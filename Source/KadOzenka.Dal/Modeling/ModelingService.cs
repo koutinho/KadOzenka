@@ -872,8 +872,8 @@ namespace KadOzenka.Dal.Modeling
 				Type = type,
 				MeanSquaredErrorTrain = trainingResult?.AccuracyScore?.MeanSquaredError?.Train,
 				MeanSquaredErrorTest = trainingResult?.AccuracyScore?.MeanSquaredError?.Test,
-				FisherCriterionTrain = trainingResult?.AccuracyScore?.FisherCriterion?.Train,
-				FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Test,
+				FisherCriterionTrain = trainingResult?.AccuracyScore?.FisherCriterion?.Estimated,
+				FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Tabular,
 				R2Train = trainingResult?.AccuracyScore?.R2?.Train,
 				R2Test = trainingResult?.AccuracyScore?.R2?.Test,
 				ScatterImage = images?.Scatter,
@@ -891,7 +891,10 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
 
 			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
-			trainingResult.QualityControlInfo = newQualityControlInfo;
+			trainingResult.QualityControlInfo.UpdateStudent(newQualityControlInfo.Student.Criterion, newQualityControlInfo.Student.Conclusion);
+			trainingResult.QualityControlInfo.UpdateMse(newQualityControlInfo.MeanSquaredError.Criterion, newQualityControlInfo.MeanSquaredError.Conclusion);
+			trainingResult.QualityControlInfo.UpdateR2(newQualityControlInfo.R2.Criterion, newQualityControlInfo.R2.Conclusion);
+			trainingResult.QualityControlInfo.UpdateFisher(newQualityControlInfo.Fisher.Criterion, newQualityControlInfo.Fisher.Conclusion);
 
 			var updatedTrainingResult = JsonConvert.SerializeObject(trainingResult);
 			switch (type)
@@ -914,8 +917,14 @@ namespace KadOzenka.Dal.Modeling
 
 		public Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type)
 		{
-			//TODO не тащить картинки, проверить после правок сервиса моделирования
-			var trainingResult = GetTrainingResult(modelId, type);
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+			var qualityInfo = trainingResult.QualityControlInfo;
 
 			var excelTemplate = new ExcelFile();
 			var mainWorkSheet = excelTemplate.Worksheets.Add("Результаты");
@@ -925,6 +934,7 @@ namespace KadOzenka.Dal.Modeling
 			var tableRowIndex = 3;
 			var criterionRowIndex = 4;
 			var conclusionRowIndex = 5;
+			//TODO убрать в отдельные объекты после подтверждения формата
 			var columnHeaders = new object[]
 			{
 				"", "t-критерий Стьюдента", "Средняя ошибка аппроксимации",
@@ -937,24 +947,22 @@ namespace KadOzenka.Dal.Modeling
 
 			AddRowToExcel(mainWorkSheet, columnHeadersRowIndex, columnHeaders);
 
+			var studentInfo = qualityInfo.Student;
+			var mseInfo = qualityInfo.MeanSquaredError;
+			var r2Info = qualityInfo.R2;
+			var fisherInfo = qualityInfo.Fisher;
 			var firstRow = new object[]
 			{
-				"Расчетное", trainingResult.MeanSquaredErrorTest, trainingResult.MeanSquaredErrorTest,
-				trainingResult.R2Test, trainingResult.FisherCriterionTest
+				"Расчетное", studentInfo.Estimated, mseInfo.Estimated, r2Info.Estimated, fisherInfo.Estimated
 			};
 			AddRowToExcel(mainWorkSheet, calculationRowIndex, firstRow);
 
 			var secondRow = new object[]
 			{
-				"Табличное", trainingResult.MeanSquaredErrorTest, trainingResult.MeanSquaredErrorTest,
-				trainingResult.R2Test, trainingResult.FisherCriterionTest
+				"Табличное", studentInfo.Tabular, mseInfo.Tabular, r2Info.Tabular, fisherInfo.Tabular
 			};
 			AddRowToExcel(mainWorkSheet, tableRowIndex, secondRow);
 
-			var studentInfo = trainingResult.QualityControlInfo.Student;
-			var mseInfo = trainingResult.QualityControlInfo.MeanSquaredError;
-			var r2Info = trainingResult.QualityControlInfo.R2;
-			var fisherInfo = trainingResult.QualityControlInfo.Fisher;
 			var thirdRow = new object[]
 			{
 				"Критерий", studentInfo.Criterion, mseInfo.Criterion, r2Info.Criterion, fisherInfo.Criterion

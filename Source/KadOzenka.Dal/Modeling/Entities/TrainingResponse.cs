@@ -23,6 +23,7 @@ namespace KadOzenka.Dal.Modeling.Entities
         [JsonProperty("images")]
         public Images Images { get; set; }
 
+        //обновляется через UI
         [JsonProperty("quality_control_info")]
         public QualityControlInfo QualityControlInfo { get; set; }
 
@@ -46,9 +47,11 @@ namespace KadOzenka.Dal.Modeling.Entities
         [JsonProperty("mse")]
         public TrainingGeneralResult MeanSquaredError { get; set; }
         [JsonProperty("fisher")]
-        public TrainingGeneralResult FisherCriterion { get; set; }
+        public TrainingSpecificResult FisherCriterion { get; set; }
         [JsonProperty("r2")]
         public TrainingGeneralResult R2 { get; set; }
+        [JsonProperty("student")]
+        public TrainingSpecificResult Student { get; set; }
     }
 
     public class TrainingGeneralResult
@@ -57,6 +60,14 @@ namespace KadOzenka.Dal.Modeling.Entities
         public string Train { get; set; }
         [JsonProperty("test")]
         public string Test { get; set; }
+    }
+
+    public class TrainingSpecificResult
+    {
+	    [JsonProperty("estimated")]
+	    public string Estimated { get; set; }
+	    [JsonProperty("tabular")]
+	    public string Tabular { get; set; }
     }
 
     public class Images
@@ -70,26 +81,54 @@ namespace KadOzenka.Dal.Modeling.Entities
     public class QualityControlInfo
     {
 	    [JsonProperty("student")]
-	    public QualityControlGeneral Student { get; set; }
+	    public QualityControlSpecial Student { get; set; }
 	    [JsonProperty("mse")]
-        public QualityControlGeneral MeanSquaredError { get; set; }
+        public QualityControlSpecial MeanSquaredError { get; set; }
         [JsonProperty("r2")]
-        public QualityControlGeneral R2 { get; set; }
+        public QualityControlSpecial R2 { get; set; }
         [JsonProperty("fisher")]
-        public QualityControlGeneral Fisher { get; set; }
+        public QualityControlSpecial Fisher { get; set; }
 
         public QualityControlInfo()
         {
-	        Student = new QualityControlGeneral();
-	        MeanSquaredError = new QualityControlGeneral();
-	        R2 = new QualityControlGeneral();
-	        Fisher = new QualityControlGeneral();
+	        Student = new QualityControlSpecial();
+	        MeanSquaredError = new QualityControlSpecial();
+	        R2 = new QualityControlSpecial();
+	        Fisher = new QualityControlSpecial();
+        }
+
+        public void UpdateStudent(string criterion, bool conclusion)
+        {
+	        Student.Criterion = criterion;
+	        Student.Conclusion = conclusion;
+        }
+
+        public void UpdateMse(string criterion, bool conclusion)
+        {
+	        MeanSquaredError.Criterion = criterion;
+	        MeanSquaredError.Conclusion = conclusion;
+        }
+
+        public void UpdateR2(string criterion, bool conclusion)
+        {
+	        R2.Criterion = criterion;
+	        R2.Conclusion = conclusion;
+        }
+
+        public void UpdateFisher(string criterion, bool conclusion)
+        {
+	        Fisher.Criterion = criterion;
+	        Fisher.Conclusion = conclusion;
         }
     }
 
-    public class QualityControlGeneral
+    public class QualityControlSpecial
     {
-	    [JsonProperty("criterion")]
+	    [JsonProperty("estimated")]
+	    public string Estimated { get; set; }
+	    [JsonProperty("tabular")]
+	    public string Tabular { get; set; }
+        [JsonProperty("criterion")]
 	    public string Criterion { get; set; }
 	    [JsonProperty("conclusion")]
 	    public bool Conclusion { get; set; }

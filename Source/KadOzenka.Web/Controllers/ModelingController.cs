@@ -881,6 +881,7 @@ namespace KadOzenka.Web.Controllers
         public IActionResult UpdateTrainingQualityInfo(TrainingDetailsModel model)
         {
 	        var dto = model.TrainingQualityInfoModel.FromModel();
+	        
 	        ModelingService.UpdateTrainingQualityInfo(model.ModelId, model.Type, dto);
 
 	        return Ok();
@@ -908,17 +909,6 @@ namespace KadOzenka.Web.Controllers
 	        return File(fileInfo.FileContent, fileInfo.ContentType,
 		        $"Результаты обучения модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
         }
-
-        #region Support Methods
-
-        private TrainingResponse GetTrainingDetails(string trainingResult)
-        {
-	        return string.IsNullOrWhiteSpace(trainingResult)
-		        ? null
-		        : JsonConvert.DeserializeObject<TrainingResponse>(trainingResult);
-        }
-
-        #endregion
 
         #endregion
 

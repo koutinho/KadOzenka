@@ -42,7 +42,7 @@ namespace KadOzenka.Web.Models.Modeling
                 R2Test = trainingResult.R2Test,
                 ScatterImageData = ConvertByteToImage(trainingResult.ScatterImage),
                 CorrelationImageData = ConvertByteToImage(trainingResult.CorrelationImage),
-                TrainingQualityInfoModel = TrainingQualityInfoModel.ToModel(trainingResult)
+                TrainingQualityInfoModel = TrainingQualityInfoModel.ToModel(trainingResult.QualityControlInfo)
             };
         }
 

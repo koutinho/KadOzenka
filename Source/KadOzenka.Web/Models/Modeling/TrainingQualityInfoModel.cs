@@ -1,16 +1,15 @@
-﻿using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Modeling.Entities;
+﻿using KadOzenka.Dal.Modeling.Entities;
 
 namespace KadOzenka.Web.Models.Modeling
 {
     public class TrainingQualityInfoModel
     {
-	    public string StudentCriterionForCalculation { get; set; }
-        public string StudentCriterionForTable { get; set; }
+	    public string StudentForEstimated { get; set; }
+        public string StudentForTabular { get; set; }
         public string MeanSquaredError { get; set; }
         public string R2 { get; set; }
-        public string FisherCriterionForCalculation { get; set; }
-        public string FisherCriterionForTable { get; set; }
+        public string FisherCriterionForEstimated { get; set; }
+        public string FisherCriterionForTabular { get; set; }
         
         public string CriterionForStudent { get; set; }
         public string CriterionForMeanSquaredError { get; set; }
@@ -23,24 +22,24 @@ namespace KadOzenka.Web.Models.Modeling
         public bool? ConclusionForFisher { get; set; }
 
 
-        public static TrainingQualityInfoModel ToModel(TrainingDetailsDto trainingResult)
+        public static TrainingQualityInfoModel ToModel(QualityControlInfo qualityControlInfo)
         {
 	        return new TrainingQualityInfoModel
             {
-	            StudentCriterionForCalculation = trainingResult.MeanSquaredErrorTest,
-                StudentCriterionForTable = trainingResult.MeanSquaredErrorTest,
-                MeanSquaredError = trainingResult.MeanSquaredErrorTest,
-                R2 = trainingResult.R2Test,
-                FisherCriterionForCalculation = trainingResult.FisherCriterionTest,
-                FisherCriterionForTable = trainingResult.FisherCriterionTest,
-                CriterionForStudent = trainingResult.QualityControlInfo.Student.Criterion,
-                CriterionForMeanSquaredError = trainingResult.QualityControlInfo.MeanSquaredError.Criterion,
-                CriterionForR2 = trainingResult.QualityControlInfo.R2.Criterion,
-                CriterionForFisher = trainingResult.QualityControlInfo.Fisher.Criterion,
-                ConclusionForStudent = trainingResult.QualityControlInfo.Student.Conclusion,
-                ConclusionForMeanSquaredError = trainingResult.QualityControlInfo.MeanSquaredError.Conclusion,
-                ConclusionForR2 = trainingResult.QualityControlInfo.R2.Conclusion,
-                ConclusionForFisher = trainingResult.QualityControlInfo.Fisher.Conclusion
+	            StudentForEstimated = qualityControlInfo.Student.Estimated,
+                StudentForTabular = qualityControlInfo.Student.Tabular,
+                MeanSquaredError = qualityControlInfo.MeanSquaredError.Tabular,
+                R2 = qualityControlInfo.R2.Tabular,
+                FisherCriterionForEstimated = qualityControlInfo.Fisher.Estimated,
+                FisherCriterionForTabular = qualityControlInfo.Fisher.Tabular,
+                CriterionForStudent = qualityControlInfo.Student.Criterion,
+                CriterionForMeanSquaredError = qualityControlInfo.MeanSquaredError.Criterion,
+                CriterionForR2 = qualityControlInfo.R2.Criterion,
+                CriterionForFisher = qualityControlInfo.Fisher.Criterion,
+                ConclusionForStudent = qualityControlInfo.Student.Conclusion,
+                ConclusionForMeanSquaredError = qualityControlInfo.MeanSquaredError.Conclusion,
+                ConclusionForR2 = qualityControlInfo.R2.Conclusion,
+                ConclusionForFisher = qualityControlInfo.Fisher.Conclusion
             };
         }
 
@@ -48,22 +47,22 @@ namespace KadOzenka.Web.Models.Modeling
         {
 	        return new QualityControlInfo
             {
-		        Student = new QualityControlGeneral
+		        Student = new QualityControlSpecial
 		        {
 			        Criterion = CriterionForStudent, 
 			        Conclusion = ConclusionForStudent.GetValueOrDefault()
 		        },
-                MeanSquaredError = new QualityControlGeneral
+                MeanSquaredError = new QualityControlSpecial
                 {
 	                Criterion = CriterionForMeanSquaredError,
 	                Conclusion = ConclusionForMeanSquaredError.GetValueOrDefault()
                 },
-                R2 = new QualityControlGeneral
+                R2 = new QualityControlSpecial
                 {
 	                Criterion = CriterionForR2,
 	                Conclusion = ConclusionForR2.GetValueOrDefault()
                 },
-                Fisher = new QualityControlGeneral
+                Fisher = new QualityControlSpecial
                 {
 	                Criterion = CriterionForFisher,
 	                Conclusion = ConclusionForFisher.GetValueOrDefault()

@@ -271,7 +271,34 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveTrainingResult(KoAlgoritmType type, TrainingResponse trainingResult, decimal? a0)
         {
-	        var trainingResultStr = JsonConvert.SerializeObject(trainingResult);
+	        var student = trainingResult.AccuracyScore?.Student;
+	        var mse = trainingResult.AccuracyScore?.MeanSquaredError;
+	        var r2 = trainingResult.AccuracyScore?.R2;
+	        var fisher = trainingResult.AccuracyScore?.FisherCriterion;
+            trainingResult.QualityControlInfo = new QualityControlInfo
+            {
+	            Student = new QualityControlSpecial
+	            {
+		            Estimated = student?.Estimated,
+		            Tabular = student?.Tabular
+	            },
+	            MeanSquaredError = new QualityControlSpecial
+	            {
+		            Estimated = mse?.Test,
+		            Tabular = mse?.Test
+                },
+	            R2 = new QualityControlSpecial
+	            {
+		            Estimated = r2?.Test,
+		            Tabular = r2?.Test
+	            },
+                Fisher = new QualityControlSpecial
+                {
+	                Estimated = fisher?.Estimated,
+                    Tabular = fisher?.Tabular
+                }
+            };
+            var trainingResultStr = JsonConvert.SerializeObject(trainingResult);
 
             switch (type)
 			{
