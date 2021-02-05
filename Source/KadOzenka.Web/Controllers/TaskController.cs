@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using KadOzenka.Web.Models.Task;
@@ -25,6 +26,7 @@ using KadOzenka.Dal.LongProcess.DataComparing;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using Kendo.Mvc.Extensions;
@@ -41,6 +43,8 @@ using KadOzenka.Web.Models.Unit;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
@@ -508,7 +512,7 @@ namespace KadOzenka.Web.Controllers
                 switch (unitFactorsShowType)
                 {
                     case UnitFactorsShowType.ModelFactors:
-                        var model = new ModelingRepository().GetActiveModelEntityByGroupId(unit.GroupId);
+                        var model = new ModelingService().GetActiveModelEntityByGroupId(unit.GroupId);
                         if (model != null)
                         {
                             var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)

@@ -19,8 +19,8 @@ using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
-    public class GbuObjectService
-    {
+	public class GbuObjectService : IGbuObjectService
+	{
         private static readonly ILogger _log = Log.ForContext<GbuObjectService>();
 		public static List<string> Postfixes = new List<string> { "TXT", "NUM", "DT" };
 
@@ -518,6 +518,17 @@ from (select
 	       var attrId= RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == idAttribute)?.RegisterId;
 
 	       return RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attrId)?.Description;
+        }
+
+        public static void SaveAttributeValueWithCheck(GbuObjectAttribute attributeValue)
+        {
+	        if (CheckExistsValueFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot) != null)
+	        {
+		        // Проблема в наличии значения на ту же дату ОТ
+			        attributeValue.Ot = GetNextOtFromAttributeIdPartition(attributeValue.ObjectId, attributeValue.AttributeId, attributeValue.Ot);
+		    }
+
+	        attributeValue.Save();
         }
 	}
 }

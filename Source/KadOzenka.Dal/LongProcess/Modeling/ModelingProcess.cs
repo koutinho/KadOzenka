@@ -3,6 +3,7 @@ using System.Threading;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Core.LongProcess;

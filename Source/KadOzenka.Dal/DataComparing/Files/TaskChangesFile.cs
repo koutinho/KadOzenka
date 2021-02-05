@@ -6,6 +6,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataComparing.Configs;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.DataComparing.Files
 {
@@ -62,6 +63,16 @@ namespace KadOzenka.Dal.DataComparing.Files
 				var targetNewValue = ExcelFile.Worksheets[0].Rows[i].Cells[NewValueColumnNumber].Value?.ToString();
 				var targetChanging = ExcelFile.Worksheets[0].Rows[i].Cells[ChangingColumnNumber].Value?.ToString();
 
+				var isSquareChanging = targetChanging?.Trim() == KoChangeStatus.Square.GetEnumDescription();
+				bool canParseTargetSquare = false;
+				decimal targetNewValueDecimal = 0;
+				if (isSquareChanging)
+				{
+					canParseTargetSquare = decimal.TryParse(targetNewValue?.Replace(".", ","), out targetNewValueDecimal);
+					if(!canParseTargetSquare)
+						canParseTargetSquare = decimal.TryParse(targetNewValue?.Replace(",", "."), out targetNewValueDecimal);
+				}
+
 				var isExists = false;
 				Parallel.ForEach(comparableFile.ExcelFile.Worksheets[0].Rows, options, (row, state) =>
 				{
@@ -71,10 +82,28 @@ namespace KadOzenka.Dal.DataComparing.Files
 						var comparableNewValue = row.Cells[NewValueColumnNumber].Value?.ToString();
 						var comparableChanging = row.Cells[ChangingColumnNumber].Value?.ToString();
 
-						if (targetKn == comparableKn && targetNewValue == comparableNewValue && targetChanging == comparableChanging)
+						if (targetKn == comparableKn && targetChanging == comparableChanging)
 						{
-							isExists = true;
-							state.Break();
+							if (string.IsNullOrEmpty(targetNewValue) && string.IsNullOrEmpty(comparableNewValue) 
+							    || targetNewValue == comparableNewValue)
+							{
+								isExists = true;
+								state.Break();
+							} else if (isSquareChanging)
+							{
+								if (!string.IsNullOrEmpty(targetNewValue) && !string.IsNullOrEmpty(comparableNewValue))
+								{
+									bool canParseComparableSquare = decimal.TryParse(comparableNewValue?.Replace(".", ","), out var comparableNewValueDecimal);
+									if (!canParseComparableSquare)
+										canParseComparableSquare = decimal.TryParse(comparableNewValue?.Replace(",", "."), out comparableNewValueDecimal);
+
+									if (canParseTargetSquare && canParseComparableSquare && targetNewValueDecimal == comparableNewValueDecimal)
+									{
+										isExists = true;
+										state.Break();
+									}
+								}
+							}
 						}
 					}
 				});

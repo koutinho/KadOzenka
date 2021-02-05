@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Core.Register.LongProcessManagment;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
@@ -13,6 +14,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support
 		protected ABaseReportTableLongProcess(ILogger logger)
 		{
 			Logger = logger;
+		}
+
+		public static void AddProcessToQueue(string processType, string param)
+		{
+			LongProcessManager.AddTaskToQueue(processType, null, null, param);
 		}
 
 		protected void CheckCancellationToken(CancellationToken cancellationToken)

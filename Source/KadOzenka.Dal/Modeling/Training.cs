@@ -5,6 +5,7 @@ using System.Net;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
@@ -75,8 +76,12 @@ namespace KadOzenka.Dal.Modeling
             RequestForService.AttributeNames.AddRange(ModelAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
             RequestForService.AttributeIds.AddRange(ModelAttributes.Select(x => x.AttributeId));
 
+            var counter = 0;
             MarketObjectsForTraining.ForEach(modelObject =>
             {
+                if(counter++ % 100 == 0)
+					Logger.Debug("Идет обработка объекта моделирования №{i}", counter);
+
                 var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
                     return;
@@ -187,7 +192,7 @@ namespace KadOzenka.Dal.Modeling
 		        ? "Операция успешно завершена."
 		        : $"Операция частично завершена.<br>{AdditionalMessage}";
 
-	        NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+	        new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
 

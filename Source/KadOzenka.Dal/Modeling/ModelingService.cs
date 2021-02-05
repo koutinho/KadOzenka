@@ -6,7 +6,6 @@ using System.Text;
 using System.Transactions;
 using Core.Register;
 using Core.Register.QuerySubsystem;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -19,6 +18,11 @@ using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.Modeling.Exceptions;
+using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Resources;
+using Serilog;
+using System.Linq.Expressions;
 using Microsoft.Practices.ObjectBuilder2;
 using Newtonsoft.Json;
 using ObjectModel.Ko;
@@ -27,10 +31,11 @@ using Serilog;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelingService
+	public class ModelingService : IModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
-        public ModelingRepository ModelingRepository { get; set; }
+        private IModelingRepository ModelingRepository { get; set; }
+        private IModelObjectsRepository ModelObjectsRepository { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public RecycleBinService RecycleBinService { get; }
 
@@ -49,68 +54,70 @@ namespace KadOzenka.Dal.Modeling
 
 		#endregion
 
-		public ModelingService()
+		public ModelingService(IModelingRepository modelingRepository = null,
+			IModelObjectsRepository modelObjectsRepository = null)
 		{
 			ModelFactorsService = new ModelFactorsService();
-			ModelingRepository = new ModelingRepository();
+			ModelingRepository = modelingRepository ?? new ModelingRepository();
 			RecycleBinService = new RecycleBinService();
+			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 		}
 
-        #region CRUD General Model
 
-        public OMModel GetActiveModelEntityByGroupId(long? groupId)
+		#region CRUD General Model
+
+		public OMModel GetActiveModelEntityByGroupId(long? groupId)
         {
-	        var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
-	        if (model == null)
-		        throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
+	        if (groupId == null)
+		        throw new Exception("Не передан идентификатор Группы для поиска модели");
 
-	        return model;
+			var model = ModelingRepository.GetEntityByCondition(x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, null);
+
+			return model;
         }
 
         public OMModel GetModelEntityById(long? modelId)
         {
-	        if (modelId == null)
-		        throw new Exception("Не передан идентификатор Модели для поиска");
+	        if (modelId.GetValueOrDefault() == 0)
+		        throw new Exception(Messages.EmptyModelId);
 
-	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetById(modelId.Value, null);
 	        if (model == null)
-		        throw new Exception($"Не найдена Модель с id='{modelId}'");
+		        throw new ModelNotFoundByIdException($"Не найдена Модель с id='{modelId}'");
 
 	        return model;
         }
 
         public ModelingModelDto GetModelById(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId)
-		        .Select(x => new
-		        {
-			        x.Description,
-			        x.Name,
-			        x.LinearTrainingResult,
-			        x.ExponentialTrainingResult,
-			        x.MultiplicativeTrainingResult,
-                    x.GroupId,
-			        x.ParentGroup.Id,
-			        x.ParentGroup.GroupName,
-			        x.IsOksObjectType,
-                    x.Type_Code,
-                    x.AlgoritmType_Code,
-                    x.CalculationType_Code,
-                    x.A0,
-					x.A0ForExponential,
-					x.A0ForMultiplicative,
-                    x.A0ForLinearTypeInPreviousTour,
-                    x.A0ForExponentialTypeInPreviousTour,
-					x.A0ForMultiplicativeTypeInPreviousTour,
-                    x.Formula,
-                    x.CalculationMethod_Code,
-					x.IsActive
-                }).ExecuteFirstOrDefault();
+	        Expression<Func<OMModel, object>> selectExpression = x => new
+	        {
+		        x.Description,
+		        x.Name,
+		        x.LinearTrainingResult,
+		        x.ExponentialTrainingResult,
+		        x.MultiplicativeTrainingResult,
+		        x.GroupId,
+		        x.ParentGroup.Id,
+		        x.ParentGroup.GroupName,
+		        x.IsOksObjectType,
+		        x.Type_Code,
+		        x.AlgoritmType_Code,
+		        x.CalculationType_Code,
+		        x.A0,
+		        x.A0ForExponential,
+		        x.A0ForMultiplicative,
+		        x.A0ForLinearTypeInPreviousTour,
+		        x.A0ForExponentialTypeInPreviousTour,
+		        x.A0ForMultiplicativeTypeInPreviousTour,
+		        x.Formula,
+		        x.CalculationMethod_Code,
+		        x.IsActive
+	        };
+	        
+	        var model = ModelingRepository.GetById(modelId, selectExpression);
 
-	        if (model == null)
-				throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-	        var tour = GetModelTour(model.GroupId);
+			var tour = GetModelTour(model.GroupId);
 
             return new ModelingModelDto
 	        {
@@ -138,7 +145,10 @@ namespace KadOzenka.Dal.Modeling
 
         public bool IsModelGroupExist(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetById(modelId, x => new {x.GroupId});
+	        if (model == null)
+		        return false;
+
 	        return OMGroup.Where(x => x.Id == model.GroupId).ExecuteExists();
         }
 
@@ -171,7 +181,7 @@ namespace KadOzenka.Dal.Modeling
                 Formula = "-"
 	        };
 
-	        model.Save();
+	        ModelingRepository.Save(model);
         }
 
         public void AddManualModel(ModelingModelDto modelDto)
@@ -190,12 +200,12 @@ namespace KadOzenka.Dal.Modeling
 
 	        model.Formula = model.GetFormulaFull(true);
 
-	        model.Save();
-        }
+			ModelingRepository.Save(model);
+		}
 
         public void UpdateAutomaticModel(ModelingModelDto modelDto)
 		{
-			ValidateModelDuringUpdating(modelDto);
+			ValidateBaseModel(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -224,7 +234,7 @@ namespace KadOzenka.Dal.Modeling
 
         public void UpdateManualModel(ModelingModelDto modelDto)
         {
-	        ValidateModelDuringUpdating(modelDto);
+	        ValidateBaseModel(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -271,46 +281,41 @@ namespace KadOzenka.Dal.Modeling
 
         public void MakeModelActive(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId)
-		        .Select(x => new
-		        {
-			        x.GroupId,
-					x.Type_Code,
-					x.LinearTrainingResult,
-					x.ExponentialTrainingResult,
-					x.MultiplicativeTrainingResult,
-					x.IsActive
-		        }).ExecuteFirstOrDefault();
-	        if (model == null)
-		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
+	        var model = ModelingRepository.GetById(modelId, x => new
+	        {
+		        x.GroupId,
+		        x.Type_Code,
+		        x.LinearTrainingResult,
+		        x.ExponentialTrainingResult,
+		        x.MultiplicativeTrainingResult,
+		        x.IsActive
+	        });
 
 	        if (model.Type_Code == KoModelType.Automatic)
 	        {
-		        var hasFormedObjectArray = GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+		        var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
 		        var hasTrainingResult = !string.IsNullOrWhiteSpace(model.LinearTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception("Невозможно активировать необученную модель");
+			        throw new Exception(Messages.CanNotActivateNotPreparedAutomaticModel);
 			}
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
+				var otherModelsForGroup = ModelingRepository.GetEntitiesByCondition(
+					x => x.GroupId == model.GroupId && x.IsActive.Coalesce(false) == true, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
-					if (!x.IsActive.GetValueOrDefault())
-						return;
-
-			        x.IsActive = false;
-			        x.Save();
-		        });
+					x.IsActive = false;
+					ModelingRepository.Save(x);
+				});
 
 		        if (!model.IsActive.GetValueOrDefault())
 		        {
 			        model.IsActive = true;
-			        model.Save();
-				}
+			        ModelingRepository.Save(model);
+		        }
 
 		        ts.Complete();
 	        }
@@ -350,12 +355,12 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
+		private void ValidateBaseModel(ModelingModelDto modelDto)
         {
 	        var message = new StringBuilder();
 
 	        if (string.IsNullOrWhiteSpace(modelDto.Name))
-		        message.AppendLine("У модели не заполнено Имя");
+		        message.AppendLine(Messages.EmptyName);
 	        if (string.IsNullOrWhiteSpace(modelDto.Description))
 		        message.AppendLine("У модели не заполнено Описание");
 
@@ -363,12 +368,12 @@ namespace KadOzenka.Dal.Modeling
 		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
 	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
+		        throw new ModelCrudException(message.ToString());
         }
 
         private void ValidateModelDuringAddition(ModelingModelDto modelDto)
         {
-	        ValidateModelDuringUpdating(modelDto);
+	        ValidateBaseModel(modelDto);
 
 	        var message = new StringBuilder();
 
@@ -380,8 +385,8 @@ namespace KadOzenka.Dal.Modeling
 		        message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
 
 	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
-        }
+				throw new ModelCrudException(message.ToString());
+		}
 
         #endregion
 
@@ -398,23 +403,9 @@ namespace KadOzenka.Dal.Modeling
                 .Execute();
 		}
 
-        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, bool isForTraining)
-        {
-	        if (isForTraining)
-	        {
-		        return OMModelToMarketObjects
-			        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-			                    (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
-	        }
-
-	        return OMModelToMarketObjects
-		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-		                    x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
-        }
-
         public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
         {
-	        return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
+	        return ModelObjectsRepository.GetIncludedModelObjects(modelId, isForTraining);
         }
 
         public int DestroyModelMarketObjects(OMModel model)
@@ -469,10 +460,8 @@ namespace KadOzenka.Dal.Modeling
 	        var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
 
-            var factors = GetFactorColumnsForModelObjectsInFile(modelId);
-			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
-            var groupedFactors = factors.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
-			var columnHeaders = new object[_maxNumberOfColumns];
+            var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId);
+            var columnHeaders = new object[_maxNumberOfColumns];
             columnHeaders[IdColumnIndex] = "ИД";
             columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
             columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
@@ -482,7 +471,7 @@ namespace KadOzenka.Dal.Modeling
             columnHeaders[PriceColumnIndex] = "Цена";
             columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
             columnHeaders[DeviationFromPredictablePriceColumnIndex] = "Отклонение цены от прогнозной, %";
-            factors.ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
+            groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
             //columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
@@ -507,8 +496,7 @@ namespace KadOzenka.Dal.Modeling
 				groupedFactors.ForEach(factor =>
 				{
 					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
-					var factorColumns = factor.ToList();
-					factorColumns.ForEach(x =>
+					factor.ToList().ForEach(x =>
 					{
 						if (x.IsColumnWithValue)
 						{
@@ -538,22 +526,32 @@ namespace KadOzenka.Dal.Modeling
 
 		public UpdateModelObjectsResult UpdateModelObjects(long modelId, ExcelFile file)
         {
-	        var factors = GetFactorColumnsForModelObjectsInFile(modelId).Where(x => !x.IsColumnWithValue).ToList();
+	        var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId).ToList();
 
-            var rows = file.Worksheets[0].Rows;
+	        var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
             var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
             for (var i = 1; i <= rowsCount; i++)
             {
 	            var cells = rows[i].Cells;
 	            var factorsFromFile = new List<CoefficientForObject>();
-                factors.ForEach(factor =>
-                {
-	                factorsFromFile.Add(new CoefficientForObject(factor.AttributeId)
-					{
-						Coefficient = cells[factor.ColumnIndex].Value.ParseToDecimalNullable()
-					});
-                });
+	            groupedFactors.ForEach(group =>
+	            {
+		            var factorFromFile = new CoefficientForObject(group.Key);
+		            group.ToList().ForEach(x =>
+		            {
+			            if (x.IsColumnWithValue)
+			            {
+				            factorFromFile.Value = cells[x.ColumnIndex].Value.ParseToStringNullable();
+			            }
+			            else
+			            {
+				            factorFromFile.Coefficient = cells[x.ColumnIndex].Value.ParseToDecimalNullable();
+			            }
+		            });
+
+		            factorsFromFile.Add(factorFromFile);
+	            });
 
                 modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
                 {
@@ -586,7 +584,8 @@ namespace KadOzenka.Dal.Modeling
 					x.Coefficients
 	            }).Execute();
 
-            foreach (var modelObjectFromExcel in modelObjectsFromExcel)
+            var normalizedFactors = groupedFactors.Where(x => x.ToList().Any(y => y.IsColumnWithValue)).Select(x => x.Key).ToList();
+			foreach (var modelObjectFromExcel in modelObjectsFromExcel)
             {
 	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
 	            if (modelObject == null)
@@ -595,23 +594,28 @@ namespace KadOzenka.Dal.Modeling
 		            continue;
 	            }
 
-				var coefficientsWereChanged = false;
+				var factorWasChanged = false;
 	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-	            factors.ForEach(attribute =>
+	            groupedFactors.ForEach(group =>
 	            {
-		            var coefficientFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
-		            var coefficientFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
-		            if (coefficientFromDb != null && coefficientFromDb.Coefficient != coefficientFromFile?.Coefficient)
+		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == group?.Key);
+		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == group?.Key);
+
+		            factorWasChanged = factorFromDb != null &&
+		                                      (factorFromDb.Coefficient != factorFromFile?.Coefficient ||
+		                                       !string.Equals(factorFromDb.Value, factorFromFile?.Value));
+		            if (factorWasChanged)
 		            {
-			            coefficientsWereChanged = true;
-			            coefficientFromDb.Coefficient = coefficientFromFile?.Coefficient;
+			            factorWasChanged = true;
+			            factorFromDb.Value = normalizedFactors.Contains(group.Key) ? factorFromFile?.Value : factorFromDb.Value;
+			            factorFromDb.Coefficient = factorFromFile?.Coefficient;
 		            }
 	            });
 
 	            if (modelObject.IsForTraining.GetValueOrDefault() == modelObjectFromExcel.IsForTraining &&
 	                modelObject.IsForControl.GetValueOrDefault() == modelObjectFromExcel.IsForControl &&
 	                modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded &&
-	                !coefficientsWereChanged)
+	                !factorWasChanged)
 	            {
 		            result.UnchangedObjectsCount++;
 		            continue;
@@ -701,7 +705,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private List<FactorInFileInfo> GetFactorColumnsForModelObjectsInFile(long modelId)
+		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(long modelId)
 		{
 			//пока работаем только с Exp (был расчет МС и процента)
 			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
@@ -736,8 +740,11 @@ namespace KadOzenka.Dal.Modeling
 
 			result = result.OrderBy(x => x.Name).ToList();
 			result.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
-			
-			return result;
+
+			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
+			var groupedFactors = result.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
+
+			return groupedFactors;
 		}
 
 		private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)

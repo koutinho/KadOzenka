@@ -50,6 +50,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
@@ -59,6 +60,7 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
@@ -201,6 +203,9 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("221", "Импорт данных KO (БД) ВУОН Сооружения", MSExporter.DoLoadBd2018Unit_Construction_VUON);
 			consoleHelper.AddCommand("222", "Импорт данных KO (БД) ВУОН Помещения", MSExporter.DoLoadBd2018Unit_Flat_VUON);
 			consoleHelper.AddCommand("223", "Импорт данных KO (БД) ВУОН ОНС", MSExporter.DoLoadBd2018Unit_Uncomplited_VUON);
+
+
+
 
 			consoleHelper.AddCommand("231", "Импорт данных ГБУ(БД) ВУОН Земля", MSExporter.DoLoadBd2018Unit_Parcel_VUON_GKN);
 			consoleHelper.AddCommand("232", "Импорт данных ГБУ(БД) ВУОН Здания", MSExporter.DoLoadBd2018Unit_Build_VUON_GKN);
@@ -599,7 +604,7 @@ namespace KadOzenka.BlFrontEnd
             {
 	            var groupIds = OMGroup.Where(x => true).Execute().Select(x => x.Id).ToList();
 
-	            var tourService = new TourService(new TourFactorService(), new GroupService(),  new RecycleBinService());
+	            var tourService = new TourService(new TourFactorService(), new GroupService(),  new RecycleBinService(), new TourRepository());
 	            var groupService = new GroupService();
 
 				var modelsWithNotExistedGroups = OMModel.Where(x => !groupIds.Contains((long) x.GroupId)).SelectAll().Execute().ToList();

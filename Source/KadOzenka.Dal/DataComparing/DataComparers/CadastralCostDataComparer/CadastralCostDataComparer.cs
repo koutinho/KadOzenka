@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer
 				catch (Exception ex)
 				{
 					_log.Error(ex, "Ошибка при обработке директории {TaskFolder}", taskFolder);
-					NotificationSender.SendNotification("Сравнение протоколов кадастровой стоимости", 
+					new NotificationSender().SendNotification("Сравнение протоколов кадастровой стоимости", 
 						$"В ходе обработки директории {taskFolder} произошла ошибка: {ex.Message}", messageAddresses);
 				}
 			}

@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-				SendMessage(processQueue, $"Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов. {processQueue.Parameters}", GetMessageSubject());
+				NotificationSender.SendNotification(processQueue, GetMessageSubject(), $"Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов. {processQueue.Parameters}");
 				return;
 			}
 
@@ -83,12 +83,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				SaveStatistic(objects, allModelAttributes, Model, Queue);
 
-				SendMessage(Queue, "Операция успешно завершена", GetMessageSubject());
+				NotificationSender.SendNotification(Queue, GetMessageSubject(), "Операция успешно завершена");
 			}
 			catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
-				SendMessage(Queue, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})", GetMessageSubject());
+				NotificationSender.SendNotification(Queue, GetMessageSubject(), $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})");
 				Logger.Error(exception, "Ошибка в ходе сбора данных для моделирования при добавлении нового фактора");
 			}
 

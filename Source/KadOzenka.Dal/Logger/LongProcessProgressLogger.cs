@@ -6,7 +6,15 @@ using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.Dal.Logger
 {
-	public class LongProcessProgressLogger
+	public interface ILongProcessProgressLogger
+	{
+		void StartLogProgress(OMQueue processQueue, Func<int> getMaxCount, Func<int> getCurrentCount);
+		void StopLogProgress();
+		void LogProgress(int maxCount, int currentCount, OMQueue processQueue);
+	}
+
+
+	public class LongProcessProgressLogger : ILongProcessProgressLogger
 	{
 		private Task _taskLogProgress;
 		private CancellationTokenSource _cancelSourceLogProcess;

@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers
 				catch (Exception ex)
 				{
 					_log.Error(ex, "Ошибка при сравнении файлов '{RsmFileName}' и '{PkkoFileName}'", filePair.Item1.Name, filePair.Item2.Name);
-					NotificationSender.SendNotification("Сравнение протоколов загрузки",
+					new NotificationSender().SendNotification("Сравнение протоколов загрузки",
 						$"В ходе сравнения файлов '{filePair.Item1.Name}' и '{filePair.Item2.Name}' произошла ошибка: {ex.Message}", messageAddresses);
 				}
 			}
@@ -97,7 +97,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers
 			TaskChangesDataComparingStorageManager.MoveComparingDataFileToResultFolder(rsmFileInfo.Name);
 			TaskChangesDataComparingStorageManager.MoveComparingDataFileToResultFolder(pkkoFileInfo.Name);
 
-			NotificationSender.SendNotification("Сравнение протоколов загрузки",
+			new NotificationSender().SendNotification("Сравнение протоколов загрузки",
 				TaskChangesDataComparingConfig.Current.GetEmailMessageForTask(task),
 				messageAddresses);
 		}

@@ -91,7 +91,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 			_rsmCostFiles.ForEach(x => CadastralCostDataComparingStorageManager.MoveFileToResultFolder(x, _taskFolder));
 			_pkkoCostFiles.ForEach(x => CadastralCostDataComparingStorageManager.MoveFileToResultFolder(x, _taskFolder));
 
-			NotificationSender.SendNotification("Сравнение протоколов кадастровой стоимости",
+			new NotificationSender().SendNotification("Сравнение протоколов кадастровой стоимости",
 				CadastralCostDataComparingConfig.Current.GetCostEmailMessageForTask(_task),
 				_messageAddresses);
 		}

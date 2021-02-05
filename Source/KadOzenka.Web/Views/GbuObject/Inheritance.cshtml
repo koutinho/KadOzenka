@@ -7,41 +7,41 @@
 
 @using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
 {
-	<div class="form-horizontal col-sm-12">
+    <div class="form-horizontal col-sm-12">
         @Html.RenderHelpButton()
 
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabel("Тур оценки")
-			</div>
-			<div class="col-sm-4">
-				@(Html.Kendo().DropDownListFor(x => x.RatingTour)
-											.DataTextField("Text")
-											.DataValueField("Value")
-											.DataSource(data => data.Read("GetRatingTours", "GbuObject"))
-				)
-			</div>
-		</div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Тур оценки")
+            </div>
+            <div class="col-sm-4">
+                @(Html.Kendo().DropDownListFor(x => x.RatingTour)
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .DataSource(data => data.Read("GetRatingTours", "GbuObject"))
+                )
+            </div>
+        </div>
 
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabel("Задания на оценку")
-			</div>
-			<div class="col-sm-10">
-				@(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
-									.DataTextField("Text")
-									.DataValueField("Value")
-									.Filter("contains")
-									.DataSource(source =>
-									{
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Задания на оценку")
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter("contains")
+                                    .DataSource(source =>
+                                    {
                                         source.Read(read =>
                                         {
                                             read.Action("GetTasksByTour", "Task").Data("handlerData");
                                         })
                                         .ServerFiltering(false);
-									}))
-			</div>
-		</div>
+                                    }))
+            </div>
+        </div>
         
         <div class="form-group">
             <div class="col-sm-2">
@@ -55,63 +55,63 @@
         </div>
 
         <fieldset>
-			<legend>Тип наследования</legend>
-			<div class="form-group">
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToParcel).Label("Кадастровый квартал \u2192 Земельный участок").Value(true).Checked(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.ParcelToBuilding).Label("Земельный участок \u2192 Здание").Value(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToBuilding).Label("Кадастровый квартал \u2192 Здание").Value(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.ParcelToConstruction).Label("Земельный участок \u2192 Сооружение").Value(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToConstruction).Label("Кадастровый квартал \u2192 Сооружение").Value(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.ParcelToUncomplited).Label("Земельный участок \u2192 Объект незавершенного строительства").Value(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToUncomplited).Label("Кадастровый квартал \u2192 Объект незавершенного строительства").Value(true))
-				</div>
-				<div class="col-sm-6">
-					@(Html.Kendo().RadioButtonFor(m => m.BuildToFlat).Label("Здание \u2192 Помещение").Value(true))
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-4">
-					@Html.CustomLabel("Фактор с родительским номером")
-				</div>
-				<div class="col-sm-8">
-					@Html.KendoDropDownListTreeWithButton(m => m.ParentCadastralNumberAttribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-				</div>
-			</div>
-		</fieldset>
-		<div id="wrapperCustomRow">
-			<div class="form-group">
-				<div class="col-sm-12">
-					<h4>Наследуемые факторы</h4>
-				</div>
-			</div>
-			<div class="form-group"></div>
-			@for (int i = 0; i < Model.Attributes.Count; i++)
-			{
-				<div class="form-group">
-					<div class="col-sm-offset-2 col-sm-10">
-						@Html.KendoDropDownListTreeWithButton(m => m.Attributes[i], (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-					</div>
-				</div>
-			}
-		</div>
-		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10" style="margin-top: 8px">
-				<a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
-			</div>
-		</div>
+            <legend>Тип наследования</legend>
+            <div class="form-group">
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToParcel).Label("Кадастровый квартал \u2192 Земельный участок").Value(true).Checked(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.ParcelToBuilding).Label("Земельный участок \u2192 Здание").Value(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToBuilding).Label("Кадастровый квартал \u2192 Здание").Value(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.ParcelToConstruction).Label("Земельный участок \u2192 Сооружение").Value(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToConstruction).Label("Кадастровый квартал \u2192 Сооружение").Value(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.ParcelToUncomplited).Label("Земельный участок \u2192 Объект незавершенного строительства").Value(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.CadastralBlockToUncomplited).Label("Кадастровый квартал \u2192 Объект незавершенного строительства").Value(true))
+                </div>
+                <div class="col-sm-6">
+                    @(Html.Kendo().RadioButtonFor(m => m.BuildToFlat).Label("Здание \u2192 Помещение").Value(true))
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-4">
+                    @Html.CustomLabel("Фактор с родительским номером")
+                </div>
+                <div class="col-sm-8">
+                    @Html.KendoDropDownListTreeWithButton(m => m.ParentCadastralNumberAttribute, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+                </div>
+            </div>
+        </fieldset>
+        <div id="wrapperCustomRow">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <h4>Наследуемые факторы</h4>
+                </div>
+            </div>
+            <div class="form-group"></div>
+            @for (int i = 0; i < Model.Attributes.Count; i++)
+            {
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        @Html.KendoDropDownListTreeWithButton(m => m.Attributes[i], (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10" style="margin-top: 8px">
+                <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-8">
                 @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
@@ -125,10 +125,10 @@
                 <button style="float: right" id="performInheritance" class="k-button" type="button">Выполнить</button>
             </div>
         </div>
-	</div>
+    </div>
 }
 <script type="text/x-kendo-template" id="templateRow">
-	<div class="wrapper-#: rowNumber #" style="display: none"></div>
+    <div class="wrapper-#: rowNumber #" style="display: none"></div>
 </script>
 
 <script src="~/js/custom-validation.js"></script>
@@ -178,15 +178,15 @@
         return classWrapper;
     }
 
-	function handlerData() {
-		return {
-			tourId: $('#RatingTour').data('kendoDropDownList').value()
-		}
-	}
+    function handlerData() {
+        return {
+            tourId: $('#RatingTour').data('kendoDropDownList').value()
+        }
+    }
 
     function tourdropdownlist_select(e) {
         $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').dataSource.read();
-		$('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').refresh();
+        $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').refresh();
     }
 
     function taskFiltermultiselect_dataBound(e) {
@@ -197,7 +197,7 @@
         }
     }
 
-	function getDataSource() {
+    function getDataSource() {
         return $.find('[class^=Attributes_]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
     }
 
@@ -241,7 +241,8 @@
         var filtered = arr.filter(v=>!changedEntries.includes(v));
         filtered.push(dataItem.value);
         blockAlreadySelectedNodes(filtered);
-    };
+        $.find('[class^=Attributes_]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).forEach(d=>$(d).data('kendoDropDownTree').close());
+    }
 
     function updateStates() {
         clearTreeStates();
@@ -253,19 +254,20 @@
         getDataSource().forEach(function (d) {
                 d.treeview.unbind('select');
                 d.treeview.bind('select', e => updateSelected(e));
+                d.options.autoClose = false;
             }
         );
         updateStates();
         var clearButtons = $.find('[class^=clear-button-Attributes]').concat($.find('div[class^=wrapper-] [class^=clear-button]'));
         clearButtons.forEach(b => b.onclick = function () { updateStates(); });
         getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
-	}
+    }
 
 
     function addCustomLevelsToForm(formObject) {
         if (!formObject) {
             return formObject;
-		}
+        }
         var attributes = [];
         Object.keys(formObject).forEach(function (key) {
             if (key.includes('Attributes')) {
@@ -352,9 +354,6 @@
         updateStates();
     }
 
-
-
-
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
 
@@ -363,37 +362,37 @@
             addNewRow(currentRowNumber);
             currentRowNumber++;
         });
-		$("#RatingTour").data('kendoDropDownList').bind('change', tourdropdownlist_select);
+        $("#RatingTour").data('kendoDropDownList').bind('change', tourdropdownlist_select);
         $("#RatingTour").data('kendoDropDownList').bind('dataBound', tourdropdownlist_select);
         $('#@(nameof(Model.TaskFilter))').data('kendoMultiSelect').bind('dataBound', taskFiltermultiselect_dataBound);
 
         $('input[type=radio]').change(function() {
-			$('input[type=radio]:checked').not(this).prop('checked', false);
-		});
+            $('input[type=radio]:checked').not(this).prop('checked', false);
+        });
 
-		$('#performInheritance').on('click',
-			function() {
-				var form = $('form');
-				var formObject = Common.Functions.FormToObject(form);
-				formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
+        $('#performInheritance').on('click',
+            function() {
+                var form = $('form');
+                var formObject = Common.Functions.FormToObject(form);
+                formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
                 var data = addCustomLevelsToForm(formObject);
                 $.post(form.attr('action'), data).done(function(response) {
-					if (response.Errors) {
+                    if (response.Errors) {
                         var errors = getErrors(response.Errors);
-						Common.ShowError(errors);
-						return;
-					}
-					if (response.Success) {
-						Common.ShowMessage(response.Success);
-					}
-				}).fail(function (response, textStatus, errorThrown) {
-					Common.ShowError(response.responseText);
-				}).always(function () {
-				    kendo.ui.progress($('body'), false);
-				});
-			});
+                        Common.ShowError(errors);
+                        return;
+                    }
+                    if (response.Success) {
+                        Common.ShowMessage(response.Success);
+                    }
+                }).fail(function (response, textStatus, errorThrown) {
+                    Common.ShowError(response.responseText);
+                }).always(function () {
+                    kendo.ui.progress($('body'), false);
+                });
+            });
 
-		templateStorage.init(@((int)DataFormStorege.Inheritance), null, addCustomLevelsToForm, fillForm);
+        templateStorage.init(@((int)DataFormStorege.Inheritance), null, addCustomLevelsToForm, fillForm);
     });
 
 </script>

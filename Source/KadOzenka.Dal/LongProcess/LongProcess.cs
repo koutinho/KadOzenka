@@ -3,7 +3,6 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using Serilog;
-using Core.Messages;
 using KadOzenka.Dal.Logger;
 
 namespace KadOzenka.Dal.LongProcess
@@ -12,15 +11,22 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		private readonly ILogger _log = Log.ForContext<LongProcess>();
 		protected const int PercentageInterval = 10;
-		protected const int MaxMessageSize = 4000;
-        protected NotificationSender NotificationSender { get; set; }
-		protected LongProcessProgressLogger LongProcessProgressLogger { get; set; }
+		protected INotificationSender NotificationSender { get; set; }
+		protected ILongProcessProgressLogger LongProcessProgressLogger { get; set; }
+
 
 		protected LongProcess()
 		{
 			NotificationSender = new NotificationSender();
 			LongProcessProgressLogger = new LongProcessProgressLogger();
 		}
+
+		protected LongProcess(INotificationSender notificationSender, ILongProcessProgressLogger logger)
+		{
+			NotificationSender = notificationSender ?? new NotificationSender();
+			LongProcessProgressLogger = logger ?? new LongProcessProgressLogger();
+		}
+
 
 		public abstract void StartProcess(OMProcessType processType, OMQueue processQueue,
 			CancellationToken cancellationToken);
@@ -59,26 +65,6 @@ namespace KadOzenka.Dal.LongProcess
             {
 				logger.Debug(message);
 			}
-        }
-
-        protected void SendMessage(OMQueue processQueue, string message, string subject)
-        {
-	        var resultMessage = message;
-	        if (message?.Length >= MaxMessageSize)
-	        {
-		        var ending = " */далее обрезано/*";
-		        resultMessage = message.Substring(0, MaxMessageSize - ending.Length) + ending;
-	        }
-
-	        new MessageService().SendMessages(new MessageDto
-	        {
-		        Addressers = new MessageAddressersDto { UserIds = processQueue.UserId.HasValue ? new[] { processQueue.UserId.Value } : new long[] { } },
-		        Subject = subject,
-		        Message = resultMessage,
-		        IsUrgent = true,
-		        IsEmail = true,
-		        ExpireDate = DateTime.Now.AddHours(2)
-	        });
         }
 	}
 }

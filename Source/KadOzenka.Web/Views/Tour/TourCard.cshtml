@@ -533,9 +533,9 @@
             type: 'POST',
             url: '@Url.Action("TourEstimates", "Tour")',
             data: data,
-            success: function (response) {
+            success: function () {
                 $("#tourAdditionModal").data("kendoWindow").close();
-                Common.ShowMessage(response.Success);
+                Common.ShowMessage("Сохранение выполнено");
                 window.parent.location.reload();
             },
             error: function (response) {
