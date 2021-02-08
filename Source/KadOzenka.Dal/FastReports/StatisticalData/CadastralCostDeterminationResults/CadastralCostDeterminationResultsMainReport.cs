@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Directory;
@@ -94,12 +93,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationRe
 										FROM KO_UNIT unit
 										LEFT JOIN cadastralDistrictAttrValues cadastralDistrictAttr ON unit.object_id=cadastralDistrictAttr.objectId
 										{unitsCondition}";
-					Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 
-					var currentOperations = _queryManager.ExecuteSql<ReportItem>(sql);
+					List<ReportItem> currentOperations;
+					Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
+					using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
+					{
+						currentOperations = _queryManager.ExecuteSql<ReportItem>(sql);
+					}
+
 					lock (_locker)
 					{
 						operations.AddRange(currentOperations);
+						Logger.Debug("Выкачено {CurrentOperationsCount} ЕО из {MaxPackagesCount}", operations.Count, unitsCount);
 					}
 				});
 
