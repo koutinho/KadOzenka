@@ -1,3 +1,5 @@
+using KadOzenka.Web.Tests.Tours;
+
 namespace KadOzenka.Web.Tests
 {
 	public class Examples
@@ -12,6 +14,10 @@ namespace KadOzenka.Web.Tests
 
 			//проверка, что контроллер проверяет состояние модели (ModelState.IsValid)
 			tmp = nameof(Modeling.Models.UpdatingTests.CanNot_Update_Automatic_Model_If_Model_State_Is_Invalid);
+
+			//проверка метода Validate у моделей, реализующих IValidatableObject
+			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_MarketSegment_Is_Empty);
+			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_Model_State_Is_Invalid);
 		}
 	}
 }
