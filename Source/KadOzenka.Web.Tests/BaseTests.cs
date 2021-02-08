@@ -1,4 +1,5 @@
-﻿using Core.UI.Registers.Services;
+﻿using Core.UI.Registers.Controllers;
+using Core.UI.Registers.Services;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.ExpressScore;
@@ -30,6 +31,8 @@ namespace KadOzenka.Web.Tests
 		protected Mock<ITourService> TourService { get; set; }
 		protected Mock<IModelingService> ModelingService { get; set; }
 
+		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
+
 
 		[OneTimeSetUp]
 		public void BaseTestsSetUp()
@@ -45,9 +48,22 @@ namespace KadOzenka.Web.Tests
 
 		}
 
+		protected void CheckMethodValidateModelState<TT>(BaseController controller, ControllerMethod<TT> method) where TT : class, new()
+		{
+			controller.ModelState.AddModelError(RandomGenerator.GetRandomString(), RandomGenerator.GetRandomString());
+
+			var result = method.Invoke(new TT());
+
+			var errors = GetPropertyFromJson(result, "Errors");
+
+			Assert.IsNotNull(errors);
+			Assert.That(controller.ModelState.IsValid, Is.False);
+		}
+
 		protected object GetPropertyFromJson(IActionResult result, string propertyName)
 		{
 			var jsonResult = result as JsonResult;
+
 			return jsonResult?.Value?.GetType().GetProperty(propertyName)?.GetValue(jsonResult.Value, null);
 		}
 
