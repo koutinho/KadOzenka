@@ -18,6 +18,9 @@ namespace KadOzenka.Web.Tests
 			//проверка метода Validate у моделей, реализующих IValidatableObject
 			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_MarketSegment_Is_Empty);
 			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_Model_State_Is_Invalid);
+
+			//если контроллер возвращает View
+			tmp = nameof(Modeling.Factors.CreationTests.Can_Return_View_During_Automatic_Factor_Addition);
 		}
 	}
 }
