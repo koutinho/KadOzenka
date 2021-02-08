@@ -12,6 +12,7 @@ $body$
                 _allpriTableName character varying;
                 _allpriPartitioning bigint;
                 _allpriTablePostfix character varying;
+                 _fullAllpriTableName character varying;
        		 	_additionalConditionForTablesWithPartitionByData character varying;
                 _attributeType bigint;
                 _currentEndDate timestamp without time zone;
@@ -44,17 +45,23 @@ $body$
                         end case;
         end if;
 
-                _query := concat('select a.object_id as objectid, CAST(a.value as character varying) as attributeValue from ', _allpriTableName, '_', _allpriTablePostfix, ' a where a.object_id in (', array_to_string(objectids, ','), ')');
+				_fullAllpriTableName :=  _allpriTableName || '_' || _allpriTablePostfix;
+                _query := concat('select a.object_id as objectid, CAST(a.value as character varying) as attributeValue from ', _fullAllpriTableName, ' a where a.object_id in (', array_to_string(objectids, ','), ')');
 
                 if _allpriPartitioning <> 2 then
-                        _query = concat(_query, '  and a.attribute_id=', attributeId);
-            			_additionalConditionForTablesWithPartitionByData = ' and a2.attribute_id = a.attribute_id ';
+                	_query = concat(_query, '  and a.attribute_id=', attributeId, ' and 
+                      A.ID = (SELECT MAX(a2.id) FROM ', _fullAllpriTableName, ' a2 
+                      WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id AND 
+                      a2.s <= ''', _currentEndDate, '''::timestamp without time zone AND 
+                      a2.ot = (SELECT MAX(a3.ot) FROM ', _fullAllpriTableName, ' a3 WHERE a3.object_id = a.object_id AND 
+                      a3.attribute_id = a.attribute_id AND a3.s <= ''', _currentEndDate, '''::timestamp without time zone ))');
+                else
+                	_query = concat(_query, ' AND a.s <= ''', _currentEndDate, '''::timestamp without time zone ',
+                        ' and a.OT = (SELECT MAX(A2.OT) FROM ', _fullAllpriTableName, ' A2
+                                                WHERE A2.object_id = a.object_id', ' AND A2.s <= ''', _currentEndDate, '''::timestamp without time zone )');
                 end if;
 
-                _query = concat(_query, ' AND a.s <= ''', _currentEndDate, '''::timestamp without time zone ',
-                        ' and a.OT = (SELECT MAX(A2.OT)
-                                                FROM ', _allpriTableName, '_', _allpriTablePostfix, ' A2
-                                                WHERE A2.object_id = a.object_id', _additionalConditionForTablesWithPartitionByData, ' AND A2.s <= ''', _currentEndDate, '''::timestamp without time zone )');
+ 
                 --raise notice '_query: %', _query;
                 
                 RETURN QUERY EXECUTE _query;
