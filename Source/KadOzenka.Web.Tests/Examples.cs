@@ -21,6 +21,9 @@ namespace KadOzenka.Web.Tests
 
 			//если контроллер возвращает View
 			tmp = nameof(Modeling.Factors.CreationTests.Can_Return_View_During_Automatic_Factor_Addition);
+
+			//если контроллер возвращает редирект (RedirectToAction)
+			tmp = nameof(Modeling.Models.GettingTests.If_Model_Group_Is_Not_Found_Redirect_To_NoGroup_View);
 		}
 	}
 }
