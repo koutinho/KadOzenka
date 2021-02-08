@@ -1,0 +1,62 @@
+﻿@model KadOzenka.Web.Models.Task.TaskDeleteModel
+
+@using (Html.BeginForm("DeleteTask", "Task", FormMethod.Post))
+{
+    @if (Model.CanTaskBeDeleted)
+    {
+        <div class="form-horizontal col-sm-12">
+            @Html.HiddenFor(m => m.TaskId)
+            @Html.HiddenFor(m => m.TaskName)
+            @Html.HiddenFor(m => m.TourYear)
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    @Html.CustomLabel($"Вы уверены, что хотите удалить задание на оценку '{Model.TaskName}' тура {Model.TourYear}?")
+                </div>
+            </div>
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <button class="k-button k-button-icontext" style="float: right" id="deleteTask" type="button">
+                        <span class="k-icon k-i-check"></span>Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <label>Задание на оценку '@Model.TaskName' не может быть удалено.</label>
+            </div>
+        </div>
+    }
+}
+
+            <script type="text/javascript">
+    $(document).ready(function () {
+        @if (Model.CanTaskBeDeleted)
+        {
+            <text>
+                $('#deleteTask').on('click',
+                    function() {
+                        kendo.ui.progress($('body'), true);
+                        var form = $('form');
+                        var formObject = Common.Functions.FormToObject(form);
+                        $.post(form.attr('action'), formObject).done(function(response) {
+                            $('#deleteTask').attr("disabled", true);
+                            Common.ShowMessage("Запрос на удаление задания на оценку добавлен в очередь");
+                        }).fail(function(response, textStatus, errorThrown) {
+                            Common.ShowError(response.responseText);
+                        }).always(function() {
+                            kendo.ui.progress($('body'), false);
+                        });
+                    });
+            </text>
+        }
+
+    });
+            </script>

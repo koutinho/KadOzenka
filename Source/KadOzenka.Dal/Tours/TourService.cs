@@ -5,6 +5,7 @@ using System.Transactions;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Dal.Tours.Resources;

@@ -24,6 +24,7 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Dal.LongProcess.DataComparing;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.RecycleBin;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
@@ -543,6 +544,21 @@ namespace KadOzenka.Web.Controllers
             return Json(new List<UnitFactorsDto>());
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = "ADMIN")]
+        public ActionResult DeleteTask(long id)
+        {
+	        var dto = TaskService.GetTaskById(id);
+	        return View(TaskDeleteModel.ToModel(dto, TaskService.CanTaskBeDeleted(id)));
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = "ADMIN")]
+        public IActionResult DeleteTask(TaskDeleteModel model)
+        {
+	        MoveTaskToRecycleBinLongProcess.AddProcessToQueue(model.ToSettings());
+            return Ok();
+        }
 
         #region Support Methods
 

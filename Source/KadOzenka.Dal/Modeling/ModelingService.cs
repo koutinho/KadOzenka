@@ -12,7 +12,6 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.Modeling.Exceptions;
@@ -20,6 +19,7 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
+using KadOzenka.Dal.RecycleBin;
 
 namespace KadOzenka.Dal.Modeling
 {

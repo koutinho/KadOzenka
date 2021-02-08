@@ -41,6 +41,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;

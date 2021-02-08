@@ -24,6 +24,7 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Dal.Tours.Repositories;
