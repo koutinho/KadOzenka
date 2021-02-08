@@ -14,16 +14,23 @@ using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
+using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
+using Microsoft.Practices.ObjectBuilder2;
 using KadOzenka.Dal.RecycleBin;
+using Newtonsoft.Json;
+using ObjectModel.Ko;
+using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelingService
+	public class ModelingService : IModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelingRepository ModelingRepository { get; set; }
@@ -452,10 +459,8 @@ namespace KadOzenka.Dal.Modeling
 	        var excelTemplate = new ExcelFile();
             var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
 
-            var factors = GetFactorColumnsForModelObjectsInFile(modelId);
-			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
-            var groupedFactors = factors.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
-			var columnHeaders = new object[_maxNumberOfColumns];
+            var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId);
+            var columnHeaders = new object[_maxNumberOfColumns];
             columnHeaders[IdColumnIndex] = "ИД";
             columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
             columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
@@ -465,7 +470,7 @@ namespace KadOzenka.Dal.Modeling
             columnHeaders[PriceColumnIndex] = "Цена";
             columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
             columnHeaders[DeviationFromPredictablePriceColumnIndex] = "Отклонение цены от прогнозной, %";
-            factors.ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
+            groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
             //columnHeaders.AddRange(new List<string>{ "МС", "%" });
 
@@ -490,8 +495,7 @@ namespace KadOzenka.Dal.Modeling
 				groupedFactors.ForEach(factor =>
 				{
 					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
-					var factorColumns = factor.ToList();
-					factorColumns.ForEach(x =>
+					factor.ToList().ForEach(x =>
 					{
 						if (x.IsColumnWithValue)
 						{
@@ -521,22 +525,32 @@ namespace KadOzenka.Dal.Modeling
 
 		public UpdateModelObjectsResult UpdateModelObjects(long modelId, ExcelFile file)
         {
-	        var factors = GetFactorColumnsForModelObjectsInFile(modelId).Where(x => !x.IsColumnWithValue).ToList();
+	        var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId).ToList();
 
-            var rows = file.Worksheets[0].Rows;
+	        var rows = file.Worksheets[0].Rows;
             var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
             var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
             for (var i = 1; i <= rowsCount; i++)
             {
 	            var cells = rows[i].Cells;
 	            var factorsFromFile = new List<CoefficientForObject>();
-                factors.ForEach(factor =>
-                {
-	                factorsFromFile.Add(new CoefficientForObject(factor.AttributeId)
-					{
-						Coefficient = cells[factor.ColumnIndex].Value.ParseToDecimalNullable()
-					});
-                });
+	            groupedFactors.ForEach(group =>
+	            {
+		            var factorFromFile = new CoefficientForObject(group.Key);
+		            group.ToList().ForEach(x =>
+		            {
+			            if (x.IsColumnWithValue)
+			            {
+				            factorFromFile.Value = cells[x.ColumnIndex].Value.ParseToStringNullable();
+			            }
+			            else
+			            {
+				            factorFromFile.Coefficient = cells[x.ColumnIndex].Value.ParseToDecimalNullable();
+			            }
+		            });
+
+		            factorsFromFile.Add(factorFromFile);
+	            });
 
                 modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
                 {
@@ -569,7 +583,8 @@ namespace KadOzenka.Dal.Modeling
 					x.Coefficients
 	            }).Execute();
 
-            foreach (var modelObjectFromExcel in modelObjectsFromExcel)
+            var normalizedFactors = groupedFactors.Where(x => x.ToList().Any(y => y.IsColumnWithValue)).Select(x => x.Key).ToList();
+			foreach (var modelObjectFromExcel in modelObjectsFromExcel)
             {
 	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
 	            if (modelObject == null)
@@ -578,23 +593,28 @@ namespace KadOzenka.Dal.Modeling
 		            continue;
 	            }
 
-				var coefficientsWereChanged = false;
+				var factorWasChanged = false;
 	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-	            factors.ForEach(attribute =>
+	            groupedFactors.ForEach(group =>
 	            {
-		            var coefficientFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
-		            var coefficientFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == attribute?.AttributeId);
-		            if (coefficientFromDb != null && coefficientFromDb.Coefficient != coefficientFromFile?.Coefficient)
+		            var factorId = group.Key;
+		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == factorId);
+		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == factorId);
+
+		            var isNormalizedFactor = normalizedFactors.Contains(factorId);
+					factorWasChanged = CheckFactorWasChanged(isNormalizedFactor, factorFromDb, factorFromFile);
+
+		            if (factorWasChanged)
 		            {
-			            coefficientsWereChanged = true;
-			            coefficientFromDb.Coefficient = coefficientFromFile?.Coefficient;
+			            factorFromDb.Value = isNormalizedFactor ? factorFromFile?.Value : factorFromDb.Value;
+			            factorFromDb.Coefficient = factorFromFile?.Coefficient;
 		            }
 	            });
 
 	            if (modelObject.IsForTraining.GetValueOrDefault() == modelObjectFromExcel.IsForTraining &&
 	                modelObject.IsForControl.GetValueOrDefault() == modelObjectFromExcel.IsForControl &&
 	                modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded &&
-	                !coefficientsWereChanged)
+	                !factorWasChanged)
 	            {
 		            result.UnchangedObjectsCount++;
 		            continue;
@@ -629,7 +649,7 @@ namespace KadOzenka.Dal.Modeling
             return result;
         }
 
-        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
+		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
         {
 	        try
@@ -684,7 +704,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private List<FactorInFileInfo> GetFactorColumnsForModelObjectsInFile(long modelId)
+		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(long modelId)
 		{
 			//пока работаем только с Exp (был расчет МС и процента)
 			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
@@ -719,8 +739,11 @@ namespace KadOzenka.Dal.Modeling
 
 			result = result.OrderBy(x => x.Name).ToList();
 			result.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
-			
-			return result;
+
+			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
+			var groupedFactors = result.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
+
+			return groupedFactors;
 		}
 
 		private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
@@ -749,45 +772,65 @@ namespace KadOzenka.Dal.Modeling
 
         private void AddRowToExcel(ExcelWorksheet sheet, int row, object[] values)
         {
-            var col = 0;
-            foreach (object value in values)
+            var column = 0;
+            foreach (var value in values)
             {
-                switch (value)
+	            var cell = sheet.Rows[row].Cells[column];
+	            switch (value)
                 {
                     case decimal _:
                     case double _:
-                        sheet.Rows[row].Cells[col].SetValue(Convert.ToDouble(value));
-                        sheet.Rows[row].Cells[col].Style.NumberFormat = "#,##0.00";
+	                    cell.SetValue(Convert.ToDouble(value));
+	                    cell.Style.NumberFormat = "#,##0.00";
                         break;
                     case DateTime _:
-                        sheet.Rows[row].Cells[col].SetValue(Convert.ToDateTime(value));
-                        sheet.Rows[row].Cells[col].Style.NumberFormat = "mm/dd/yyyy";
+	                    cell.SetValue(Convert.ToDateTime(value));
+	                    cell.Style.NumberFormat = "mm/dd/yyyy";
                         break;
                     case bool _:
                         var res = Convert.ToBoolean(value) ? "Да" : "Нет";
-                        sheet.Rows[row].Cells[col].SetValue(res);
+                        cell.SetValue(res);
                         break;
                     default:
                         var defaultValue = value?.ToString();
-                        sheet.Rows[row].Cells[col].SetValue(defaultValue);
+                        cell.SetValue(defaultValue);
                         break;
                 }
 
-                sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All,
-                    SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+	            cell.Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+	            cell.Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+	            cell.Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+	            cell.Style.WrapText = true;
 
-                col++;
+	            column++;
             }
         }
 
-        #endregion
+        private bool CheckFactorWasChanged(bool isNormalizedFactor, CoefficientForObject factorFromDb, CoefficientForObject factorFromFile)
+        {
+	        bool factorWasChanged;
+	        if (isNormalizedFactor)
+	        {
+		        factorWasChanged = factorFromDb != null &&
+		                           (factorFromDb.Coefficient != factorFromFile?.Coefficient ||
+		                            !string.Equals(factorFromDb.Value, factorFromFile?.Value));
+	        }
+	        else
+	        {
+		        factorWasChanged = factorFromDb != null && factorFromDb.Coefficient != factorFromFile?.Coefficient;
+	        }
 
-        #endregion
+	        return factorWasChanged;
+        }
+
+		#endregion
+
+		#endregion
 
 
-        #region Modeling Process
+		#region Modeling Process
 
-        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+		public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
 		{
 			var model = GetModelEntityById(modelId);
 			ResetTrainingResults(model, type);
@@ -821,6 +864,149 @@ namespace KadOzenka.Dal.Modeling
 			});
 
 			generalModel.Save();
+		}
+
+		#endregion
+
+		#region Training Result
+
+		public TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type)
+		{
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var images = GetModelImages(modelId, type);
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+
+			return new TrainingDetailsDto
+			{
+				ModelId = model.Id,
+				ModelName = model.Name,
+				Type = type,
+				MeanSquaredErrorTrain = trainingResult?.AccuracyScore?.MeanSquaredError?.Train,
+				MeanSquaredErrorTest = trainingResult?.AccuracyScore?.MeanSquaredError?.Test,
+				FisherCriterionTrain = trainingResult?.AccuracyScore?.FisherCriterion?.Estimated,
+				FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Tabular,
+				R2Train = trainingResult?.AccuracyScore?.R2?.Train,
+				R2Test = trainingResult?.AccuracyScore?.R2?.Test,
+				ScatterImage = images?.Scatter,
+				CorrelationImage = images?.Correlation,
+				QualityControlInfo = trainingResult?.QualityControlInfo
+			};
+		}
+
+		public void UpdateTrainingQualityInfo(long modelId, KoAlgoritmType type, QualityControlInfo newQualityControlInfo)
+		{
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+			trainingResult.QualityControlInfo.UpdateStudent(newQualityControlInfo.Student.Criterion, newQualityControlInfo.Student.Conclusion);
+			trainingResult.QualityControlInfo.UpdateMse(newQualityControlInfo.MeanSquaredError.Criterion, newQualityControlInfo.MeanSquaredError.Conclusion);
+			trainingResult.QualityControlInfo.UpdateR2(newQualityControlInfo.R2.Criterion, newQualityControlInfo.R2.Conclusion);
+			trainingResult.QualityControlInfo.UpdateFisher(newQualityControlInfo.Fisher.Criterion, newQualityControlInfo.Fisher.Conclusion);
+
+			var updatedTrainingResult = JsonConvert.SerializeObject(trainingResult);
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					model.ExponentialTrainingResult = updatedTrainingResult;
+					break;
+				case KoAlgoritmType.Line:
+					model.LinearTrainingResult = updatedTrainingResult;
+					break;
+				case KoAlgoritmType.Multi:
+					model.MultiplicativeTrainingResult = updatedTrainingResult;
+					break;
+				default:
+					throw new Exception($"Передан неизвестный тип модели {type.GetEnumDescription()}");
+			}
+
+			model.Save();
+		}
+
+		public Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type)
+		{
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+			var qualityInfo = trainingResult.QualityControlInfo;
+
+			var excelTemplate = new ExcelFile();
+			var mainWorkSheet = excelTemplate.Worksheets.Add("Результаты");
+
+			var columnHeadersRowIndex = 1;
+			var calculationRowIndex = 2;
+			var tableRowIndex = 3;
+			var criterionRowIndex = 4;
+			var conclusionRowIndex = 5;
+			//TODO убрать в отдельные объекты после подтверждения формата
+			var columnHeaders = new object[]
+			{
+				"", "t-критерий Стьюдента", "Средняя ошибка аппроксимации",
+				"Коэффициент детерминации (R²)", "F-критерий Фишера"
+			};
+
+			mainWorkSheet.Rows[0].Cells[0].SetValue("Анализ качества статической модели");
+			var cells = mainWorkSheet.Cells.GetSubrangeAbsolute(0, 0, 0, columnHeaders.Length);
+			cells.Merged = true;
+
+			AddRowToExcel(mainWorkSheet, columnHeadersRowIndex, columnHeaders);
+
+			var studentInfo = qualityInfo.Student;
+			var mseInfo = qualityInfo.MeanSquaredError;
+			var r2Info = qualityInfo.R2;
+			var fisherInfo = qualityInfo.Fisher;
+			var firstRow = new object[]
+			{
+				"Расчетное", studentInfo.Estimated, mseInfo.Estimated, r2Info.Estimated, fisherInfo.Estimated
+			};
+			AddRowToExcel(mainWorkSheet, calculationRowIndex, firstRow);
+
+			var secondRow = new object[]
+			{
+				"Табличное", studentInfo.Tabular, mseInfo.Tabular, r2Info.Tabular, fisherInfo.Tabular
+			};
+			AddRowToExcel(mainWorkSheet, tableRowIndex, secondRow);
+
+			var thirdRow = new object[]
+			{
+				"Критерий", studentInfo.Criterion, mseInfo.Criterion, r2Info.Criterion, fisherInfo.Criterion
+			};
+			AddRowToExcel(mainWorkSheet, criterionRowIndex, thirdRow);
+
+			var fifthRow = new object[]
+			{
+				"Вывод", studentInfo.Conclusion, mseInfo.Conclusion, r2Info.Conclusion, fisherInfo.Conclusion
+			};
+			AddRowToExcel(mainWorkSheet, conclusionRowIndex, fifthRow);
+
+			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, 2, tableRowIndex, 2);
+			cells.Merged = true;
+			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, 3, tableRowIndex, 3);
+			cells.Merged = true;
+
+			var stream = new MemoryStream();
+			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
+
+		public OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type)
+		{
+			return OMModelTrainingResultImages.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
 		}
 
 		#endregion

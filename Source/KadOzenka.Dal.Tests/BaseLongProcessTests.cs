@@ -12,6 +12,8 @@ namespace KadOzenka.Dal.Tests
 	public class BaseLongProcessTests : BaseTests
 	{
 		protected Mock<INotificationSender> NotificationSender { get; set; }
+		protected Mock<ILongProcessProgressLogger> LongProcessProgressLogger { get; set; }
+		protected Mock<IWorkerCommonWrapper> WorkerCommonWrapper { get; set; }
 		protected Mock<IFileStorageManagerWrapper> FileStorageManagerWrapper { get; set; }
 		protected Mock<IRosreestrRegisterService> RosreestrRegisterService { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
@@ -22,6 +24,8 @@ namespace KadOzenka.Dal.Tests
 		public void BaseLongProcessTestsSetUp()
 		{
 			NotificationSender = new Mock<INotificationSender>();
+			LongProcessProgressLogger = new Mock<ILongProcessProgressLogger>();
+			WorkerCommonWrapper = new Mock<IWorkerCommonWrapper>();
 			FileStorageManagerWrapper = new Mock<IFileStorageManagerWrapper>();
 			RosreestrRegisterService = new Mock<IRosreestrRegisterService>();
 			GbuObjectService = new Mock<IGbuObjectService>();
@@ -31,10 +35,8 @@ namespace KadOzenka.Dal.Tests
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
-			var workerCommonWrapper = new Mock<IWorkerCommonWrapper>();
-			var longProcessProgressLogger = new Mock<ILongProcessProgressLogger>();
-			container.AddTransient(typeof(IWorkerCommonWrapper), sp => workerCommonWrapper.Object);
-			container.AddTransient(typeof(ILongProcessProgressLogger), sp => longProcessProgressLogger.Object);
+			container.AddTransient(typeof(IWorkerCommonWrapper), sp => WorkerCommonWrapper.Object);
+			container.AddTransient(typeof(ILongProcessProgressLogger), sp => LongProcessProgressLogger.Object);
 			container.AddTransient(typeof(INotificationSender), sp => NotificationSender.Object);
 			container.AddTransient(typeof(IRosreestrRegisterService), sp => RosreestrRegisterService.Object);
 			container.AddTransient(typeof(IFileStorageManagerWrapper), sp => FileStorageManagerWrapper.Object);

@@ -7,6 +7,7 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Dto;
+using KadOzenka.Dal.Tours.Exceptions;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Dal.Tours.Resources;
 using ObjectModel.Common;
@@ -15,8 +16,8 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tours
 {
-    public class TourService
-    {
+	public class TourService : ITourService
+	{
         private TourFactorService TourFactorService { get; set; }
         private GroupService GroupService { get; set; }
         private RecycleBinService RecycleBinService { get; }
@@ -151,12 +152,9 @@ namespace KadOzenka.Dal.Tours
             if (tourDto.Year.GetValueOrDefault() == 0)
                 throw new Exception(Messages.EmptyTourYear);
 
-            if (!int.TryParse(tourDto.Year.Value.ToString(), out _))
-                throw new Exception("Введенное число не может быть преобразовано в год");
-
             var isTourWithTheSameYearExists = TourRepository.IsExists(x => x.Year == tourDto.Year && x.Id != tourDto.Id);
             if (isTourWithTheSameYearExists)
-	            throw new Exception($"Тур с годом '{tourDto.Year}' уже существует");
+	            throw new TourAlreadyExistsException($"Тур с годом '{tourDto.Year}' уже существует");
         }
 
         private OMTour GetTourByIdInternal(long? tourId)

@@ -675,6 +675,21 @@ namespace ObjectModel.KO
 		    return null;
 	    }
 
+        public string GetTrainingResult(KoAlgoritmType type)
+		{
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					return ExponentialTrainingResult;
+				case KoAlgoritmType.Line:
+					return LinearTrainingResult;
+				case KoAlgoritmType.Multi:
+					return MultiplicativeTrainingResult;
+				default:
+					throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
+			}
+		}
+
         public string GetFormulaFull(bool upks)
         {
             string str_koeff = GetFormulaKoeff(false, string.Empty);

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace KadOzenka.Dal.Tests
@@ -15,13 +12,6 @@ namespace KadOzenka.Dal.Tests
 		public void BaseTestsSetUp()
 		{
 			ConfigureServices();
-		}
-
-		protected static List<T> CreateListWithRepeatedElements<T>(T element, int count)
-		{
-			var elements = new List<T>(count);
-			elements.AddRange(Enumerable.Repeat(element, count));
-			return elements;
 		}
 
 		protected virtual void AddServicesToContainer(ServiceCollection container)

@@ -6,7 +6,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Builders
 {
 	public class ModelBuilder
 	{
-		private OMModel _model;
+		private readonly OMModel _model;
 
 		public ModelBuilder()
 		{

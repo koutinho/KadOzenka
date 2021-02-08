@@ -10,62 +10,153 @@
 }
 else
 {
-    <div class="form-horizontal col-sm-12" style="padding: 3%">
-        <div class="form-group">
-            @(Html.Kendo().Grid(new List<KadOzenka.Web.Models.Modeling.TrainingDetailsModel>{Model})
-                .Name("priceHistoryGrid")
-                .Columns(columns =>
-                {
-                    columns.Group(g => g.Title("Средняя абсолютная ошибка")
-                        .Columns(c =>
-                        {
-                            c.Bound(x => x.MeanSquaredErrorTrain).Title("Train");
-                            c.Bound(x => x.MeanSquaredErrorTest).Title("Test");
-                        }));
-                    columns.Group(g => g.Title("Критерий Фишера")
-                        .Columns(c =>
-                        {
-                            c.Bound(x => x.FisherCriterionTrain).Title("Train");
-                            c.Bound(x => x.FisherCriterionTest).Title("Test");
-                        }));
-                    columns.Group(g => g.Title("Коэффициент детерминации (R²)")
-                        .Columns(c =>
-                        {
-                            c.Bound(x => x.R2Train).Title("Train");
-                            c.Bound(x => x.R2Test).Title("Test");
-                        }));
-                })
-                .DataSource(dataSource => dataSource
-                    .Ajax()
-                    .ServerOperation(false)
-                    .Model(x =>
-                    {
-                        x.Field(c => c.MeanSquaredErrorTrain).Editable(false);
-                        x.Field(c => c.MeanSquaredErrorTest).Editable(false);
-                        x.Field(c => c.FisherCriterionTrain).Editable(false);
-                        x.Field(c => c.FisherCriterionTest).Editable(false);
-                        x.Field(c => c.R2Train).Editable(false);
-                        x.Field(c => c.R2Test).Editable(false);
-                    }))
-                .HtmlAttributes(new {@class = "coefficients-grid" }))
+<div class="form-horizontal col-sm-12" style="padding: 2%">
+
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Модель")
         </div>
-        <div class="form-group" style="padding-top: 2%">
-            <div class="col-sm-5 center">
-                @Html.CustomLabel("Разброс:")
-            </div>
-            <div class="col-sm-5 center">
-                @Html.CustomLabel("Корреляция:")
-            </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(m => m.ModelName)
+                .DataTextField("Name")
+                .DataValueField("Name")
+                .Enable(false))
         </div>
-        <div class="form-group">
-            <div class="col-sm-5 center" id="scatterDiv">
-                <img id="scatterImg" src="@Model.ScatterImageLink" alt="Изображение не найдено"/>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabel("Тип")
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownList()
+                .Name("AlgorithmType")
+                .DataTextField("Name")
+                .DataValueField("Name")
+                .Value(Model.Type.GetEnumDescription())
+                .Enable(false))
+        </div>
+    </div>
+    
+@using (Html.BeginForm("UpdateTrainingQualityInfo", "Modeling", FormMethod.Post, htmlAttributes: new {id = "updateQualityInfoForm"}))
+{
+    @Html.HiddenFor(x => x.ModelId)
+    @Html.HiddenFor(x => x.Type)
+    <div class="form-group" style="padding: 2% 0 5% 0;">
+        <span>Анализ качества статистической модели</span>
+        <div class="coefficients-grid k-grid k-widget k-display-block" id="qualityGrid" name="qualityGrid" data-role="grid">
+            <div class="k-header k-grid-toolbar">
+                <div style="float: left">
+                    <a class="k-button k-button-icon" id="saveBtn" style="width:120px;">
+                        <span class="k-icon k-i-save" style="padding-right: 30%"></span>
+                        Сохранить
+                    </a>
+                    <a class="k-button k-button-icon" id="exportBtn" style="width:120px;">
+                        <span class="k-icon k-i-download" style="padding-right: 30%"></span>
+                        Выгрузить
+                    </a>
+                </div>
             </div>
-            <div class="col-sm-5 center" id="correlationDiv">
-                <img id="correlationImg" src="@Model.CorrelationImageLink" alt="Изображение не найдено"/>
+            <div class="k-grid-content k-auto-scrollable">
+                <table id="qualityTable" role="grid">
+                    <thead class="k-grid-header" role="rowgroup">
+                    <tr role="row">
+                        <th scope="col" role="columnheader" colspan="1" class="k-header"> </th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">t-критерий Стьюдента</th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">Средняя ошибка аппроксимации</th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">Коэффициент детерминации (R²)</th>
+                        <th scope="col" role="columnheader" colspan="1" class="k-header">F-критерий Фишера</th>
+                    </tr>
+                    </thead>
+                    <tbody role="rowgroup">
+                    <tr role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Расчетное</td>
+                        <td class="" role="gridcell">@Model.TrainingQualityInfoModel.StudentForEstimated</td>
+                        <td class="" role="gridcell" rowspan="2">@Model.TrainingQualityInfoModel.MeanSquaredError</td>
+                        <td class="" role="gridcell" rowspan="2">@Model.TrainingQualityInfoModel.R2</td>
+                        <td class="" role="gridcell">@Model.TrainingQualityInfoModel.FisherCriterionForEstimated</td>
+                    </tr>
+                    <tr class="k-alt" role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Табличное</td>
+                        <td class="" role="gridcell">@Model.TrainingQualityInfoModel.StudentForTabular</td>
+                        <td class="" role="gridcell">@Model.TrainingQualityInfoModel.FisherCriterionForTabular</td>
+                    </tr>
+                    <tr role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Критерий</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.TrainingQualityInfoModel.CriterionForStudent)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.TrainingQualityInfoModel.CriterionForMeanSquaredError)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.TrainingQualityInfoModel.CriterionForR2)</td>
+                        <td class="" role="gridcell">@Html.TextAreaFor(x => x.TrainingQualityInfoModel.CriterionForFisher)</td>
+                    </tr>
+                    <tr class="k-alt" role="row">
+                        <td class="quality-grid-first-column" role="gridcell">Вывод</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.TrainingQualityInfoModel.ConclusionForStudent, isReadonly: false)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.TrainingQualityInfoModel.ConclusionForMeanSquaredError, isReadonly: false)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.TrainingQualityInfoModel.ConclusionForR2, isReadonly: false)</td>
+                        <td class="" role="gridcell">@Html.KendoCheckBoxFor(x => x.TrainingQualityInfoModel.ConclusionForFisher, isReadonly: false)</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+}
+
+    <div class="form-group">
+        @(Html.Kendo().Grid(new List<KadOzenka.Web.Models.Modeling.TrainingDetailsModel>{Model})
+            .Name("trainAndTestGrid")
+            .Columns(columns =>
+            {
+                columns.Group(g => g.Title("Средняя абсолютная ошибка")
+                    .Columns(c =>
+                    {
+                        c.Bound(x => x.MeanSquaredErrorTrain).Title("Train");
+                        c.Bound(x => x.MeanSquaredErrorTest).Title("Test");
+                    }));
+                columns.Group(g => g.Title("Критерий Фишера")
+                    .Columns(c =>
+                    {
+                        c.Bound(x => x.FisherCriterionTrain).Title("Train");
+                        c.Bound(x => x.FisherCriterionTest).Title("Test");
+                    }));
+                columns.Group(g => g.Title("Коэффициент детерминации (R²)")
+                    .Columns(c =>
+                    {
+                        c.Bound(x => x.R2Train).Title("Train");
+                        c.Bound(x => x.R2Test).Title("Test");
+                    }));
+            })
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .Model(x =>
+                {
+                    x.Field(c => c.MeanSquaredErrorTrain).Editable(false);
+                    x.Field(c => c.MeanSquaredErrorTest).Editable(false);
+                    x.Field(c => c.FisherCriterionTrain).Editable(false);
+                    x.Field(c => c.FisherCriterionTest).Editable(false);
+                    x.Field(c => c.R2Train).Editable(false);
+                    x.Field(c => c.R2Test).Editable(false);
+                }))
+            .HtmlAttributes(new {@class = "coefficients-grid" }))
+    </div>
+
+    <div class="form-group" style="padding-top: 2%">
+        <div class="col-sm-5 center">
+            @Html.CustomLabel("Разброс:")
+        </div>
+        <div class="col-sm-5 center">
+            @Html.CustomLabel("Корреляция:")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-5 center" id="scatterDiv">
+            <img id="scatterImg" src="@Model.ScatterImageData" alt="Изображение не найдено" />
+        </div>
+        <div class="col-sm-5 center" id="correlationDiv">
+            <img id="correlationImg" src="@Model.CorrelationImageData" alt="Изображение не найдено" />
+        </div>
+    </div>
+</div>
 
 }
 
@@ -90,6 +181,25 @@ else
     .coefficients-grid {
         text-align: center;
     }
+
+    .quality-grid-first-column {
+        text-align: left;
+    }
+
+    #qualityGrid textarea {
+        height: 7em;
+        width: 85%;
+        padding: 5%;
+        resize: none;
+        border: 1px solid #dedee0;
+        text-align: center;
+    }
+
+    #qualityGrid textarea:focus {
+        outline: none !important;
+        border: 1px solid green;
+        box-shadow: 0 0 10px #719ECE;
+    }
 </style>
 
 
@@ -99,56 +209,13 @@ else
         @if (Model != null)
         {
             <text>
-                //картинки не всегда подгружаются сразу (особенности сервиса моделирования),
-                //поэтому, если картинка не загрузилась - отправляем еще несколько запросов на сервис
-                $("#scatterImg")
-                    .on('load', () => onImageLoad(scatter))
-                    .on('error', () => onImageFail(scatter, $("#scatterImg"), "@Model.ScatterImageLink"));
-
-                $("#correlationImg")
-                    .on('load', () => onImageLoad(correlation))
-                    .on('error', () => onImageFail(correlation, $("#correlationImg"), "@Model.CorrelationImageLink"));
+                alignImagesMiddle();
+                $('#exportBtn').on('click', exportTrainingResult);
+                $("#saveBtn").on('click', saveQualityInfo);
             </text>
         }
     });
 
-
-
-    var requestsMaxNumber = 25;
-    var scatter = {
-        Timer: -1,
-        Counter: 0
-    };
-    var correlation = {
-        Timer: -1,
-        Counter: 0
-    }
-
-
-    function onImageLoad(imgObject) {
-        //console.log('success');
-        if (imgObject.Timer !== -1) {
-            clearInterval(imgObject.Timer);
-            alignImagesMiddle();
-        }
-    }
-
-
-    function onImageFail(imgObject, jqObject, srcValue) {
-        //console.log('error');
-        imgObject.Counter++;
-        //console.log('counter', imgObject.Counter);
-        if (imgObject.Timer === -1) {
-            // повторить с интервалом 2 секунды
-            imgObject.Timer = setInterval(() => jqObject.attr("src", srcValue), 2000);
-            //console.log('set sheduler', imgObject.Timer);
-        }
-        else if (imgObject.Counter > requestsMaxNumber) {
-            // остановить вывод
-            clearInterval(imgObject.Timer);
-            //console.log('stop calling', imgObject.Timer);
-        }
-    }
 
 
     function alignImagesMiddle() {
@@ -164,4 +231,53 @@ else
             $("#scatterImg").css('margin-top', ((max - scatterImgHeight) / 2) + 'px');
         }
     };
+
+
+    function exportTrainingResult() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Html.Raw(Url.Action("ExportTrainingResultToExcel", "Modeling", new {modelId = Model.ModelId, type = Model.Type}))',
+            success: function (response) {
+                var url =
+                    '@Url.Action("DownloadTrainingResultFile", "Modeling", new {modelName = Model.ModelName})&fileName=' +
+                        response.FileName;
+                window.location = url;
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function saveQualityInfo() {
+        kendo.ui.progress($('body'), true);
+        var form = $('#updateQualityInfoForm');
+        var formObject = Common.Functions.FormToObject(form);
+        console.log('form', formObject);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage('Данные сохранены');
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 </script>

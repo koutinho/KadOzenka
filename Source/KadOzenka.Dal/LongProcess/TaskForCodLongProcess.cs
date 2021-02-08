@@ -28,19 +28,27 @@ namespace KadOzenka.Dal.LongProcess
 		private IWorkerCommonWrapper Worker { get; }
 
 
-		public TaskForCodLongProcess(ITaskService taskService = null,
-			IRosreestrRegisterService rosreestrRegisterService = null, IGbuObjectService gbuObjectService = null,
-			IGbuReportService gbuReportService = null, IUnitRepository unitRepository = null,
-			IWorkerCommonWrapper worker = null, INotificationSender notificationSender = null,
-			ILongProcessProgressLogger logger = null)
+		public TaskForCodLongProcess(ITaskService taskService, IRosreestrRegisterService rosreestrRegisterService, 
+			IGbuObjectService gbuObjectService, IGbuReportService gbuReportService, IUnitRepository unitRepository,
+			IWorkerCommonWrapper worker, INotificationSender notificationSender, ILongProcessProgressLogger logger)
 			: base(notificationSender, logger)
 		{
-			TaskService = taskService ?? new TaskService();
-			RosreestrRegisterService = rosreestrRegisterService ?? new RosreestrRegisterService();
-			GbuObjectService = gbuObjectService ?? new GbuObjectService();
-			GbuReportService = gbuReportService ?? new GbuReportService("Задания для ЦОД");
-			Worker = worker ?? new WorkerCommonWrapper();
-			UnitRepository = unitRepository ?? new UnitRepository();
+			TaskService = taskService;
+			RosreestrRegisterService = rosreestrRegisterService;
+			GbuObjectService = gbuObjectService;
+			GbuReportService = gbuReportService;
+			UnitRepository = unitRepository;
+			Worker = worker;
+		}
+
+		public TaskForCodLongProcess()
+		{
+			TaskService = new TaskService();
+			RosreestrRegisterService = new RosreestrRegisterService();
+			GbuObjectService = new GbuObjectService();
+			GbuReportService = new GbuReportService("Задания для ЦОД");
+			Worker = new WorkerCommonWrapper();
+			UnitRepository = new UnitRepository();
 		}
 
 

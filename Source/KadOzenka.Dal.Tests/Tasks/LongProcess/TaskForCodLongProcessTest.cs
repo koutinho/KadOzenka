@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 		[Test]
 		public void If_After_Filtration_No_Units_Left_Report_Must_Have_Only_Headers()
 		{
-			MoqUnitRepository(CreateListWithRepeatedElements(new OMUnit(), 10));
+			MoqUnitRepository(RandomGenerator.CreateListWithRepeatedElements(new OMUnit(), 10));
 			MockGbuObjectServiceGetAllAttributes(new List<GbuObjectAttribute>());
 
 			StartProcess();
@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 		[Test]
 		public void If_After_Filtration_Some_Units_Left_Must_Create_Report()
 		{
-			var units = CreateListWithRepeatedElements(new OMUnit{ObjectId = RandomGenerator.GenerateRandomInteger()}, 10);
+			var units = RandomGenerator.CreateListWithRepeatedElements(new OMUnit{ObjectId = RandomGenerator.GenerateRandomInteger()}, 10);
 			var filteredUnits = new List<GbuObjectAttribute> { new GbuObjectAttribute { ObjectId = units[0].ObjectId.Value, NumValue = 1 } };
 			MoqUnitRepository(units);
 			MockGbuObjectServiceGetAllAttributes(filteredUnits);

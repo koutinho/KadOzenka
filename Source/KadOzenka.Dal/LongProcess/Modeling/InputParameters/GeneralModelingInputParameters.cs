@@ -1,6 +1,6 @@
 ﻿using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.LongProcess.InputParameters
+namespace KadOzenka.Dal.LongProcess.Modeling.InputParameters
 {
     public class GeneralModelingInputParameters
     {

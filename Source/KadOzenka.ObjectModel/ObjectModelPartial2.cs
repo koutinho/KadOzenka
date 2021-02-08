@@ -799,6 +799,24 @@ namespace ObjectModel.Ko
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 223 Картинки с результатами обучения модели
+    /// </summary>
+    public partial class OMModelTrainingResultImages
+    {
+        /// <summary>
+        /// Ссылка на (206 Модель)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMModel ParentModel { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
     public partial class OMUnitParamsOks2018

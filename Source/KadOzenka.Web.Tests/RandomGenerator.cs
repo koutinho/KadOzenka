@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KadOzenka.Dal.Tests
+namespace KadOzenka.Web.Tests
 {
 	public static class RandomGenerator
 	{
