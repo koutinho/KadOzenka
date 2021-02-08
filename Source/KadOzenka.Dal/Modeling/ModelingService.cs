@@ -593,7 +593,7 @@ namespace KadOzenka.Dal.Modeling
 		            continue;
 	            }
 
-				var factorWasChanged = false;
+				var alLeastOneFactorWasChanged = false;
 	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
 	            groupedFactors.ForEach(group =>
 	            {
@@ -602,10 +602,11 @@ namespace KadOzenka.Dal.Modeling
 		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == factorId);
 
 		            var isNormalizedFactor = normalizedFactors.Contains(factorId);
-					factorWasChanged = CheckFactorWasChanged(isNormalizedFactor, factorFromDb, factorFromFile);
+					var currentFactorWasChanged = CheckFactorWasChanged(isNormalizedFactor, factorFromDb, factorFromFile);
 
-		            if (factorWasChanged)
+		            if (currentFactorWasChanged)
 		            {
+			            alLeastOneFactorWasChanged = true;
 			            factorFromDb.Value = isNormalizedFactor ? factorFromFile?.Value : factorFromDb.Value;
 			            factorFromDb.Coefficient = factorFromFile?.Coefficient;
 		            }
@@ -614,7 +615,7 @@ namespace KadOzenka.Dal.Modeling
 	            if (modelObject.IsForTraining.GetValueOrDefault() == modelObjectFromExcel.IsForTraining &&
 	                modelObject.IsForControl.GetValueOrDefault() == modelObjectFromExcel.IsForControl &&
 	                modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded &&
-	                !factorWasChanged)
+	                !alLeastOneFactorWasChanged)
 	            {
 		            result.UnchangedObjectsCount++;
 		            continue;
