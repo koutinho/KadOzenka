@@ -22,4 +22,4 @@ PARALLEL UNSAFE
 COST 100;
 
 ALTER FUNCTION public.gbu_get_allpri_attribute_value (objectid bigint, attributeid bigint)
-  OWNER TO cipjs_gko_ppr;
+  OWNER TO cipjs_kad_ozenka;
