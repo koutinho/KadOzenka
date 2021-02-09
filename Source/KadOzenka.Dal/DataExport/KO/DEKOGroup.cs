@@ -69,24 +69,22 @@ namespace KadOzenka.Dal.DataExport
                 ParallelOptions options = new ParallelOptions {MaxDegreeOfParallelism = 8};
                 var curr = countCurr;
                 Parallel.ForEach(setting.TaskFilter, options, taskId =>
-                        //foreach (var taskId in setting.TaskFilter)
+                    //foreach (var taskId in setting.TaskFilter)
+                {
+                    Log.Debug("Начата работа с ЗнО {TaskId}", taskId);
+                    var export = new DEKOGroupExport(setting, subgroup, taskId);
+                    export.Export(curr, res);
+
+                    lock (syncRoot)
                     {
-                        Log.Debug("Начата работа с ЗнО {TaskId}", taskId);
-
-                        var export = new DEKOGroupExport(setting, subgroup, taskId);
-                        export.Export(curr, res);
-
-                        lock (syncRoot)
-                        {
-                            taskCounter++;
-                            progress = (taskCounter * 100 / setting.TaskFilter.Count + (curr - 1) * 100) /
-                                       koGroups.Count;
-                            setProgress?.Invoke(progress, progressMessage: progressMessage);
-                            if (unloadResultQueue != null)
-                                KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
-                        }
+                        taskCounter++;
+                        progress = (taskCounter * 100 / setting.TaskFilter.Count + (curr - 1) * 100) /
+                                   koGroups.Count;
+                        setProgress?.Invoke(progress, progressMessage: progressMessage);
+                        if (unloadResultQueue != null)
+                            KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
                     }
-                );
+                });
             }
 
             setProgress?.Invoke(100, true, progressMessage);
@@ -100,6 +98,7 @@ namespace KadOzenka.Dal.DataExport
 
         internal class DEKOGroupExportBase
         {
+            private const long UnitThresholdForMemoryStream = 1_000_000;
             private readonly bool _singleQueryMode;
             private readonly KOUnloadSettings _setting;
             private readonly OMGroup _subgroup;
@@ -152,36 +151,39 @@ namespace KadOzenka.Dal.DataExport
                     resultFile = SaveXmlDocument();
                 }
 
-                var parentGroup = OMGroup.Where(x => x.Id == _subgroup.ParentId).SelectAll()
-                    .ExecuteFirstOrDefault();
-                var fullGroupNum = GetFullGroupNum(parentGroup, _subgroup);
-                var fileName = GetFdFileName(_taskId, fullGroupNum, _subgroup, countCurr);
-
-                if (_setting.IsDataComparingUnload)
+                using (resultFile)
                 {
-                    using (Log.TimeOperation("Копирование файла для сравнения '{fileName}'", fileName))
-                    {
-                        var fullFileName = Path.Combine(_setting.DirectoryName, $"{fileName}.xml");
-                        using var fs = File.Create(fullFileName);
-                        fs.Seek(0, SeekOrigin.Begin);
-                        resultFile.CopyTo(fs);
-                    }
-                }
-                else
-                {
-                    long id;
-                    using (Log.TimeOperation("Сохранение файла '{fileName}'", fileName))
-                    {
-                        id = SaveReportDownload.SaveReport(fileName, resultFile, OMGroup.GetRegisterId());
-                    }
+                    var parentGroup = OMGroup.Where(x => x.Id == _subgroup.ParentId).SelectAll()
+                        .ExecuteFirstOrDefault();
+                    var fullGroupNum = GetFullGroupNum(parentGroup, _subgroup);
+                    var fileName = GetFdFileName(_taskId, fullGroupNum, _subgroup, countCurr);
 
-                    var fileResult = new ResultKoUnloadSettings
+                    if (_setting.IsDataComparingUnload)
                     {
-                        FileName = fileName,
-                        FileId = id,
-                        TaskId = _taskId
-                    };
-                    res.Add(fileResult);
+                        using (Log.TimeOperation("Копирование файла для сравнения '{fileName}'", fileName))
+                        {
+                            var fullFileName = Path.Combine(_setting.DirectoryName, $"{fileName}.xml");
+                            using var fs = File.Create(fullFileName);
+                            fs.Seek(0, SeekOrigin.Begin);
+                            resultFile.CopyTo(fs);
+                        }
+                    }
+                    else
+                    {
+                        long id;
+                        using (Log.TimeOperation("Сохранение файла '{fileName}'", fileName))
+                        {
+                            id = SaveReportDownload.SaveReport(fileName, resultFile, OMGroup.GetRegisterId());
+                        }
+
+                        var fileResult = new ResultKoUnloadSettings
+                        {
+                            FileName = fileName,
+                            FileId = id,
+                            TaskId = _taskId
+                        };
+                        res.Add(fileResult);
+                    }
                 }
             }
 
@@ -225,10 +227,18 @@ namespace KadOzenka.Dal.DataExport
 
                 _xmlFile.AppendChild(xnLandValuation);
 
-                var stream = new MemoryStream();
+                Stream stream;
+                if (_unitCount < UnitThresholdForMemoryStream)
+                {
+                    stream = new MemoryStream();
+                }
+                else
+                {
+                    stream = new FileStream(Path.GetTempFileName(), FileMode.Open, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                }
+
                 _xmlFile.Save(stream);
                 stream.Seek(0, SeekOrigin.Begin);
-
                 return stream;
             }
 
@@ -1087,11 +1097,12 @@ namespace KadOzenka.Dal.DataExport
                         var units = query.Execute();
                         //var sql = query.GetSql();
                         var objectIds = units.Select(x => x.ObjectId.GetValueOrDefault()).ToList();
+                        var unitIds = units.Select(x=> x.Id).ToList();
                         var attributes = GetAttributesByObject(objectIds);
                         Dictionary<long, List<CalcItem>> factors = new Dictionary<long, List<CalcItem>>();
                         if (loadGroupFactors)
                         {
-                            factors = GetGroupFactors(factorRegisterId, _subgroup.Id, _taskId, objectIds);
+                            factors = GetGroupFactors(factorRegisterId, _subgroup.Id, _taskId, unitIds);
                         }
 
                         foreach (var unit in units)
