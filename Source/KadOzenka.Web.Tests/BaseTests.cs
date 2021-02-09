@@ -1,4 +1,5 @@
-﻿using Core.UI.Registers.Services;
+﻿using Core.UI.Registers.Controllers;
+using Core.UI.Registers.Services;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.ExpressScore;
@@ -29,6 +30,9 @@ namespace KadOzenka.Web.Tests
 		protected ServiceProvider Provider { get; set; }
 		protected Mock<ITourService> TourService { get; set; }
 		protected Mock<IModelingService> ModelingService { get; set; }
+		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
+
+		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
 
 
 		[OneTimeSetUp]
@@ -36,6 +40,7 @@ namespace KadOzenka.Web.Tests
 		{
 			TourService = new Mock<ITourService>();
 			ModelingService = new Mock<IModelingService>();
+			GbuObjectService = new Mock<IGbuObjectService>();
 
 			ConfigureServices();
 		}
@@ -45,9 +50,22 @@ namespace KadOzenka.Web.Tests
 
 		}
 
+		protected void CheckMethodValidateModelState<TT>(BaseController controller, ControllerMethod<TT> method) where TT : class, new()
+		{
+			controller.ModelState.AddModelError(RandomGenerator.GetRandomString(), RandomGenerator.GetRandomString());
+
+			var result = method.Invoke(new TT());
+
+			var errors = GetPropertyFromJson(result, "Errors");
+
+			Assert.IsNotNull(errors);
+			Assert.That(controller.ModelState.IsValid, Is.False);
+		}
+
 		protected object GetPropertyFromJson(IActionResult result, string propertyName)
 		{
 			var jsonResult = result as JsonResult;
+
 			return jsonResult?.Value?.GetType().GetProperty(propertyName)?.GetValue(jsonResult.Value, null);
 		}
 
@@ -93,6 +111,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 			container.AddTransient(typeof(IModelingService), sp => ModelingService.Object);
+			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
 
 			AddServicesToContainer(container);
 

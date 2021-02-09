@@ -7,6 +7,9 @@ namespace KadOzenka.Web.Models.Tour
 {
     public class GroupSegmentSettingsModel : IValidatableObject
     {
+	    public static string NoSegmentErrorMessage => "Не выбран сегмент";
+	    public static string NoTerritoryErrorMessage => "Не выбрана территория";
+
         public long GroupId { get; set; }
 
         [Display(Name="Сегмент")]
@@ -29,9 +32,9 @@ namespace KadOzenka.Web.Models.Tour
             var errors = new List<ValidationResult>();
 
             if(MarketSegment == MarketSegment.None)
-                errors.Add(new ValidationResult("Не выбран сегмент"));
+                errors.Add(new ValidationResult(NoSegmentErrorMessage));
             if (TerritoryType == TerritoryType.None)
-                errors.Add(new ValidationResult("Не выбрана территория"));
+                errors.Add(new ValidationResult(NoTerritoryErrorMessage));
 
             return errors;
         }
