@@ -219,8 +219,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				x.PricePerMeter
 			});
 
-			//TODO для тестирования
-			baseQuery.SetPackageIndex(0).SetPackageSize(100);
+			////TODO для тестирования
+			//baseQuery.SetPackageIndex(0).SetPackageSize(100);
 
 			return baseQuery
                 //TODO для тестирования расчета МС и Процента
