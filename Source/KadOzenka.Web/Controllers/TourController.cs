@@ -24,6 +24,7 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Dal.Tours.Repositories;
@@ -50,16 +51,16 @@ namespace KadOzenka.Web.Controllers
         public ITourService TourService { get; set; }
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
-        public GbuObjectService GbuObjectService { get; set; }
+        public IGbuObjectService GbuObjectService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
         public GroupFactorService GroupFactorService { get; set; }
 
-        public TourController(ITourService tourService)
+        public TourController(ITourService tourService, IGbuObjectService gbuObjectService)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             TourService = tourService;
-            GbuObjectService = new GbuObjectService();
+            GbuObjectService = gbuObjectService;
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
         }

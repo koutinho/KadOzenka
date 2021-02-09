@@ -3,6 +3,8 @@
 @using (Html.BeginForm("Restore", "RecycleBin", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.ObjectRegisterId)
+    @Html.HiddenFor(m => m.ObjectName)
     <div class="form-horizontal col-sm-12">
         <div class="form-group">
             <div class="col-sm-12">
@@ -29,7 +31,7 @@
                 var formObject = Common.Functions.FormToObject(form);
                 $.post(form.attr('action'), formObject).done(function (response) {
                     $('#restore').attr("disabled", true);
-                    Common.ShowMessage("Данные восстановлены");
+                    Common.ShowMessage(response);
                 }).fail(function (response, textStatus, errorThrown) {
                     Common.ShowError(response.responseText);
                 }).always(function () {

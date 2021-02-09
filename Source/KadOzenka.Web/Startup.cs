@@ -41,6 +41,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
@@ -120,6 +121,7 @@ namespace CIPJS
             services.AddTransient(typeof(ITourService), typeof(TourService));
             services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));
             services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
+            services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

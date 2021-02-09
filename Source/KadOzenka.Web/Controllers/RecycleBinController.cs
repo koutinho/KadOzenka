@@ -2,6 +2,7 @@
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.RecycleBin;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.RecycleBin;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +31,19 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = "ADMIN")]
 		public IActionResult Restore(RecycleBinModel model)
 		{
-			RecycleBinService.RestoreObject(model.Id);
-			return Ok();
+			string responseText;
+			if (RecycleBinService.ShouldUseLongProcessForRestoringObject(model.ObjectRegisterId))
+			{
+				RestoreObjectFromRecycleBinLongProcess.AddProcessToQueue(model.ToSettings());
+				responseText = "Запрос на восстановление данных добавлен в очередь";
+			}
+			else
+			{
+				RecycleBinService.RestoreObject(model.Id);
+				responseText = "Данные восстановлены";
+			}
+
+			return Ok(responseText);
 		}
 
 		[HttpGet]

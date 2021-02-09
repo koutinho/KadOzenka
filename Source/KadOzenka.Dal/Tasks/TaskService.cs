@@ -18,13 +18,21 @@ using KadOzenka.Dal.DataComparing;
 using KadOzenka.Dal.DataComparing.Exceptions;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Models.Task;
+using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.RecycleBin;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks.Responses;
+using KadOzenka.Dal.Tours;
 using ObjectModel.Common;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
 using Serilog;
+using OMAttachment = ObjectModel.Core.TD.OMAttachment;
 
 namespace KadOzenka.Dal.Tasks
 {
@@ -33,10 +41,16 @@ namespace KadOzenka.Dal.Tasks
 	    private static readonly ILogger _log = Log.ForContext<TaskService>();
 
         public DocumentService DocumentService { get; set; }
+        public TourFactorService TourFactorService { get; }
+        public RecycleBinService RecycleBinService { get; }
+        private IRosreestrRegisterService RosreestrRegisterService { get; }
 
         public TaskService()
         {
             DocumentService = new DocumentService();
+            TourFactorService = new TourFactorService();
+            RecycleBinService = new RecycleBinService();
+            RosreestrRegisterService = new RosreestrRegisterService();
         }
 
         public TaskDto GetTaskById(long taskId)
@@ -581,5 +595,104 @@ namespace KadOzenka.Dal.Tasks
         }
 
         #endregion
+
+        public bool CanTaskBeDeleted(long taskId)
+        {
+            var task = OMTask.Where(x => x.Id == taskId).Select(x => x.Status_Code).ExecuteFirstOrDefault();
+            return task.Status_Code != KoTaskStatus.InWork;
+        }
+
+        public void DeleteTask(long taskId, int userId)
+        {
+	        var dto = GetTaskById(taskId);
+	        if (dto == null)
+	        {
+		        throw new Exception($"Задание на оценку с ИД {taskId} не найдено");
+	        }
+	        var taskName = GetTemplateForTaskName(dto.EstimationDate, dto.IncomingDocument.CreationDate,
+		        dto.IncomingDocument.RegNumber, dto.NoteType.GetEnumDescription());
+	        if (dto.StatusCode == KoTaskStatus.InWork)
+	        {
+		        throw new Exception($"Задание на оценку '{taskName}' не может быть удалено, т.к. имеет статус '{KoTaskStatus.InWork.GetEnumDescription()}'");
+	        }
+
+	        var registerObjectsList = new List<RecycleBinService.RegisterObjects>();
+
+	         var query = new QSQuery
+	        {
+		        MainRegisterID = OMUnit.GetRegisterId(),
+		        Condition = new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.Equal, taskId),
+	        };
+	        query.AddColumn(OMUnit.GetColumn(x => x.ObjectId));
+	        query.AddPKColumn = false;
+	        registerObjectsList.Add(new RecycleBinService.GbuRegisterObjects((int)RosreestrRegisterService.RosreestrRegisterId, dto.IncomingDocument.Id, query.GetSql()));
+
+            var oksFactorRegister = TourFactorService.GetTourRegister(dto.Tour.Id, ObjectType.Oks);
+	        var zuFactorRegister = TourFactorService.GetTourRegister(dto.Tour.Id, ObjectType.ZU);
+            if(oksFactorRegister != null)
+				registerObjectsList.Add(new RecycleBinService.RegisterObjects((int)oksFactorRegister.RegisterId, OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code != PropertyTypes.Stead).GetSql()));
+            if(zuFactorRegister != null)
+				registerObjectsList.Add(new RecycleBinService.RegisterObjects((int)zuFactorRegister.RegisterId, OMUnit.Where(x => x.TaskId == taskId && x.PropertyType_Code == PropertyTypes.Stead).GetSql()));
+	        
+	        registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMUnitChange.GetRegisterId(), OMUnitChange.Where(x => x.ParentUnit.TaskId == taskId).GetSql()));
+	        registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMCostRosreestr.GetRegisterId(), OMCostRosreestr.Where(x => x.ParentUnit.TaskId == taskId).GetSql()));
+
+
+            registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMAttachment.GetRegisterId(), $@"select att_main.id from core_attachment att_main where att_main.id in (
+            select distinct at1.id 
+            from core_attachment at1
+                left join core_attachment_object at_obj on at1.id=at_obj.attachment_id
+            where at_obj.register_id=203 and at_obj.object_id={taskId} 
+                and (at1.is_deleted=0 or at1.is_deleted is null)
+                and (at_obj.is_deleted=0 or at_obj.is_deleted is null)
+                and not exists (select * 
+                                from core_attachment at2 
+                                    join core_attachment_object at_obj2 on at2.id=at_obj2.attachment_id
+                                where at1.id=at2.id and (at_obj2.register_id<>203 or at_obj2.object_id<>{taskId}) 
+                                    and (at2.is_deleted=0 or at2.is_deleted is null)
+                                    and (at_obj2.is_deleted=0 or at_obj2.is_deleted is null)))"));
+
+            registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMAttachmentObject.GetRegisterId(), $@"select att_obj_main.id from core_attachment_object att_obj_main where att_obj_main.attachment_id in (
+            select distinct at1.id 
+            from core_attachment at1
+                left join core_attachment_object at_obj on at1.id=at_obj.attachment_id
+            where at_obj.register_id=203 and at_obj.object_id={taskId} 
+                and (at1.is_deleted=0 or at1.is_deleted is null)
+                and (at_obj.is_deleted=0 or at_obj.is_deleted is null)
+                and not exists (select * 
+                                from core_attachment at2 
+                                    join core_attachment_object at_obj2 on at2.id=at_obj2.attachment_id
+                                where at1.id=at2.id and (at_obj2.register_id<>203 or at_obj2.object_id<>{taskId}) 
+                                    and (at2.is_deleted=0 or at2.is_deleted is null)
+                                    and (at_obj2.is_deleted=0 or at_obj2.is_deleted is null)))"));
+
+
+            var importDataLogIds = OMImportDataLog
+		        .Where(x => x.RegisterId == OMTask.GetRegisterId() && x.ObjectId == taskId)
+		        .Execute().Select(x => x.Id).ToList();
+
+	        var queueIds = new List<long>();
+	        if (importDataLogIds.IsNotEmpty())
+	        {
+		        var importDataLogIdNullable = importDataLogIds.Select(y => (long?) y).ToList();
+		        queueIds = OMQueue
+			        .Where(x => x.ParentProcessType.ProcessName == DataImporterGknLongProcess.LongProcessName &&
+			                    importDataLogIdNullable.Contains(x.ObjectId))
+			        .Execute().Select(x => x.Id).ToList();
+            }
+		       
+
+            if(queueIds.IsNotEmpty())
+				registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMQueue.GetRegisterId(), queueIds));
+            if(importDataLogIds.IsNotEmpty())
+				registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMImportDataLog.GetRegisterId(), importDataLogIds));
+
+            registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMUnit.GetRegisterId(), OMUnit.Where(x => x.TaskId == taskId).GetSql()));
+	        registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMTask.GetRegisterId(), new List<long>{taskId}));
+
+	        RecycleBinService.MoveObjectsToRecycleBin(registerObjectsList, OMTask.GetRegisterId(),
+		        $"Задание на оценку '{taskName}' Тура '{dto.Tour.Year}'", userId);
+
+        }
     }
 }

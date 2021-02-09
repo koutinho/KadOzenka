@@ -60,6 +60,20 @@
             <Button Caption="Настройка атрибута" NavigateURL="~/Task/UpdateEvaluativeGroupSettings" SRDFunctionTag="KO.TASKS" OpenInRadWindow="true" WindowHeight="300" WindowWidth="1000" Icon="fas fa-wrench" />
           </DropDownButtons>
         </Button>
+
+        <Button Caption="Удалить задание на оценку" NavigateURL="~/Task/DeleteTask" SRDFunctionTag="ADMIN" WindowHeight="200" WindowWidth="800" Icon="fas fa-trash-alt" NeedRefresh="true">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And"/>
+                        <Condition Key="[20300700]" Operation="Equal" Value="В работе"/>
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="id" Value="[ObjectId]" />
+            </Parameters>
+        </Button>
     </Buttons>
 
     <Tabs>

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace KadOzenka.Dal.CommonFunctions.Dto
+namespace KadOzenka.Dal.RecycleBin.Dto
 {
 	public class RecycleBinDto
 	{
@@ -10,5 +8,6 @@ namespace KadOzenka.Dal.CommonFunctions.Dto
 		public DateTime DeletedTime { get; set; }
 		public string ObjectType { get; set; }
 		public string ObjectName { get; set; }
+		public long ObjectRegisterId { get; set; }
 	}
 }
