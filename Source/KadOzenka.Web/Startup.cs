@@ -121,6 +121,7 @@ namespace CIPJS
             services.AddTransient(typeof(ITourService), typeof(TourService));
             services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));
             services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
+            services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

@@ -24,6 +24,12 @@ namespace KadOzenka.Web.Tests
 
 			//если контроллер возвращает редирект (RedirectToAction)
 			tmp = nameof(Modeling.Models.GettingTests.If_Model_Group_Is_Not_Found_Redirect_To_NoGroup_View);
+
+			//если контроллер заполняет ViewBag
+			tmp = nameof(Modeling.Marks.GettingTests.Can_Get_View_With_Marks_Grid);
+
+			//если контроллер заполняет ViewData
+			tmp = nameof(AttributesTests.Can_Get_View_With_Attributes_Settings);
 		}
 	}
 }
