@@ -719,6 +719,126 @@ end $$;
 
 DO $$
 begin
+	if (not CORE_UPDSTRU_CheckExistTable('COMMON_RECYCLE_BIN')) then
+		execute 'create table COMMON_RECYCLE_BIN ("event_id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_RECYCLE_BIN', 'event_id')) then
+        execute 'alter table COMMON_RECYCLE_BIN add "event_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_RECYCLE_BIN', 'deleted_time')) then
+        execute 'alter table COMMON_RECYCLE_BIN add "deleted_time" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_RECYCLE_BIN', 'user_id')) then
+        execute 'alter table COMMON_RECYCLE_BIN add "user_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_RECYCLE_BIN', 'object_register_id')) then
+        execute 'alter table COMMON_RECYCLE_BIN add "object_register_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_RECYCLE_BIN', 'description')) then
+        execute 'alter table COMMON_RECYCLE_BIN add "description" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_812_q_pk')) then
+    execute 'alter table COMMON_RECYCLE_BIN add constraint reg_812_q_pk primary key (event_id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('COMMON_REGISTERS_WITH_SOFT_DELETION')) then
+		execute 'create table COMMON_REGISTERS_WITH_SOFT_DELETION ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REGISTERS_WITH_SOFT_DELETION', 'id')) then
+        execute 'alter table COMMON_REGISTERS_WITH_SOFT_DELETION add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REGISTERS_WITH_SOFT_DELETION', 'register_id')) then
+        execute 'alter table COMMON_REGISTERS_WITH_SOFT_DELETION add "register_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('COMMON_REGISTERS_WITH_SOFT_DELETION', 'main_table_name')) then
+        execute 'alter table COMMON_REGISTERS_WITH_SOFT_DELETION add "main_table_name" VARCHAR(255) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_813_main_table_name_unique')) then
+    execute 'alter table COMMON_REGISTERS_WITH_SOFT_DELETION add constraint reg_813_main_table_name_unique unique (main_table_name)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_813_q_pk')) then
+    execute 'alter table COMMON_REGISTERS_WITH_SOFT_DELETION add constraint reg_813_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+  if (not CORE_UPDSTRU_CheckExistIndex('reg_813_main_table_name_unique')) then
+	execute 'CREATE UNIQUE INDEX reg_813_main_table_name_unique on COMMON_REGISTERS_WITH_SOFT_DELETION (main_table_name)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
 	if (not CORE_UPDSTRU_CheckExistTable('COMMON_REPORT_FILES')) then
 		execute 'create table COMMON_REPORT_FILES ("id" BIGINT NOT NULL)';
 	end if;
@@ -1161,7 +1281,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_BACKGROUND_EXPORTS', 'next_run_date')) then
-        execute 'alter table CORE_BACKGROUND_EXPORTS add "next_run_date" TIMESTAMP NOT NULL';
+        execute 'alter table CORE_BACKGROUND_EXPORTS add "next_run_date" TIMESTAMP';
     end if;
 end $$;
 
@@ -2766,7 +2886,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_MESSAGES', 'message')) then
-        execute 'alter table CORE_MESSAGES add "message" VARCHAR(10485760) NOT NULL';
+        execute 'alter table CORE_MESSAGES add "message" VARCHAR(4000) NOT NULL';
     end if;
 end $$;
 
@@ -5769,6 +5889,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('CORE_SRD_USERSETTINGSREGVIEW', 'search_type')) then
         execute 'alter table CORE_SRD_USERSETTINGSREGVIEW add "search_type" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_USERSETTINGSREGVIEW', 'selected_list')) then
+        execute 'alter table CORE_SRD_USERSETTINGSREGVIEW add "selected_list" VARCHAR(1000)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('CORE_SRD_USERSETTINGSREGVIEW', 'condition_fixed_search')) then
+        execute 'alter table CORE_SRD_USERSETTINGSREGVIEW add "condition_fixed_search" VARCHAR';
     end if;
 end $$;
 
@@ -28290,6 +28428,67 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_210_q_pk')) then
     execute 'alter table KO_MODEL_FACTOR add constraint reg_210_q_pk primary key (id)';
+  end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+	if (not CORE_UPDSTRU_CheckExistTable('ko_model_training_result_images')) then
+		execute 'create table ko_model_training_result_images ("id" BIGINT NOT NULL)';
+	end if;
+end $$;
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_model_training_result_images', 'id')) then
+        execute 'alter table ko_model_training_result_images add "id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_model_training_result_images', 'model_id')) then
+        execute 'alter table ko_model_training_result_images add "model_id" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_model_training_result_images', 'scatter')) then
+        execute 'alter table ko_model_training_result_images add "scatter" BYTEA';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_model_training_result_images', 'algorithm_type')) then
+        execute 'alter table ko_model_training_result_images add "algorithm_type" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('ko_model_training_result_images', 'correlation')) then
+        execute 'alter table ko_model_training_result_images add "correlation" BYTEA';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+  if (not core_updstru_checkexistconstraint('reg_223_q_pk')) then
+    execute 'alter table ko_model_training_result_images add constraint reg_223_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--
