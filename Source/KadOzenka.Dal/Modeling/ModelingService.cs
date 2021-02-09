@@ -491,7 +491,7 @@ namespace KadOzenka.Dal.Modeling
 				values[PredictedPriceColumnIndex] = obj.PriceFromModel;
 				values[DeviationFromPredictablePriceColumnIndex] = CalculatePercent(obj.PriceFromModel, obj.Price);
 
-				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				var coefficients = obj.DeserializeCoefficient();
 				groupedFactors.ForEach(factor =>
 				{
 					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
@@ -594,7 +594,7 @@ namespace KadOzenka.Dal.Modeling
 	            }
 
 				var alLeastOneFactorWasChanged = false;
-	            var coefficientsFromDb = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+	            var coefficientsFromDb = modelObject.DeserializeCoefficient();
 	            groupedFactors.ForEach(group =>
 	            {
 		            var factorId = group.Key;
@@ -624,7 +624,7 @@ namespace KadOzenka.Dal.Modeling
 	            modelObject.IsForTraining = modelObjectFromExcel.IsForTraining;
 	            modelObject.IsForControl = modelObjectFromExcel.IsForControl;
 	            modelObject.IsExcluded = modelObjectFromExcel.IsExcluded;
-	            modelObject.Coefficients = coefficientsFromDb.SerializeToXml();
+	            modelObject.Coefficients = coefficientsFromDb.SerializeCoefficient();
 	            modelObject.Save();
 	            result.UpdatedObjectsCount++;
             }

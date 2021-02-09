@@ -82,7 +82,7 @@ namespace KadOzenka.Dal.Modeling
                 if(counter++ % 100 == 0)
 					Logger.Debug("Идет обработка объекта моделирования №{i}", counter);
 
-                var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                var modelObjectAttributes = modelObject.DeserializeCoefficient();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
                     return;
 
@@ -93,7 +93,6 @@ namespace KadOzenka.Dal.Modeling
                     coefficients.Add(currentAttribute?.Coefficient);
                 });
 
-                //TODO эта проверка будет в сервисе
                 if (coefficients.All(x => x != null))
                 {
 	                if (modelObject.IsForTraining.GetValueOrDefault())

@@ -631,20 +631,6 @@ namespace ObjectModel.KO
     {
 	    public string InternalName => $"model_{Id}";
 
-	    public OMModel Copy()
-	    {
-            return new OMModel
-            {
-                AlgoritmType_Code = AlgoritmType_Code,
-                Formula = Formula,
-                Description = Description,
-                Name = Name,
-                GroupId = GroupId,
-                IsOksObjectType = IsOksObjectType,
-                Type_Code = Type_Code
-            };
-	    }
-
 	    public decimal? GetA0()
 	    {
 		    switch (AlgoritmType_Code)
@@ -836,6 +822,7 @@ namespace ObjectModel.KO
             return res;
         }
     }
+
     public partial class OMModelFactor
     {
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
@@ -3335,4 +3322,49 @@ namespace ObjectModel.KO
 	        UnloadType = unloadType;
         }
     }
+}
+
+
+namespace ObjectModel.Modeling
+{
+	public partial class OMModelToMarketObjects
+	{
+		public List<CoefficientForObject> DeserializeCoefficient()
+		{
+            if(string.IsNullOrWhiteSpace(Coefficients))
+                return new List<CoefficientForObject>();
+
+            return JsonConvert.DeserializeObject<List<CoefficientForObject>>(Coefficients);
+		}
+	}
+
+
+	
+
+
+	public class CoefficientForObject
+	{
+		public long AttributeId { get; set; }
+		public decimal? Coefficient { get; set; }
+		public string Value { get; set; }
+
+		public CoefficientForObject(long attributeId)
+		{
+			AttributeId = attributeId;
+		}
+
+		//для сериализации нужен конструктор без параметров
+		protected CoefficientForObject()
+		{
+
+		}
+	}
+
+	public static class CoefficientExtensions
+	{
+		public static string SerializeCoefficient(this List<CoefficientForObject> coefficients)
+		{
+			return JsonConvert.SerializeObject(coefficients);
+		}
+	}
 }

@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			for (var i = 0; i < modelObjects.Count; i++)
 			{
 				var modelObject = modelObjects[i];
-				var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				var objectCoefficients = modelObject.DeserializeCoefficient();
 
 				foreach (var attribute in attributes)
 				{
@@ -113,7 +113,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			objects.ForEach(obj =>
 			{
-				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				var coefficients = obj.DeserializeCoefficient();
 				attributes.ForEach(attribute =>
 				{
 					var attributeCoefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
