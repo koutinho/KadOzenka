@@ -293,7 +293,7 @@ namespace KadOzenka.Web.Controllers
 			//{
 			//	Status_Code = Status.Added,
 			//	UserId = SRDSession.GetCurrentUserId(),
-			//	Parameters = inputParamters.SerializeToXml()
+			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
 			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);

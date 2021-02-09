@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 var processedMarketObjectsCount = PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: Logger);
 
-                CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
+                //CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
 
                 SaveStatistic(ModelObjects, modelAttributes, Model, Queue);
 
@@ -170,7 +170,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	                    baseCoefficient.Value = currentCoefficient.Value;
                     });
 
-                    modelToMarketObjectRelation.Coefficients = resultCoefficients.SerializeToXml();
+                    modelToMarketObjectRelation.Coefficients = resultCoefficients.SerializeCoefficient();
                     modelToMarketObjectRelation.Save();
 
                     //сохраняем в список, чтобы не выкачивать повторно

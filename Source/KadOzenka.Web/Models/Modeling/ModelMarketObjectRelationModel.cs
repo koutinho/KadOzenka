@@ -43,7 +43,7 @@ namespace KadOzenka.Web.Models.Modeling
                 IsExcluded = entity.IsExcluded.GetValueOrDefault(),
                 IsForTraining = entity.IsForTraining.GetValueOrDefault(),
                 IsForControl = entity.IsForControl.GetValueOrDefault(),
-                Coefficients = entity.Coefficients.DeserializeFromXml<List<CoefficientForObject>>()
+                Coefficients = entity.DeserializeCoefficient()
 			};
 		}
 
