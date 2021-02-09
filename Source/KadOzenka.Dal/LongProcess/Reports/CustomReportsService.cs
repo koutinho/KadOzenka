@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 	public class CustomReportsService
 	{
 		public static string FileStorageKey => "SaveReportPath";
-		private ZipFile _generalZipFile;
+		private readonly ZipFile _generalZipFile;
 
 
 		public CustomReportsService()

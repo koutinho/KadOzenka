@@ -36,11 +36,6 @@ namespace KadOzenka.Dal.LongProcess
 			_log.ForContext("ErrorId", errorId).Error(ex, "Ошибка фонового процесса. ID объекта {objectId}", objectId);
 		}
 
-		public virtual void AddToQueue(object input)
-		{
-
-		}
-
 		public bool Test()
 		{
 			return true;

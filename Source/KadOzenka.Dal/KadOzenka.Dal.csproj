@@ -112,6 +112,7 @@
     <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByCadastralQuartersReport.cs" />
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs" />
     <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageReport.cs" />
+    <Compile Update="LongProcess\Reports\CadastralCostDeterminationResults\CadastralCostDeterminationResultsMainReport.cs" />
     <Compile Update="Modeling\Resources\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

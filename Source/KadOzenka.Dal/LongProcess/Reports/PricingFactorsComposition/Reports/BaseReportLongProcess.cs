@@ -21,7 +21,7 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public abstract class BaseReportLongProcess<T> : LongProcess where T : class, new()
+	public abstract class BaseReportLongProcess<T> : LongProcessForReportsBase where T : class, new()
 	{
 		private int _packageSize = 125000;
 		protected abstract string ReportName { get; }
@@ -29,7 +29,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
-		private CustomReportsService CustomReportsService { get; }
 		private readonly QueryManager _queryManager;
 		private object _locker;
 
@@ -38,7 +37,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			Logger = logger;
 			_locker = new object();
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
-			CustomReportsService = new CustomReportsService();
 			_queryManager = new QueryManager();
 		}
 
@@ -189,16 +187,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			NotificationSender.SendNotification(processQueue, MessageSubject, fullMessage);
 		}
 
-		private void CheckCancellationToken(CancellationToken processCancellationToken,
-			CancellationTokenSource localCancellationToken, ParallelOptions options)
-		{
-			if (!processCancellationToken.IsCancellationRequested)
-				return;
-
-			localCancellationToken.Cancel();
-			options.CancellationToken.ThrowIfCancellationRequested();
-		}
-
 		private void GenerateReport(List<T> reportItems)
 		{
 			var headerColumns = GenerateReportHeaders(reportItems);
@@ -228,13 +216,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			}
 		}
 
-		protected void WriteToStream(List<string> str, Encoding encoding, MemoryStream stream)
-		{
-			str.Add("\n");
-			var headers = string.Join(',', str);
-			byte[] firstString = encoding.GetBytes(headers);
-			stream.Write(firstString, 0, firstString.Length);
-		}
 
 		#endregion
 

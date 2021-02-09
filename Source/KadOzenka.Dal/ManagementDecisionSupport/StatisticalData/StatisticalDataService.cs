@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Core.ConfigParam;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
@@ -9,10 +10,15 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.LongProcess.Reports;
+using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.Tours;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -27,7 +33,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        new Dictionary<long?, Type>
 	        {
 		        {(long) StatisticalDataType.PricingFactorsCompositionFinalUniform, typeof(UniformReportLongProcess)},
-		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)}
+		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)},
+		        {(long) StatisticalDataType.CadastralCostDeterminationResults, typeof(CadastralCostDeterminationResultsLongProcess)}
 	        };
 
         public StatisticalDataService()
@@ -151,7 +158,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        if (!ReportsViaLongLongProcess.TryGetValue(modelReportType.Value, out var longProcessType))
 		        throw new Exception("Формирование отчета через фоновый процесс недоступно");
 
-	        var longProcess = (LongProcess.LongProcess)Activator.CreateInstance(longProcessType);
+            var longProcess = (LongProcessForReportsBase)Activator.CreateInstance(longProcessType);
 
             ////TODO код для отладки
             //longProcess.StartProcess(new OMProcessType(), new OMQueue
