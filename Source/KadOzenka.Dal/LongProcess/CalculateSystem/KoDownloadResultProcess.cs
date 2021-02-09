@@ -127,10 +127,6 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 				unloadResultQueue.DateStarted = DateTime.Now;
 				unloadResultQueue.Save();
-
-				WorkerCommon.SetProgress(processQueue, 5);
-
-
 				WorkerCommon.SetProgress(processQueue, 10);
 				var res = KOUnloadResult.Unload(processQueue, unloadResultQueue, settings);
 
