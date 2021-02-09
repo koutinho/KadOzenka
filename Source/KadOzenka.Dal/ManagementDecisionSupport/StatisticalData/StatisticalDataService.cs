@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        {
 		        {(long) StatisticalDataType.PricingFactorsCompositionFinalUniform, typeof(UniformReportLongProcess)},
 		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)},
-		        {(long) StatisticalDataType.CadastralCostDeterminationResults, typeof(CadastralCostDeterminationResultsLongProcess)}
+		        {(long) StatisticalDataType.CadastralCostDeterminationResults, typeof(KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess)}
 	        };
 
         public StatisticalDataService()
