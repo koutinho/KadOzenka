@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
@@ -37,13 +35,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			Logger = Log.ForContext<BaseReportLongProcess>();
 		}
 
-		public override void AddToQueue(object input)
+		public static void AddProcessToQueue(ReportLongProcessInputParameters input)
 		{
-			var parameters = input as ReportLongProcessInputParameters;
-			if (!AreInputParametersValid(parameters))
+			if (!AreInputParametersValid(input))
 				throw new Exception("Не переданы параметры для построения отчета");
 
-			LongProcessManager.AddTaskToQueue(nameof(BaseReportLongProcess), parameters: parameters.SerializeToXml());
+			LongProcessManager.AddTaskToQueue(nameof(BaseReportLongProcess), parameters: input.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -60,9 +57,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 				return;
 			}
 
-			//TODO убрать
-			//parameters.Type = typeof(StateResultsReport);
-			var reportType = typeof(StateResultsReport);
+			var reportType = parameters.Type == ReportType.State ? typeof(StateResultsReport) : typeof(IndividuallyResultsReport);
 			var taskIds = parameters.TaskIds;
 			var taskIdStr = string.Join(',', taskIds);
 			var report = (ICadastralCostDeterminationResultsReport)Activator.CreateInstance(reportType);
@@ -100,15 +95,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 					var processedItemsCount = 0;
 					Parallel.For(0, numberOfPackages, options, (i, s) =>
 					{
-						using (Logger.TimeOperation("Общее время обработки пакета №{i}", i))
-						{
-							var unitsCondition = $@"where unit.task_id IN ({taskIdStr}) AND 
+						var unitsCondition = $@"where unit.task_id IN ({taskIdStr}) AND 
 									unit.GROUP_ID IN ({groupIdsStr}) AND
 									(unit.PROPERTY_TYPE_CODE <> 2190 or unit.PROPERTY_TYPE_CODE is null)
 										order by unit.id 
 										limit {PackageSize} offset {i * PackageSize}";
 
-							var sql = $@"with object_ids as (
+						var sql = $@"with object_ids as (
 									select object_id from ko_unit unit {unitsCondition}
 								),
 								cadastralDistrictAttrValues as (
@@ -124,23 +117,23 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 										FROM KO_UNIT unit
 										LEFT JOIN cadastralDistrictAttrValues cadastralDistrictAttr ON unit.object_id=cadastralDistrictAttr.objectId
 										{unitsCondition}";
-							Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
+						Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 
 
-							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-							List<ReportItem> currentOperations;
-							using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
-							{
-								currentOperations = _queryManager.ExecuteSql<ReportItem>(sql).OrderBy(x => x.CadastralDistrict).ToList();
-								processedItemsCount += currentOperations.Count;
-								Logger.Debug("Выкачено {ProcessedItemsCount} записей", processedItemsCount);
-							}
+						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
+						List<ReportItem> currentOperations;
+						using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
+						{
+							currentOperations = _queryManager.ExecuteSql<ReportItem>(sql).OrderBy(x => x.CadastralDistrict).ToList();
+							processedItemsCount += currentOperations.Count;
+							Logger.Debug("Выкачено {ProcessedItemsCount} записей", processedItemsCount);
+						}
 
-							CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-							using (Logger.TimeOperation("Формирование файла для пакета №{i}", i))
-							{
-								GenerateReport(currentOperations, report);
-							}
+						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
+						using (Logger.TimeOperation("Формирование файла для пакета №{i}", i))
+						{
+							GenerateReport(currentOperations, report);
+							currentOperations = null;
 						}
 
 						lock (_locker)
@@ -181,16 +174,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 
 		#region Support Methods
 
-		private bool AreInputParametersValid(ReportLongProcessInputParameters parameters)
+		private static bool AreInputParametersValid(ReportLongProcessInputParameters parameters)
 		{
-			//var a = typeof(ICadastralCostDeterminationResultsReport).IsAssignableFrom(parameters?.Type);
-			//var b = parameters?.Type is ICadastralCostDeterminationResultsReport;
-
-			return true;
-
-
-			//return parameters?.TaskIds == null || parameters.TaskIds.Count == 0 ||
-			//       !typeof(ICadastralCostDeterminationResultsReport).IsAssignableFrom(parameters.Type) ;
+			return parameters?.TaskIds != null && parameters.TaskIds.Count != 0;
 		}
 
 		private void SendMessageInternal(OMQueue processQueue, string mainMessage, string urlToDownload)
