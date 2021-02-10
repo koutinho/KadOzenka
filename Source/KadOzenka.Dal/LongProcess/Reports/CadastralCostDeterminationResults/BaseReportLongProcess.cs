@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 										order by unit.id 
 										limit {PackageSize} offset {i * PackageSize}";
 
-						var sql = $@"with object_ids as (
+						var sql = $@"/*{i}*/ with object_ids as (
 									select object_id from ko_unit unit {unitsCondition}
 								),
 								cadastralDistrictAttrValues as (
