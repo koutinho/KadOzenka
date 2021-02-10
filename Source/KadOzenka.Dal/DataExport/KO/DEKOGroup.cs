@@ -43,13 +43,20 @@ namespace KadOzenka.Dal.DataExport
             if (unloadResultQueue != null)
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, progress);
 
+            // Подгруппы тура
             var tourGroups = OMTourGroup
                 .Where(x => x.TourId == setting.IdTour)
                 .Select(x => x.GroupId).Execute()
                 .Select(x => x.GroupId).ToList();
 
-            // Выбираем все подгруппы
-            var koGroups = OMGroup.Where(x => x.ParentId != -1 && tourGroups.Contains(x.Id)).SelectAll().Execute();
+            // Основные группы ОКС/ЗУ
+            var mainGroupType = setting.UnloadParcel ? KoGroupAlgoritm.MainParcel : KoGroupAlgoritm.MainOKS;
+            var mainGroups = OMGroup.Where(x => x.ParentId == -1 && x.GroupAlgoritm_Code == mainGroupType)
+                .Select(x=>x.Id).Execute()
+                .Select(x=>(long?)x.Id).ToList();
+
+            // Выбор подгрупп тура с разделением по ОКС\ЗУ
+            var koGroups = OMGroup.Where(x => x.ParentId != -1 && mainGroups.Contains(x.ParentId) && tourGroups.Contains(x.Id)).SelectAll().Execute();
             var res = new List<ResultKoUnloadSettings>();
             var countCurr = 0;
             var countAll = koGroups.Count;
