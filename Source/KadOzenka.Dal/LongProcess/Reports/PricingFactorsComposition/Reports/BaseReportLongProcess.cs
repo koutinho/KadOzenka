@@ -210,7 +210,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				{
 					using (Logger.TimeOperation("Добавление zip-файла"))
 					{
-						CustomReportsService.AddFileToZip(stream, ReportName, "csv");
+						CustomReportsService.AddZipFileToGeneralZipArchive(stream, ReportName, "csv");
 					}
 				}
 			}

@@ -228,7 +228,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			{
 				using (Logger.TimeOperation("Добавление zip-файла"))
 				{
-					CustomReportsService.AddFileToZip(excelFileGenerator.GetStream(), report.ReportName, "xlsx");
+					CustomReportsService.AddExcelFileToGeneralZipArchive(excelFileGenerator.GetStream(), report.ReportName);
 				}
 			}
 		}
