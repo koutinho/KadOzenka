@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 	public class BaseReportLongProcess : LongProcessForReportsBase
 	{
 		private readonly QueryManager _queryManager;
-		private const int PackageSize = 125000;
+		private const int PackageSize = 200000;
 		public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
 		private string ReportName { get; set; }
 		private string MessageSubject => $"Отчет '{ReportName}'";
