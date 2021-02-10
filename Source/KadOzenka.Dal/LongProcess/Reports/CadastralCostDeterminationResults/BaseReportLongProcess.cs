@@ -87,7 +87,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 					var options = new ParallelOptions
 					{
 						CancellationToken = localCancelTokenSource.Token,
-						MaxDegreeOfParallelism = 20
+						MaxDegreeOfParallelism = 4
 					};
 					var cadastralQuarterAttributeId = new GbuCodRegisterService().GetCadastralQuarterFinalAttribute().Id;
 					var numberOfPackages = unitsCount / PackageSize + 1;
