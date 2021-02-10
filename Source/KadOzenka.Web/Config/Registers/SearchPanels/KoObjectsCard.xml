@@ -2,4 +2,11 @@
     <ControlElement Caption="Кадастровый номер" ID="cadastral_number" OwnType="Text" AttributeNumber="20101600" QueryOperation="Like" />
     <ControlElement Caption="Тип объекта" ID="property_type" OwnType="Combo" AttributeNumber="20101800" ReferenceId="102" QueryOperation="Equal"/>
     <ControlElement Caption="Статус задания" ID="status_type" OwnType="Combo" AttributeNumber="20100700" ReferenceId="200" QueryOperation="Equal"/>
+    <ControlElement Caption="Площадь" ID="square" OwnType="Panel">
+      <children>
+        <ControlElement Caption="с " ID="square_from" OwnType="Text" AttributeNumber="20101500" QueryOperation="MoreOrEqual" />
+        <ControlElement Caption="по" ID="square_to" OwnType="Text" AttributeNumber="20101500" QueryOperation="LessOrEqual" />
+      </children>
+    </ControlElement>
+    <ControlElement Caption="Статус расчета" ID="STATUS_REPEAT_CALC" OwnType="Combo" AttributeNumber="20101400" ReferenceId="209" QueryOperation="Equal"/>
 </RootElement>
