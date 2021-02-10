@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using KadOzenka.Web.Models.Modeling;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
 namespace KadOzenka.Web.Tests.Modeling.Models

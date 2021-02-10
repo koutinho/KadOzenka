@@ -12,13 +12,6 @@ namespace KadOzenka.Web.Tests
 			//если контроллер возвращает Json
 			var tmp = nameof(Tours.CreationTests.Can_Add_New_Tour);
 
-			//проверка, что контроллер проверяет состояние модели (ModelState.IsValid)
-			tmp = nameof(Modeling.Models.UpdatingTests.CanNot_Update_Automatic_Model_If_Model_State_Is_Invalid);
-
-			//проверка метода Validate у моделей, реализующих IValidatableObject
-			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_MarketSegment_Is_Empty);
-			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_Model_State_Is_Invalid);
-
 			//если контроллер возвращает View
 			tmp = nameof(Modeling.Factors.CreationTests.Can_Return_View_During_Automatic_Factor_Addition);
 
@@ -30,6 +23,13 @@ namespace KadOzenka.Web.Tests
 
 			//если контроллер заполняет ViewData
 			tmp = nameof(AttributesTests.Can_Get_View_With_Attributes_Settings);
+
+			//проверка, что контроллер проверяет состояние модели (ModelState.IsValid)
+			tmp = nameof(Modeling.Models.UpdatingTests.CanNot_Update_Automatic_Model_If_Model_State_Is_Invalid);
+
+			//проверка метода Validate у моделей, реализующих IValidatableObject
+			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_MarketSegment_Is_Empty);
+			tmp = nameof(GroupSegmentTests.CanNot_Save_Relation_If_Model_State_Is_Invalid);
 		}
 	}
 }

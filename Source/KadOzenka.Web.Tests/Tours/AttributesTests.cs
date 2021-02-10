@@ -1,14 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Castle.Components.DictionaryAdapter;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Web.Models.Tour;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Moq;
 using NUnit.Framework;
 
 namespace KadOzenka.Web.Tests.Tours

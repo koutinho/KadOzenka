@@ -43,15 +43,5 @@ namespace KadOzenka.Web.Tests.Modeling.Dictionaries
 			Assert.IsTrue(errors.First().ErrorMessage.Contains(PartialDictionaryModel.NoDictionaryIdErrorMessage),
 				errors.GetAllErrorMessagesAsOneString());
 		}
-
-		////TODO
-		//[Test]
-		//public void CanNot_Import_Dictionary_If_Model_State_Is_Invalid()
-		//{
-		//	var controller = ModelingController;
-		//	var method = new ControllerMethod<DictionaryImportModel>(controller.DictionaryImport);
-
-		//	CheckMethodValidateModelState(controller, method);
-		//}
 	}
 }

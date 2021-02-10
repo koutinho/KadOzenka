@@ -1,7 +1,5 @@
-﻿using KadOzenka.Dal.Tours;
-using KadOzenka.Web.Controllers;
+﻿using KadOzenka.Web.Controllers;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 using NUnit.Framework;
 
 namespace KadOzenka.Web.Tests.Tours
