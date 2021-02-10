@@ -136,11 +136,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 							currentOperations = null;
 						}
 
-						//lock (_locker)
-						//{
-						//	processedPackageCount++;
-						//	LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
-						//}
+						lock (_locker)
+						{
+							processedPackageCount++;
+							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
+						}
 					});
 				}
 			}
