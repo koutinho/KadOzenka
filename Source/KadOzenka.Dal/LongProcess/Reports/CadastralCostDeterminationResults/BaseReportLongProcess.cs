@@ -133,7 +133,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 						using (Logger.TimeOperation("Формирование файла для пакета №{i}", i))
 						{
 							GenerateReport(currentOperations, report);
-							currentOperations = null;
 						}
 
 						lock (_locker)
@@ -141,6 +140,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 							processedPackageCount++;
 							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
 						}
+
+						Logger.Debug("Закончена работа с пакетом №{PackageNumber}", i);
 					});
 				}
 			}
@@ -204,11 +205,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 					Logger.Debug("Обрабатывается строка №{i} из {reportItemsCount}.", i, reportItems.Count);
 			}
 
-			using (Logger.TimeOperation("Применение стилей"))
-			{
-				excelFileGenerator.SetIndividualWidth(headerColumns);
-				excelFileGenerator.SetStyle();
-			}
+			excelFileGenerator.SetIndividualWidth(headerColumns);
+			excelFileGenerator.SetStyle();
+
+			//попытка принудительно освободить память
+			reportItems = null;
+			GC.Collect();
 
 			lock (_locker)
 			{
