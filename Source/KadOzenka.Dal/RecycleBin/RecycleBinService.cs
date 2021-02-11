@@ -216,7 +216,7 @@ DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};
 
 		private void ExecuteCommands(List<string> commands, NpgsqlConnection connection)
 		{
-			var tran = connection.BeginTransaction();
+			var tran = connection.BeginTransaction(IsolationLevel.Serializable);
 			try
 			{
 				foreach (var command in commands)

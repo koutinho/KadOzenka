@@ -4,7 +4,9 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
+using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.RecycleBin
@@ -18,7 +20,17 @@ namespace KadOzenka.Dal.LongProcess.RecycleBin
 
 		public static long AddProcessToQueue(RestoreObjectFromRecycleBinLongProcessParams settings)
 		{
-			return LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
+			return LongProcessManager.AddTaskToQueue(LongProcessName, null, settings.EventId, settings.SerializeToXml());
+		}
+
+		public static bool IsDuplicateProcessExists(long eventId)
+		{
+			return OMQueue.Where(x => x.ParentProcessType.ProcessName == LongProcessName
+			                          && x.ObjectId == eventId
+			                          && (x.Status_Code == Status.Added ||
+			                              x.Status_Code == Status.PrepareToRun ||
+			                              x.Status_Code == Status.Running))
+				.ExecuteExists();
 		}
 
 		public RestoreObjectFromRecycleBinLongProcess()

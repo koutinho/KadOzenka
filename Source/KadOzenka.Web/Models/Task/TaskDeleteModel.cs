@@ -12,8 +12,9 @@ namespace KadOzenka.Web.Models.Task
 		public string TaskName { get; set; }
 		public long? TourYear { get; set; }
 		public bool CanTaskBeDeleted { get; set; }
+		public bool IsDuplicateProcessExists { get; set; }
 
-		public static TaskDeleteModel ToModel(TaskDto dto, bool canTaskBeDeleted)
+		public static TaskDeleteModel ToModel(TaskDto dto, bool canTaskBeDeleted, bool isDuplicateProcessExists)
 		{
 			return new TaskDeleteModel
 			{
@@ -21,7 +22,8 @@ namespace KadOzenka.Web.Models.Task
 				TourYear = dto.Tour?.Year,
 				TaskName = TaskService.GetTemplateForTaskName(dto.EstimationDate, dto.IncomingDocument.CreationDate,
 					dto.IncomingDocument.RegNumber, dto.NoteType.GetEnumDescription()),
-				CanTaskBeDeleted = canTaskBeDeleted
+				CanTaskBeDeleted = canTaskBeDeleted,
+				IsDuplicateProcessExists = isDuplicateProcessExists
 			};
 		}
 

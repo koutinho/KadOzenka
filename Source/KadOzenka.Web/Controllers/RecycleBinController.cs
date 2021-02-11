@@ -1,4 +1,5 @@
-﻿using Core.Shared.Extensions;
+﻿using System;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.RecycleBin;
@@ -24,7 +25,7 @@ namespace KadOzenka.Web.Controllers
 		public IActionResult RestoreRecycleBinRecord(long id)
 		{
 			var record = RecycleBinService.GetRecycleBinRecord(id);
-			return View(RecycleBinModel.FromDto(record));
+			return View(RecycleBinModel.FromDto(record, RestoreObjectFromRecycleBinLongProcess.IsDuplicateProcessExists(id)));
 		}
 
 		[HttpPost]
@@ -34,6 +35,9 @@ namespace KadOzenka.Web.Controllers
 			string responseText;
 			if (RecycleBinService.ShouldUseLongProcessForRestoringObject(model.ObjectRegisterId))
 			{
+				if (RestoreObjectFromRecycleBinLongProcess.IsDuplicateProcessExists(model.Id))
+					throw new Exception($"Запрос на восстановление данных для записи {model.Id} уже существует");
+
 				RestoreObjectFromRecycleBinLongProcess.AddProcessToQueue(model.ToSettings());
 				responseText = "Запрос на восстановление данных добавлен в очередь";
 			}
