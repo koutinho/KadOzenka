@@ -13,7 +13,7 @@
     @Html.HiddenFor(x => x.Id)
     <div id="toolbar"></div>
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
-        <div style="margin: 1%;">
+        <div style="margin: 2%;">
             @{
                 await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
             }
@@ -450,4 +450,13 @@
         margin-bottom: 5px !important;
         display: block;
     }
+    #toolbar{
+            position: fixed;
+            /*background-color: white;*/
+            z-index: 2;
+            width: 100%;
+            border-color: #e5e6eb;
+            border-width: 1px 0;
+            left: -1px; top: -1px;
+        }
 </style>

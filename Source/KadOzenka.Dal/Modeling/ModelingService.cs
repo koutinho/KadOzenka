@@ -14,9 +14,7 @@ using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Extentions;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Entities;
-using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
@@ -25,8 +23,6 @@ using System.Linq.Expressions;
 using Microsoft.Practices.ObjectBuilder2;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
-using ObjectModel.Ko;
-using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -807,7 +803,12 @@ namespace KadOzenka.Dal.Modeling
             }
         }
 
-        private bool CheckFactorWasChanged(bool isNormalizedFactor, CoefficientForObject factorFromDb, CoefficientForObject factorFromFile)
+        public void SetIndividualWidth(ExcelWorksheet sheet, int column, int width)
+        {
+	        sheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
+        }
+
+		private bool CheckFactorWasChanged(bool isNormalizedFactor, CoefficientForObject factorFromDb, CoefficientForObject factorFromFile)
         {
 	        bool factorWasChanged;
 	        if (isNormalizedFactor)
@@ -951,15 +952,24 @@ namespace KadOzenka.Dal.Modeling
 			var tableRowIndex = 3;
 			var criterionRowIndex = 4;
 			var conclusionRowIndex = 5;
-			//TODO убрать в отдельные объекты после подтверждения формата
+			var rowHeaderColumnIndex = 0;
+			var studentColumnIndex = 1;
+			var mseColumnIndex = 2;
+			var r2ColumnIndex = 3;
+			var fisherColumnIndex = 4;
+
 			var columnHeaders = new object[]
 			{
 				"", "t-критерий Стьюдента", "Средняя ошибка аппроксимации",
 				"Коэффициент детерминации (R²)", "F-критерий Фишера"
 			};
-
+			SetIndividualWidth(mainWorkSheet, rowHeaderColumnIndex, 5);
+			SetIndividualWidth(mainWorkSheet, studentColumnIndex, 4);
+			SetIndividualWidth(mainWorkSheet, mseColumnIndex, 4);
+			SetIndividualWidth(mainWorkSheet, r2ColumnIndex, 4);
+			SetIndividualWidth(mainWorkSheet, fisherColumnIndex, 4);
 			mainWorkSheet.Rows[0].Cells[0].SetValue("Анализ качества статической модели");
-			var cells = mainWorkSheet.Cells.GetSubrangeAbsolute(0, 0, 0, columnHeaders.Length);
+			var cells = mainWorkSheet.Cells.GetSubrangeAbsolute(0, 0, 0, columnHeaders.Length - 1);
 			cells.Merged = true;
 
 			AddRowToExcel(mainWorkSheet, columnHeadersRowIndex, columnHeaders);
@@ -968,6 +978,7 @@ namespace KadOzenka.Dal.Modeling
 			var mseInfo = qualityInfo.MeanSquaredError;
 			var r2Info = qualityInfo.R2;
 			var fisherInfo = qualityInfo.Fisher;
+
 			var firstRow = new object[]
 			{
 				"Расчетное", studentInfo.Estimated, mseInfo.Estimated, r2Info.Estimated, fisherInfo.Estimated
@@ -992,9 +1003,9 @@ namespace KadOzenka.Dal.Modeling
 			};
 			AddRowToExcel(mainWorkSheet, conclusionRowIndex, fifthRow);
 
-			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, 2, tableRowIndex, 2);
+			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, mseColumnIndex, tableRowIndex, mseColumnIndex);
 			cells.Merged = true;
-			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, 3, tableRowIndex, 3);
+			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, r2ColumnIndex, tableRowIndex, r2ColumnIndex);
 			cells.Merged = true;
 
 			var stream = new MemoryStream();

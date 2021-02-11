@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 var processedMarketObjectsCount = PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: Logger);
 
-                //CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
+                CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
 
                 SaveStatistic(ModelObjects, modelAttributes, Model, Queue);
 
@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             List<MarketObjectToUnitRelation> marketObjectToUnitsRelation;
             using (Logger.TimeOperation("Получение Единиц оценки по Объектам аналогам"))
             {
-	            marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects, tourFactorsAttributes.Count != 0);
+	            marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects);
 	            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
             }
             
@@ -277,7 +277,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             return relation;
         }
 
-        private List<MarketObjectToUnitRelation> GetMarketObjectToUnitRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
+        private List<MarketObjectToUnitRelation> GetMarketObjectToUnitRelation(List<MarketObjectPure> marketObjects)
         {
 	        List<string> cadastralNumbers;
 	        using (Logger.TimeOperation("Выборка КН из ОА"))
@@ -289,44 +289,40 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		        Logger.Debug("Найдено {CadastralNumbersCount} уникальных КН ОА", cadastralNumbers.Count);
             }
 
-	        var unitsDictionary = new Dictionary<string, UnitPure>();
-            if (downloadUnits)
-            {
-	            List<OMUnit> units;
-	            using (Logger.TimeOperation("Поиск ЕО по КН объектов аналогов из тура с ИД {TourId}", Tour.Id))
-	            {
-		            units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
-			            .Select(x => new
-			            {
-				            x.CadastralNumber,
-				            x.PropertyType_Code,
-				            x.BuildingCadastralNumber
-			            })
-			            .Execute();
+	        List<OMUnit> units;
+	        using (Logger.TimeOperation("Поиск ЕО по КН объектов аналогов из тура с ИД {TourId}", Tour.Id))
+	        {
+		        units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
+			        .Select(x => new
+			        {
+				        x.CadastralNumber,
+				        x.PropertyType_Code,
+				        x.BuildingCadastralNumber
+			        })
+			        .Execute();
 
-		            Logger.Debug("Найдено {UnitsCount} ЕО", units.Count);
-                }
+		        Logger.Debug("Найдено {UnitsCount} ЕО", units.Count);
+	        }
 
-	            using (Logger.TimeOperation("Обработка помещений в найденных ЕО"))
-	            {
-		            var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
-		            if (placementUnits.Count > 0)
-		            {
-			            ProcessPlacemenUnits(placementUnits, units);
-		            }
-                }
-	            
-                unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v =>
-                {
-	                var unit = v.First();
+	        using (Logger.TimeOperation("Обработка помещений в найденных ЕО"))
+	        {
+		        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
+		        if (placementUnits.Count > 0)
+		        {
+			        ProcessPlacemenUnits(placementUnits, units);
+		        }
+	        }
 
-	                return new UnitPure
-	                {
-		                Id = unit.Id,
-                        PropertyType = unit.PropertyType_Code
-	                };
-                });
-            }
+	        var unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v =>
+	        {
+		        var unit = v.First();
+
+		        return new UnitPure
+		        {
+			        Id = unit.Id,
+			        PropertyType = unit.PropertyType_Code
+		        };
+	        });
 
             var marketObjectToUnitRelation = new List<MarketObjectToUnitRelation>();
             using (Logger.TimeOperation("Формирование отношений ЕО к ОА"))

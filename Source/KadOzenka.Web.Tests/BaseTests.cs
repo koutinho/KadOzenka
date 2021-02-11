@@ -50,11 +50,12 @@ namespace KadOzenka.Web.Tests
 
 		}
 
-		protected void CheckMethodValidateModelState<TT>(BaseController controller, ControllerMethod<TT> method) where TT : class, new()
+		protected void CheckMethodValidateModelState<TMethodInputParameterType>(BaseController controller,
+			ControllerMethod<TMethodInputParameterType> method) where TMethodInputParameterType : class, new()
 		{
 			controller.ModelState.AddModelError(RandomGenerator.GetRandomString(), RandomGenerator.GetRandomString());
 
-			var result = method.Invoke(new TT());
+			var result = method.Invoke(new TMethodInputParameterType());
 
 			var errors = GetPropertyFromJson(result, "Errors");
 
@@ -68,6 +69,7 @@ namespace KadOzenka.Web.Tests
 
 			return jsonResult?.Value?.GetType().GetProperty(propertyName)?.GetValue(jsonResult.Value, null);
 		}
+
 
 		#region Support Methods
 
