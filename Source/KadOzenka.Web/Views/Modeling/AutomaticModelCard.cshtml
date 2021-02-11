@@ -51,12 +51,13 @@
 @using (Html.BeginForm("AutomaticModelCard", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
     @Html.HiddenFor(x => x.Id)
+
     <ul id="ls_panelbar" class="panelbar">
-        <li id="SectionMainData" data-expand style="padding-top: 1%">
+        <div id="mainToolbar" style=""></div>
+        <li id="SectionMainData" data-expand style="padding-top: 7%">
             <span>Основные данные</span>
             <div class="form-horizontal col-sm-12" style="padding: 2%">
-                <div id="mainToolbar" style="position: fixed; background-color: white; z-index: 2; width: 95%"></div>
-                <div style="padding-top: 5%">
+                <div style="padding: 0%">
                     @{
                         await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
                     }
@@ -67,9 +68,9 @@
                         </div>
                         <div class="col-sm-10">
                             @(Html.Kendo().DropDownListFor(m => m.CalculationTypeStr)
-                            .DataTextField("Name")
-                            .DataValueField("Name")
-                            .Enable(false))
+                                .DataTextField("Name")
+                                .DataValueField("Name")
+                                .Enable(false))
                         </div>
                     </div>
                 </div>
@@ -121,6 +122,15 @@
 
     .k-dropdowntree {
         width: 100%;
+    }
+    #mainToolbar{
+        position: fixed;
+        /*background-color: white;*/
+        z-index: 2;
+        width: 100%;
+        border-color: #e5e6eb;
+        border-width: 1px 0;
+        left: -1px; top: -1px;
     }
 </style>
 
