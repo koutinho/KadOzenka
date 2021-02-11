@@ -20,11 +20,14 @@ using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.ES;
 using ObjectModel.ES;
+using Serilog;
 
 namespace KadOzenka.Dal.ExpressScore
 {
     public class ExpressScoreReferenceService
     {
+	    private readonly ILogger _log = Log.ForContext<ExpressScoreReferenceService>();
+
         public const string DateCreatedStringFormat = "yyyyMMddHHmmss";
         public int AllRows { get; private set; } = 1;
 		public int CurrentRow { get; private set; }
@@ -306,7 +309,9 @@ namespace KadOzenka.Dal.ExpressScore
         private Stream ImportReferenceItemsFromExcel(Stream fileStream, OMEsReference reference,
             ImportReferenceFileInfoDto fileImportInfo)
         {
-	        fileStream.Seek(0, SeekOrigin.Begin);
+	        _log.ForContext("ReferenceName",reference.Name).Debug("Начинается процесс разбора файла и добавления значений в справочник");
+
+            fileStream.Seek(0, SeekOrigin.Begin);
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			var mainWorkSheet = excelFile.Worksheets[0];
 
@@ -331,6 +336,7 @@ namespace KadOzenka.Dal.ExpressScore
             var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
             var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= lastUsedRowIndex);
 
+
             Parallel.ForEach(dataRows, options, row =>
             {
                 try
@@ -341,16 +347,18 @@ namespace KadOzenka.Dal.ExpressScore
                         .Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)] : null;
                     var cellCalcValue = mainWorkSheet.Rows[row.Index]
                         .Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)];
-                    var cellValueFrom = mainWorkSheet.Rows[row.Index]
-	                    .Cells[columnNames.IndexOf(fileImportInfo.ValueFromColumnName)];
-                    var cellValueTo = mainWorkSheet.Rows[row.Index]
-	                    .Cells[columnNames.IndexOf(fileImportInfo.ValueToColumnName)];
+                    var cellValueFrom = fileImportInfo.UseInterval ? mainWorkSheet.Rows[row.Index]
+	                    .Cells[columnNames.IndexOf(fileImportInfo.ValueFromColumnName)] : null;
+                    var cellValueTo = fileImportInfo.UseInterval ? mainWorkSheet.Rows[row.Index]
+	                    .Cells[columnNames.IndexOf(fileImportInfo.ValueToColumnName)] : null;
 
                     if (!cellCalcValue.Value.TryParseToDecimal(out var calcValue))
                     {
                         throw new Exception(
                             $"Значение '{cellCalcValue.Value}' не может быть приведено к типу '{ReferenceItemCodeType.Number.GetEnumDescription()}'");
                     }
+
+                    _log.Debug("Значение для расчета получено, {calcValue}", calcValue);
 
                     string valueString = null;
                     string valueFrom = null;
@@ -361,8 +369,8 @@ namespace KadOzenka.Dal.ExpressScore
                             if(!fileImportInfo.UseInterval) valueString = GetDecimalValue(cellValue?.Value).ToString(CultureInfo.InvariantCulture);
                             if (fileImportInfo.UseInterval)
                             {
-	                            valueFrom = GetDecimalValue(cellValueFrom.Value).ToString(CultureInfo.InvariantCulture);
-	                            valueTo = GetDecimalValue(cellValueTo.Value).ToString(CultureInfo.InvariantCulture);
+	                            valueFrom = GetDecimalValue(cellValueFrom?.Value).ToString(CultureInfo.InvariantCulture);
+	                            valueTo = GetDecimalValue(cellValueTo?.Value).ToString(CultureInfo.InvariantCulture);
                             }
 
 	                        break;
@@ -373,8 +381,8 @@ namespace KadOzenka.Dal.ExpressScore
 	                        if (!fileImportInfo.UseInterval) valueString = GetDateValue(cellValue?.Value).ToString(CultureInfo.CurrentCulture);
 	                        if (fileImportInfo.UseInterval)
 	                        {
-		                        valueFrom = GetDateValue(cellValueFrom.Value).ToShortDateString();
-		                        valueTo = GetDateValue(cellValueTo.Value).ToShortDateString();
+		                        valueFrom = GetDateValue(cellValueFrom?.Value).ToShortDateString();
+		                        valueTo = GetDateValue(cellValueTo?.Value).ToShortDateString();
 	                        }
                             break;
                     }
@@ -395,12 +403,13 @@ namespace KadOzenka.Dal.ExpressScore
 
 					if (obj != null)
                     {
-                        obj.CalculationValue = calcValue;
+	                    obj.CalculationValue = calcValue;
                         obj.CommonValue = cellCommonValue?.Value?.ToString();
                         //lock (locked)
                         {
                             obj.Save();
                         }
+                        _log.Debug("Значение было обновлено, т.к в справочнике {refName} уже было расчетное значение для {valueString}", reference.Name, valueString );
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
                     }
                     else
@@ -417,6 +426,7 @@ namespace KadOzenka.Dal.ExpressScore
                                 ValueTo = valueTo
 							}.Save();
 						}
+						_log.Debug("Значение было создано {valueString}", valueString);
                         mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
                     }
 					lock(locked)
@@ -426,6 +436,7 @@ namespace KadOzenka.Dal.ExpressScore
                 }
                 catch (Exception ex)
                 {
+                    _log.Error(ex.Message);
                     mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {ex.Message}");
                     for (int i = 0; i < maxColumns; i++)
                     {
