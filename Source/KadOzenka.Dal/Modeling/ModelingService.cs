@@ -570,7 +570,7 @@ namespace KadOzenka.Dal.Modeling
 							long.TryParse(attributeIdStr, out var attributeId);
 							
 							var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
-							//if (coefficientFromDb == null)
+							if (coefficientFromDb == null)
 								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут с ИД {column.AttributeStr}");
 
 							if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
