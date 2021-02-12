@@ -1,17 +1,10 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.ModelingObjectsModel
 
-
-<!-- Модальное окно для загрузки Excel-файла -->
-<div id="downloadFilesModalWnd" style="display: none; padding: 2%;">
-    <div class="form-horizontal col-sm-12">
-        <div class="form-group">
-            <div class="col-sm-12" style="padding-top: 5%;">
-                <input name="file" id="file" type="file" aria-label="files" accept=".xls,.xlsx" />
-            </div>
-        </div>
-    </div>
+<!-- Модальное окно для обновления объектов -->
+<div id="constructorModal" style="display: none;">
 </div>
+
 
 
 <!-- Модальное окно с результатами исключения объектов из расчета после загрузки Excel-файла -->
@@ -116,7 +109,7 @@
         <div id="gridWithPreviousTourCoefficients"></div>
     </div>*@
     <div class="form-group">
-        <a class="k-button k-button-icon" id="uploadBtn" style="width:250px;">
+        <a class="k-button k-button-icon" id="updateBtn" style="width:250px;">
             <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
             Обновить объекты
         </a>
@@ -195,7 +188,7 @@
         initFileUploader();
         //initFactorsGrid();
 
-        $('#uploadBtn').on('click', uploadObjects);
+        $('#updateBtn').on('click', showModelObjectsUpdatingConstructor);
     });
 
 
@@ -239,7 +232,7 @@
             url: '@Url.Action("GetObjectsForModel", "Modeling", new {modelId = Model.Id})',
             success: function (result) {
                 if (!result.successfulModels || result.successfulModels.length == 0) {
-                    $("#uploadBtn").addClass('k-state-disabled');
+                    $("#updateBtn").addClass('k-state-disabled');
                 }
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
@@ -797,12 +790,24 @@
     }
 
 
-    function uploadObjects() {
-        var upload = $("#file").data("kendoUpload");
-        upload.clearAllFiles();
-        upload.removeAllFiles();
-        var modal = $("#downloadFilesModalWnd");
-        ShowModal(modal, '25%', '14%', "Обновление объектов модели (признаки и факторы)");
+    function showModelObjectsUpdatingConstructor() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ModelObjectsUpdatingConstructor", "Modeling")',
+            data: { modelId: '@Model.Id' },
+            success: function (response) {
+                $("#constructorModal").html(response);
+                var modal = $("#constructorModal");
+                ShowModal(modal, '70%', '70%', "Обновление объектов модели");
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
 
@@ -841,7 +846,7 @@
                 } else {
                     Common.ShowError("Не удалось загрузить выбранный файл");
                 }
-                var modal = $('#downloadFilesModalWnd');
+                var modal = $('#constructorModal');
                 modal.data("kendoWindow").close();
             },
             error: function (e) {

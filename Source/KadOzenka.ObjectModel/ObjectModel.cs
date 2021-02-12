@@ -25576,7 +25576,7 @@ namespace ObjectModel.Modeling
 
         private decimal _price;
         /// <summary>
-        /// 70200300 Цена объекта (PRICE)
+        /// 70200300 Цена ОА (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200300)]
         public decimal Price
@@ -25596,7 +25596,7 @@ namespace ObjectModel.Modeling
 
         private bool? _isexcluded;
         /// <summary>
-        /// 70200400 Исключение объекта из расчета (IS_EXCLUDED)
+        /// 70200400 Признак исключения из расчета (IS_EXCLUDED)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200400)]
         public bool? IsExcluded
@@ -25656,7 +25656,7 @@ namespace ObjectModel.Modeling
 
         private bool? _isfortraining;
         /// <summary>
-        /// 70200700 Признак: используется ли объект для обучения модели (IS_FOR_TRAINING)
+        /// 70200700 Признак выбора аналога в обучающую модель (IS_FOR_TRAINING)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200700)]
         public bool? IsForTraining
@@ -25676,7 +25676,7 @@ namespace ObjectModel.Modeling
 
         private decimal? _pricefrommodel;
         /// <summary>
-        /// 70200800 Цена объекта, спрогнозированная моделью (PRICE_FROM_MODEL)
+        /// 70200800 Спрогнозированная цена (PRICE_FROM_MODEL)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200800)]
         public decimal? PriceFromModel
@@ -25696,7 +25696,7 @@ namespace ObjectModel.Modeling
 
         private bool? _isforcontrol;
         /// <summary>
-        /// 70200900 Признак: используется ли объект для контрольной выборки модели (IS_FOR_CONTROL)
+        /// 70200900 Признак выбора аналога в контрольную модель (IS_FOR_CONTROL)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200900)]
         public bool? IsForControl

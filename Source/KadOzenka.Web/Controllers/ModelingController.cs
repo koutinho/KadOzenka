@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
 using System.Threading;
+using Core.Register.RegisterEntities;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
@@ -43,6 +44,7 @@ using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.Shared;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Ko;
 using ObjectModel.Modeling;
@@ -1031,33 +1033,107 @@ namespace KadOzenka.Web.Controllers
                 $"Объекты модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public IActionResult ModelObjectsUpdatingConstructor(long modelId)
+        {
+	        var register = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
+            var registerInfo = new
+            {
+                Description = register.Description,
+                AttributeId = register.Id
+            };
+
+            var source = new List<object> { registerInfo };
+            var exceptions = new List<long>
+            {
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectId),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitId),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code)
+            };
+
+            RegisterCache.RegisterAttributes.Values
+                .Where(x => x.RegisterId == register.Id && !exceptions.Contains(x.Id))
+                .OrderBy(x => x.Name)
+                .ForEach(x =>
+                {
+                    source.Add(new
+                    {
+                        Description = x.Name,
+                        AttributeId = x.Id,
+                        ParentId = register.Id
+                    });
+                });
+
+            var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+            attributes.ForEach(x =>
+            {
+                if (x.IsNormalized)
+                {
+                    source.Add(new
+                    {
+                        Description = $"{x.AttributeName} (значение)",
+                        AttributeId = $"{x.AttributeId}_1",
+                        ParentId = register.Id
+                    });
+                    source.Add(new
+                    {
+                        Description = $"{x.AttributeName} (коэффициент)",
+                        AttributeId = $"{x.AttributeId}_2",
+                        ParentId = register.Id
+                    });
+                }
+                else
+                {
+                    source.Add(new
+                    {
+                        Description = x.AttributeName,
+                        AttributeId = x.AttributeId,
+                        ParentId = register.Id
+                    });
+                }
+            });
+
+            ViewBag.Attributes = source;
+
+            return PartialView();
+        }
+
+
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult UpdateModelObjects(long modelId, IFormFile file)
+        public ActionResult UpdateModelObjects(ModelingObjectsUpdatingModel model)
         {
-            if (file == null)
-                throw new Exception("Не выбран файл");
+            //if (file == null)
+            //    throw new Exception("Не выбран файл");
 
-            ExcelFile excelFile;
-            using (var stream = file.OpenReadStream())
-            {
-                excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-            }
+            //ExcelFile excelFile;
+            //using (var stream = file.OpenReadStream())
+            //{
+            //    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+            //}
             
-            var updateResult = ModelingService.UpdateModelObjects(modelId, excelFile);
+            //var updateResult = ModelingService.UpdateModelObjects(modelId, excelFile);
             
-            var fileName = string.Empty;
-            if (updateResult.File != null)
-            {
-	            fileName = "Не найденные объекты.xlsx";
-	            HttpContext.Session.Set(fileName, updateResult.File.ToByteArray());
-            }
+            //var fileName = string.Empty;
+            //if (updateResult.File != null)
+            //{
+	           // fileName = "Не найденные объекты.xlsx";
+	           // HttpContext.Session.Set(fileName, updateResult.File.ToByteArray());
+            //}
 
-            return Content(JsonConvert.SerializeObject(new
-            {
-	            updateResult.TotalCount, updateResult.UpdatedObjectsCount, updateResult.UnchangedObjectsCount,
-	            updateResult.ErrorObjectsCount, updateResult.ErrorRowIndexes, fileName
-            }), "application/json");
+            //return Content(JsonConvert.SerializeObject(new
+            //{
+	           // updateResult.TotalCount, updateResult.UpdatedObjectsCount, updateResult.UnchangedObjectsCount,
+	           // updateResult.ErrorObjectsCount, updateResult.ErrorRowIndexes, fileName
+            //}), "application/json");
+
+            return Ok();
         }
 
         #endregion

@@ -460,7 +460,7 @@ namespace KadOzenka.Dal.Modeling
             columnHeaders[IdColumnIndex] = "ИД";
             columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
             columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
-            columnHeaders[IsExcludedColumnIndex] = "Исключен из расчета";
+            columnHeaders[IsExcludedColumnIndex] = "Признак исключения из расчета";
             columnHeaders[CadastralNumberColumnIndex] = "Кадастровый номер";
             columnHeaders[ObjectTypeColumnIndex] = "Тип объекта";
             columnHeaders[PriceColumnIndex] = "Цена";
