@@ -23,6 +23,8 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.ErrorManagment;
+using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
 using Microsoft.Practices.ObjectBuilder2;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
@@ -525,88 +527,76 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-		public Stream UpdateModelObjects(long modelId, List<ColumnToAttributeMapping> columnsMapping, ExcelFile file)
+        public Stream UpdateModelObjects(long modelId, ExcelFile file, List<ColumnToAttributeMapping> columnsMapping)
 		{
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
-			var maxRowIndex = DataExportCommon.GetLastUsedRowIndex(sheet);
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
-			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
-			var columnsMappingWithoutPrimaryKey = columnsMapping.Where(x =>
-				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
+			var objectsFromExcel = GetInfoFromFile(sheet, columnsMapping);
 
-			var rows = sheet.Rows;
-			for (var i = 1; i <= maxRowIndex; i++)
-			{
-				var cells = rows[i].Cells;
-
-				var columnsWithValues = new List<Column>();
-				columnsMappingWithoutPrimaryKey.ForEach(x =>
-				{
-					long.TryParse(x.AttributeId, out var attributeNumber);
-					columnsWithValues.Add(new Column
-					{
-						AttributeStr = x.AttributeId, 
-						AttributeId = attributeNumber,
-						ValueToUpdate = cells[x.ColumnIndex].Value
-					});
-				});
-
-				modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
-				{
-					Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
-					RowIndexInFile = i,
-					Columns = columnsWithValues
-				});
-			}
-
-			var modelObjectsIds = modelObjectsFromExcel.Select(x => x.Id).ToList();
+			var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
 			if (modelObjectsIds.Count == 0)
 				throw new Exception("В файле не было найдено ИД объектов");
 
-			var modelObjectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id)).Select(x => new
-			{
-				x.IsForTraining,
-				x.IsForControl,
-				x.IsExcluded,
-				x.Price,
-				x.PriceFromModel,
-				x.Coefficients
-			}).Execute();
+			var objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
+				.Select(x => x.Coefficients).Execute();
 
-			foreach (var modelObjectFromExcel in modelObjectsFromExcel)
+			foreach (var objectFromExcel in objectsFromExcel)
 			{
-				var modelObjectFromDb = modelObjectsFromDb.FirstOrDefault(o => o.Id == modelObjectFromExcel.Id);
-				if (modelObjectFromDb == null)
-					continue;
-
-				var coefficientsFromDb = modelObjectFromDb.DeserializeCoefficient();
-				var registerObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)modelObjectFromExcel.Id.Value);
-				modelObjectFromExcel.Columns.ForEach(column =>
+				try
 				{
-					if (column.AttributeId != 0)
+					var objectFromDb = objectsFromDb.FirstOrDefault(o => o.Id == objectFromExcel.Id);
+					if (objectFromDb == null)
 					{
-						registerObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
+						ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex, $"Объект с ИД {objectFromExcel.Id} не найден в БД");
+						continue;
 					}
-					else
+
+					var coefficientsFromDb = objectFromDb.DeserializeCoefficient();
+					
+					var omModelToMarketObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)objectFromDb.Id);
+					objectFromExcel.Columns.ForEach(column =>
 					{
-						var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
-						var attributeIdStr = match.Groups[0].Value;
-						long.TryParse(attributeIdStr, out var attributeId);
-						var fromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
-						if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
+						if (column.AttributeId != 0)
 						{
-							fromDb.Value = column.ValueToUpdate.ParseToStringNullable();
+							omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
 						}
 						else
 						{
-							fromDb.Coefficient = column.ValueToUpdate.ParseToLongNullable();
+							//из атрибута вида ххх_1 вытаскиваем ххх
+							var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
+							var attributeIdStr = match.Groups[0].Value;
+							long.TryParse(attributeIdStr, out var attributeId);
+							
+							var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
+							//if (coefficientFromDb == null)
+								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут с ИД {column.AttributeStr}");
+
+							if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
+							{
+								coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
+							}
+							else
+							{
+								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToLongNullable();
+							}
+
+							omModelToMarketObject.SetAttributeValue(
+								(int)OMModelToMarketObjects.GetColumnAttributeId(c => c.Coefficients),
+								coefficientsFromDb.SerializeCoefficient());
 						}
-						registerObject.SetAttributeValue((int)OMModelToMarketObjects.GetColumnAttributeId(c => c.Coefficients), coefficientsFromDb.SerializeCoefficient());
-					}
-				});
-				RegisterStorage.Save(registerObject);
+					});
+
+					RegisterStorage.Save(omModelToMarketObject);
+					sheet.Rows[objectFromExcel.RowIndexInFile].Cells[maxColumnIndex].SetValue("Обработано");
+				}
+				catch (Exception ex)
+				{
+					long errorId = ErrorManager.LogError(ex);
+					ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
+						$"Ошибка: {ex.Message} (подробно в журнале №{errorId})");
+				}
 			}
 
 			var stream = new MemoryStream();
@@ -616,7 +606,7 @@ namespace KadOzenka.Dal.Modeling
 			return stream;
         }
 
-		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
+        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
         {
 	        try
@@ -670,6 +660,42 @@ namespace KadOzenka.Dal.Modeling
 
 
 		#region Support Methods
+
+		private List<ModelObjectsFromExcelData> GetInfoFromFile(ExcelWorksheet sheet, List<ColumnToAttributeMapping> columnsMapping)
+		{
+			var rows = sheet.Rows;
+			var maxRowIndex = DataExportCommon.GetLastUsedRowIndex(sheet);
+			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
+
+			var columnsMappingWithoutPrimaryKey = columnsMapping.Where(x =>
+				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
+
+			for (var i = 1; i <= maxRowIndex; i++)
+			{
+				var cells = rows[i].Cells;
+
+				var columnsWithValues = new List<Column>();
+				columnsMappingWithoutPrimaryKey.ForEach(x =>
+				{
+					long.TryParse(x.AttributeId, out var attributeNumber);
+					columnsWithValues.Add(new Column
+					{
+						AttributeStr = x.AttributeId,
+						AttributeId = attributeNumber,
+						ValueToUpdate = cells[x.ColumnIndex].Value
+					});
+				});
+
+				modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
+				{
+					Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
+					RowIndexInFile = i,
+					Columns = columnsWithValues
+				});
+			}
+
+			return modelObjectsFromExcel;
+		}
 
 		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(long modelId)
 		{

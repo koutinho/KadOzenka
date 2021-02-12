@@ -1111,10 +1111,11 @@ namespace KadOzenka.Web.Controllers
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
 
-			var resultStream = ModelingService.UpdateModelObjects(model.ModelId, model.Map(), excelFile);
-			HttpContext.Session.Set(model.File.Name, resultStream.ToByteArray());
+			var resultStream = ModelingService.UpdateModelObjects(model.ModelId, excelFile, model.Map());
+			var fileName = model.File.FileName;
+			HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
-			return Json(new {fileName = model.File.FileName});
+			return Json(new {fileName = fileName});
 		}
 
         #endregion
