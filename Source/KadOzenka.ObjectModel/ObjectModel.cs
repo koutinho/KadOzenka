@@ -10261,6 +10261,153 @@ namespace ObjectModel.Ko
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 223 Картинки с результатами обучения модели (ko_model_training_result_images)
+    /// </summary>
+    [RegisterInfo(RegisterID = 223)]
+    [Serializable]
+    public partial class OMModelTrainingResultImages : OMBaseClass<OMModelTrainingResultImages>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 22300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 22300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _modelid;
+        /// <summary>
+        /// 22300200 ИД модели (model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300200)]
+        public long ModelId
+        {
+            get
+            {
+                CheckPropertyInited("ModelId");
+                return _modelid;
+            }
+            set
+            {
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
+            }
+        }
+
+
+        private byte[] _scatter;
+        /// <summary>
+        /// 22300300 Разброс (scatter)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300300)]
+        public byte[] Scatter
+        {
+            get
+            {
+                CheckPropertyInited("Scatter");
+                return _scatter;
+            }
+            set
+            {
+                _scatter = value;
+                NotifyPropertyChanged("Scatter");
+            }
+        }
+
+
+        private string _algorithmtype;
+        /// <summary>
+        /// 22300400 Алгоритм расчета ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300400)]
+        public string AlgorithmType
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType");
+                return _algorithmtype;
+            }
+            set
+            {
+                _algorithmtype = value;
+                NotifyPropertyChanged("AlgorithmType");
+            }
+        }
+
+
+        private KoAlgoritmType _algorithmtype_Code;
+        /// <summary>
+        /// 22300400 Алгоритм расчета (справочный код) (algorithm_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300400)]
+        public KoAlgoritmType AlgorithmType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType_Code");
+                return this._algorithmtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_algorithmtype))
+                    {
+                         _algorithmtype = descr;
+                    }
+                }
+                else
+                {
+                     _algorithmtype = descr;
+                }
+
+                this._algorithmtype_Code = value;
+                NotifyPropertyChanged("AlgorithmType");
+                NotifyPropertyChanged("AlgorithmType_Code");
+            }
+        }
+
+
+        private byte[] _correlation;
+        /// <summary>
+        /// 22300500 Корреляция (correlation)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300500)]
+        public byte[] Correlation
+        {
+            get
+            {
+                CheckPropertyInited("Correlation");
+                return _correlation;
+            }
+            set
+            {
+                _correlation = value;
+                NotifyPropertyChanged("Correlation");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]

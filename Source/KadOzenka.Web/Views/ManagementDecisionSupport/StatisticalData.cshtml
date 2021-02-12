@@ -27,8 +27,10 @@
     </div>
 </div>
 
+
 <div class="form-horizontal col-sm-12" style="height: 100%; padding: 1%">
     @Html.RenderHelpButton()
+
 <div class="form-group">
         <div class="col-sm-3 tourLabel">
             @Html.CustomLabelFor("Тур оценки")
@@ -195,7 +197,10 @@
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.GeneralizedIndicators.GetEnumDescription()).Value((long)StatisticalDataType.GeneralizedIndicators))
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription()).Value((long)StatisticalDataType.CadastralCostDeterminationResults).Enable(true))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                .Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription())
+                .Value((long)StatisticalDataType.CadastralCostDeterminationResults)
+                .HtmlAttributes(new { @class = "cadastralCostDeterminationResults" }))
         </div>
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.InfoAboutCadastralCostDeterminingMethod.GetEnumDescription()).Value((long)StatisticalDataType.InfoAboutCadastralCostDeterminingMethod).Enable(true))
@@ -293,7 +298,6 @@
     <div id="reportViewerWindow"></div>
 </div>
 
-
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js" charset="utf-8"></script>
 <script type="text/javascript">
@@ -334,6 +338,7 @@
 
         $('input[type="radio"][name="ReportType"]').change(onReportTypeChanged);
         $(".pricingFactorsCompositionForPreviousTours").click(onCompositionForPreviousToursClick);
+        $(".cadastralCostDeterminationResults").click(onCadastralCostDeterminationResultsClick);
     });
 
 
@@ -347,6 +352,7 @@
         var currentReportType = $('input[type="radio"][name="ReportType"]:checked').val();
         if (currentReportType != '@((long)StatisticalDataType.AdditionalFormsMarketDataInfo)' &&
             currentReportType != '@((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)' &&
+            currentReportType != '@((long)StatisticalDataType.CadastralCostDeterminationResults)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsOks)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsZu)') {
             var value = this.value();
@@ -407,6 +413,9 @@
     function enableFormButton() {
         $('#showViewer').attr('disabled', false);
     }
+    function disableFormButton() {
+        $('#showViewer').attr('disabled', true);
+    }
 
     function enableTaskFilter(enabled) {
         $("#TaskFilter").data('kendoMultiSelect').enable(enabled);
@@ -443,16 +452,28 @@
             enableTaskFilter(true);
             enableTour(true);
         }
+        if (this.value == '@((long)StatisticalDataType.CadastralCostDeterminationResults)') {
+            disableFormButton();
+        }
     }
 
 
     function onCompositionForPreviousToursClick() {
-        var tourId = getSelectedTourId();
+        getViewWithAdditionalParameters('@Url.Action("PreviousToursReportConfiguration", "ManagementDecisionSupport")');
+    }
+    function onCadastralCostDeterminationResultsClick() {
+        getViewWithAdditionalParameters('@Url.Action("CadastralCostDeterminationResultsConfiguration", "ManagementDecisionSupport")');
+    }
+
+    function getViewWithAdditionalParameters(url) {
+        var formObject = Common.Functions.FormToObject($('.form-horizontal'));
+        formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
         kendo.ui.progress($('body'), true);
         $.ajax({
-            type: 'GET',
-            url: '@Url.Action("PreviousToursReportConfiguration", "ManagementDecisionSupport")',
-            data: { lastTourId: tourId },
+            //через Get не передаются данные формы
+            type: 'POST',
+            url: url,
+            data: formObject,
             success: function (response) {
                 $("#reportsWithAdditionalConfigurationModalContent").html(response);
                 var modal = $("#reportsWithAdditionalConfigurationModal");

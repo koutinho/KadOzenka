@@ -5,6 +5,10 @@ namespace KadOzenka.Web.Models.Modeling
 {
 	public class PartialDictionaryModel : IValidatableObject
     {
+        public static string NoDictionaryIdErrorMessage => "Выберете справочник";
+        public static string EmptyDictionaryNameErrorMessage => "Наименование нового справочника не может быть пустым";
+
+
         public string ModelPrefix { get; set; }
 
         [Display(Name = "Справочник")]
@@ -25,14 +29,14 @@ namespace KadOzenka.Web.Models.Modeling
                 if (string.IsNullOrEmpty(NewDictionaryName))
                 {
                     yield return
-                        new ValidationResult(errorMessage: "Наименование нового справочника не может быть пустым",
+                        new ValidationResult(errorMessage: EmptyDictionaryNameErrorMessage,
                             memberNames: new[] { nameof(NewDictionaryName) });
                 }
             }
             else if (!DictionaryId.HasValue)
             {
                 yield return
-                    new ValidationResult(errorMessage: "Выберете справочник",
+                    new ValidationResult(errorMessage: NoDictionaryIdErrorMessage,
                         memberNames: new[] { nameof(DictionaryId) });
             }
         }

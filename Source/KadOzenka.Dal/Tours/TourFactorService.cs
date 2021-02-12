@@ -9,6 +9,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours.Dto;
 using ObjectModel.Core.Register;
@@ -113,6 +114,8 @@ namespace KadOzenka.Dal.Tours
                 RegisterService.CreateIdColumnForRegister(registerId);
 
                 RegisterConfigurator.CreateDbTableForRegister(registerId);
+
+                RecycleBinService.CreateDeletedTable(registerId, quantTable);
 
                 if (isStead)
                 {

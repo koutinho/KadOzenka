@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 	public class CustomReportsService
 	{
 		public static string FileStorageKey => "SaveReportPath";
-		private ZipFile _generalZipFile;
+		private readonly ZipFile _generalZipFile;
 
 
 		public CustomReportsService()
@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		}
 
 
-		public void AddFileToZip(MemoryStream stream, string fileName, string fileExtension)
+		public void AddZipFileToGeneralZipArchive(MemoryStream stream, string fileName, string fileExtension)
 		{
 			using (var currentZipFile = new ZipFile())
 			{
@@ -58,13 +58,23 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			}
 		}
 
+		public void AddExcelFileToGeneralZipArchive(MemoryStream stream, string fileName)
+		{
+			var counter = _generalZipFile.Entries.Count + 1;
+			var fullFileName = $"{fileName} №{counter}.xlsx";
+
+			_generalZipFile.AddEntry(fullFileName, stream);
+		}
+
 		public string SaveReport(string fileName)
 		{
 			if (_generalZipFile.Entries.Count == 0)
 				return string.Empty;
 
+			//внутри zip-архива может быть как другой архив, так и файл напрямую
+			var fileContainsOnlyZip = _generalZipFile.All(x => x.FileName.EndsWith(".zip"));
 			MemoryStream stream;
-			if (_generalZipFile.Entries.Count == 1)
+			if (_generalZipFile.Entries.Count == 1 && fileContainsOnlyZip)
 			{
 				var entry = _generalZipFile.Entries.ElementAt(0);
 				stream = (MemoryStream) entry.InputStream;

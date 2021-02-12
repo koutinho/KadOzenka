@@ -137,7 +137,7 @@
                 } else {
                     $("#listView").data("kendoListView").save();
                 }
-                Common.ShowMessage(response.Success);
+                Common.ShowMessage("Сохранение выполнено");
             },
             error: function (response) {
                 Common.ShowError(response.responseText);

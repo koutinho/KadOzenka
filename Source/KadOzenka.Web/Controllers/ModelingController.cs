@@ -39,6 +39,8 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
+using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
@@ -51,24 +53,27 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ModelingController : KoBaseController
 	{
-		public ModelingService ModelingService { get; set; }
+		public IModelingService ModelingService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
+        public IModelObjectsRepository ModelObjectsRepository { get; set; }
 
 
-        public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
-            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
-            ModelFactorsService modelFactorsService, GroupService groupService)
+        public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
+	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+	        ModelFactorsService modelFactorsService, GroupService groupService,
+	        IModelObjectsRepository modelObjectsRepository)
         {
-            ModelingService = modelingService;
-            TourFactorService = tourFactorService;
-            RegisterAttributeService = registerAttributeService;
-            DictionaryService = dictionaryService;
-            ModelFactorsService = modelFactorsService;
-            GroupService = groupService;
+	        ModelingService = modelingService;
+	        TourFactorService = tourFactorService;
+	        RegisterAttributeService = registerAttributeService;
+	        DictionaryService = dictionaryService;
+	        ModelFactorsService = modelFactorsService;
+	        GroupService = groupService;
+	        ModelObjectsRepository = modelObjectsRepository;
         }
 
 
@@ -155,7 +160,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
-			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+			var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
 			model.IsReadOnly = isReadOnly;
 
@@ -282,15 +287,16 @@ namespace KadOzenka.Web.Controllers
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
+			var inputParameters = new ObjectFormationInputParameters {ModelId = modelId};
 			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
 			//	UserId = SRDSession.GetCurrentUserId(),
-			//	ObjectId = modelId
+			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
-			ObjectFormationForModelingProcess.AddProcessToQueue(modelId);
+			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
 			return Ok();
 		}
@@ -861,50 +867,48 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult LinearModelDetails(long modelId)
+        public ActionResult ModelTrainingResult(long modelId, KoAlgoritmType type)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var trainingResult = ModelingService.GetTrainingResult(modelId, type);
 
-	        var trainingResult = GetTrainingDetails(model.LinearTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
+	        var model = TrainingDetailsModel.ToModel(trainingResult);
 
-	        return View("ModelTrainingResult", details);
+	        return View(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult UpdateTrainingQualityInfo(TrainingDetailsModel model)
+        {
+	        var dto = model.TrainingQualityInfoModel.FromModel();
+	        
+	        ModelingService.UpdateTrainingQualityInfo(model.ModelId, model.Type, dto);
+
+	        return Ok();
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ExponentialModelDetails(long modelId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public JsonResult ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var fileStream = ModelingService.ExportQualityInfoToExcel(modelId, type);
 
-	        var trainingResult = GetTrainingDetails(model.ExponentialTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
+	        HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
-	        return View("ModelTrainingResult", details);
+	        return Json(new { FileName = modelId.ToString() });
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult MultiplicativeModelDetails(long modelId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public IActionResult DownloadTrainingResultFile(string fileName, string modelName)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+	        if (fileInfo == null)
+		        return new EmptyResult();
 
-	        var trainingResult = GetTrainingDetails(model.MultiplicativeTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
-
-	        return View("ModelTrainingResult", details);
+	        return File(fileInfo.FileContent, fileInfo.ContentType,
+		        $"Результаты обучения модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
         }
-
-        #region Support Methods
-
-        private TrainingResponse GetTrainingDetails(string trainingResult)
-        {
-	        return string.IsNullOrWhiteSpace(trainingResult)
-		        ? null
-		        : JsonConvert.DeserializeObject<TrainingResponse>(trainingResult);
-        }
-
-        #endregion
 
         #endregion
 

@@ -5,25 +5,31 @@ using System.Transactions;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
-using KadOzenka.Dal.Oks;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Dto;
+using KadOzenka.Dal.Tours.Exceptions;
+using KadOzenka.Dal.Tours.Repositories;
+using KadOzenka.Dal.Tours.Resources;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tours
 {
-    public class TourService
-    {
+	public class TourService : ITourService
+	{
         private TourFactorService TourFactorService { get; set; }
         private GroupService GroupService { get; set; }
         private RecycleBinService RecycleBinService { get; }
+        private ITourRepository TourRepository { get; }
 
-        public TourService(TourFactorService tourFactorService, GroupService groupService, RecycleBinService recycleBinService)
+        public TourService(TourFactorService tourFactorService, GroupService groupService,
+	        RecycleBinService recycleBinService, ITourRepository tourRepository)
         {
             TourFactorService = tourFactorService;
             GroupService = groupService;
             RecycleBinService = recycleBinService;
+	        TourRepository = tourRepository;
         }
 
         public TourDto GetTourById(long? tourId)
@@ -43,37 +49,24 @@ namespace KadOzenka.Dal.Tours
 
         public int AddTour(TourDto tourDto)
         {
-            ValidateTourYear(tourDto);
-            var existedTour = OMTour.Where(x => x.Year == tourDto.Year).Select(x => x.Id).ExecuteFirstOrDefault();
-            if (existedTour != null)
-                throw new Exception($"Тур с годом '{tourDto.Year}' уже существует");
+            ValidateTour(tourDto);
 
-            int id;
-            using (var ts = new TransactionScope())
+            var tour = new OMTour
             {
-                id = new OMTour
-                {
-                    Year = tourDto.Year.Value
-                }.Save();
-                ts.Complete();
-            }
+	            Year = tourDto.Year.Value
+            };
 
-            return id;
+            return TourRepository.Save(tour);
         }
 
         public int UpdateTour(TourDto tourDto)
         {
-            ValidateTourYear(tourDto);
+            ValidateTour(tourDto);
 
             var tour = GetTourByIdInternal(tourDto.Id);
 
-            int id;
-            using (var ts = new TransactionScope())
-            {
-                tour.Year = tourDto.Year;
-                id = tour.Save();
-                ts.Complete();
-            }
+            tour.Year = tourDto.Year;
+            var id = tour.Save();
 
             return id;
         }
@@ -154,13 +147,14 @@ namespace KadOzenka.Dal.Tours
 
         #region Support Methods
 
-        private  void ValidateTourYear(TourDto tourDto)
+        private void ValidateTour(TourDto tourDto)
         {
-            if (tourDto.Year == null || tourDto.Year.Value == 0)
-                throw new Exception("Не указан год при создании Тура");
+            if (tourDto.Year.GetValueOrDefault() == 0)
+                throw new Exception(Messages.EmptyTourYear);
 
-            if (!int.TryParse(tourDto.Year.Value.ToString(), out _))
-                throw new Exception("Введенное число не может быть преобразовано в год");
+            var isTourWithTheSameYearExists = TourRepository.IsExists(x => x.Year == tourDto.Year && x.Id != tourDto.Id);
+            if (isTourWithTheSameYearExists)
+	            throw new TourAlreadyExistsException($"Тур с годом '{tourDto.Year}' уже существует");
         }
 
         private OMTour GetTourByIdInternal(long? tourId)
@@ -168,7 +162,7 @@ namespace KadOzenka.Dal.Tours
             if (tourId == null)
                 throw new Exception("Не передан идентификатор Тура для поиска");
 
-            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
+            var tour = TourRepository.GetById(tourId.Value, null);
             if (tour == null)
                 throw new Exception($"Не найден Тур с id='{tourId}'");
 

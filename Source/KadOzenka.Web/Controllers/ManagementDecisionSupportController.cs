@@ -5,14 +5,11 @@ using System.Threading;
 using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
-using Core.SRD;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
@@ -20,7 +17,6 @@ using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRe
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest.Filter;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
-using KadOzenka.Dal.MapModeling;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
@@ -35,6 +31,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
+using ReportLongProcessInputParameters = KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities.ReportLongProcessInputParameters;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -458,7 +455,6 @@ namespace KadOzenka.Web.Controllers
 
 			if (model.IsForBackground)
 			{
-				//пока таких отчетов только 2, поэтому нет унификации
 				var parameters = new ReportLongProcessInputParameters
 				{
 					TaskIds = model.TaskFilter.ToList()
@@ -501,9 +497,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public ActionResult PreviousToursReportConfiguration(long? lastTourId)
+        public ActionResult PreviousToursReportConfiguration(StatisticalDataModel generalModel)
         {
-            var lastTour = _tourService.GetTourById(lastTourId);
+            var lastTour = _tourService.GetTourById(generalModel.TourId);
             var previousTours = OMTour.Where(x => x.Year <= lastTour.Year).OrderBy(x => x.Year).SelectAll().Execute();
 
             var model = new PreviousToursConfigurationModel
@@ -551,7 +547,44 @@ namespace KadOzenka.Web.Controllers
             return GetStatisticalDataReportUrl(model.Map());
         }
 
-        #endregion
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult CadastralCostDeterminationResultsConfiguration(StatisticalDataModel generalModel)
+        {
+	        var model = new CadastralCostDeterminationResultsModel
+			{
+		       TaskIds = generalModel.TaskFilter
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/CadastralCostDeterminationResultsConfiguration.cshtml", model);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessCadastralCostDeterminationResultsReport(CadastralCostDeterminationResultsModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+			var inputParameters = new Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities.ReportLongProcessInputParameters
+			{
+				TaskIds = model.TaskIds?.ToList(),
+				Type = model.ReportType
+			};
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess.AddProcessToQueue(inputParameters);
+
+			return Ok();
+        }
+
+		#endregion
 
 		#endregion StatisticalData
 

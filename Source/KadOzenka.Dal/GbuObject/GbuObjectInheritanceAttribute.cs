@@ -131,7 +131,7 @@ namespace KadOzenka.Dal.GbuObject
                             StringValue = pattrib.StringValue,
                         };
 
-                        DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
+                        GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
 
                         lock (locked)
                         {

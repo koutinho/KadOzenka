@@ -167,6 +167,30 @@ namespace ObjectModel.KO
                 }
             }
         }
+        //Используется при импорте задания на оценку для уменьшения числа запросов в базу
+        public HistoryUnit(OMUnit unit, List<OMTask> prevTourUnitTasks, OMTour tour)
+        {
+	        Unit = unit;
+	        IsBad = (Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorInData || Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorTechnical);
+	        IsActual = false;
+	        Task = prevTourUnitTasks.FirstOrDefault(x => x.Id == unit.TaskId);
+	        if (Task != null)
+	        {
+                //Документ при импрорте не используется
+		        //long? id_Indoc = Task.DocumentId;
+		        //if (id_Indoc != null)
+		        //{
+			       // InputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Indoc.Value).SelectAll().ExecuteFirstOrDefault();
+		        //}
+		        //long? id_Outdoc = unit.ResponseDocId;
+		        //if (id_Outdoc != null)
+		        //{
+			       // OutputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Outdoc.Value).SelectAll().ExecuteFirstOrDefault();
+		        //}
+
+		        Tour = tour;
+	        }
+        }
         int IComparer<HistoryUnit>.Compare(HistoryUnit unit1, HistoryUnit unit2)
         {
             if (unit1.Tour.Year.ParseToLong() == unit2.Tour.Year.ParseToLong())
@@ -310,6 +334,63 @@ namespace ObjectModel.KO
             }
             return Items;
         }
+
+        //Используется при импорте задания на оценку для уменьшения числа запросов в базу
+        public static List<HistoryUnit> GetPrevHistoryTour(long currentUnitId, List<OMUnit> prevUnits, List<OMTask> prevTourUnitTasks, OMTour tour)
+        {
+            List<HistoryUnit> Items = new List<HistoryUnit>();
+            List<OMUnit> units = prevUnits.Where(x => x.Id != currentUnitId).ToList();
+            foreach (OMUnit unit in units)
+            {
+                Items.Add(new HistoryUnit(unit, prevTourUnitTasks, tour));
+            }
+
+            if (Items.Count > 0)
+            {
+                Items.Sort(Items[0]);
+
+                int indexActual = -1;
+                int startIndex = -1;
+                for (int i = Items.Count - 1; i >= 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost != null)
+                    {
+                        if (Items[i].Unit.CadastralCost.Value > 0 && !Items[i].IsBad)
+                        {
+                            indexActual = i;
+                            startIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (indexActual >= 0)
+                {
+                    decimal cost = Items[indexActual].Unit.CadastralCost.Value;
+                    for (int i = startIndex - 1; i >= 0; i--)
+                    {
+                        if (Items[i].Unit.CadastralCost != null)
+                        {
+                            if (Items[i].Unit.CadastralCost.Value == cost && !Items[i].IsBad)
+                            {
+                                indexActual = i;
+                            }
+                            else
+                            if (Items[i].IsBad)
+                            {
+                            }
+                            else break;
+                        }
+                        else
+                            break;
+                    }
+                    if (indexActual >= 0)
+                        Items[indexActual].IsActual = true;
+                }
+            }
+            return Items;
+        }
+
         public static HistoryUnit GetPrevUnit(List<HistoryUnit> items)
         {
             if (items.Count > 0)
@@ -550,20 +631,6 @@ namespace ObjectModel.KO
     {
 	    public string InternalName => $"model_{Id}";
 
-	    public OMModel Copy()
-	    {
-            return new OMModel
-            {
-                AlgoritmType_Code = AlgoritmType_Code,
-                Formula = Formula,
-                Description = Description,
-                Name = Name,
-                GroupId = GroupId,
-                IsOksObjectType = IsOksObjectType,
-                Type_Code = Type_Code
-            };
-	    }
-
 	    public decimal? GetA0()
 	    {
 		    switch (AlgoritmType_Code)
@@ -593,6 +660,21 @@ namespace ObjectModel.KO
 
 		    return null;
 	    }
+
+        public string GetTrainingResult(KoAlgoritmType type)
+		{
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					return ExponentialTrainingResult;
+				case KoAlgoritmType.Line:
+					return LinearTrainingResult;
+				case KoAlgoritmType.Multi:
+					return MultiplicativeTrainingResult;
+				default:
+					throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
+			}
+		}
 
         public string GetFormulaFull(bool upks)
         {
@@ -740,6 +822,7 @@ namespace ObjectModel.KO
             return res;
         }
     }
+
     public partial class OMModelFactor
     {
         static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
@@ -3259,4 +3342,49 @@ namespace ObjectModel.KO
 	        UnloadType = unloadType;
         }
     }
+}
+
+
+namespace ObjectModel.Modeling
+{
+	public partial class OMModelToMarketObjects
+	{
+		public List<CoefficientForObject> DeserializeCoefficient()
+		{
+            if(string.IsNullOrWhiteSpace(Coefficients))
+                return new List<CoefficientForObject>();
+
+            return JsonConvert.DeserializeObject<List<CoefficientForObject>>(Coefficients);
+		}
+	}
+
+
+	
+
+
+	public class CoefficientForObject
+	{
+		public long AttributeId { get; set; }
+		public decimal? Coefficient { get; set; }
+		public string Value { get; set; }
+
+		public CoefficientForObject(long attributeId)
+		{
+			AttributeId = attributeId;
+		}
+
+		//для сериализации нужен конструктор без параметров
+		protected CoefficientForObject()
+		{
+
+		}
+	}
+
+	public static class CoefficientExtensions
+	{
+		public static string SerializeCoefficient(this List<CoefficientForObject> coefficients)
+		{
+			return JsonConvert.SerializeObject(coefficients);
+		}
+	}
 }

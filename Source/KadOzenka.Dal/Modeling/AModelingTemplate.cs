@@ -84,13 +84,13 @@ namespace KadOzenka.Dal.Modeling
         protected virtual void SendSuccessNotification(OMQueue processQueue)
         {
             var message = "Операция успешно завершена";
-            NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+            new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
         protected virtual void SendFailNotification(OMQueue processQueue, Exception exception, long errorId)
         {
             var message = $"Операция завершена с ошибкой.\n{exception.Message}\n\nПодробнее в списке процессов.\nЖурнал: {errorId}";
-            NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+            new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
         protected string PreProcessAttributeName(string name)

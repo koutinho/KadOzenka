@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
@@ -33,6 +34,7 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 			if (!checkers.Any())
 			{
 				_log.Warning("Воркер чекер не запущен, так как не найдены классы для проверки");
+				CheckerRunner.CleanChecker();
 				return;
 			}
 
@@ -87,8 +89,8 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 				var res = new List<IWorkerChecker>();
 
 				var type = typeof(IWorkerChecker);
-				var types = AppDomain.CurrentDomain.GetAssemblies()
-					.SelectMany(s => s.GetTypes())
+				var types = Assembly.GetExecutingAssembly()
+					.GetTypes()
 					.Where(p => type.IsAssignableFrom(p) && !p.IsInterface).ToList();
 
 				_log.Debug("Найдено {count} объектов для воркер чекера", types.Count);
@@ -122,22 +124,24 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 	/// </summary>
 	public static class CheckerRunner
 	{
+		private static readonly ILogger _log = Log.ForContext(typeof(CheckerRunner));
 		private static WorkerCheckerDb _checker;
 
 		public static IWebHostBuilder StartWorkerChecker(this IWebHostBuilder builder, IConfigurationRoot config)
 		{
-			Log.Logger.Warning("Проверяем необходимо ли запускать воркер чекер");
-			bool useWorkerChecker = config.GetSection("WorkerChecker:useWorkerChecker").Value == "True";
-
+			_log.Warning("Проверяем необходимо ли запускать воркер чекер");
+			
 			CheckTimeProperty(config, out int? runChecker, out int? sleep);
 
+			bool useWorkerChecker = config.GetSection("WorkerChecker:useWorkerChecker").Value == "True";
 			if (useWorkerChecker)
 			{
 				SetAndRunChecker(runChecker, sleep);
 			}
 			else
 			{
-				Log.Logger.ForContext("config", config, true).Warning("Воркер чекер не запущен т.к флаг useWorkerChecker = false или не нейден");
+				_log.ForContext("config", config, true)
+					.Warning("Воркер чекер не запущен т.к флаг useWorkerChecker = false или не нейден");
 			}
 
 			ChangeToken.OnChange(config.GetReloadToken,  InvokeChanged, config);
@@ -154,7 +158,7 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 		{
 			if (_checker == null)
 			{
-				Log.Logger.ForContext("TimeToRunAfterError", runSecond)
+				_log.ForContext("TimeToRunAfterError", runSecond)
 					.ForContext("TimeToSleepCheck", sleep)
 					.Warning("Запуск воркер чекера");
 				_checker = new WorkerCheckerDb(runSecond, sleep);
@@ -162,7 +166,7 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 			}
 			else
 			{
-				Log.Logger.Warning("Воркер чекер не запущен, т.к существует предыдущий экземпляр");
+				_log.Warning("Воркер чекер не запущен, т.к существует предыдущий экземпляр");
 			}
 		}
 
@@ -172,13 +176,14 @@ namespace KadOzenka.Dal.WorkerCheckerDataBase
 			{
 				_checker.CancelToken();
 				_checker = null;
-				Log.Logger.Warning("Воркер чекер отключен");
+				_log.Warning("Воркер чекер отключен");
 			}
 		}
 
 		private static void InvokeChanged(IConfigurationRoot config)
 		{
-			Log.Logger.ForContext("config.Providers", config.Providers.ToList(), true).Debug("Сработала подписка на измение кофигурационного файла");
+			_log.ForContext("config.Providers", config.Providers.ToList(), true)
+				.Debug("Сработала подписка на измение кофигурационного файла");
 
 			CheckTimeProperty(config, out int? runChecker, out int? sleep);
 

@@ -6,6 +6,8 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using DevExpress.CodeParser;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -14,6 +16,7 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -25,6 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }
         private List<OMModelToMarketObjects> ModelObjects { get; }
+        private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
 
         public ObjectFormationForModelingProcess() : base(Log.ForContext<ObjectFormationForModelingProcess>())
@@ -33,31 +37,30 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         }
 
 
-        public static void AddProcessToQueue(long modelId)
+        public static void AddProcessToQueue(ObjectFormationInputParameters inputParameters)
         {
-	        LongProcessManager.AddTaskToQueue(nameof(ObjectFormationForModelingProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
+	        LongProcessManager.AddTaskToQueue(nameof(ObjectFormationForModelingProcess), parameters: inputParameters.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			WorkerCommon.SetProgress(processQueue, 0);
-			var modelId = processQueue.ObjectId;
 			Queue = processQueue;
 
-            Log.ForContext("ModelId", modelId).Information("Старт фонового процесса Формирования массива данных для Моделирования");
-
-			if (!modelId.HasValue)
+			InputParameters = processQueue.Parameters?.DeserializeFromXml<ObjectFormationInputParameters>();
+            if (InputParameters == null)
 			{
-				var message = Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
-				WorkerCommon.SetMessage(processQueue, message);
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-				SendMessage(processQueue, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов", MessageSubject);
+				NotificationSender.SendNotification(processQueue, "Моделирование", "Операция завершена с ошибкой, т.к. нет входных данных.");
 				return;
 			}
+            Logger.ForContext("InputParameters", InputParameters, true).Debug("Старт фонового процесса Формирования массива данных для Моделирования");
+
 
 			try
 			{
-				Model = ModelingService.GetModelEntityById(modelId);
+				Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
 				Tour = ModelingService.GetModelTour(Model.GroupId);
 
 				var modelAttributes = GetGeneralModelAttributes(Model.Id);
@@ -71,17 +74,17 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
                 SaveStatistic(ModelObjects, modelAttributes, Model, Queue);
 
-                SendMessage(processQueue, $"Операция успешно завершена.<br>Всего обработано объектов-аналогов: {processedMarketObjectsCount}.", MessageSubject);
+                NotificationSender.SendNotification(processQueue, MessageSubject, $"Операция успешно завершена.<br>Всего обработано объектов-аналогов: {processedMarketObjectsCount}.");
 			}
             catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
-				SendMessage(processQueue, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})", MessageSubject);
-                Log.Error(exception, "Ошибка в ходе сбора данных для моделирования");
+				NotificationSender.SendNotification(processQueue, MessageSubject, $"Операция завершена с ошибкой: {exception.Message}. Подробнее в журнале ({errorId})");
+				Logger.Error(exception, "Ошибка в ходе сбора данных для моделирования");
 			}
 
 			WorkerCommon.SetProgress(processQueue, 100);
-            Log.Information("Закончен фоновый процесс Формирования массива данных для Моделирования");
+			Logger.Information("Закончен фоновый процесс Формирования массива данных для Моделирования");
 		}
 
 
@@ -103,9 +106,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var dictionaries = GetDictionaries(modelAttributes);
             AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибутов  модели.", logger: Logger);
 
-            var marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects, tourFactorsAttributes.Count != 0);
-            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
-
+            List<MarketObjectToUnitRelation> marketObjectToUnitsRelation;
+            using (Logger.TimeOperation("Получение Единиц оценки по Объектам аналогам"))
+            {
+	            marketObjectToUnitsRelation = GetMarketObjectToUnitRelation(marketObjects);
+	            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
+            }
+            
             var i = 0;
             AddLog(Queue, "Обработано объектов: ", logger: Logger);
             //берем 75% от всего числа объектов, из них первая половина для обучающей выборки, вторая - для контрольной 
@@ -163,7 +170,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	                    baseCoefficient.Value = currentCoefficient.Value;
                     });
 
-                    modelToMarketObjectRelation.Coefficients = resultCoefficients.SerializeToXml();
+                    modelToMarketObjectRelation.Coefficients = resultCoefficients.SerializeCoefficient();
                     modelToMarketObjectRelation.Save();
 
                     //сохраняем в список, чтобы не выкачивать повторно
@@ -270,53 +277,71 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             return relation;
         }
 
-        private List<MarketObjectToUnitRelation> GetMarketObjectToUnitRelation(List<MarketObjectPure> marketObjects, bool downloadUnits)
+        private List<MarketObjectToUnitRelation> GetMarketObjectToUnitRelation(List<MarketObjectPure> marketObjects)
         {
-            var cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).Distinct().ToList();
-            if (cadastralNumbers.Count == 0)
-                return new List<MarketObjectToUnitRelation>();
+	        List<string> cadastralNumbers;
+	        using (Logger.TimeOperation("Выборка КН из ОА"))
+	        {
+		        cadastralNumbers = marketObjects.Select(x => x.CadastralNumber).Distinct().ToList();
+		        if (cadastralNumbers.Count == 0)
+			        return new List<MarketObjectToUnitRelation>();
 
-            var unitsDictionary = new Dictionary<string, UnitPure>();
-            if (downloadUnits)
-            {
-                var units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
-                    .Select(x => new
-                    {
-                        x.CadastralNumber,
-                        x.PropertyType_Code,
-                        x.BuildingCadastralNumber
-                    })
-                    .Execute();
-
-                var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
-                if (placementUnits.Count > 0)
-                {
-                    ProcessPlacemenUnits(placementUnits, units);
-                }
-
-                unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v =>
-                {
-	                var unit = v.First();
-
-	                return new UnitPure
-	                {
-		                Id = unit.Id,
-                        PropertyType = unit.PropertyType_Code
-	                };
-                });
+		        Logger.Debug("Найдено {CadastralNumbersCount} уникальных КН ОА", cadastralNumbers.Count);
             }
 
-            var marketObjectToUnitRelation = new List<MarketObjectToUnitRelation>();
-            marketObjects.ForEach(x =>
-            {
-                var resultUnit = unitsDictionary.TryGetValue(x.CadastralNumber, out var unit) ? unit : null;
+	        List<OMUnit> units;
+	        using (Logger.TimeOperation("Поиск ЕО по КН объектов аналогов из тура с ИД {TourId}", Tour.Id))
+	        {
+		        units = OMUnit.Where(x => cadastralNumbers.Contains(x.CadastralNumber) && x.TourId == Tour.Id)
+			        .Select(x => new
+			        {
+				        x.CadastralNumber,
+				        x.PropertyType_Code,
+				        x.BuildingCadastralNumber
+			        })
+			        .Execute();
 
-                marketObjectToUnitRelation.Add(new MarketObjectToUnitRelation
-                {
-                    MarketObject = x,
-                    Unit = resultUnit
-                });
-            });
+		        Logger.Debug("Найдено {UnitsCount} ЕО", units.Count);
+	        }
+
+	        using (Logger.TimeOperation("Обработка помещений в найденных ЕО"))
+	        {
+		        var placementUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Pllacement).ToList();
+		        if (placementUnits.Count > 0)
+		        {
+			        ProcessPlacemenUnits(placementUnits, units);
+		        }
+	        }
+
+	        var unitsDictionary = units.GroupBy(x => x.CadastralNumber).ToDictionary(k => k.Key, v =>
+	        {
+		        var unit = v.First();
+
+		        return new UnitPure
+		        {
+			        Id = unit.Id,
+			        PropertyType = unit.PropertyType_Code
+		        };
+	        });
+
+            var marketObjectToUnitRelation = new List<MarketObjectToUnitRelation>();
+            using (Logger.TimeOperation("Формирование отношений ЕО к ОА"))
+            {
+	            marketObjects.ForEach(x =>
+	            {
+		            var resultUnit = unitsDictionary.TryGetValue(x.CadastralNumber, out var unit) ? unit : null;
+		            if (resultUnit == null && InputParameters.IsExcludeMarketObjectsWithoutUnit)
+			            return;
+
+		            marketObjectToUnitRelation.Add(new MarketObjectToUnitRelation
+		            {
+			            MarketObject = x,
+			            Unit = resultUnit
+		            });
+	            });
+
+                Logger.Debug("Изанчально было {MarketObjectsCount} ОА, после фильтрации по непустой ЕО осталось {LeftCount}", marketObjects.Count, marketObjectToUnitRelation.Count);
+            }
 
             return marketObjectToUnitRelation;
         }
@@ -328,26 +353,38 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var buildingCadastralNumbers = placementUnits
                 .Where(x => !string.IsNullOrWhiteSpace(x.BuildingCadastralNumber))
                 .Select(x => x.BuildingCadastralNumber).Distinct().ToList();
-            var buildingUnits = buildingCadastralNumbers.Count > 0
-                ? OMUnit.Where(x =>
-                        buildingCadastralNumbers.Contains(x.CadastralNumber) &&
-                        x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
-                    .Select(x => x.CadastralNumber)
-                    .Execute()
-                : new List<OMUnit>();
+            Logger.Debug("Найдено {BuildingCadastralNumbersCount} уникальных КН зданий", buildingCadastralNumbers.Count);
 
-            placementUnits.ForEach(placementUnit =>
+            List<OMUnit> buildingUnits;
+            using (Logger.TimeOperation("Получение ЕО по ранее найденным КН зданий из тура"))
             {
-                if (!string.IsNullOrWhiteSpace(placementUnit.BuildingCadastralNumber))
-                {
-                    var currentBuildingUnits = buildingUnits.Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
-                    currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
-                    units.AddRange(buildingUnits);
-                    AddLog(Queue, $"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'", logger: Logger);
-                }
+	            buildingUnits = buildingCadastralNumbers.Count > 0
+		            ? OMUnit.Where(x =>
+				            buildingCadastralNumbers.Contains(x.CadastralNumber) &&
+				            x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
+			            .Select(x => x.CadastralNumber)
+			            .Execute()
+		            : new List<OMUnit>();
+	            
+	            Logger.Debug("Найдено {BuildingUnitsCount} ЕО с типом здание", buildingUnits.Count);
+            }
 
-                units.Remove(placementUnit);
-            });
+            using (Logger.TimeOperation("Замена ЕД помещений на здания"))
+            {
+	            placementUnits.ForEach(placementUnit =>
+	            {
+		            if (!string.IsNullOrWhiteSpace(placementUnit.BuildingCadastralNumber))
+		            {
+			            var currentBuildingUnits = buildingUnits
+				            .Where(x => x.CadastralNumber == placementUnit.BuildingCadastralNumber).ToList();
+			            currentBuildingUnits.ForEach(x => x.CadastralNumber = placementUnit.CadastralNumber);
+			            units.AddRange(buildingUnits);
+			            AddLog(Queue, $"Единица оценки заменена на аналогичную по Кадастровому номеру здания '{placementUnit.BuildingCadastralNumber}'", logger: Logger);
+		            }
+
+		            units.Remove(placementUnit);
+	            });
+            }
         }
 
         #endregion

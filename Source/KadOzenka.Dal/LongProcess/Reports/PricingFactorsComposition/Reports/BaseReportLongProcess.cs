@@ -21,7 +21,7 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public abstract class BaseReportLongProcess<T> : LongProcess where T : class, new()
+	public abstract class BaseReportLongProcess<T> : LongProcessForReportsBase where T : class, new()
 	{
 		private int _packageSize = 125000;
 		protected abstract string ReportName { get; }
@@ -29,7 +29,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
-		private CustomReportsService CustomReportsService { get; }
 		private readonly QueryManager _queryManager;
 		private object _locker;
 
@@ -38,7 +37,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			Logger = logger;
 			_locker = new object();
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
-			CustomReportsService = new CustomReportsService();
 			_queryManager = new QueryManager();
 		}
 
@@ -73,7 +71,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			}
 			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 			{
-				SendMessage(processQueue, "Не переданы ИД задач для построения отчета", MessageSubject);
+				NotificationSender.SendNotification(processQueue, MessageSubject, "Не переданы ИД задач для построения отчета");
 				return;
 			}
 
@@ -186,17 +184,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				? mainMessage 
 				: mainMessage + "<br>" + $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
-			SendMessage(processQueue, fullMessage, MessageSubject);
-		}
-
-		private void CheckCancellationToken(CancellationToken processCancellationToken,
-			CancellationTokenSource localCancellationToken, ParallelOptions options)
-		{
-			if (!processCancellationToken.IsCancellationRequested)
-				return;
-
-			localCancellationToken.Cancel();
-			options.CancellationToken.ThrowIfCancellationRequested();
+			NotificationSender.SendNotification(processQueue, MessageSubject, fullMessage);
 		}
 
 		private void GenerateReport(List<T> reportItems)
@@ -222,19 +210,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				{
 					using (Logger.TimeOperation("Добавление zip-файла"))
 					{
-						CustomReportsService.AddFileToZip(stream, ReportName, "csv");
+						CustomReportsService.AddZipFileToGeneralZipArchive(stream, ReportName, "csv");
 					}
 				}
 			}
 		}
 
-		protected void WriteToStream(List<string> str, Encoding encoding, MemoryStream stream)
-		{
-			str.Add("\n");
-			var headers = string.Join(',', str);
-			byte[] firstString = encoding.GetBytes(headers);
-			stream.Write(firstString, 0, firstString.Length);
-		}
 
 		#endregion
 

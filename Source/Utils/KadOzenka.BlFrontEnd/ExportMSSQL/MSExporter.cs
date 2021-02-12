@@ -2153,6 +2153,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     {
                         koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
                     }
+                    if (objtype == PropertyTypes.Pllacement)
+                    {
+                        koGroup.BuildingCadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_PARENT"]);
+                    }
+                    if (objtype == PropertyTypes.Stead)
+                    {
+                        koGroup.UseAsPrototype = NullConvertor.ToString(myOleDbDataReader["procent"])=="Да";
+                    }
                     count++;
                     Items.Add(koGroup);
                     if (Items.Count == 50)
@@ -5190,7 +5198,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 StringValue = value,
             };
 
-            DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
         }
 
         public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
@@ -5208,7 +5216,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 NumValue = value,
             };
 
-            DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
         }
 
         public static void SetAttributeValue_Boolean(long idAttribute, bool value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
@@ -5226,7 +5234,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 NumValue = (value ? 1 : 0)
             };
 
-            DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
         }
 
         public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
@@ -5244,7 +5252,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                 DtValue = value,
             };
 
-            DataImporterGkn.SaveAttributeValueWithCheck(attributeValue);
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
         }
     }
 }
