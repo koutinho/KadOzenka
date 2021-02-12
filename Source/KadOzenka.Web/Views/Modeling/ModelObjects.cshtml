@@ -760,9 +760,7 @@
             url: '@Url.Action("ExportModelObjectsToExcel", "Modeling")',
             data: { modelId: '@Model.Id'},
             success: function (response) {
-                var url =
-                    '@Url.Action("DownloadModelObjectsFromExcel", "Modeling", new {modelName = Model.Name})&fileName=' +
-                    response.FileName;
+                var url = '@Url.Action("DownloadExcelFileFromSessionByName", "Modeling")' + "?fileName=" + response.FileName;
                 window.location = url;
             },
             error: function(response) {

@@ -26,7 +26,7 @@ namespace KadOzenka.Web.Controllers
 			if (fileInfo == null)
 				return new EmptyResult();
 
-			return File(fileInfo.FileContent, fileInfo.ContentType, $"({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
+			return File(fileInfo.FileContent, fileInfo.ContentType, $"{fileName}, {DateTime.Now}.{fileInfo.FileExtension}");
 		}
 
         protected JsonResult GenerateMessageNonValidModel()

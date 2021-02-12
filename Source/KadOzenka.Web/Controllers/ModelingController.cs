@@ -62,12 +62,13 @@ namespace KadOzenka.Web.Controllers
         public ModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
+        public IModelingRepository ModelingRepository { get; set; }
 
 
         public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
 	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
-	        IModelObjectsRepository modelObjectsRepository)
+	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository)
         {
 	        ModelingService = modelingService;
 	        TourFactorService = tourFactorService;
@@ -76,6 +77,7 @@ namespace KadOzenka.Web.Controllers
 	        ModelFactorsService = modelFactorsService;
 	        GroupService = groupService;
 	        ModelObjectsRepository = modelObjectsRepository;
+	        ModelingRepository = modelingRepository;
         }
 
 
@@ -1014,23 +1016,13 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportModelObjectsToExcel(long modelId)
         {
+	        var modelName = ModelingRepository.GetById(modelId, x => new {x.Name})?.Name;
 	        var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
 
-            HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
+	        var fileName = $"Объекты модели {modelName}";
+            HttpContext.Session.Set(fileName, fileStream.ToByteArray());
 
-            return Json(new { FileName = modelId.ToString() });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult DownloadModelObjectsFromExcel(string fileName, string modelName)
-        {
-            var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
-            if (fileInfo == null)
-                return new EmptyResult();
-
-            return File(fileInfo.FileContent, fileInfo.ContentType,
-                $"Объекты модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
+            return Json(new { FileName = fileName });
         }
 
         [HttpGet]
