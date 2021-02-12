@@ -14,6 +14,9 @@ namespace KadOzenka.Dal.Modeling
 	{
 		ModelFactorsService ModelFactorsService { get; set; }
 		RecycleBinService RecycleBinService { get; }
+		string PrefixForFactor { get; }
+		string PrefixForValueInNormalizedColumn { get; }
+		string PrefixForCoefficientInNormalizedColumn { get; }
 		OMModel GetActiveModelEntityByGroupId(long? groupId);
 		OMModel GetModelEntityById(long? modelId);
 		ModelingModelDto GetModelById(long modelId);
@@ -31,7 +34,7 @@ namespace KadOzenka.Dal.Modeling
 		int DestroyModelMarketObjects(OMModel model);
 		void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects);
 		Stream ExportMarketObjectsToExcel(long modelId);
-		ModelingService.UpdateModelObjectsResult UpdateModelObjects(long modelId, ExcelFile file);
+		Stream UpdateModelObjects(long modelId, List<ColumnToAttributeMapping> columnsMapping, ExcelFile file);
 
 		ModelingService.ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 			List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber);

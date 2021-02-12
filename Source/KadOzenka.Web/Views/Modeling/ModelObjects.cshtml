@@ -185,7 +185,6 @@
 
     $(document).ready(function () {
         updateGrid();
-        initFileUploader();
         //initFactorsGrid();
 
         $('#updateBtn').on('click', showModelObjectsUpdatingConstructor);
@@ -799,7 +798,7 @@
             success: function (response) {
                 $("#constructorModal").html(response);
                 var modal = $("#constructorModal");
-                ShowModal(modal, '70%', '70%', "Обновление объектов модели");
+                ShowModal(modal, '50%', '80%', "Обновление объектов модели");
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
@@ -808,51 +807,6 @@
                 kendo.ui.progress($('body'), false);
             }
         });
-    }
-
-
-    function initFileUploader() {
-        $('#file').kendoUpload({
-            multiple: false,
-            localization: {
-                select: 'Загрузить Файл',
-                clearSelectedFiles: 'Очистить',
-                invalidMaxFileSize: "Максимальный размер файла - 4 МБ"
-            },
-            async: {
-                autoUpload: true,
-                saveUrl: '@Url.Action("UpdateModelObjects", "Modeling", new {modelId = Model.Id })'
-            },
-            validation: {
-                allowedExtensions: ['.xls', '.xlsx'],
-                maxFileSize: 4194304 
-            },
-            success: function (data) {
-                var response = data.response;
-                if (response) {
-                    $("#totalCount").text(response.TotalCount);
-                    $("#updatedObjectsCount").text(response.UpdatedObjectsCount);
-                    $("#unchangedObjectsCount").text(response.UnchangedObjectsCount);
-                    $("#errorObjectsCount").text(response.ErrorObjectsCount);
-                    if (response.ErrorObjectsCount > 0) {
-                        $("#errorRowIndexes").text(response.ErrorRowIndexes);
-                        $("#errorRowIndexesBlock").show();
-                    }
-                    var modalWithResult = $("#excludeModelObjectsFromCalculationResult");
-                    ShowModal(modalWithResult, '33%', '25%', "Результат обновления объектов модели (признаки и факторы)");
-                    if (response.fileName) {
-                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
-                    }
-                } else {
-                    Common.ShowError("Не удалось загрузить выбранный файл");
-                }
-                var modal = $('#constructorModal');
-                modal.data("kendoWindow").close();
-            },
-            error: function (e) {
-                $('html').html(e.XMLHttpRequest.responseText);
-            }
-        }).data('kendoUpload');
     }
 
 </script>

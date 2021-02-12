@@ -12,12 +12,24 @@ using Kendo.Mvc.UI;
 using ObjectModel.Core.TD;
 using Core.Main.FileStorages;
 using System.IO;
+using KadOzenka.Web.Attributes;
 
 namespace KadOzenka.Web.Controllers
 {
     public class KoBaseController : BaseController
 	{
-		protected JsonResult GenerateMessageNonValidModel()
+		[HttpGet]
+		[SRDFunction(Tag = "")]
+		public IActionResult DownloadExcelFileFromSessionByName(string fileName)
+		{
+			var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+			if (fileInfo == null)
+				return new EmptyResult();
+
+			return File(fileInfo.FileContent, fileInfo.ContentType, $"({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
+		}
+
+        protected JsonResult GenerateMessageNonValidModel()
         {
             return Json(new
             {

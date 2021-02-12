@@ -1,4 +1,5 @@
-﻿<form id="importForm">
+﻿@using KadOzenka.Web.Models.Modeling
+<form id="importForm">
     <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
         <li id="sectionUploading" data-expand>
             <span>Формирование загрузки</span>
@@ -92,7 +93,7 @@
 		}
 
 		.matchParamsContainer {
-			height: 204px !important;
+            min-height: 204px !important;
 		}
 
 		.filterParamsContainer {
@@ -265,7 +266,8 @@
             multiple: false,
             localization: {
                 select: 'Загрузить Файл',
-                clearSelectedFiles: 'Очистить'
+                clearSelectedFiles: 'Очистить',
+                //invalidMaxFileSize: "Максимальный размер файла - 4 МБ"
             },
             async: {
                 autoUpload: false,
@@ -273,7 +275,8 @@
             },
             select: showConfirmationAboutFileStructure,
             validation: {
-                allowedExtensions: ['.xls', '.xlsx']
+                allowedExtensions: ['.xls', '.xlsx'],
+                //maxFileSize: 4194304
             },
             success: onFileUpload,
             error: function(e) {
@@ -292,6 +295,7 @@
         }).data('kendoUpload');
     });
 
+    
 
 
 
@@ -433,10 +437,8 @@
         var columns = $.map(data,
             function(item) {
                 return {
-                    ColumnName: item.ColumnName,
                     ColumnIndex: item.ColumnIndex,
-                    AttributeId: item.AttributeId,
-                    IsKey: item.IsKey
+                    AttributeId: item.AttributeId
                 };
             });
 
@@ -444,15 +446,13 @@
         var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
 
         var formData = new FormData();
-        formData.append("File", file.rawFile);
-        formData.append("IsBackgroundDownload", isBackgroundDownload);
+        formData.append('@nameof(ModelingObjectsUpdatingModel.ModelId)', '@ViewBag.ModelId');
+        formData.append('@nameof(ModelingObjectsUpdatingModel.File)', file.rawFile);
+        formData.append('@nameof(ModelingObjectsUpdatingModel.IsBackgroundDownload)', isBackgroundDownload);
         for (var i = 0; i !== columns.length; i++) {
             formData.append("columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
-            formData.append("columns[" + i + "].ColumnName", columns[i].ColumnName);
             formData.append("columns[" + i + "].AttributeId", columns[i].AttributeId);
-            formData.append("columns[" + i + "].IsKey", columns[i].IsKey);
         }
-        console.log('form', formData);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("UpdateModelObjects", "Modeling")',
@@ -460,22 +460,20 @@
             contentType: false,
             processData: false,
             success: function(data) {
-                if (data.Success) {
-                    Common.ShowMessage(data.Message);
+                if (data.Errors) {
+                    var errors = getErrors(data.Errors);
+                    Common.ShowError(errors);
+                    return;
                 } else {
-                    Common.ShowError(data.Message);
-                }
-                if (data.ImportDataLogId) {
-                    var hrefForJournal =
-                        "/RegistersView/DataImporter?Transition=1&80100100=" + data.ImportDataLogId;
-                    var goToJournalBtn = $("#goToJournalBtn");
-                    goToJournalBtn.removeClass('k-state-disabled');
-                    goToJournalBtn.attr('href', hrefForJournal);
-                }
-                if (data.ResultFileName) {
-                    window.location = '@Url.Action("DownloadExcelResultFile", "DataImportByTemplate")' +
-                        "?resultFileName=" +
-                        data.ResultFileName;
+                    if (data.ImportDataLogId) {
+                        var hrefForJournal = "/RegistersView/DataImporter?Transition=1&80100100=" + data.ImportDataLogId;
+                        var goToJournalBtn = $("#goToJournalBtn");
+                        goToJournalBtn.removeClass('k-state-disabled');
+                        goToJournalBtn.attr('href', hrefForJournal);
+                    }
+                    if (data.fileName) {
+                        window.location = '@Url.Action("DownloadExcelFileFromSessionByName", "Modeling")' + "?fileName=" + data.fileName;
+                    }
                 }
             },
             error: function(response) {
@@ -510,7 +508,7 @@
                     IsKey: true,
                     IsReadOnly: true,
                     ColumnName: idData.Name,
-                    ColumnId: idData.Id,
+                    ColumnIndex: idData.Id,
                     AttributeDescription: 'ИД',
                     AttributeId: 70200100
                 });

@@ -1078,13 +1078,13 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}_1",
+                        AttributeId = $"{x.AttributeId}{ModelingService.PrefixForValueInNormalizedColumn}",
                         ParentId = register.Id
                     });
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}_2",
+                        AttributeId = $"{x.AttributeId}{ModelingService.PrefixForCoefficientInNormalizedColumn}",
                         ParentId = register.Id
                     });
                 }
@@ -1093,13 +1093,14 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = x.AttributeName,
-                        AttributeId = x.AttributeId,
+                        AttributeId = $"{x.AttributeId}{ModelingService.PrefixForFactor}",
                         ParentId = register.Id
                     });
                 }
             });
 
             ViewBag.Attributes = source;
+            ViewBag.ModelId = modelId;
 
             return PartialView();
         }
@@ -1108,33 +1109,21 @@ namespace KadOzenka.Web.Controllers
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public ActionResult UpdateModelObjects(ModelingObjectsUpdatingModel model)
-        {
-            //if (file == null)
-            //    throw new Exception("Не выбран файл");
+		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
 
-            //ExcelFile excelFile;
-            //using (var stream = file.OpenReadStream())
-            //{
-            //    excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-            //}
-            
-            //var updateResult = ModelingService.UpdateModelObjects(modelId, excelFile);
-            
-            //var fileName = string.Empty;
-            //if (updateResult.File != null)
-            //{
-	           // fileName = "Не найденные объекты.xlsx";
-	           // HttpContext.Session.Set(fileName, updateResult.File.ToByteArray());
-            //}
+			ExcelFile excelFile;
+			using (var stream = model.File.OpenReadStream())
+			{
+				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+			}
 
-            //return Content(JsonConvert.SerializeObject(new
-            //{
-	           // updateResult.TotalCount, updateResult.UpdatedObjectsCount, updateResult.UnchangedObjectsCount,
-	           // updateResult.ErrorObjectsCount, updateResult.ErrorRowIndexes, fileName
-            //}), "application/json");
+			var resultStream = ModelingService.UpdateModelObjects(model.ModelId, model.Map(), excelFile);
+			HttpContext.Session.Set(model.File.Name, resultStream.ToByteArray());
 
-            return Ok();
-        }
+			return Json(new {fileName = model.File.FileName});
+		}
 
         #endregion
 

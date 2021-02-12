@@ -20,6 +20,9 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Practices.ObjectBuilder2;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
@@ -46,6 +49,9 @@ namespace KadOzenka.Dal.Modeling
 		private const int PredictedPriceColumnIndex = 7;
 		private const int DeviationFromPredictablePriceColumnIndex = 8;
 		private int _maxNumberOfColumns = 9;
+		public string PrefixForFactor => "_";
+		public string PrefixForValueInNormalizedColumn => $"{PrefixForFactor}1";
+		public string PrefixForCoefficientInNormalizedColumn => $"{PrefixForFactor}2";
 
 		#endregion
 
@@ -519,131 +525,95 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-		public UpdateModelObjectsResult UpdateModelObjects(long modelId, ExcelFile file)
-        {
-	        var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId).ToList();
+		public Stream UpdateModelObjects(long modelId, List<ColumnToAttributeMapping> columnsMapping, ExcelFile file)
+		{
+			var sheet = file.Worksheets[0];
+			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
+			var maxRowIndex = DataExportCommon.GetLastUsedRowIndex(sheet);
+			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
-	        var rows = file.Worksheets[0].Rows;
-            var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
-            var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
-            for (var i = 1; i <= rowsCount; i++)
-            {
-	            var cells = rows[i].Cells;
-	            var factorsFromFile = new List<CoefficientForObject>();
-	            groupedFactors.ForEach(group =>
-	            {
-		            var factorFromFile = new CoefficientForObject(group.Key);
-		            group.ToList().ForEach(x =>
-		            {
-			            if (x.IsColumnWithValue)
-			            {
-				            factorFromFile.Value = cells[x.ColumnIndex].Value.ParseToStringNullable();
-			            }
-			            else
-			            {
-				            factorFromFile.Coefficient = cells[x.ColumnIndex].Value.ParseToDecimalNullable();
-			            }
-		            });
+			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
+			var columnsMappingWithoutPrimaryKey = columnsMapping.Where(x =>
+				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
 
-		            factorsFromFile.Add(factorFromFile);
-	            });
+			var rows = sheet.Rows;
+			for (var i = 1; i <= maxRowIndex; i++)
+			{
+				var cells = rows[i].Cells;
 
-                modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
-                {
-                    Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
-					IsForTraining = cells[IsForTrainingColumnIndex].Value.ParseToBooleanFromString(),
-					IsForControl = cells[IsForControlColumnIndex].Value.ParseToBooleanFromString(),
-                    IsExcluded = cells[IsExcludedColumnIndex].Value.ParseToBooleanFromString(),
-                    RowIndexInFile = i,
-					Factors = factorsFromFile
-                });
-            }
+				var columnsWithValues = new List<Column>();
+				columnsMappingWithoutPrimaryKey.ForEach(x =>
+				{
+					long.TryParse(x.AttributeId, out var attributeNumber);
+					columnsWithValues.Add(new Column
+					{
+						AttributeStr = x.AttributeId, 
+						AttributeId = attributeNumber,
+						ValueToUpdate = cells[x.ColumnIndex].Value
+					});
+				});
 
-            var modelObjectsIds = modelObjectsFromExcel.Select(x => x.Id).ToList();
-            if (modelObjectsIds.Count == 0)
-            {
-	            return new UpdateModelObjectsResult();
-            }
+				modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
+				{
+					Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
+					RowIndexInFile = i,
+					Columns = columnsWithValues
+				});
+			}
 
-            var result = new UpdateModelObjectsResult
-            {
-                TotalCount = modelObjectsFromExcel.Count
-            };
+			var modelObjectsIds = modelObjectsFromExcel.Select(x => x.Id).ToList();
+			if (modelObjectsIds.Count == 0)
+				throw new Exception("В файле не было найдено ИД объектов");
 
-            var modelObjects = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
-	            .Select(x => new
-	            {
-		            x.IsForTraining,
-		            x.IsForControl,
-		            x.IsExcluded,
-					x.Coefficients
-	            }).Execute();
+			var modelObjectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id)).Select(x => new
+			{
+				x.IsForTraining,
+				x.IsForControl,
+				x.IsExcluded,
+				x.Price,
+				x.PriceFromModel,
+				x.Coefficients
+			}).Execute();
 
-            var normalizedFactors = groupedFactors.Where(x => x.ToList().Any(y => y.IsColumnWithValue)).Select(x => x.Key).ToList();
 			foreach (var modelObjectFromExcel in modelObjectsFromExcel)
-            {
-	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
-	            if (modelObject == null)
-	            {
-		            result.ErrorRowIndexes.Add(modelObjectFromExcel.RowIndexInFile);
-		            continue;
-	            }
+			{
+				var modelObjectFromDb = modelObjectsFromDb.FirstOrDefault(o => o.Id == modelObjectFromExcel.Id);
+				if (modelObjectFromDb == null)
+					continue;
 
-				var alLeastOneFactorWasChanged = false;
-	            var coefficientsFromDb = modelObject.DeserializeCoefficient();
-	            groupedFactors.ForEach(group =>
-	            {
-		            var factorId = group.Key;
-		            var factorFromDb = coefficientsFromDb.FirstOrDefault(x => x.AttributeId == factorId);
-		            var factorFromFile = modelObjectFromExcel.Factors.FirstOrDefault(x => x.AttributeId == factorId);
+				var coefficientsFromDb = modelObjectFromDb.DeserializeCoefficient();
+				var registerObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)modelObjectFromExcel.Id.Value);
+				modelObjectFromExcel.Columns.ForEach(column =>
+				{
+					if (column.AttributeId != 0)
+					{
+						registerObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
+					}
+					else
+					{
+						var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
+						var attributeIdStr = match.Groups[0].Value;
+						long.TryParse(attributeIdStr, out var attributeId);
+						var fromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
+						if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
+						{
+							fromDb.Value = column.ValueToUpdate.ParseToStringNullable();
+						}
+						else
+						{
+							fromDb.Coefficient = column.ValueToUpdate.ParseToLongNullable();
+						}
+						registerObject.SetAttributeValue((int)OMModelToMarketObjects.GetColumnAttributeId(c => c.Coefficients), coefficientsFromDb.SerializeCoefficient());
+					}
+				});
+				RegisterStorage.Save(registerObject);
+			}
 
-		            var isNormalizedFactor = normalizedFactors.Contains(factorId);
-					var currentFactorWasChanged = CheckFactorWasChanged(isNormalizedFactor, factorFromDb, factorFromFile);
+			var stream = new MemoryStream();
+			file.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
 
-		            if (currentFactorWasChanged)
-		            {
-			            alLeastOneFactorWasChanged = true;
-			            factorFromDb.Value = isNormalizedFactor ? factorFromFile?.Value : factorFromDb.Value;
-			            factorFromDb.Coefficient = factorFromFile?.Coefficient;
-		            }
-	            });
-
-	            if (modelObject.IsForTraining.GetValueOrDefault() == modelObjectFromExcel.IsForTraining &&
-	                modelObject.IsForControl.GetValueOrDefault() == modelObjectFromExcel.IsForControl &&
-	                modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded &&
-	                !alLeastOneFactorWasChanged)
-	            {
-		            result.UnchangedObjectsCount++;
-		            continue;
-	            }
-
-	            modelObject.IsForTraining = modelObjectFromExcel.IsForTraining;
-	            modelObject.IsForControl = modelObjectFromExcel.IsForControl;
-	            modelObject.IsExcluded = modelObjectFromExcel.IsExcluded;
-	            modelObject.Coefficients = coefficientsFromDb.SerializeCoefficient();
-	            modelObject.Save();
-	            result.UpdatedObjectsCount++;
-            }
-
-            if (result.ErrorObjectsCount > 0)
-            {
-	            var stream = new MemoryStream();
-				//исключительный случай - когда не найден ни один объект из файла
-				//тогда не генерируем файл заново, а возвращаем тот же самый
-	            if (rowsCount - 1 == result.ErrorRowIndexes?.Count)
-	            {
-		            file.Save(stream, SaveOptions.XlsxDefault);
-		            stream.Seek(0, SeekOrigin.Begin);
-				}
-	            else
-	            {
-		            stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
-	            }
-
-	            result.File = stream;
-            }
-
-            return result;
+			return stream;
         }
 
 		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
@@ -1043,32 +1013,21 @@ namespace KadOzenka.Dal.Modeling
         private class ModelObjectsFromExcelData
         {
 	        public long? Id { get; set; }
-	        public bool IsForTraining { get; set; }
-	        public bool IsForControl { get; set; }
-	        public bool IsExcluded { get; set; }
-	        public List<CoefficientForObject> Factors { get; set; }
 	        public int RowIndexInFile { get; set; }
+			public List<Column> Columns { get; set; }
 
 	        public ModelObjectsFromExcelData()
 	        {
-		        Factors = new List<CoefficientForObject>();
+		        Columns = new List<Column>();
 	        }
 		}
 
-        public class UpdateModelObjectsResult
-		{
-			public int TotalCount { get; set; }
-			public int UpdatedObjectsCount { get; set; }
-			public int UnchangedObjectsCount { get; set; }
-			public int ErrorObjectsCount => ErrorRowIndexes.Count;
-			public List<int> ErrorRowIndexes { get; set; }
-			public MemoryStream File { get; set; }
-
-			public UpdateModelObjectsResult()
-			{
-				ErrorRowIndexes = new List<int>();
-			}
-		}
+        private class Column
+        {
+	        public string AttributeStr { get; set; }
+	        public long AttributeId { get; set; }
+	        public object ValueToUpdate { get; set; }
+        }
 
         #endregion
     }
