@@ -33,7 +33,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	        new Dictionary<long?, Type>
 	        {
 		        {(long) StatisticalDataType.PricingFactorsCompositionFinalUniform, typeof(UniformReportLongProcess)},
-		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)}
+		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)},
+		        {(long) StatisticalDataType.PricingFactorsCompositionForOks, typeof(OksReportLongProcess)}
 	        };
 
         public StatisticalDataService()

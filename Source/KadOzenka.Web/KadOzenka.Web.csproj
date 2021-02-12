@@ -249,6 +249,7 @@
     <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForOks.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
@@ -604,6 +605,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql">
@@ -1945,6 +1949,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForOks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
