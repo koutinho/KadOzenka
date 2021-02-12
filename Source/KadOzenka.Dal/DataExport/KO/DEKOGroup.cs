@@ -12,6 +12,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using DevExpress.Data.Extensions;
+using Ionic.Zip;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
@@ -180,7 +181,15 @@ namespace KadOzenka.Dal.DataExport
                         long id;
                         using (Log.TimeOperation("Сохранение файла '{fileName}'", fileName))
                         {
-                            id = SaveReportDownload.SaveReport(fileName, resultFile, OMGroup.GetRegisterId());
+                            var zf = new ZipFile();
+                            zf.AddEntry(fileName+".xml", resultFile);
+                            using (var fs = new FileStream(Path.GetTempFileName(), FileMode.Open, FileAccess.ReadWrite,
+                                FileShare.None, 4096, FileOptions.DeleteOnClose))
+                            {
+                                zf.Save(fs);
+                                fs.Seek(0, SeekOrigin.Begin);
+                                id = SaveReportDownload.SaveReport(fileName + ".zip", fs, OMGroup.GetRegisterId());
+                            }
                         }
 
                         var fileResult = new ResultKoUnloadSettings
