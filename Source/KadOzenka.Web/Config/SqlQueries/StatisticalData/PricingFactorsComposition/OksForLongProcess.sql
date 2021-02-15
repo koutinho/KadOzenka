@@ -1,5 +1,5 @@
 with object_ids as (
-	select unit.object_id from ko_unit unit where unit.TASK_ID IN ({0}) AND unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND unit.OBJECT_ID IS NOT NULL
+	select unit.object_id from ko_unit unit {0}
 ),
 --Rosreestr
 commissioningYearAttrValues as (
@@ -52,7 +52,7 @@ subGroupNumberAttrValues as (
 )
 
 
-SELECT DISTINCT ON (unit.CADASTRAL_NUMBER)
+SELECT 
 	unit.CADASTRAL_NUMBER AS CadastralNumber,
 	unit.SQUARE AS Square,
 	costRosreesrt.COSTVALUE AS CostValue,
@@ -101,6 +101,4 @@ FROM KO_UNIT unit
     LEFT OUTER JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
     LEFT OUTER JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
     LEFT OUTER JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
-WHERE 
-	(unit.TASK_ID IN ({0}) AND unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND unit.OBJECT_ID IS NOT NULL)
-    order by unit.CADASTRAL_NUMBER
+{0}
