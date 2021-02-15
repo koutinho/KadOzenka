@@ -13,6 +13,8 @@ using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Repositories;
 using Serilog;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
 using Microsoft.Practices.ObjectBuilder2;
@@ -200,7 +202,13 @@ namespace KadOzenka.Dal.Modeling
 					x.Coefficients
 				}).Execute();
 
-			foreach (var objectFromExcel in objectsFromExcel)
+			var cancelTokenSource = new CancellationTokenSource();
+			var options = new ParallelOptions
+			{
+				CancellationToken = cancelTokenSource.Token,
+				MaxDegreeOfParallelism = 100
+			};
+			Parallel.ForEach(objectsFromExcel, options, objectFromExcel =>
 			{
 				try
 				{
@@ -208,7 +216,7 @@ namespace KadOzenka.Dal.Modeling
 					if (objectFromDb == null)
 					{
 						ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex, $"Объект с ИД {objectFromExcel.Id} не найден в БД");
-						continue;
+						return;
 					}
 
 					var coefficientsFromDb = objectFromDb.DeserializeCoefficient();
@@ -236,7 +244,7 @@ namespace KadOzenka.Dal.Modeling
 							var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
 							var attributeIdStr = match.Groups[0].Value;
 							long.TryParse(attributeIdStr, out var attributeId);
-							
+
 							var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
 							if (coefficientFromDb == null)
 								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут с ИД {column.AttributeStr}");
@@ -257,7 +265,7 @@ namespace KadOzenka.Dal.Modeling
 					});
 
 					if ((isForControl || objectFromDb.IsForControl.GetValueOrDefault()) &&
-					    (isForTraining || objectFromDb.IsForTraining.GetValueOrDefault()))
+						(isForTraining || objectFromDb.IsForTraining.GetValueOrDefault()))
 						throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
 
 					RegisterStorage.Save(omModelToMarketObject);
@@ -269,7 +277,7 @@ namespace KadOzenka.Dal.Modeling
 					ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
 						$"Ошибка: {ex.Message} (подробно в журнале №{errorId})");
 				}
-			}
+			});
 
 			var stream = new MemoryStream();
 			file.Save(stream, SaveOptions.XlsxDefault);
