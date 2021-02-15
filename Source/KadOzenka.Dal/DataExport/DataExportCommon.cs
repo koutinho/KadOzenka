@@ -96,6 +96,10 @@ namespace KadOzenka.Dal.DataExport
                         sheet.Rows[Row].Cells[Col].Style.NumberFormat = "mm/dd/yyyy";
                     }
                 }
+                else
+                {
+	                sheet.Rows[Row].Cells[Col].SetValue(value?.ToString());
+                }
 
                 sheet.Rows[Row].Cells[Col].Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
                 Col++;

@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.Modeling
 		}
 
 
-		#region Model Object Relations
+
 
         public List<OMModelToMarketObjects> GetModelObjects(long modelId)
 		{
@@ -193,7 +193,12 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception("В файле не было найдено ИД объектов");
 
 			var objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
-				.Select(x => x.Coefficients).Execute();
+				.Select(x => new
+				{
+					x.IsForControl,
+					x.IsForTraining,
+					x.Coefficients
+				}).Execute();
 
 			foreach (var objectFromExcel in objectsFromExcel)
 			{
@@ -207,13 +212,23 @@ namespace KadOzenka.Dal.Modeling
 					}
 
 					var coefficientsFromDb = objectFromDb.DeserializeCoefficient();
-					
+
+					bool isForControl = false, isForTraining = false;
 					var omModelToMarketObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)objectFromDb.Id);
 					objectFromExcel.Columns.ForEach(column =>
 					{
 						if (column.AttributeId != 0)
 						{
 							omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
+
+							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl))
+							{
+								isForControl = column.ValueToUpdate?.ToString()?.ToLower() == "да";
+							}
+							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining))
+							{
+								isForTraining = column.ValueToUpdate?.ToString()?.ToLower() == "да";
+							}
 						}
 						else
 						{
@@ -240,6 +255,10 @@ namespace KadOzenka.Dal.Modeling
 								coefficientsFromDb.SerializeCoefficient());
 						}
 					});
+
+					if ((isForControl || objectFromDb.IsForControl.GetValueOrDefault()) &&
+					    (isForTraining || objectFromDb.IsForTraining.GetValueOrDefault()))
+						throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
 
 					RegisterStorage.Save(omModelToMarketObject);
 					sheet.Rows[objectFromExcel.RowIndexInFile].Cells[maxColumnIndex].SetValue("Обработано");
@@ -390,7 +409,6 @@ namespace KadOzenka.Dal.Modeling
 			return groupedFactors;
 		}
 
-		#endregion
 
 		#endregion
 
