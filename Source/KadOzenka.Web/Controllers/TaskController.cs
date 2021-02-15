@@ -549,13 +549,16 @@ namespace KadOzenka.Web.Controllers
         public ActionResult DeleteTask(long id)
         {
 	        var dto = TaskService.GetTaskById(id);
-	        return View(TaskDeleteModel.ToModel(dto, TaskService.CanTaskBeDeleted(id)));
+	        return View(TaskDeleteModel.ToModel(dto, TaskService.CanTaskBeDeleted(id), MoveTaskToRecycleBinLongProcess.IsDuplicateProcessExists(id)));
         }
 
         [HttpPost]
         [SRDFunction(Tag = "ADMIN")]
         public IActionResult DeleteTask(TaskDeleteModel model)
         {
+	        if (MoveTaskToRecycleBinLongProcess.IsDuplicateProcessExists(model.TaskId))
+		        throw new Exception($"Запрос на удаление задания на оценку {model.TaskId} уже существует");
+
 	        MoveTaskToRecycleBinLongProcess.AddProcessToQueue(model.ToSettings());
             return Ok();
         }

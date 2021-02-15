@@ -78,7 +78,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
 					if (unitsCount == 0)
 					{
-						message = "У заданий на оценку нет единиц оценки";
+						message = "У заданий на оценку нет единиц оценки, принадлежащих к группе ";
+						if (reportType == typeof(StateResultsReport))
+						{
+							message += $"не {IndividuallyResultsGroupNamePhrase}";
+						}
+						else
+						{
+							message += IndividuallyResultsGroupNamePhrase;
+						}
 						return;
 					}
 
