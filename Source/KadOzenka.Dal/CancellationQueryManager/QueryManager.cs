@@ -11,6 +11,7 @@ using Core.ErrorManagment;
 using Core.Register.QuerySubsystem;
 using Core.Register.QuerySubsystem.SqlExecutor;
 using Microsoft.Practices.EnterpriseLibrary.Data;
+using Npgsql;
 using Serilog;
 
 namespace KadOzenka.Dal.CancellationQueryManager
@@ -24,6 +25,8 @@ namespace KadOzenka.Dal.CancellationQueryManager
 
 		private readonly ILogger _log = Log.ForContext<QueryManager>();
 
+		//https://www.postgresql.org/docs/9.4/errcodes-appendix.html
+		private readonly string _errorCodeQueryCanceled = "57014";
 
 		public List<T> ExecuteQuery<T>(QSQuery<T> query) where T : class, new()
 		{
@@ -35,8 +38,12 @@ namespace KadOzenka.Dal.CancellationQueryManager
 				CancelSubscriber(cTokenSource);
 				return res;
 			}
-			catch (Exception e)
+			catch (PostgresException e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<T>();
@@ -54,8 +61,12 @@ namespace KadOzenka.Dal.CancellationQueryManager
 				CancelSubscriber(cTokenSource);
 				return res;
 			}
-			catch (Exception e)
+			catch (PostgresException e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<T>();
@@ -74,8 +85,12 @@ namespace KadOzenka.Dal.CancellationQueryManager
 
 				return res;
 			}
-			catch (Exception e)
+			catch (PostgresException e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<TResult>();
@@ -87,14 +102,19 @@ namespace KadOzenka.Dal.CancellationQueryManager
 			var cTokenSource = new CancellationTokenSource();
 			try
 			{
-				var executor =  QSQuery.GetSqlExecutor<TResult>(sql);
-				StartSubscriber(cTokenSource, executor:executor);
+				var executor = QSQuery.GetSqlExecutor<TResult>(sql);
+				StartSubscriber(cTokenSource, executor: executor);
 				var res = executor.ExecuteSql();
 				CancelSubscriber(cTokenSource);
 				return res;
 			}
-			catch (Exception e)
+			catch (PostgresException e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
+
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new List<TResult>();
@@ -113,8 +133,12 @@ namespace KadOzenka.Dal.CancellationQueryManager
 				CancelSubscriber(cTokenSource);
 				return dataSet;
 			}
-			catch (Exception e)
+			catch (PostgresException  e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new DataSet();
@@ -133,8 +157,12 @@ namespace KadOzenka.Dal.CancellationQueryManager
 
 				return res;
 			}
-			catch (Exception e)
+			catch (PostgresException e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return 0;
@@ -152,8 +180,12 @@ namespace KadOzenka.Dal.CancellationQueryManager
 				CancelSubscriber(cTokenSource);
 				return res;
 			}
-			catch (Exception e)
+			catch (PostgresException e)
 			{
+				if (!e.SqlState.Equals(_errorCodeQueryCanceled))
+				{
+					throw;
+				}
 				_log.Error("Ошибка во время запроса данных {e}", e);
 				CancelSubscriber(cTokenSource);
 				return new DataTable();
