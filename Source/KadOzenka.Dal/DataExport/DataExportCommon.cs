@@ -9,6 +9,8 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.TD;
 using System.Globalization;
 using System.Linq;
+using Serilog;
+using SerilogTimings.Extensions;
 using LengthUnit = GemBox.Spreadsheet.LengthUnit;
 
 namespace KadOzenka.Dal.DataExport
@@ -17,7 +19,7 @@ namespace KadOzenka.Dal.DataExport
     {
         public static string specifierInteger = "D";
         public static string specifierDouble = "N";
-        public static CultureInfo culture = CultureInfo.CreateSpecificCulture("ru-RU");
+        public static CultureInfo Culture = CultureInfo.CreateSpecificCulture("ru-RU");
 
         /// <summary>
         /// Добавление аттрибута к объекту XML
@@ -154,19 +156,7 @@ namespace KadOzenka.Dal.DataExport
                         sheet.Rows[Row + inx_row].Cells[inx_col].SetValue(Convert.ToDateTime(value));
                         sheet.Rows[Row + inx_row].Cells[inx_col].Style.NumberFormat = "mm/dd/yyyy";
                     }
-                    else
-                    if (value is int?)
-                    {
-                        if (value == null)
-                        {
-                            sheet.Rows[Row + inx_row].Cells[inx_col].SetValue("-");
-                        }
-                        else
-                        {
-                            sheet.Rows[Row + inx_row].Cells[inx_col].SetValue((int)value);
-                            sheet.Rows[Row + inx_row].Cells[inx_col].Style.NumberFormat = "#,##0";
-                        }
-                    }
+
                     else
                     if (value is decimal?)
                     {
@@ -422,18 +412,66 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static bool GetObjectAttribute(OMUnit _unit, long _number, out string _value)
         {
+            using (Log.Logger.TimeOperation("Получение атрибутов объекта"))
+            {
+                bool result = false;
+                _value = "";
+                List<long> lstIds = new List<long>();
+                lstIds.Add(_number);
+                List<GbuObjectAttribute> attribs =
+                    new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value, null, lstIds,
+                        _unit.CreationDate.Value);
+                if (attribs.Count > 0)
+                {
+                    _value = attribs[0].StringValue;
+                    result = true;
+                }
+
+                return result;
+            }
+        }
+
+        public static bool GetObjectAttribute(List<GbuObjectAttribute> list, OMUnit unit, long attrNumber, out string value)
+        {
             bool result = false;
-            _value = "";
-            List<long> lstIds = new List<long>();
-            lstIds.Add(_number);
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value, null, lstIds, _unit.CreationDate.Value);
+            var value1 = "";
+            var attribs = list.Where(x => x.AttributeId == attrNumber && x.ObjectId == unit.ObjectId && x.S <= unit.CreationDate.GetValueOrDefault()).OrderByDescending(x=>x.S).ToList();
             if (attribs.Count > 0)
             {
-                _value = attribs[0].StringValue;
+                value1 = attribs[0].StringValue;
                 result = true;
             }
 
+            value = value1;
             return result;
+        }
+
+        public static bool GetObjectAttribute(DEKOGroup.UnitInfo unitInfo, long attrNumber, out string value)
+        {
+            var list = unitInfo.Attributes;
+            var unit = unitInfo.Unit;
+            bool result = false;
+            var value1 = "";
+            var attribs = list.Where(x => x.AttributeId == attrNumber && x.ObjectId == unit.ObjectId && x.S <= unit.CreationDate.GetValueOrDefault()).OrderByDescending(x=>x.S).ToList();
+            if (attribs.Count > 0)
+            {
+                value1 = attribs[0].StringValue;
+                result = true;
+            }
+
+            value = value1;
+            return result;
+        }
+
+        public static bool GetObjectAttribute(Dictionary<long,List<GbuObjectAttribute>> dict, OMUnit unit, long attrNumber, out string value)
+        {
+            value = "";
+            var dictLookup = dict.TryGetValue(unit.ObjectId.GetValueOrDefault(), out var list);
+            if (!dictLookup) return false;
+            var attribs = list.Where(x => x.AttributeId == attrNumber && x.ObjectId == unit.ObjectId && x.S <= unit.CreationDate.GetValueOrDefault()).OrderByDescending(x=>x.S).ToList();
+            if (attribs.Count <= 0) return false;
+            value = attribs[0].StringValue;
+            return true;
         }
 
         /// <summary>
@@ -494,8 +532,8 @@ namespace KadOzenka.Dal.DataExport
             OMGroup parent_group = OMGroup.Where(x => x.Id == _group.ParentId).SelectAll().ExecuteFirstOrDefault();
             if (parent_group != null)
             {
-	            full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
-	                             ((_group.Number == null ? _group.Id.ToString() : _group.Number));
+                full_group_num = ((parent_group.Number == null ? parent_group.Id.ToString() : parent_group.Number)) + "." +
+                                 ((_group.Number == null ? _group.Id.ToString() : _group.Number));
             }
             else
             {
@@ -664,284 +702,41 @@ namespace KadOzenka.Dal.DataExport
         //Возвращает индекс последней заполненной строки
         public static int GetLastUsedRowIndex(ExcelWorksheet worksheet)
         {
-	        var lastUsedRowIndex = worksheet.Rows.Count - 1;
-	        for (var i = lastUsedRowIndex; i >= 0; i--)
-	        {
-		        if (worksheet.Rows[i].AllocatedCells.All(x => x.ValueType == CellValueType.Null))
-		        {
-			        lastUsedRowIndex--;
-		        }
-		        else
-		        {
-			        break;
-		        }
-	        }
+            var lastUsedRowIndex = worksheet.Rows.Count - 1;
+            for (var i = lastUsedRowIndex; i >= 0; i--)
+            {
+                if (worksheet.Rows[i].AllocatedCells.All(x => x.ValueType == CellValueType.Null))
+                {
+                    lastUsedRowIndex--;
+                }
+                else
+                {
+                    break;
+                }
+            }
 
-	        return lastUsedRowIndex;
+            return lastUsedRowIndex;
         }
 
         //Возвращает последнего заполненного столбца
         public static int GetLastUsedColumnIndex(ExcelWorksheet worksheet)
         {
-	        int lastUsedColumnIndex = worksheet.CalculateMaxUsedColumns() - 1;
-	        int maxRowIndex = worksheet.Rows.Count - 1;
-	        for (var i = lastUsedColumnIndex; i >= 0; i--)
-	        {
-		        if (worksheet.Columns[i].Cells.Where(x => x.Row.Index <= maxRowIndex)
-			        .All(x => x.ValueType == CellValueType.Null))
-		        {
-			        lastUsedColumnIndex--;
-		        }
-		        else
-		        {
-			        break;
-		        }
-	        }
-
-	        return lastUsedColumnIndex;
-        }
-    }
-
-    public class CheckNullEmpty
-    {
-        public static string CheckStringOut(string value)
-        {
-            return string.IsNullOrEmpty(value) ? "-" : value;
-        }
-
-        public static string CheckString(string value)
-        {
-            return string.IsNullOrEmpty(value) ? "" : value;
-        }
-
-        public static decimal? CheckDecimal(decimal? value)
-        {
-            return (value == null) ? 0 : value;
-        }
-    }
-
-    public class NullConvertorMS
-    {
-        public static string DTtoSTRDOC(DateTime value)
-        {
-            if (value <= Convert.ToDateTime("01.01.1901")) return String.Empty; else return " от " + value.ToString("dd.MM.yyyy");
-        }
-
-        public static object StringToDB(string value)
-        {
-            if (value == null)
-                return DBNull.Value;
-            if (value.Equals(String.Empty))
-                return DBNull.Value;
-            return value;
-        }
-
-        public static string ToString(object value)
-        {
-            return (value == null) ? String.Empty : value.ToString();
-        }
-
-        public static string ToStringOrNull(object value)
-        {
-            return ((value == null) || (value == DBNull.Value)) ? null : value.ToString();
-        }
-
-        public static string ToString(string value)
-        {
-            return (value == null) ? String.Empty : value;
-        }
-
-        public static void SwapString(ref string sold, ref string snew)
-        {
-            if (snew == null)
-                snew = sold;
-        }
-
-        public static void SwapDouble(ref double dold, ref double dnew)
-        {
-            if (dnew == double.MinValue)
-                dnew = dold;
-        }
-
-        public static void SwapInt(ref Int32 dold, ref Int32 dnew)
-        {
-            if (dnew == Int32.MinValue)
-                dnew = dold;
-        }
-
-        public static object IntIdToDB(int value)
-        {
-            if (value < 0)
-                return DBNull.Value;
-            else
-                return value;
-        }
-
-        public static object IntIdToDB(Int64 value)
-        {
-            if (value < 0)
-                return DBNull.Value;
-            else
-                return value;
-        }
-
-        public static object Int64ToDB(Int64 value)
-        {
-            if (value < 0)
-                return DBNull.Value;
-            else
-                return value;
-        }
-
-        public static object IntToSTR(int value)
-        {
-            if (value == int.MinValue)
-                return String.Empty;
-            else
-                return value.ToString();
-        }
-
-        public static int DBToInt(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return int.MinValue;
-            else
-                return Convert.ToInt32(value);
-        }
-
-        public static bool DBToBoolean(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return false;
-            else
-                if (Convert.ToInt32(value) > 0) return true;
-            else
-                return false;
-        }
-
-        public static byte[] DBToByteArray(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return null;
-            else
-                return (byte[])(value);
-        }
-
-        public static int DBToInt(object value, int _default)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return _default;
-            else
-                return Convert.ToInt32(value);
-        }
-
-        public static Int64 DBToInt64(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return -1;
-            else
-                return Convert.ToInt64(value);
-        }
-
-        public static object DoubleToDB(double value)
-        {
-            if (value == double.MinValue)
-                return DBNull.Value;
-            else
-                return value;
-        }
-
-        public static object DoubleToObject(double value)
-        {
-            if (value == double.MinValue)
-                return "-";
-            else
-                return value;
-        }
-
-        public static double DBToDouble(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return double.MinValue;
-            else
-                return Convert.ToDouble(value);
-        }
-
-        public static decimal DBToDecimal(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return decimal.MinValue;
-            else
-                return Convert.ToDecimal(value);
-        }
-
-        public static string DBDoubleNullToString(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return String.Empty;
-            else
-                return Convert.ToDouble(value).ToString("0.##");
-        }
-
-        public static object DateTimeToDB(DateTime value)
-        {
-            if (value <= Convert.ToDateTime("01.01.1901"))
-                return DBNull.Value;
-            else
-                return value;
-        }
-
-        public static DateTime DBToDateTime(object value)
-        {
-            if ((value == null) || (value == DBNull.Value))
-                return DateTime.MinValue;
-            else
-                return Convert.ToDateTime(value);
-        }
-
-        public static object IdNameToDB(int id, string name)
-        {
-            if (id != int.MinValue)
-                return DBNull.Value;
-            else
+            int lastUsedColumnIndex = worksheet.CalculateMaxUsedColumns() - 1;
+            int maxRowIndex = worksheet.Rows.Count - 1;
+            for (var i = lastUsedColumnIndex; i >= 0; i--)
             {
-                return name;
+                if (worksheet.Columns[i].Cells.Where(x => x.Row.Index <= maxRowIndex)
+                    .All(x => x.ValueType == CellValueType.Null))
+                {
+                    lastUsedColumnIndex--;
+                }
+                else
+                {
+                    break;
+                }
             }
-        }
 
-        public static string DTtoSTR(DateTime value)
-        {
-            if (value <= Convert.ToDateTime("01.01.1901")) return String.Empty; else return value.ToString("dd.MM.yyyy");
-        }
-
-        public static string DTtoSTRTime(DateTime value)
-        {
-            if (value <= Convert.ToDateTime("01.01.1901")) return String.Empty; else return value.ToString("dd.MM.yyyy") + " " + value.ToLongTimeString();
-        }
-
-        public static string DoubletoSTR(double value)
-        {
-            if (value == double.MinValue) return String.Empty; else return value.ToString();
-        }
-
-        public static string PriceToSTR(double value)
-        {
-            if (value == double.MinValue) return String.Empty; else return value.ToString("0.00");
-        }
-
-        public static double PriceToDouble(double value)
-        {
-            if (value == double.MinValue) return 0; else return Convert.ToDouble(value.ToString("0.00"));
-        }
-
-        public static string DecimaltoSTR(decimal? value)
-        {
-            if (value == decimal.MinValue) return String.Empty; else return value.ToString();
-        }
-
-        public static string BooltoSTR(bool value)
-        {
-            if (!value) return String.Empty; else return "Да";
+            return lastUsedColumnIndex;
         }
     }
 }

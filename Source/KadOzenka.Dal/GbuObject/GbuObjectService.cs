@@ -16,6 +16,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Directory;
 using Platform.Register;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -68,99 +69,123 @@ namespace KadOzenka.Dal.GbuObject
 
         public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
 		{
-            if(objectIds == null || objectIds.Count == 0) return new List<GbuObjectAttribute>();
-
-            var uniqueObjectIds = objectIds.Distinct().ToList();
-            var attributes = inputAttributes?.Distinct().ToList();
-            if (sources == null)
+			using (_log.TimeOperation("Получение ГБУ атрибутов"))
 			{
-				List<int> registerIds = attributes != null && attributes.Count > 0 ? 
-					RegisterCache.RegisterAttributes.Values
-						.Where(x => attributes.Contains(x.Id))
-						.Select(x => x.RegisterId)
-						.ToList() : 
-					null;
-				
-				var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
-                
-				sources = RegisterCache.Registers.Values
-						.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id && (registerIds == null || registerIds.Contains(x.Id)))
-						.Select(x => (long)x.Id)
+				if (objectIds == null || objectIds.Count == 0) return new List<GbuObjectAttribute>();
+
+				var uniqueObjectIds = objectIds.Distinct().ToList();
+				var attributes = inputAttributes?.Distinct().ToList();
+				if (sources == null)
+				{
+					List<int> registerIds = attributes != null && attributes.Count > 0
+						? RegisterCache.RegisterAttributes.Values
+							.Where(x => attributes.Contains(x.Id))
+							.Select(x => x.RegisterId)
+							.ToList()
+						: null;
+
+					var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
+
+					sources = RegisterCache.Registers.Values
+						.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id &&
+						            (registerIds == null || registerIds.Contains(x.Id)))
+						.Select(x => (long) x.Id)
 						.ToList();
+				}
+
+				var uniqueSources = sources.Distinct().ToList();
+				var result = new List<GbuObjectAttribute>();
+				foreach (var registerId in uniqueSources)
+				{
+					var registerData = RegisterCache.GetRegisterData((int) registerId);
+
+					if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
+					{
+						var postfixes = new List<string> {"TXT", "NUM", "DT"};
+
+						foreach (var postfix in postfixes)
+						{
+							var propName = "StringValue";
+
+							if (postfix == "NUM") propName = "NumValue";
+							else if (postfix == "DT") propName = "DtValue";
+
+							var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName,
+								registerData, isLight);
+
+							if (attributes != null && attributes.Count > 0)
+								sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
+
+							if (dateS != null || dateOt != null)
+							{
+								string dateSFilter = dateS == null
+									? String.Empty
+									: $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
+								string dateOtFilter = dateOt == null
+									? String.Empty
+									: $"AND A3.Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+
+								sql =
+									$"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
+							}
+
+							result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+						}
+					}
+					else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
+					{
+						List<RegisterAttribute> attributesData;
+
+						if (attributes == null)
+							attributesData = RegisterCache.RegisterAttributes.Values.ToList()
+								.Where(x => x.RegisterId == registerId).ToList();
+						else
+							attributesData = RegisterCache.RegisterAttributes.Values.ToList()
+								.Where(x => attributes.Contains(x.Id) && x.RegisterId == registerId).ToList();
+
+						foreach (var attributeData in attributesData)
+						{
+							if (attributeData.IsPrimaryKey) continue;
+
+							var propName = "StringValue";
+							switch (attributeData.Type)
+							{
+								case RegisterAttributeType.INTEGER:
+								case RegisterAttributeType.DECIMAL:
+								case RegisterAttributeType.BOOLEAN:
+									propName = "NumValue";
+									break;
+								case RegisterAttributeType.DATE:
+									propName = "DtValue";
+									break;
+								default:
+									propName = "StringValue";
+									break;
+							}
+
+							var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName,
+								attributeData, registerData, isLight);
+
+							if (dateS != null || dateOt != null)
+							{
+								string dateSFilter = dateS == null
+									? String.Empty
+									: $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
+								string dateOtFilter = dateOt == null
+									? String.Empty
+									: $"AND [A].Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+
+								sql =
+									$"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
+							}
+
+							result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+						}
+					}
+				}
+
+				return result;
 			}
-
-            var uniqueSources = sources.Distinct().ToList();
-            var result = new List<GbuObjectAttribute>();
-            foreach (var registerId in uniqueSources)
-			{
-				var registerData = RegisterCache.GetRegisterData((int)registerId);
-
-				if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
-				{
-					var postfixes = new List<string> { "TXT", "NUM", "DT" };
-
-					foreach (var postfix in postfixes)
-					{
-						var propName = "StringValue";
-
-						if (postfix == "NUM") propName = "NumValue";
-						else if (postfix == "DT") propName = "DtValue";
-
-						var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName, registerData, isLight);
-
-						if (attributes != null && attributes.Count > 0) sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
-
-						if (dateS != null || dateOt != null)
-						{
-							string dateSFilter = dateS == null ? String.Empty : $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
-							string dateOtFilter = dateOt == null ? String.Empty : $"AND A3.Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
-
-							sql = $"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
-						}
-						result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
-					}
-				}
-				else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
-				{
-					List<RegisterAttribute> attributesData;
-
-					if (attributes == null) attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => x.RegisterId == registerId).ToList();
-					else attributesData = RegisterCache.RegisterAttributes.Values.ToList().Where(x => attributes.Contains(x.Id) && x.RegisterId == registerId).ToList();
-
-					foreach (var attributeData in attributesData)
-					{
-						if (attributeData.IsPrimaryKey) continue;
-
-						var propName = "StringValue";
-                        switch (attributeData.Type)
-						{
-							case RegisterAttributeType.INTEGER:
-							case RegisterAttributeType.DECIMAL:
-							case RegisterAttributeType.BOOLEAN:
-								propName = "NumValue";
-								break;
-							case RegisterAttributeType.DATE:
-								propName = "DtValue";
-								break;
-							default:
-								propName = "StringValue";
-								break;
-						}
-
-                        var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName, attributeData, registerData, isLight);
-
-						if (dateS != null || dateOt != null)
-						{
-							string dateSFilter = dateS == null ? String.Empty : $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
-							string dateOtFilter = dateOt == null ? String.Empty : $"AND [A].Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
-
-							sql = $"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
-						}
-						result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
-					}
-				}
-            }
-			return result;
 		}
 
         private static string GetSqlForRegisterWithDataPartitioning(List<long> objectIds, string postfix, string propName, RegisterData registerData, bool isLight)

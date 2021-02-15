@@ -2,7 +2,7 @@
 
 @using (Html.BeginForm("DeleteTask", "Task", FormMethod.Post))
 {
-    @if (Model.CanTaskBeDeleted)
+    @if (Model.CanTaskBeDeleted && !Model.IsDuplicateProcessExists)
     {
         <div class="form-horizontal col-sm-12">
             @Html.HiddenFor(m => m.TaskId)
@@ -26,19 +26,33 @@
             </div>
         </div>
     }
+    else if (Model.IsDuplicateProcessExists)
+    {
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <label>Запрос на удаление задания на оценку '@Model.TaskName' уже существует</label>
+                </div>
+            </div>
+        </div>
+    }
     else
     {
         <div class="form-horizontal col-sm-12">
+            <div class="form-group"></div>
             <div class="form-group">
-                <label>Задание на оценку '@Model.TaskName' не может быть удалено.</label>
+                <div class="col-sm-12">
+                    <label>Задание на оценку '@Model.TaskName' не может быть удалено.</label>
+                </div>
             </div>
         </div>
     }
 }
 
-            <script type="text/javascript">
+<script type="text/javascript">
     $(document).ready(function () {
-        @if (Model.CanTaskBeDeleted)
+        @if (Model.CanTaskBeDeleted && !Model.IsDuplicateProcessExists)
         {
             <text>
                 $('#deleteTask').on('click',
@@ -59,4 +73,4 @@
         }
 
     });
-            </script>
+</script>

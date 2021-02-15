@@ -11,8 +11,9 @@ namespace KadOzenka.Web.Models.RecycleBin
 		public long ObjectRegisterId { get; set; }
 		public string ObjectName { get; set; }
 		public DateTime DeletedTime { get; set; }
+		public bool IsDuplicateProcessExists { get; set; }
 
-		public static RecycleBinModel FromDto(RecycleBinDto dto)
+		public static RecycleBinModel FromDto(RecycleBinDto dto, bool isDuplicateProcessExists)
 		{
 			return new RecycleBinModel
 			{
@@ -20,7 +21,8 @@ namespace KadOzenka.Web.Models.RecycleBin
 				ObjectType = dto.ObjectType,
 				ObjectName = dto.ObjectName,
 				DeletedTime = dto.DeletedTime,
-				ObjectRegisterId = dto.ObjectRegisterId
+				ObjectRegisterId = dto.ObjectRegisterId,
+				IsDuplicateProcessExists = isDuplicateProcessExists
 			};
 		}
 

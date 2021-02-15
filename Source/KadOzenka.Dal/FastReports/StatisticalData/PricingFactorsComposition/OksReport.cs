@@ -8,6 +8,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
@@ -34,16 +35,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
             var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);
 
-            var operations = GetOperations(tourId, taskIds);
-            Logger.Debug("Найдено {Count} объектов", operations?.Count);
+            using (Logger.TimeOperation("Общее время работы"))
+            {
+	            var operations = GetOperations(tourId, taskIds);
+	            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
-            Logger.Debug("Начато формирование таблиц");
-            var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
-            dataSet.Tables.Add(itemTable);
-            Logger.Debug("Закончено формирование таблиц");
+	            Logger.Debug("Начато формирование таблиц");
+	            var dataSet = new DataSet();
+	            var itemTable = GetItemDataTable(operations);
+	            dataSet.Tables.Add(itemTable);
+	            Logger.Debug("Закончено формирование таблиц");
 
-            return dataSet;
+	            return dataSet;
+            }
         }
 
 
