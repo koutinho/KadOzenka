@@ -264,8 +264,9 @@ namespace KadOzenka.Dal.Modeling
 						}
 					});
 
-					if ((isForControl || objectFromDb.IsForControl.GetValueOrDefault()) &&
-						(isForTraining || objectFromDb.IsForTraining.GetValueOrDefault()))
+					if ((isForControl && objectFromDb.IsForTraining.GetValueOrDefault()) ||
+						(isForTraining && objectFromDb.IsForControl.GetValueOrDefault()) ||
+						(isForTraining && isForControl))
 						throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
 
 					RegisterStorage.Save(omModelToMarketObject);
