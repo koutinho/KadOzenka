@@ -9,6 +9,7 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.TD;
 using System.Globalization;
 using System.Linq;
+using LengthUnit = GemBox.Spreadsheet.LengthUnit;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -100,7 +101,12 @@ namespace KadOzenka.Dal.DataExport
                 Col++;
             }
         }
-        
+
+        public static void SetIndividualWidth(ExcelWorksheet sheet, int column, int width)
+        {
+	        sheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
+        }
+
         /// <summary>
         /// Добавление в Excel таблицы данных, начиная со строки с индексом Row
         /// </summary>

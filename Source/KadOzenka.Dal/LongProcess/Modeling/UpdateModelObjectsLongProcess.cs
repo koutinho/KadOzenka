@@ -24,13 +24,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	{
 		private readonly ILogger _log = Log.ForContext<UpdateModelObjectsLongProcess>();
 		private string MessageSubject => "Обновление объектов моделирования";
-		public IModelingService ModelingService { get; set; }
+		public IModelObjectsService ModelObjectsService { get; set; }
 
 
 
 		public UpdateModelObjectsLongProcess()
 		{
-			ModelingService = new ModelingService();
+			ModelObjectsService = new ModelObjectsService();
 		}
 
 
@@ -107,7 +107,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				Stream updatingResult;
 				using (_log.TimeOperation("Обновление объектов"))
 				{
-					updatingResult = ModelingService.UpdateModelObjects(excelFile, columnsMapping);
+					updatingResult = ModelObjectsService.UpdateModelObjects(excelFile, columnsMapping);
 				}
 
 				using (_log.TimeOperation("Сохранение файла с результатом обновления"))

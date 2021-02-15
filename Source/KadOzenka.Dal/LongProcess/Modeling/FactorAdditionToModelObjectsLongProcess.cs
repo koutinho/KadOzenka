@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					: DictionaryService.GetDictionaries(new List<long> { Attribute.DictionaryId.Value });
 				AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибута.", logger: Logger);
 
-				var objects = ModelingService.GetModelObjects(inputParameters.ModelId);
+				var objects = ModelObjectsService.GetModelObjects(inputParameters.ModelId);
 				AddLog(Queue, $"Найдено {objects.Count} объектов Модели.", logger: Logger);
 
 				AddLog(Queue, "Начат сбор коэффициентов.", logger: Logger);

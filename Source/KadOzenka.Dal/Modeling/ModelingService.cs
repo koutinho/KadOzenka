@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
-using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -13,19 +11,12 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using Core.ErrorManagment;
-using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
-using Microsoft.Practices.ObjectBuilder2;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
 
@@ -36,28 +27,10 @@ namespace KadOzenka.Dal.Modeling
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelingRepository ModelingRepository { get; set; }
         private IModelObjectsRepository ModelObjectsRepository { get; set; }
-        public ModelFactorsService ModelFactorsService { get; set; }
-        public RecycleBinService RecycleBinService { get; }
+        private ModelFactorsService ModelFactorsService { get; set; }
+        private RecycleBinService RecycleBinService { get; }
 
-		#region Информация для выгрузки/загрузки объектов моделирования
-
-		private const int IdColumnIndex = 0;
-		private const int IsForTrainingColumnIndex = 1;
-		private const int IsForControlColumnIndex = 2;
-		private const int IsExcludedColumnIndex = 3;
-		private const int CadastralNumberColumnIndex = 4;
-		private const int ObjectTypeColumnIndex = 5;
-		private const int PriceColumnIndex = 6;
-		private const int PredictedPriceColumnIndex = 7;
-		private const int DeviationFromPredictablePriceColumnIndex = 8;
-		private int _maxNumberOfColumns = 9;
-		public string PrefixForFactor => "_";
-		public string PrefixForValueInNormalizedColumn => $"{PrefixForFactor}1";
-		public string PrefixForCoefficientInNormalizedColumn => $"{PrefixForFactor}2";
-
-		#endregion
-
-		public ModelingService(IModelingRepository modelingRepository = null,
+        public ModelingService(IModelingRepository modelingRepository = null,
 			IModelObjectsRepository modelObjectsRepository = null)
 		{
 			ModelFactorsService = new ModelFactorsService();
@@ -396,436 +369,6 @@ namespace KadOzenka.Dal.Modeling
         #endregion
 
 
-        #region Model Object Relations
-
-        public List<OMModelToMarketObjects> GetModelObjects(long modelId)
-		{
-			return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
-                .OrderBy(x => x.CadastralNumber)
-                .SelectAll()
-                .Execute();
-		}
-
-        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
-        {
-	        return ModelObjectsRepository.GetIncludedModelObjects(modelId, isForTraining);
-        }
-
-        public int DestroyModelMarketObjects(OMModel model)
-        {
-	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == model.Id).Execute();
-	        existedModelObjects.ForEach(x => x.Destroy());
-	        
-	        model.ObjectsStatistic = null;
-	        model.Save();
-
-	        return existedModelObjects.Count;
-        }
-
-        public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
-		{
-			var ids = objects.Select(x => x.Id).ToList();
-            if (ids.Count == 0)
-                return;
-
-            var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).Select(x => new
-            {
-                x.IsExcluded,
-                x.IsForTraining,
-                x.IsForControl
-            }).Execute();
-            objects.ForEach(obj =>
-            {
-                var objFromDb = objectsFromDb.FirstOrDefault(x => x.Id == obj.Id);
-                if (objFromDb == null)
-                    return;
-
-                if (objFromDb.IsExcluded.GetValueOrDefault() != obj.IsExcluded ||
-                    objFromDb.IsForTraining.GetValueOrDefault() != obj.IsForTraining ||
-                    objFromDb.IsForControl.GetValueOrDefault() != obj.IsForControl)
-                {
-	                if (obj.IsForTraining && obj.IsForControl)
-		                throw new Exception($"Объект с КН '{obj.CadastralNumber}' не может одновременно быть и в обучающей, и в контрольной выборках");
-
-	                objFromDb.IsExcluded = obj.IsExcluded;
-	                objFromDb.IsForTraining = obj.IsForTraining;
-	                objFromDb.IsForControl = obj.IsForControl;
-	                objFromDb.Save();
-                }
-            });
-        }
-
-        public Stream ExportMarketObjectsToExcel(long modelId)
-        {
-	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
-	        //if (model == null)
-	        //    throw new Exception($"Не найдена модель с ИД '{modelId}'");
-	        var excelTemplate = new ExcelFile();
-            var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
-
-            var groupedFactors = GetFactorColumnsForModelObjectsInFile(modelId);
-            var columnHeaders = new object[_maxNumberOfColumns];
-            columnHeaders[IdColumnIndex] = "ИД";
-            columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
-            columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
-            columnHeaders[IsExcludedColumnIndex] = "Признак исключения из расчета";
-            columnHeaders[CadastralNumberColumnIndex] = "Кадастровый номер";
-            columnHeaders[ObjectTypeColumnIndex] = "Тип объекта";
-            columnHeaders[PriceColumnIndex] = "Цена";
-            columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
-            columnHeaders[DeviationFromPredictablePriceColumnIndex] = "Отклонение цены от прогнозной, %";
-            groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
-            //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
-            //columnHeaders.AddRange(new List<string>{ "МС", "%" });
-
-            AddRowToExcel(mainWorkSheet, 0, columnHeaders);
-
-			var rowCounter = 1;
-			var marketObjects = GetModelObjects(modelId);
-			marketObjects.ForEach(obj =>
-			{
-				var values = new object[_maxNumberOfColumns];
-				values[IdColumnIndex] = obj.Id;
-				values[IsForTrainingColumnIndex] = obj.IsForTraining.GetValueOrDefault();
-				values[IsForControlColumnIndex] = obj.IsForControl.GetValueOrDefault();
-				values[IsExcludedColumnIndex] = obj.IsExcluded.GetValueOrDefault();
-				values[CadastralNumberColumnIndex] = obj.CadastralNumber;
-				values[ObjectTypeColumnIndex] = obj.UnitPropertyType;
-				values[PriceColumnIndex] = obj.Price;
-				values[PredictedPriceColumnIndex] = obj.PriceFromModel;
-				values[DeviationFromPredictablePriceColumnIndex] = CalculatePercent(obj.PriceFromModel, obj.Price);
-
-				var coefficients = obj.DeserializeCoefficient();
-				groupedFactors.ForEach(factor =>
-				{
-					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
-					factor.ToList().ForEach(x =>
-					{
-						if (x.IsColumnWithValue)
-						{
-							values[x.ColumnIndex] = coefficient?.Value;
-						}
-						else
-						{
-							values[x.ColumnIndex] = coefficient?.Coefficient;
-						}
-					});
-				});
-
-				//var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
-				// factors, coefficients, obj.CadastralNumber); 
-
-				//values.Add(calculationParameters.ModelingPrice); 
-				//values.Add(calculationParameters.Percent);
-
-				AddRowToExcel(mainWorkSheet, rowCounter++, values);
-			});
-
-			var stream = new MemoryStream();
-            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
-        }
-
-        public Stream UpdateModelObjects(ExcelFile file, List<ColumnToAttributeMapping> columnsMapping)
-		{
-			var sheet = file.Worksheets[0];
-			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
-			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
-
-			var objectsFromExcel = GetInfoFromFile(sheet, columnsMapping);
-
-			var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
-			if (modelObjectsIds.Count == 0)
-				throw new Exception("В файле не было найдено ИД объектов");
-
-			var objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
-				.Select(x => x.Coefficients).Execute();
-
-			foreach (var objectFromExcel in objectsFromExcel)
-			{
-				try
-				{
-					var objectFromDb = objectsFromDb.FirstOrDefault(o => o.Id == objectFromExcel.Id);
-					if (objectFromDb == null)
-					{
-						ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex, $"Объект с ИД {objectFromExcel.Id} не найден в БД");
-						continue;
-					}
-
-					var coefficientsFromDb = objectFromDb.DeserializeCoefficient();
-					
-					var omModelToMarketObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)objectFromDb.Id);
-					objectFromExcel.Columns.ForEach(column =>
-					{
-						if (column.AttributeId != 0)
-						{
-							omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
-						}
-						else
-						{
-							//из атрибута вида ххх_1 вытаскиваем ххх
-							var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
-							var attributeIdStr = match.Groups[0].Value;
-							long.TryParse(attributeIdStr, out var attributeId);
-							
-							var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
-							if (coefficientFromDb == null)
-								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут с ИД {column.AttributeStr}");
-
-							if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
-							{
-								coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
-							}
-							else
-							{
-								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToLongNullable();
-							}
-
-							omModelToMarketObject.SetAttributeValue(
-								(int)OMModelToMarketObjects.GetColumnAttributeId(c => c.Coefficients),
-								coefficientsFromDb.SerializeCoefficient());
-						}
-					});
-
-					RegisterStorage.Save(omModelToMarketObject);
-					sheet.Rows[objectFromExcel.RowIndexInFile].Cells[maxColumnIndex].SetValue("Обработано");
-				}
-				catch (Exception ex)
-				{
-					long errorId = ErrorManager.LogError(ex);
-					ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
-						$"Ошибка: {ex.Message} (подробно в журнале №{errorId})");
-				}
-			}
-
-			var stream = new MemoryStream();
-			file.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-
-			return stream;
-        }
-
-        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
-	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
-        {
-	        try
-	        {
-		        decimal modelingPriceCounter = 0;
-		        foreach (var factor in factors)
-		        {
-			        var objectCoefficient = objectCoefficients?.FirstOrDefault(x =>
-				        x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
-
-			        var metka = objectCoefficient?.Coefficient;
-
-			        modelingPriceCounter = modelingPriceCounter +
-			                               (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
-		        }
-
-		        var resultModelingPrice = (decimal?) Math.Exp((double) (a0.GetValueOrDefault() + modelingPriceCounter));
-		        var modelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-		        decimal? percent = null;
-		        if (objectPrice.GetValueOrDefault() != 1)
-		        {
-			        percent = CalculatePercent(modelingPrice, objectPrice);
-		        }
-
-		        return new ModelObjectsCalculationParameters
-		        {
-			        ModelingPrice = modelingPrice,
-			        Percent = percent
-		        };
-	        }
-	        catch (Exception exception)
-	        {
-		        _log.ForContext("CadastralNumber", cadastralNumber)
-			        .ForContext("A0", a0)
-			        .ForContext("ObjectPrice", objectPrice)
-			        .Error(exception, "Ошибка во время расчета МС и % для объекта моделирования");
-		        return new ModelObjectsCalculationParameters();
-	        }
-        }
-
-        public static decimal? CalculatePercent(decimal? calculatedPrice, decimal? initialPrice)
-        {
-	        decimal? percent = null;
-	        if (calculatedPrice != null && initialPrice.GetValueOrDefault() != 0)
-	        {
-		        percent = (calculatedPrice / initialPrice.GetValueOrDefault() - 1) * 100;
-	        }
-
-	        return percent;
-        }
-
-
-		#region Support Methods
-
-		private List<ModelObjectsFromExcelData> GetInfoFromFile(ExcelWorksheet sheet, List<ColumnToAttributeMapping> columnsMapping)
-		{
-			var rows = sheet.Rows;
-			var maxRowIndex = DataExportCommon.GetLastUsedRowIndex(sheet);
-			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
-
-			var columnsMappingWithoutPrimaryKey = columnsMapping.Where(x =>
-				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
-
-			for (var i = 1; i <= maxRowIndex; i++)
-			{
-				var cells = rows[i].Cells;
-
-				var columnsWithValues = new List<Column>();
-				columnsMappingWithoutPrimaryKey.ForEach(x =>
-				{
-					long.TryParse(x.AttributeId, out var attributeNumber);
-					columnsWithValues.Add(new Column
-					{
-						AttributeStr = x.AttributeId,
-						AttributeId = attributeNumber,
-						ValueToUpdate = cells[x.ColumnIndex].Value
-					});
-				});
-
-				modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
-				{
-					Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
-					RowIndexInFile = i,
-					Columns = columnsWithValues
-				});
-			}
-
-			return modelObjectsFromExcel;
-		}
-
-		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(long modelId)
-		{
-			//пока работаем только с Exp (был расчет МС и процента)
-			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
-			var result = new List<FactorInFileInfo>();
-			factors.ForEach(x =>
-			{
-				var factorId = x.FactorId.GetValueOrDefault();
-				var factorName = RegisterCache.GetAttributeData((int) x.FactorId.GetValueOrDefault()).Name;
-				if (x.DictionaryId == null)
-				{
-					result.Add(new FactorInFileInfo
-					{
-						AttributeId = factorId,
-						Name = factorName
-					});
-				}
-				else
-				{
-					result.Add(new FactorInFileInfo
-					{
-						AttributeId = factorId,
-						Name = $"{factorName} (Коэффициент)"
-					});
-					result.Add(new FactorInFileInfo
-					{
-						AttributeId = factorId,
-						Name = $"{factorName} (Значение)",
-						IsColumnWithValue = true
-					});
-				}
-			});
-
-			result = result.OrderBy(x => x.Name).ToList();
-			result.ForEach(x => x.ColumnIndex = _maxNumberOfColumns++);
-
-			//если есть нормализация - показывать два столбца (с коэфициентом и со значением)
-			var groupedFactors = result.OrderBy(x => x.ColumnIndex).GroupBy(x => x.AttributeId).ToList();
-
-			return groupedFactors;
-		}
-
-		private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
-        {
-			var resultFile = new ExcelFile();
-	        var sheet = resultFile.Worksheets.Add("Не найденные объекты");
-	        sheet.Cells.Style.Font.Name = "Times New Roman";
-
-            //копируем заголовки
-            var generalRowCounter = 0;
-            sheet.Rows.InsertCopy(generalRowCounter, initialFile.Worksheets[0].Rows[0]);
-
-            for (var i = 0; i < errorRowIndexes.Count; i++)
-            {
-	            generalRowCounter++;
-	            sheet.Rows.InsertCopy(generalRowCounter, initialFile.Worksheets[0].Rows[errorRowIndexes[i]]);
-	            errorRowIndexes[i]++;
-            }
-
-            var stream = new MemoryStream();
-	        resultFile.Save(stream, SaveOptions.XlsxDefault);
-	        stream.Seek(0, SeekOrigin.Begin);
-
-	        return stream;
-        }
-
-        private void AddRowToExcel(ExcelWorksheet sheet, int row, object[] values)
-        {
-            var column = 0;
-            foreach (var value in values)
-            {
-	            var cell = sheet.Rows[row].Cells[column];
-	            switch (value)
-                {
-                    case decimal _:
-                    case double _:
-	                    cell.SetValue(Convert.ToDouble(value));
-	                    cell.Style.NumberFormat = "#,##0.00";
-                        break;
-                    case DateTime _:
-	                    cell.SetValue(Convert.ToDateTime(value));
-	                    cell.Style.NumberFormat = "mm/dd/yyyy";
-                        break;
-                    case bool _:
-                        var res = Convert.ToBoolean(value) ? "Да" : "Нет";
-                        cell.SetValue(res);
-                        break;
-                    default:
-                        var defaultValue = value?.ToString();
-                        cell.SetValue(defaultValue);
-                        break;
-                }
-
-	            cell.Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-	            cell.Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-	            cell.Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-	            cell.Style.WrapText = true;
-
-	            column++;
-            }
-        }
-
-        public void SetIndividualWidth(ExcelWorksheet sheet, int column, int width)
-        {
-	        sheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
-        }
-
-		private bool CheckFactorWasChanged(bool isNormalizedFactor, CoefficientForObject factorFromDb, CoefficientForObject factorFromFile)
-        {
-	        bool factorWasChanged;
-	        if (isNormalizedFactor)
-	        {
-		        factorWasChanged = factorFromDb != null &&
-		                           (factorFromDb.Coefficient != factorFromFile?.Coefficient ||
-		                            !string.Equals(factorFromDb.Value, factorFromFile?.Value));
-	        }
-	        else
-	        {
-		        factorWasChanged = factorFromDb != null && factorFromDb.Coefficient != factorFromFile?.Coefficient;
-	        }
-
-	        return factorWasChanged;
-        }
-
-		#endregion
-
-		#endregion
-
-
 		#region Modeling Process
 
 		public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
@@ -865,6 +408,7 @@ namespace KadOzenka.Dal.Modeling
 		}
 
 		#endregion
+
 
 		#region Training Result
 
@@ -959,16 +503,16 @@ namespace KadOzenka.Dal.Modeling
 				"", "t-критерий Стьюдента", "Средняя ошибка аппроксимации",
 				"Коэффициент детерминации (R²)", "F-критерий Фишера"
 			};
-			SetIndividualWidth(mainWorkSheet, rowHeaderColumnIndex, 5);
-			SetIndividualWidth(mainWorkSheet, studentColumnIndex, 4);
-			SetIndividualWidth(mainWorkSheet, mseColumnIndex, 4);
-			SetIndividualWidth(mainWorkSheet, r2ColumnIndex, 4);
-			SetIndividualWidth(mainWorkSheet, fisherColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, rowHeaderColumnIndex, 5);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, studentColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, mseColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, r2ColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, fisherColumnIndex, 4);
 			mainWorkSheet.Rows[0].Cells[0].SetValue("Анализ качества статической модели");
 			var cells = mainWorkSheet.Cells.GetSubrangeAbsolute(0, 0, 0, columnHeaders.Length - 1);
 			cells.Merged = true;
 
-			AddRowToExcel(mainWorkSheet, columnHeadersRowIndex, columnHeaders);
+			DataExportCommon.AddRow(mainWorkSheet, columnHeadersRowIndex, columnHeaders.ToArray());
 
 			var studentInfo = qualityInfo.Student;
 			var mseInfo = qualityInfo.MeanSquaredError;
@@ -979,25 +523,25 @@ namespace KadOzenka.Dal.Modeling
 			{
 				"Расчетное", studentInfo.Estimated, mseInfo.Estimated, r2Info.Estimated, fisherInfo.Estimated
 			};
-			AddRowToExcel(mainWorkSheet, calculationRowIndex, firstRow);
+			DataExportCommon.AddRow(mainWorkSheet, calculationRowIndex, firstRow);
 
 			var secondRow = new object[]
 			{
 				"Табличное", studentInfo.Tabular, mseInfo.Tabular, r2Info.Tabular, fisherInfo.Tabular
 			};
-			AddRowToExcel(mainWorkSheet, tableRowIndex, secondRow);
+			DataExportCommon.AddRow(mainWorkSheet, tableRowIndex, secondRow);
 
 			var thirdRow = new object[]
 			{
 				"Критерий", studentInfo.Criterion, mseInfo.Criterion, r2Info.Criterion, fisherInfo.Criterion
 			};
-			AddRowToExcel(mainWorkSheet, criterionRowIndex, thirdRow);
+			DataExportCommon.AddRow(mainWorkSheet, criterionRowIndex, thirdRow);
 
 			var fifthRow = new object[]
 			{
 				"Вывод", studentInfo.Conclusion, mseInfo.Conclusion, r2Info.Conclusion, fisherInfo.Conclusion
 			};
-			AddRowToExcel(mainWorkSheet, conclusionRowIndex, fifthRow);
+			DataExportCommon.AddRow(mainWorkSheet, conclusionRowIndex, fifthRow);
 
 			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, mseColumnIndex, tableRowIndex, mseColumnIndex);
 			cells.Merged = true;
@@ -1018,43 +562,5 @@ namespace KadOzenka.Dal.Modeling
 		}
 
 		#endregion
-
-
-		#region Entities
-
-		private class FactorInFileInfo
-		{
-			public long AttributeId { get; set; }
-			public string Name { get; set; }
-			public int ColumnIndex { get; set; }
-			public bool IsColumnWithValue { get; set; }
-		}
-
-		public class ModelObjectsCalculationParameters
-        {
-	        public decimal? ModelingPrice { get; set; }
-	        public decimal? Percent { get; set; }
-        }
-
-        private class ModelObjectsFromExcelData
-        {
-	        public long? Id { get; set; }
-	        public int RowIndexInFile { get; set; }
-			public List<Column> Columns { get; set; }
-
-	        public ModelObjectsFromExcelData()
-	        {
-		        Columns = new List<Column>();
-	        }
-		}
-
-        private class Column
-        {
-	        public string AttributeStr { get; set; }
-	        public long AttributeId { get; set; }
-	        public object ValueToUpdate { get; set; }
-        }
-
-        #endregion
-    }
+	}
 }

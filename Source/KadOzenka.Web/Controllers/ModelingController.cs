@@ -56,6 +56,7 @@ namespace KadOzenka.Web.Controllers
 	public class ModelingController : KoBaseController
 	{
 		public IModelingService ModelingService { get; set; }
+		public IModelObjectsService ModelObjectsService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
@@ -68,7 +69,8 @@ namespace KadOzenka.Web.Controllers
         public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
 	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
-	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository)
+	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
+	        IModelObjectsService modelObjectsService)
         {
 	        ModelingService = modelingService;
 	        TourFactorService = tourFactorService;
@@ -78,6 +80,7 @@ namespace KadOzenka.Web.Controllers
 	        GroupService = groupService;
 	        ModelObjectsRepository = modelObjectsRepository;
 	        ModelingRepository = modelingRepository;
+	        ModelObjectsService = modelObjectsService;
         }
 
 
@@ -947,7 +950,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
-			var objectsDto = ModelingService.GetModelObjects(modelId);
+			var objectsDto = ModelObjectsService.GetModelObjects(modelId);
 
             //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
             //if (model == null)
@@ -1006,8 +1009,8 @@ namespace KadOzenka.Web.Controllers
 			var allModels = JsonConvert.DeserializeObject<List<ModelMarketObjectRelationModel>>(objectsJson);
 			var changedModels = allModels.Where(x => x.IsDirty).ToList();
 			var objectsDtos = changedModels.Select(ModelMarketObjectRelationModel.FromModel).ToList();
-			
-			ModelingService.ChangeObjectsStatusInCalculation(objectsDtos);
+
+			ModelObjectsService.ChangeObjectsStatusInCalculation(objectsDtos);
 
 			return Json(new { Message = "Данные успешно обновлены" });
 		}
@@ -1016,10 +1019,12 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-	        var modelName = ModelingRepository.GetById(modelId, x => new {x.Name})?.Name;
-	        var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId);
+	        //пока работаем только с Exp (был расчет МС и процента)
+	        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+	        var fileStream = ModelObjectsService.ExportMarketObjectsToExcel(modelId, factors);
 
-	        var fileName = $"Объекты модели {modelName}";
+	        var modelName = ModelingRepository.GetById(modelId, x => new { x.Name })?.Name;
+            var fileName = $"Объекты модели {modelName}";
             HttpContext.Session.Set(fileName, fileStream.ToByteArray());
 
             return Json(new { FileName = fileName });
@@ -1070,13 +1075,13 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}{ModelingService.PrefixForValueInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForValueInNormalizedColumn}",
                         ParentId = register.Id
                     });
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}{ModelingService.PrefixForCoefficientInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForCoefficientInNormalizedColumn}",
                         ParentId = register.Id
                     });
                 }
@@ -1085,7 +1090,7 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = x.AttributeName,
-                        AttributeId = $"{x.AttributeId}{ModelingService.PrefixForFactor}",
+                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForFactor}",
                         ParentId = register.Id
                     });
                 }
@@ -1121,7 +1126,7 @@ namespace KadOzenka.Web.Controllers
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
 
-			var resultStream = ModelingService.UpdateModelObjects(excelFile, model.Map());
+			var resultStream = ModelObjectsService.UpdateModelObjects(excelFile, model.Map());
 			HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
 			return Json(new { fileName = fileName });

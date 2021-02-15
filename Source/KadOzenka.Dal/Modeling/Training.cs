@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Найдено {ModelAttributes?.Count} активных атрибутов для модели.");
             Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 
-            MarketObjectsForTraining = ModelingService.GetIncludedModelObjects(GeneralModel.Id, true);
+            MarketObjectsForTraining = ModelObjectsService.GetIncludedModelObjects(GeneralModel.Id, true);
             AddLog($"Найдено {MarketObjectsForTraining.Count} объекта для обучения.");
         }
 

@@ -24,6 +24,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		protected DictionaryService DictionaryService { get; set; }
 		protected ModelingService ModelingService { get; set; }
 		protected ModelFactorsService ModelFactorsService { get; set; }
+		protected IModelObjectsService ModelObjectsService { get; set; }
 
 		public BaseObjectFormationForModelingProcess(ILogger logger)
 		{
@@ -31,6 +32,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			ModelingService = new ModelingService();
 			DictionaryService = new DictionaryService();
 			ModelFactorsService = new ModelFactorsService();
+			ModelObjectsService = new ModelObjectsService();
 		}
 
 

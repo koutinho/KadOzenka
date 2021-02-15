@@ -38,7 +38,7 @@ namespace KadOzenka.Web.Models.Modeling
 				Price = entity.Price,
                 PriceFromModel = entity.PriceFromModel,
 				//ModelingPrice = entity.ModelingPrice,
-				DeviationFromPredictablePrice = ModelingService.CalculatePercent(entity.PriceFromModel, entity.Price),
+				DeviationFromPredictablePrice = ModelObjectsService.CalculatePercent(entity.PriceFromModel, entity.Price),
 				//Percent = entity.Percent,
                 IsExcluded = entity.IsExcluded.GetValueOrDefault(),
                 IsForTraining = entity.IsForTraining.GetValueOrDefault(),

@@ -95,7 +95,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        var marketObjects = GetMarketObjects();
             AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: Logger);
 
-            var numberOfDeletedModelObjects = ModelingService.DestroyModelMarketObjects(Model);
+            var numberOfDeletedModelObjects = ModelObjectsService.DestroyModelMarketObjects(Model);
             AddLog(Queue, $"Удалено {numberOfDeletedModelObjects} ранее найденных объектов модели.", logger: Logger);
 
             var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId()).ToList();
@@ -116,7 +116,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var i = 0;
             AddLog(Queue, "Обработано объектов: ", logger: Logger);
             //берем 75% от всего числа объектов, из них первая половина для обучающей выборки, вторая - для контрольной 
-            var objectsCount = marketObjects.Count * 75 / 100;
+            var objectsCount = marketObjectToUnitsRelation.Count * 75 / 100;
             var firstHalf = objectsCount / 2.0;
             var packageSize = 1000;
             var packageIndex = 0;

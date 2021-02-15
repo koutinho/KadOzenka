@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.Modeling
 
             var allAttributes = ModelFactorsService.GetGeneralModelAttributes(InputParameters.ModelId);
 
-            var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, false);
+            var modelObjects = ModelObjectsService.GetIncludedModelObjects(InputParameters.ModelId, false);
             modelObjects.ForEach(modelObject =>
             {
                 var modelObjectAttributes = modelObject.DeserializeCoefficient();
