@@ -25,6 +25,7 @@ namespace KadOzenka.Dal.Modeling
 	{
 		private readonly ILogger _log = Log.ForContext<ModelObjectsService>();
 		private IModelObjectsRepository ModelObjectsRepository { get; }
+		private object _locker;
 
 		#region Информация для выгрузки/загрузки объектов моделирования
 
@@ -41,14 +42,15 @@ namespace KadOzenka.Dal.Modeling
 		public string PrefixForFactor => "_";
 		public string PrefixForValueInNormalizedColumn => $"{PrefixForFactor}1";
 		public string PrefixForCoefficientInNormalizedColumn => $"{PrefixForFactor}2";
-		public int RowsCount { get; set; } = 1;
-		public int CurrentRow { get; set; }
+		public int MaxRowsCountInFileForUpdating { get; set; } = 1;
+		public int CurrentRowIndexInFileForUpdating { get; set; }
 
 		#endregion
 
 		public ModelObjectsService(IModelObjectsRepository modelObjectsRepository = null)
 		{
 			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
+			_locker = new object();
 		}
 
 
@@ -183,12 +185,16 @@ namespace KadOzenka.Dal.Modeling
         }
 
         public Stream UpdateModelObjects(ExcelFile file, List<ColumnToAttributeMapping> columnsMapping)
-		{
+        {
+	        var loggerBasePhrase = "Обновление объектов моделирования:";
+			_log.Debug("{LoggerBasePhrase} старт", loggerBasePhrase);
+
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
 			var objectsFromExcel = GetInfoFromFile(sheet, columnsMapping);
+			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", loggerBasePhrase, MaxRowsCountInFileForUpdating);
 
 			var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
 			if (modelObjectsIds.Count == 0)
@@ -201,6 +207,7 @@ namespace KadOzenka.Dal.Modeling
 					x.IsForTraining,
 					x.Coefficients
 				}).Execute();
+			_log.Debug("{LoggerBasePhrase} найдено {ModelObjectsCount} объектов в БД", loggerBasePhrase, objectsFromDb.Count);
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -212,6 +219,13 @@ namespace KadOzenka.Dal.Modeling
 			{
 				try
 				{
+					lock (_locker)
+					{
+						CurrentRowIndexInFileForUpdating++;
+					}
+					if(CurrentRowIndexInFileForUpdating % 1000 == 0)
+						_log.Debug("{LoggerBasePhrase} обрабатывается объект № {CurrentCount}", loggerBasePhrase, CurrentRowIndexInFileForUpdating);
+
 					var objectFromDb = objectsFromDb.FirstOrDefault(o => o.Id == objectFromExcel.Id);
 					if (objectFromDb == null)
 					{
@@ -345,13 +359,13 @@ namespace KadOzenka.Dal.Modeling
 		private List<ModelObjectsFromExcelData> GetInfoFromFile(ExcelWorksheet sheet, List<ColumnToAttributeMapping> columnsMapping)
 		{
 			var rows = sheet.Rows;
-			var maxRowIndex = DataExportCommon.GetLastUsedRowIndex(sheet);
+			MaxRowsCountInFileForUpdating = DataExportCommon.GetLastUsedRowIndex(sheet);
 			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
 
 			var columnsMappingWithoutPrimaryKey = columnsMapping.Where(x =>
 				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
 
-			for (var i = 1; i <= maxRowIndex; i++)
+			for (var i = 1; i <= MaxRowsCountInFileForUpdating; i++)
 			{
 				var cells = rows[i].Cells;
 

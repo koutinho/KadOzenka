@@ -10,8 +10,8 @@ namespace KadOzenka.Dal.Modeling
 {
 	public interface IModelObjectsService
 	{
-		int RowsCount { get; set; }
-		int CurrentRow { get; set; }
+		int MaxRowsCountInFileForUpdating { get; set; }
+		int CurrentRowIndexInFileForUpdating { get; set; }
 		string PrefixForFactor { get; }
 		string PrefixForValueInNormalizedColumn { get; }
 		string PrefixForCoefficientInNormalizedColumn { get; }

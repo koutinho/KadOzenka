@@ -86,18 +86,16 @@ namespace KadOzenka.Dal.LongProcess
 					DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
 						settings.DeleteOldValues, import);
 				}
-
-				LongProcessProgressLogger.StopLogProgress();
-				Worker.SetProgress(processQueue, 100);
 			}
 			catch (Exception e)
 			{
 				var errorId = ErrorManager.LogError(e);
 				_log.Error(e, "Загрузка справочников моделирования завершена с ошибкой {ErrorId}", errorId);
-				LongProcessProgressLogger.StopLogProgress();
 				NotificationSender.SendNotification(processQueue, MessageSubject, $"Операция завершена с ошибкой. Подробнее в журнале (ИД {errorId})");
 			}
 
+			LongProcessProgressLogger.StopLogProgress();
+			Worker.SetProgress(processQueue, 100);
 			_log.Information("Окончание фонового процесса для Импорта словаря Моделирования");
 		}
 

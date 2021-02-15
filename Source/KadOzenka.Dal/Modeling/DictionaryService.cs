@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.Modeling
 	    public int RowsCount { get; set; } = 1;
 		public int CurrentRow { get; set; }
 
-        private const long MaxRowInFileDuringImport = 1;
+        private const long MaxRowInFileDuringImport = 1000;
         private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
         private static readonly string RegisterViewId = "ModelingDictionaries";
 

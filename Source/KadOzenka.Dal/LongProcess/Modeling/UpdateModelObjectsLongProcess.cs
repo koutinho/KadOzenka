@@ -14,6 +14,7 @@ using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
@@ -67,7 +68,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return import.Id;
 		}
 
-		//TODO добавить прогресс-бар
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			_log.Debug("Старт фонового процесса {InputParameters}", processQueue.Parameters);
@@ -104,6 +104,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(import.ColumnsMapping);
 				}
 
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsService.MaxRowsCountInFileForUpdating, () => ModelObjectsService.CurrentRowIndexInFileForUpdating);
 				Stream updatingResult;
 				using (_log.TimeOperation("Обновление объектов"))
 				{
@@ -122,7 +123,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				import.Save();
 
 				SendSuccessfulMessage(processQueue, import.Id);
-				WorkerCommon.SetProgress(processQueue, 100);
 			}
 			catch (Exception e)
 			{
@@ -131,6 +131,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					$"Операция завершена с ошибкой. Подробнее в журнале (ИД {ErrorManager.LogError(e)})");
 			}
 
+			LongProcessProgressLogger.StopLogProgress();
+			WorkerCommon.SetProgress(processQueue, 100);
 			_log.Debug("Финиш фонового процесса");
 		}
 
