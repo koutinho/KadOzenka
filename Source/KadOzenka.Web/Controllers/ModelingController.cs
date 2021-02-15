@@ -1092,7 +1092,6 @@ namespace KadOzenka.Web.Controllers
             });
 
             ViewBag.Attributes = source;
-            ViewBag.ModelId = modelId;
 
             return PartialView();
         }
@@ -1105,18 +1104,28 @@ namespace KadOzenka.Web.Controllers
 			if (!ModelState.IsValid)
 				return GenerateMessageNonValidModel();
 
+			var fileName = model.File.FileName;
+            if (model.IsBackgroundDownload)
+			{
+				using (var stream = model.File.OpenReadStream())
+				{
+					var importDataLogId = UpdateModelObjectsLongProcess.AddToQueue(stream, fileName, model.Map());
+					
+					return new JsonResult(new { importDataLogId = importDataLogId });
+                }
+			}
+
 			ExcelFile excelFile;
 			using (var stream = model.File.OpenReadStream())
 			{
 				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
 			}
 
-			var resultStream = ModelingService.UpdateModelObjects(model.ModelId, excelFile, model.Map());
-			var fileName = model.File.FileName;
+			var resultStream = ModelingService.UpdateModelObjects(excelFile, model.Map());
 			HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
-			return Json(new {fileName = fileName});
-		}
+			return Json(new { fileName = fileName });
+        }
 
         #endregion
 

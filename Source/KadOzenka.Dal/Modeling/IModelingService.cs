@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.Modeling
 		int DestroyModelMarketObjects(OMModel model);
 		void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects);
 		Stream ExportMarketObjectsToExcel(long modelId);
-		Stream UpdateModelObjects(long modelId, ExcelFile file, List<ColumnToAttributeMapping> columnsMapping);
+		Stream UpdateModelObjects(ExcelFile file, List<ColumnToAttributeMapping> columnsMapping);
 
 		ModelingService.ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 			List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber);

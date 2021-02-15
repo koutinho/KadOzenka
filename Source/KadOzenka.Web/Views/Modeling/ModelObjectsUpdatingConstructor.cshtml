@@ -446,7 +446,6 @@
         var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
 
         var formData = new FormData();
-        formData.append('@nameof(ModelingObjectsUpdatingModel.ModelId)', '@ViewBag.ModelId');
         formData.append('@nameof(ModelingObjectsUpdatingModel.File)', file.rawFile);
         formData.append('@nameof(ModelingObjectsUpdatingModel.IsBackgroundDownload)', isBackgroundDownload);
         for (var i = 0; i !== columns.length; i++) {
@@ -465,14 +464,17 @@
                     Common.ShowError(errors);
                     return;
                 } else {
-                    if (data.ImportDataLogId) {
-                        var hrefForJournal = "/RegistersView/DataImporter?Transition=1&80100100=" + data.ImportDataLogId;
+                    if (data.importDataLogId) {
+                        Common.ShowMessage("Процесс добавлен в очередь. Результат будет отправлен на почту.");
                         var goToJournalBtn = $("#goToJournalBtn");
                         goToJournalBtn.removeClass('k-state-disabled');
-                        goToJournalBtn.attr('href', hrefForJournal);
+                        goToJournalBtn.attr('href', "/RegistersView/DataImporter?Transition=1&80100100=" + data.importDataLogId);
                     }
-                    if (data.fileName) {
+                    else if (data.fileName) {
+                        Common.ShowMessage("Обновление завершено. Идет скачивание файла с результатом операции");
                         window.location = '@Url.Action("DownloadExcelFileFromSessionByName", "Modeling")' + "?fileName=" + data.fileName;
+                    } else {
+                        Common.ShowError("Неизвестная ошибка. Обратитесь к администратору.");
                     }
                 }
             },

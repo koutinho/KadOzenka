@@ -527,7 +527,7 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public Stream UpdateModelObjects(long modelId, ExcelFile file, List<ColumnToAttributeMapping> columnsMapping)
+        public Stream UpdateModelObjects(ExcelFile file, List<ColumnToAttributeMapping> columnsMapping)
 		{
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;

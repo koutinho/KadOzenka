@@ -7,8 +7,7 @@ namespace KadOzenka.Web.Models.Modeling
 {
     public class ModelingObjectsUpdatingModel : IValidatableObject
     {
-	    public long ModelId { get; set; }
-        public bool IsBackgroundDownload { get; set; }
+	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
         public List<ColumnToAttributeMapping> Columns { get; set; }
 
@@ -19,11 +18,7 @@ namespace KadOzenka.Web.Models.Modeling
 	        {
 				yield return new ValidationResult("Не передан файл", new[] { nameof(File) });
 			}
-	        if (ModelId == 0)
-	        {
-		        yield return new ValidationResult("Не передан ИД модели", new[] { nameof(ModelId) });
-	        }
-			if (Columns.Count <= 1)
+	        if (Columns.Count <= 1)
 	        {
 		        yield return new ValidationResult("Минимальное число сопоставляемых полей - 2", new[] { nameof(Columns) });
 	        }
