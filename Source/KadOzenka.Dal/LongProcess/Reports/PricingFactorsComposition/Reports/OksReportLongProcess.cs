@@ -24,8 +24,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	{
 		public static readonly string DateFormat = "dd.MM.yyyy";
 		protected readonly string BaseFolderWithSql = "PricingFactorsComposition";
-		private int _packageSize = 50000;
-		private object _locker;
+		private int _packageSize = 200000;
+		private readonly object _locker;
 		public string ReportName => "Состав данных по перечню объектов недвижимости, подлежащих государственной кадастровой оценке (объекты капитального строительства)";
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		protected ILogger Logger { get; set; }
@@ -66,6 +66,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				return;
 			}
 
+			_packageSize = parameters.PackageSize.GetValueOrDefault() == 0 ? _packageSize : parameters.PackageSize.GetValueOrDefault();
 			var message = string.Empty;
 			try
 			{
