@@ -150,7 +150,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
 						}
 
-						Logger.Debug("Закончена работа с пакетом №{PackageNumber}", i);
+						Logger.Debug("Закончена работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 					});
 				}
 			}

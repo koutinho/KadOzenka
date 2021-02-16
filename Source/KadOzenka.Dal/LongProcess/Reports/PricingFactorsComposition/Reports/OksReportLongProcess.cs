@@ -128,7 +128,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
 						}
 
-						Logger.Debug("Закончена работа с пакетом №{PackageNumber}", i);
+						Logger.Debug("Закончена работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 					});
 				}
 			}
