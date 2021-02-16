@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.KoObject
 		public int CurrentCount { get; private set; }
 
 
-		public long Run(EstimatedGroupModel param)
+		public string Run(EstimatedGroupModel param)
 		{ 
 			Logger.ForContext("InputParameters", JsonConvert.SerializeObject(param)).Debug("Входные данные для Присвоения оценочной группы");
 
@@ -229,10 +229,11 @@ namespace KadOzenka.Dal.KoObject
 				});
 			}
 
-			long reportId = reportService.SaveReport();
+			var reportId = reportService.SaveReport();
 
 			Logger.Debug("Закончена операция присвоения оценочной группы");
-			return reportId;
+
+			return reportService.GetUrlToDownloadFile(reportId);
 		}
 
 		#region Help Methods

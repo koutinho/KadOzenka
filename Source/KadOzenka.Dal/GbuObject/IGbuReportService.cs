@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.GbuObject.Dto;
+using ObjectModel.Common;
 
 namespace KadOzenka.Dal.GbuObject
 {
 	public interface IGbuReportService
 	{
-		string UrlToDownload { get; }
+		string DefaultExtension { get; }
 		CellStyle WarningCellStyle { get; }
 		CellStyle ErrorCellStyle { get; }
+		string FileStorageKey { get; }
 
 		/// <summary>
 		/// Отдает текущий номер строки и инкрементирует значение для следующего обращения 
@@ -29,8 +32,12 @@ namespace KadOzenka.Dal.GbuObject
 		void AddValue(string value, int column, GbuReportService.Row row, CellStyle cellStyle = null);
 		void AddRow(GbuReportService.Row row, List<string> values);
 		void AddRow(GbuReportService.Row row, List<object> values);
-		long SaveReport(long? mainRegisterId = null, string registerViewId = null);
+		long SaveReport();
 		GbuReportService.ReportFile GetReportFile();
 		void Dispose();
+
+		string GetUrlToDownloadFile(long reportId);
+		ReportInfo GetFile(long reportId);
+		OMGbuOperationsReports GetFileInfo(long reportId);
 	}
 }

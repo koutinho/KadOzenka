@@ -31,7 +31,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var report = CustomReportsService.GetFileInfo(reportId);
 
-			var model = new ReportFileGeneralInfoModel
+			var model = new FileGeneralInfoModel
 			{
 				User = SRDCache.Users[(int)report.UserId].FullName,
 				CreationDate = report.CreationDate,

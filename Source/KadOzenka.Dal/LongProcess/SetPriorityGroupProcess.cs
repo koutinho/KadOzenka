@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.LongProcess
 				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettings>();
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => PriorityGrouping.MaxCount, () => PriorityGrouping.CurrentCount);
 
-				long reportId = PriorityGrouping.SetPriorityGroup(settings);
+				var url = PriorityGrouping.SetPriorityGroup(settings);
 				//TestLongRunningProcess(settings);
 
 				LongProcessProgressLogger.StopLogProgress();
@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.LongProcess
 				WorkerCommon.SetProgress(processQueue, 100);
 
 				string message = "Операция успешно завершена. " +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""{url}"">Скачать результат</a>";
 
 
 				NotificationSender.SendNotification(processQueue, "Результат Операции группировки", message);

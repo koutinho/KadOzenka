@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.GbuObject
 		/// <summary>
 		/// Выборка из справочника ЦОД по кадастровому номеру
 		/// </summary>
-		public static long Run(CodSelectionSettings setting)
+		public static string Run(CodSelectionSettings setting)
         {
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Выборки из справочника ЦОД");
 
@@ -104,11 +104,11 @@ namespace KadOzenka.Dal.GbuObject
             MaxCount = 0;
 
 
-            long reportId = reportService.SaveReport();
+            var reportId = reportService.SaveReport();
 
             _log.Debug("Закончена операция Выборки из справочника ЦОД");
 
-            return reportId;
+            return reportService.GetUrlToDownloadFile(reportId);
         }
 
         public static void RunOneGbu(GbuReportService reportService, OMMainObject obj, CodSelectionSettings setting, List<OMCodDictionary> dictionaryItems, DateTime dt)

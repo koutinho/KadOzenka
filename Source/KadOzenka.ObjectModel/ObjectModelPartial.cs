@@ -3637,6 +3637,30 @@ namespace ObjectModel.Common
 namespace ObjectModel.Common
 {
     /// <summary>
+    /// 814 Таблица с отчетами для основных операций системы
+    /// </summary>
+    public partial class OMGbuOperationsReports
+    {
+
+        public OMGbuOperationsReports()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMGbuOperationsReports(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
     /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
     /// </summary>
     public partial class OMAllReportsInSystemView

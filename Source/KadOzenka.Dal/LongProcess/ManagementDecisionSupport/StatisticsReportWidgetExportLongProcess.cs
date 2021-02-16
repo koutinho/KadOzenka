@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.LongProcess.ManagementDecisionSupport
 				}
 
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={result.ReportId.Value}"">Скачать результат</a>";
+				                 $@"<a href=""{result.UrlToDownloadReport}"">Скачать результат</a>";
 				NotificationSender.SendNotification(processQueue, settings.StatisticsReportExportType.GetEnumDescription(), message);
 
 				WorkerCommon.SetProgress(processQueue, 100);

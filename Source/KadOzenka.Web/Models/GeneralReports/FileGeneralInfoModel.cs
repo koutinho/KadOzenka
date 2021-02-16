@@ -3,7 +3,7 @@ using KadOzenka.Web.Models.KoBase;
 
 namespace KadOzenka.Web.Models.GeneralReports
 {
-	public class ReportFileGeneralInfoModel
+	public class FileGeneralInfoModel
 	{
 		public string User { get; set; }
 		public string Status { get; set; }
@@ -13,7 +13,7 @@ namespace KadOzenka.Web.Models.GeneralReports
 		public FileSize FileSize { get; set; }
 
 
-		public ReportFileGeneralInfoModel()
+		public FileGeneralInfoModel()
 		{
 			FileSize = new FileSize();
 		}

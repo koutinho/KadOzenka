@@ -85,9 +85,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				Run(task, evaluativeGroupAttribute, reportService);
 
-				reportService.SaveReport( OMTask.GetRegisterId(), "KoTasks");
+				var reportId = reportService.SaveReport();
 
-				var message = "Операция успешно завершена.<br>" + $@"<a href=""{reportService.UrlToDownload}"">Скачать результат</a>";
+				var message = "Операция успешно завершена.<br>" + $@"<a href=""{reportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
 				NotificationSender.SendNotification(processQueue, GetMessageSubject(task.Name), message);
 				WorkerCommon.SetProgress(processQueue, 100);
 

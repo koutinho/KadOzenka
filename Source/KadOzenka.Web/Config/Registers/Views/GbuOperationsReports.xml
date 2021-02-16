@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="true" RegisterId="1000811" DefaultLayoutId="1000811" Description="Созданные отчеты" LinkedRegistersList="950"
+<RegisterView IsBasic="true" RegisterId="814" DefaultLayoutId="10009364" Description="Выгрузка отчетов по основным операциям" LinkedRegistersList="950"
               ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
   <Buttons>
-    <Button Caption="Скачать" NavigateURL="/GeneralReports/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
+    <Button Caption="Скачать" NavigateURL="/GbuOperationsReports/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
       <Parameters>
         <Parameter Key="reportId" Value="[ObjectID]" />
       </Parameters>
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>
-              <Condition Key="[81100700]" Operation="NotEqual" Value="Завершена" />
+            <!-- Разрешаем скачивать только завершенные файлы -->
+            <Condition Key="[81400500]" Operation="NotEqual" Value="2" ByRef="true"/>
           </Conditions>
         </ConditionGroup>
       </ConditionGroups>
@@ -18,7 +19,7 @@
 
 
   <Tabs>
-    <Tab Caption="Основные данные" NavigateURL="~/GeneralReports/ReportFileCard">
+    <Tab Caption="Основные данные" NavigateURL="~/GbuOperationsReports/ReportFileCard">
       <Parameters>
         <Parameter Key="reportId" Value="[ObjectID]" />
       </Parameters>

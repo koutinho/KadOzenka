@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции наследования атрибутов
         /// </summary>
-        public static long Run(GbuInheritanceAttributeSettings setting)
+        public static string Run(GbuInheritanceAttributeSettings setting)
         {
 	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Наследования");
 
@@ -81,9 +81,10 @@ namespace KadOzenka.Dal.GbuObject
                 units.Clear();
                 _log.Debug("Переменная очищена. Записей {Count}", units.Count);
             }
-            
-            long reportId = reportService.SaveReport();
-            return reportId;
+
+            var reportId = reportService.SaveReport();
+
+            return reportService.GetUrlToDownloadFile(reportId);
         }
 
         public static void Inheritance(InheritanceUnitPure unit, GbuInheritanceAttributeSettings setting, ObjectModel.Directory.PropertyTypes typecode, GbuReportService reportService)

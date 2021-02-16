@@ -12,6 +12,12 @@ namespace ObjectModel.Common
 		public string FileNameOnServer => Id.ToString();
 		public DateTime DateOnServer => CreationDate;
 	}
+
+	public partial class OMGbuOperationsReports
+	{
+		public string FileNameOnServer => Id.ToString();
+		public DateTime DateOnServer => CreationDate;
+	}
 }
 
 

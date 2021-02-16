@@ -2,25 +2,28 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
-using ObjectModel.Gbu;
 using System.Text;
+using DocumentFormat.OpenXml.Presentation;
 using Ionic.Zip;
+using KadOzenka.Dal.GbuObject.Dto;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.GbuObject
 {
 	public class GbuReportService : IDisposable, IGbuReportService
 	{
-		//TODO Dal не должен знать о контроллере
-		public string UrlToDownload => $"/DataExport/DownloadExportResult?exportId={ReportId}";
-		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
+		public string DefaultExtension => "xlsx";
+		public string FileStorageKey => "GbuOperationsReportsPath";
 		public static readonly int MaxRowsCountInSheet = 1000000;
+
+		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
+		
 
 		public CellStyle WarningCellStyle { get; }
 		public CellStyle ErrorCellStyle { get; }
@@ -30,7 +33,6 @@ namespace KadOzenka.Dal.GbuObject
 		private string _fileName;
 		private ZipFile _zipFile;
 		private Row CurrentRow { get; set; }
-		private long ReportId { get; set; }
 		private readonly List<Column> _columnsWidth;
 		private List<string> _headers;
 		private bool _applyStyle;
@@ -52,6 +54,11 @@ namespace KadOzenka.Dal.GbuObject
 				SpreadsheetColor.FromName(ColorName.Black));
 
 			CreateFile();
+		}
+
+		public GbuReportService()
+		{
+			
 		}
 
 
@@ -166,11 +173,11 @@ namespace KadOzenka.Dal.GbuObject
 			DataExportCommon.AddRow(row.File.Worksheets[0], row.Index, values.ToArray());
 		}
 
-		public long SaveReport(long? mainRegisterId = null, string registerViewId = null)
+		public long SaveReport()
 		{
 			return _zipFile == null 
-				? SaveReportXlsx(mainRegisterId, registerViewId) 
-				: SaveReportZip( mainRegisterId, registerViewId);
+				? SaveReportXlsx() 
+				: SaveReportZip();
 		}
 
 		public ReportFile GetReportFile()
@@ -178,7 +185,7 @@ namespace KadOzenka.Dal.GbuObject
 			ReportFile file = new ReportFile();
 			if (_zipFile == null)
 			{
-				file.FileName = $"{_fileName}.xlsx";
+				file.FileName = $"{_fileName}.{DefaultExtension}";
 				file.FileStream = new MemoryStream();
 				_curretExcelFile.Save(file.FileStream, SaveOptions.XlsxDefault);
 				file.FileStream.Seek(0, SeekOrigin.Begin);
@@ -195,6 +202,35 @@ namespace KadOzenka.Dal.GbuObject
 		public void Dispose()
 		{
 			_zipFile?.Dispose();
+		}
+
+		public string GetUrlToDownloadFile(long reportId)
+		{
+			//TODO Dal не должен знать о контроллере
+			return $"/GbuOperationsReports/Download?reportId={reportId}";
+		}
+
+
+		public ReportInfo GetFile(long reportId)
+		{
+			var report = GetFileInfo(reportId);
+
+			var fileStream = FileStorageManager.GetFileStream(FileStorageKey, report.DateOnServer, report.FileNameOnServer);
+
+			return new ReportInfo
+			{
+				Stream = fileStream,
+				FullFileName = report.FileName
+			};
+		}
+
+		public OMGbuOperationsReports GetFileInfo(long reportId)
+		{
+			var report = OMGbuOperationsReports.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
+			if (report == null)
+				throw new Exception($"В журнале с сохраненными отчетами не найдена запись с ИД '{reportId}'");
+
+			return report;
 		}
 
 		#region Support Methods
@@ -289,75 +325,67 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-		private long SaveReportXlsx( long? mainRegisterId = null, string registerViewId = null)
+		private long SaveReportXlsx()
 		{
 			_log.Debug("Начато сохранение отчета через xlsx");
 
+			var stream = new MemoryStream();
+			_curretExcelFile.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+
+			return SaveReportGeneral(stream, _fileName, "xlsx");
+		}
+
+		private long SaveReportZip()
+		{
+			_log.Debug("Сохранение отчета через zip");
+
+			var zipStream = CreateZipMemoryStream();
+
+			using (_log.TimeOperation("Сохранение zip-файла"))
+			{
+				return SaveReportGeneral(zipStream, _fileName, "zip");
+			}
+		}
+
+		private long SaveReportGeneral(Stream stream, string fileName, string fileExtension)
+		{
+			_log.Debug("Начато сохранение отчета");
+
+			var export = new OMGbuOperationsReports
+			{
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				CreationDate = DateTime.Now,
+				Status_Code = ExportStatus.Added,
+				FileName = $"{fileName}.{fileExtension}"
+			};
 			try
 			{
-				MemoryStream stream = new MemoryStream();
-				_curretExcelFile.Save(stream, SaveOptions.XlsxDefault);
-				stream.Seek(0, SeekOrigin.Begin);
-
-				var currentDate = DateTime.Now;
-				var export = new OMExportByTemplates
-				{
-					UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-					DateCreated = currentDate,
-					DateStarted = currentDate,
-					Status = (int)ImportStatus.Added,
-					FileResultTitle = _fileName,
-					FileExtension = "xlsx",
-					MainRegisterId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId(),
-					RegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects"
-				};
 				export.Save();
 
-				export.DateFinished = DateTime.Now;
-				export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-				export.Status = (long)ImportStatus.Completed;
-				FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
-				export.Save();
+				FileStorageManager.Save(stream, FileStorageKey, export.DateOnServer, export.FileNameOnServer);
 
-				_log.ForContext("ResultFileName", export.ResultFileName)
+				SaveExportResult(export, ExportStatus.Completed);
+
+				_log.ForContext("ResultFileName", export.FileName)
 					.ForContext("FileId", export.Id)
 					.Debug("Закончено сохранение отчета {FileName}", _fileName);
 
-				ReportId = export.Id;
-
-				return ReportId;
+				return export.Id;
 			}
 			catch (Exception ex)
 			{
-				_log.Error(ex, "Сохранение отчета завершилось исключением");
-				ErrorManager.LogError(ex);
+				SaveExportResult(export, ExportStatus.Faulted);
+				_log.Error(ex, "Сохранение отчета завершилось с ошибкой");
 				throw;
 			}
 		}
 
-		private long SaveReportZip(long? mainRegisterId = null, string registerViewId = null)
+		private void SaveExportResult(OMGbuOperationsReports export, ExportStatus status)
 		{
-			_log.Debug("Сохранение отчета через zip");
-
-			try
-			{
-				MemoryStream zipStream = CreateZipMemoryStream();
-				var zipFileName = _fileName;
-				var registerId = mainRegisterId.HasValue ? mainRegisterId.Value : OMMainObject.GetRegisterId();
-				var resultRegisterViewId = !string.IsNullOrEmpty(registerViewId) ? registerViewId : "GbuObjects";
-
-				_log.Debug($"Начато сохранение zip-файла '{zipFileName}'");
-				ReportId = SaveReportDownload.SaveReport(zipFileName, zipStream, registerId, resultRegisterViewId, "zip");
-				_log.Debug($"Закончено сохранение zip-файла '{zipFileName}'");
-
-				return ReportId;
-			}
-			catch (Exception ex)
-			{
-				_log.Error(ex, "Сохранение отчета завершилось исключением");
-				ErrorManager.LogError(ex);
-				throw;
-			}
+			export.Status_Code = status;
+			export.FinishDate = DateTime.Now;
+			export.Save();
 		}
 
 		private MemoryStream CreateZipMemoryStream()

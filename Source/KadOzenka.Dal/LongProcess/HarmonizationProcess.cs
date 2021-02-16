@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.LongProcess
                 var harmonization = new Harmonization(settings, _log);
                 LongProcessProgressLogger.StartLogProgress(processQueue, () => harmonization.MaxObjectsCount, () => harmonization.CurrentCount);
 
-                var reportId = harmonization.Run();
+                var urlToDownload = harmonization.Run();
 
                 //TestLongRunningProcess(settings);
                 LongProcessProgressLogger.StopLogProgress();
@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.LongProcess
                 _log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 
                 string message = "Операция успешно завершена." +
-                                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+                                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
                 NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", message);
             }

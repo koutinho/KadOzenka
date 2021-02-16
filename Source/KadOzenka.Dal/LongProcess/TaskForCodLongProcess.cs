@@ -172,11 +172,11 @@ namespace KadOzenka.Dal.LongProcess
 		        GbuReportService.AddValue("Изменение ФС", statusNumberColumn.Index, row);
 	        });
 
-	        GbuReportService.SaveReport();
+	        var reportId = GbuReportService.SaveReport();
 
 	        _log.Information("Закончена генерация отчета");
 
-			return GbuReportService.UrlToDownload;
+			return GbuReportService.GetUrlToDownloadFile(reportId);
         }
 
         private string GetMessageSubject(string taskName)

@@ -62,8 +62,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			try
 			{
 				_log.Information("Начато обновление кадастровых данных для задания на оценку {TaskId}", processQueue.ObjectId.Value);
-				var reportId = UpdateTaskCadastralData(processQueue.ObjectId.Value);
-				NotificationSender.SendNotification(processQueue, "Результат Операции Актуализации кадастровых данных", GetEmailMessage(reportId));
+				var urlToDownload = UpdateTaskCadastralData(processQueue.ObjectId.Value);
+				NotificationSender.SendNotification(processQueue, "Результат Операции Актуализации кадастровых данных", GetEmailMessage(urlToDownload));
 				WorkerCommon.SetProgress(processQueue, 100);
 				_log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 			}
@@ -76,7 +76,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-		private long UpdateTaskCadastralData(long taskId)
+		private string UpdateTaskCadastralData(long taskId)
 		{
 			SetupInitialSettings(taskId);
 			var units = GetUnits(taskId);
@@ -209,9 +209,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			
 
 			_log.Debug("Сохранение отчета");
-			var reportId = reportService.SaveReport( OMTask.GetRegisterId(), "KoTasks");
+			var reportId = reportService.SaveReport();
 
-			return reportId;
+			return reportService.GetUrlToDownloadFile(reportId);
 		}
 
 		private Dictionary<long, string> GetBuildingCadastralQuarterDictionaryForPlacements(List<long> placementGbuObjIds, DateTime currentDate, Dictionary<long, string> buildingCadastralNumberDictionary)
@@ -337,10 +337,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			reportService.AddValue(buildingKnNew, 4, rowNumber);
 		}
 
-		private string GetEmailMessage(long reportId)
+		private string GetEmailMessage(string urlToDownload)
 		{
 			return $"Операция Актуализации кадастровых данных для задания на оценку '{_taskName}' успешно завершена. " +
-			       $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+			       $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 		}
 	}
 }

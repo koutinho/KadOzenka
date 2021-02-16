@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 
 			ReportService.Verify(foo => foo.AddHeaders(It.IsAny<List<string>>()), Times.Once);
 			ReportService.Verify(foo => foo.GetCurrentRow(), Times.Never);
-			ReportService.Verify(foo => foo.SaveReport(It.IsAny<long?>(), It.IsAny<string>()), Times.Once);
+			ReportService.Verify(foo => foo.SaveReport(), Times.Once);
 		}
 
 		[Test]
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 
 			ReportService.Verify(foo => foo.AddHeaders(It.IsAny<List<string>>()), Times.Once);
 			ReportService.Verify(foo => foo.GetCurrentRow(), Times.AtLeast(filteredUnits.Count));
-			ReportService.Verify(foo => foo.SaveReport(It.IsAny<long?>(), It.IsAny<string>()), Times.Once);
+			ReportService.Verify(foo => foo.SaveReport(), Times.Once);
 		}
 
 

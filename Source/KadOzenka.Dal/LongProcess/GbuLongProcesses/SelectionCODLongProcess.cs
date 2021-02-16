@@ -32,14 +32,14 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 				_log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
 
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => SelectionCOD.MaxCount, () => SelectionCOD.CurrentCount);
-				long reportId = SelectionCOD.Run(settings);
+				var urlToDownload = SelectionCOD.Run(settings);
 				LongProcessProgressLogger.StopLogProgress();
 
 				WorkerCommon.SetProgress(processQueue, 100);
 				_log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
 				NotificationSender.SendNotification(processQueue, "Результат Операции выборки из справочника ЦОД", message);
 			}

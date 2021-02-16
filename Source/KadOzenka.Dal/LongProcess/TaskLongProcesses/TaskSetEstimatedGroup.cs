@@ -33,11 +33,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var koObjectSetEstimatedGroup = new KoObjectSetEstimatedGroup();
                 LongProcessProgressLogger.StartLogProgress(processQueue, () => koObjectSetEstimatedGroup.CountAllUnits, () => koObjectSetEstimatedGroup.CurrentCount);
 
-				long reportId = koObjectSetEstimatedGroup.Run(param);
+				var urlToDownload = koObjectSetEstimatedGroup.Run(param);
 				LongProcessProgressLogger.StopLogProgress();
 
 				string message = "Присвоение оценочной группы успешно завершено." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 				NotificationSender.SendNotification(processQueue, "Присвоение оценочной группы", message);
 
                 WorkerCommon.SetProgress(processQueue, 100);

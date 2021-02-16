@@ -37,7 +37,7 @@ namespace KadOzenka.Web.Controllers
 				fileLocation = fileLocation.Replace(".pdf", ".zip");
 			}
 
-			var model = new ReportFileGeneralInfoModel
+			var model = new FileGeneralInfoModel
 			{
 				User = SRDCache.Users[(int)platformReport.UserId].FullName,
 				CreationDate = platformReport.CreateDate,

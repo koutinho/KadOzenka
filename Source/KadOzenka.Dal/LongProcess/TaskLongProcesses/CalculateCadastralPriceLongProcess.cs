@@ -35,11 +35,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var settings = processQueue.Parameters.DeserializeFromXml<KOCalcSettings>();
-				var reportId = PerformProc(settings);
+				var urlToDownload = PerformProc(settings);
 
 				WorkerCommon.SetProgress(processQueue, 100);
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", message);
 			}
 			catch (Exception ex)
@@ -50,10 +50,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-		private long PerformProc(KOCalcSettings settings)
+		private string PerformProc(KOCalcSettings settings)
 		{
 			var result = OMGroup.CalculateSelectGroup(settings);
-			var reportId = FormReport(result);
+			var urlToDownload = FormReport(result);
 
 			var taskIds = settings.TaskFilter;
 			if (taskIds.Count > 0)
@@ -68,10 +68,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 			
 
-			return reportId;
+			return urlToDownload;
 		}
 
-		private static long FormReport(List<CalcErrorItem> result)
+		private static string FormReport(List<CalcErrorItem> result)
 		{
 			using var reportService = new GbuReportService("Отчет по итогам расчета кадастровой стоимости");
 			reportService.AddHeaders(new List<string> { "Оценочная группа", "Задание на оценку", "Тип объекта", "КН", "Ошибка"});
@@ -110,7 +110,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 
 			var reportId = reportService.SaveReport();
-			return reportId;
+
+			return reportService.GetUrlToDownloadFile(reportId);
 		}
 	}
 }
