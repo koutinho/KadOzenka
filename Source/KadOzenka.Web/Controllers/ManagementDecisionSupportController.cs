@@ -495,7 +495,7 @@ namespace KadOzenka.Web.Controllers
 
         #region Reports with additional configuration
 
-        [HttpGet]
+        [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public ActionResult PreviousToursReportConfiguration(StatisticalDataModel generalModel)
         {
