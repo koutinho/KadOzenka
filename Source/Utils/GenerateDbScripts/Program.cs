@@ -1,5 +1,6 @@
 ﻿using Core.ErrorManagment;
 using Core.Shared.Extensions;
+using Npgsql;
 using Platform.Configurator;
 using Platform.Configurator.ExportProfile;
 using System;
@@ -10,16 +11,49 @@ using System.Linq;
 
 namespace GenerateDbScripts
 {
+
     class Program
     {
+
         static void Main(string[] args)
         
 		{
-			if (ConfigurationManager.AppSettings["DbExporterEnabled"].ParseToBoolean())
-				ExportDb();
+            if (ConfigurationManager.AppSettings["DbExporterEnabled"].ParseToBoolean())
+                ExportDb();
 
-			if (ConfigurationManager.AppSettings["CreateDbTableForRegister"].ParseToBoolean())
-				CreateDbTableForRegister();
+            if (ConfigurationManager.AppSettings["CreateDbTableForRegister"].ParseToBoolean())
+                CreateDbTableForRegister();
+
+            if (ConfigurationManager.AppSettings["CreateDbFunctions"].ParseToBoolean())
+				new GenerateFunctions(
+						ConfigurationManager.AppSettings["DbExporterConnectionString"],
+                        ConfigurationManager.AppSettings["DbExporterConnectionString"].Split("Username=")[1].Split(";")[0],
+						ConfigurationManager.AppSettings["GetFunctionsSQLReuqest"],
+						ConfigurationManager.AppSettings["FunctionsTemplate"],
+						ConfigurationManager.AppSettings["DbExporterBaseFolder"],
+						ConfigurationManager.AppSettings["FunctionsFileName"]
+					).Generate();
+
+			if (ConfigurationManager.AppSettings["CreateDbTriggers"].ParseToBoolean())
+				new GenerateTriggers(
+						ConfigurationManager.AppSettings["DbExporterConnectionString"],
+						ConfigurationManager.AppSettings["GetTriggersSQLReuqest"],
+						ConfigurationManager.AppSettings["TriggersTemplate"],
+						ConfigurationManager.AppSettings["DbExporterBaseFolder"],
+						ConfigurationManager.AppSettings["TriggersFileName"]
+					).Generate();
+
+			if (ConfigurationManager.AppSettings["CreateDbIndexes"].ParseToBoolean())
+				new GenerateIndexes(
+						ConfigurationManager.AppSettings["DbExporterConnectionString"],
+						ConfigurationManager.AppSettings["GetIndexesSQLReuqest"],
+						ConfigurationManager.AppSettings["IndexesTemplate"],
+						ConfigurationManager.AppSettings["DbExporterBaseFolder"],
+						ConfigurationManager.AppSettings["IndexesFileName"]
+					).Generate();
+
+			Console.WriteLine("Done");
+			Console.ReadLine();
 		}
 
 		private static void ExportDb()
@@ -44,11 +78,6 @@ namespace GenerateDbScripts
 			{
 				Console.WriteLine(ex.Message);
 			}
-
-			
-
-			Console.WriteLine("Done");
-			Console.ReadLine();
 		}
 
 		private static void CreateDbTableForRegister()
@@ -67,12 +96,11 @@ namespace GenerateDbScripts
 				{
 					int errorId = ErrorManager.LogError(ex);
 
-					Console.WriteLine($"При формировании физической таблицы в БД для реестра \"{registerId}\" взниклаошбка: {ex.Message} (подробно в журнале № {errorId})");
+					Console.WriteLine($"При формировании физической таблицы в БД для реестра \"{registerId}\" возникла ошибка: {ex.Message} (подробно в журнале № {errorId})");
 				}
 			}
-
-			Console.WriteLine("Done");
-			Console.ReadLine();
 		}
+
 	}
+
 }
