@@ -114,6 +114,8 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 			container.AddTransient(typeof(IModelingService), sp => ModelingService.Object);
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
+			container.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
+			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
 
 			AddServicesToContainer(container);
 
