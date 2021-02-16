@@ -337,8 +337,6 @@
             });
 
         $('input[type="radio"][name="ReportType"]').change(onReportTypeChanged);
-        $(".pricingFactorsCompositionForPreviousTours").click(onCompositionForPreviousToursClick);
-        $(".cadastralCostDeterminationResults").click(onCadastralCostDeterminationResultsClick);
     });
 
 
@@ -351,8 +349,6 @@
     function onTaskFilterChanged(e) {
         var currentReportType = $('input[type="radio"][name="ReportType"]:checked').val();
         if (currentReportType != '@((long)StatisticalDataType.AdditionalFormsMarketDataInfo)' &&
-            currentReportType != '@((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)' &&
-            currentReportType != '@((long)StatisticalDataType.CadastralCostDeterminationResults)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsOks)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsZu)') {
             var value = this.value();
@@ -378,7 +374,6 @@
         formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
         kendo.ui.progress($('body'), true);
         $.post("/ManagementDecisionSupport/ProcessReport", formObject).done(function (response) {
-            console.log('response', response);
             if (response.Errors) {
                 var errors = getErrors(response.Errors);
                 Common.ShowError(errors);
@@ -388,7 +383,10 @@
                 openReportViewer(response);
                 return;
             }
-            Common.ShowMessage('Процесс поставлен в очередь');
+            $("#reportsWithAdditionalConfigurationModalContent").html(response);
+            var modal = $("#reportsWithAdditionalConfigurationModal");
+            ShowModal(modal, '50%', '25%', "Параметры отчета");
+            
         }).fail(function (response, textStatus, errorThrown) {
             Common.ShowError(response.responseText);
         }).always(function () {
@@ -457,34 +455,4 @@
         }
     }
 
-
-    function onCompositionForPreviousToursClick() {
-        getViewWithAdditionalParameters('@Url.Action("PreviousToursReportConfiguration", "ManagementDecisionSupport")');
-    }
-    function onCadastralCostDeterminationResultsClick() {
-        getViewWithAdditionalParameters('@Url.Action("CadastralCostDeterminationResultsConfiguration", "ManagementDecisionSupport")');
-    }
-
-    function getViewWithAdditionalParameters(url) {
-        var formObject = Common.Functions.FormToObject($('.form-horizontal'));
-        formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            //через Get не передаются данные формы
-            type: 'POST',
-            url: url,
-            data: formObject,
-            success: function (response) {
-                $("#reportsWithAdditionalConfigurationModalContent").html(response);
-                var modal = $("#reportsWithAdditionalConfigurationModal");
-                ShowModal(modal, '50%', '25%', "Параметры отчета");
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
-    }
 </script>

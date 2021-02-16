@@ -2,7 +2,7 @@
 @model KadOzenka.Web.Models.ManagementDecisionSupport.CadastralCostDeterminationResultsModel
 
 <div class="form-horizontal col-sm-12" style="padding: 5%">
-    @using (Html.BeginForm("ProcessCadastralCostDeterminationResultsReport", "ManagementDecisionSupport", FormMethod.Get, new { id = "getReportForm" }))
+    @using (Html.BeginForm("ProcessCadastralCostDeterminationResultsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
     {
         if (Model.TaskIds == null || Model.TaskIds.Length == 0)
         {

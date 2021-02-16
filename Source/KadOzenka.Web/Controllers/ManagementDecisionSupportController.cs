@@ -453,6 +453,10 @@ namespace KadOzenka.Web.Controllers
 			if (!ModelState.IsValid)  
 				return GenerateMessageNonValidModel();
 
+			//есть три типа отчетов
+			//1. отчеты, которые идут через платформу - GetStatisticalDataReportUrl(model)
+			//2. отчеты, которые идут через свои собственные процессы и не требуют дополнительных входных параметров - model.IsForBackground
+			//3. отчеты, которые идут через свои собственные процессы и требуют дополнительных входных параметров - model.IsWithAdditionalConfiguration
 			if (model.IsForBackground)
 			{
 				var parameters = new ReportLongProcessInputParameters
@@ -462,6 +466,13 @@ namespace KadOzenka.Web.Controllers
 				_statisticalDataService.AddProcessToQueue(model.ReportType, parameters);
 				
 				return Ok();
+			}
+			if (model.IsWithAdditionalConfiguration)
+			{
+				if (!model.ReportsWithAdditionalConfiguration.TryGetValue(model.ReportType.GetValueOrDefault(), out var actionName))
+					throw new Exception("Формирование отчета с дополнительной конфигурацией недопустимо. Обратитесь к администратору.");
+
+				return RedirectToAction(actionName, model);
 			}
 
 			return GetStatisticalDataReportUrl(model);
@@ -495,14 +506,14 @@ namespace KadOzenka.Web.Controllers
 
         #region Reports with additional configuration
 
-        [HttpPost]
+        [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public ActionResult PreviousToursReportConfiguration(StatisticalDataModel generalModel)
+        public ActionResult PreviousToursReportConfiguration(StatisticalDataModel model)
         {
-            var lastTour = _tourService.GetTourById(generalModel.TourId);
+            var lastTour = _tourService.GetTourById(model.TourId);
             var previousTours = OMTour.Where(x => x.Year <= lastTour.Year).OrderBy(x => x.Year).SelectAll().Execute();
 
-            var model = new PreviousToursConfigurationModel
+            var reportConfigurationModel = new PreviousToursConfigurationModel
             {
                 AvailableTours = previousTours.Select(x => new SelectListItem
                 {
@@ -511,10 +522,10 @@ namespace KadOzenka.Web.Controllers
                 }).ToList()
             };
 
-            return PartialView("~/Views/ManagementDecisionSupport/Partials/PreviousToursReportConfiguration.cshtml", model);
+            return PartialView("~/Views/ManagementDecisionSupport/Partials/PreviousToursReportConfiguration.cshtml", reportConfigurationModel);
         }
 
-        [HttpGet]
+        [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
@@ -547,19 +558,19 @@ namespace KadOzenka.Web.Controllers
             return GetStatisticalDataReportUrl(model.Map());
         }
 
-        [HttpPost]
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public ActionResult CadastralCostDeterminationResultsConfiguration(StatisticalDataModel generalModel)
+        public ActionResult CadastralCostDeterminationResultsConfiguration(StatisticalDataModel model)
         {
-	        var model = new CadastralCostDeterminationResultsModel
+	        var reportConfigurationModel = new CadastralCostDeterminationResultsModel
 			{
-		       TaskIds = generalModel.TaskFilter
+		       TaskIds = model.TaskFilter
 	        };
 
-	        return PartialView("~/Views/ManagementDecisionSupport/Partials/CadastralCostDeterminationResultsConfiguration.cshtml", model);
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/CadastralCostDeterminationResultsConfiguration.cshtml", reportConfigurationModel);
         }
 
-        [HttpGet]
+        [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public IActionResult ProcessCadastralCostDeterminationResultsReport(CadastralCostDeterminationResultsModel model)
         {
