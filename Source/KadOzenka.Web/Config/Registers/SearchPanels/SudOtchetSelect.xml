@@ -6,8 +6,8 @@
 
       <ControlElement Caption="Дата" ID="date_panel" OwnType="Panel">
         <children>
-          <ControlElement Caption="с " ID="create_date_from" OwnType="Calendar" AttributeNumber="30800300" QueryOperation="MoreThan" />
-          <ControlElement Caption="по" ID="create_date_to" OwnType="Calendar" AttributeNumber="30800300" QueryOperation="LessThan" />
+          <ControlElement Caption="с " ID="create_date_from" OwnType="Calendar" AttributeNumber="30800300" QueryOperation="MoreOrEqual" />
+          <ControlElement Caption="по" ID="create_date_to" OwnType="Calendar" AttributeNumber="30800300" QueryOperation="LessOrEqual" />
         </children>
       </ControlElement>
 

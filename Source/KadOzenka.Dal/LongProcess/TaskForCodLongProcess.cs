@@ -5,9 +5,12 @@ using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Dal.Units.Repositories;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
@@ -17,13 +20,35 @@ namespace KadOzenka.Dal.LongProcess
     public class TaskForCodLongProcess : LongProcess
     {
 	    private static readonly ILogger _log = Log.ForContext<ExportAttributeToKoProcess>();
-	    private GbuObjectService GbuObjectService { get; }
-	    private RosreestrRegisterService RosreestrRegisterService { get; }
+	    private ITaskService TaskService { get; }
+	    private IRosreestrRegisterService RosreestrRegisterService { get; }
+	    private IGbuObjectService GbuObjectService { get; }
+		private IGbuReportService GbuReportService { get; }
+		private IUnitRepository UnitRepository { get; }
+		private IWorkerCommonWrapper Worker { get; }
 
-	    public TaskForCodLongProcess()
-	    {
-		    RosreestrRegisterService = new RosreestrRegisterService();
+
+		public TaskForCodLongProcess(ITaskService taskService, IRosreestrRegisterService rosreestrRegisterService, 
+			IGbuObjectService gbuObjectService, IGbuReportService gbuReportService, IUnitRepository unitRepository,
+			IWorkerCommonWrapper worker, INotificationSender notificationSender, ILongProcessProgressLogger logger)
+			: base(notificationSender, logger)
+		{
+			TaskService = taskService;
+			RosreestrRegisterService = rosreestrRegisterService;
+			GbuObjectService = gbuObjectService;
+			GbuReportService = gbuReportService;
+			UnitRepository = unitRepository;
+			Worker = worker;
+		}
+
+		public TaskForCodLongProcess()
+		{
+			TaskService = new TaskService();
+			RosreestrRegisterService = new RosreestrRegisterService();
 			GbuObjectService = new GbuObjectService();
+			GbuReportService = new GbuReportService("Задания для ЦОД");
+			Worker = new WorkerCommonWrapper();
+			UnitRepository = new UnitRepository();
 		}
 
 
@@ -34,8 +59,9 @@ namespace KadOzenka.Dal.LongProcess
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
         {
-            WorkerCommon.SetProgress(processQueue, 0);
-            _log.ForContext("TaskId", processQueue.ObjectId).Debug("Запущен процесс для выгрузки заданий для ЦОД");
+	        Worker.SetProgress(processQueue, 0);
+
+			_log.ForContext("TaskId", processQueue.ObjectId).Debug("Запущен процесс для выгрузки заданий для ЦОД");
 
 			var taskName = string.Empty;
             try
@@ -44,13 +70,13 @@ namespace KadOzenka.Dal.LongProcess
 	            if (!taskId.HasValue)
 	            {
 		            var message = Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId;
-		            WorkerCommon.SetMessage(processQueue, message);
-		            WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-		            SendMessage(processQueue, message, GetMessageSubject(taskName));
+		            Worker.SetMessage(processQueue, message);
+		            Worker.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+		            NotificationSender.SendNotification(processQueue, GetMessageSubject(taskName), message);
 		            return;
 	            }
 
-	            taskName = new TaskService().GetTemplateForTaskName(taskId.Value);
+	            taskName = TaskService.GetTemplateForTaskName(taskId.Value);
 
 				var units = GetUnits(taskId.Value);
 
@@ -58,19 +84,19 @@ namespace KadOzenka.Dal.LongProcess
 
 				var successMessage = "Формирование задания для ЦОД успешно завершено.<br>" +
 				              $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
-				SendMessage(processQueue, successMessage, GetMessageSubject(taskName));
+				NotificationSender.SendNotification(processQueue, GetMessageSubject(taskName), successMessage);
 			}
             catch (Exception exception)
             {
 	            var errorId = ErrorManager.LogError(exception);
 	            
 	            var message = $"Операция завершилась с ошибкой. Подробности в журнале (ИД {errorId}).\n{exception.Message}";
-				SendMessage(processQueue, message, GetMessageSubject(taskName));
+	            NotificationSender.SendNotification(processQueue, GetMessageSubject(taskName), message);
 
 				_log.Error(exception, "Во время работы процесса выброшена ошибка");
 			}
-            
-			WorkerCommon.SetProgress(processQueue, 100);
+
+            Worker.SetProgress(processQueue, 100);
 			_log.Debug("Процесс для выгрузки заданий для ЦОД завершен");
 		}
 
@@ -81,14 +107,13 @@ namespace KadOzenka.Dal.LongProcess
         {
 	        _log.Debug("Начата загрузка ЕО для Задания на оценку с ИД {TaskId}", taskId);
 
-	        var units = OMUnit.Where(x => x.TaskId == taskId && x.ObjectId != null)
-		        .Select(x => new
-		        {
-					x.ObjectId,
-			        x.CadastralNumber
-		        }).Execute();
+	        var units = UnitRepository.GetEntitiesByCondition(x => x.TaskId == taskId && x.ObjectId != null, x => new
+	        {
+		        x.ObjectId,
+		        x.CadastralNumber
+	        });
 
-	        _log.Debug($"Загружено {units.Count} ЕО");
+	        _log.Debug("Загружено unitsCount ЕО", units.Count);
 
 	        return FilterUnits(units);
         }
@@ -101,7 +126,7 @@ namespace KadOzenka.Dal.LongProcess
 
 	        var fsAttributes = GbuObjectService.GetAllAttributes(
 			        units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(),
-			        new List<long> { RosreestrRegisterService.RegisterId },
+			        new List<long> { RosreestrRegisterService.RosreestrRegisterId },
 			        new List<long> { fs.Id },
 			        DateTime.Now.GetEndOfTheDay(),
 			        isLight: true);
@@ -124,9 +149,7 @@ namespace KadOzenka.Dal.LongProcess
         {
 	        _log.Information("Запущена генерация отчета");
 
-			using var reportService = new GbuReportService("Задания для ЦОД");
-
-	        var cadastralNumberColumn = new GbuReportService.Column
+			var cadastralNumberColumn = new GbuReportService.Column
 	        {
 		        Index = 0,
 		        Header = "Кадастровый номер",
@@ -138,22 +161,22 @@ namespace KadOzenka.Dal.LongProcess
 		        Header = "Статус после обновления",
 		        Width = 8
 	        };
-	        reportService.AddHeaders(new List<string> { cadastralNumberColumn.Header, statusNumberColumn.Header });
-	        reportService.SetIndividualWidth(cadastralNumberColumn.Index, cadastralNumberColumn.Width);
-	        reportService.SetIndividualWidth(statusNumberColumn.Index, statusNumberColumn.Width);
+	        GbuReportService.AddHeaders(new List<string> { cadastralNumberColumn.Header, statusNumberColumn.Header });
+	        GbuReportService.SetIndividualWidth(cadastralNumberColumn.Index, cadastralNumberColumn.Width);
+	        GbuReportService.SetIndividualWidth(statusNumberColumn.Index, statusNumberColumn.Width);
 
 	        units.ForEach(x =>
 	        {
-		        var row = reportService.GetCurrentRow();
-		        reportService.AddValue(x.CadastralNumber, cadastralNumberColumn.Index, row);
-		        reportService.AddValue("Изменение ФС", statusNumberColumn.Index, row);
+		        var row = GbuReportService.GetCurrentRow();
+		        GbuReportService.AddValue(x.CadastralNumber, cadastralNumberColumn.Index, row);
+		        GbuReportService.AddValue("Изменение ФС", statusNumberColumn.Index, row);
 	        });
 
-	        reportService.SaveReport();
+	        var reportId = GbuReportService.SaveReport();
 
 	        _log.Information("Закончена генерация отчета");
 
-			return reportService.UrlToDownload;
+			return GbuReportService.GetUrlToDownloadFile(reportId);
         }
 
         private string GetMessageSubject(string taskName)

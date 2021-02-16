@@ -1288,7 +1288,7 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции группировки
         /// </summary>
-        public static long SetPriorityGroup(GroupingSettings setting)
+        public static string SetPriorityGroup(GroupingSettings setting)
         {
             using var reportService =  new GbuReportService("Отчет нормализации");
             var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
@@ -1402,7 +1402,8 @@ namespace KadOzenka.Dal.GbuObject
             try
             {
 	            reportId = reportService.SaveReport();
-                return reportId;
+
+                return reportService.GetUrlToDownloadFile(reportId);
             }
             catch (Exception ex)
             {

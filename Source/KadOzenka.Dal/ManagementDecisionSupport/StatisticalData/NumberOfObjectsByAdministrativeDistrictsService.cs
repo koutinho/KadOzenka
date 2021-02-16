@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Register.QuerySubsystem;
@@ -11,8 +9,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
-using ObjectModel.KO;
-using ObjectModel.Market;
+
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {
@@ -32,14 +29,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			public long propertyTypeCode { get; set; }
 		}
 
-		private readonly StatisticalDataService _statisticalDataService;
-		private readonly GbuObjectService _gbuObjectService;
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
 
-		public NumberOfObjectsByAdministrativeDistrictsService(StatisticalDataService statisticalDataService, GbuObjectService gbuObjectService, GbuCodRegisterService gbuCodRegisterService)
+		public NumberOfObjectsByAdministrativeDistrictsService(GbuCodRegisterService gbuCodRegisterService)
 		{
-			_statisticalDataService = statisticalDataService;
-			_gbuObjectService = gbuObjectService;
 			_gbuCodRegisterService = gbuCodRegisterService;
 		}
 
@@ -57,7 +50,10 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					break;
 			}
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+			
+			var table = QueryManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks,
+				_gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesDto>();
 
 			if (table.Count != 0)
@@ -114,7 +110,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		{
 			string contents;
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream("NumberOfObjectsByAdministrativeDistrictsBySubject", "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks));
+			var table = QueryManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList),
+				isOks));
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsBySubjectDto>();
 			if (table.Count != 0)
 			{
@@ -176,7 +173,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 					break;
 			}
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
-			var table = QSQuery.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList), isOks, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+			var table = QueryManager.ExecuteSql<InitialData>(string.Format(contents, string.Join(", ", taskList),
+				isOks, _gbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id));
+
 			var data = new List<NumberOfObjectsByAdministrativeDistrictsByGroupsDto>();
 			if(table.Count != 0)
             {

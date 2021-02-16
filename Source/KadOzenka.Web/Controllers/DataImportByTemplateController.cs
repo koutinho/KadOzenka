@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.DataImport;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
@@ -17,6 +16,8 @@ using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
 using System.IO;
 using Core.Register.Enums;
+using KadOzenka.Dal.DataImport.DataImporterByTemplate;
+using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
@@ -194,7 +195,9 @@ namespace KadOzenka.Web.Controllers
                 ColumnName = x.ColumnName,
                 IsKey = x.IsKey
             }).ToList();
-			DataImporterByTemplate.ValidateColumns(columns);
+			var dataImporter =
+				DataImporterByTemplateFactory.CreateDataImporterByTemplate(model.MainRegisterId);
+			dataImporter.ValidateColumns(columns);
 
 			model.Document.ProcessDocument();
 
@@ -203,7 +206,7 @@ namespace KadOzenka.Web.Controllers
                 long importDataLogId;
                 using (var stream = model.File.OpenReadStream())
                 {
-                    importDataLogId = DataImporterByTemplate.AddImportToQueue(model.MainRegisterId,
+                    importDataLogId = DataImporterByTemplateLongProcess.AddImportToQueue(model.MainRegisterId,
                         model.RegisterViewId, model.File.FileName, stream, columns, model.Document.IdDocument);
                 }
 
@@ -217,14 +220,13 @@ namespace KadOzenka.Web.Controllers
                     excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
                 }
 
-                var resultFile = (MemoryStream) DataImporterByTemplate.ImportDataFromExcel(model.MainRegisterId,
-                    excelFile, columns, model.Document.IdDocument, out var success);
+                var result = dataImporter.ImportDataFromExcel(excelFile, columns, model.Document.IdDocument);
 
                 var resultFileName = $"{Path.GetFileNameWithoutExtension(model.File.FileName)}_Result{Path.GetExtension(model.File.FileName)}";
-                HttpContext.Session.Set(resultFileName, resultFile.ToArray());
+                HttpContext.Session.Set(resultFileName, ((MemoryStream)result.ResultFile).ToArray());
 
-                var message = success ? "Загрузка завершена." : "Не удалось выполнить загрузку. Файл содержит некорректные данные";
-                return Content(JsonConvert.SerializeObject(new { Message = message, Success = success, ResultFileName = resultFileName }), "application/json");
+                var message = result.Status.GetEnumDescription();
+                return Content(JsonConvert.SerializeObject(new { Message = message, Success = result.Status != DataImportStatus.Failed, ResultFileName = resultFileName }), "application/json");
             }
         }
 
@@ -293,14 +295,17 @@ namespace KadOzenka.Web.Controllers
                 IsKey = false
             });
 
-            if (model.IsBackgroundDownload)
+            var dataImporter =
+	            DataImporterByTemplateFactory.CreateDataImporterByTemplate(model.MainRegisterId);
+            dataImporter.ValidateColumns(columns);
+			if (model.IsBackgroundDownload)
             {
                 long importDataLogId;
                 using (var excelStream = new MemoryStream())
                 {
                     excelFile.Save(excelStream, SaveOptions.XlsxDefault);
                     excelStream.Seek(0, SeekOrigin.Begin);
-					importDataLogId = DataImporterByTemplate.AddImportToQueue(model.MainRegisterId,
+					importDataLogId = DataImporterByTemplateLongProcess.AddImportToQueue(model.MainRegisterId,
                         model.RegisterViewId, model.File.FileName, excelStream, columns, null);
                 }
 
@@ -309,17 +314,15 @@ namespace KadOzenka.Web.Controllers
             }
             else
             {
-                var resultFile = (MemoryStream) DataImporterByTemplate.ImportDataFromExcel(model.MainRegisterId, excelFile,
-                    columns, null, out var success);
+	            var result = dataImporter.ImportDataFromExcel(excelFile, columns);
+
                 var resultFileName =
                     $"{Path.GetFileNameWithoutExtension(model.File.FileName)}_Result{Path.GetExtension(model.File.FileName)}";
-                HttpContext.Session.Set(resultFileName, resultFile.ToArray());
-                var message = success
-                    ? "Загрузка завершена."
-                    : "Не удалось выполнить загрузку. Файл содержит некорректные данные";
+                HttpContext.Session.Set(resultFileName, ((MemoryStream)result.ResultFile).ToArray());
+                var message = result.Status.GetEnumDescription();
                 return Content(
                     JsonConvert.SerializeObject(new
-                        {Message = message, Success = success, ResultFileName = resultFileName}), "application/json");
+                        {Message = message, Success = result.Status != DataImportStatus.Failed, ResultFileName = resultFileName}), "application/json");
             }
         }
 

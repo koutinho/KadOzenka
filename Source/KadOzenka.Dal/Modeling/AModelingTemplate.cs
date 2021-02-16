@@ -17,6 +17,7 @@ namespace KadOzenka.Dal.Modeling
     {
         private static HttpClient _httpClient;
         protected ModelingService ModelingService { get; set; }
+        protected IModelObjectsService ModelObjectsService { get; set; }
         protected ModelFactorsService ModelFactorsService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
         protected ILogger Logger { get; set; }
@@ -24,6 +25,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
+	        ModelObjectsService = new ModelObjectsService();
             ModelingService = new ModelingService();
             ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;
@@ -84,13 +86,13 @@ namespace KadOzenka.Dal.Modeling
         protected virtual void SendSuccessNotification(OMQueue processQueue)
         {
             var message = "Операция успешно завершена";
-            NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+            new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
         protected virtual void SendFailNotification(OMQueue processQueue, Exception exception, long errorId)
         {
             var message = $"Операция завершена с ошибкой.\n{exception.Message}\n\nПодробнее в списке процессов.\nЖурнал: {errorId}";
-            NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+            new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
         protected string PreProcessAttributeName(string name)

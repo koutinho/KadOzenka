@@ -201,12 +201,15 @@
 			const mainRegisterId = @((long)ViewBag.MainRegisterId);
 			const registerViewId = '@((string)ViewBag.RegisterViewId)';
 
-			$("#filter").on("input", function () {
+            $("#filter").on("input", function (event, enableAllTreeViewValues) {
 				var query = this.value.toLowerCase();
 				const treeView = $("#treeview").data("kendoTreeView");
 				var dataSource = treeView.dataSource;
 				filter(dataSource, query);
 				treeView.expand(".k-item");
+
+                if (enableAllTreeViewValues)
+                    treeView.enable(true);
 			});
 
 			$("#matchButton").kendoButton({
@@ -439,8 +442,7 @@
 
 		function resetData() {
 			$("#matchButton").data('kendoButton').enable(false);
-			$("#treeview").data('kendoTreeView').enable(true);
-			$("#treeview").data('kendoTreeView').select($());
+            $('#filter').val('').trigger('input', [true]);
 			dataSource.data([]);
 			$("#loadButton").data('kendoButton').enable(false);
 		}

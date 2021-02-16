@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
@@ -8,6 +9,7 @@ using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
+using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using Serilog;
@@ -24,9 +26,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         private readonly ILogger _logger;
         protected override ILogger Logger => _logger;
 
+        public readonly QueryManager QueryManager;
         public CalculationParamsReport()
         {
-	        _logger = Log.ForContext<CalculationParamsReport>();
+	        QueryManager= new QueryManager();
+            _logger = Log.ForContext<CalculationParamsReport>();
         }
 
         protected override string TemplateName(NameValueCollection query)
@@ -41,9 +45,12 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
+            QueryManager.SetBaseToken(CancellationToken);
             var groupId = GetGroupIdFromFilter(query);
 
             var model = ModelService.GetActiveModelEntityByGroupId(groupId);
+            if (model == null)
+	            throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
             Logger.Debug("ИД модели '{ModelId}' для группы '{GroupId}'", model.Id, groupId);
 
             var factors = GetFactors(model);
@@ -126,7 +133,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 			query.AddColumn(OMModelFactor.GetColumn(x => x.AlgorithmType_Code, nameof(ModelFactor.AlgorithmType)));
 
 			var factors = new List<ModelFactor>();
-			var table = query.ExecuteQuery();
+			var table = QueryManager.ExecuteQueryToDataTable(query);
             //сделано через ExecuteQuery, потому что в query.ExecuteQuery<ModelFactor> есть ошибка
             //из-за которой данные выкачиваются неправильно (некоторые поля меняются местами)
             for (var i = 0; i < table.Rows.Count; i++)

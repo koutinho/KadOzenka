@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
@@ -59,11 +61,11 @@ namespace KadOzenka.Dal.Modeling
         {
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id);
-            AddLog($"Найдено {ModelAttributes?.Count} атрибутов для модели.");
+            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id).Where(x => x.IsActive).ToList();
+            AddLog($"Найдено {ModelAttributes?.Count} активных атрибутов для модели.");
             Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 
-            MarketObjectsForTraining = ModelingService.GetIncludedModelObjects(GeneralModel.Id, true);
+            MarketObjectsForTraining = ModelObjectsService.GetIncludedModelObjects(GeneralModel.Id, true);
             AddLog($"Найдено {MarketObjectsForTraining.Count} объекта для обучения.");
         }
 
@@ -74,9 +76,13 @@ namespace KadOzenka.Dal.Modeling
             RequestForService.AttributeNames.AddRange(ModelAttributes.Select(x => PreProcessAttributeName(x.AttributeName)));
             RequestForService.AttributeIds.AddRange(ModelAttributes.Select(x => x.AttributeId));
 
+            var counter = 0;
             MarketObjectsForTraining.ForEach(modelObject =>
             {
-                var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                if(counter++ % 100 == 0)
+					Logger.Debug("Идет обработка объекта моделирования №{i}", counter);
+
+                var modelObjectAttributes = modelObject.DeserializeCoefficient();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
                     return;
 
@@ -87,7 +93,6 @@ namespace KadOzenka.Dal.Modeling
                     coefficients.Add(currentAttribute?.Coefficient);
                 });
 
-                //TODO эта проверка будет в сервисе
                 if (coefficients.All(x => x != null))
                 {
 	                if (modelObject.IsForTraining.GetValueOrDefault())
@@ -151,7 +156,7 @@ namespace KadOzenka.Dal.Modeling
 	            returnedResultType.Add(trainingType);
 
                 SaveCoefficients(trainingResult.Coefficients?.CoefficientsForAttributes, trainingType);
-	            SaveTrainingResult(trainingType, JsonConvert.SerializeObject(trainingResult), trainingResult.Coefficients?.A0);
+	            SaveTrainingResult(trainingType, trainingResult, trainingResult.Coefficients?.A0);
 
 	            AddLog($"Закончено сохранение коэффициентов для типизированной модели '{trainingType.GetEnumDescription()}'.");
             });
@@ -163,7 +168,10 @@ namespace KadOzenka.Dal.Modeling
 		            var array = (KoAlgoritmType[])System.Enum.GetValues(typeof(KoAlgoritmType));
 		            var list = new List<KoAlgoritmType>(array);
 		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
-		            notReturnedTypes.ForEach(ResetTrainingResults);
+		            notReturnedTypes.ForEach(x =>
+		            {
+			            ModelingService.ResetTrainingResults(GeneralModel, x);
+                    });
                 }
             }
             catch (Exception)
@@ -174,7 +182,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void RollBackResult()
         {
-	        ResetTrainingResults(InputParameters.ModelType);
+	        ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
         }
 
         protected override void SendSuccessNotification(OMQueue processQueue)
@@ -183,7 +191,7 @@ namespace KadOzenka.Dal.Modeling
 		        ? "Операция успешно завершена."
 		        : $"Операция частично завершена.<br>{AdditionalMessage}";
 
-	        NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message);
+	        new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message);
         }
 
 
@@ -260,20 +268,49 @@ namespace KadOzenka.Dal.Modeling
 	        }
         }
 
-        private void SaveTrainingResult(KoAlgoritmType type, string trainingResult, decimal? a0)
-		{
-			switch (type)
+        private void SaveTrainingResult(KoAlgoritmType type, TrainingResponse trainingResult, decimal? a0)
+        {
+	        var student = trainingResult.AccuracyScore?.Student;
+	        var mse = trainingResult.AccuracyScore?.MeanSquaredError;
+	        var r2 = trainingResult.AccuracyScore?.R2;
+	        var fisher = trainingResult.AccuracyScore?.FisherCriterion;
+            trainingResult.QualityControlInfo = new QualityControlInfo
+            {
+	            Student = new QualityControlSpecial
+	            {
+		            Estimated = student?.Estimated,
+		            Tabular = student?.Tabular
+	            },
+	            MeanSquaredError = new QualityControlSpecial
+	            {
+		            Estimated = mse?.Test,
+		            Tabular = mse?.Test
+                },
+	            R2 = new QualityControlSpecial
+	            {
+		            Estimated = r2?.Test,
+		            Tabular = r2?.Test
+	            },
+                Fisher = new QualityControlSpecial
+                {
+	                Estimated = fisher?.Estimated,
+                    Tabular = fisher?.Tabular
+                }
+            };
+            var trainingResultStr = JsonConvert.SerializeObject(trainingResult);
+
+            switch (type)
 			{
 				case KoAlgoritmType.Exp:
-					GeneralModel.ExponentialTrainingResult = trainingResult;
+					GeneralModel.ExponentialTrainingResult = trainingResultStr;
 					GeneralModel.A0ForExponential = a0;
 					break;
 				case KoAlgoritmType.Line:
-					GeneralModel.LinearTrainingResult = trainingResult;
+					GeneralModel.LinearTrainingResult = trainingResultStr;
 					GeneralModel.A0 = a0;
                     break;
 				case KoAlgoritmType.Multi:
-					GeneralModel.MultiplicativeTrainingResult = trainingResult;
+					GeneralModel.MultiplicativeTrainingResult = trainingResultStr;
 					GeneralModel.A0ForMultiplicative = a0;
                     break;
                 case KoAlgoritmType.None:
@@ -281,18 +318,38 @@ namespace KadOzenka.Dal.Modeling
 			}
 
 			GeneralModel.Save();
-		}
 
-        private void ResetTrainingResults(KoAlgoritmType type)
+			SaveImagesToDb(type, trainingResult);
+        }
+
+        private void SaveImagesToDb(KoAlgoritmType type, TrainingResponse trainingResult)
         {
-	        ModelingService.ResetTrainingResults(GeneralModel, type);
-
-	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
-	        factors.ForEach(x =>
+	        var existedImages = ModelingService.GetModelImages(GeneralModel.Id, type);
+	        if (existedImages == null)
 	        {
-		        x.Weight = 0;
-		        x.Save();
-	        });
+		        existedImages = new OMModelTrainingResultImages
+		        {
+			        ModelId = GeneralModel.Id,
+			        AlgorithmType_Code = type
+		        };
+	        }
+
+	        var scatterImage = DownloadImage(trainingResult.Images?.ScatterLink);
+	        var correlationImage = DownloadImage(trainingResult.Images?.CorrelationLink);
+	        existedImages.Scatter = scatterImage;
+	        existedImages.Correlation = correlationImage;
+	        existedImages.Save();
+        }
+
+        private byte[] DownloadImage(string url)
+        {
+	        if (string.IsNullOrWhiteSpace(url))
+		        return null;
+
+	        using (var webClient = new WebClient())
+	        {
+		        return webClient.DownloadData(url);
+	        }
         }
 
         #endregion

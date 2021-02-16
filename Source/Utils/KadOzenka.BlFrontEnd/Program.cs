@@ -39,22 +39,38 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.SPD;
 using System.Data;
 using System.Text;
+using System.Threading.Tasks;
 using Core.Main.FileStorages;
 using KadOzenka.BlFrontEnd.ExpressScore;
 using KadOzenka.Dal.AddingMissingDataFromGbuPart;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
+using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Selenium.FillingAdditionalFields;
+using KadOzenka.Dal.Tours;
+using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using Platform.Web.Services.BackgroundExporterScheduler;
+using Microsoft.Extensions.Configuration;
+using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.BlFrontEnd
 {
@@ -62,6 +78,17 @@ namespace KadOzenka.BlFrontEnd
 	{
 		static void Main(string[] args)
 		{
+			var configuration = new ConfigurationBuilder()
+			   .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+			   .AddEnvironmentVariables()
+			   .Build();
+
+			Log.Logger = new LoggerConfiguration()
+			.ReadFrom.Configuration(configuration)
+			.CreateLogger();
+
+			Log.Information("Starting KadOzenka.BlFrontEnd");
+
 			BuildQsXml.BuildSudApproveStatus();
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 
@@ -77,6 +104,8 @@ namespace KadOzenka.BlFrontEnd
 		{
 			consoleHelper.AddCommand("2", "Запуск службы выполнения фоновых процессов", () =>
 			{
+
+				Log.Information("Запуск службы выполнения фоновых процессов");
 				LongProcessManagementService service = new LongProcessManagementService();
 				service.Start();
 			});
@@ -175,6 +204,9 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("221", "Импорт данных KO (БД) ВУОН Сооружения", MSExporter.DoLoadBd2018Unit_Construction_VUON);
 			consoleHelper.AddCommand("222", "Импорт данных KO (БД) ВУОН Помещения", MSExporter.DoLoadBd2018Unit_Flat_VUON);
 			consoleHelper.AddCommand("223", "Импорт данных KO (БД) ВУОН ОНС", MSExporter.DoLoadBd2018Unit_Uncomplited_VUON);
+
+
+
 
 			consoleHelper.AddCommand("231", "Импорт данных ГБУ(БД) ВУОН Земля", MSExporter.DoLoadBd2018Unit_Parcel_VUON_GKN);
 			consoleHelper.AddCommand("232", "Импорт данных ГБУ(БД) ВУОН Здания", MSExporter.DoLoadBd2018Unit_Build_VUON_GKN);
@@ -390,7 +422,7 @@ namespace KadOzenka.BlFrontEnd
 			});
 
 			consoleHelper.AddCommand("554", "эксель импорт",
-				() => new DataImporterByTemplate().StartProcess(null,
+				() => new DataImporterByTemplateLongProcess().StartProcess(null,
 					new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 },
 					new System.Threading.CancellationToken()));
 
@@ -534,11 +566,95 @@ namespace KadOzenka.BlFrontEnd
 				}, new CancellationToken());
 			});
 
+            consoleHelper.AddCommand("562", "Тест длительного процесса для начального наполнения данными отчетов с характеристиками объектов", () =>
+            {
+				new InitialReportTableFiller().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId()
+				}, new CancellationToken());
+
+				////TODO тестирование отмены процесса
+				//var cancelSource = new CancellationTokenSource();
+				//var cancelToken = cancelSource.Token;
+				//Task.Factory.StartNew(() =>
+				//{
+				//	Thread.Sleep(300000);
+				//	cancelSource.Cancel();
+				//});
+				//new DataCompositionByCharacteristicsReportsLongProcessViaTables().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId()
+				//}, cancelToken);
+			});
+
 
             consoleHelper.AddCommand("18122020", "Исправление типа ГБУ объектов на кадастровый квартал", () =>
             {
 	            ChangeTypeToCadastralQuarter.Perform("C:\\Genix\\data1.xlsx");
             });
+
+
+            consoleHelper.AddCommand("563", "Создание триггеров для поддержания актуальности кеш-таблицы для отчетов с составом данных", () =>
+            {
+				TriggerCreationForDataCompositionReports.Start();
+            });
+
+            consoleHelper.AddCommand("564", "Удаление моделей, которые остались после некорректного удаления групп и туров", () =>
+            {
+	            var groupIds = OMGroup.Where(x => true).Execute().Select(x => x.Id).ToList();
+
+	            var tourService = new TourService(new TourFactorService(), new GroupService(),  new RecycleBinService(), new TourRepository());
+	            var groupService = new GroupService();
+
+				var modelsWithNotExistedGroups = OMModel.Where(x => !groupIds.Contains((long) x.GroupId)).SelectAll().Execute().ToList();
+				//var modelIdsToDelete = modelsWithNotExistedGroups.Select(x => x.Id).ToList();
+				var notExistedGroupIds = modelsWithNotExistedGroups.Select(x => x.GroupId.Value).Distinct().ToList();
+				if (notExistedGroupIds.Count > 0)
+				{
+					var tourToGroupRelations = OMTourGroup.Where(x => notExistedGroupIds.Contains(x.GroupId)).SelectAll().Execute();
+					var possibleDeletedTourIds = tourToGroupRelations.Select(x => x.TourId).Distinct().ToList();
+					if (possibleDeletedTourIds.Count > 0)
+					{
+						possibleDeletedTourIds.ForEach(x =>
+						{
+							tourService.DeleteTour(x);
+						});
+					}
+
+					notExistedGroupIds.ForEach(x =>
+					{
+						groupService.DeleteGroup(x);
+					});
+				}
+
+				var tours = OMTour.Where(x => true).Execute().Select(x => x.Id).ToList();
+				var deletedTourIds = OMTourGroup.Where(x => !tours.Contains(x.TourId)).SelectAll().Execute().Select(x => x.TourId).Distinct().ToList();
+				deletedTourIds.ForEach(x =>
+				{
+					tourService.DeleteTour(x);
+				});
+            });
+
+
+            consoleHelper.AddCommand("565", "Тест длительного процесса для начального наполнения данными отчетов с характеристиками объектов", () =>
+            {
+				//TODO тестирование отмены процесса
+				var cancelSource = new CancellationTokenSource();
+				var cancelToken = cancelSource.Token;
+				Task.Factory.StartNew(() =>
+				{
+					Thread.Sleep(5000);
+					cancelSource.Cancel();
+				});
+				new UniformReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId(),
+					Parameters = new ReportLongProcessInputParameters {TaskIds = new List<long>{ 15534573 }}.SerializeToXml()
+				}, cancelToken);
+			});
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));

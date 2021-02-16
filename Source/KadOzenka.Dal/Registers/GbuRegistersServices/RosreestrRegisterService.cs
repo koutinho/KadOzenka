@@ -4,10 +4,11 @@ using Core.Register.RegisterEntities;
 
 namespace KadOzenka.Dal.Registers.GbuRegistersServices
 {
-    public class RosreestrRegisterService : GbuRegisterService
-    {
+	public class RosreestrRegisterService : GbuRegisterService, IRosreestrRegisterService
+	{
 	    protected override string RegisterName => "Источник: Росреестр";
 
+	    public long RosreestrRegisterId => RegisterId;
 
 	    /// <summary>
         /// Аттрибут "Наименование объекта"

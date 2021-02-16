@@ -27,8 +27,10 @@
     </div>
 </div>
 
+
 <div class="form-horizontal col-sm-12" style="height: 100%; padding: 1%">
     @Html.RenderHelpButton()
+
 <div class="form-group">
         <div class="col-sm-3 tourLabel">
             @Html.CustomLabelFor("Тур оценки")
@@ -195,7 +197,10 @@
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.GeneralizedIndicators.GetEnumDescription()).Value((long)StatisticalDataType.GeneralizedIndicators))
         </div>
         <div class="col-sm-11">
-            @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription()).Value((long)StatisticalDataType.CadastralCostDeterminationResults).Enable(true))
+            @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                .Label(StatisticalDataType.CadastralCostDeterminationResults.GetEnumDescription())
+                .Value((long)StatisticalDataType.CadastralCostDeterminationResults)
+                .HtmlAttributes(new { @class = "cadastralCostDeterminationResults" }))
         </div>
         <div class="col-sm-11">
             @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.InfoAboutCadastralCostDeterminingMethod.GetEnumDescription()).Value((long)StatisticalDataType.InfoAboutCadastralCostDeterminingMethod).Enable(true))
@@ -224,7 +229,13 @@
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionForOks.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionForOks).Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalUniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalUniform).Enable(true))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                    .Label(StatisticalDataType.PricingFactorsCompositionFinalUniform.GetEnumDescription() +
+                           (Model.PricingFactorsCompositionFinalUniformReportActualizationDate == null
+                               ? ""
+                               : $" ({Model.PricingFactorsCompositionFinalUniformReportActualizationDate.Value.ToString("dd.MM.yyyy HH:mm")})"))
+                    .Value((long)StatisticalDataType.PricingFactorsCompositionFinalUniform)
+                    .Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
                 @(Html.Kendo().RadioButtonFor(m => m.ReportType)
@@ -234,7 +245,13 @@
                     .Enable(true))
             </div>
             <div class="col-sm-11 subgroup-first-level">
-                @(Html.Kendo().RadioButtonFor(m => m.ReportType).Label(StatisticalDataType.PricingFactorsCompositionFinalNonuniform.GetEnumDescription()).Value((long)StatisticalDataType.PricingFactorsCompositionFinalNonuniform).Enable(true))
+                @(Html.Kendo().RadioButtonFor(m => m.ReportType)
+                    .Label(StatisticalDataType.PricingFactorsCompositionFinalNonuniform.GetEnumDescription() +
+                           (Model.PricingFactorsCompositionFinalNonuniformActualizationDate == null
+                               ? ""
+                               : $" ({Model.PricingFactorsCompositionFinalNonuniformActualizationDate.Value.ToString("dd.MM.yyyy HH:mm")})"))
+                    .Value((long)StatisticalDataType.PricingFactorsCompositionFinalNonuniform)
+                    .Enable(true))
             </div>
         </div>
 
@@ -281,7 +298,6 @@
     <div id="reportViewerWindow"></div>
 </div>
 
-
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js" charset="utf-8"></script>
 <script type="text/javascript">
@@ -321,7 +337,6 @@
             });
 
         $('input[type="radio"][name="ReportType"]').change(onReportTypeChanged);
-        $(".pricingFactorsCompositionForPreviousTours").click(onCompositionForPreviousToursClick);
     });
 
 
@@ -334,7 +349,6 @@
     function onTaskFilterChanged(e) {
         var currentReportType = $('input[type="radio"][name="ReportType"]:checked').val();
         if (currentReportType != '@((long)StatisticalDataType.AdditionalFormsMarketDataInfo)' &&
-            currentReportType != '@((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsOks)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsZu)') {
             var value = this.value();
@@ -359,8 +373,20 @@
         var formObject = Common.Functions.FormToObject($('.form-horizontal'));
         formObject.TaskFilter = $("#TaskFilter").data("kendoMultiSelect").value();
         kendo.ui.progress($('body'), true);
-        $.post("/ManagementDecisionSupport/GetStatisticalDataReportUrl", formObject).done(function(response) {
-            openReportViewer(response);
+        $.post("/ManagementDecisionSupport/ProcessReport", formObject).done(function (response) {
+            if (response.Errors) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            if (response.reportUrl) {
+                openReportViewer(response);
+                return;
+            }
+            $("#reportsWithAdditionalConfigurationModalContent").html(response);
+            var modal = $("#reportsWithAdditionalConfigurationModal");
+            ShowModal(modal, '50%', '25%', "Параметры отчета");
+            
         }).fail(function (response, textStatus, errorThrown) {
             Common.ShowError(response.responseText);
         }).always(function () {
@@ -384,6 +410,9 @@
 
     function enableFormButton() {
         $('#showViewer').attr('disabled', false);
+    }
+    function disableFormButton() {
+        $('#showViewer').attr('disabled', true);
     }
 
     function enableTaskFilter(enabled) {
@@ -421,27 +450,9 @@
             enableTaskFilter(true);
             enableTour(true);
         }
+        if (this.value == '@((long)StatisticalDataType.CadastralCostDeterminationResults)') {
+            disableFormButton();
+        }
     }
 
-
-    function onCompositionForPreviousToursClick() {
-        var tourId = getSelectedTourId();
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("PreviousToursReportConfiguration", "ManagementDecisionSupport")',
-            data: { lastTourId: tourId },
-            success: function (response) {
-                $("#reportsWithAdditionalConfigurationModalContent").html(response);
-                var modal = $("#reportsWithAdditionalConfigurationModal");
-                ShowModal(modal, '50%', '25%', "Параметры отчета");
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
-    }
 </script>

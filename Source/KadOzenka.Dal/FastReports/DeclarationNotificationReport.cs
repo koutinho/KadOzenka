@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.Reports.Model;
@@ -36,7 +37,6 @@ namespace KadOzenka.Dal.FastReports
 				}
 			}
 		}
-
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
 			DataSet dataSet = new DataSet();
@@ -52,115 +52,118 @@ namespace KadOzenka.Dal.FastReports
 			dataSet.Tables[0].Columns.Add("SignatoryPosition");
 			dataSet.Tables[0].Columns.Add("SignatoryName");
 
-			var notification = OMUved
+			if (!CancellationToken.GetValueOrDefault().IsCancellationRequested)
+			{
+				var notification = OMUved
 				.Where(x => x.Id == ObjectId)
 				.SelectAll()
 				.Execute().FirstOrDefault();
-			if (notification == null)
-			{
-				throw new Exception($"Уведомление с ИД {ObjectId} не найдено");
-			}
-
-			var declaration = OMDeclaration
-				.Where(x => x.Id == notification.Declaration_Id)
-				.SelectAll()
-				.Execute().FirstOrDefault();
-
-			if (declaration == null)
-			{
-				throw new Exception($"Декларация не найдена");
-			}
-
-			OMSubject subject = null;
-			SendUvedType uvedType = SendUvedType.None;
-			var agent = OMSubject
-				.Where(x => x.Id == declaration.Agent_Id)
-				.SelectAll()
-				.Execute().FirstOrDefault();
-			var owner = OMSubject
-				.Where(x => x.Id == declaration.Owner_Id)
-				.SelectAll()
-				.Execute().FirstOrDefault();
-			if (owner != null && agent != null)
-			{
-				subject = agent;
-				uvedType = declaration.UvedTypeAgent_Code;
-			}
-			else if (owner != null || agent != null)
-			{
-				if (owner != null)
+				if (notification == null)
 				{
-					subject = owner;
-					uvedType = declaration.UvedTypeOwner_Code;
+					throw new Exception($"Уведомление с ИД {ObjectId} не найдено");
 				}
-				if (agent != null)
+
+				var declaration = OMDeclaration
+					.Where(x => x.Id == notification.Declaration_Id)
+					.SelectAll()
+					.Execute().FirstOrDefault();
+
+				if (declaration == null)
+				{
+					throw new Exception($"Декларация не найдена");
+				}
+
+				OMSubject subject = null;
+				SendUvedType uvedType = SendUvedType.None;
+				var agent = OMSubject
+					.Where(x => x.Id == declaration.Agent_Id)
+					.SelectAll()
+					.Execute().FirstOrDefault();
+				var owner = OMSubject
+					.Where(x => x.Id == declaration.Owner_Id)
+					.SelectAll()
+					.Execute().FirstOrDefault();
+				if (owner != null && agent != null)
 				{
 					subject = agent;
 					uvedType = declaration.UvedTypeAgent_Code;
 				}
-			}
-			else
-			{
-				throw new Exception($"В декларации отсутствуют Заявитель и Представитель заявителя");
-			}
-
-			var subjectName = string.Empty;
-			if (subject.Type_Code == SubjectType.Fl)
-			{
-				var petrovich = new Petrovich
+				else if (owner != null || agent != null)
 				{
-					FirstName = subject.I_Name,
-					LastName = subject.F_Name,
-					MiddleName = subject.O_Name,
-					AutoDetectGender = true
-				};
-				var inflected = petrovich.InflectTo(Case.Dative);
-				subjectName = inflected.LastName;
-				if (!string.IsNullOrWhiteSpace(inflected.FirstName) &&
-					!string.IsNullOrWhiteSpace(inflected.MiddleName))
-				{
-					subjectName += $" {inflected.FirstName.Trim()[0]}.{inflected.MiddleName.Trim()[0]}.";
+					if (owner != null)
+					{
+						subject = owner;
+						uvedType = declaration.UvedTypeOwner_Code;
+					}
+					if (agent != null)
+					{
+						subject = agent;
+						uvedType = declaration.UvedTypeAgent_Code;
+					}
 				}
+				else
+				{
+					throw new Exception($"В декларации отсутствуют Заявитель и Представитель заявителя");
+				}
+
+				var subjectName = string.Empty;
+				if (subject.Type_Code == SubjectType.Fl)
+				{
+					var petrovich = new Petrovich
+					{
+						FirstName = subject.I_Name,
+						LastName = subject.F_Name,
+						MiddleName = subject.O_Name,
+						AutoDetectGender = true
+					};
+					var inflected = petrovich.InflectTo(Case.Dative);
+					subjectName = inflected.LastName;
+					if (!string.IsNullOrWhiteSpace(inflected.FirstName) &&
+						!string.IsNullOrWhiteSpace(inflected.MiddleName))
+					{
+						subjectName += $" {inflected.FirstName.Trim()[0]}.{inflected.MiddleName.Trim()[0]}.";
+					}
+				}
+				else
+				{
+					subjectName = subject.Name;
+				}
+
+				var book = OMBook
+					.Where(x => x.Id == declaration.Book_Id)
+					.SelectAll()
+					.Execute().FirstOrDefault();
+
+				var userIsp = OMUser
+					.Where(x => x.Id == SRDSession.GetCurrentUserId())
+					.SelectAll()
+					.ExecuteFirstOrDefault();
+
+				var userIspName = userIsp.Surname;
+				if (!string.IsNullOrWhiteSpace(userIsp.Name) && !string.IsNullOrWhiteSpace(userIsp.Patronymic))
+				{
+					userIspName += $" {userIsp.Name.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
+				}
+
+				var signatoryId = GetQueryParam<long>("Podpisant", query);
+				var signatory = OMSignatory.Where(x => x.Id == signatoryId).SelectAll().Execute().FirstOrDefault();
+				if (signatory == null)
+				{
+					throw new Exception($"Подписант не найден");
+				}
+
+				dataSet.Tables[0].Rows.Add(
+					subjectName,
+					FormAddress(subject, uvedType),
+					declaration.DateIn?.ToString("dd.MM.yyyy"),
+					$"{declaration.NumIn}/{book?.Prefics}",
+					userIspName,
+					GetMainData(declaration, notification, uvedType),
+					"\u0009Приложение:",
+					GetAnnex(notification),
+					signatory.Position,
+					signatory.FullName);
 			}
-			else
-			{
-				subjectName = subject.Name;
-			}
-
-			var book = OMBook
-				.Where(x => x.Id == declaration.Book_Id)
-				.SelectAll()
-				.Execute().FirstOrDefault();
-
-			var userIsp = OMUser
-				.Where(x => x.Id == SRDSession.GetCurrentUserId())
-				.SelectAll()
-				.ExecuteFirstOrDefault();
-
-			var userIspName = userIsp.Surname;
-			if (!string.IsNullOrWhiteSpace(userIsp.Name) && !string.IsNullOrWhiteSpace(userIsp.Patronymic))
-			{
-				userIspName += $" {userIsp.Name.Trim()[0]}.{userIsp.Patronymic.Trim()[0]}.";
-			}
-
-			var signatoryId = GetQueryParam<long>("Podpisant", query);
-			var signatory = OMSignatory.Where(x => x.Id == signatoryId).SelectAll().Execute().FirstOrDefault();
-			if (signatory == null)
-			{
-				throw new Exception($"Подписант не найден");
-			}
-
-			dataSet.Tables[0].Rows.Add(
-				subjectName,
-				FormAddress(subject, uvedType),
-				declaration.DateIn?.ToString("dd.MM.yyyy"),
-				$"{declaration.NumIn}/{book?.Prefics}",
-				userIspName,
-				GetMainData(declaration, notification, uvedType),
-				"\u0009Приложение:",
-				GetAnnex(notification),
-				signatory.Position,
-				signatory.FullName);
 
 			return dataSet;
 		}

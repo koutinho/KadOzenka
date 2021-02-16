@@ -51,12 +51,13 @@
 @using (Html.BeginForm("AutomaticModelCard", "Modeling", FormMethod.Post, new { id = "updateModelModelForm" }))
 {
     @Html.HiddenFor(x => x.Id)
+
     <ul id="ls_panelbar" class="panelbar">
-        <li id="SectionMainData" data-expand style="padding-top: 1%">
+        <div id="mainToolbar" style=""></div>
+        <li id="SectionMainData" data-expand style="padding-top: 7%">
             <span>Основные данные</span>
             <div class="form-horizontal col-sm-12" style="padding: 2%">
-                <div id="mainToolbar"></div>
-                <div style="padding-top: 2%">
+                <div style="padding: 0%">
                     @{
                         await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
                     }
@@ -67,9 +68,9 @@
                         </div>
                         <div class="col-sm-10">
                             @(Html.Kendo().DropDownListFor(m => m.CalculationTypeStr)
-                            .DataTextField("Name")
-                            .DataValueField("Name")
-                            .Enable(false))
+                                .DataTextField("Name")
+                                .DataValueField("Name")
+                                .Enable(false))
                         </div>
                     </div>
                 </div>
@@ -92,13 +93,13 @@
                         @Html.CustomLabelFor(x => x.A0)
                     </div>
                     <div class="col-sm-4">
-                        @Html.Kendo().NumericTextBoxFor(x => x.A0).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsFromTourCard)
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsReadOnly)
                     </div>
                     <div class="col-sm-2">
                         @Html.CustomLabelFor(x => x.A0ForPreviousTour)
                     </div>
                     <div class="col-sm-4">
-                        @Html.Kendo().NumericTextBoxFor(x => x.A0ForPreviousTour).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsFromTourCard)
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0ForPreviousTour).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsReadOnly)
                     </div>
                 </div>
                 <div class="form-group">
@@ -121,6 +122,15 @@
 
     .k-dropdowntree {
         width: 100%;
+    }
+    #mainToolbar{
+        position: fixed;
+        /*background-color: white;*/
+        z-index: 2;
+        width: 100%;
+        border-color: #e5e6eb;
+        border-width: 1px 0;
+        left: -1px; top: -1px;
     }
 </style>
 
@@ -220,7 +230,7 @@
         $(".k-toolbar [title]").kendoTooltip({
             position: "top"
         });
-        if (isFromTourCard) {
+        if (isReadOnly) {
             $('#mainToolbar').hide();
             $('#attributesToolbar').hide();
         }
@@ -245,11 +255,11 @@
                             IsNormalized: { type: "boolean" },
                             DictionaryName: { type: "string" },
                             Coefficient: { type: "number" },
-                            PreviousWeight: { type: "number" }
+                            PreviousWeight: { type: "number" },
+                            IsActive: { type: "boolean" }
                         }
                     }
-                },
-                pageSize: 10
+                }
             },
             columns: [
                 {
@@ -268,6 +278,12 @@
                     field: 'IsNormalized',
                     title: 'Нормализация',
                     template: '<input type="checkbox" #= DictionaryId != null ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'IsActive',
+                    title: 'Использовать в модели',
+                    template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
                     attributes: { style: "text-align: center;" }
                 },
                 {
@@ -290,7 +306,10 @@
             dataBound: changeToolBarButtonsClass,
             width: '100%',
             scrollable: true,
-            selectable: true
+            selectable: true,
+            pageable: {
+                pageSize: 10
+            }
         });
 
         $("#chooseModelTypeButtons").kendoButtonGroup({

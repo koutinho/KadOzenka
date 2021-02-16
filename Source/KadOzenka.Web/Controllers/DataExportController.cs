@@ -85,25 +85,16 @@ namespace KadOzenka.Web.Controllers
 			ViewBag.User = SRDCache.Users[(int)export.UserId].FullName;
 			ViewBag.StatusDescription = ((RegistersExportStatus)export.Status).GetEnumDescription();
 
-			string templateFileLocation = FileStorageManager.GetPathForFileFolder(DataExporterCommon.FileStorageName, export.DateCreated);
-			templateFileLocation = Path.Combine(templateFileLocation, DataExporterCommon.GetStorageTemplateFileName(export.Id));
-			if (!string.IsNullOrEmpty(templateFileLocation))
-				if (System.IO.File.Exists(templateFileLocation))
-				{
-					long templateFileSize = new FileInfo(templateFileLocation).Length;
-					ViewBag.TemplateFileSizeKb = Convert.ToString(templateFileSize / 1024);
-					ViewBag.TemplateFileSizeMb = Convert.ToString(templateFileSize / (1024 * 1024));
-				}
+			var fileSizeFormat = "n2";
+			var templateFileInfo = CalculateFileSize(DataExporterCommon.FileStorageName, export.DateCreated,
+				DataExporterCommon.GetStorageTemplateFileName(export.Id));
+			ViewBag.TemplateFileSizeKb = templateFileInfo.Kb.ToString(fileSizeFormat);
+			ViewBag.TemplateFileSizeMb = templateFileInfo.Mb.ToString(fileSizeFormat);
 
-			string resultFileLocation = FileStorageManager.GetPathForFileFolder(DataExporterCommon.FileStorageName, export.DateFinished.GetValueOrDefault());
-			resultFileLocation = Path.Combine(resultFileLocation, DataExporterCommon.GetStorageResultFileName(export.Id));
-			if (!string.IsNullOrEmpty(resultFileLocation))
-				if (System.IO.File.Exists(resultFileLocation))
-				{
-					long resultFileSize = new FileInfo(resultFileLocation).Length;
-					ViewBag.ResultFileSizeKb = Convert.ToString(resultFileSize / 1024);
-					ViewBag.ResultFileSizeMb = Convert.ToString(resultFileSize / (1024 * 1024));
-				}
+			var resultFileInfo = CalculateFileSize(DataExporterCommon.FileStorageName, export.DateFinished.GetValueOrDefault(),
+				DataExporterCommon.GetStorageResultFileName(export.Id));
+			ViewBag.ResultFileSizeKb = resultFileInfo.Kb.ToString(fileSizeFormat);
+			ViewBag.ResultFileSizeMb = resultFileInfo.Mb.ToString(fileSizeFormat);
 
 			List<ColumnsMappingDto> columnsMappingDtoList = null;
 			if (!string.IsNullOrEmpty(export.ColumnsMapping))

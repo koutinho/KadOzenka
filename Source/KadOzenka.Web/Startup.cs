@@ -35,8 +35,14 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.Reports;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.RecycleBin;
+using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -106,6 +112,18 @@ namespace CIPJS
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
+            services.AddSingleton<StatisticalDataService>();
+            services.AddSingleton<CustomReportsService>();
+            services.AddTransient<RecycleBinService>();
+            services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
+            services.AddTransient(typeof(IModelingService), typeof(ModelingService));
+            services.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
+            services.AddTransient(typeof(ITourRepository), typeof(TourRepository));
+            services.AddTransient(typeof(ITourService), typeof(TourService));
+            services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));
+            services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
+            services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
+            services.AddTransient(typeof(IGbuReportService), typeof(GbuReportService));
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

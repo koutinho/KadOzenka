@@ -5,13 +5,12 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
-using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.Directory;
 using ObjectModel.KO;
-using ObjectModel.Market;
 using Platform.Register;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
@@ -19,12 +18,11 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 	public class NumberOfObjectsByZoneAndSubgroupsService
 	{
 		private readonly StatisticalDataService _statisticalDataService;
-		private readonly GbuObjectService _gbuObjectService;
-
-		public NumberOfObjectsByZoneAndSubgroupsService(StatisticalDataService statisticalDataService, GbuObjectService gbuObjectService)
+		public readonly QueryManager QueryManager;
+		public NumberOfObjectsByZoneAndSubgroupsService(StatisticalDataService statisticalDataService)
 		{
+			QueryManager = new QueryManager();
 			_statisticalDataService = statisticalDataService;
-			_gbuObjectService = gbuObjectService;
 		}
 
 		public List<NumberOfObjectsByZoneAndSubgroupsDto> GetNumberOfObjectsByZoneAndSubgroupsData(long firstTourId, long secondTourId, NumberOfObjectsByZoneAndSubgroupsReportDataType reportDataType, bool isOksReportType)
@@ -37,30 +35,52 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType) fileName = "NumberOfObjectsByZoneAndSubgroupsData_VUON_ZU";
 
 			using (var sr = new StreamReader(Core.ConfigParam.Configuration.GetFileStream(fileName, "sql", "SqlQueries"))) contents = sr.ReadToEnd();
+			string firstQuery =
+				$"SELECT CORE_REGISTER_ATTRIBUTE.* FROM CORE_REGISTER_ATTRIBUTE, KO_TOUR_ATTRIBUTE_SETTINGS WHERE CORE_REGISTER_ATTRIBUTE.ID=ATTRIBUTE_ID AND TOUR_ID={firstTourId} AND ATTRIBUTE_USING_TYPE_CODE=1;";
+			RegisterAttribute firstTourCodeGroupAttr = QueryManager.ExecuteSql<RegisterAttribute>(firstQuery).FirstOrDefault();
 
-			RegisterAttribute firstTourCodeGroupAttr = QSQuery.ExecuteSql<RegisterAttribute>(string.Format("SELECT CORE_REGISTER_ATTRIBUTE.* FROM CORE_REGISTER_ATTRIBUTE, KO_TOUR_ATTRIBUTE_SETTINGS WHERE CORE_REGISTER_ATTRIBUTE.ID=ATTRIBUTE_ID AND TOUR_ID={0} AND ATTRIBUTE_USING_TYPE_CODE=1;", firstTourId)).FirstOrDefault();
-			RegisterAttribute secondTourCodeGroupAttr = QSQuery.ExecuteSql<RegisterAttribute>(string.Format("SELECT CORE_REGISTER_ATTRIBUTE.* FROM CORE_REGISTER_ATTRIBUTE, KO_TOUR_ATTRIBUTE_SETTINGS WHERE CORE_REGISTER_ATTRIBUTE.ID=ATTRIBUTE_ID AND TOUR_ID={0} AND ATTRIBUTE_USING_TYPE_CODE=1;", secondTourId)).FirstOrDefault();
+			string secondQuery =
+				$"SELECT CORE_REGISTER_ATTRIBUTE.* FROM CORE_REGISTER_ATTRIBUTE, KO_TOUR_ATTRIBUTE_SETTINGS WHERE CORE_REGISTER_ATTRIBUTE.ID=ATTRIBUTE_ID AND TOUR_ID={secondTourId} AND ATTRIBUTE_USING_TYPE_CODE=1;";
+			RegisterAttribute secondTourCodeGroupAttr = QueryManager.ExecuteSql<RegisterAttribute>(secondQuery).FirstOrDefault();
+
 			if (firstTourCodeGroupAttr == null) throw new Exception($"Для тура {firstTourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
 			if (secondTourCodeGroupAttr == null) throw new Exception($"Для тура {secondTourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
 
 			long? firstTourTaskId = null, secondTourTaskId = null;
-
-			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={0} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
-			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && !isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={0} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
-			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT ID FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={0} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
-			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType) firstTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={0} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", firstTourId)).FirstOrDefault()?.id;
+			;
+			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && isOksReportType)
+				firstTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+						$"SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={firstTourId} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;")
+					.FirstOrDefault()?.id;
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && !isOksReportType)
+				firstTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={firstTourId} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && isOksReportType)
+				firstTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT ID FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={firstTourId} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
+			else if(reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType) 
+				firstTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={firstTourId} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
 
 			if (!firstTourTaskId.HasValue) ThrowNotDataException(firstTourId, reportDataType, isOksReportType);
 
-			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && isOksReportType) secondTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={0} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", secondTourId)).FirstOrDefault()?.id;
-			else if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && !isOksReportType) secondTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={0} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", secondTourId)).FirstOrDefault()?.id;
-			else if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && isOksReportType) secondTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT ID FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={0} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", secondTourId)).FirstOrDefault()?.id;
-			else if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType) secondTourTaskId = QSQuery.ExecuteSql<TourTaskIdsRegisterAttributes>(string.Format("SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={0} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;", secondTourId)).FirstOrDefault()?.id;
+			if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && isOksReportType) 
+				secondTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={secondTourId} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
+			else if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnInitial && !isOksReportType)
+				secondTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={secondTourId} AND NOTE_TYPE_CODE=4 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
+			else if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && isOksReportType)
+				secondTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT ID FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE (KO_UNIT.PROPERTY_TYPE_CODE<> 4 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL) AND (KO_UNIT.PROPERTY_TYPE_CODE<> 0 OR KO_UNIT.PROPERTY_TYPE_CODE IS NULL)) AND TOUR_ID={secondTourId} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
+			else if (reportDataType == NumberOfObjectsByZoneAndSubgroupsReportDataType.BasedOnVuon && !isOksReportType)
+				secondTourTaskId = QueryManager.ExecuteSql<TourTaskIdsRegisterAttributes>(
+					$"SELECT * FROM KO_TASK WHERE KO_TASK.ID IN (SELECT KO_UNIT.TASK_ID FROM KO_UNIT WHERE KO_UNIT.PROPERTY_TYPE_CODE=4) AND TOUR_ID={secondTourId} AND NOTE_TYPE_CODE=1 ORDER BY KO_TASK.CREATION_DATE DESC LIMIT 1;").FirstOrDefault()?.id;
 
 			if (!secondTourTaskId.HasValue) ThrowNotDataException(secondTourId, reportDataType, isOksReportType);
 
-			CoreRegisterData firstGbuAttributesRD = QSQuery.ExecuteSql<CoreRegisterData>(string.Format("SELECT CORE_REGISTER.* FROM CORE_REGISTER WHERE REGISTERID={0};", firstTourCodeGroupAttr.RegisterId)).FirstOrDefault();
-			CoreRegisterData secondGbuAttributesRD = QSQuery.ExecuteSql<CoreRegisterData>(string.Format("SELECT CORE_REGISTER.* FROM CORE_REGISTER WHERE REGISTERID={0};", secondTourCodeGroupAttr.RegisterId)).FirstOrDefault();
+			CoreRegisterData firstGbuAttributesRD = QueryManager.ExecuteSql<CoreRegisterData>(string.Format("SELECT CORE_REGISTER.* FROM CORE_REGISTER WHERE REGISTERID={0};", firstTourCodeGroupAttr.RegisterId)).FirstOrDefault();
+			CoreRegisterData secondGbuAttributesRD = QueryManager.ExecuteSql<CoreRegisterData>(string.Format("SELECT CORE_REGISTER.* FROM CORE_REGISTER WHERE REGISTERID={0};", secondTourCodeGroupAttr.RegisterId)).FirstOrDefault();
 
 			string subQueryFirstTour = string.Empty, subQuerySecondTour = string.Empty;
 
@@ -81,14 +101,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 			else if ((AllpriPartitioningType)secondGbuAttributesRD.allpri_partitioning == AllpriPartitioningType.AttributeId)
 				subQuerySecondTour = string.Format("SELECT COUNT(*)>1\n\tFROM {0}\n\tLEFT JOIN CORE_SRD_USER ON CORE_SRD_USER.ID={0}.CHANGE_USER_ID\n\tLEFT JOIN CORE_TD_INSTANCE ON CORE_TD_INSTANCE.ID={0}.CHANGE_DOC_ID\n\tWHERE {0}.OBJECT_ID=KO_UNIT.OBJECT_ID", $"{secondGbuAttributesRD.allpri_table}_{secondTourCodeGroupAttr.Id}");
 
-			string Query = string.Format(contents, subQueryFirstTour, subQuerySecondTour, firstTourTaskId.GetValueOrDefault(), secondTourTaskId.GetValueOrDefault(), firstTourId, secondTourId);
+			string query = string.Format(contents, subQueryFirstTour, subQuerySecondTour, firstTourTaskId.GetValueOrDefault(), secondTourTaskId.GetValueOrDefault(), firstTourId, secondTourId);
 
-			List<NumberOfObjectsByZoneAndSubgroupsDto> globalResult = QSQuery.ExecuteSql<NumberOfObjectsByZoneAndSubgroupsDto>(Query);
-			List<NumberOfObjectsByZoneAndSubgroupsDto> Result = new List<NumberOfObjectsByZoneAndSubgroupsDto>();
-			Result.AddRange(globalResult);
+			List<NumberOfObjectsByZoneAndSubgroupsDto> globalResult = QueryManager.ExecuteSql<NumberOfObjectsByZoneAndSubgroupsDto>(query);
+			List<NumberOfObjectsByZoneAndSubgroupsDto> result = new List<NumberOfObjectsByZoneAndSubgroupsDto>();
+			result.AddRange(globalResult);
 
 			if (isOksReportType)
-				Result
+				result
 					.AddRange(globalResult
 					.GroupBy(x => new { x.Zone, x.DistrictName, x.RegionName })
 					.Select(g => new NumberOfObjectsByZoneAndSubgroupsDto
@@ -134,9 +154,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 						//MaxUpksVarianceBetweenToursWithoutGroupChanging = g.Max(max => max.MaxUpksVarianceBetweenToursWithoutGroupChanging)
 					})
 					.ToList());
-			Result = Result.OrderBy(x => x.Zone).ThenBy(x => x.DistrictName).ThenBy(x => x.RegionName).ThenBy(x => x.PropertyType != "Всего").ThenBy(x => x.PropertyType).ToList();
+			result = result.OrderBy(x => x.Zone).ThenBy(x => x.DistrictName).ThenBy(x => x.RegionName).ThenBy(x => x.PropertyType != "Всего").ThenBy(x => x.PropertyType).ToList();
 
-			return Result;
+			return result;
 		}
 
 		private void ThrowNotDataException(long tourId, NumberOfObjectsByZoneAndSubgroupsReportDataType reportDataType, bool isOksReportType)

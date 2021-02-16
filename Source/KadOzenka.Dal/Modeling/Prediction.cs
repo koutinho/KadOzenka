@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
@@ -65,10 +66,10 @@ namespace KadOzenka.Dal.Modeling
 
             var allAttributes = ModelFactorsService.GetGeneralModelAttributes(InputParameters.ModelId);
 
-            var modelObjects = ModelingService.GetIncludedModelObjects(InputParameters.ModelId, false);
+            var modelObjects = ModelObjectsService.GetIncludedModelObjects(InputParameters.ModelId, false);
             modelObjects.ForEach(modelObject =>
             {
-                var modelObjectAttributes = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+                var modelObjectAttributes = modelObject.DeserializeCoefficient();
                 if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
                     return;
 

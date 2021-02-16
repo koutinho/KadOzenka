@@ -6,6 +6,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using Serilog;
 
@@ -13,12 +14,14 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
 {
     public class InfoAboutCadastralCostDeterminingMethodReport : StatisticalDataReport
     {
+	    public readonly QueryManager QueryManger;
 	    private readonly ILogger _logger;
 	    protected override ILogger Logger => _logger;
 
 	    public InfoAboutCadastralCostDeterminingMethodReport()
 	    {
-		    _logger = Log.ForContext<InfoAboutCadastralCostDeterminingMethodReport>();
+		    QueryManger = new QueryManager();
+            _logger = Log.ForContext<InfoAboutCadastralCostDeterminingMethodReport>();
 	    }
 
 
@@ -95,7 +98,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData
             query.AddColumn(OMModel.GetColumn(x => x.Name, nameof(ReportItem.ModelName)));
 
             var operations = new List<ReportItem>();
-            var table = query.ExecuteQuery();
+            var table = QueryManger.ExecuteQueryToDataTable(query);
             foreach (DataRow row in table.Rows)
             {
                 var objectPropertyType = (PropertyTypes) row[nameof(ReportItem.ObjectPropertyType)].ParseToLong();

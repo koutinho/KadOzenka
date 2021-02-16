@@ -27,6 +27,8 @@
 /Source/KadOzenka.LongProcessService/wwwroot
 /Source/KadOzenka.Dal/obj
 /Source/KadOzenka.Dal/bin
+/Source/KadOzenka.Dal.Tests/obj
+/Source/KadOzenka.Dal.Tests/bin
 /Source/ImageProccessor/obj
 /Source/ImageProccessor/bin
 /Source/Utils/EP.SdkCore/obj
@@ -47,6 +49,8 @@
 /Source/KadOzenka.Web/wwwroot/PlatformJs
 /Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css
 /Source/KadOzenka.Web/wwwroot/lib/kendo-ui/styles/kendo.silver.genix.min.css.map
+/Source/KadOzenka.Web.Tests/obj
+/Source/KadOzenka.Web.Tests/bin
 /Source/ImagesProcessor/obj
 /Source/GISStandProject/obj
 /.vs

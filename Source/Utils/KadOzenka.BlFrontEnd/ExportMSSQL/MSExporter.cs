@@ -13,7 +13,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 
 
 namespace KadOzenka.BlFrontEnd.ExportMSSQL
@@ -2152,6 +2153,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                     {
                         koGroup.DegreeReadiness = NullConvertor.DBToProcent(myOleDbDataReader["procent"]);
                     }
+                    if (objtype == PropertyTypes.Pllacement)
+                    {
+                        koGroup.BuildingCadastralNumber = NullConvertor.ToString(myOleDbDataReader["KN_PARENT"]);
+                    }
+                    if (objtype == PropertyTypes.Stead)
+                    {
+                        koGroup.UseAsPrototype = NullConvertor.ToString(myOleDbDataReader["procent"])=="Да";
+                    }
                     count++;
                     Items.Add(koGroup);
                     if (Items.Count == 50)
@@ -3821,25 +3830,22 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                             #region Сохранение данных ГКН
                             //Наименование участка
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(1, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(1, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Площадь
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Тип объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "Земельный участок", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(26, "Земельный участок", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Местоположение
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Адрес
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Кадастровый квартал
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Категория земель
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(3, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(3, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Вид использования по документам
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(4, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(4, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             #endregion
-
-
-
 
                             Items.Add(obj);
                             if (count % 25 == 0)
@@ -3923,35 +3929,32 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                             #region Сохранение данных ГКН
                             //Площадь
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Назначение здания
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(14, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(14, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Наименование объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Количество этажей
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Количество подземных этажей
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Год ввода в эксплуатацию
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Год постройки
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Тип объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "Здание", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(26, "Здание", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Материал стен
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(21, wall, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(21, wall, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Местоположение
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Адрес
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Кадастровый квартал
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Земельный участок
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             #endregion
-
-
-
 
                             Items.Add(obj);
                             if (count % 25 == 0)
@@ -4037,33 +4040,31 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                             #region Сохранение данных ГКН
                             //Площадь
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(44, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(44, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Назначение сооружения
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(22, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(22, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Наименование объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
 
                             //Количество этажей
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Количество подземных этажей
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Год ввода в эксплуатацию
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Год постройки
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Тип объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "Сооружение", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(26, "Сооружение", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Местоположение
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Адрес
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Кадастровый квартал
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Земельный участок
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             #endregion
-
-
 
                             Items.Add(obj);
                             if (count % 25 == 0)
@@ -4147,21 +4148,21 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             count++;
                             #region Сохранение данных ГКН
                             //Процент готовности
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(46, (proc == string.Empty) ? (decimal?)null : proc.ParseToDecimalNullable(), obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_Numeric(46, (proc == string.Empty) ? (decimal?)null : proc.ParseToDecimalNullable(), obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Площадь
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(44, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(44, Category, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Наименование объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(19, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(19, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Тип объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "ОНС", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(26, "ОНС", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Местоположение
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Адрес
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Кадастровый квартал
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Земельный участок
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(602, zu, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             #endregion
 
                             if (count % 25 == 0)
@@ -4247,48 +4248,46 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             count++;
                             #region Сохранение данных ГКН
                             //Площадь
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Назначение помещения
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(23, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(23, ByDoc, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Наименование объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(19, Name, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
 
                             //Количество этажей
                             if (floor != string.Empty)
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                                SetAttributeValue_String(17, floor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Количество подземных этажей
                             if (unfloor != string.Empty)
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                                SetAttributeValue_String(18, unfloor, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Год ввода в эксплуатацию
                             if (used != string.Empty)
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                                SetAttributeValue_String(16, used, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Год постройки
                             if (built != string.Empty)
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                                SetAttributeValue_String(15, built, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
 
                             //Тип объекта
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(26, "Помещение", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(26, "Помещение", obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Материал стен
                             if (wall != string.Empty)
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(21, wall, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                                SetAttributeValue_String(21, wall, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Местоположение
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(8, Place, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Адрес
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(600, Adress, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             //Кадастровый квартал
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(601, CadastralBlock, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
 
 
                             //Кадастровый номер здания или сооружения, в котором расположено помещение
-                            KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(604, parent, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                            SetAttributeValue_String(604, parent, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
 
                             if (level != string.Empty)
                             {
                                 //Номер этажа
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(24, level, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
+                                SetAttributeValue_String(24, level, obj.Id, inputDoc.Id, inputDoc.ApproveDate.Value, inputDoc.ApproveDate.Value, Core.SRD.SRDSession.Current.UserID, inputDoc.ApproveDate.Value);
                             }
-
-
 
                             #endregion
 
@@ -4363,7 +4362,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             if (obj != null)
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_String(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 //Площадь
                                 //KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
@@ -4462,7 +4461,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             if (obj != null)
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_Numeric(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 //Площадь
                                 //KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
@@ -4557,11 +4556,10 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             DateTime value = NullConvertor.DBToDateTime(myOleDbDataReader["value"]);
                             DateTime date = NullConvertor.DBToDateTime(myOleDbDataReader["date_value"]);
 
-
                             if (obj != null)
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Date(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_Date(id_factor, value, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 //Площадь
                                 //KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(2, Square, obj.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
@@ -4692,10 +4690,9 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             long id_factor = NullConvertor.DBToInt64(myOleDbDataReader["id_factor"]) + 1000;
                             string value = NullConvertor.ToString(myOleDbDataReader["value"]);
                             DateTime date = NullConvertor.DBToDateTime(myOleDbDataReader["date_value"]);
-
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_String(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
                             }
                         }
@@ -4806,7 +4803,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_Numeric(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
                             }
                         }
@@ -4928,7 +4925,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                                 #region Сохранение данных ГКН
                                 try
                                 {
-                                    KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Date(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                    SetAttributeValue_Date(id_factor, value, record.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 }
                                 catch
                                 {
@@ -5015,7 +5012,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             if (cur != null)
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Date(id_factor, value, cur.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_Date(id_factor, value, cur.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
                             }
                         }
@@ -5092,7 +5089,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             if (cur != null)
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_Numeric(id_factor, value, cur.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_Numeric(id_factor, value, cur.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
                             }
                         }
@@ -5171,7 +5168,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             if (cur != null)
                             {
                                 #region Сохранение данных ГКН
-                                KadOzenka.Dal.DataImport.DataImporterGkn.SetAttributeValue_String(id_factor, value, cur.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
+                                SetAttributeValue_String(id_factor, value, cur.Id, inputDoc.Id, date, inputDoc.CreateDate, Core.SRD.SRDSession.Current.UserID, date);
                                 #endregion
                             }
                         }
@@ -5186,6 +5183,76 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
             }
         }
 
+        public static void SetAttributeValue_String(long idAttribute, string value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idAttribute,
+                ObjectId = idObject,
+                ChangeDocId = idDocument,
+                S = sDate,
+                ChangeUserId = idUser,
+                ChangeDate = DateTime.Now,
+                Ot = otDate,
+                StringValue = value,
+            };
 
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
+        }
+
+        public static void SetAttributeValue_Numeric(long idAttribute, decimal? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idAttribute,
+                ObjectId = idObject,
+                ChangeDocId = idDocument,
+                S = sDate,
+                ChangeUserId = idUser,
+                ChangeDate = DateTime.Now,
+                Ot = otDate,
+                NumValue = value,
+            };
+
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
+        }
+
+        public static void SetAttributeValue_Boolean(long idAttribute, bool value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idAttribute,
+                ObjectId = idObject,
+                ChangeDocId = idDocument,
+                S = sDate,
+                ChangeUserId = idUser,
+                ChangeDate = DateTime.Now,
+                Ot = otDate,
+                NumValue = (value ? 1 : 0)
+            };
+
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
+        }
+
+        public static void SetAttributeValue_Date(long idAttribute, DateTime? value, long idObject, long idDocument, DateTime sDate, DateTime otDate, long idUser, DateTime changeDate)
+        {
+            var attributeValue = new GbuObjectAttribute
+            {
+                Id = -1,
+                AttributeId = idAttribute,
+                ObjectId = idObject,
+                ChangeDocId = idDocument,
+                S = sDate,
+                ChangeUserId = idUser,
+                ChangeDate = DateTime.Now,
+                Ot = otDate,
+                DtValue = value,
+            };
+
+            GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
+        }
     }
 }

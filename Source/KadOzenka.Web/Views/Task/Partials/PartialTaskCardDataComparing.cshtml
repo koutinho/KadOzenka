@@ -1,0 +1,150 @@
+﻿@using KadOzenka.Dal.DataComparing
+@using ObjectModel.Directory
+@model KadOzenka.Web.Models.Task.TaskDataComparingModel
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.DataComparingTaskChangesStatusCode)
+    </div>
+    <div class="col-sm-4">
+        @if (Model.NoteType == KoNoteType.Initial)
+        {
+            <label class="control-label totalImportObjectsLabel"> - </label>
+        }
+        else if (Model.DataComparingTaskChangesStatusCode == KoDataComparingTaskChangesStatus.ComparingWasNotPerformed)
+        {
+            <label class="control-label totalImportObjectsLabel">@(Model.DataComparingTaskChangesStatusCode.GetEnumDescription())</label>
+        }
+        else
+        {
+            <label class="control-label totalImportObjectsLabel">
+                @(Model.DataComparingTaskChangesStatusCode.GetEnumDescription())
+                <a href="@Url.Action("DownloadTaskChangesDataComparingResult", "Task", new{taskId=Model.Id})" 
+                   class="k-icon @(Model.DataComparingTaskChangesStatusCode == KoDataComparingTaskChangesStatus.DataAreMatch ? " k-i-check greenColor" : " k-i-close redColor" )"></a>
+            </label>
+        }
+    </div>
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.DataComparingCadastralCostStatusCode)
+    </div>
+    <div class="col-sm-4">
+        @if (Model.DataComparingCadastralCostStatusCode == KoDataComparingCadastralCostStatus.ComparingWasNotPerformed)
+        {
+            <label class="control-label totalImportObjectsLabel">@(Model.DataComparingCadastralCostStatusCode.GetEnumDescription())</label>
+        }
+        else
+        {
+            <label class="control-label totalImportObjectsLabel">
+                @(Model.DataComparingCadastralCostStatusCode.GetEnumDescription())
+                <a href="@Url.Action("DownloadTaskCadastralCostDataComparingResult", "Task", new{taskId=Model.Id})"
+                   class="k-icon @(Model.DataComparingCadastralCostStatusCode == KoDataComparingCadastralCostStatus.DataAreMatch ? " k-i-check greenColor" : " k-i-close redColor")"></a>
+            </label>
+        }
+    </div>
+    @if (Model.ContainsFdFilesComparingResult)
+    {
+        <div class="col-sm-offset-8 col-sm-4">
+            <label class=" control-label">Результат сравнения FD файлов <a class="k-icon k-i-download" href="@Url.Action("DownloadTaskCadastralCostFDDataComparingResult", "Task", new {taskId = Model.Id})"></a></label>
+        </div>
+    }
+</div>
+<div class="form-group">
+</div>
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabel("Наличие ПККО файлов")
+    </div>
+    <div class="col-sm-10">
+        <ul style="list-style-type: none; margin: 0; padding: 0;">
+            @if (Model.IsTaskChangesPkkoFileUploaded)
+            {
+                <li><label class=" control-label">Загружен протокол изменений<a href="@Url.Action("DownloadTaskDataComparingPkkoData", "Task", new {taskId = Model.Id, downloadType = DataComparingFileType.TaskChangesPkkoFile})" class="k-icon k-i-download"></a></label></li>
+            }
+            @if (Model.AreCostPkkoFilesUploaded)
+            {
+                <li><label class=" control-label">Загружены COST файлы <a href="@Url.Action("DownloadTaskDataComparingPkkoData", "Task", new {taskId = Model.Id, downloadType = DataComparingFileType.CostPkkoFiles})" class="k-icon k-i-download"></a></label></li>
+            }
+            @if (Model.AreFdPkkoFilesUploaded)
+            {
+                <li><label class=" control-label">Загружены FD файлы <a href="@Url.Action("DownloadTaskDataComparingPkkoData", "Task", new {taskId = Model.Id, downloadType = DataComparingFileType.FdPkkoFiles})" class="k-icon k-i-download"></a></label></li>
+            }
+        </ul>
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabel("Загрузить ПККО файлы")
+    </div>
+    <div class="col-sm-4">
+        <select id="dataComparingPkkoFilesType">
+            @foreach (var val in Model.PossibleUploadTypes)
+            {
+                <option value="@val.Value">@val.Text</option>
+            }
+        </select>
+    </div>
+    <div class="col-sm-6">
+        <input type="file" name="files" id="dataComparingPkkoFilesUploader" />
+    </div>
+</div>
+
+<style>
+    .greenColor, .greenColor:hover, .greenColor:before {
+        color: #00ff00;
+    }
+
+    .redColor, .redColor:hover, .redColor:before {
+        color: #ff0000;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#dataComparingPkkoFilesType').kendoDropDownList({
+            change: updateDataComparingFilesBlock
+        });
+
+        $('#dataComparingPkkoFilesUploader').kendoUpload({
+            multiple: true,
+            localization: {
+                select: 'Загрузить файлы'
+            },
+            validation: {
+                allowedExtensions: ['.xml']
+            },
+            async: {
+                batch: true,
+                autoUpload: true,
+                saveUrl: '@Url.Action("UploadDataComparingPkkoFiles", "Task")'
+            },
+            upload: function (e) {
+                var uploadType = $('#dataComparingPkkoFilesType').data('kendoDropDownList').value();
+                e.data = { taskId: '@Model.Id', uploadType: uploadType }
+            },
+            success: function (e) {
+                if (e.operation === "upload") {
+                    Common.ShowMessage(e.response.resultMessage);
+                    setTimeout(() => { location.reload() }, 2000);
+                }
+            },
+            error: function (e) {
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
+                }
+            }
+        });
+
+        updateDataComparingFilesBlock();
+    });
+
+    function updateDataComparingFilesBlock() {
+        var uploadType = $('#dataComparingPkkoFilesType').data('kendoDropDownList').value();
+        if (uploadType == @((int)DataComparingFileType.TaskChangesPkkoFile)) {
+            $("#dataComparingPkkoFilesUploader").data('kendoUpload').options.validation.allowedExtensions = ['.xlsx'];
+        } else {
+            $("#dataComparingPkkoFilesUploader").data('kendoUpload').options.validation.allowedExtensions = ['.xml'];
+        }
+    }
+</script>

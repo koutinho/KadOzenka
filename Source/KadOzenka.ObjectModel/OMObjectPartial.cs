@@ -5,6 +5,21 @@ using System.Collections.Generic;
 using System.Text;
 
 
+namespace ObjectModel.Common
+{
+	public partial class OMReportFiles
+	{
+		public string FileNameOnServer => Id.ToString();
+		public DateTime DateOnServer => CreationDate;
+	}
+
+	public partial class OMGbuOperationsReports
+	{
+		public string FileNameOnServer => Id.ToString();
+		public DateTime DateOnServer => CreationDate;
+	}
+}
+
 
 namespace ObjectModel.Sud
 {

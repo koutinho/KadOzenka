@@ -1,34 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Web.Controllers;
 
 namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {
 	public class StatisticalDataModel : IValidatableObject
 	{
-		/// <summary>
-		/// Тур
-		/// </summary>
+		public bool IsForBackground => ReportType != null && StatisticalDataService.ReportsViaLongLongProcess.ContainsKey(ReportType);
+		public bool IsWithAdditionalConfiguration => ReportType != null && ReportsWithAdditionalConfiguration.ContainsKey(ReportType);
+
 		public long? TourId { get; set; }
 
-		/// <summary>
-		/// Тур 2
-		/// </summary>
 		public long? SecondTourId { get; set; }
 
-		/// <summary>
-		/// Список заданий на оценку
-		/// </summary>
 		public long[] TaskFilter { get; set; }
 
-		/// <summary>
-		/// Тип отчета
-		/// </summary>
 		[Required(ErrorMessage = "Выберете тип отчета")]
 		public long? ReportType { get; set; }
 
+		public DateTime? PricingFactorsCompositionFinalUniformReportActualizationDate { get; set; }
+		public DateTime? PricingFactorsCompositionFinalNonuniformActualizationDate { get; set; }
 
-        private readonly List<long?> _reportsEnabledWithoutTasks = 
+
+		public readonly Dictionary<long?, string> ReportsWithAdditionalConfiguration =
+			new Dictionary<long?, string>
+			{
+				{(long) StatisticalDataType.PricingFactorsCompositionForPreviousTours, nameof(ManagementDecisionSupportController.PreviousToursReportConfiguration)},
+				{(long) StatisticalDataType.CadastralCostDeterminationResults, nameof(ManagementDecisionSupportController.CadastralCostDeterminationResultsConfiguration)}
+			};
+
+		private readonly List<long?> _reportsEnabledWithoutTasks = 
             new List<long?>
             {
 	            (long)StatisticalDataType.PricingFactorsCompositionForPreviousTours,

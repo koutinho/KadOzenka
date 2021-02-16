@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.RecycleBin;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 
@@ -8,6 +10,13 @@ namespace KadOzenka.Dal.Registers
 {
     public class RegisterService
     {
+	    public RecycleBinService RecycleBinService { get; }
+
+	    public RegisterService()
+	    {
+		    RecycleBinService = new RecycleBinService();
+	    }
+
         public OMRegister GetRegister(long? registerId)
         {
             return OMRegister.Where(x => x.RegisterId == registerId).SelectAll().ExecuteFirstOrDefault();
@@ -53,7 +62,7 @@ namespace KadOzenka.Dal.Registers
             }.Save();
         }
 
-        public void RemoveRegister(long registerId)
+        public void RemoveRegister(long registerId, long eventId)
         {
             using (var ts = new TransactionScope())
             {
@@ -62,15 +71,11 @@ namespace KadOzenka.Dal.Registers
                 {
                     throw new Exception($"Не найден реестр с ИД {registerId}");
                 }
-                omRegister.IsDeleted = true;
-                omRegister.Save();
+                RecycleBinService.MoveObjectToRecycleBin(omRegister.RegisterId, OMRegister.GetRegisterId(), eventId);
 
                 var omRegisterAttributes = OMAttribute.Where(x => x.RegisterId == registerId).SelectAll().Execute();
-                foreach (var omRegisterAttribute in omRegisterAttributes)
-                {
-                    omRegisterAttribute.IsDeleted = true;
-                    omRegisterAttribute.Save();
-                }
+                RecycleBinService.MoveObjectsToRecycleBin(omRegisterAttributes.Select(x => x.Id).ToList(),
+	                OMAttribute.GetRegisterId(), eventId);
 
                 ts.Complete();
             }

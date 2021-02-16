@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
@@ -16,9 +17,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	    private readonly ILogger _logger;
 	    protected override ILogger Logger => _logger;
 
+	    private readonly QueryManager _queryManager;
 	    public ZuReport()
 	    {
-		    _logger = Log.ForContext<ZuReport>();
+		    _queryManager = new QueryManager();
+            _logger = Log.ForContext<ZuReport>();
 	    }
 
 
@@ -28,8 +31,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         }
 
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
-        {
-            var taskIds = GetTaskIdList(query)?.ToList();
+        { 
+	        _queryManager.SetBaseToken(CancellationToken);
+	        var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);
 
             var operations = GetOperations(tourId, taskIds);
@@ -51,6 +55,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var sql = StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, "Zu");
 
+            if (_queryManager.IsRequestCancellationToken())
+            {
+                return new List<ReportItem>();
+            }
             var typeOfUseByDocuments = RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute();
             var typeOfUseByClassifier = RosreestrRegisterService.GetTypeOfUseByClassifierAttribute();
             var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
@@ -67,7 +75,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 typeOfUseByClassifier.Id, formationDate.Id, parcelCategory.Id, location.Id, address.Id, parcelName.Id,
                 objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
-            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
+            var result = _queryManager.ExecuteSql<ReportItem>(sqlWithParameters);
 
             return result;
         }

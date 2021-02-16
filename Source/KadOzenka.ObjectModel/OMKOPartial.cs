@@ -167,6 +167,30 @@ namespace ObjectModel.KO
                 }
             }
         }
+        //Используется при импорте задания на оценку для уменьшения числа запросов в базу
+        public HistoryUnit(OMUnit unit, List<OMTask> prevTourUnitTasks, OMTour tour)
+        {
+	        Unit = unit;
+	        IsBad = (Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorInData || Unit.StatusResultCalc_Code == KoStatusResultCalc.ErrorTechnical);
+	        IsActual = false;
+	        Task = prevTourUnitTasks.FirstOrDefault(x => x.Id == unit.TaskId);
+	        if (Task != null)
+	        {
+                //Документ при импрорте не используется
+		        //long? id_Indoc = Task.DocumentId;
+		        //if (id_Indoc != null)
+		        //{
+			       // InputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Indoc.Value).SelectAll().ExecuteFirstOrDefault();
+		        //}
+		        //long? id_Outdoc = unit.ResponseDocId;
+		        //if (id_Outdoc != null)
+		        //{
+			       // OutputDoc = Core.TD.OMInstance.Where(x => x.Id == id_Outdoc.Value).SelectAll().ExecuteFirstOrDefault();
+		        //}
+
+		        Tour = tour;
+	        }
+        }
         int IComparer<HistoryUnit>.Compare(HistoryUnit unit1, HistoryUnit unit2)
         {
             if (unit1.Tour.Year.ParseToLong() == unit2.Tour.Year.ParseToLong())
@@ -310,6 +334,63 @@ namespace ObjectModel.KO
             }
             return Items;
         }
+
+        //Используется при импорте задания на оценку для уменьшения числа запросов в базу
+        public static List<HistoryUnit> GetPrevHistoryTour(long currentUnitId, List<OMUnit> prevUnits, List<OMTask> prevTourUnitTasks, OMTour tour)
+        {
+            List<HistoryUnit> Items = new List<HistoryUnit>();
+            List<OMUnit> units = prevUnits.Where(x => x.Id != currentUnitId).ToList();
+            foreach (OMUnit unit in units)
+            {
+                Items.Add(new HistoryUnit(unit, prevTourUnitTasks, tour));
+            }
+
+            if (Items.Count > 0)
+            {
+                Items.Sort(Items[0]);
+
+                int indexActual = -1;
+                int startIndex = -1;
+                for (int i = Items.Count - 1; i >= 0; i--)
+                {
+                    if (Items[i].Unit.CadastralCost != null)
+                    {
+                        if (Items[i].Unit.CadastralCost.Value > 0 && !Items[i].IsBad)
+                        {
+                            indexActual = i;
+                            startIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (indexActual >= 0)
+                {
+                    decimal cost = Items[indexActual].Unit.CadastralCost.Value;
+                    for (int i = startIndex - 1; i >= 0; i--)
+                    {
+                        if (Items[i].Unit.CadastralCost != null)
+                        {
+                            if (Items[i].Unit.CadastralCost.Value == cost && !Items[i].IsBad)
+                            {
+                                indexActual = i;
+                            }
+                            else
+                            if (Items[i].IsBad)
+                            {
+                            }
+                            else break;
+                        }
+                        else
+                            break;
+                    }
+                    if (indexActual >= 0)
+                        Items[indexActual].IsActual = true;
+                }
+            }
+            return Items;
+        }
+
         public static HistoryUnit GetPrevUnit(List<HistoryUnit> items)
         {
             if (items.Count > 0)
@@ -398,26 +479,28 @@ namespace ObjectModel.KO
                     }
                     if (ci != null)
                     {
-                        switch (attributeData.Type)
-                        {
-                            case RegisterAttributeType.INTEGER:
-                                value = ci.Value.ParseToLongNullable();
-                                break;
-                            case RegisterAttributeType.DECIMAL:
-                                value = ci.Value.ParseToDecimalNullable();
-                                break;
-                            case RegisterAttributeType.BOOLEAN:
-                                value = ci.Value.ParseToBooleanNullable();
-                                break;
-                            case RegisterAttributeType.STRING:
-                                value = ci.Value.ToString();
-                                break;
-                            case RegisterAttributeType.DATE:
-                                value = ci.Value.ParseToDateTimeNullable();
-                                break;
-                        }
+	                    value = ci.Value;
                     }
                 }
+            }
+
+            switch (attributeData.Type)
+            {
+	            case RegisterAttributeType.INTEGER:
+		            value = value.ParseToLongNullable();
+		            break;
+	            case RegisterAttributeType.DECIMAL:
+		            value = value.ParseToDecimalNullable();
+		            break;
+	            case RegisterAttributeType.BOOLEAN:
+		            value = value.ParseToBooleanNullable();
+		            break;
+	            case RegisterAttributeType.STRING:
+		            value = value.ToString();
+		            break;
+	            case RegisterAttributeType.DATE:
+		            value = value.ParseToDateTimeNullable();
+		            break;
             }
             RegisterObject registerObject = new RegisterObject((int)RegId, (int)this.Id);
             registerObject.SetAttributeValue(factorId, value, referenceItemId);
@@ -548,20 +631,6 @@ namespace ObjectModel.KO
     {
 	    public string InternalName => $"model_{Id}";
 
-	    public OMModel Copy()
-	    {
-            return new OMModel
-            {
-                AlgoritmType_Code = AlgoritmType_Code,
-                Formula = Formula,
-                Description = Description,
-                Name = Name,
-                GroupId = GroupId,
-                IsOksObjectType = IsOksObjectType,
-                Type_Code = Type_Code
-            };
-	    }
-
 	    public decimal? GetA0()
 	    {
 		    switch (AlgoritmType_Code)
@@ -591,6 +660,21 @@ namespace ObjectModel.KO
 
 		    return null;
 	    }
+
+        public string GetTrainingResult(KoAlgoritmType type)
+		{
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					return ExponentialTrainingResult;
+				case KoAlgoritmType.Line:
+					return LinearTrainingResult;
+				case KoAlgoritmType.Multi:
+					return MultiplicativeTrainingResult;
+				default:
+					throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
+			}
+		}
 
         public string GetFormulaFull(bool upks)
         {
@@ -738,13 +822,30 @@ namespace ObjectModel.KO
             return res;
         }
     }
+
     public partial class OMModelFactor
     {
+        static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
+        [Obsolete]
         public void FillMarkCatalogs(OMModel model)
         {
             MarkCatalogs = new List<OMMarkCatalog>();
             MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == model.GroupId && x.FactorId == this.FactorId).SelectAll().Execute());
+        }
+
+        public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
+        {
+            MarkCatalogs = new List<OMMarkCatalog>();
+            MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
+            //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
+        }
+
+        public void FillMarkCatalogsFromList(Dictionary<long?, List<OMMarkCatalog>> dict)
+        {
+            var success = dict.TryGetValue(FactorId.GetValueOrDefault(), out var marks);
+            MarkCatalogs = success ? marks : new List<OMMarkCatalog>();
+            //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
         }
     }
     public partial class OMGroup
@@ -1270,6 +1371,7 @@ namespace ObjectModel.KO
             {
                 int? factorReestrId = GetFactorReestrId(this);
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
+                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
                 if (model != null && factorReestrId != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -1282,7 +1384,7 @@ namespace ObjectModel.KO
                     {
 
                         if (weight.SignMarket)
-                            weight.FillMarkCatalogs(model);
+                            weight.FillMarkCatalogsFromList(marks, model.GroupId);
                         if (weight.MarkerId == 1)
                         {
                             idsquarefactor = weight.FactorId;
@@ -2370,6 +2472,7 @@ namespace ObjectModel.KO
             if (upks != null)
             {
                 List<ObjectModel.KO.OMGroupFactor> groupFactors = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
+                var marks = OMMarkCatalog.Where(x => x.GroupId == this.Id).SelectAll().Execute();
                 foreach (ObjectModel.KO.OMGroupFactor groupFactor in groupFactors)
                 {
                     string factorName = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == groupFactor.FactorId)?.Name;
@@ -2383,8 +2486,9 @@ namespace ObjectModel.KO
                         {
                             if (groupFactor.SignMarket.ParseToBoolean())
                             {
+                                // TODO: ko_mark_catalog
                                 List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
-                                MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == this.Id && x.FactorId == groupFactor.FactorId).SelectAll().Execute());
+                                MarkCatalogs.AddRange(marks.Where(x => x.FactorId == groupFactor.FactorId));
 
                                 string t6 = row.ItemArray[6].ParseToString();
                                 if (t6 != string.Empty && t6 != null)
@@ -2539,6 +2643,7 @@ namespace ObjectModel.KO
             if (factorReestrId != null)
             {
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
+                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
                 if (model != null)
                 {
                     if (model.ModelFactor.Count == 0)
@@ -2548,7 +2653,7 @@ namespace ObjectModel.KO
                     {
 
                         if (weight.SignMarket)
-                            weight.FillMarkCatalogs(model);
+                            weight.FillMarkCatalogsFromList(marks, model.GroupId);
                     }
 
 
@@ -3237,4 +3342,49 @@ namespace ObjectModel.KO
 	        UnloadType = unloadType;
         }
     }
+}
+
+
+namespace ObjectModel.Modeling
+{
+	public partial class OMModelToMarketObjects
+	{
+		public List<CoefficientForObject> DeserializeCoefficient()
+		{
+            if(string.IsNullOrWhiteSpace(Coefficients))
+                return new List<CoefficientForObject>();
+
+            return JsonConvert.DeserializeObject<List<CoefficientForObject>>(Coefficients);
+		}
+	}
+
+
+	
+
+
+	public class CoefficientForObject
+	{
+		public long AttributeId { get; set; }
+		public decimal? Coefficient { get; set; }
+		public string Value { get; set; }
+
+		public CoefficientForObject(long attributeId)
+		{
+			AttributeId = attributeId;
+		}
+
+		//для сериализации нужен конструктор без параметров
+		protected CoefficientForObject()
+		{
+
+		}
+	}
+
+	public static class CoefficientExtensions
+	{
+		public static string SerializeCoefficient(this List<CoefficientForObject> coefficients)
+		{
+			return JsonConvert.SerializeObject(coefficients);
+		}
+	}
 }

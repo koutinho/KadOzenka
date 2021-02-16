@@ -10,12 +10,26 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Models.KoBase;
 using Kendo.Mvc.UI;
 using ObjectModel.Core.TD;
+using Core.Main.FileStorages;
+using System.IO;
+using KadOzenka.Web.Attributes;
 
 namespace KadOzenka.Web.Controllers
 {
     public class KoBaseController : BaseController
 	{
-		protected JsonResult GenerateMessageNonValidModel()
+		[HttpGet]
+		[SRDFunction(Tag = "")]
+		public IActionResult DownloadExcelFileFromSessionByName(string fileName)
+		{
+			var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+			if (fileInfo == null)
+				return new EmptyResult();
+
+			return File(fileInfo.FileContent, fileInfo.ContentType, $"{fileName}, {DateTime.Now}.{fileInfo.FileExtension}");
+		}
+
+        protected JsonResult GenerateMessageNonValidModel()
         {
             return Json(new
             {
@@ -87,6 +101,10 @@ namespace KadOzenka.Web.Controllers
 	                return "application/octet-stream";
                 case "docx":
 	                return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "txt":
+	                return "text/plain";
+                case "csv":
+	                return "text/csv";
                 default:
 	                throw new Exception($"Неподдерживаемый тип файла: {fileExtension}");
 	        }
@@ -122,6 +140,25 @@ namespace KadOzenka.Web.Controllers
 				        Text = y.Text
 			        }).ToList()
 		        }).AsEnumerable();
+        }
+
+        protected FileSize CalculateFileSize(string storageKey, DateTime fileDateOnServer, string fileName)
+        {
+	        var fileLocation = FileStorageManager.GetPathForFileFolder(storageKey, fileDateOnServer);
+	        fileLocation = Path.Combine(fileLocation, fileName);
+
+            return CalculateFileSize(fileLocation);
+        }
+
+        protected FileSize CalculateFileSize(string fileLocation)
+        {
+	        var fileSize = new FileSize();
+	        if (!string.IsNullOrEmpty(fileLocation) && System.IO.File.Exists(fileLocation))
+	        {
+		        var resultFileSize = new FileInfo(fileLocation).Length;
+		        fileSize.Kb = (float)(resultFileSize / 1024m);
+	        }
+	        return fileSize;
         }
     }
 }

@@ -107,9 +107,9 @@ namespace KadOzenka.Dal.GbuObject
                 MaxCount = 0;
             }
 
-            reportService.SaveReport();
+            var reportId = reportService.SaveReport();
 
-            return reportService.UrlToDownload;
+            return reportService.GetUrlToDownloadFile(reportId);
         }
 
 

@@ -799,6 +799,24 @@ namespace ObjectModel.Ko
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 223 Картинки с результатами обучения модели
+    /// </summary>
+    public partial class OMModelTrainingResultImages
+    {
+        /// <summary>
+        /// Ссылка на (206 Модель)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMModel ParentModel { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года
     /// </summary>
     public partial class OMUnitParamsOks2018
@@ -1348,6 +1366,67 @@ namespace ObjectModel.Common
     /// 801 Журнал загрузки данных
     /// </summary>
     public partial class OMImportDataLog
+    {
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 812 Корзина с информацией об удаленных сушностях
+    /// </summary>
+    public partial class OMRecycleBin
+    {
+        /// <summary>
+        /// Ссылка на (930 Список реестров)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMRegister ParentRegister { get; set; }
+
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 814 Таблица с отчетами для основных операций системы
+    /// </summary>
+    public partial class OMGbuOperationsReports
+    {
+        /// <summary>
+        /// Ссылка на (950 Пользователи системы)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
+    /// </summary>
+    public partial class OMAllReportsInSystemView
     {
         /// <summary>
         /// Ссылка на (950 Пользователи системы)

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ConvertNulls="false" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="09/01/2020 15:47:18" ReportInfo.CreatorVersion="2017.4.7.0">
+<Report ScriptLanguage="CSharp" ConvertNulls="false" ReportInfo.Created="12/24/2019 10:00:00" ReportInfo.Modified="12/18/2020 17:04:18" ReportInfo.CreatorVersion="2019.4.11.0">
   <Dictionary>
     <BusinessObjectDataSource Name="Data" ReferenceName="Data" DataType="null" Enabled="true">
       <Column Name="CadastralNumber" DataType="System.String"/>
@@ -32,11 +32,11 @@
       <Column Name="CountInDays" DataType="System.Decimal"/>
     </BusinessObjectDataSource>
   </Dictionary>
-  <ReportPage Name="Page1" Landscape="true" PaperWidth="957" PaperHeight="210" RawPaperSize="9" Guides="9.45,3411.45,151.2,907.2,1067.85,255.15,330.75,519.75,652.05,756,1190.7,1294.65,1445.85,1549.8,1644.3,1710.45,1757.7,1861.65,1993.95,2079,2192.4,2324.7,2457,2589.3,2721.6,2853.9,2986.2,3127.95,3269.7" UnlimitedWidth="true">
-    <ReportTitleBand Name="ReportTitle1" Width="3541.86" Height="47.25" Guides="18.9,47.25">
+  <ReportPage Name="Page1" Landscape="true" PaperWidth="957" PaperHeight="210" RawPaperSize="9" Watermark.Font="Arial, 60pt" UnlimitedWidth="true">
+    <ReportTitleBand Name="ReportTitle1" Width="3541.86" Height="47.25">
       <TextObject Name="Text1" Left="9.45" Top="18.9" Width="3402" Height="28.35" Text="Анализ расчетов" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 20pt"/>
     </ReportTitleBand>
-    <DataBand Name="BandData" Top="185.95" Width="3541.86" Height="66.15" Guides="0,18.9">
+    <DataBand Name="BandData" Top="187.55" Width="3541.86" Height="66.15" CanGrow="true">
       <TextObject Name="Text79" Left="9.45" Width="141.75" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.CadastralNumber]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text86" Left="907.2" Width="160.65" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.EvaluationSubgroup2018]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text80" Left="151.2" Width="103.95" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.Type]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -65,7 +65,7 @@
       <TextObject Name="Text104" Left="2986.2" Width="141.75" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.ParticipatingCount]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text105" Left="3127.95" Width="141.75" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.CountInYear]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       <TextObject Name="Text106" Left="3269.7" Width="141.75" Height="18.9" Border.Lines="All" CanGrow="true" GrowToBottom="true" Text="[Data.CountInDays]" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
-      <DataHeaderBand Name="DataHeader2" Top="50.45" Width="3541.86" Height="132.3" Guides="66.15,132.3,0">
+      <DataHeaderBand Name="DataHeader2" Top="51.25" Width="3541.86" Height="132.3">
         <TextObject Name="Text25" Left="9.45" Top="66.15" Width="141.75" Height="66.15" Border.Lines="All" Text="Кадастровый номер" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text26" Left="151.2" Top="66.15" Width="103.95" Height="66.15" Border.Lines="All" Text="Тип" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
         <TextObject Name="Text27" Left="255.15" Top="66.15" Width="75.6" Height="66.15" Border.Lines="All" Text="Площадь" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
@@ -101,6 +101,6 @@
         <TextObject Name="Text78" Left="2986.2" Width="425.25" Height="66.15" Border.Lines="All" Text="Участие в оценке" HorzAlign="Center" VertAlign="Center" Font="Times New Roman, 12pt"/>
       </DataHeaderBand>
     </DataBand>
-    <ReportSummaryBand Name="ReportSummary1" Top="255.3" Width="3541.86" Height="9.45"/>
+    <ReportSummaryBand Name="ReportSummary1" Top="257.7" Width="3541.86" Height="9.45"/>
   </ReportPage>
 </Report>

@@ -127,10 +127,6 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				unloadResultQueue.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 				unloadResultQueue.DateStarted = DateTime.Now;
 				unloadResultQueue.Save();
-
-				WorkerCommon.SetProgress(processQueue, 5);
-
-
 				WorkerCommon.SetProgress(processQueue, 10);
 				var res = KOUnloadResult.Unload(processQueue, unloadResultQueue, settings);
 
@@ -235,7 +231,43 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				foreach (var entry in result)
 				{
 					var entryStream = DataExporterCommon.GetExportResultFileStream(entry.FileId);
-					zipFile.AddEntry(DataExporterCommon.GetDownloadResultFileName(entry.FileId), entryStream);
+					var isZip = ZipFile.IsZipFile(entryStream,false);
+					entryStream.Seek(0, SeekOrigin.Begin);
+					if (isZip)
+					{
+						try
+						{
+							using var entryZipFile = ZipFile.Read(entryStream);
+							var zipEntries = entryZipFile.Entries.ToList();
+							foreach (var zipEntry in zipEntries)
+							{
+								var entryFileName = zipEntry.FileName;
+								var attempts = 1;
+								while (attempts < 100) // Попытка записать в архив, переименовать если файл существует
+								{
+									if (attempts > 1 && attempts < 100)
+										entryFileName = zipEntry.FileName + $" ({attempts})";
+									if (!zipFile.EntryFileNames.Contains(entryFileName))
+									{
+										using var zipEntryStream = zipEntry.OpenReader();
+										zipFile.AddEntry(entryFileName, zipEntryStream);
+										break;
+									}
+									attempts++;
+								}
+								if (attempts>=10)
+									_log.Warning("Файл {fileName} не был добавлен в архив из-за совпадений по имени",zipEntry.FileName);
+							}
+						}
+						catch (Exception e)
+						{
+							_log.Error(e,"Ошибка при чтении архива для добавления к результату");
+						}
+					}
+					else
+					{
+						zipFile.AddEntry(DataExporterCommon.GetDownloadResultFileName(entry.FileId), entryStream);
+					}
 				}
 
 				MemoryStream stream = new MemoryStream();

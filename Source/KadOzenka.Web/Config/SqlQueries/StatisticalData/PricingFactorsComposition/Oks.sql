@@ -1,5 +1,5 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0})
+	select unit.object_id from ko_unit unit where unit.TASK_ID IN ({0}) AND unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND unit.OBJECT_ID IS NOT NULL
 ),
 --Rosreestr
 commissioningYearAttrValues as (

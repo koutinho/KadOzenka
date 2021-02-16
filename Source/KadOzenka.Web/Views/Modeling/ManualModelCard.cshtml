@@ -1,30 +1,10 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.ManualModelingModel
 
+
 <!-- Модальное окно для загрузки справочника меток -->
-@using (Html.BeginForm("UploadMarksCatalog", "Modeling", FormMethod.Post, new { id = "UploadMarksCatalogForm", enctype = "multipart/form-data" }))
-{
-    <div id="uploadMarksCatalogModal" style="display: none;  padding: 2%;">
-        <div class="form-horizontal col-sm-12">
-            <div class="form-group">
-                <div class="col-sm-9">
-                    <label for="isDeleteAllCheckBox">Загрузка с удалением имеющихся данных</label>
-                </div>
-                <div class="col-sm-2">
-                    <input name="isDeleteAllCheckBox" id="isDeleteAllCheckBox" type="checkbox" />
-                </div>
-            </div>
-            <div class="form-group">
-                <input name="marksCatalogFiles" id="marksCatalogFiles" type="file" aria-label="files" accept=".xls,.xlsx" />
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2 col-sm-offset-9">
-                    <button id="loadMarksCatalogFilesButton" type="button">Загрузить</button>
-                </div>
-            </div>
-        </div>
-    </div>
-}
+<div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
+</div>
 
 
 <!--Основное окно с информацией о модели -->
@@ -33,7 +13,7 @@
     @Html.HiddenFor(x => x.Id)
     <div id="toolbar"></div>
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
-        <div style="margin: 1%;">
+        <div style="margin: 2%;">
             @{
                 await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
             }
@@ -43,7 +23,7 @@
                     @Html.CustomLabelFor(x => x.CalculationType, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: Model.IsFromTourCard)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationType, isReadonly: Model.IsReadOnly)
                 </div>
             </div>
             <div class="form-group" id="modelCalculationMethod" style="display: none;">
@@ -51,7 +31,7 @@
                     @Html.CustomLabelFor(x => x.CalculationMethodCode, true)
                 </div>
                 <div class="col-sm-10">
-                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: Model.IsFromTourCard)
+                    @Html.KendoEnumDropDownListFor(x => x.CalculationMethodCode, isReadonly: Model.IsReadOnly)
                 </div>
             </div>
         </div>
@@ -91,18 +71,9 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    // Установка стиля при загрузке меток из файла
-    var mutConfig = { childList: true, subtree: true };
-    var mutationFunction = function (mutList, observer) {
-        var targetNode = $(".k-file");
-        if (targetNode) {
-            targetNode.addClass("k-file-success");
-        }
-    }
-
     $(document).ready(function () {
-        $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isFromTourCard);
-        $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isFromTourCard);
+        $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
+        $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
 
         $('#toolbar').kendoToolBar({
             items: [
@@ -130,7 +101,7 @@
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
-                    hidden: isFromTourCard
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
@@ -138,7 +109,7 @@
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
-                    hidden: isFromTourCard
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
@@ -146,7 +117,7 @@
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete',
-                    hidden: isFromTourCard
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
@@ -161,7 +132,7 @@
                     text: '',
                     attributes: { title: "Загрузить справочник меток" },
                     icon: 'upload',
-                    hidden: isFromTourCard
+                    hidden: isReadOnly
                 },
                 {
                     type: 'button',
@@ -175,7 +146,7 @@
         $(".k-toolbar [title]").kendoTooltip({
             position:"top"
         });
-        if (isFromTourCard) {
+        if (isReadOnly) {
             $('#toolbar').hide();
         }
 
@@ -252,39 +223,6 @@
         $('#show-marks').on('click', showMarks);
         $('#upload-marks-catalog').on('click', showModalToUploadMarksCatalog);
         $('#download-marks-catalog').on('click', downloadMarksCatalog);
-
-
-        $('#marksCatalogFiles').kendoUpload({
-            multiple: false,
-            localization: {
-                select: 'Выбрать Файл'
-            },
-            validation: {
-                allowedExtensions: ['.xls', '.xlsx']
-            },
-            success: function (e) {
-                if (e.operation === "upload") {
-                    Common.ShowMessage("Данные загружены успешно");
-                }
-            },
-            error: function (e) {
-                if (e.XMLHttpRequest.responseText) {
-                    Common.ShowError(e.XMLHttpRequest.responseText);
-                } else {
-                    Common.ShowError("Не удалось загрузить выбранный файл");
-                }
-            }
-        }).data('kendoUpload');
-
-        var mutObserver = new MutationObserver(mutationFunction);
-        var uploader = $(".k-upload");
-        if (uploader.length) {
-            mutObserver.observe(uploader[0], mutConfig);
-        }
-
-        $("#loadMarksCatalogFilesButton").kendoButton({
-            click: uploadMarksCatalog
-        });
     });
 
 
@@ -481,51 +419,28 @@
     function showModalToUploadMarksCatalog() {
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
-            $("#marksCatalogFiles").getKendoUpload().removeAllFiles();
-            var modal = $("#uploadMarksCatalogModal");
-            ShowModal(modal, '50%', '30%');
-        }
-    }
-
-
-    function uploadMarksCatalog() {
-        var selectedRowData = getSelectedRowInFactorsGrid();
-        if (selectedRowData) {
-            var files = $("#marksCatalogFiles").getKendoUpload().getFiles();
-            if (files.length === 0) {
-                Common.ShowError("Файл не выбран");
-                return;
-            }
-            var formData = new FormData();
-            formData.append('file', files[0].rawFile);
-            formData.append('groupId', '@Model.GroupId');
-            formData.append('factorId', selectedRowData.AttributeId);
-            formData.append('isDeleteOld', $("#isDeleteAllCheckBox").is(":checked"));
-            kendo.ui.progress($('#uploadMarksCatalogModal'), true);
+            var groupId = '@Model.GroupId';
+            var factorId = selectedRowData.AttributeId;
+            kendo.ui.progress($('body'), true);
             $.ajax({
                 url: '@Url.Action("UploadMarksCatalog", "Modeling")',
-                type: 'POST',
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function(response) {
-                    if (response.success) {
-                        window.location = '@Url.Action("DownloadExcelFile", "Modeling")' + "?fileName=" + response.fileName;
-                    } else {
-                        Common.ShowError("Не удалось загрузить выбранный файл");
-                    }
+                type: 'GET',
+                data: { groupId: groupId, factorId: factorId },
+                success: function (response) {
+                    var modal = $("#uploadMarksCatalogModal");
+                    modal.html(response);
+                    ShowModal(modal, '50%', '30%', "Загрузка меток");
                 },
-                error: function(e) {
-                    Common.ShowError(e.responseText);
+                error: function (response) {
+                    Common.ShowError(response.responseText);
                 },
                 complete: function() {
-                    kendo.ui.progress($('#uploadMarksCatalogModal'), false);
-                    $("#uploadMarksCatalogModal").data("kendoWindow").close();
+                    kendo.ui.progress($('body'), false);
                 }
             });
         }
     }
+
 </script>
 
 
@@ -535,4 +450,13 @@
         margin-bottom: 5px !important;
         display: block;
     }
+    #toolbar{
+            position: fixed;
+            /*background-color: white;*/
+            z-index: 2;
+            width: 100%;
+            border-color: #e5e6eb;
+            border-width: 1px 0;
+            left: -1px; top: -1px;
+        }
 </style>

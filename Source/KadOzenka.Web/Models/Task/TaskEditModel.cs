@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.Tasks.Dto;
+using KadOzenka.Dal.Tasks.Responses;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Task
@@ -16,6 +18,10 @@ namespace KadOzenka.Web.Models.Task
         public long? CommonNumberOfImportedObjects { get; set; }
 
         public long? PossibleTotalCountOfObjects { get; set; }
+
+        public TaskDataComparingModel TaskDataComparingModel { get; set; }
+
+        public string TaskDataComparingError { get; set; }
 
         public TaskDto ToDto()
         {
@@ -41,7 +47,7 @@ namespace KadOzenka.Web.Models.Task
             };
         }
 
-        public static TaskEditModel ToEditModel(TaskDto task)
+        public static TaskEditModel ToEditModel(TaskDto task, TaskDataComparingDtoResponse taskDataComparingResponse)
         {
             return new TaskEditModel
             {
@@ -57,7 +63,13 @@ namespace KadOzenka.Web.Models.Task
                 TourYear = task.Tour?.Year,
                 StatusCode = task.StatusCode,
                 CommonNumberOfImportedObjects = task.CommonNumberOfImportedObjects,
-                PossibleTotalCountOfObjects = task.PossibleTotalCountOfObjects
+                PossibleTotalCountOfObjects = task.PossibleTotalCountOfObjects,
+                TaskDataComparingModel = taskDataComparingResponse.Success
+	                ? TaskDataComparingModel.ToModel(taskDataComparingResponse.TaskDataComparingDto) 
+	                : null,
+                TaskDataComparingError = taskDataComparingResponse.Success
+	                ? null 
+	                : taskDataComparingResponse.ErrorMessage,
             };
         }
     }

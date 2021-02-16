@@ -15,6 +15,8 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Reports;
 using System.Data;
+using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.Modeling.Repositories;
 using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
@@ -24,6 +26,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
         public static readonly string DateFormat = "dd.MM.yyyy";
         protected string DecimalFormat => "#,##0.00";
         public static readonly int PrecisionForDecimalValues = 2;
+        protected QueryManager QueryManager;
 
         protected readonly GbuObjectService GbuObjectService;
 		protected readonly StatisticalDataService StatisticalDataService;
@@ -38,7 +41,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         protected StatisticalDataReport()
 		{
-			GbuObjectService = new GbuObjectService();
+			QueryManager = new QueryManager();
+            GbuObjectService = new GbuObjectService(QueryManager);
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
             GbuCodRegisterService = new GbuCodRegisterService();
@@ -47,6 +51,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             ModelFactorsService = new ModelFactorsService();
             GroupService = new GroupService();
             FactorsService = new FactorsService();
+           
         }
 
 		public override string GetTitle(long? objectId)
@@ -56,7 +61,9 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
 		protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
 		{
-			Logger.Debug("Начат сбор данных");
+			QueryManager.SetBaseToken(CancellationToken);
+
+            Logger.Debug("Начат сбор данных");
 
 			var loggedHeaders = query.AllKeys.ToDictionary(h => h, h => GetQueryParam<string>(h, query));
 			Logger.ForContext("InputParameters", loggedHeaders, destructureObjects: true).Debug("Входные параметры");
@@ -183,18 +190,18 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
 
         protected List<OMUnit> GetUnits(List<long> taskIds, PropertyTypes type)
         {
-            return OMUnit.Where(x => taskIds.Contains((long) x.TaskId) &&
-                                     x.PropertyType_Code == type &&
-                                     x.ObjectId != null)
-                .Select(x => new
-                {
-                    x.ObjectId,
-                    x.CadastralNumber,
-                    x.Square,
-                    x.Upks,
-                    x.CadastralCost
-                })
-                .Execute();
+	        var query = OMUnit.Where(x => taskIds.Contains((long) x.TaskId) &&
+	                                      x.PropertyType_Code == type &&
+	                                      x.ObjectId != null)
+		        .Select(x => new
+		        {
+			        x.ObjectId,
+			        x.CadastralNumber,
+			        x.Square,
+			        x.Upks,
+			        x.CadastralCost
+		        });
+	        return  QueryManager.ExecuteQuery(query);
         }
 
         protected string ProcessDate(string dateStr)

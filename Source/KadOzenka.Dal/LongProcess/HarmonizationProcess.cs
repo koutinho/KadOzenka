@@ -24,8 +24,6 @@ namespace KadOzenka.Dal.LongProcess
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			var cancelSource = new CancellationTokenSource();
-			var cancelToken = cancelSource.Token;
 			try
 			{
 				_log.Information("Начато выполнение фонового процесса: {ProcessType}", processType.Description);
@@ -35,45 +33,26 @@ namespace KadOzenka.Dal.LongProcess
                 _log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
                 
                 var harmonization = new Harmonization(settings, _log);
+                LongProcessProgressLogger.StartLogProgress(processQueue, () => harmonization.MaxObjectsCount, () => harmonization.CurrentCount);
 
-                var t = Task.Run(() =>
-                {
-                    while (true)
-                    {
-                        if (cancelToken.IsCancellationRequested)
-                        {
-                            break;
-                        }
-                        if (harmonization.MaxObjectsCount > 0 && harmonization.CurrentCount > 0)
-                        {
-                            var newProgress = (long)Math.Round(((double)harmonization.CurrentCount / harmonization.MaxObjectsCount) * 100);
-                            if (newProgress != processQueue.Progress)
-                            {
-                                WorkerCommon.SetProgress(processQueue, newProgress);
-                            }
-                        }
-                    }
-                }, cancelToken);
-
-                var reportId = harmonization.Run();
+                var urlToDownload = harmonization.Run();
 
                 //TestLongRunningProcess(settings);
-                cancelSource.Cancel();
-                t.Wait(cancellationToken);
-                cancelSource.Dispose();
+                LongProcessProgressLogger.StopLogProgress();
 
                 WorkerCommon.SetProgress(processQueue, 100);
                 _log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 
                 string message = "Операция успешно завершена." +
-                                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+                                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
                 NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", message);
             }
 			catch (Exception ex)
 			{
-				cancelSource.Cancel();
-				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", $"Операция была прервана: {ex.Message}");
+				_log.Error(ex, "Операция гармонизации завершена с ошибкой");
+                LongProcessProgressLogger.StopLogProgress();
+                NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", $"Операция была прервана: {ex.Message}");
 				throw;
 			}
 		}

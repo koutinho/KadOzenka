@@ -89,6 +89,12 @@ namespace ObjectModel.SRD
               // Удаление (362)
               public const string CORE_SRD_ROLES_DELETE = "CORE.SRD.ROLES.DELETE";
                 
+              // Копирование (363)
+              public const string CORE_SRD_ROLES_COPY = "CORE.SRD.ROLES.COPY";
+                
+              // Копирование (364)
+              public const string CORE_SRD_USERS_COPY = "CORE.SRD.USERS.COPY";
+                
               // Объекты аналоги (500)
               public const string MARKET = "MARKET";
                 
@@ -544,6 +550,15 @@ namespace ObjectModel.SRD
                 
               // Просмотр всех сообщений (1300140)
               public const string CORE_MESSAGES_ALL = "CORE.MESSAGES.ALL";
+                
+              // Отчетность (1300141)
+              public const string REPORTS = "REPORTS";
+                
+              // Cохранение отчетов (1300142)
+              public const string CORE_SAVED_REPORTS_SAVE = "CORE.SAVED.REPORTS.SAVE";
+                
+              // Реестр утвержденных моделей (1300143)
+              public const string KO_DICT_MODELS_APPROVED = "KO.DICT.MODELS.APPROVED";
                 
     }
 }

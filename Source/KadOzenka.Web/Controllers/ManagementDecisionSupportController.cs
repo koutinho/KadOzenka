@@ -5,17 +5,18 @@ using System.Threading;
 using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
-using Core.SRD;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports.DataSourceRequest.Filter;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
-using KadOzenka.Dal.MapModeling;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
@@ -30,6 +31,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
+using ReportLongProcessInputParameters = KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities.ReportLongProcessInputParameters;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -40,19 +42,23 @@ namespace KadOzenka.Web.Controllers
 		private readonly DashboardWidgetService _dashboardWidgetService;
 		private readonly StatisticsReportsWidgetService _statisticsReportsWidgetService;
 		private readonly StatisticsReportsWidgetExportService _statisticsReportsWidgetExportService;
+		private readonly StatisticalDataService _statisticalDataService;
 		private readonly TourService _tourService;
 		private readonly int dataPageSize = 30;
 		private readonly int dataCacheSize = 3000;
 
 		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
-            StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService)
+            StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
+            StatisticalDataService statisticalDataService)
         {
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
             _statisticsReportsWidgetService = statisticsReportsWidgetService;
             _statisticsReportsWidgetExportService = statisticsReportsWidgetExportService;
             _tourService = tourService;
+            _statisticalDataService = statisticalDataService;
+
         }
 
         #region MapBuilding
@@ -428,10 +434,51 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
 		public ActionResult StatisticalData()
 		{
-			return View(new StatisticalDataModel());
+			var dataCompositionByCharacteristicReportsActualizationDate =
+				LongProcessService.GetLastSuccessfulCompletedQueue(ReportTableUpdater.ProcessId)?.EndDate ??
+				LongProcessService.GetLastSuccessfulCompletedQueue(InitialReportTableFiller.ProcessId)?.EndDate;
+
+			var model = new StatisticalDataModel
+			{
+				PricingFactorsCompositionFinalUniformReportActualizationDate = dataCompositionByCharacteristicReportsActualizationDate,
+				PricingFactorsCompositionFinalNonuniformActualizationDate = dataCompositionByCharacteristicReportsActualizationDate
+			};
+
+			return View(model);
 		}
 
-        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
+		public IActionResult ProcessReport(StatisticalDataModel model)
+		{
+			if (!ModelState.IsValid)  
+				return GenerateMessageNonValidModel();
+
+			//есть три типа отчетов
+			//1. отчеты, которые идут через платформу - GetStatisticalDataReportUrl(model)
+			//2. отчеты, которые идут через свои собственные процессы и не требуют дополнительных входных параметров - model.IsForBackground
+			//3. отчеты, которые идут через свои собственные процессы и требуют дополнительных входных параметров - model.IsWithAdditionalConfiguration
+			if (model.IsForBackground)
+			{
+				var parameters = new ReportLongProcessInputParameters
+				{
+					TaskIds = model.TaskFilter.ToList()
+				};
+				_statisticalDataService.AddProcessToQueue(model.ReportType, parameters);
+				
+				return Ok();
+			}
+			if (model.IsWithAdditionalConfiguration)
+			{
+				if (!model.ReportsWithAdditionalConfiguration.TryGetValue(model.ReportType.GetValueOrDefault(), out var actionName))
+					throw new Exception("Формирование отчета с дополнительной конфигурацией недопустимо. Обратитесь к администратору.");
+
+				return RedirectToAction(actionName, model);
+			}
+
+			return GetStatisticalDataReportUrl(model);
+		}
+
+		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT_STATISTICS)]
 		public IActionResult GetStatisticalDataReportUrl(StatisticalDataModel model)
 		{
 			if (!ModelState.IsValid)
@@ -461,12 +508,12 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public ActionResult PreviousToursReportConfiguration(long? lastTourId)
+        public ActionResult PreviousToursReportConfiguration(StatisticalDataModel model)
         {
-            var lastTour = _tourService.GetTourById(lastTourId);
+            var lastTour = _tourService.GetTourById(model.TourId);
             var previousTours = OMTour.Where(x => x.Year <= lastTour.Year).OrderBy(x => x.Year).SelectAll().Execute();
 
-            var model = new PreviousToursConfigurationModel
+            var reportConfigurationModel = new PreviousToursConfigurationModel
             {
                 AvailableTours = previousTours.Select(x => new SelectListItem
                 {
@@ -475,10 +522,10 @@ namespace KadOzenka.Web.Controllers
                 }).ToList()
             };
 
-            return PartialView("~/Views/ManagementDecisionSupport/Partials/PreviousToursReportConfiguration.cshtml", model);
+            return PartialView("~/Views/ManagementDecisionSupport/Partials/PreviousToursReportConfiguration.cshtml", reportConfigurationModel);
         }
 
-        [HttpGet]
+        [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
@@ -509,6 +556,43 @@ namespace KadOzenka.Web.Controllers
             }
 
             return GetStatisticalDataReportUrl(model.Map());
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult CadastralCostDeterminationResultsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new CadastralCostDeterminationResultsModel
+			{
+		       TaskIds = model.TaskFilter
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/CadastralCostDeterminationResultsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessCadastralCostDeterminationResultsReport(CadastralCostDeterminationResultsModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+			var inputParameters = new Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities.ReportLongProcessInputParameters
+			{
+				TaskIds = model.TaskIds?.ToList(),
+				Type = model.ReportType
+			};
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess.AddProcessToQueue(inputParameters);
+
+			return Ok();
         }
 
 		#endregion

@@ -108,6 +108,23 @@
                 </div>
             </div>
         </li>
+        
+        <li id="SectionDataComparing" data-expand>
+            <span>Сравнение данных</span>
+            <div class="form-horizontal col-sm-12" style="padding: 1%">
+                <div id="dataComparingSection">
+                    @if (Model.TaskDataComparingModel == null)
+                    {
+                        <span style='color: red;'>Не удалось получить данные о сравнении. @(!string.IsNullOrEmpty(Model.TaskDataComparingError) ? Model.TaskDataComparingError : "Проверьте корректность введенных данных в задании на оценку.")</span>
+                    }
+                    else
+                    {
+                        @await Html.PartialAsync("~/Views/Task/Partials/PartialTaskCardDataComparing.cshtml",
+                            Model.TaskDataComparingModel)
+                    }
+                </div>
+            </div>
+        </li>
 
         <li id="SectionAttachment" data-expand>
             <span>Образы</span>

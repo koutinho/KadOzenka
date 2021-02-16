@@ -24,6 +24,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		protected DictionaryService DictionaryService { get; set; }
 		protected ModelingService ModelingService { get; set; }
 		protected ModelFactorsService ModelFactorsService { get; set; }
+		protected IModelObjectsService ModelObjectsService { get; set; }
 
 		public BaseObjectFormationForModelingProcess(ILogger logger)
 		{
@@ -31,6 +32,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			ModelingService = new ModelingService();
 			DictionaryService = new DictionaryService();
 			ModelFactorsService = new ModelFactorsService();
+			ModelObjectsService = new ModelObjectsService();
 		}
 
 
@@ -81,13 +83,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			for (var i = 0; i < modelObjects.Count; i++)
 			{
 				var modelObject = modelObjects[i];
-				var objectCoefficients = modelObject.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				var objectCoefficients = modelObject.DeserializeCoefficient();
 
 				foreach (var attribute in attributes)
 				{
 					var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
-					if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) || objectCoefficient.Coefficient == null)
-						return;
+					if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
+					    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
+						continue;
 
 					ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient, attribute.AttributeId, groupId);
 				}
@@ -112,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			objects.ForEach(obj =>
 			{
-				var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
+				var coefficients = obj.DeserializeCoefficient();
 				attributes.ForEach(attribute =>
 				{
 					var attributeCoefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;

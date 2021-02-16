@@ -33,7 +33,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.628" />
+    <PackageReference Include="Platform.Web" Version="1.0.646" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspnetcoreHttpcontext" Version="1.1.0" />
     <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />
@@ -50,16 +50,16 @@
 
   <ItemGroup>
     <None Update="Config\Param\*">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-	  <None Update="Config\Reports\*">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	<None Update="Config\Reports\*">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
-	<None Update="Config\SqlQueries\*">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	<None Update="Config\SqlQueries\**\*">
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
 	<None Update="Config\ExcelTemplates\*">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	</None>
   </ItemGroup>
 

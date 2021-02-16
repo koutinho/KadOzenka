@@ -30,6 +30,7 @@ using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
 using System.Threading;
+using Core.Register.RegisterEntities;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
@@ -39,8 +40,11 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
+using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Core.Shared;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Ko;
 using ObjectModel.Modeling;
@@ -51,24 +55,32 @@ namespace KadOzenka.Web.Controllers
 {
 	public class ModelingController : KoBaseController
 	{
-		public ModelingService ModelingService { get; set; }
+		public IModelingService ModelingService { get; set; }
+		public IModelObjectsService ModelObjectsService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
+        public IModelObjectsRepository ModelObjectsRepository { get; set; }
+        public IModelingRepository ModelingRepository { get; set; }
 
 
-        public ModelingController(ModelingService modelingService, TourFactorService tourFactorService,
-            RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
-            ModelFactorsService modelFactorsService, GroupService groupService)
+        public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
+	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+	        ModelFactorsService modelFactorsService, GroupService groupService,
+	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
+	        IModelObjectsService modelObjectsService)
         {
-            ModelingService = modelingService;
-            TourFactorService = tourFactorService;
-            RegisterAttributeService = registerAttributeService;
-            DictionaryService = dictionaryService;
-            ModelFactorsService = modelFactorsService;
-            GroupService = groupService;
+	        ModelingService = modelingService;
+	        TourFactorService = tourFactorService;
+	        RegisterAttributeService = registerAttributeService;
+	        DictionaryService = dictionaryService;
+	        ModelFactorsService = modelFactorsService;
+	        GroupService = groupService;
+	        ModelObjectsRepository = modelObjectsRepository;
+	        ModelingRepository = modelingRepository;
+	        ModelObjectsService = modelObjectsService;
         }
 
 
@@ -76,7 +88,13 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelCard(long modelId, bool isPartial = false, bool isReadOnly = false)
         {
-	        var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
+	        var isGroupExists = ModelingService.IsModelGroupExist(modelId);
+	        if (!isGroupExists)
+	        {
+                return RedirectToAction(nameof(ModelWithDeletedGroupCard), new { modelId, isPartial });
+            }
+
+            var model = OMModel.Where(x => x.Id == modelId).Select(x => x.Type_Code).ExecuteFirstOrDefault();
 	        if (model?.Type_Code == KoModelType.Automatic)
 	        {
 		        return RedirectToAction(nameof(AutomaticModelCard), new {modelId, isPartial, isReadOnly});
@@ -98,7 +116,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [JsonExceptionHandler]
+        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
         public JsonResult AddModel(GeneralModelingModel modelingModel)
         {
@@ -131,14 +149,27 @@ namespace KadOzenka.Web.Controllers
         #region Карточка автоматической модели
 
         [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult ModelWithDeletedGroupCard(long modelId, bool isPartial)
+        {
+	        var modelName = OMModel.Where(x => x.Id == modelId).Select(x => x.Name).ExecuteFirstOrDefault()?.Name;
+	        if (isPartial)
+	        {
+		        return PartialView(nameof(ModelWithDeletedGroupCard), modelName);
+	        }
+
+	        return View(nameof(ModelWithDeletedGroupCard), modelName);
+        }
+
+        [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public ActionResult AutomaticModelCard(long modelId, bool isPartial, bool isReadOnly = false)
 		{
 			var modelDto = ModelingService.GetModelById(modelId);
 
-			var hasFormedObjectArray = ModelingService.GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+			var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
 			var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
-			model.IsFromTourCard = isReadOnly;
+			model.IsReadOnly = isReadOnly;
 
 			if (isPartial)
 			{
@@ -239,6 +270,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public ActionResult AutomaticModelCard(AutomaticModelingModel modelingModel)
 		{
@@ -258,19 +290,20 @@ namespace KadOzenka.Web.Controllers
 			if (modelId == 0)
 				throw new Exception("Не передан ИД модели");
 
-            var isProcessExists = LongProcessService.CheckProcessExistsInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
+            var isProcessExists = LongProcessService.CheckProcessActiveInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
 			if (isProcessExists)
 				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
 
+			var inputParameters = new ObjectFormationInputParameters {ModelId = modelId};
 			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
 			//	UserId = SRDSession.GetCurrentUserId(),
-			//	ObjectId = modelId
+			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
-			ObjectFormationForModelingProcess.AddProcessToQueue(modelId);
+			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
 			return Ok();
 		}
@@ -365,7 +398,8 @@ namespace KadOzenka.Web.Controllers
 	        var factorDto = new AutomaticFactorModel
 	        {
 		        Id = -1,
-		        ModelId = generalModelId
+		        ModelId = generalModelId,
+                IsActive = true
 	        };
 
 	        return View("EditAutomaticModelFactor", factorDto);
@@ -392,7 +426,7 @@ namespace KadOzenka.Web.Controllers
 	        if (factorModel.Id == -1)
 	        {
 		        var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
-                var queue = LongProcessService.GetQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
+                var queue = LongProcessService.GetProcessActiveQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
 		        if (hasFormedObjectArray && queue != null)
 		        {
 			        var existedInputParameters = queue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
@@ -426,7 +460,11 @@ namespace KadOzenka.Web.Controllers
             }
             else
 	        {
-		        ModelFactorsService.UpdateAutomaticFactor(dto);
+		        var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
+		        if (mustResetTrainingResult)
+		        {
+			        ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+                }
 	        }
 
 	        return Json(isProcessForFactorAdditionCreated);
@@ -541,7 +579,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelingService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
-            model.IsFromTourCard = isReadOnly;
+            model.IsReadOnly = isReadOnly;
 
             if (isPartial)
             {
@@ -572,6 +610,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
+        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ManualModelCard(ManualModelingModel model)
         {
@@ -744,6 +783,16 @@ namespace KadOzenka.Web.Controllers
             return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult UploadMarksCatalog(long groupId, long factorId)
+        {
+	        ViewBag.GroupId = groupId;
+	        ViewBag.FactorId = factorId;
+
+	        return PartialView();
+        }
+
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
         {
@@ -825,50 +874,48 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult LinearModelDetails(long modelId)
+        public ActionResult ModelTrainingResult(long modelId, KoAlgoritmType type)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var trainingResult = ModelingService.GetTrainingResult(modelId, type);
 
-	        var trainingResult = GetTrainingDetails(model.LinearTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
+	        var model = TrainingDetailsModel.ToModel(trainingResult);
 
-	        return View("ModelTrainingResult", details);
+	        return View(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public IActionResult UpdateTrainingQualityInfo(TrainingDetailsModel model)
+        {
+	        var dto = model.TrainingQualityInfoModel.FromModel();
+	        
+	        ModelingService.UpdateTrainingQualityInfo(model.ModelId, model.Type, dto);
+
+	        return Ok();
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult ExponentialModelDetails(long modelId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public JsonResult ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var fileStream = ModelingService.ExportQualityInfoToExcel(modelId, type);
 
-	        var trainingResult = GetTrainingDetails(model.ExponentialTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
+	        HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 
-	        return View("ModelTrainingResult", details);
+	        return Json(new { FileName = modelId.ToString() });
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult MultiplicativeModelDetails(long modelId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public IActionResult DownloadTrainingResultFile(string fileName, string modelName)
         {
-	        var model = ModelingService.GetModelEntityById(modelId);
+	        var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
+	        if (fileInfo == null)
+		        return new EmptyResult();
 
-	        var trainingResult = GetTrainingDetails(model.MultiplicativeTrainingResult);
-	        var details = TrainingDetailsModel.ToModel(trainingResult);
-
-	        return View("ModelTrainingResult", details);
+	        return File(fileInfo.FileContent, fileInfo.ContentType,
+		        $"Результаты обучения модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
         }
-
-        #region Support Methods
-
-        private TrainingResponse GetTrainingDetails(string trainingResult)
-        {
-	        return string.IsNullOrWhiteSpace(trainingResult)
-		        ? null
-		        : JsonConvert.DeserializeObject<TrainingResponse>(trainingResult);
-        }
-
-        #endregion
 
         #endregion
 
@@ -903,7 +950,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
 		public JsonResult GetObjectsForModel(long modelId)
 		{
-			var objectsDto = ModelingService.GetModelObjects(modelId);
+			var objectsDto = ModelObjectsService.GetModelObjects(modelId);
 
             //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
             //if (model == null)
@@ -962,65 +1009,127 @@ namespace KadOzenka.Web.Controllers
 			var allModels = JsonConvert.DeserializeObject<List<ModelMarketObjectRelationModel>>(objectsJson);
 			var changedModels = allModels.Where(x => x.IsDirty).ToList();
 			var objectsDtos = changedModels.Select(ModelMarketObjectRelationModel.FromModel).ToList();
-			
-			ModelingService.ChangeObjectsStatusInCalculation(objectsDtos);
+
+			ModelObjectsService.ChangeObjectsStatusInCalculation(objectsDtos);
 
 			return Json(new { Message = "Данные успешно обновлены" });
 		}
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public JsonResult ExportModelObjectsToExcel(string objectIdsStr, long modelId)
+        public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            var objectsJson = JObject.Parse(objectIdsStr).SelectToken("objectIds").ToString();
-            var objectIds = JsonConvert.DeserializeObject<List<long>>(objectsJson);
+	        //пока работаем только с Exp (был расчет МС и процента)
+	        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+	        var fileStream = ModelObjectsService.ExportMarketObjectsToExcel(modelId, factors);
 
-            var fileStream = ModelingService.ExportMarketObjectsToExcel(modelId, objectIds);
+	        var modelName = ModelingRepository.GetById(modelId, x => new { x.Name })?.Name;
+            var fileName = $"Объекты модели {modelName}";
+            HttpContext.Session.Set(fileName, fileStream.ToByteArray());
 
-            HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
-
-            return Json(new { FileName = modelId.ToString() });
+            return Json(new { FileName = fileName });
         }
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult DownloadModelObjectsFromExcel(string fileName, string modelName)
+        public IActionResult ModelObjectsUpdatingConstructor(long modelId)
         {
-            var fileInfo = GetFileFromSession(fileName, RegistersExportType.Xlsx);
-            if (fileInfo == null)
-                return new EmptyResult();
+	        var register = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
+            var registerInfo = new
+            {
+                Description = register.Description,
+                AttributeId = register.Id
+            };
 
-            return File(fileInfo.FileContent, fileInfo.ContentType,
-                $"Объекты модели {modelName} ({fileName}), {DateTime.Now}.{fileInfo.FileExtension}");
+            var source = new List<object> { registerInfo };
+            var exceptions = new List<long>
+            {
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectId),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitId),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code)
+            };
+
+            RegisterCache.RegisterAttributes.Values
+                .Where(x => x.RegisterId == register.Id && !exceptions.Contains(x.Id))
+                .OrderBy(x => x.Name)
+                .ForEach(x =>
+                {
+                    source.Add(new
+                    {
+                        Description = x.Name,
+                        AttributeId = x.Id,
+                        ParentId = register.Id
+                    });
+                });
+
+            var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+            attributes.ForEach(x =>
+            {
+                if (x.IsNormalized)
+                {
+                    source.Add(new
+                    {
+                        Description = $"{x.AttributeName} (значение)",
+                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForValueInNormalizedColumn}",
+                        ParentId = register.Id
+                    });
+                    source.Add(new
+                    {
+                        Description = $"{x.AttributeName} (коэффициент)",
+                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForCoefficientInNormalizedColumn}",
+                        ParentId = register.Id
+                    });
+                }
+                else
+                {
+                    source.Add(new
+                    {
+                        Description = x.AttributeName,
+                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForFactor}",
+                        ParentId = register.Id
+                    });
+                }
+            });
+
+            ViewBag.Attributes = source;
+
+            return PartialView();
         }
+
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ExcludeModelObjectsFromCalculation(IFormFile file)
-        {
-            if (file == null)
-                throw new Exception("Не выбран файл");
+        public ActionResult UpdateModelObjects(ModelingObjectsUpdatingModel model)
+		{
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
 
-            ExcelFile excelFile;
-            using (var stream = file.OpenReadStream())
-            {
-                excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-            }
-            
-            var excludeResult = ModelingService.ExcludeModelObjectsFromCalculation(excelFile);
-            
-            var fileName = string.Empty;
-            if (excludeResult.File != null)
-            {
-	            fileName = "Не найденные объекты.xlsx";
-	            HttpContext.Session.Set(fileName, excludeResult.File.ToByteArray());
-            }
+			var fileName = model.File.FileName;
+            if (model.IsBackgroundDownload)
+			{
+				using (var stream = model.File.OpenReadStream())
+				{
+					var importDataLogId = UpdateModelObjectsLongProcess.AddToQueue(stream, fileName, model.Map());
+					
+					return new JsonResult(new { importDataLogId = importDataLogId });
+                }
+			}
 
-            return Content(JsonConvert.SerializeObject(new
-            {
-	            excludeResult.TotalCount, excludeResult.UpdatedObjectsCount, excludeResult.UnchangedObjectsCount,
-	            excludeResult.ErrorObjectsCount, excludeResult.ErrorRowIndexes, fileName
-            }), "application/json");
+			ExcelFile excelFile;
+			using (var stream = model.File.OpenReadStream())
+			{
+				excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
+			}
+
+			var resultStream = ModelObjectsService.UpdateModelObjects(excelFile, model.Map());
+			HttpContext.Session.Set(fileName, resultStream.ToByteArray());
+
+			return Json(new { fileName = fileName });
         }
 
         #endregion
@@ -1337,7 +1446,9 @@ namespace KadOzenka.Web.Controllers
 		        Value = x.Id.ToString()
 	        }).ToList();
 
-	        return Json(dictionaries);
+	        dictionaries.Insert(0, new SelectListItem("", ""));
+
+            return Json(dictionaries);
         }
 
         #endregion

@@ -123,7 +123,7 @@ namespace KadOzenka.Dal.Modeling
                 .AppendLine("Коэффициенты:")
                 .AppendLine(ResultMessage);
 
-            NotificationSender.SendNotification(processQueue, SubjectForMessageInNotification, message.ToString());
+            new NotificationSender().SendNotification(processQueue, SubjectForMessageInNotification, message.ToString());
         }
 
 

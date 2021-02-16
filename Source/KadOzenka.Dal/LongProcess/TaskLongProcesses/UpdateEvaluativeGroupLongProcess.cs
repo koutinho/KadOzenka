@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			{
 				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
 				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-				SendMessage(processQueue, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов", GetMessageSubject(null));
+				NotificationSender.SendNotification(processQueue, GetMessageSubject(null), "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
 				return;
 			}
 
@@ -85,10 +85,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				Run(task, evaluativeGroupAttribute, reportService);
 
-				reportService.SaveReport( OMTask.GetRegisterId(), "KoTasks");
+				var reportId = reportService.SaveReport();
 
-				var message = "Операция успешно завершена.<br>" + $@"<a href=""{reportService.UrlToDownload}"">Скачать результат</a>";
-				SendMessage(processQueue, message, GetMessageSubject(task.Name));
+				var message = "Операция успешно завершена.<br>" + $@"<a href=""{reportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
+				NotificationSender.SendNotification(processQueue, GetMessageSubject(task.Name), message);
 				WorkerCommon.SetProgress(processQueue, 100);
 
 				_log.Debug("Закончен перенос оценочной группы для задания на оценку {TaskId}", taskId);
@@ -96,7 +96,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			catch(Exception ex)
 			{
 				var errorId = ErrorManager.LogError(ex);
-				SendMessage(processQueue, $"Операция завершена с ошибкой: {ex.Message}.<br>(Подробнее в журнале: {errorId})", GetMessageSubject(task.Name));
+				NotificationSender.SendNotification(processQueue, GetMessageSubject(task.Name), $"Операция завершена с ошибкой: {ex.Message}.<br>(Подробнее в журнале: {errorId})");
 				_log.Error(ex, "Ошибка при переносе оценочной группы");
 				
 				throw;

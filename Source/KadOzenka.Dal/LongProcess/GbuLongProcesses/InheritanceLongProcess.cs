@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 				}, cancelToken);
 
 
-				long reportId = GbuObjectInheritanceAttribute.Run(settings);
+				var urlToDownload = GbuObjectInheritanceAttribute.Run(settings);
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 
 
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
 				NotificationSender.SendNotification(processQueue, "Результат операции Наследования", message);
 			}

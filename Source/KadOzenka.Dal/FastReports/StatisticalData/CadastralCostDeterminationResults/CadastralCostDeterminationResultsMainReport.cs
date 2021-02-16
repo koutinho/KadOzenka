@@ -4,184 +4,194 @@ using System.Collections.Specialized;
 using System.Data;
 using System.IO;
 using System.Linq;
-using Core.Register;
-using Core.Register.RegisterEntities;
+using System.Threading;
+using System.Threading.Tasks;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
-using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.CadastralCostDeterminationResults
 {
-    public class CadastralCostDeterminationResultsMainReport : StatisticalDataReport
-    {
-	    public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
-        private Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
-        private readonly ILogger _logger;
-        protected override ILogger Logger => _logger;
+	public class CadastralCostDeterminationResultsMainReport : StatisticalDataReport
+	{
+		private readonly QueryManager _queryManager;
+		private const int PackageSize = 125000;
+		public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
+		private Dictionary<Type, ICadastralCostDeterminationResultsReport> _reportsDictionary;
+		private readonly ILogger _logger;
+		protected override ILogger Logger => _logger;
+		private object _locker;
 
 
-        public CadastralCostDeterminationResultsMainReport()
-        {
-            _reportsDictionary = new Dictionary<Type, ICadastralCostDeterminationResultsReport>();
-            _logger = Log.ForContext<CadastralCostDeterminationResultsMainReport>();
-        }
+		public CadastralCostDeterminationResultsMainReport()
+		{
+			_queryManager = new QueryManager();
+			_reportsDictionary = new Dictionary<Type, ICadastralCostDeterminationResultsReport>();
+			_logger = Log.ForContext<CadastralCostDeterminationResultsMainReport>();
+			_locker = new object();
+		}
 
-        protected override string TemplateName(NameValueCollection query)
-        {
-            var report = GetReport(query);
-            return report.GetTemplateName(query);
-        }
+		protected override string TemplateName(NameValueCollection query)
+		{
+			var report = GetReport(query);
+			return report.GetTemplateName(query);
+		}
 
-        protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
-        {
-            var taskIdList = GetTaskIdList(query).ToList();
 
-            var report = GetReport(query);
-            Logger.Debug("Тип отчета {ReportType}", report.GetType().ToString());
+		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
+		{
+			_queryManager.SetBaseToken(CancellationToken);
+			var taskIds = GetTaskIdList(query).ToList();
+			var taskIdStr = string.Join(',', taskIds);
 
-            var groupIds = report.GetAvailableGroupIds();
-            Logger.Debug("Найдено {GroupsCount} Групп", groupIds.Count);
+			using (Logger.TimeOperation("Общее время выполнения"))
+			{
+				var report = GetReport(query);
+				Logger.Debug("Тип отчета {ReportType}", report.GetType().ToString());
 
-            var units = GetUnits(taskIdList, groupIds);
-            Logger.Debug("Найдено {UnitsCount} Единиц оценки", units?.Count);
+				var groupIds = report.GetAvailableGroupIds();
+				var groupIdsStr = string.Join(',', groupIds);
+				Logger.Debug("Найдено {GroupsCount} Групп", groupIds.Count);
 
-            var operations = GetOperations(units);
-            Logger.Debug("Найдено {Count} объектов", operations?.Count);
+				var unitsCount = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && groupIds.Contains((long)x.GroupId) &&
+												   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+				Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
 
-            Logger.Debug("Начато формирование таблиц");
-            var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
-            dataSet.Tables.Add(itemTable);
-            Logger.Debug("Закончено формирование таблиц");
 
-            return dataSet;
-        }
+				var options = new ParallelOptions
+				{
+					CancellationToken = new CancellationTokenSource().Token,
+					MaxDegreeOfParallelism = 20
+				};
+				var cadastralQuarterAttributeId = GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id;
+				var numberOfPackages = unitsCount / PackageSize + 1;
+				var operations = new List<ReportItem>();
+				Parallel.For(0, numberOfPackages, options, (i, s) =>
+				{
+					var unitsCondition = $@"where unit.task_id IN ({taskIdStr}) AND 
+									unit.GROUP_ID IN ({groupIdsStr}) AND
+									(unit.PROPERTY_TYPE_CODE <> 2190 or unit.PROPERTY_TYPE_CODE is null)
+										order by unit.id 
+										limit {PackageSize} offset {i * PackageSize}";
 
-        #region Support Methods
+					var sql = $@"with object_ids as (
+									select object_id from ko_unit unit {unitsCondition}
+								),
+								cadastralDistrictAttrValues as (
+									select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {cadastralQuarterAttributeId})
+								)
+								SELECT
+									SUBSTRING(COALESCE(cadastralDistrictAttr.attributeValue, unit.CADASTRAL_BLOCK), 0, 6) as CadastralDistrict,
+									unit.CADASTRAL_NUMBER AS CadastralNumber,
+									unit.PROPERTY_TYPE AS Type,
+									unit.SQUARE AS SQUARE,
+									unit.UPKS AS UPKS,
+									unit.CADASTRAL_COST AS Cost
+										FROM KO_UNIT unit
+										LEFT JOIN cadastralDistrictAttrValues cadastralDistrictAttr ON unit.object_id=cadastralDistrictAttr.objectId
+										{unitsCondition}";
 
-        private ICadastralCostDeterminationResultsReport GetReport(NameValueCollection query)
-        {
-            Type type;
-            var reportType = GetQueryParam<string>("ReportType", query);
-            switch (reportType)
-            {
-                case "Результаты определения кадастровой стоимости":
-                    type = typeof(StateResultsReport);
-                    break;
-                case "Сведения о результатах определения КС ОН, КС которых определен индивидуально":
-                    type = typeof(IndividuallyResultsReport);
-                    break;
-                default:
-                    throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
-            }
+					List<ReportItem> currentOperations;
+					Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
+					using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
+					{
+						currentOperations = _queryManager.ExecuteSql<ReportItem>(sql);
+					}
 
-            if (!_reportsDictionary.TryGetValue(type, out var concreteReport))
-            {
-                concreteReport = (ICadastralCostDeterminationResultsReport)Activator.CreateInstance(type);
-                _reportsDictionary[type] = concreteReport;
-            }
+					lock (_locker)
+					{
+						operations.AddRange(currentOperations);
+						Logger.Debug("Выкачено {CurrentOperationsCount} ЕО из {MaxPackagesCount}", operations.Count, unitsCount);
+					}
+				});
 
-            return concreteReport;
-        }
+				using (Logger.TimeOperation("Сортировка по Кадастровому кварталу"))
+				{
+					operations = operations.OrderBy(x => x.CadastralDistrict).ToList();
+				}
 
-        private List<OMUnit> GetUnits(List<long> taskIds, List<long?> groupIds)
-        {
-	        return OMUnit.Where(x => x.TaskId != null && taskIds.Contains((long)x.TaskId) &&
-	                          x.GroupId != null && groupIds.Contains(x.GroupId) &&
-	                          x.PropertyType_Code != PropertyTypes.CadastralQuartal)
-		        .Select(x => new
-		        {
-			        x.CadastralBlock,
-			        x.ObjectId,
-			        x.CadastralNumber,
-			        x.PropertyType_Code,
-			        x.Square,
-			        x.Upks,
-			        x.CadastralCost
-		        }).Execute();
-        }
+				Logger.Debug("Начато формирование таблиц");
+				var dataSet = new DataSet();
+				var itemTable = GetItemDataTable(operations);
+				dataSet.Tables.Add(itemTable);
+				Logger.Debug("Закончено формирование таблиц");
 
-        private List<ReportItem> GetOperations(List<OMUnit> units)
-        {
-            if (units.Count == 0)
-                return new List<ReportItem>();
+				return dataSet;
+			}
+		}
 
-            var cadastralQuartalGbuAttributes = GbuObjectService.GetAllAttributes(
-	            units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
-	            new List<long>{ GbuCodRegisterService.GetCadastralQuarterFinalAttribute().RegisterId},
-	            new List<long> { GbuCodRegisterService.GetCadastralQuarterFinalAttribute().Id },
-	            DateTime.Now.GetEndOfTheDay(), isLight: true);
-            Logger.Debug("Найдено {Count} атрибутов Кадастрового квартала", cadastralQuartalGbuAttributes?.Count);
 
-            var i = 0;
-            return units.Select(unit =>
-            {
-	            var cadastralQuartalGbu = cadastralQuartalGbuAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId)?.GetValueInString();
-	            var cadastralQuartal = !string.IsNullOrEmpty(cadastralQuartalGbu)
-		            ? cadastralQuartalGbu
-		            : unit.CadastralBlock;
+		#region Support Methods
 
-	            i++;
-                if(i % 500 == 0)
-                    Logger.Debug($"Обработано {i} объектов");
+		private ICadastralCostDeterminationResultsReport GetReport(NameValueCollection query)
+		{
+			Type type;
+			var reportType = GetQueryParam<string>("ReportType", query);
+			switch (reportType)
+			{
+				case "Результаты определения кадастровой стоимости":
+					type = typeof(StateResultsReport);
+					break;
+				case "Сведения о результатах определения КС ОН, КС которых определен индивидуально":
+					type = typeof(IndividuallyResultsReport);
+					break;
+				default:
+					throw new InvalidDataException($"Неизвестный тип формирования данных: {reportType}");
+			}
 
-                return new ReportItem
-	            {
-		            CadastralQuartal = cadastralQuartal,
-		            CadastralDistrict = GetCadastralDistrict(cadastralQuartal),
-		            CadastralNumber = unit.CadastralNumber,
-		            Type = unit.PropertyType_Code,
-		            Square = unit.Square,
-		            Upks = unit.Upks,
-		            Cost = unit.CadastralCost
-	            };
-	            
-            }).OrderBy(x => x.CadastralQuartal).ToList();
-        }
+			if (!_reportsDictionary.TryGetValue(type, out var concreteReport))
+			{
+				concreteReport = (ICadastralCostDeterminationResultsReport)Activator.CreateInstance(type);
+				_reportsDictionary[type] = concreteReport;
+			}
 
-        private DataTable GetItemDataTable(List<ReportItem> operations)
-        {
-            var dataTable = new DataTable("ITEM");
+			return concreteReport;
+		}
 
-            dataTable.Columns.Add("Number");
-            dataTable.Columns.Add("CadastralDistrict");
-            dataTable.Columns.Add("CadastralNumber");
-            dataTable.Columns.Add("Type");
-            dataTable.Columns.Add("Square");
-            dataTable.Columns.Add("Upks");
-            dataTable.Columns.Add("Cost");
+		private DataTable GetItemDataTable(List<ReportItem> operations)
+		{
+			var dataTable = new DataTable("ITEM");
 
-            for (var i = 0; i < operations.Count; i++)
-            {
-                dataTable.Rows.Add(i + 1,
-                    operations[i].CadastralDistrict,
-                    operations[i].CadastralNumber,
-                    operations[i].Type.GetEnumDescription(),
-                    operations[i].Square,
-                    operations[i].Upks,
-                    operations[i].Cost);
-            }
+			dataTable.Columns.Add("Number");
+			dataTable.Columns.Add("CadastralDistrict");
+			dataTable.Columns.Add("CadastralNumber");
+			dataTable.Columns.Add("Type");
+			dataTable.Columns.Add("Square");
+			dataTable.Columns.Add("Upks");
+			dataTable.Columns.Add("Cost");
 
-            return dataTable;
-        }
+			for (var i = 0; i < operations.Count; i++)
+			{
+				dataTable.Rows.Add(i + 1,
+					operations[i].CadastralDistrict,
+					operations[i].CadastralNumber,
+					operations[i].Type,
+					operations[i].Square,
+					operations[i].Upks,
+					operations[i].Cost);
+			}
 
-        #endregion
+			return dataTable;
+		}
 
-        #region Entities
+		#endregion
 
-        private class ReportItem
-        {
-	        public string CadastralQuartal{ get; set; }
-            public string CadastralDistrict { get; set; }
-            public string CadastralNumber { get; set; }
-            public PropertyTypes Type { get; set; }
-            public decimal? Square { get; set; }
-            public decimal? Upks { get; set; }
-            public decimal? Cost { get; set; }
-        }
 
-        #endregion
-    }
+		#region Entities
+
+		private class ReportItem
+		{
+			public string CadastralDistrict { get; set; }
+			public string CadastralNumber { get; set; }
+			public string Type { get; set; }
+			public decimal? Square { get; set; }
+			public decimal? Upks { get; set; }
+			public decimal? Cost { get; set; }
+		}
+
+		#endregion
+	}
 }

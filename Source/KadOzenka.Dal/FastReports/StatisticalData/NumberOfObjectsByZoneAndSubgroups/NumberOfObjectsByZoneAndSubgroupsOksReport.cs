@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 
 		public NumberOfObjectsByZoneAndSubgroupsOksReport()
 		{
-			_service = new NumberOfObjectsByZoneAndSubgroupsService(StatisticalDataService, GbuObjectService);
+			_service = new NumberOfObjectsByZoneAndSubgroupsService(StatisticalDataService);
 			_logger = Log.ForContext<NumberOfObjectsByZoneAndSubgroupsOksReport>();
 		}
 
@@ -29,6 +29,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.NumberOfObjectsByZoneAndSubg
 
 		protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
 		{
+			_service.QueryManager.SetBaseToken(CancellationToken);
+
 			var firstTourId = GetQueryParam<long?>("TourId", query);
 			if (!firstTourId.HasValue)
 			{

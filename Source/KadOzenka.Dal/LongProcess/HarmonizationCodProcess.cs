@@ -24,8 +24,6 @@ namespace KadOzenka.Dal.LongProcess
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			var cancelSource = new CancellationTokenSource();
-			var cancelToken = cancelSource.Token;
 			try
 			{
 				_log.Information("Начато выполнение фонового процесса: {ProcessType}", processType.Description);
@@ -35,55 +33,36 @@ namespace KadOzenka.Dal.LongProcess
 				_log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
 				var harmonizationCOD = new HarmonizationCOD(settings, _log);
 
-                var t = Task.Run(() => {
-					while (true)
-					{
-						if (cancelToken.IsCancellationRequested)
-						{
-							break;
-						}
-						if (harmonizationCOD.MaxObjectsCount > 0 && harmonizationCOD.CurrentCount > 0)
-						{
-							var newProgress = (long)Math.Round(((double)harmonizationCOD.CurrentCount / harmonizationCOD.MaxObjectsCount) * 100);
-							if (newProgress != processQueue.Progress)
-							{
-								WorkerCommon.SetProgress(processQueue, newProgress);
-							}
-						}
-					}
-				}, cancelToken);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => harmonizationCOD.MaxObjectsCount, () => harmonizationCOD.CurrentCount);
 
-                var reportId = harmonizationCOD.Run();
-				//TestLongRunningProcess(settings);
-				cancelSource.Cancel();
-				t.Wait(cancellationToken);
-				cancelSource.Dispose();
+				var urlToDownload = harmonizationCOD.Run();
+				//TestLongRunningProcess(harmonizationCOD);
+
+				LongProcessProgressLogger.StopLogProgress();
 
 				WorkerCommon.SetProgress(processQueue, 100);
 				_log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
 
 				string message = "Операция успешно завершена." +
-				                 $@"<a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
+				                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
 				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации с использованием справочника ЦОД", message);
 			}
 			catch (Exception ex)
 			{
-				cancelSource.Cancel();
+				_log.Error(ex, "Операция гармонизации по классификатору ЦОД завершена с ошибкой");
+				LongProcessProgressLogger.StopLogProgress();
 				NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации с использованием справочника ЦОД", $"Операция была прервана: {ex.Message}");
 				throw;
 			}
 		}
 
-		protected void TestLongRunningProcess(HarmonizationCODSettings setting)
+		protected void TestLongRunningProcess(HarmonizationCOD harmonizationCOD)
 		{
-            var harmonizationCOD = new HarmonizationCOD(setting, _log)
-            {
-                MaxObjectsCount = 500,
-                CurrentCount = 0
-            };
+			harmonizationCOD.MaxObjectsCount = 500;
+			harmonizationCOD.CurrentCount = 0;
 
-            for (int i = 0; i < 500; i++)
+			for (int i = 0; i < 500; i++)
 			{
                 harmonizationCOD.CurrentCount++;
 				Thread.Sleep(1000);

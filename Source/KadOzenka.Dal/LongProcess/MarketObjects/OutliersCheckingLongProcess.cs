@@ -136,7 +136,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 Исключенных объектов: {history.ExcludedObjectsCount}.
 <a href=""/DataExport/DownloadExportResult?exportId={reportId}"">Скачать результат</a>";
 
-			NotificationSender.SendNotification(processQueue,
+			new NotificationSender().SendNotification(processQueue,
 				"Результат Процедуры проверки на вылеты", message);
 		}
 	}

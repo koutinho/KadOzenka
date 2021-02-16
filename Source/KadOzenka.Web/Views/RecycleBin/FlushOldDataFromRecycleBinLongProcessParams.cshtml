@@ -1,0 +1,23 @@
+﻿@model KadOzenka.Dal.LongProcess.RecycleBin.FlushOldDataFromRecycleBinLongProcessParams
+
+@using (Html.BeginForm("FlushOldDataFromRecycleBinLongProcessParams", "RecycleBin", FormMethod.Post))
+{
+    @Html.Hidden("processTypeId", (long)ViewBag.processTypeId)
+    <div class="form-horizontal col-sm-12">
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabel("Удалять данные старше N дней")
+            </div>
+            <div class="col-sm-8">
+                @Html.Kendo().NumericTextBoxFor(m => m.KeepDataForPastNDays).Format("N0").Decimals(0).Min(0).Spinners(false).HtmlAttributes(new { style = "width: 100%;" }).Enable(false)
+            </div>
+        </div>
+        <div class="form-group">
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    });
+</script>

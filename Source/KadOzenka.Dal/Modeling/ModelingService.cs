@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
-using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
@@ -13,81 +11,89 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
-using KadOzenka.Dal.Oks;
-using ObjectModel.Ko;
-using ObjectModel.Market;
+using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Exceptions;
+using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
+using System.Linq.Expressions;
+using KadOzenka.Dal.RecycleBin;
+using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelingService
+	public class ModelingService : IModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
-        public ModelingRepository ModelingRepository { get; set; }
-        public ModelFactorsService ModelFactorsService { get; set; }
+        private IModelingRepository ModelingRepository { get; set; }
+        private IModelObjectsRepository ModelObjectsRepository { get; set; }
+        private ModelFactorsService ModelFactorsService { get; set; }
+        private RecycleBinService RecycleBinService { get; }
 
-		public ModelingService()
+        public ModelingService(IModelingRepository modelingRepository = null,
+			IModelObjectsRepository modelObjectsRepository = null)
 		{
 			ModelFactorsService = new ModelFactorsService();
-			ModelingRepository = new ModelingRepository();
+			ModelingRepository = modelingRepository ?? new ModelingRepository();
+			RecycleBinService = new RecycleBinService();
+			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 		}
 
-        #region CRUD General Model
 
-        public OMModel GetActiveModelEntityByGroupId(long? groupId)
+		#region CRUD General Model
+
+		public OMModel GetActiveModelEntityByGroupId(long? groupId)
         {
-	        var model = ModelingRepository.GetActiveModelEntityByGroupId(groupId);
-	        if (model == null)
-		        throw new Exception($"Не найдена активная модель для Группы с id='{groupId}'");
+	        if (groupId == null)
+		        throw new Exception("Не передан идентификатор Группы для поиска модели");
 
-	        return model;
+			var model = ModelingRepository.GetEntityByCondition(x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, null);
+
+			return model;
         }
 
         public OMModel GetModelEntityById(long? modelId)
         {
-	        if (modelId == null)
-		        throw new Exception("Не передан идентификатор Модели для поиска");
+	        if (modelId.GetValueOrDefault() == 0)
+		        throw new Exception(Messages.EmptyModelId);
 
-	        var model = OMModel.Where(x => x.Id == modelId).SelectAll().ExecuteFirstOrDefault();
+	        var model = ModelingRepository.GetById(modelId.Value, null);
 	        if (model == null)
-		        throw new Exception($"Не найдена Модель с id='{modelId}'");
+		        throw new ModelNotFoundByIdException($"Не найдена Модель с id='{modelId}'");
 
 	        return model;
         }
 
         public ModelingModelDto GetModelById(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId)
-		        .Select(x => new
-		        {
-			        x.Description,
-			        x.Name,
-			        x.LinearTrainingResult,
-			        x.ExponentialTrainingResult,
-			        x.MultiplicativeTrainingResult,
-                    x.GroupId,
-			        x.ParentGroup.Id,
-			        x.ParentGroup.GroupName,
-			        x.IsOksObjectType,
-                    x.Type_Code,
-                    x.AlgoritmType_Code,
-                    x.CalculationType_Code,
-                    x.A0,
-					x.A0ForExponential,
-					x.A0ForMultiplicative,
-                    x.A0ForLinearTypeInPreviousTour,
-                    x.A0ForExponentialTypeInPreviousTour,
-					x.A0ForMultiplicativeTypeInPreviousTour,
-                    x.Formula,
-                    x.CalculationMethod_Code,
-					x.IsActive
-                }).ExecuteFirstOrDefault();
+	        Expression<Func<OMModel, object>> selectExpression = x => new
+	        {
+		        x.Description,
+		        x.Name,
+		        x.LinearTrainingResult,
+		        x.ExponentialTrainingResult,
+		        x.MultiplicativeTrainingResult,
+		        x.GroupId,
+		        x.ParentGroup.Id,
+		        x.ParentGroup.GroupName,
+		        x.IsOksObjectType,
+		        x.Type_Code,
+		        x.AlgoritmType_Code,
+		        x.CalculationType_Code,
+		        x.A0,
+		        x.A0ForExponential,
+		        x.A0ForMultiplicative,
+		        x.A0ForLinearTypeInPreviousTour,
+		        x.A0ForExponentialTypeInPreviousTour,
+		        x.A0ForMultiplicativeTypeInPreviousTour,
+		        x.Formula,
+		        x.CalculationMethod_Code,
+		        x.IsActive
+	        };
+	        
+	        var model = ModelingRepository.GetById(modelId, selectExpression);
 
-	        if (model == null)
-				throw new Exception($"Не найдена модель с Id='{modelId}'");
-
-	        var tour = GetModelTour(model.GroupId);
+			var tour = GetModelTour(model.GroupId);
 
             return new ModelingModelDto
 	        {
@@ -111,6 +117,15 @@ namespace KadOzenka.Dal.Modeling
                 CalculationMethod = model.CalculationMethod_Code,
                 IsActive = model.IsActive.GetValueOrDefault()
 			};
+        }
+
+        public bool IsModelGroupExist(long modelId)
+        {
+	        var model = ModelingRepository.GetById(modelId, x => new {x.GroupId});
+	        if (model == null)
+		        return false;
+
+	        return OMGroup.Where(x => x.Id == model.GroupId).ExecuteExists();
         }
 
         public OMTour GetModelTour(long? groupId)
@@ -142,7 +157,7 @@ namespace KadOzenka.Dal.Modeling
                 Formula = "-"
 	        };
 
-	        model.Save();
+	        ModelingRepository.Save(model);
         }
 
         public void AddManualModel(ModelingModelDto modelDto)
@@ -161,12 +176,12 @@ namespace KadOzenka.Dal.Modeling
 
 	        model.Formula = model.GetFormulaFull(true);
 
-	        model.Save();
-        }
+			ModelingRepository.Save(model);
+		}
 
         public void UpdateAutomaticModel(ModelingModelDto modelDto)
 		{
-			ValidateModelDuringUpdating(modelDto);
+			ValidateBaseModel(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -195,7 +210,7 @@ namespace KadOzenka.Dal.Modeling
 
         public void UpdateManualModel(ModelingModelDto modelDto)
         {
-	        ValidateModelDuringUpdating(modelDto);
+	        ValidateBaseModel(modelDto);
 
             var existedModel = GetModelEntityById(modelDto.ModelId);
 
@@ -242,46 +257,41 @@ namespace KadOzenka.Dal.Modeling
 
         public void MakeModelActive(long modelId)
         {
-	        var model = OMModel.Where(x => x.Id == modelId)
-		        .Select(x => new
-		        {
-			        x.GroupId,
-					x.Type_Code,
-					x.LinearTrainingResult,
-					x.ExponentialTrainingResult,
-					x.MultiplicativeTrainingResult,
-					x.IsActive
-		        }).ExecuteFirstOrDefault();
-	        if (model == null)
-		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
+	        var model = ModelingRepository.GetById(modelId, x => new
+	        {
+		        x.GroupId,
+		        x.Type_Code,
+		        x.LinearTrainingResult,
+		        x.ExponentialTrainingResult,
+		        x.MultiplicativeTrainingResult,
+		        x.IsActive
+	        });
 
 	        if (model.Type_Code == KoModelType.Automatic)
 	        {
-		        var hasFormedObjectArray = GetIncludedModelObjectsQuery(modelId, true).ExecuteExists();
+		        var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
 		        var hasTrainingResult = !string.IsNullOrWhiteSpace(model.LinearTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception("Невозможно активировать необученную модель");
+			        throw new Exception(Messages.CanNotActivateNotPreparedAutomaticModel);
 			}
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = OMModel.Where(x => x.GroupId == model.GroupId).Select(x => x.IsActive).Execute();
+				var otherModelsForGroup = ModelingRepository.GetEntitiesByCondition(
+					x => x.GroupId == model.GroupId && x.IsActive.Coalesce(false) == true, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
-					if (!x.IsActive.GetValueOrDefault())
-						return;
-
-			        x.IsActive = false;
-			        x.Save();
-		        });
+					x.IsActive = false;
+					ModelingRepository.Save(x);
+				});
 
 		        if (!model.IsActive.GetValueOrDefault())
 		        {
 			        model.IsActive = true;
-			        model.Save();
-				}
+			        ModelingRepository.Save(model);
+		        }
 
 		        ts.Complete();
 	        }
@@ -292,12 +302,7 @@ namespace KadOzenka.Dal.Modeling
 			var model = GetModelEntityById(modelId);
 
 			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
-			factors.ForEach(factor =>
-			{
-				ModelFactorsService.DeleteMarks(model.GroupId, factor.FactorId);
-
-				factor.Destroy();
-			});
+			factors.ForEach(factor => factor.Destroy());
 
 			if (model.Type_Code == KoModelType.Automatic)
 			{
@@ -308,14 +313,30 @@ namespace KadOzenka.Dal.Modeling
 			model.Destroy();
 		}
 
-        #region Support Methods
+        public void DeleteModelLogically(long modelId, long eventId)
+        {
+	        var model = GetModelEntityById(modelId);
 
-        private void ValidateModelDuringUpdating(ModelingModelDto modelDto)
+	        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+	        RecycleBinService.MoveObjectsToRecycleBin(factors.Select(x => x.Id).ToList(), OMModelFactor.GetRegisterId(), eventId);
+
+	        if (model.Type_Code == KoModelType.Automatic)
+	        {
+		        var modelToObjectsRelation = OMModelToMarketObjects.Where(x => x.ModelId == modelId).Execute();
+		        RecycleBinService.MoveObjectsToRecycleBin(modelToObjectsRelation.Select(x => x.Id).ToList(), OMModelToMarketObjects.GetRegisterId(), eventId);
+	        }
+
+			RecycleBinService.MoveObjectToRecycleBin(model.Id, OMModel.GetRegisterId(), eventId);
+		}
+
+		#region Support Methods
+
+		private void ValidateBaseModel(ModelingModelDto modelDto)
         {
 	        var message = new StringBuilder();
 
 	        if (string.IsNullOrWhiteSpace(modelDto.Name))
-		        message.AppendLine("У модели не заполнено Имя");
+		        message.AppendLine(Messages.EmptyName);
 	        if (string.IsNullOrWhiteSpace(modelDto.Description))
 		        message.AppendLine("У модели не заполнено Описание");
 
@@ -323,12 +344,12 @@ namespace KadOzenka.Dal.Modeling
 		        message.AppendLine($"Для модели типа '{KoModelType.Manual.GetEnumDescription()}' нужно указать Тип алгоритма");
 
 	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
+		        throw new ModelCrudException(message.ToString());
         }
 
         private void ValidateModelDuringAddition(ModelingModelDto modelDto)
         {
-	        ValidateModelDuringUpdating(modelDto);
+	        ValidateBaseModel(modelDto);
 
 	        var message = new StringBuilder();
 
@@ -340,349 +361,17 @@ namespace KadOzenka.Dal.Modeling
 		        message.AppendLine($"Группа c Id='{modelDto.GroupId}'не принадлежит туру с Id='{modelDto.TourId}'");
 
 	        if (message.Length != 0)
-		        throw new Exception(message.ToString());
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region Model Object Relations
-
-        public List<OMModelToMarketObjects> GetModelObjects(long modelId)
-		{
-			return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
-                .OrderBy(x => x.CadastralNumber)
-                .SelectAll()
-                .Execute();
+				throw new ModelCrudException(message.ToString());
 		}
 
-        public QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, bool isForTraining)
-        {
-	        if (isForTraining)
-	        {
-		        return OMModelToMarketObjects
-			        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-			                    (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
-	        }
-
-	        return OMModelToMarketObjects
-		        .Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-		                    x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
-        }
-
-        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
-        {
-	        return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
-        }
-
-        public int DestroyModelMarketObjects(OMModel model)
-        {
-	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == model.Id).Execute();
-	        existedModelObjects.ForEach(x => x.Destroy());
-	        
-	        model.ObjectsStatistic = null;
-	        model.Save();
-
-	        return existedModelObjects.Count;
-        }
-
-        public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
-		{
-			var ids = objects.Select(x => x.Id).ToList();
-            if (ids.Count == 0)
-                return;
-
-            var objectsFromDb = OMModelToMarketObjects.Where(x => ids.Contains(x.Id)).Select(x => new
-            {
-                x.IsExcluded,
-                x.IsForTraining,
-                x.IsForControl
-            }).Execute();
-            objects.ForEach(obj =>
-            {
-                var objFromDb = objectsFromDb.FirstOrDefault(x => x.Id == obj.Id);
-                if (objFromDb == null)
-                    return;
-
-                if (objFromDb.IsExcluded.GetValueOrDefault() != obj.IsExcluded ||
-                    objFromDb.IsForTraining.GetValueOrDefault() != obj.IsForTraining ||
-                    objFromDb.IsForControl.GetValueOrDefault() != obj.IsForControl)
-                {
-	                if (obj.IsForTraining && obj.IsForControl)
-		                throw new Exception($"Объект с КН '{obj.CadastralNumber}' не может одновременно быть и в обучающей, и в контрольной выборках");
-
-	                objFromDb.IsExcluded = obj.IsExcluded;
-	                objFromDb.IsForTraining = obj.IsForTraining;
-	                objFromDb.IsForControl = obj.IsForControl;
-	                objFromDb.Save();
-                }
-            });
-        }
-
-        public Stream ExportMarketObjectsToExcel(long modelId, List<long> marketObjectsIds)
-        {
-	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
-	        //if (model == null)
-	        //    throw new Exception($"Не найдена модель с ИД '{modelId}'");
-            //пока работаем только с Exp
-            var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp).Select(x => new
-            {
-	            FactorId = x.FactorId.GetValueOrDefault(),
-                Name = RegisterCache.GetAttributeData((int)x.FactorId.GetValueOrDefault()).Name
-            }).OrderBy(x => x.Name).ToList();
-
-            var excelTemplate = new ExcelFile();
-            var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты модели");
-
-            var columnHeaders = new List<object>
-            {
-                "Id", "Исключен из расчета", "Кадастровый номер", "Цена", "Спрогнозированная цена"
-            };
-            columnHeaders.AddRange(factors.Select(x => x.Name).ToList());
-            columnHeaders.AddRange(new List<string>{ "Признак выбора аналога в обучающую модель", "Признак выбора аналога в контрольную модель" });
-            //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
-            //columnHeaders.AddRange(new List<string>{ "МС", "%" });
-
-            AddRowToExcel(mainWorkSheet, 0, columnHeaders.ToArray());
-
-            if (marketObjectsIds != null && marketObjectsIds.Count > 0)
-            {
-                var rowCounter = 1;
-                var marketObjects = OMModelToMarketObjects.Where(x => marketObjectsIds.Contains(x.Id)).SelectAll().Execute();
-                marketObjectsIds.ForEach(id =>
-                {
-	                var obj = marketObjects.FirstOrDefault(x => x.Id == id);
-                    if(obj == null)
-                        return;
-                    
-	                var values = new List<object>
-                    {
-                        obj.Id, obj.IsExcluded.GetValueOrDefault(), obj.CadastralNumber, obj.Price, obj.PriceFromModel
-                    };
-
-	                var coefficients = obj.Coefficients.DeserializeFromXml<List<CoefficientForObject>>();
-	                factors.ForEach(attribute =>
-	                {
-		                var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute?.FactorId)?.Coefficient;
-		                values.Add(coefficient);
-	                });
-
-	                values.Add(obj.IsForTraining.GetValueOrDefault());
-	                values.Add(obj.IsForControl.GetValueOrDefault());
-
-                    //var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
-                    // factors, coefficients, obj.CadastralNumber); 
-
-                    //values.Add(calculationParameters.ModelingPrice); 
-                    //values.Add(calculationParameters.Percent);
-
-                    AddRowToExcel(mainWorkSheet, rowCounter++, values.ToArray());
-                });
-            }
-
-            var stream = new MemoryStream();
-            excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
-        }
-
-        public ExcludeModelObjectsFromCalculationResult ExcludeModelObjectsFromCalculation(ExcelFile file)
-        {
-            const int idColumnIndex = 0;
-            const int isExcludedColumnIndex = 1;
-
-            var rows = file.Worksheets[0].Rows;
-            var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
-            var rowsCount = DataExportCommon.GetLastUsedRowIndex(file.Worksheets[0]);
-            for (var i = 1; i < rowsCount; i++)
-            {
-                var id = rows[i].Cells[idColumnIndex].Value.ParseToLongNullable();
-                var isExcludedStr = rows[i].Cells[isExcludedColumnIndex].Value.ParseToStringNullable();
-
-                modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
-                {
-                    Id = id,
-                    IsExcluded = isExcludedStr?.ToLower() == "да",
-                    RowIndexInFile = i
-                });
-            }
-
-            var modelObjectsIds = modelObjectsFromExcel.Select(x => x.Id).ToList();
-            if (modelObjectsIds.Count == 0)
-            {
-	            return new ExcludeModelObjectsFromCalculationResult();
-            }
-
-            var result = new ExcludeModelObjectsFromCalculationResult
-            {
-                TotalCount = modelObjectsFromExcel.Count
-            };
-
-            var modelObjects = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
-	            .Select(x => x.IsExcluded)
-	            .Execute();
-            foreach (var modelObjectFromExcel in modelObjectsFromExcel)
-            {
-	            var modelObject = modelObjects.FirstOrDefault(x => x.Id == modelObjectFromExcel.Id);
-	            if (modelObject == null)
-	            {
-		            result.ErrorRowIndexes.Add(modelObjectFromExcel.RowIndexInFile);
-		            continue;
-	            }
-
-	            if (modelObject.IsExcluded.GetValueOrDefault() == modelObjectFromExcel.IsExcluded)
-	            {
-		            result.UnchangedObjectsCount++;
-		            continue;
-	            }
-	            
-	            modelObject.IsExcluded = modelObjectFromExcel.IsExcluded;
-	            modelObject.Save();
-	            result.UpdatedObjectsCount++;
-            }
-
-            if (result.ErrorObjectsCount > 0)
-            {
-	            var stream = new MemoryStream();
-				//исключительный случай - когда не найден ни один объект из файла
-				//тогда не генерируем файл заново, а возвращаем тот же самый
-	            if (rowsCount - 1 == result.ErrorRowIndexes?.Count)
-	            {
-		            file.Save(stream, SaveOptions.XlsxDefault);
-		            stream.Seek(0, SeekOrigin.Begin);
-				}
-	            else
-	            {
-		            stream = GenerateReportWithErrors(file, result.ErrorRowIndexes);
-	            }
-	            result.File = stream;
-            }
-
-            return result;
-        }
-
-        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
-	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
-        {
-	        try
-	        {
-		        decimal modelingPriceCounter = 0;
-		        foreach (var factor in factors)
-		        {
-			        var objectCoefficient = objectCoefficients?.FirstOrDefault(x =>
-				        x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
-
-			        var metka = objectCoefficient?.Coefficient;
-
-			        modelingPriceCounter = modelingPriceCounter +
-			                               (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
-		        }
-
-		        var resultModelingPrice = (decimal?) Math.Exp((double) (a0.GetValueOrDefault() + modelingPriceCounter));
-		        var modelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-		        decimal? percent = null;
-		        if (objectPrice.GetValueOrDefault() != 1)
-		        {
-			        percent = CalculatePercent(modelingPrice, objectPrice);
-		        }
-
-		        return new ModelObjectsCalculationParameters
-		        {
-			        ModelingPrice = modelingPrice,
-			        Percent = percent
-		        };
-	        }
-	        catch (Exception exception)
-	        {
-		        _log.ForContext("CadastralNumber", cadastralNumber)
-			        .ForContext("A0", a0)
-			        .ForContext("ObjectPrice", objectPrice)
-			        .Error(exception, "Ошибка во время расчета МС и % для объекта моделирования");
-		        return new ModelObjectsCalculationParameters();
-	        }
-        }
-
-        public static decimal? CalculatePercent(decimal? calculatedPrice, decimal? initialPrice)
-        {
-	        decimal? percent = null;
-	        if (calculatedPrice != null && initialPrice.GetValueOrDefault() != 0)
-	        {
-		        percent = (calculatedPrice / initialPrice.GetValueOrDefault() - 1) * 100;
-	        }
-
-	        return percent;
-        }
-
-
-        #region Support Methods
-
-        private MemoryStream GenerateReportWithErrors(ExcelFile initialFile, List<int> errorRowIndexes)
-        {
-			var resultFile = new ExcelFile();
-	        var sheet = resultFile.Worksheets.Add("Не найденные объекты");
-	        sheet.Cells.Style.Font.Name = "Times New Roman";
-
-            //копируем заголовки
-            var generalRowCounter = 0;
-            sheet.Rows.InsertCopy(generalRowCounter, initialFile.Worksheets[0].Rows[0]);
-
-            for (var i = 0; i < errorRowIndexes.Count; i++)
-            {
-	            generalRowCounter++;
-	            sheet.Rows.InsertCopy(generalRowCounter, initialFile.Worksheets[0].Rows[errorRowIndexes[i]]);
-	            errorRowIndexes[i]++;
-            }
-
-            var stream = new MemoryStream();
-	        resultFile.Save(stream, SaveOptions.XlsxDefault);
-	        stream.Seek(0, SeekOrigin.Begin);
-
-	        return stream;
-        }
-
-        private void AddRowToExcel(ExcelWorksheet sheet, int row, object[] values)
-        {
-            var col = 0;
-            foreach (object value in values)
-            {
-                switch (value)
-                {
-                    case decimal _:
-                    case double _:
-                        sheet.Rows[row].Cells[col].SetValue(Convert.ToDouble(value));
-                        sheet.Rows[row].Cells[col].Style.NumberFormat = "#,##0.00";
-                        break;
-                    case DateTime _:
-                        sheet.Rows[row].Cells[col].SetValue(Convert.ToDateTime(value));
-                        sheet.Rows[row].Cells[col].Style.NumberFormat = "mm/dd/yyyy";
-                        break;
-                    case bool _:
-                        var res = Convert.ToBoolean(value) ? "Да" : "Нет";
-                        sheet.Rows[row].Cells[col].SetValue(res);
-                        break;
-                    default:
-                        var defaultValue = value?.ToString();
-                        sheet.Rows[row].Cells[col].SetValue(defaultValue);
-                        break;
-                }
-
-                sheet.Rows[row].Cells[col].Style.Borders.SetBorders(MultipleBorders.All,
-                    SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-
-                col++;
-            }
-        }
-
         #endregion
 
         #endregion
 
 
-        #region Modeling Process
+		#region Modeling Process
 
-        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+		public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
 		{
 			var model = GetModelEntityById(modelId);
 			ResetTrainingResults(model, type);
@@ -708,42 +397,170 @@ namespace KadOzenka.Dal.Modeling
 					break;
 			}
 
+			var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
+			factors.ForEach(x =>
+			{
+				x.Weight = 0;
+				x.Save();
+			});
+
 			generalModel.Save();
 		}
 
 		#endregion
 
 
-        #region Entities
+		#region Training Result
 
-        public class ModelObjectsCalculationParameters
-        {
-	        public decimal? ModelingPrice { get; set; }
-	        public decimal? Percent { get; set; }
-        }
-
-        public class ModelObjectsFromExcelData
-        {
-	        public long? Id { get; set; }
-	        public bool IsExcluded { get; set; }
-	        public int RowIndexInFile { get; set; }
-        }
-
-        public class ExcludeModelObjectsFromCalculationResult
+		public TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type)
 		{
-			public int TotalCount { get; set; }
-			public int UpdatedObjectsCount { get; set; }
-			public int UnchangedObjectsCount { get; set; }
-			public int ErrorObjectsCount => ErrorRowIndexes.Count;
-			public List<int> ErrorRowIndexes { get; set; }
-			public MemoryStream File { get; set; }
+			var model = GetModelEntityById(modelId);
 
-			public ExcludeModelObjectsFromCalculationResult()
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var images = GetModelImages(modelId, type);
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+
+			return new TrainingDetailsDto
 			{
-				ErrorRowIndexes = new List<int>();
-			}
+				ModelId = model.Id,
+				ModelName = model.Name,
+				Type = type,
+				MeanSquaredErrorTrain = trainingResult?.AccuracyScore?.MeanSquaredError?.Train,
+				MeanSquaredErrorTest = trainingResult?.AccuracyScore?.MeanSquaredError?.Test,
+				FisherCriterionTrain = trainingResult?.AccuracyScore?.FisherCriterion?.Estimated,
+				FisherCriterionTest = trainingResult?.AccuracyScore?.FisherCriterion?.Tabular,
+				R2Train = trainingResult?.AccuracyScore?.R2?.Train,
+				R2Test = trainingResult?.AccuracyScore?.R2?.Test,
+				ScatterImage = images?.Scatter,
+				CorrelationImage = images?.Correlation,
+				QualityControlInfo = trainingResult?.QualityControlInfo
+			};
 		}
 
-        #endregion
-    }
+		public void UpdateTrainingQualityInfo(long modelId, KoAlgoritmType type, QualityControlInfo newQualityControlInfo)
+		{
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+			trainingResult.QualityControlInfo.UpdateStudent(newQualityControlInfo.Student.Criterion, newQualityControlInfo.Student.Conclusion);
+			trainingResult.QualityControlInfo.UpdateMse(newQualityControlInfo.MeanSquaredError.Criterion, newQualityControlInfo.MeanSquaredError.Conclusion);
+			trainingResult.QualityControlInfo.UpdateR2(newQualityControlInfo.R2.Criterion, newQualityControlInfo.R2.Conclusion);
+			trainingResult.QualityControlInfo.UpdateFisher(newQualityControlInfo.Fisher.Criterion, newQualityControlInfo.Fisher.Conclusion);
+
+			var updatedTrainingResult = JsonConvert.SerializeObject(trainingResult);
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					model.ExponentialTrainingResult = updatedTrainingResult;
+					break;
+				case KoAlgoritmType.Line:
+					model.LinearTrainingResult = updatedTrainingResult;
+					break;
+				case KoAlgoritmType.Multi:
+					model.MultiplicativeTrainingResult = updatedTrainingResult;
+					break;
+				default:
+					throw new Exception($"Передан неизвестный тип модели {type.GetEnumDescription()}");
+			}
+
+			model.Save();
+		}
+
+		public Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type)
+		{
+			var model = GetModelEntityById(modelId);
+
+			var trainingResultStr = model.GetTrainingResult(type);
+			if (string.IsNullOrWhiteSpace(trainingResultStr))
+				throw new Exception($"Не найдет результат обучения модели типа '{type.GetEnumDescription()}'");
+
+			var trainingResult = JsonConvert.DeserializeObject<TrainingResponse>(trainingResultStr);
+			var qualityInfo = trainingResult.QualityControlInfo;
+
+			var excelTemplate = new ExcelFile();
+			var mainWorkSheet = excelTemplate.Worksheets.Add("Результаты");
+
+			var columnHeadersRowIndex = 1;
+			var calculationRowIndex = 2;
+			var tableRowIndex = 3;
+			var criterionRowIndex = 4;
+			var conclusionRowIndex = 5;
+			var rowHeaderColumnIndex = 0;
+			var studentColumnIndex = 1;
+			var mseColumnIndex = 2;
+			var r2ColumnIndex = 3;
+			var fisherColumnIndex = 4;
+
+			var columnHeaders = new object[]
+			{
+				"", "t-критерий Стьюдента", "Средняя ошибка аппроксимации",
+				"Коэффициент детерминации (R²)", "F-критерий Фишера"
+			};
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, rowHeaderColumnIndex, 5);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, studentColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, mseColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, r2ColumnIndex, 4);
+			DataExportCommon.SetIndividualWidth(mainWorkSheet, fisherColumnIndex, 4);
+			mainWorkSheet.Rows[0].Cells[0].SetValue("Анализ качества статической модели");
+			var cells = mainWorkSheet.Cells.GetSubrangeAbsolute(0, 0, 0, columnHeaders.Length - 1);
+			cells.Merged = true;
+
+			DataExportCommon.AddRow(mainWorkSheet, columnHeadersRowIndex, columnHeaders.ToArray());
+
+			var studentInfo = qualityInfo.Student;
+			var mseInfo = qualityInfo.MeanSquaredError;
+			var r2Info = qualityInfo.R2;
+			var fisherInfo = qualityInfo.Fisher;
+
+			var firstRow = new object[]
+			{
+				"Расчетное", studentInfo.Estimated, mseInfo.Estimated, r2Info.Estimated, fisherInfo.Estimated
+			};
+			DataExportCommon.AddRow(mainWorkSheet, calculationRowIndex, firstRow);
+
+			var secondRow = new object[]
+			{
+				"Табличное", studentInfo.Tabular, mseInfo.Tabular, r2Info.Tabular, fisherInfo.Tabular
+			};
+			DataExportCommon.AddRow(mainWorkSheet, tableRowIndex, secondRow);
+
+			var thirdRow = new object[]
+			{
+				"Критерий", studentInfo.Criterion, mseInfo.Criterion, r2Info.Criterion, fisherInfo.Criterion
+			};
+			DataExportCommon.AddRow(mainWorkSheet, criterionRowIndex, thirdRow);
+
+			var fifthRow = new object[]
+			{
+				"Вывод", studentInfo.Conclusion, mseInfo.Conclusion, r2Info.Conclusion, fisherInfo.Conclusion
+			};
+			DataExportCommon.AddRow(mainWorkSheet, conclusionRowIndex, fifthRow);
+
+			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, mseColumnIndex, tableRowIndex, mseColumnIndex);
+			cells.Merged = true;
+			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, r2ColumnIndex, tableRowIndex, r2ColumnIndex);
+			cells.Merged = true;
+
+			var stream = new MemoryStream();
+			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
+
+		public OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type)
+		{
+			return OMModelTrainingResultImages.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type)
+				.SelectAll()
+				.ExecuteFirstOrDefault();
+		}
+
+		#endregion
+	}
 }

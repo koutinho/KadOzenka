@@ -2484,7 +2484,7 @@ namespace ObjectModel.Market
 
         private string _province2;
         /// <summary>
-        /// 10100800 Уточнение округа (PROVINCE_2)
+        /// 10100800 Уточнение округа (область) (PROVINCE_2)
         /// </summary>
         [RegisterAttribute(AttributeID = 10100800)]
         public string Province2
@@ -2604,7 +2604,7 @@ namespace ObjectModel.Market
 
         private string _district2;
         /// <summary>
-        /// 10101400 Уточнение округа (DISTRICT_2)
+        /// 10101400 Уточнение округа (район) (DISTRICT_2)
         /// </summary>
         [RegisterAttribute(AttributeID = 10101400)]
         public string District2
@@ -7319,12 +7319,12 @@ namespace ObjectModel.KO
         }
 
 
-        private KoDataComparingStatus _datachangescomparingstatus_Code;
+        private KoDataComparingTaskChangesStatus _datachangescomparingstatus_Code;
         /// <summary>
         /// 20300900 Статус после сравнения протоколов загрузки (справочный код) (CHANGES_COMPARING_STATUS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20300900)]
-        public KoDataComparingStatus DataChangesComparingStatus_Code
+        public KoDataComparingTaskChangesStatus DataChangesComparingStatus_Code
         {
             get
             {
@@ -7374,12 +7374,12 @@ namespace ObjectModel.KO
         }
 
 
-        private KoDataComparingStatus _cadastralcostcomparingstatus_Code;
+        private KoDataComparingCadastralCostStatus _cadastralcostcomparingstatus_Code;
         /// <summary>
         /// 20301000 Статус после сравнения протоколов кадастровой стоимости (справочный код) (KS_COMPARING_STATUS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 20301000)]
-        public KoDataComparingStatus CadastralCostComparingStatus_Code
+        public KoDataComparingCadastralCostStatus CadastralCostComparingStatus_Code
         {
             get
             {
@@ -7405,46 +7405,6 @@ namespace ObjectModel.KO
                 this._cadastralcostcomparingstatus_Code = value;
                 NotifyPropertyChanged("CadastralCostComparingStatus");
                 NotifyPropertyChanged("CadastralCostComparingStatus_Code");
-            }
-        }
-
-
-        private string _changescomparingreportlink;
-        /// <summary>
-        /// 20301100 Ссылка на результат сравнения протоколов загрузки (CHANGES_COMPARING_REPORT_LINK)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20301100)]
-        public string ChangesComparingReportLink
-        {
-            get
-            {
-                CheckPropertyInited("ChangesComparingReportLink");
-                return _changescomparingreportlink;
-            }
-            set
-            {
-                _changescomparingreportlink = value;
-                NotifyPropertyChanged("ChangesComparingReportLink");
-            }
-        }
-
-
-        private string _cadastralcostreportlink;
-        /// <summary>
-        /// 20301200 Ссылка на результат сравнения протоколов КС (KS_COMPARING_REPORT_LINK)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20301200)]
-        public string CadastralCostReportLink
-        {
-            get
-            {
-                CheckPropertyInited("CadastralCostReportLink");
-                return _cadastralcostreportlink;
-            }
-            set
-            {
-                _cadastralcostreportlink = value;
-                NotifyPropertyChanged("CadastralCostReportLink");
             }
         }
 
@@ -8803,6 +8763,26 @@ namespace ObjectModel.KO
             {
                 _previousweight = value;
                 NotifyPropertyChanged("PreviousWeight");
+            }
+        }
+
+
+        private bool? _isactive;
+        /// <summary>
+        /// 21001300 Использовать в моделировании (is_active)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001300)]
+        public bool? IsActive
+        {
+            get
+            {
+                CheckPropertyInited("IsActive");
+                return _isactive;
+            }
+            set
+            {
+                _isactive = value;
+                NotifyPropertyChanged("IsActive");
             }
         }
 
@@ -10281,6 +10261,153 @@ namespace ObjectModel.Ko
 namespace ObjectModel.KO
 {
     /// <summary>
+    /// 223 Картинки с результатами обучения модели (ko_model_training_result_images)
+    /// </summary>
+    [RegisterInfo(RegisterID = 223)]
+    [Serializable]
+    public partial class OMModelTrainingResultImages : OMBaseClass<OMModelTrainingResultImages>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 22300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 22300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _modelid;
+        /// <summary>
+        /// 22300200 ИД модели (model_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300200)]
+        public long ModelId
+        {
+            get
+            {
+                CheckPropertyInited("ModelId");
+                return _modelid;
+            }
+            set
+            {
+                _modelid = value;
+                NotifyPropertyChanged("ModelId");
+            }
+        }
+
+
+        private byte[] _scatter;
+        /// <summary>
+        /// 22300300 Разброс (scatter)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300300)]
+        public byte[] Scatter
+        {
+            get
+            {
+                CheckPropertyInited("Scatter");
+                return _scatter;
+            }
+            set
+            {
+                _scatter = value;
+                NotifyPropertyChanged("Scatter");
+            }
+        }
+
+
+        private string _algorithmtype;
+        /// <summary>
+        /// 22300400 Алгоритм расчета ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300400)]
+        public string AlgorithmType
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType");
+                return _algorithmtype;
+            }
+            set
+            {
+                _algorithmtype = value;
+                NotifyPropertyChanged("AlgorithmType");
+            }
+        }
+
+
+        private KoAlgoritmType _algorithmtype_Code;
+        /// <summary>
+        /// 22300400 Алгоритм расчета (справочный код) (algorithm_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300400)]
+        public KoAlgoritmType AlgorithmType_Code
+        {
+            get
+            {
+                CheckPropertyInited("AlgorithmType_Code");
+                return this._algorithmtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_algorithmtype))
+                    {
+                         _algorithmtype = descr;
+                    }
+                }
+                else
+                {
+                     _algorithmtype = descr;
+                }
+
+                this._algorithmtype_Code = value;
+                NotifyPropertyChanged("AlgorithmType");
+                NotifyPropertyChanged("AlgorithmType_Code");
+            }
+        }
+
+
+        private byte[] _correlation;
+        /// <summary>
+        /// 22300500 Корреляция (correlation)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 22300500)]
+        public byte[] Correlation
+        {
+            get
+            {
+                CheckPropertyInited("Correlation");
+                return _correlation;
+            }
+            set
+            {
+                _correlation = value;
+                NotifyPropertyChanged("Correlation");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
     /// 250 Параметры расчета для ОКС 2018 года (KO_UNIT_PARAMS_OKS_2018)
     /// </summary>
     [RegisterInfo(RegisterID = 250)]
@@ -11714,7 +11841,7 @@ namespace ObjectModel.KO
 
         private string _field167;
         /// <summary>
-        /// 25216700 Высота потолка  (FIELD_167)
+        /// 25216700 Высота потолка (2) (FIELD_167)
         /// </summary>
         [RegisterAttribute(AttributeID = 25216700)]
         public string Field167
@@ -15099,7 +15226,7 @@ namespace ObjectModel.Sud
 
         private long _id;
         /// <summary>
-        /// 30100100  (ID)
+        /// 30100100 ИД (ID)
         /// </summary>
         [PrimaryKey(AttributeID = 30100100)]
         public long Id
@@ -15119,7 +15246,7 @@ namespace ObjectModel.Sud
 
         private long? _iduser;
         /// <summary>
-        /// 30100200  (ID_USER)
+        /// 30100200 ИД пользователя (ID_USER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100200)]
         public long? IdUser
@@ -15139,7 +15266,7 @@ namespace ObjectModel.Sud
 
         private long _idtable;
         /// <summary>
-        /// 30100300  (ID_TABLE)
+        /// 30100300 ИД таблицы (ID_TABLE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100300)]
         public long IdTable
@@ -15159,7 +15286,7 @@ namespace ObjectModel.Sud
 
         private string _typeoper;
         /// <summary>
-        /// 30100400  (TYPE_OPER)
+        /// 30100400 Тип операции (TYPE_OPER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100400)]
         public string TypeOper
@@ -15179,7 +15306,7 @@ namespace ObjectModel.Sud
 
         private string _xmldata;
         /// <summary>
-        /// 30100500  (XML_DATA)
+        /// 30100500 ИД записи (XML_DATA)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100500)]
         public string XmlData
@@ -15199,7 +15326,7 @@ namespace ObjectModel.Sud
 
         private DateTime? _dateoper;
         /// <summary>
-        /// 30100600  (DATE_OPER)
+        /// 30100600 Название таблицы (DATE_OPER)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100600)]
         public DateTime? DateOper
@@ -15219,7 +15346,7 @@ namespace ObjectModel.Sud
 
         private string _nametable;
         /// <summary>
-        /// 30100700  (NAME_TABLE)
+        /// 30100700 XML данные (NAME_TABLE)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100700)]
         public string NameTable
@@ -15239,7 +15366,7 @@ namespace ObjectModel.Sud
 
         private long? _idrecord;
         /// <summary>
-        /// 30100800  (ID_RECORD)
+        /// 30100800 Дата операции (ID_RECORD)
         /// </summary>
         [RegisterAttribute(AttributeID = 30100800)]
         public long? IdRecord
@@ -25449,7 +25576,7 @@ namespace ObjectModel.Modeling
 
         private decimal _price;
         /// <summary>
-        /// 70200300 Цена объекта (PRICE)
+        /// 70200300 Цена ОА (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200300)]
         public decimal Price
@@ -25469,7 +25596,7 @@ namespace ObjectModel.Modeling
 
         private bool? _isexcluded;
         /// <summary>
-        /// 70200400 Исключение объекта из расчета (IS_EXCLUDED)
+        /// 70200400 Признак исключения из расчета (IS_EXCLUDED)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200400)]
         public bool? IsExcluded
@@ -25529,7 +25656,7 @@ namespace ObjectModel.Modeling
 
         private bool? _isfortraining;
         /// <summary>
-        /// 70200700 Признак: используется ли объект для обучения модели (IS_FOR_TRAINING)
+        /// 70200700 Признак выбора аналога в обучающую модель (IS_FOR_TRAINING)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200700)]
         public bool? IsForTraining
@@ -25549,7 +25676,7 @@ namespace ObjectModel.Modeling
 
         private decimal? _pricefrommodel;
         /// <summary>
-        /// 70200800 Цена объекта, спрогнозированная моделью (PRICE_FROM_MODEL)
+        /// 70200800 Спрогнозированная цена (PRICE_FROM_MODEL)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200800)]
         public decimal? PriceFromModel
@@ -25569,7 +25696,7 @@ namespace ObjectModel.Modeling
 
         private bool? _isforcontrol;
         /// <summary>
-        /// 70200900 Признак: используется ли объект для контрольной выборки модели (IS_FOR_CONTROL)
+        /// 70200900 Признак выбора аналога в контрольную модель (IS_FOR_CONTROL)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200900)]
         public bool? IsForControl
@@ -26644,6 +26771,696 @@ namespace ObjectModel.Common
             {
                 _iscommon = value;
                 NotifyPropertyChanged("IsCommon");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 810 Таблица для созданных отчетов (COMMON_REPORT_FILES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 810)]
+    [Serializable]
+    public partial class OMReportFiles : OMBaseClass<OMReportFiles>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81000200 ИД пользователя (user_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private DateTime _creationdate;
+        /// <summary>
+        /// 81000300 Дата создания (creation_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000300)]
+        public DateTime CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 81000500 Статус ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000500)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.ExportStatus _status_Code;
+        /// <summary>
+        /// 81000500 Статус (справочный код) (status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000500)]
+        public ObjectModel.Directory.Common.ExportStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 81000600 Имя файла (file_name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000600)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private DateTime? _finishdate;
+        /// <summary>
+        /// 81000700 Дата Завершения (finish_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000700)]
+        public DateTime? FinishDate
+        {
+            get
+            {
+                CheckPropertyInited("FinishDate");
+                return _finishdate;
+            }
+            set
+            {
+                _finishdate = value;
+                NotifyPropertyChanged("FinishDate");
+            }
+        }
+
+
+        private string _fileextension;
+        /// <summary>
+        /// 81000800 Расширение файла (file_extension)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81000800)]
+        public string FileExtension
+        {
+            get
+            {
+                CheckPropertyInited("FileExtension");
+                return _fileextension;
+            }
+            set
+            {
+                _fileextension = value;
+                NotifyPropertyChanged("FileExtension");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 812 Корзина с информацией об удаленных сушностях (COMMON_RECYCLE_BIN)
+    /// </summary>
+    [RegisterInfo(RegisterID = 812)]
+    [Serializable]
+    public partial class OMRecycleBin : OMBaseClass<OMRecycleBin>
+    {
+
+        private long _eventid;
+        /// <summary>
+        /// 81200100 Идентификатор события удаления (EVENT_ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81200100)]
+        public long EventId
+        {
+            get
+            {
+                CheckPropertyInited("EventId");
+                return _eventid;
+            }
+            set
+            {
+                _eventid = value;
+                NotifyPropertyChanged("EventId");
+            }
+        }
+
+
+        private DateTime _deletedtime;
+        /// <summary>
+        /// 81200200 Время удаления (DELETED_TIME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200200)]
+        public DateTime DeletedTime
+        {
+            get
+            {
+                CheckPropertyInited("DeletedTime");
+                return _deletedtime;
+            }
+            set
+            {
+                _deletedtime = value;
+                NotifyPropertyChanged("DeletedTime");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81200300 Идентификатор пользователя (USER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200300)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private long _objectregisterid;
+        /// <summary>
+        /// 81200400 Идентификатор реестра удаляемой сущности (OBJECT_REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200400)]
+        public long ObjectRegisterId
+        {
+            get
+            {
+                CheckPropertyInited("ObjectRegisterId");
+                return _objectregisterid;
+            }
+            set
+            {
+                _objectregisterid = value;
+                NotifyPropertyChanged("ObjectRegisterId");
+            }
+        }
+
+
+        private string _description;
+        /// <summary>
+        /// 81200500 Описание (DESCRIPTION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81200500)]
+        public string Description
+        {
+            get
+            {
+                CheckPropertyInited("Description");
+                return _description;
+            }
+            set
+            {
+                _description = value;
+                NotifyPropertyChanged("Description");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 813 Информация о реестрах с логическим удалением (COMMON_REGISTERS_WITH_SOFT_DELETION)
+    /// </summary>
+    [RegisterInfo(RegisterID = 813)]
+    [Serializable]
+    public partial class OMRegistersWithSoftDeletion : OMBaseClass<OMRegistersWithSoftDeletion>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81300100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81300100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _registerid;
+        /// <summary>
+        /// 81300200 Идентификатор реестра (REGISTER_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81300200)]
+        public long RegisterId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterId");
+                return _registerid;
+            }
+            set
+            {
+                _registerid = value;
+                NotifyPropertyChanged("RegisterId");
+            }
+        }
+
+
+        private string _maintablename;
+        /// <summary>
+        /// 81300300 Имя основной таблицы (MAIN_TABLE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81300300)]
+        public string MainTableName
+        {
+            get
+            {
+                CheckPropertyInited("MainTableName");
+                return _maintablename;
+            }
+            set
+            {
+                _maintablename = value;
+                NotifyPropertyChanged("MainTableName");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 814 Таблица с отчетами для основных операций системы (COMMON_GBU_OPERATIONS_REPORTS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 814)]
+    [Serializable]
+    public partial class OMGbuOperationsReports : OMBaseClass<OMGbuOperationsReports>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81400100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81400100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81400200 ИД пользователя (user_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81400200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private DateTime _creationdate;
+        /// <summary>
+        /// 81400300 Дата создания (creation_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81400300)]
+        public DateTime CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private DateTime? _finishdate;
+        /// <summary>
+        /// 81400400 Дата завершения (finish_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81400400)]
+        public DateTime? FinishDate
+        {
+            get
+            {
+                CheckPropertyInited("FinishDate");
+                return _finishdate;
+            }
+            set
+            {
+                _finishdate = value;
+                NotifyPropertyChanged("FinishDate");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 81400500 Статус ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81400500)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
+            }
+        }
+
+
+        private ObjectModel.Directory.Common.ExportStatus _status_Code;
+        /// <summary>
+        /// 81400500 Статус (справочный код) (status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81400500)]
+        public ObjectModel.Directory.Common.ExportStatus Status_Code
+        {
+            get
+            {
+                CheckPropertyInited("Status_Code");
+                return this._status_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_status))
+                    {
+                         _status = descr;
+                    }
+                }
+                else
+                {
+                     _status = descr;
+                }
+
+                this._status_Code = value;
+                NotifyPropertyChanged("Status");
+                NotifyPropertyChanged("Status_Code");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 81400600 Имя файла (file_name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81400600)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
+    /// </summary>
+    [RegisterInfo(RegisterID = 1000811)]
+    [Serializable]
+    public partial class OMAllReportsInSystemView : OMBaseClass<OMAllReportsInSystemView>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 81100100 Идентификатор (id)
+        /// </summary>
+        [PrimaryKey(AttributeID = 81100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _userid;
+        /// <summary>
+        /// 81100200 ИД пользователя (user_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100200)]
+        public long UserId
+        {
+            get
+            {
+                CheckPropertyInited("UserId");
+                return _userid;
+            }
+            set
+            {
+                _userid = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 81100300 Имя файла (file_name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100300)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private DateTime _creationdate;
+        /// <summary>
+        /// 81100400 Дата создания (creation_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100400)]
+        public DateTime CreationDate
+        {
+            get
+            {
+                CheckPropertyInited("CreationDate");
+                return _creationdate;
+            }
+            set
+            {
+                _creationdate = value;
+                NotifyPropertyChanged("CreationDate");
+            }
+        }
+
+
+        private DateTime? _finishdate;
+        /// <summary>
+        /// 81100500 Дата завершения (finish_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100500)]
+        public DateTime? FinishDate
+        {
+            get
+            {
+                CheckPropertyInited("FinishDate");
+                return _finishdate;
+            }
+            set
+            {
+                _finishdate = value;
+                NotifyPropertyChanged("FinishDate");
+            }
+        }
+
+
+        private bool _isplatformreport;
+        /// <summary>
+        /// 81100600 Платформенный отчет (is_platform)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100600)]
+        public bool IsPlatformReport
+        {
+            get
+            {
+                CheckPropertyInited("IsPlatformReport");
+                return _isplatformreport;
+            }
+            set
+            {
+                _isplatformreport = value;
+                NotifyPropertyChanged("IsPlatformReport");
+            }
+        }
+
+
+        private string _status;
+        /// <summary>
+        /// 81100700 Статус (status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 81100700)]
+        public string Status
+        {
+            get
+            {
+                CheckPropertyInited("Status");
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                NotifyPropertyChanged("Status");
             }
         }
 

@@ -69,16 +69,34 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
             });
         }
 
+        public ChromeDriver InitializeChromeDriver(bool useProxy)
+        {
+            ChromeDriverService service = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            ChromeOptions options = new ChromeOptions();
+            options.AddArgument(@"--user-data-dir=C:\Users\adminAIS\AppData\Local\Google\Chrome\User Data");
+            options.AddArgument(@"--profile-directory=Default");
+            if (useProxy)
+            {
+                Proxy proxy = new Proxy();
+                proxy.Kind = ProxyKind.Manual;
+                proxy.IsAutoDetect = false;
+                proxy.SslProxy = "159.203.44.177:3128";
+                options.Proxy = proxy;
+                options.AddArgument("ignore-certificate-errors");
+            }
+            ChromeDriver driver = new ChromeDriver(service, options);
+            driver.Manage().Window.Maximize();
+            WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            return driver;
+        }
+
         public void RefreshAllData(int maxCounter = 0, bool testBoot = false)
         {
             if (maxCounter != 0) AllObjects = AllObjects.Take(maxCounter).ToList();
-            ChromeOptions options = new ChromeOptions();
-            ChromeDriverService service = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            using (ChromeDriver driver = new ChromeDriver(service, options)) 
-            {
-                driver.Manage().Window.Maximize();
+
+                ChromeDriver driver = InitializeChromeDriver(false);
                 IJavaScriptExecutor executor = (IJavaScriptExecutor)driver;
-                WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+                
                 int OCur = 0, OCor = 0, OErr = 0, NErr = 0, NPub = 0, NAuc = 0, CScr = 0, OCtr = AllObjects.Count;
                 List<string> errorLog = new List<string>();
                 foreach (OMCoreObject initialObject in AllObjects)
@@ -87,6 +105,15 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                     try
                     {
                         driver.Navigate().GoToUrl(initialObject.Url);
+                        while ((bool)executor.ExecuteScript("return document.querySelector('div#captcha') !== null") == true)
+                        {
+                            driver.Dispose();
+                            driver = InitializeChromeDriver(false);
+                            executor = (IJavaScriptExecutor)driver;
+                            driver.Navigate().GoToUrl(initialObject.Url);
+                            Console.WriteLine("Введите капчу");
+                            Console.ReadLine();
+                        }
                         if (bool.Parse(executor.ExecuteScript(ConfigurationManager.AppSettings["checkCIANUnpublished"]).ToString()))
                         {
                             //Тут обрабатываются данные снятых с публикации объектов
@@ -152,7 +179,7 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                                     OMPriceHistory lastPrice = OMPriceHistory.Where(x => x.InitialId == initialObject.Id).SelectAll().OrderByDescending(x => x.ChangingDate).ExecuteFirstOrDefault();
                                     if (lastPrice == null || price != lastPrice.PriceValueTo)
                                     {
-                                        ProcessNoSegmentObjectType(initialObject, executor.ExecuteScript("return document.querySelector('h1[data-name=\"OfferTitle\"]').innerText.split(',')[0];").ToString().ToLower());
+                                        ProcessNoSegmentObjectType(initialObject, executor.ExecuteScript("return document.querySelector('div[data-name=\"OfferTitle\"] h1').innerText.split(',')[0];").ToString().ToLower());
                                         new OMPriceHistory { InitialId = initialObject.Id, ChangingDate = currentTime, PriceValueTo = price }.Save();
                                         SaveScreenShot(driver, new OMScreenshots { InitialId = initialObject.Id, CreationDate = currentTime, Type = "image/png" }, currentTime, MarketTypes.Cian, initialObject.Id, testBoot);
 
@@ -196,7 +223,8 @@ namespace KadOzenka.Dal.Selenium.PriceChecker
                 }
                 errorLog.Add($"========> Обновление цен завершено ({ConsoleLog.GetResultData(OCtr, OCur, OCor, OErr, nspErr: NErr, unpub: NPub, screen: CScr, auc: NAuc)})\n");
                 ConsoleLog.LogError(errorLog.ToArray(), "Присвоение координат объектам из исходного файла");
-            }
+                driver.Dispose();
+
             ConsoleLog.WriteFotter("Обновление цен завершено");
         }
 

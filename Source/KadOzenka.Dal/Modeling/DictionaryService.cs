@@ -23,12 +23,12 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
-    public class DictionaryService
-    {
-	    public int RowsCount { get; private set; } = 1;
-		public int CurrentRow { get; private set; }
+	public class DictionaryService : IDictionaryService
+	{
+	    public int RowsCount { get; set; } = 1;
+		public int CurrentRow { get; set; }
 
-        private const long MaxRowInFileDuringImport = 10000;
+        private const long MaxRowInFileDuringImport = 1000;
         private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
         private static readonly string RegisterViewId = "ModelingDictionaries";
 
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<OMModelingDictionary> GetDictionaries()
 		{
-			return OMModelingDictionary.Where(x => true).SelectAll().Execute();
+			return OMModelingDictionary.Where(x => true).OrderBy(x => x.Name).SelectAll().Execute();
 		}
 
 		public List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true)

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
-using Core.Main.FileStorages;
+using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
@@ -18,19 +20,38 @@ namespace KadOzenka.Dal.LongProcess
 {
 	public class ModelDictionaryImportFromExcelLongProcess : LongProcess
 	{
-		private DictionaryService DictionaryService { get; }
-		public const string LongProcessName = nameof(ModelDictionaryImportFromExcelLongProcess);
 		private readonly ILogger _log = Log.ForContext<ModelDictionaryImportFromExcelLongProcess>();
+		private string MessageSubject => "Загрузка справочника для моделирования";
+		private IDictionaryService DictionaryService { get; }
+		private IImportDataLogRepository ImportDataLogRepository { get; }
+		private IWorkerCommonWrapper Worker { get; }
+		private IFileStorageManagerWrapper FileStorageManagerWrapper { get; }
+
+
+		public ModelDictionaryImportFromExcelLongProcess(IDictionaryService dictionaryService,
+			IImportDataLogRepository importDataLogRepository, INotificationSender notificationSender, 
+			IWorkerCommonWrapper worker, IFileStorageManagerWrapper fileStorageManagerWrapper,
+			ILongProcessProgressLogger logger)
+			: base(notificationSender, logger)
+		{
+			DictionaryService = dictionaryService;
+			ImportDataLogRepository = importDataLogRepository;
+			Worker = worker;
+			FileStorageManagerWrapper = fileStorageManagerWrapper;
+		}
 
 		public ModelDictionaryImportFromExcelLongProcess()
 		{
 			DictionaryService = new DictionaryService();
+			ImportDataLogRepository = new ImportDataLogRepository();
+			Worker = new WorkerCommonWrapper();
+			FileStorageManagerWrapper = new FileStorageManagerWrapper();
 		}
 
 
 		public static void AddProcessToQueue(Stream file, DictionaryImportFileFromExcelDto settings, OMImportDataLog import)
 		{
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMModelingDictionary.GetRegisterId(), import.Id, settings.SerializeToXml());
+			LongProcessManager.AddTaskToQueue(nameof(ModelDictionaryImportFromExcelLongProcess), OMModelingDictionary.GetRegisterId(), import.Id, settings.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -39,40 +60,19 @@ namespace KadOzenka.Dal.LongProcess
 
 			try
 			{
-				var cancelSource = new CancellationTokenSource();
-				var cancelToken = cancelSource.Token;
+				Worker.SetProgress(processQueue, 0);
 
-				WorkerCommon.SetProgress(processQueue, 0);
-
-				var import = OMImportDataLog.Where(x => x.Id == processQueue.ObjectId).SelectAll().ExecuteFirstOrDefault();
+				var import = ImportDataLogRepository.GetById(processQueue.ObjectId.GetValueOrDefault(), null);
 				if (import == null)
 				{
-					WorkerCommon.SetMessage(processQueue, "Процесс не выполнен, так как отсутствует исходный файл.");
+					NotificationSender.SendNotification(processQueue, MessageSubject, "Процесс не выполнен, так как отсутствует исходный файл.");
 					return;
 				}
 
 				var settings = processQueue.Parameters.DeserializeFromXml<DictionaryImportFileFromExcelDto>();
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => DictionaryService.RowsCount, () => DictionaryService.CurrentRow);
 
-				var task = Task.Run(() =>
-				{
-					while (true)
-					{
-						if (cancelToken.IsCancellationRequested)
-						{
-							break;
-						}
-						if (DictionaryService.RowsCount > 0 && DictionaryService.CurrentRow > 0)
-						{
-							var newProgress = (long)Math.Round(((double)DictionaryService.CurrentRow / DictionaryService.RowsCount) * 100);
-							if (newProgress != processQueue.Progress)
-							{
-								WorkerCommon.SetProgress(processQueue, newProgress);
-							}
-						}
-					}
-				}, cancelToken);
-
-				var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
+				var fileStream = FileStorageManagerWrapper.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 					import.DataFileName);
 
 				_log.ForContext("IsNewDictionary", settings.IsNewDictionary).Verbose("Создание или обновление словаря.");
@@ -86,24 +86,22 @@ namespace KadOzenka.Dal.LongProcess
 					DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
 						settings.DeleteOldValues, import);
 				}
-
-				cancelSource.Cancel();
-				task.Wait(cancellationToken);
-				cancelSource.Dispose();
-
-				WorkerCommon.SetProgress(processQueue, 100);
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine(e);
-				throw;
+				var errorId = ErrorManager.LogError(e);
+				_log.Error(e, "Загрузка справочников моделирования завершена с ошибкой {ErrorId}", errorId);
+				NotificationSender.SendNotification(processQueue, MessageSubject, $"Операция завершена с ошибкой. Подробнее в журнале (ИД {errorId})");
 			}
 
+			LongProcessProgressLogger.StopLogProgress();
+			Worker.SetProgress(processQueue, 100);
 			_log.Information("Окончание фонового процесса для Импорта словаря Моделирования");
 		}
 
 		public override void LogError(long? objectId, Exception ex, long? errorId = null)
 		{
+			base.LogError(objectId, ex, errorId);
 			var import = OMImportDataLog.Where(x => x.Id == objectId)
 				.SelectAll()
 				.ExecuteFirstOrDefault();

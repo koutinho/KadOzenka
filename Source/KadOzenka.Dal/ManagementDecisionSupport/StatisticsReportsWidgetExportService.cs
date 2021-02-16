@@ -188,7 +188,9 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 			{
 				_log.ForContext("TotalDataCount", totalDataCount)
 					.Debug("Сохрание отчета в файловое хранилище");
-				result.ReportId = gbuReportService.SaveReport();
+
+				var reportId = gbuReportService.SaveReport();
+				result.UrlToDownloadReport = gbuReportService.GetUrlToDownloadFile(reportId);
 			}
 			else
 			{

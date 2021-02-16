@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Data;
 using Platform.Reports;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.ManagementDecisionSupport;
 
@@ -12,10 +13,12 @@ namespace KadOzenka.Dal.FastReports
     public class ChangedRegisteredObjectsReport : FastReportBase
     {
 	    private readonly ReportingFormFormationService _reportingFormFormationService;
+	    private readonly QueryManager _queryManager;
 
 		public ChangedRegisteredObjectsReport()
 		{
-			_reportingFormFormationService = new ReportingFormFormationService(new GbuObjectService());
+			_queryManager = new QueryManager();
+			_reportingFormFormationService = new ReportingFormFormationService(new GbuObjectService(), _queryManager);
 		}
 
 		protected override string TemplateName(NameValueCollection query)
@@ -33,7 +36,8 @@ namespace KadOzenka.Dal.FastReports
 
         protected override DataSet GetData(NameValueCollection query, HashSet<long> objectList = null)
         {
-	        var reportType = GetQueryParam<string>("ReportType", query);
+	        _queryManager.SetBaseToken(CancellationToken);
+			var reportType = GetQueryParam<string>("ReportType", query);
 	        DataSet dataSet = reportType == "В разрезе видов объекта недвижимости"
 	            ? GetDataForNewlyRegisteredObjectsByPropertyTypeReport(query)
 				: GetDataForNewlyRegisteredObjectsDefaultReport(query);

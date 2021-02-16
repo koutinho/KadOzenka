@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.GbuObject
         }
 
 
-        public long Run()
+        public string Run()
         {
 	        _log.Debug("Валидация входных параметров");
             ValidateInputParameters();
@@ -116,10 +116,7 @@ namespace KadOzenka.Dal.GbuObject
             _log.Debug("Сохранение отчета");
             var reportId = reportService.SaveReport();
 
-            //TODO для тестирования
-            var link = $"https://localhost:50252/DataExport/DownloadExportResult?exportId={reportId}";
-
-            return reportId;
+            return reportService.GetUrlToDownloadFile(reportId);
         }
 
         protected abstract bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute, GbuReportService reportService);

@@ -54,6 +54,8 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 					"Данные, отсутствующие в ПККО");
 				FillUnitSetsInconsistenciesReport(pkkoUnitCadastralCostDictionary, rsmUnitCadastralCostDictionary, resultExcelFile,
 					"Данные, отсутствующие в РСМ");
+				_task.CadastralCostComparingStatus_Code =
+					KoDataComparingCadastralCostStatus.ThereAreUnitSetsInconsistencies;
 			}
 			else
 			{
@@ -64,18 +66,19 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 					_log.ForContext("TaskFolder", _taskFolder)
 						.Debug("Найдены несоответствия в кадастровой стоимости");
 					FillUnitCostsInconsistenciesReport(rsmUnitCadastralCostDictionary, pkkoUnitCadastralCostDictionary, resultExcelFile);
+					_task.CadastralCostComparingStatus_Code =
+						KoDataComparingCadastralCostStatus.ThereAreUnitCostsInconsistencies;
 				}
 				else
 				{
 					_log.ForContext("TaskFolder", _taskFolder)
 						.Debug("Данные совпадают");
 					resultExcelFile.Worksheets.Add("Данные совпадают");
+					_task.CadastralCostComparingStatus_Code =
+						KoDataComparingCadastralCostStatus.DataAreMatch;
 				}
 			}
 
-			_task.CadastralCostComparingStatus_Code = !areUnitSetsInconsistencies && !areUnitCostsInconsistencies
-				? KoDataComparingStatus.DataAreMatch
-				: KoDataComparingStatus.ThereAreInconsistencies;
 			_task.Save();
 
 			_log.ForContext("TaskFolder", _taskFolder)
@@ -88,9 +91,8 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 			_rsmCostFiles.ForEach(x => CadastralCostDataComparingStorageManager.MoveFileToResultFolder(x, _taskFolder));
 			_pkkoCostFiles.ForEach(x => CadastralCostDataComparingStorageManager.MoveFileToResultFolder(x, _taskFolder));
 
-			NotificationSender.SendNotification("Сравнение протоколов кадастровой стоимости",
-				CadastralCostDataComparingConfig.Current.GetCostEmailMessageForTask(_task, areUnitSetsInconsistencies,
-					areUnitCostsInconsistencies),
+			new NotificationSender().SendNotification("Сравнение протоколов кадастровой стоимости",
+				CadastralCostDataComparingConfig.Current.GetCostEmailMessageForTask(_task),
 				_messageAddresses);
 		}
 

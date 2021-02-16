@@ -4,9 +4,11 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 {
@@ -15,9 +17,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 	    protected readonly string BaseFolderWithSql = "PricingFactorsComposition";
 	    private readonly ILogger _logger;
 	    protected override ILogger Logger => _logger;
-
+	    private readonly QueryManager _queryManager;
 	    public OksReport()
 	    {
+            _queryManager = new QueryManager();
 		    _logger = Log.ForContext<OksReport>();
 	    }
 
@@ -28,19 +31,23 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
 
         protected override DataSet GetReportData(NameValueCollection query, HashSet<long> objectList = null)
         {
+            _queryManager.SetBaseToken(CancellationToken);
             var taskIds = GetTaskIdList(query)?.ToList();
             var tourId = GetTourId(query);
 
-            var operations = GetOperations(tourId, taskIds);
-            Logger.Debug("Найдено {Count} объектов", operations?.Count);
+            using (Logger.TimeOperation("Общее время работы"))
+            {
+	            var operations = GetOperations(tourId, taskIds);
+	            Logger.Debug("Найдено {Count} объектов", operations?.Count);
 
-            Logger.Debug("Начато формирование таблиц");
-            var dataSet = new DataSet();
-            var itemTable = GetItemDataTable(operations);
-            dataSet.Tables.Add(itemTable);
-            Logger.Debug("Закончено формирование таблиц");
+	            Logger.Debug("Начато формирование таблиц");
+	            var dataSet = new DataSet();
+	            var itemTable = GetItemDataTable(operations);
+	            dataSet.Tables.Add(itemTable);
+	            Logger.Debug("Закончено формирование таблиц");
 
-            return dataSet;
+	            return dataSet;
+            }
         }
 
 
@@ -50,6 +57,10 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
         {
             var sql = StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, "Oks");
 
+            if (_queryManager.IsRequestCancellationToken())
+            {
+                return new List<ReportItem>();
+            }
             var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
             var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
             var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
@@ -72,7 +83,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.PricingFactorsComposition
                 address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
                 objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
-            var result = QSQuery.ExecuteSql<ReportItem>(sqlWithParameters);
+            var result = _queryManager.ExecuteSql<ReportItem>(sqlWithParameters);
 
             return result;
         }

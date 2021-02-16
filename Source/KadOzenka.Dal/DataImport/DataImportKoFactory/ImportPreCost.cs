@@ -77,6 +77,15 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 									setPreUpks = true;
 								}
 
+								if (setPreUpks && setPreCost && preUpksDecimal > preCost)
+								{
+									lock (locked)
+									{
+										ImportKoCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
+										return;
+									}
+								}
+
 								if (setPreUpks || setPreCost)
 								{
 									unit.Save();
@@ -195,6 +204,15 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									unit.UpksPre = preUpksDecimal;
 									setPreUpks = true;
+								}
+
+								if (setPreUpks && setPreCost && preUpksDecimal > preCost)
+								{
+									lock (locked)
+									{
+										ImportKoCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
+										return;
+									}
 								}
 
 								if (setPreUpks || setPreCost)

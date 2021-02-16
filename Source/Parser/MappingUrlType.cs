@@ -7,9 +7,9 @@ namespace Parser
 
     enum UrlType
     {
-        Ordinar = 0,
-        Root = 1,
-        AsParameter = 2
+        Ordinar = 1,
+        Root = 2,
+        AsParameter = 3
     }
 
 }

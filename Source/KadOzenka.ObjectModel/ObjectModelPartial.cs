@@ -1604,6 +1604,12 @@ namespace ObjectModel.KO
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
+
+        /// <summary>
+        /// Ссылка на (223 Картинки с результатами обучения модели)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMModelTrainingResultImages> ModelTrainingResultImages { get; set; }
         public OMModel()
         {
 
@@ -1613,6 +1619,8 @@ namespace ObjectModel.KO
             PropertyChangedList = new HashSet<String>();
 
             ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
+
+            ModelTrainingResultImages = new List<ObjectModel.KO.OMModelTrainingResultImages>();
 
         }
         public OMModel(bool trackPropertyChanging) : this()
@@ -1960,6 +1968,30 @@ namespace ObjectModel.Ko
 
         }
         public OMGroupToMarketSegmentRelation(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 223 Картинки с результатами обучения модели
+    /// </summary>
+    public partial class OMModelTrainingResultImages
+    {
+
+        public OMModelTrainingResultImages()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMModelTrainingResultImages(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -3524,6 +3556,126 @@ namespace ObjectModel.Common
 
         }
         public OMDataFormStorage(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 810 Таблица для созданных отчетов
+    /// </summary>
+    public partial class OMReportFiles
+    {
+
+        public OMReportFiles()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMReportFiles(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 812 Корзина с информацией об удаленных сушностях
+    /// </summary>
+    public partial class OMRecycleBin
+    {
+
+        public OMRecycleBin()
+        {
+
+            EventId = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMRecycleBin(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 813 Информация о реестрах с логическим удалением
+    /// </summary>
+    public partial class OMRegistersWithSoftDeletion
+    {
+
+        public OMRegistersWithSoftDeletion()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMRegistersWithSoftDeletion(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 814 Таблица с отчетами для основных операций системы
+    /// </summary>
+    public partial class OMGbuOperationsReports
+    {
+
+        public OMGbuOperationsReports()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMGbuOperationsReports(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Common
+{
+    /// <summary>
+    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
+    /// </summary>
+    public partial class OMAllReportsInSystemView
+    {
+
+        public OMAllReportsInSystemView()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMAllReportsInSystemView(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

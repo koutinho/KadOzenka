@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
@@ -10,16 +13,21 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
 using Core.SRD;
+using Ionic.Zip;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.DataComparing;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
+using KadOzenka.Dal.LongProcess.DataComparing;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.RecycleBin;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using Kendo.Mvc.Extensions;
@@ -33,8 +41,11 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
 using KadOzenka.Web.Models.Unit;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
@@ -80,7 +91,8 @@ namespace KadOzenka.Web.Controllers
             if (taskDto == null)
                 return NotFound();
 
-            var taskModel = TaskEditModel.ToEditModel(taskDto);
+            var dataComparingDtoResponse = TaskService.TryGetTaskDataComparingDto(taskId);
+            var taskModel = TaskEditModel.ToEditModel(taskDto, dataComparingDtoResponse);
 
             return View(taskModel);
         }
@@ -501,7 +513,7 @@ namespace KadOzenka.Web.Controllers
                 switch (unitFactorsShowType)
                 {
                     case UnitFactorsShowType.ModelFactors:
-                        var model = new ModelingRepository().GetActiveModelEntityByGroupId(unit.GroupId);
+                        var model = new ModelingService().GetActiveModelEntityByGroupId(unit.GroupId);
                         if (model != null)
                         {
                             var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
@@ -532,6 +544,24 @@ namespace KadOzenka.Web.Controllers
             return Json(new List<UnitFactorsDto>());
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = "ADMIN")]
+        public ActionResult DeleteTask(long id)
+        {
+	        var dto = TaskService.GetTaskById(id);
+	        return View(TaskDeleteModel.ToModel(dto, TaskService.CanTaskBeDeleted(id), MoveTaskToRecycleBinLongProcess.IsDuplicateProcessExists(id)));
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = "ADMIN")]
+        public IActionResult DeleteTask(TaskDeleteModel model)
+        {
+	        if (MoveTaskToRecycleBinLongProcess.IsDuplicateProcessExists(model.TaskId))
+		        throw new Exception($"Запрос на удаление задания на оценку {model.TaskId} уже существует");
+
+	        MoveTaskToRecycleBinLongProcess.AddProcessToQueue(model.ToSettings());
+            return Ok();
+        }
 
         #region Support Methods
 
@@ -1090,9 +1120,10 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion Просмотр настроек факторов
-    #region Сравнение данных
 
-		[HttpGet]
+        #region Сравнение данных
+
+        [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public FileResult DownloadTaskChangesDataComparingResult(long taskId)
 		{
@@ -1124,6 +1155,86 @@ namespace KadOzenka.Web.Controllers
 			return Ok("Запущено формирование FD файлов");
 		}
 
-		#endregion #region Изменения в атрибутах
-	}
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+		public FileResult DownloadTaskDataComparingPkkoData(long taskId, DataComparingFileType downloadType)
+		{
+			GbuReportService.ReportFile file = TaskService.DownloadTaskDataComparingPkkoFile(taskId, downloadType);
+			return File(file.FileStream, Consts.ExcelContentType, Path.GetFileName(file.FileName));
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = "")]
+		public ActionResult UploadDataComparingPkkoFiles(List<IFormFile> files, long taskId, DataComparingFileType uploadType)
+		{
+			string resultMessage = null;
+			try
+			{
+				if (uploadType == DataComparingFileType.TaskChangesPkkoFile)
+				{
+					if (files.Count == 1)
+					{
+						using (var stream = files.First().OpenReadStream())
+						{
+							TaskService.UploadDataComparingTaskChangesPkkoFile(taskId, stream);
+						}
+						resultMessage = "ПККО протокол изменений успешно загружен";
+                    }
+					else
+					{
+						using (var stream = new MemoryStream())
+						{
+							using (ZipFile zipFile = new ZipFile())
+							{
+								zipFile.AlternateEncoding = Encoding.UTF8;
+								zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
+
+								foreach (var file in files)
+								{
+									var entryStream = file.OpenReadStream();
+									zipFile.AddEntry(file.FileName, entryStream);
+								}
+								zipFile.Save(stream);
+								stream.Seek(0, SeekOrigin.Begin);
+							}
+
+							UploadTaskChangesPkkoFileLongProcess.AddImportToQueue(stream, taskId);
+						}
+						resultMessage = "Загрузка ПККО протокола изменений добавлена в очередь, по результатам загрузки будет отправлено сообщение";
+                    }
+					
+				}
+                else
+                {
+	                using (var streamList = new DisposableList<Stream>())
+	                {
+		                foreach (var file in files)
+		                {
+			                var stream = file.OpenReadStream();
+			                streamList.Add(stream);
+		                }
+
+		                if (uploadType == DataComparingFileType.CostPkkoFiles)
+		                {
+                            TaskService.UploadDataComparingCostPkkoFiles(taskId, streamList);
+                        }
+		                else
+		                {
+			                TaskService.UploadDataComparingFdPkkoFiles(taskId, streamList);
+                        }
+	                }
+	                resultMessage = $"ПККО { uploadType.GetEnumDescription()} успешно загружены";
+                }
+			}
+			catch (Exception e)
+			{
+				ErrorManager.LogError(e);
+				return BadRequest();
+			}
+
+			return Json(new { resultMessage });
+		}
+
+        #endregion Сравнение данных
+    }
 }
