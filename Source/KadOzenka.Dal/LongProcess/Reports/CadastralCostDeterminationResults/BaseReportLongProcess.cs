@@ -19,20 +19,20 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 {
 	public class BaseReportLongProcess : LongProcessForReportsBase
 	{
+		private int _defaultPackageSize = 200000;
+		private int _defaultThreadsCount = 4;
+
 		private readonly QueryManager _queryManager;
-		private const int PackageSize = 200000;
 		public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
 		private string ReportName { get; set; }
 		private string MessageSubject => $"Отчет '{ReportName}'";
 		private object _locker;
-		protected ILogger Logger { get; }
 
 
-		public BaseReportLongProcess()
+		public BaseReportLongProcess() : base(Log.ForContext<BaseReportLongProcess>())
 		{
 			_queryManager = new QueryManager();
 			_locker = new object();
-			Logger = Log.ForContext<BaseReportLongProcess>();
 		}
 
 		public static void AddProcessToQueue(ReportLongProcessInputParameters input)
@@ -57,6 +57,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 				return;
 			}
 
+			var config = GetProcessConfigFromSettings("StateOrIndividualCadastralCostDeterminationResults", _defaultPackageSize, _defaultThreadsCount);
 			var reportType = parameters.Type == ReportType.State ? typeof(StateResultsReport) : typeof(IndividuallyResultsReport);
 			var taskIds = parameters.TaskIds;
 			var taskIdStr = string.Join(',', taskIds);
@@ -95,10 +96,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 					var options = new ParallelOptions
 					{
 						CancellationToken = localCancelTokenSource.Token,
-						MaxDegreeOfParallelism = 4
+						MaxDegreeOfParallelism = config.ThreadsCount
 					};
 					var cadastralQuarterAttributeId = new GbuCodRegisterService().GetCadastralQuarterFinalAttribute().Id;
-					var numberOfPackages = unitsCount / PackageSize + 1;
+					var numberOfPackages = unitsCount / config.PackageSize + 1;
 					var processedPackageCount = 0;
 					var processedItemsCount = 0;
 					Parallel.For(0, numberOfPackages, options, (i, s) =>
@@ -107,7 +108,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 									unit.GROUP_ID IN ({groupIdsStr}) AND
 									(unit.PROPERTY_TYPE_CODE <> 2190 or unit.PROPERTY_TYPE_CODE is null)
 										order by unit.id 
-										limit {PackageSize} offset {i * PackageSize}";
+										limit {config.PackageSize} offset {i * config.PackageSize}";
 
 						var sql = $@"/*{i}*/ with object_ids as (
 									select object_id from ko_unit unit {unitsCondition}

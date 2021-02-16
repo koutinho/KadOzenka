@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
@@ -23,18 +22,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
 	public abstract class BaseReportLongProcess<T> : LongProcessForReportsBase where T : class, new()
 	{
-		private int _packageSize = 125000;
+		private int _defaultPackageSize = 125000;
+		private int _defaultThreadsCount = 20;
 		protected abstract string ReportName { get; }
 		protected abstract string ProcessName { get; }
 		private string MessageSubject => $"Отчет '{ReportName}'";
-		protected ILogger Logger { get; }
 		private DataCompositionByCharacteristicsService DataCompositionByCharacteristicsService { get; }
 		private readonly QueryManager _queryManager;
 		private object _locker;
 
-		protected BaseReportLongProcess(ILogger logger)
+		protected BaseReportLongProcess(ILogger logger) : base(logger)
 		{
-			Logger = logger;
 			_locker = new object();
 			DataCompositionByCharacteristicsService = new DataCompositionByCharacteristicsService();
 			_queryManager = new QueryManager();
@@ -60,21 +58,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			Logger.Debug("Начат фоновый процесс.");
 			WorkerCommon.SetProgress(processQueue, 0);
 
-			ReportLongProcessInputParameters parameters = null;
-			if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
-			{
-				parameters = processQueue.Parameters.DeserializeFromXml<ReportLongProcessInputParameters>();
-				if (parameters.PackageSize.GetValueOrDefault() != 0)
-				{
-					_packageSize = parameters.PackageSize.GetValueOrDefault();
-				}
-			}
+			var parameters = processQueue?.Parameters?.DeserializeFromXml<ReportLongProcessInputParameters>();
 			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 			{
 				NotificationSender.SendNotification(processQueue, MessageSubject, "Не переданы ИД задач для построения отчета");
 				return;
 			}
-
 			Logger.ForContext("InputParameters", parameters.TaskIds, destructureObjects: true).Debug("Входные параметры");
 
 			if (!DataCompositionByCharacteristicsService.IsCacheTableExists())
@@ -83,6 +72,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			var message = string.Empty;
 			try
 			{
+				var config = GetProcessConfigFromSettings("UniformAndNonUniform", _defaultPackageSize, _defaultThreadsCount);
+
 				var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long) x.TaskId) &&
 				                                   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
 				Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
@@ -97,11 +88,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				var options = new ParallelOptions
 				{
 					CancellationToken = localCancelTokenSource.Token,
-					MaxDegreeOfParallelism = 20
+					MaxDegreeOfParallelism = config.ThreadsCount
 				};
 
 				var processedPackageCount = 0;
-				var numberOfPackages = unitsCount / _packageSize + 1;
+				var numberOfPackages = unitsCount / config.PackageSize + 1;
 				var processedItemsCount = 0;
 				using (Logger.TimeOperation("Полная обработка всех пакетов"))
 				{
@@ -115,7 +106,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 							var objectIdsSubQuerySql = $@"select object_id from ko_unit 
 								where task_id in ({string.Join(',', parameters.TaskIds)}) and PROPERTY_TYPE_CODE <> 2190 
 								order by object_id 
-								limit {_packageSize} offset {i * _packageSize} ";
+								limit {config.PackageSize} offset {i * config.PackageSize} ";
 
 							var sql = $@"select cadastral_number as CadastralNumber, attributes 
 								from {DataCompositionByCharacteristicsService.TableName} 
@@ -216,6 +207,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			}
 		}
 
+		protected void WriteToStream(List<string> str, Encoding encoding, MemoryStream stream)
+		{
+			str.Add("\n");
+			var headers = string.Join(',', str);
+			byte[] firstString = encoding.GetBytes(headers);
+			stream.Write(firstString, 0, firstString.Length);
+		}
 
 		#endregion
 

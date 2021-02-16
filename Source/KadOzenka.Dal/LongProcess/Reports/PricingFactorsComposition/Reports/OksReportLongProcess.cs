@@ -22,25 +22,25 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
 	public class OksReportLongProcess : LongProcessForReportsBase
 	{
+		private int _defaultPackageSize = 200000;
+		private int _defaultThreadsCount = 3;
+
 		public static readonly string DateFormat = "dd.MM.yyyy";
 		protected readonly string BaseFolderWithSql = "PricingFactorsComposition";
-		private int _packageSize = 200000;
 		private readonly object _locker;
 		public string ReportName => "Состав данных по перечню объектов недвижимости, подлежащих государственной кадастровой оценке (объекты капитального строительства)";
 		private string MessageSubject => $"Отчет '{ReportName}'";
-		protected ILogger Logger { get; set; }
 		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		private readonly QueryManager _queryManager;
 
 
-		public OksReportLongProcess()
+		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
 		{
 			_locker = new object();
 			_queryManager = new QueryManager();
 			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
-			Logger = Log.ForContext<OksReportLongProcess>();
 		}
 
 		public override void AddToQueue(object input)
@@ -66,10 +66,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				return;
 			}
 
-			_packageSize = parameters.PackageSize.GetValueOrDefault() == 0 ? _packageSize : parameters.PackageSize.GetValueOrDefault();
 			var message = string.Empty;
 			try
 			{
+				var config = GetProcessConfigFromSettings("PricingFactorsCompositionForOks", _defaultPackageSize, _defaultThreadsCount);
 				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
 				{
 					var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long)x.TaskId) &&
@@ -90,9 +90,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 					var options = new ParallelOptions
 					{
 						CancellationToken = localCancelTokenSource.Token,
-						MaxDegreeOfParallelism = 3
+						MaxDegreeOfParallelism = config.ThreadsCount
 					};
-					var numberOfPackages = unitsCount / _packageSize + 1;
+					var numberOfPackages = unitsCount / config.PackageSize + 1;
 					var processedPackageCount = 0;
 					var processedItemsCount = 0;
 					Parallel.For(0, numberOfPackages, options, (i, s) =>
@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 										unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND 
 										unit.OBJECT_ID IS NOT NULL
 										order by unit.id 
-										limit {_packageSize} offset {i * _packageSize}";
+										limit {config.PackageSize} offset {i * config.PackageSize}";
 
 						var sql = string.Format(baseSql, unitsCondition);
 						Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
