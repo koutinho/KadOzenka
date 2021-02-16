@@ -269,7 +269,7 @@ namespace KadOzenka.Dal.Modeling
 							}
 							else
 							{
-								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToLongNullable();
+								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
 							}
 
 							omModelToMarketObject.SetAttributeValue(
