@@ -27,7 +27,7 @@ namespace ObjectModel.SRD
               public const string CORE_MESSAGES = "CORE.MESSAGES";
                 
               // Смена своего пароля пользователем (35)
-              public const string CORE_SRD_USERS_CHANGEPASSWORD = "CORE.SRD.USERS.CHANGEPASSWORD";
+              public const string CORE_SRD_USERS_CHANGE_PASSWORD_OWN = "CORE.SRD.USERS.CHANGE_PASSWORD_OWN";
                 
               // Создание / изменение (36)
               public const string CORE_SRD_USERS_CHANGE = "CORE.SRD.USERS.CHANGE";
@@ -533,6 +533,24 @@ namespace ObjectModel.SRD
               // Редактирование статуса Решение вступило в законную силу (655)
               public const string SUD_OBJECTS_EDIT_DECISION_ENTERED_INTO_FORCE = "SUD.OBJECTS.EDIT.DECISION_ENTERED_INTO_FORCE";
                 
+              // Доступ к выгрузкам из раскладок (660)
+              public const string CORE_REGISTER_EXPORT = "CORE.REGISTER.EXPORT";
+
+              // Настройка справочников (661)
+              public const string ADMIN_REFERENCES = "ADMIN.REFERENCES";
+
+              // Настройка реестров (662)
+              public const string ADMIN_REGISTERS = "ADMIN.REGISTERS";
+
+              // Переключение сервисного режима работы (663)
+              public const string ADMIN_SERVICE_MODE = "ADMIN.SERVICE_MODE";
+
+              // Контроль работы системы (664)
+              public const string ADMIN_SYSTEM_LOGS = "ADMIN.SYSTEM.LOGS";
+
+              // Календарь рабочих дней (665)
+              public const string CORE_HOLIDAYS_VIEW = "CORE.HOLIDAYS.VIEW";
+
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
