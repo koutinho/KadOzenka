@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using ObjectModel.Core.LongProcess;
 using Serilog;
-using System.Threading.Tasks;
-using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
@@ -17,7 +11,6 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 using ObjectModel.KO;
-using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {

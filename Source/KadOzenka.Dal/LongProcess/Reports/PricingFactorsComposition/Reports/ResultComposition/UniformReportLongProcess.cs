@@ -6,25 +6,26 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComp
 using Microsoft.Practices.ObjectBuilder2;
 using Serilog;
 
-namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
+namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition
 {
-	public class NonUniformReportLongProcess : BaseReportLongProcess<NonUniformReportLongProcess.ReportItem>
+	public class UniformReportLongProcess : BaseReportLongProcess<UniformReportLongProcess.ReportItem>
 	{
-		protected override string ReportName => "Состав данных по характеристикам объектов недвижимости взаимно увязанных разнородными сведениями по различным источникам";
-		protected override string ProcessName => nameof(NonUniformReportLongProcess);
+		protected override string ReportName => "Итоговый состав данных по характеристикам объектов недвижимости";
+		protected override string ProcessName => nameof(UniformReportLongProcess);
 
-		public NonUniformReportLongProcess() : base(Log.ForContext<NonUniformReportLongProcess>())
+		public UniformReportLongProcess() : base(Log.ForContext<UniformReportLongProcess>())
 		{
+			
 		}
 
 
 		protected override List<string> GenerateReportReportRow(int index, ReportItem item)
 		{
 			var attributesInfo = new List<string>();
-			item.FullAttributes?.ForEach(attribute =>
+			item.FullAttributes.ForEach(x =>
 			{
-				attributesInfo.Add(attribute.Name);
-				attribute.RegisterNames.ForEach(registerName => attributesInfo.Add(registerName));
+				attributesInfo.Add(x.Name);
+				attributesInfo.Add(x.RegisterName);
 			});
 			var values = new List<string> { (index + 1).ToString(), item.CadastralNumber };
 			values.AddRange(attributesInfo);
@@ -47,12 +48,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				Header = "Кадастровый номер",
 				Width = 4
 			};
-			var columns = new List<GbuReportService.Column> { sequentialNumberColumn, cadastralNumberColumn };
 
 			var maxNumberOfAttributes = info.Max(x => x.FullAttributes?.Count) ?? 0;
-			if (maxNumberOfAttributes == 0)
-				return columns;
-			var maxNumberOfRegisters = info.SelectMany(x => x.FullAttributes.Select(r => r.RegisterNames?.Count ?? 0)).Max();
+			var columns = new List<GbuReportService.Column>(maxNumberOfAttributes + 2) { sequentialNumberColumn, cadastralNumberColumn };
 
 			//2 - чтобы учесть колонки с номером по порядку и КН
 			var columnWidth = 8;
@@ -65,45 +63,34 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 					Index = columnIndex,
 					Width = columnWidth
 				};
-				columns.Add(characteristicColumn);
-
-				var registerColumnsIndex = characteristicColumn.Index + 1;
-				for (var j = 0; j < maxNumberOfRegisters; j++)
+				var sourceColumn = new GbuReportService.Column
 				{
-					var sourceColumn = new GbuReportService.Column
-					{
-						Header = $"Итоговый источник информации {j + 1}",
-						Index = registerColumnsIndex,
-						Width = columnWidth
-					};
-					columns.Add(sourceColumn);
-					registerColumnsIndex++;
-				}
+					Header = $"Итоговый источник информации {i + 1}",
+					Index = characteristicColumn.Index + 1,
+					Width = columnWidth
+				};
 
-				columnIndex += registerColumnsIndex;
+				columns.Add(characteristicColumn);
+				columns.Add(sourceColumn);
+
+				columnIndex += 2;
 			}
 
 			return columns;
 		}
 
-
 		#region Entities
-
-		public class SameAttributes
-		{
-			public string Name { get; set; }
-			public List<string> RegisterNames { get; set; }
-		}
 
 		public class ReportItem
 		{
-			private List<SameAttributes> _fullAttributes;
+			private List<Attribute> _fullAttributes;
 
 			public string CadastralNumber { get; set; }
 			public long[] Attributes { get; set; }
-			public List<SameAttributes> FullAttributes => _fullAttributes ?? (_fullAttributes = GetNotUniqueAttributes());
+			public List<Attribute> FullAttributes => _fullAttributes ?? (_fullAttributes = GetUniqueAttributes());
 
-			private List<SameAttributes> GetNotUniqueAttributes()
+
+			private List<Attribute> GetUniqueAttributes()
 			{
 				var objectAttributes = new List<Attribute>();
 				Attributes?.ForEach(attributeId =>
@@ -122,33 +109,35 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				});
 
 				if (objectAttributes.Count == 0)
-					return new List<SameAttributes>();
+					return new List<Attribute>();
 
 				var gbuAttributesExceptRosreestr = objectAttributes
 					.Where(x => x.RegisterId != DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 				var rosreestrAttributes = objectAttributes
 					.Where(x => x.RegisterId == DataCompositionByCharacteristicsService.RosreestrRegisterId).ToList();
 
-				var notUniqueAttribute = new List<SameAttributes>();
+				//симметрическая разность множеств
+				var uniqueAttributes = new List<Attribute>();
+				//отбираем уникальные аттрибуты из РР
 				rosreestrAttributes.ForEach(rr =>
 				{
-					var sameAttributes = gbuAttributesExceptRosreestr.Where(gbu =>
-						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase)).ToList();
-					if (sameAttributes.Count == 0)
-						return;
+					var isSameAttributesExist = gbuAttributesExceptRosreestr.Any(gbu =>
+						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
 
-					var registerNames = new List<string> { rr.RegisterName };
-					registerNames.AddRange(sameAttributes.Select(x => x.RegisterName));
-					var attribute = new SameAttributes
-					{
-						Name = rr.Name,
-						RegisterNames = registerNames
-					};
+					if (!isSameAttributesExist)
+						uniqueAttributes.Add(rr);
+				});
+				//отбираем уникальные аттрибуты из всех источников кроме РР
+				gbuAttributesExceptRosreestr.ForEach(gbu =>
+				{
+					var isSameAttributesExist = rosreestrAttributes.Any(rr =>
+						gbu.Name.StartsWith(rr.Name, StringComparison.InvariantCultureIgnoreCase));
 
-					notUniqueAttribute.Add(attribute);
+					if (!isSameAttributesExist)
+						uniqueAttributes.Add(gbu);
 				});
 
-				return notUniqueAttribute;
+				return uniqueAttributes;
 			}
 		}
 
