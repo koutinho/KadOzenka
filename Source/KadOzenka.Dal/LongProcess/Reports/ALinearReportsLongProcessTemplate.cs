@@ -49,8 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			_queryManager.SetBaseToken(cancellationToken);
-			Logger.Debug("Начат фоновый процесс.");
-			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Входные параметры");
+			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Начат фоновый процесс. Входные параметры");
 			WorkerCommon.SetProgress(processQueue, 0);
 
 			var parameters = processQueue.Parameters?.DeserializeFromXml<TInputParameters>();

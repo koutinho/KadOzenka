@@ -1,120 +1,112 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
-using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 {
-	public class BaseReportLongProcess : LongProcessForReportsBase
+	public class BaseReportLongProcess : ALinearReportsLongProcessTemplate<ReportItem, ReportLongProcessInputParameters>
 	{
-		private int _defaultPackageSize = 200000;
-		private int _defaultThreadsCount = 4;
-
-		private readonly QueryManager _queryManager;
+		private string TaskIdsStr { get; set; }
+		private List<long?> GroupIds { get; set; }
+		private string GroupIdsStr { get; set; }
+		private long CadastralQuarterAttributeId { get; set; }
+		private ICadastralCostDeterminationResultsReport ConcreteReport { get; set; }
+		protected override string ReportName => ConcreteReport?.ReportName;
 		public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
-		private string ReportName { get; set; }
-		private string MessageSubject => $"Отчет '{ReportName}'";
-		private object _locker;
 
 
 		public BaseReportLongProcess() : base(Log.ForContext<BaseReportLongProcess>())
 		{
-			_queryManager = new QueryManager();
-			_locker = new object();
+			
 		}
 
-		public static void AddProcessToQueue(ReportLongProcessInputParameters input)
+
+
+
+		public override void AddToQueue(object input)
 		{
-			if (!AreInputParametersValid(input))
+			var parameters = input as ReportLongProcessInputParameters;
+			if (!AreInputParametersValid(parameters))
 				throw new Exception("Не переданы параметры для построения отчета");
 
 			LongProcessManager.AddTaskToQueue(nameof(BaseReportLongProcess), parameters: input.SerializeToXml());
 		}
 
-		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
-		{
-			_queryManager.SetBaseToken(cancellationToken);
-			Logger.Debug("Начат фоновый процесс.");
-			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Входные параметры");
-			WorkerCommon.SetProgress(processQueue, 0);
 
-			var parameters = processQueue.Parameters?.DeserializeFromXml<ReportLongProcessInputParameters>();
-			if (!AreInputParametersValid(parameters))
+		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		{
+			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
+		}
+
+		protected override ReportsConfig GetProcessConfig()
+		{
+			var defaultPackageSize = 200000;
+			var defaultThreadsCount = 4;
+
+			return GetProcessConfigFromSettings("StateOrIndividualCadastralCostDeterminationResults", defaultPackageSize, defaultThreadsCount);
+		}
+
+		//TODO переделать на общую часть sql строкой
+		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters)
+		{
+			if (GroupIds.Count == 0)
+				return 0;
+
+			return OMUnit.Where(x => inputParameters.TaskIds.Contains((long)x.TaskId) && GroupIds.Contains((long)x.GroupId) &&
+			                         x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+		}
+
+		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
+		{
+			var message = "У заданий на оценку нет единиц оценки, принадлежащих к группе ";
+
+			if (ConcreteReport.GetType() == typeof(StateResultsReport))
 			{
-				NotificationSender.SendNotification(processQueue, MessageSubject, "Не переданы параметры для построения отчета");
-				return;
+				message += $"не {IndividuallyResultsGroupNamePhrase}";
+			}
+			else
+			{
+				message += IndividuallyResultsGroupNamePhrase;
 			}
 
-			var config = GetProcessConfigFromSettings("StateOrIndividualCadastralCostDeterminationResults", _defaultPackageSize, _defaultThreadsCount);
-			var reportType = parameters.Type == ReportType.State ? typeof(StateResultsReport) : typeof(IndividuallyResultsReport);
-			var taskIds = parameters.TaskIds;
-			var taskIdStr = string.Join(',', taskIds);
-			var report = (ICadastralCostDeterminationResultsReport)Activator.CreateInstance(reportType);
-			ReportName = report.ReportName;
-			Logger.Debug("Тип отчета {ReportType}", report.GetType().ToString());
+			return message;
+		}
 
-			var message = string.Empty;
-			try
-			{
-				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
-				{
-					var groupIds = report.GetAvailableGroupIds();
-					var groupIdsStr = string.Join(',', groupIds);
-					Logger.Debug("Найдено {GroupsCount} Групп", groupIds.Count);
+		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		{
+			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
+			CadastralQuarterAttributeId = new GbuCodRegisterService().GetCadastralQuarterFinalAttribute().Id;
+			
+			var reportType = inputParameters.Type == ReportType.State ? typeof(StateResultsReport) : typeof(IndividuallyResultsReport);
+			ConcreteReport = (ICadastralCostDeterminationResultsReport)Activator.CreateInstance(reportType);
+			Logger.Debug("Тип отчета {ReportType}", ConcreteReport.GetType().ToString());
 
-					var unitsCount = OMUnit.Where(x => taskIds.Contains((long)x.TaskId) && groupIds.Contains((long)x.GroupId) &&
-					                                   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
-					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
-					if (unitsCount == 0)
-					{
-						message = "У заданий на оценку нет единиц оценки, принадлежащих к группе ";
-						if (reportType == typeof(StateResultsReport))
-						{
-							message += $"не {IndividuallyResultsGroupNamePhrase}";
-						}
-						else
-						{
-							message += IndividuallyResultsGroupNamePhrase;
-						}
-						return;
-					}
+			GroupIds = ConcreteReport.GetAvailableGroupIds();
+			GroupIdsStr = string.Join(',', GroupIds);
+			Logger.Debug("Найдено {GroupsCount} Групп", GroupIds.Count);
+		}
 
-
-					var localCancelTokenSource = new CancellationTokenSource();
-					var options = new ParallelOptions
-					{
-						CancellationToken = localCancelTokenSource.Token,
-						MaxDegreeOfParallelism = config.ThreadsCount
-					};
-					var cadastralQuarterAttributeId = new GbuCodRegisterService().GetCadastralQuarterFinalAttribute().Id;
-					var numberOfPackages = unitsCount / config.PackageSize + 1;
-					var processedPackageCount = 0;
-					var processedItemsCount = 0;
-					Parallel.For(0, numberOfPackages, options, (i, s) =>
-					{
-						var unitsCondition = $@"where unit.task_id IN ({taskIdStr}) AND 
-									unit.GROUP_ID IN ({groupIdsStr}) AND
+		protected override string GetSql(int packageIndex, int packageSize)
+		{
+			var unitsCondition = $@"where unit.task_id IN ({TaskIdsStr}) AND 
+									unit.GROUP_ID IN ({GroupIdsStr}) AND
 									(unit.PROPERTY_TYPE_CODE <> 2190 or unit.PROPERTY_TYPE_CODE is null)
 										order by unit.id 
-										limit {config.PackageSize} offset {i * config.PackageSize}";
+										limit {packageSize} offset {packageIndex * packageSize}";
 
-						var sql = $@"/*{i}*/ with object_ids as (
+			var sql = $@"/*{packageIndex}*/ with object_ids as (
 									select object_id from ko_unit unit {unitsCondition}
 								),
 								cadastralDistrictAttrValues as (
-									select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {cadastralQuarterAttributeId})
+									select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {CadastralQuarterAttributeId})
 								)
 								SELECT
 									SUBSTRING(COALESCE(cadastralDistrictAttr.attributeValue, unit.CADASTRAL_BLOCK), 0, 6) as CadastralDistrict,
@@ -126,110 +118,23 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 										FROM KO_UNIT unit
 										LEFT JOIN cadastralDistrictAttrValues cadastralDistrictAttr ON unit.object_id=cadastralDistrictAttr.objectId
 										{unitsCondition}";
-						Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 
-
-						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-						List<ReportItem> currentOperations;
-						using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
-						{
-							currentOperations = _queryManager.ExecuteSql<ReportItem>(sql).OrderBy(x => x.CadastralDistrict).ToList();
-							processedItemsCount += currentOperations.Count;
-							Logger.Debug("Выкачено {ProcessedItemsCount} записей", processedItemsCount);
-						}
-
-						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-						using (Logger.TimeOperation("Формирование файла для пакета №{i}", i))
-						{
-							GenerateReport(currentOperations, report);
-						}
-
-						lock (_locker)
-						{
-							processedPackageCount++;
-							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
-						}
-
-						Logger.Debug("Закончена работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
-					});
-				}
-			}
-			catch (OperationCanceledException)
-			{
-				message = "Формирование отчета было отменено пользователем";
-				Logger.Error(message);
-			}
-			catch (Exception exception)
-			{
-				var errorId = ErrorManager.LogError(exception);
-				Logger.Fatal(exception, "Ошибка построения отчета");
-
-				message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
-			}
-			finally
-			{
-				string urlToDownload;
-				using (Logger.TimeOperation("Сохранение zip-файла"))
-				{
-					urlToDownload = CustomReportsService.SaveReport(report.ReportName);
-				}
-
-				SendMessageInternal(processQueue, message, urlToDownload);
-			}
-
-			WorkerCommon.SetProgress(processQueue, 100);
-			Logger.Debug("Закончен фоновый процесс.");
+			return sql;
 		}
 
-
-		#region Support Methods
-
-		private static bool AreInputParametersValid(ReportLongProcessInputParameters parameters)
+		protected override Func<ReportItem, string> GetSortingCondition()
 		{
-			return parameters?.TaskIds != null && parameters.TaskIds.Count != 0;
+			return x => x.CadastralDistrict;
 		}
 
-		private void SendMessageInternal(OMQueue processQueue, string mainMessage, string urlToDownload)
+		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
-			var fullMessage = string.IsNullOrWhiteSpace(urlToDownload)
-				? mainMessage
-				: mainMessage + "<br>" + $@"<a href=""{urlToDownload}"">Скачать результат</a>";
-
-			NotificationSender.SendNotification(processQueue, MessageSubject, fullMessage);
+			return ConcreteReport.GenerateReportHeaders();
 		}
 
-		private void GenerateReport(List<ReportItem> reportItems, ICadastralCostDeterminationResultsReport report)
+		protected override List<object> GenerateReportReportRow(int index, ReportItem item)
 		{
-			var excelFileGenerator = new GemBoxExcelFileGenerator();
-
-			var headerColumns = report.GenerateReportHeaders(reportItems);
-			excelFileGenerator.AddHeaders(headerColumns);
-
-			for (var i = 0; i < reportItems.Count; i++)
-			{
-				var values = report.GenerateReportReportRow(i, reportItems[i]);
-				excelFileGenerator.AddRow(values);
-
-				if (i % 100000 == 0)
-					Logger.Debug("Обрабатывается строка №{i} из {reportItemsCount}.", i, reportItems.Count);
-			}
-
-			excelFileGenerator.SetIndividualWidth(headerColumns);
-			excelFileGenerator.SetStyle();
-
-			//попытка принудительно освободить память
-			reportItems = null;
-			GC.Collect();
-
-			lock (_locker)
-			{
-				using (Logger.TimeOperation("Добавление zip-файла"))
-				{
-					CustomReportsService.AddExcelFileToGeneralZipArchive(excelFileGenerator.GetStream(), report.ReportName);
-				}
-			}
+			return ConcreteReport.GenerateReportReportRow(index, item);
 		}
-
-		#endregion
 	}
 }

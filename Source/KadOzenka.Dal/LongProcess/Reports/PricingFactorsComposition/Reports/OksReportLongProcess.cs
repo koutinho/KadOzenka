@@ -30,6 +30,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		}
 
 
+		public override void AddToQueue(object input)
+		{
+			var parameters = input as ReportLongProcessInputParameters;
+			if (!AreInputParametersValid(parameters))
+				throw new Exception("Не переданы ИД задач");
+
+			LongProcessManager.AddTaskToQueue(nameof(OksReportLongProcess), parameters: parameters.SerializeToXml());
+		}
+
 		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
@@ -56,48 +65,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return "У заданий на оценку нет единиц оценки";
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
-		{
-			return x => x.CadastralNumber;
-		}
-
 		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
-		}
-
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
-		{
-			var tourId = OMTask.Where(x => x.Id == parameters.TaskIds[0]).Select(x => x.TourId).ExecuteFirstOrDefault().TourId.GetValueOrDefault();
-			Logger.Debug("ИД тура '{TourId}'", tourId);
-
-			var baseFolderWithSql = "PricingFactorsComposition";
-			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "OksForLongProcess");
-
-			var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
-			var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
-			var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
-			var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
-			var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
-			var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
-			var location = RosreestrRegisterService.GetLocationAttribute();
-			var address = RosreestrRegisterService.GetAddressAttribute();
-			var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
-			var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
-			var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
-			var objectName = RosreestrRegisterService.GetObjectNameAttribute();
-
-			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
-			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
-			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
-
-			var sqlWithParameters = string.Format(sql, "{0}", commissioningYear.Id,
-				buildYear.Id, formationDate.Id, undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
-				address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
-				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
-
-			return sqlWithParameters;
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -111,6 +82,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return string.Format(BaseSql, unitsCondition);
 		}
 
+		protected override Func<ReportItem, string> GetSortingCondition()
+		{
+			return x => x.CadastralNumber;
+		}
 
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
@@ -276,18 +251,42 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			};
 		}
 
-		public override void AddToQueue(object input)
-		{
-			var parameters = input as ReportLongProcessInputParameters;
-			if (!AreInputParametersValid(parameters))
-				throw new Exception("Не переданы ИД задач");
-
-			LongProcessManager.AddTaskToQueue(nameof(OksReportLongProcess), parameters: parameters.SerializeToXml());
-		}
-
 
 
 		#region Support Methods
+		
+		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		{
+			var tourId = OMTask.Where(x => x.Id == parameters.TaskIds[0]).Select(x => x.TourId).ExecuteFirstOrDefault().TourId.GetValueOrDefault();
+			Logger.Debug("ИД тура '{TourId}'", tourId);
+
+			var baseFolderWithSql = "PricingFactorsComposition";
+			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "OksForLongProcess");
+
+			var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
+			var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+			var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
+			var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+			var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
+			var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
+			var location = RosreestrRegisterService.GetLocationAttribute();
+			var address = RosreestrRegisterService.GetAddressAttribute();
+			var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
+			var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
+			var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
+			var objectName = RosreestrRegisterService.GetObjectNameAttribute();
+
+			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
+
+			var sqlWithParameters = string.Format(sql, "{0}", commissioningYear.Id,
+				buildYear.Id, formationDate.Id, undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
+				address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
+				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
+
+			return sqlWithParameters;
+		}
 
 		private string ProcessDate(string dateStr)
 		{

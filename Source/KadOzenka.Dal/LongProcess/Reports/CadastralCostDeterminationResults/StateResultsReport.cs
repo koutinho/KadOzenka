@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 		    };
 	    }
 
-	    public List<GbuReportService.Column> GenerateReportHeaders(List<ReportItem> info)
+	    public List<GbuReportService.Column> GenerateReportHeaders()
 	    {
 		    var columns = new List<GbuReportService.Column>
 		    {
