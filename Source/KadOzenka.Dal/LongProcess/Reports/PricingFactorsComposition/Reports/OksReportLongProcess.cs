@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
-using Core.Register.LongProcessManagment;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
@@ -17,6 +15,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessInputParameters>
 	{
 		protected override string ReportName => "Состав данных по перечню ОН, подлежащих государственной кадастровой оценке (ОКС)";
+		protected override string ProcessName => nameof(OksReportLongProcess);
 		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		protected string BaseSql { get; set; }
@@ -29,15 +28,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 
-
-		public override void AddToQueue(object input)
-		{
-			var parameters = input as ReportLongProcessInputParameters;
-			if (!AreInputParametersValid(parameters))
-				throw new Exception("Не переданы ИД задач");
-
-			LongProcessManager.AddTaskToQueue(nameof(OksReportLongProcess), parameters: parameters.SerializeToXml());
-		}
 
 		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
 		{

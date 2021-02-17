@@ -590,7 +590,7 @@ namespace KadOzenka.Web.Controllers
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
-			Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess.AddProcessToQueue(inputParameters);
+			new Dal.LongProcess.Reports.CadastralCostDeterminationResults.CadastralCostDeterminationResultsBaseReportLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }

@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
         {
             return OMGroup
 	            .Where(x => !x.GroupName.ToLower()
-		            .Contains(BaseReportLongProcess.IndividuallyResultsGroupNamePhrase)).Execute()
+		            .Contains(CadastralCostDeterminationResultsBaseReportLongProcess.IndividuallyResultsGroupNamePhrase)).Execute()
 	            .Select(x => (long?) x.Id).ToList();
         }
 

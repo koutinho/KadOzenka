@@ -36,6 +36,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		protected abstract bool AreInputParametersValid(TInputParameters inputParameters);
 		protected abstract string ReportName { get; }
+		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
 		protected abstract int GetMaxUnitsCount(TInputParameters inputParameters);
 		protected abstract string GetMessageForReportsWithoutUnits(TInputParameters inputParameters);
@@ -45,6 +46,15 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract string GetSql(int packageIndex, int packageSize);
 		protected virtual void PrepareVariables(TInputParameters inputParameters) { }
 
+
+		public override void AddToQueue(object input)
+		{
+			var parameters = input as TInputParameters;
+			if (!AreInputParametersValid(parameters))
+				throw new Exception("Не переданы параметры для построения отчета");
+
+			LongProcessManager.AddTaskToQueue(ProcessName, parameters: input.SerializeToXml());
+		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{

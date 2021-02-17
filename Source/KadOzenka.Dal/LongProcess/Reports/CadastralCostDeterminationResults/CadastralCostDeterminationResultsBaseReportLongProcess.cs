@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Core.Register.LongProcessManagment;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
@@ -12,7 +10,7 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 {
-	public class BaseReportLongProcess : ALinearReportsLongProcessTemplate<ReportItem, ReportLongProcessInputParameters>
+	public class CadastralCostDeterminationResultsBaseReportLongProcess : ALinearReportsLongProcessTemplate<ReportItem, ReportLongProcessInputParameters>
 	{
 		private string TaskIdsStr { get; set; }
 		private List<long?> GroupIds { get; set; }
@@ -20,25 +18,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 		private long CadastralQuarterAttributeId { get; set; }
 		private ICadastralCostDeterminationResultsReport ConcreteReport { get; set; }
 		protected override string ReportName => ConcreteReport?.ReportName;
+		protected override string ProcessName => nameof(CadastralCostDeterminationResultsBaseReportLongProcess);
 		public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
 
 
-		public BaseReportLongProcess() : base(Log.ForContext<BaseReportLongProcess>())
+		public CadastralCostDeterminationResultsBaseReportLongProcess() : base(Log.ForContext<CadastralCostDeterminationResultsBaseReportLongProcess>())
 		{
 			
 		}
 
-
-
-
-		public override void AddToQueue(object input)
-		{
-			var parameters = input as ReportLongProcessInputParameters;
-			if (!AreInputParametersValid(parameters))
-				throw new Exception("Не переданы параметры для построения отчета");
-
-			LongProcessManager.AddTaskToQueue(nameof(BaseReportLongProcess), parameters: input.SerializeToXml());
-		}
 
 
 		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
