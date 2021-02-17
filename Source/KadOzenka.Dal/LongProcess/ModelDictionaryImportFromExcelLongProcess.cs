@@ -28,6 +28,9 @@ namespace KadOzenka.Dal.LongProcess
 		private IFileStorageManagerWrapper FileStorageManagerWrapper { get; }
 
 
+		/// <summary>
+		/// Конструктор для юнит-тестов
+		/// </summary>
 		public ModelDictionaryImportFromExcelLongProcess(IDictionaryService dictionaryService,
 			IImportDataLogRepository importDataLogRepository, INotificationSender notificationSender, 
 			IWorkerCommonWrapper worker, IFileStorageManagerWrapper fileStorageManagerWrapper,

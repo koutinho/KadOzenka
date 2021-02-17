@@ -32,6 +32,7 @@ namespace KadOzenka.Web.Tests
 		protected Mock<ITourService> TourService { get; set; }
 		protected Mock<IModelingService> ModelingService { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
+		protected Mock<ILongProcessService> LongProcessService { get; set; }
 
 		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
 
@@ -42,6 +43,7 @@ namespace KadOzenka.Web.Tests
 			TourService = new Mock<ITourService>();
 			ModelingService = new Mock<IModelingService>();
 			GbuObjectService = new Mock<IGbuObjectService>();
+			LongProcessService = new Mock<ILongProcessService>();
 
 			ConfigureServices();
 		}
@@ -117,7 +119,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
 			container.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
 			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
-			container.AddTransient(typeof(ILongProcessService), typeof(LongProcessService));
+			container.AddTransient(typeof(ILongProcessService), sp => LongProcessService.Object);
 
 			AddServicesToContainer(container);
 

@@ -1992,6 +1992,19 @@
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Helpers\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Helpers\Messages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\SqlQueries&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\ExcelTemplates&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\Reports&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;" />

@@ -28,6 +28,9 @@ namespace KadOzenka.Dal.LongProcess
 		private IWorkerCommonWrapper Worker { get; }
 
 
+		/// <summary>
+		/// Конструктор для юнит-тестов
+		/// </summary>
 		public TaskForCodLongProcess(ITaskService taskService, IRosreestrRegisterService rosreestrRegisterService, 
 			IGbuObjectService gbuObjectService, IGbuReportService gbuReportService, IUnitRepository unitRepository,
 			IWorkerCommonWrapper worker, INotificationSender notificationSender, ILongProcessProgressLogger logger)

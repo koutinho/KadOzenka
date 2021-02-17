@@ -2,10 +2,12 @@
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
+using Serilog;
 
 namespace KadOzenka.Dal.Tests
 {
@@ -18,6 +20,8 @@ namespace KadOzenka.Dal.Tests
 		protected Mock<IRosreestrRegisterService> RosreestrRegisterService { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
 		protected Mock<IGbuReportService> ReportService { get; set; }
+		protected Mock<ILongProcessService> LongProcessService { get; set; }
+		protected Mock<ILogger> SeqLogger { get; set; }
 
 
 		[SetUp]
@@ -30,6 +34,10 @@ namespace KadOzenka.Dal.Tests
 			RosreestrRegisterService = new Mock<IRosreestrRegisterService>();
 			GbuObjectService = new Mock<IGbuObjectService>();
 			ReportService = new Mock<IGbuReportService>();
+			LongProcessService = new Mock<ILongProcessService>();
+			SeqLogger = new Mock<ILogger>();
+			SeqLogger.Setup(x => x.ForContext(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<bool>()))
+				.Returns(SeqLogger.Object);
 		}
 
 
@@ -42,6 +50,8 @@ namespace KadOzenka.Dal.Tests
 			container.AddTransient(typeof(IFileStorageManagerWrapper), sp => FileStorageManagerWrapper.Object);
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
 			container.AddTransient(typeof(IGbuReportService), sp => ReportService.Object);
+			container.AddTransient(typeof(ILongProcessService), sp => LongProcessService.Object);
+			container.AddTransient(typeof(ILogger), sp => SeqLogger.Object);
 		}
 	}
 }

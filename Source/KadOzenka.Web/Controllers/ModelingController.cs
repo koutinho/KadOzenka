@@ -42,6 +42,7 @@ using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
@@ -294,7 +295,7 @@ namespace KadOzenka.Web.Controllers
 
             var isProcessExists = LongProcessService.HasActiveProcessInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
 			if (isProcessExists)
-				throw new Exception("Процесс сбора данных уже находится в очереди");
+				throw new Exception(Messages.ObjectFormationProcessAlreadyAdded);
 
 			var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
 			////TODO код для отладки
