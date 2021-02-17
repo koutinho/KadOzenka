@@ -12,10 +12,10 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class ZuReportLongProcess : ALinearReportsLongProcessTemplate<ZuReportLongProcess.ReportItem, ReportLongProcessInputParameters>
 	{
-		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ОКС)";
-		protected override string ProcessName => nameof(OksReportLongProcess);
+		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ЗУ)";
+		protected override string ProcessName => nameof(ZuReportLongProcess);
 		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		private string TaskIdsStr { get; set; }
@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		private string BaseSql { get; set; }
 
 
-		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
+		public ZuReportLongProcess() : base(Log.ForContext<ZuReportLongProcess>())
 		{
 			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
@@ -41,16 +41,16 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
 
 			BaseUnitsCondition = $@" where unit.TASK_ID IN ({TaskIdsStr}) AND 
-										unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND 
+										unit.PROPERTY_TYPE_CODE = 4 AND 
 										unit.OBJECT_ID IS NOT NULL ";
 		}
 
 		protected override ReportsConfig GetProcessConfig()
 		{
 			var defaultPackageSize = 200000;
-			var defaultThreadsCount = 3;
+			var defaultThreadsCount = 4;
 
-			return GetProcessConfigFromSettings("PricingFactorsCompositionForOks", defaultPackageSize, defaultThreadsCount);
+			return GetProcessConfigFromSettings("PricingFactorsCompositionForZu", defaultPackageSize, defaultThreadsCount);
 		}
 
 		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters,
@@ -80,6 +80,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
+			var widthForDates = 3;
 			var columns = new List<GbuReportService.Column>
 			{
 				new GbuReportService.Column
@@ -94,53 +95,38 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				},
 				new GbuReportService.Column
 				{
-					Header = "Год ввода в эксплуатацию",
-					Width = 5
+					Header = "Вид использования по документам",
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
-					Header = "Год постройки",
-					Width = 4
+					Header = "Вид использования по классификатору",
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата образования",
-					Width = 4
+					Width = widthForDates
 				},
 				new GbuReportService.Column
 				{
-					Header = "Количество подземных этажей",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Количество этажей",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Материал стен",
-					Width = 4
+					Header = "Категория земель",
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Местоположение",
-					Width = 4
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Адрес",
-					Width = 4
+					Width = 8
 				},
 				new GbuReportService.Column
 				{
-					Header = "Назначение",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование объекта",
-					Width = 4
+					Header = "Наименование земельного участка",
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
@@ -150,58 +136,57 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Тип объекта",
-					Width = 4
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Кадастровый квартал",
-					Width = 4
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Значение кадастровой стоимости",
-					Width = 4
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата определения кадастровой стоимости",
-					Width = 4
+					Width = widthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН",
-					Width = 4
+					Width = widthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата утверждения кадастровой стоимости",
-					Width = 4
+					Width = widthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Номер акта об утверждении кадастровой стоимости",
-					Width = 4
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата акта об утверждении кадастровой стоимости",
-					Width = 4
+					Width = widthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Наименование документа об утверждении кадастровой стоимости",
-					Width = 4
+					Width = 6
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата начала применения кадастровой стоимости",
-					Width = 4
-				}
-				,
+					Width = widthForDates
+				},
 				new GbuReportService.Column
 				{
 					Header = "Дата подачи заявления о пересмотре кадастровой стоимости",
-					Width = 4
+					Width = widthForDates
 				}
 			};
 
@@ -217,16 +202,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			{
 				(index + 1).ToString(),
 				item.CadastralNumber,
-				item.CommissioningYear,
-				item.BuildYear,
-				ProcessDate(item.FormationDate),
-				item.UndergroundFloorsNumber,
-				item.FloorsNumber,
-				item.WallMaterial,
+				item.TypeOfUseByDocuments,
+				item.TypeOfUseByClassifier,
+				item.FormationDate,
+				item.ParcelCategory,
 				item.Location,
 				item.Address,
-				item.Purpose,
-				item.ObjectName,
+				item.ParcelName,
 				item.Square,
 				item.ObjectType,
 				item.CadastralQuartal,
@@ -252,41 +234,25 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			Logger.Debug("ИД тура '{TourId}'", tourId);
 
 			var baseFolderWithSql = "PricingFactorsComposition";
-			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "OksForLongProcess");
+			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "ZuForLongProcess");
 
-			var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
-			var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+			var typeOfUseByDocuments = RosreestrRegisterService.GetTypeOfUseByDocumentsAttribute();
+			var typeOfUseByClassifier = RosreestrRegisterService.GetTypeOfUseByClassifierAttribute();
 			var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
-			var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
-			var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
-			var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
+			var parcelCategory = RosreestrRegisterService.GetParcelCategoryAttribute();
 			var location = RosreestrRegisterService.GetLocationAttribute();
 			var address = RosreestrRegisterService.GetAddressAttribute();
-			var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
-			var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
-			var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
-			var objectName = RosreestrRegisterService.GetObjectNameAttribute();
+			var parcelName = RosreestrRegisterService.GetParcelNameAttribute();
 
 			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
 			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
 			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
-			var sqlWithParameters = string.Format(sql, "{0}", commissioningYear.Id,
-				buildYear.Id, formationDate.Id, undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
-				address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
+			var sqlWithParameters = string.Format(sql, "{0}", typeOfUseByDocuments.Id,
+				typeOfUseByClassifier.Id, formationDate.Id, parcelCategory.Id, location.Id, address.Id, parcelName.Id,
 				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
 			return sqlWithParameters;
-		}
-
-		private string ProcessDate(string dateStr)
-		{
-			if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
-			{
-				dateStr = date.ToString("dd.MM.yyyy");
-			}
-
-			return dateStr;
 		}
 
 		#endregion
@@ -299,21 +265,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			//From Unit
 			public string CadastralNumber { get; set; }
 			public decimal? Square { get; set; }
-
-			//From Rosreestr
-			public string CommissioningYear { get; set; }
-			public string BuildYear { get; set; }
-			public string FormationDate { get; set; }
-			public string UndergroundFloorsNumber { get; set; }
-			public string FloorsNumber { get; set; }
-			public string WallMaterial { get; set; }
-			public string Location { get; set; }
-			public string Address { get; set; }
-			public string Purpose { get; set; }
-			public string ObjectName { get; set; }
-
-			//From Tour Settings
-
 
 			//From KO.CostRosreestr (KO_COST_ROSREESTR)
 			/// <summary>
@@ -352,6 +303,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			/// Дата подачи заявления о пересмотре кадастровой стоимости
 			/// </summary>
 			public DateTime? RevisalStatementDate { get; set; }
+
+			//From Rosreestr
+			public string TypeOfUseByDocuments { get; set; }
+			public string TypeOfUseByClassifier { get; set; }
+			public string FormationDate { get; set; }
+			public string ParcelCategory { get; set; }
+			public string Location { get; set; }
+			public string Address { get; set; }
+			public string ParcelName { get; set; }
+
+			//From Tour Settings
 		}
 
 		#endregion

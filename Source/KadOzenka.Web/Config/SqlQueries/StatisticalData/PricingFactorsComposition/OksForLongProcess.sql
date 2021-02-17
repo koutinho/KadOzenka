@@ -85,20 +85,20 @@ SELECT
 FROM KO_UNIT unit
  	LEFT JOIN KO_COST_ROSREESTR costRosreesrt ON (unit.ID = costRosreesrt.ID_OBJECT)
      --Rosreestr
-    LEFT OUTER JOIN commissioningYearAttrValues commissioningYearAttr ON unit.object_id=commissioningYearAttr.objectId
-    LEFT OUTER JOIN buildYearAttrValues buildYearAttr ON unit.object_id=buildYearAttr.objectId
-    LEFT OUTER JOIN formationDateAttrValues formationDateAttr ON unit.object_id=formationDateAttr.objectId
-    LEFT OUTER JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON unit.object_id=undergroundFloorsNumberAttr.objectId
-    LEFT OUTER JOIN floorsNumberAttrValues floorsNumberAttr ON unit.object_id=floorsNumberAttr.objectId
-    LEFT OUTER JOIN wallMaterialAttrValues wallMaterialAttr ON unit.object_id=wallMaterialAttr.objectId
-    LEFT OUTER JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
-    LEFT OUTER JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
-    LEFT OUTER JOIN buildingPurposeAttrValues buildingPurposeAttr ON unit.object_id=buildingPurposeAttr.objectId
-    LEFT OUTER JOIN placementPurposeAttrValues placementPurposeAttr ON unit.object_id=placementPurposeAttr.objectId
-    LEFT OUTER JOIN constructionPurposeAttrValues constructionPurposeAttr ON unit.object_id=constructionPurposeAttr.objectId
-    LEFT OUTER JOIN objectNameAttrValues objectNameAttr ON unit.object_id=objectNameAttr.objectId
+    LEFT JOIN commissioningYearAttrValues commissioningYearAttr ON unit.object_id=commissioningYearAttr.objectId
+    LEFT JOIN buildYearAttrValues buildYearAttr ON unit.object_id=buildYearAttr.objectId
+    LEFT JOIN formationDateAttrValues formationDateAttr ON unit.object_id=formationDateAttr.objectId
+    LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON unit.object_id=undergroundFloorsNumberAttr.objectId
+    LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON unit.object_id=floorsNumberAttr.objectId
+    LEFT JOIN wallMaterialAttrValues wallMaterialAttr ON unit.object_id=wallMaterialAttr.objectId
+    LEFT JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
+    LEFT JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
+    LEFT JOIN buildingPurposeAttrValues buildingPurposeAttr ON unit.object_id=buildingPurposeAttr.objectId
+    LEFT JOIN placementPurposeAttrValues placementPurposeAttr ON unit.object_id=placementPurposeAttr.objectId
+    LEFT JOIN constructionPurposeAttrValues constructionPurposeAttr ON unit.object_id=constructionPurposeAttr.objectId
+    LEFT JOIN objectNameAttrValues objectNameAttr ON unit.object_id=objectNameAttr.objectId
     --Tour
-    LEFT OUTER JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
-    LEFT OUTER JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
-    LEFT OUTER JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
+    LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
+    LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
+    LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
 {0}
