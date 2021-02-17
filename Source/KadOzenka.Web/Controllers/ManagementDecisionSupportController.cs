@@ -584,7 +584,7 @@ namespace KadOzenka.Web.Controllers
 			};
 
 			////TODO для тестирования
-			//new Dal.LongProcess.Reports.CadastralCostDeterminationResults.BaseReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//new Dal.LongProcess.Reports.CadastralCostDeterminationResults.CadastralCostDeterminationResultsBaseReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()

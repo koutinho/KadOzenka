@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 using KadOzenka.Dal.GbuObject;
@@ -7,7 +9,6 @@ using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
@@ -18,8 +19,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		protected override string ProcessName => nameof(OksReportLongProcess);
 		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
-		protected string BaseSql { get; set; }
-		protected string TaskIdsStr { get; set; }
+		private string TaskIdsStr { get; set; }
+		private string BaseUnitsCondition { get; set; }
+		private string BaseSql { get; set; }
 
 
 		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
@@ -34,6 +36,16 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
+		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		{
+			BaseSql = GetBaseSql(inputParameters);
+			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
+
+			BaseUnitsCondition = $@" where unit.TASK_ID IN ({TaskIdsStr}) AND 
+										unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND 
+										unit.OBJECT_ID IS NOT NULL ";
+		}
+
 		protected override ReportsConfig GetProcessConfig()
 		{
 			var defaultPackageSize = 200000;
@@ -42,12 +54,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return GetProcessConfigFromSettings("PricingFactorsCompositionForOks", defaultPackageSize, defaultThreadsCount);
 		}
 
-		//TODO переделать на общую часть sql строкой
-		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters)
+		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters,
+			QueryManager queryManager)
 		{
-			return OMUnit.Where(x => inputParameters.TaskIds.Contains((long)x.TaskId) &&
-			                                   x.PropertyType_Code != PropertyTypes.Stead &&
-			                                   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
+			return GetMaxUnitsCountInternal(BaseUnitsCondition, queryManager);
 		}
 
 		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
@@ -55,17 +65,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return "У заданий на оценку нет единиц оценки";
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
-		{
-			BaseSql = GetBaseSql(inputParameters);
-			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
-		}
-
 		protected override string GetSql(int packageIndex, int packageSize)
 		{
-			var unitsCondition = $@"where unit.TASK_ID IN ({TaskIdsStr}) AND 
-										unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND 
-										unit.OBJECT_ID IS NOT NULL
+			var unitsCondition = $@"{BaseUnitsCondition}
 										order by unit.id 
 										limit {packageSize} offset {packageIndex * packageSize}";
 

@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract string ReportName { get; }
 		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
-		protected abstract int GetMaxUnitsCount(TInputParameters inputParameters);
+		protected abstract int GetMaxUnitsCount(TInputParameters inputParameters, QueryManager queryManager);
 		protected abstract string GetMessageForReportsWithoutUnits(TInputParameters inputParameters);
 		protected abstract Func<TReportItem, string> GetSortingCondition();
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
@@ -77,7 +77,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				var config = GetProcessConfig();
 				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
 				{
-					var unitsCount = GetMaxUnitsCount(parameters);
+					var unitsCount = GetMaxUnitsCount(parameters, _queryManager);
 					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
 					if (unitsCount == 0)
 					{
@@ -153,6 +153,23 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 
 		#region Support Methods
+
+		//пока неизвестно - все ли линейные отчеты связаны с юнитами
+		protected int GetMaxUnitsCountInternal(string baseUnitsCondition, QueryManager queryManager)
+		{
+			var columnName = "count";
+			var countSql = $@"select count(*) as {columnName} from ko_unit unit {baseUnitsCondition}";
+			var dataSet = queryManager.ExecuteSqlStringToDataSet(countSql);
+
+			var unitCount = 0;
+			var row = dataSet.Tables[0]?.Rows[0];
+			if (row != null)
+			{
+				unitCount = row[columnName].ParseToInt();
+			}
+
+			return unitCount;
+		}
 
 		private void SendMessageInternal(OMQueue processQueue, string mainMessage, string urlToDownload)
 		{
