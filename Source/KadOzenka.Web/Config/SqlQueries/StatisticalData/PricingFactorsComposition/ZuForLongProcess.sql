@@ -1,5 +1,5 @@
 with object_ids as (
-	select unit.object_id from ko_unit unit where unit.task_id IN ({0}) AND unit.PROPERTY_TYPE_CODE = 4 AND unit.OBJECT_ID IS NOT NULL
+	select unit.object_id from ko_unit unit {0}
 ),
 --Rosreestr
 typeOfUseByDocumentsAttrValues as (
@@ -35,7 +35,7 @@ subGroupNumberAttrValues as (
 )
 
 
-SELECT DISTINCT ON (unit.CADASTRAL_NUMBER)
+SELECT
 	unit.CADASTRAL_NUMBER AS CadastralNumber,
 	unit.SQUARE AS Square,
 	costRosreesrt.COSTVALUE AS CostValue,
@@ -62,17 +62,16 @@ SELECT DISTINCT ON (unit.CADASTRAL_NUMBER)
 FROM KO_UNIT unit
  	LEFT JOIN KO_COST_ROSREESTR costRosreesrt ON (unit.ID = costRosreesrt.ID_OBJECT)
      --Rosreestr
-    LEFT OUTER JOIN typeOfUseByDocumentsAttrValues typeOfUseByDocumentsAttr ON unit.object_id=typeOfUseByDocumentsAttr.objectId
-    LEFT OUTER JOIN typeOfUseByClassifierAttrValues typeOfUseByClassifierAttr ON unit.object_id=typeOfUseByClassifierAttr.objectId
-    LEFT OUTER JOIN formationDateAttrValues formationDateAttr ON unit.object_id=formationDateAttr.objectId
-    LEFT OUTER JOIN parcelCategoryAttrValues parcelCategoryAttr ON unit.object_id=parcelCategoryAttr.objectId
-    LEFT OUTER JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
-    LEFT OUTER JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
-    LEFT OUTER JOIN parcelNameAttrValues parcelNameAttr ON unit.object_id=parcelNameAttr.objectId
+    LEFT JOIN typeOfUseByDocumentsAttrValues typeOfUseByDocumentsAttr ON unit.object_id=typeOfUseByDocumentsAttr.objectId
+    LEFT JOIN typeOfUseByClassifierAttrValues typeOfUseByClassifierAttr ON unit.object_id=typeOfUseByClassifierAttr.objectId
+    LEFT JOIN formationDateAttrValues formationDateAttr ON unit.object_id=formationDateAttr.objectId
+    LEFT JOIN parcelCategoryAttrValues parcelCategoryAttr ON unit.object_id=parcelCategoryAttr.objectId
+    LEFT JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
+    LEFT JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
+    LEFT JOIN parcelNameAttrValues parcelNameAttr ON unit.object_id=parcelNameAttr.objectId
     --Tour
-    LEFT OUTER JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
-    LEFT OUTER JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
-    LEFT OUTER JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
-WHERE 
-	(unit.TASK_ID IN ({0}) AND unit.PROPERTY_TYPE_CODE = 4 AND unit.OBJECT_ID IS NOT NULL)
+    LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
+    LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
+    LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
+{0}
 
