@@ -7,7 +7,7 @@ var AppData = {
     sandboxKey: "60445215-6d3a-4f88-87fe-8d52b72e5bc9",
     defaultRemoveElements: ["trafficControl", "geolocationControl", "fullscreenControl", "zoomControl"],
     ProxyIp: "GKOPARS-W.cipgs.ru:8888",
-    ProxyIpDev: "localhost:8888"
+    ProxyIpDev: "192.168.3.67:8888"
 };
 
 var MapSettings = {
