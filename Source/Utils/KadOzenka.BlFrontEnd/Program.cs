@@ -54,6 +54,7 @@ using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.Modeling;

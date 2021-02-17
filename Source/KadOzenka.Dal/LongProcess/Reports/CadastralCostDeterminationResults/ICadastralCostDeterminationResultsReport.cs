@@ -10,6 +10,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 
 	    List<long?> GetAvailableGroupIds();
 	    List<object> GenerateReportReportRow(int index, ReportItem item);
-	    List<GbuReportService.Column> GenerateReportHeaders(List<ReportItem> info);
+	    List<GbuReportService.Column> GenerateReportHeaders();
     }
 }

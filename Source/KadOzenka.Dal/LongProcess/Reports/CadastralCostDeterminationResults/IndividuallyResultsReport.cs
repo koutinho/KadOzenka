@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
         {
 	        return OMGroup
 		        .Where(x => x.GroupName.ToLower()
-			        .Contains(BaseReportLongProcess.IndividuallyResultsGroupNamePhrase)).Execute()
+			        .Contains(CadastralCostDeterminationResultsBaseReportLongProcess.IndividuallyResultsGroupNamePhrase)).Execute()
 		        .Select(x => (long?)x.Id).ToList();
         }
 
@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			};
 		}
 
-		public List<GbuReportService.Column> GenerateReportHeaders(List<ReportItem> info)
+		public List<GbuReportService.Column> GenerateReportHeaders()
 		{
 			var columns = new List<GbuReportService.Column>
 			{

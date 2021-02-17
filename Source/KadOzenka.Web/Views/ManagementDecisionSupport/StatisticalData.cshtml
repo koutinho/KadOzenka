@@ -383,9 +383,13 @@
                 openReportViewer(response);
                 return;
             }
-            $("#reportsWithAdditionalConfigurationModalContent").html(response);
-            var modal = $("#reportsWithAdditionalConfigurationModal");
-            ShowModal(modal, '50%', '25%', "Параметры отчета");
+            if (response) {
+                $("#reportsWithAdditionalConfigurationModalContent").html(response);
+                var modal = $("#reportsWithAdditionalConfigurationModal");
+                ShowModal(modal, '50%', '25%', "Параметры отчета");
+            } else {
+                Common.ShowMessage("Процесс поставлен в очередь");
+            }
             
         }).fail(function (response, textStatus, errorThrown) {
             Common.ShowError(response.responseText);

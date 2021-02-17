@@ -15,6 +15,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;

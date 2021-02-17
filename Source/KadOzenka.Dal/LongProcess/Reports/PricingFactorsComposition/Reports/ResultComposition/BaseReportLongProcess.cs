@@ -18,7 +18,7 @@ using ObjectModel.KO;
 using Serilog;
 using SerilogTimings.Extensions;
 
-namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
+namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition
 {
 	public abstract class BaseReportLongProcess<T> : LongProcessForReportsBase where T : class, new()
 	{

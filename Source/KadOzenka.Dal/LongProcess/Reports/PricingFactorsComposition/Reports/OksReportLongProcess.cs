@@ -1,274 +1,85 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using ObjectModel.Core.LongProcess;
 using Serilog;
-using System.Threading.Tasks;
-using Core.ErrorManagment;
-using Core.Register.LongProcessManagment;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
-using ObjectModel.Directory;
 using ObjectModel.KO;
-using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public class OksReportLongProcess : LongProcessForReportsBase
+	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessInputParameters>
 	{
-		private int _defaultPackageSize = 200000;
-		private int _defaultThreadsCount = 3;
-
-		public static readonly string DateFormat = "dd.MM.yyyy";
-		protected readonly string BaseFolderWithSql = "PricingFactorsComposition";
-		private readonly object _locker;
-		public string ReportName => "Состав данных по перечню объектов недвижимости, подлежащих государственной кадастровой оценке (объекты капитального строительства)";
-		private string MessageSubject => $"Отчет '{ReportName}'";
+		protected override string ReportName => "Состав данных по перечню ОН, подлежащих государственной кадастровой оценке (ОКС)";
+		protected override string ProcessName => nameof(OksReportLongProcess);
 		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
-		private readonly QueryManager _queryManager;
+		private string TaskIdsStr { get; set; }
+		private string BaseUnitsCondition { get; set; }
+		private string BaseSql { get; set; }
 
 
 		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
 		{
-			_locker = new object();
-			_queryManager = new QueryManager();
 			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 
-		public override void AddToQueue(object input)
-		{
-			var parameters = input as ReportLongProcessInputParameters;
-			if (!AreInputParametersValid(parameters))
-				throw new Exception("Не переданы ИД задач");
 
-			LongProcessManager.AddTaskToQueue(nameof(OksReportLongProcess), parameters: parameters.SerializeToXml());
+		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		{
+			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
+		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
 		{
-			_queryManager.SetBaseToken(cancellationToken);
-			Logger.Debug("Начат фоновый процесс.");
-			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Входные параметры");
-			WorkerCommon.SetProgress(processQueue, 0);
+			BaseSql = GetBaseSql(inputParameters);
+			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
 
-			var parameters = processQueue.Parameters?.DeserializeFromXml<ReportLongProcessInputParameters>();
-			if (!AreInputParametersValid(parameters))
-			{
-				NotificationSender.SendNotification(processQueue, MessageSubject, "Не переданы параметры для построения отчета");
-				return;
-			}
-
-			var message = string.Empty;
-			try
-			{
-				var config = GetProcessConfigFromSettings("PricingFactorsCompositionForOks", _defaultPackageSize, _defaultThreadsCount);
-				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
-				{
-					var unitsCount = OMUnit.Where(x => parameters.TaskIds.Contains((long)x.TaskId) &&
-													   x.PropertyType_Code != PropertyTypes.Stead &&
-													   x.PropertyType_Code != PropertyTypes.CadastralQuartal).ExecuteCount();
-					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
-					if (unitsCount == 0)
-					{
-						message = "У заданий на оценку нет единиц оценки";
-						return;
-					}
-
-
-					var tourId = OMTask.Where(x => x.Id == parameters.TaskIds[0]).Select(x => x.TourId).ExecuteFirstOrDefault().TourId.GetValueOrDefault();
-					var taskIdStr = string.Join(',', parameters.TaskIds);
-					var baseSql = GetBaseSql(tourId);
-					var localCancelTokenSource = new CancellationTokenSource();
-					var options = new ParallelOptions
-					{
-						CancellationToken = localCancelTokenSource.Token,
-						MaxDegreeOfParallelism = config.ThreadsCount
-					};
-					var numberOfPackages = unitsCount / config.PackageSize + 1;
-					var processedPackageCount = 0;
-					var processedItemsCount = 0;
-					Parallel.For(0, numberOfPackages, options, (i, s) =>
-					{
-						var unitsCondition = $@"where unit.TASK_ID IN ({taskIdStr}) AND 
+			BaseUnitsCondition = $@" where unit.TASK_ID IN ({TaskIdsStr}) AND 
 										unit.PROPERTY_TYPE_CODE <> 4 AND unit.PROPERTY_TYPE_CODE<>2190 AND 
-										unit.OBJECT_ID IS NOT NULL
+										unit.OBJECT_ID IS NOT NULL ";
+		}
+
+		protected override ReportsConfig GetProcessConfig()
+		{
+			var defaultPackageSize = 200000;
+			var defaultThreadsCount = 3;
+
+			return GetProcessConfigFromSettings("PricingFactorsCompositionForOks", defaultPackageSize, defaultThreadsCount);
+		}
+
+		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters,
+			QueryManager queryManager)
+		{
+			return GetMaxUnitsCountInternal(BaseUnitsCondition, queryManager);
+		}
+
+		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
+		{
+			return "У заданий на оценку нет единиц оценки";
+		}
+
+		protected override string GetSql(int packageIndex, int packageSize)
+		{
+			var unitsCondition = $@"{BaseUnitsCondition}
 										order by unit.id 
-										limit {config.PackageSize} offset {i * config.PackageSize}";
+										limit {packageSize} offset {packageIndex * packageSize}";
 
-						var sql = string.Format(baseSql, unitsCondition);
-						Logger.Debug(new Exception(sql), "Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
-
-						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-						List<ReportItem> currentOperations;
-						using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
-						{
-							//TODO
-							currentOperations = _queryManager.ExecuteSql<ReportItem>(sql).OrderBy(x => x.CadastralNumber).ToList();
-							processedItemsCount += currentOperations.Count;
-							Logger.Debug("Выкачено {ProcessedItemsCount} записей", processedItemsCount);
-						}
-
-						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
-						using (Logger.TimeOperation("Формирование файла для пакета №{i}", i))
-						{
-							GenerateReport(currentOperations);
-						}
-
-						lock (_locker)
-						{
-							processedPackageCount++;
-							LongProcessProgressLogger.LogProgress(numberOfPackages, processedPackageCount, processQueue);
-						}
-
-						Logger.Debug("Закончена работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
-					});
-				}
-			}
-			catch (OperationCanceledException)
-			{
-				message = "Формирование отчета было отменено пользователем";
-				Logger.Error(message);
-			}
-			catch (Exception exception)
-			{
-				var errorId = ErrorManager.LogError(exception);
-				Logger.Fatal(exception, "Ошибка построения отчета");
-
-				message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
-			}
-			finally
-			{
-				string urlToDownload;
-				using (Logger.TimeOperation("Сохранение zip-файла"))
-				{
-					urlToDownload = CustomReportsService.SaveReport(ReportName);
-				}
-
-				SendMessageInternal(processQueue, message, urlToDownload);
-			}
-
-			WorkerCommon.SetProgress(processQueue, 100);
-			Logger.Debug("Закончен фоновый процесс.");
+			return string.Format(BaseSql, unitsCondition);
 		}
 
-
-		#region Support Methods
-
-		private bool AreInputParametersValid(ReportLongProcessInputParameters parameters)
+		protected override Func<ReportItem, string> GetSortingCondition()
 		{
-			return parameters?.TaskIds != null && parameters.TaskIds.Count != 0;
+			return x => x.CadastralNumber;
 		}
 
-		private void SendMessageInternal(OMQueue processQueue, string mainMessage, string urlToDownload)
-		{
-			var fullMessage = string.IsNullOrWhiteSpace(urlToDownload)
-				? mainMessage
-				: mainMessage + "<br>" + $@"<a href=""{urlToDownload}"">Скачать результат</a>";
-
-			NotificationSender.SendNotification(processQueue, MessageSubject, fullMessage);
-		}
-
-		private string GetBaseSql(long tourId)
-		{
-			var sql = StatisticalDataService.GetSqlFileContent(BaseFolderWithSql, "OksForLongProcess");
-
-			var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
-			var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
-			var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
-			var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
-			var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
-			var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
-			var location = RosreestrRegisterService.GetLocationAttribute();
-			var address = RosreestrRegisterService.GetAddressAttribute();
-			var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
-			var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
-			var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
-			var objectName = RosreestrRegisterService.GetObjectNameAttribute();
-
-			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
-			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
-			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
-
-			var sqlWithParameters = string.Format(sql, "{0}", commissioningYear.Id,
-				buildYear.Id, formationDate.Id, undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
-				address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
-				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
-
-			return sqlWithParameters;
-		}
-
-		private void GenerateReport(List<ReportItem> reportItems)
-		{
-			var excelFileGenerator = new GemBoxExcelFileGenerator();
-
-			var headerColumns = GenerateReportHeaders();
-			excelFileGenerator.AddHeaders(headerColumns);
-
-			for (var i = 0; i < reportItems.Count; i++)
-			{
-				var values = GenerateReportReportRow(i, reportItems[i]);
-				excelFileGenerator.AddRow(values);
-
-				if (i % 100000 == 0)
-					Logger.Debug("Обрабатывается строка №{i} из {reportItemsCount}.", i, reportItems.Count);
-			}
-
-			excelFileGenerator.SetIndividualWidth(headerColumns);
-			excelFileGenerator.SetStyle();
-
-			//попытка принудительно освободить память
-			reportItems = null;
-			GC.Collect();
-
-			lock (_locker)
-			{
-				using (Logger.TimeOperation("Добавление zip-файла"))
-				{
-					CustomReportsService.AddExcelFileToGeneralZipArchive(excelFileGenerator.GetStream(), ReportName);
-				}
-			}
-		}
-
-		private List<object> GenerateReportReportRow(int index, ReportItem item)
-		{
-			return new List<object>
-			{
-				(index + 1).ToString(),
-				item.CadastralNumber,
-				item.CommissioningYear,
-				item.BuildYear,
-				ProcessDate(item.FormationDate),
-				item.UndergroundFloorsNumber,
-				item.FloorsNumber,
-				item.WallMaterial,
-				item.Location,
-				item.Address,
-				item.Purpose,
-				item.ObjectName,
-				item.Square,
-				item.ObjectType,
-				item.CadastralQuartal,
-				item.CostValue,
-				item.DateValuation,
-				item.DateEntering,
-				item.DateApproval,
-				item.DocNumber,
-				item.DocDate,
-				item.DocName,
-				item.ApplicationDate,
-				item.RevisalStatementDate
-			};
-		}
-
-		private List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
 			var columns = new List<GbuReportService.Column>
 			{
@@ -401,11 +212,79 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return columns;
 		}
 
-		protected string ProcessDate(string dateStr)
+		protected override List<object> GenerateReportReportRow(int index, ReportItem item)
+		{
+			return new List<object>
+			{
+				(index + 1).ToString(),
+				item.CadastralNumber,
+				item.CommissioningYear,
+				item.BuildYear,
+				ProcessDate(item.FormationDate),
+				item.UndergroundFloorsNumber,
+				item.FloorsNumber,
+				item.WallMaterial,
+				item.Location,
+				item.Address,
+				item.Purpose,
+				item.ObjectName,
+				item.Square,
+				item.ObjectType,
+				item.CadastralQuartal,
+				item.CostValue,
+				item.DateValuation,
+				item.DateEntering,
+				item.DateApproval,
+				item.DocNumber,
+				item.DocDate,
+				item.DocName,
+				item.ApplicationDate,
+				item.RevisalStatementDate
+			};
+		}
+
+
+
+		#region Support Methods
+		
+		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		{
+			var tourId = OMTask.Where(x => x.Id == parameters.TaskIds[0]).Select(x => x.TourId).ExecuteFirstOrDefault().TourId.GetValueOrDefault();
+			Logger.Debug("ИД тура '{TourId}'", tourId);
+
+			var baseFolderWithSql = "PricingFactorsComposition";
+			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "OksForLongProcess");
+
+			var commissioningYear = RosreestrRegisterService.GetCommissioningYearAttribute();
+			var buildYear = RosreestrRegisterService.GetBuildYearAttribute();
+			var formationDate = RosreestrRegisterService.GetFormationDateAttribute();
+			var undergroundFloorsNumber = RosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+			var floorsNumber = RosreestrRegisterService.GetFloorsNumberAttribute();
+			var wallMaterial = RosreestrRegisterService.GetWallMaterialAttribute();
+			var location = RosreestrRegisterService.GetLocationAttribute();
+			var address = RosreestrRegisterService.GetAddressAttribute();
+			var buildingPurpose = RosreestrRegisterService.GetBuildingPurposeAttribute();
+			var placementPurpose = RosreestrRegisterService.GetPlacementPurposeAttribute();
+			var constructionPurpose = RosreestrRegisterService.GetConstructionPurposeAttribute();
+			var objectName = RosreestrRegisterService.GetObjectNameAttribute();
+
+			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
+			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
+			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
+
+			var sqlWithParameters = string.Format(sql, "{0}", commissioningYear.Id,
+				buildYear.Id, formationDate.Id, undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
+				address.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, objectName.Id,
+				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
+
+			return sqlWithParameters;
+		}
+
+		private string ProcessDate(string dateStr)
 		{
 			if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
 			{
-				dateStr = date.ToString(DateFormat);
+				dateStr = date.ToString("dd.MM.yyyy");
 			}
 
 			return dateStr;
@@ -413,9 +292,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		#endregion
 
+
 		#region Entities
 
-		private class ReportItem : InfoFromTourSettings
+		public class ReportItem : InfoFromTourSettings
 		{
 			//From Unit
 			public string CadastralNumber { get; set; }
