@@ -38,6 +38,7 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling.Repositories;
@@ -124,6 +125,7 @@ namespace CIPJS
             services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
             services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
             services.AddTransient(typeof(IGbuReportService), typeof(GbuReportService));
+            services.AddTransient(typeof(ILongProcessService), typeof(LongProcessService));
 
             services.AddHttpContextAccessor();
                 services.AddSession(options =>

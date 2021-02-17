@@ -44,13 +44,14 @@ namespace KadOzenka.Web.Controllers
 		private readonly StatisticsReportsWidgetExportService _statisticsReportsWidgetExportService;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly TourService _tourService;
+		private ILongProcessService LongProcessService { get; }
 		private readonly int dataPageSize = 30;
 		private readonly int dataCacheSize = 3000;
 
 		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
             StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
-            StatisticalDataService statisticalDataService)
+            StatisticalDataService statisticalDataService, ILongProcessService longProcessService)
         {
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
@@ -58,7 +59,7 @@ namespace KadOzenka.Web.Controllers
             _statisticsReportsWidgetExportService = statisticsReportsWidgetExportService;
             _tourService = tourService;
             _statisticalDataService = statisticalDataService;
-
+            LongProcessService = longProcessService;
         }
 
         #region MapBuilding

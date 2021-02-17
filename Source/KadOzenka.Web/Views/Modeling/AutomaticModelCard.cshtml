@@ -140,7 +140,7 @@
 <script src="~/js/custom-validation.js"></script>
 <script src="~/js/jquery.fancybox.min.js"></script>
 <script>
-    var hasProcessToFormObjectArrayInQueue = '@Model.HasProcessToFormObjectArrayInQueue' === "True";
+    @*var hasProcessToFormObjectArrayInQueue = '@Model.HasProcessToFormObjectArrayInQueue' === "True";*@
     var hasFormedObjectArray = '@Model.HasFormedObjectArray' === "True";
 
     $(document).ready(function () {
@@ -166,7 +166,7 @@
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
                     icon: 'media-manager',
-                    enable: !hasProcessToFormObjectArrayInQueue,
+                    //enable: !hasProcessToFormObjectArrayInQueue,
                     click: onFormObjectArrayBtnClick
                 },
                 {
@@ -607,7 +607,7 @@
 
     function changeToolBarButtonsClass() {
         var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
-        $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists && !hasProcessToFormObjectArrayInQueue);
+        $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
             $('#editAttributeBtn').addClass('k-state-disabled');

@@ -5,6 +5,7 @@ using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -116,6 +117,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
 			container.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
 			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
+			container.AddTransient(typeof(ILongProcessService), typeof(LongProcessService));
 
 			AddServicesToContainer(container);
 

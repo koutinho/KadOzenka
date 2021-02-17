@@ -7,6 +7,7 @@ using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using DevExpress.CodeParser;
+using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Core.LongProcess;
@@ -28,18 +29,23 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }
         private List<OMModelToMarketObjects> ModelObjects { get; }
+        private ILongProcessService LongProcessService { get; }
         private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
 
         public ObjectFormationForModelingProcess() : base(Log.ForContext<ObjectFormationForModelingProcess>())
         {
 	        ModelObjects = new List<OMModelToMarketObjects>();
+	        LongProcessService = new LongProcessService();
         }
 
 
         public static void AddProcessToQueue(ObjectFormationInputParameters inputParameters)
         {
-	        LongProcessManager.AddTaskToQueue(nameof(ObjectFormationForModelingProcess), parameters: inputParameters.SerializeToXml());
+	        LongProcessManager.AddTaskToQueue(nameof(ObjectFormationForModelingProcess),
+		        objectId: inputParameters.ModelId, 
+                registerId: OMModel.GetRegisterId(),
+		        parameters: inputParameters.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -50,18 +56,21 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			InputParameters = processQueue.Parameters?.DeserializeFromXml<ObjectFormationInputParameters>();
             if (InputParameters == null)
 			{
-				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetMessage(processQueue, Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
 				NotificationSender.SendNotification(processQueue, "Моделирование", "Операция завершена с ошибкой, т.к. нет входных данных.");
 				return;
 			}
             Logger.ForContext("InputParameters", InputParameters, true).Debug("Старт фонового процесса Формирования массива данных для Моделирования");
 
 
-			try
+            try
 			{
 				Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
 				Tour = ModelingService.GetModelTour(Model.GroupId);
+
+				if (LongProcessService.HasActiveProcessInQueue(ProcessId, Model.Id))
+					throw new Exception("Процесс сбора данных уже был запущен ранее");
 
 				var modelAttributes = GetGeneralModelAttributes(Model.Id);
 				AddLog(Queue, $"Найдено {modelAttributes.Count} атрибутов для модели.", logger: Logger);

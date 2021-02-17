@@ -64,13 +64,14 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelingRepository ModelingRepository { get; set; }
+        public ILongProcessService LongProcessService { get; set; }
 
 
         public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
 	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
-	        IModelObjectsService modelObjectsService)
+	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService)
         {
 	        ModelingService = modelingService;
 	        TourFactorService = tourFactorService;
@@ -81,6 +82,7 @@ namespace KadOzenka.Web.Controllers
 	        ModelObjectsRepository = modelObjectsRepository;
 	        ModelingRepository = modelingRepository;
 	        ModelObjectsService = modelObjectsService;
+	        LongProcessService = longProcessService;
         }
 
 
@@ -290,11 +292,11 @@ namespace KadOzenka.Web.Controllers
 			if (modelId == 0)
 				throw new Exception("Не передан ИД модели");
 
-            var isProcessExists = LongProcessService.CheckProcessActiveInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
+            var isProcessExists = LongProcessService.HasActiveProcessInQueue(ObjectFormationForModelingProcess.ProcessId, modelId);
 			if (isProcessExists)
-				throw new Exception("Процесс сбора данных для модели уже находится в очереди");
+				throw new Exception("Процесс сбора данных уже находится в очереди");
 
-			var inputParameters = new ObjectFormationInputParameters {ModelId = modelId};
+			var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
 			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
