@@ -134,7 +134,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				},
 				new GbuReportService.Column
 				{
-					Header = "Назначение",
+					Header = "Назначение здания",
 					Width = 4
 				},
 				new GbuReportService.Column
