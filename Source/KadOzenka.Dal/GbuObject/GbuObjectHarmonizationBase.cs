@@ -108,10 +108,13 @@ namespace KadOzenka.Dal.GbuObject
             Parallel.ForEach(objects, options, obj =>
             {
                 ProcessOneObject(obj, levelsAttributesIds, reportService);
+
+                lock (Locked)
+                {
+	                CurrentCount++;
+                }
             });
             _log.Debug("Обработка объектов завершена");
-
-            _log.Debug("Настройка стилей отчета");
 
             _log.Debug("Сохранение отчета");
             var reportId = reportService.SaveReport();
@@ -223,16 +226,12 @@ namespace KadOzenka.Dal.GbuObject
 
         private void ProcessOneObject(Item item, List<long> levelsAttributeIds, GbuReportService reportService)
         {
-            lock (Locked)
-            {
-	            CurrentCount++;
-                if (CurrentCount <= LogCount)
-                {
-	                _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
-		                .ForContext("ItemDate", item.Date)
-                        .Verbose("Обработка объекта {ItemObjectId}", item.ObjectId);
-                }
-            }
+	        if (CurrentCount <= LogCount)
+	        {
+		        _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
+			        .ForContext("ItemDate", item.Date)
+			        .Verbose("Обработка объекта {ItemObjectId}", item.ObjectId);
+	        }
 
             var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
             foreach (var sourceAttributeId in levelsAttributeIds)

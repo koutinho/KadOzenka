@@ -40,13 +40,13 @@ namespace KadOzenka.Dal.LongProcess
                 //TestLongRunningProcess(settings);
                 LongProcessProgressLogger.StopLogProgress();
 
-                WorkerCommon.SetProgress(processQueue, 100);
-                _log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
-
                 string message = "Операция успешно завершена." +
                                  $@"<a href=""{urlToDownload}"">Скачать результат</a>";
 
                 NotificationSender.SendNotification(processQueue, "Результат Операции Гармонизации", message);
+
+                WorkerCommon.SetProgress(processQueue, 100);
+                _log.Information("Завершение фонового процесса: {ProcessType}", processType.Description);
             }
 			catch (Exception ex)
 			{

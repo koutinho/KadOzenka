@@ -65,7 +65,8 @@ namespace KadOzenka.Dal.Logger
 				return;
 
 			var newProgress = (long)Math.Round(((double)currentCount / maxCount) * 100);
-			if (newProgress != processQueue.Progress)
+			//убираем 100, т.к. после обработки объектов процесс обычно выполняет еще какие-нибудь действия
+			if (newProgress != processQueue.Progress && newProgress != 100)
 				WorkerCommon.SetProgress(processQueue, newProgress);
 		}
 	}
