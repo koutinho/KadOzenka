@@ -1,0 +1,158 @@
+﻿using System;
+using System.Collections.Generic;
+using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using Serilog;
+
+namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
+{
+	public class GroupingReportLongProcess : ALinearReportsLongProcessTemplate<GroupingReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	{
+		protected override string ReportName => "Группировка объектов недвижимости";
+		protected override string ProcessName => nameof(GroupingReportLongProcess);
+		protected StatisticalDataService StatisticalDataService { get; set; }
+		private string TaskIdsStr { get; set; }
+		private string BaseUnitsCondition { get; set; }
+		private string BaseSql { get; set; }
+
+
+		public GroupingReportLongProcess() : base(Log.ForContext<GroupingReportLongProcess>())
+		{
+			StatisticalDataService = new StatisticalDataService();
+		}
+
+
+		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		{
+			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
+		}
+
+		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		{
+			BaseSql = GetBaseSql(inputParameters);
+			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
+
+			BaseUnitsCondition = $@" where unit.TASK_ID IN ({TaskIdsStr}) AND 
+										unit.PROPERTY_TYPE_CODE<>2190 ";
+		}
+
+		protected override ReportsConfig GetProcessConfig()
+		{
+			var defaultPackageSize = 400000;
+			var defaultThreadsCount = 4;
+
+			return GetProcessConfigFromSettings("QualityPricingFactorsEncodingResultsForGrouping", defaultPackageSize, defaultThreadsCount);
+		}
+
+		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters,
+			QueryManager queryManager)
+		{
+			return GetMaxUnitsCountInternal(BaseUnitsCondition, queryManager);
+		}
+
+		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
+		{
+			return "У заданий на оценку нет единиц оценки";
+		}
+
+		protected override string GetSql(int packageIndex, int packageSize)
+		{
+			var unitsCondition = $@"{BaseUnitsCondition}
+										order by unit.id 
+										limit {packageSize} offset {packageIndex * packageSize}";
+
+			return string.Format(BaseSql, unitsCondition);
+		}
+
+		protected override Func<ReportItem, string> GetSortingCondition()
+		{
+			return x => x.CadastralNumber;
+		}
+
+		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		{
+			var columns = new List<GbuReportService.Column>
+			{
+				new GbuReportService.Column
+				{
+					Header = "№ п/п",
+					Width = 3
+				},
+				new GbuReportService.Column
+				{
+					Header = "Тип",
+					Width = 3
+				},
+				new GbuReportService.Column
+				{
+					Header = "Кадастровый номер",
+					Width = 6
+				},
+				new GbuReportService.Column
+				{
+					Header = "Номер подгруппы",
+					Width = 4
+				},
+				new GbuReportService.Column
+				{
+					Header = "Метод оценки",
+					Width = 4
+				}
+			};
+
+			var counter = 0;
+			columns.ForEach(x => x.Index = counter++);
+
+			return columns;
+		}
+
+		protected override List<object> GenerateReportReportRow(int index, ReportItem item)
+		{
+			return new List<object>
+			{
+				(index + 1).ToString(),
+				item.PropertyType,
+				item.CadastralNumber,
+				item.GroupNumber,
+				item.ModelCalculationMethod
+			};
+		}
+
+
+
+		#region Support Methods
+
+		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		{
+			var tourId = GetTourFromTasks(parameters.TaskIds);
+
+			var baseFolderWithSql = "QualityPricingFactorsEncodingResults";
+			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "GroupingForLongProcess");
+
+			var codeGroupAttributeId = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId).Id;
+
+			var sqlWithParameters = string.Format(sql, "{0}", codeGroupAttributeId);
+
+			return sqlWithParameters;
+		}
+
+		#endregion
+
+
+		#region Entities
+
+		public class ReportItem : InfoFromTourSettings
+		{
+			public string PropertyType { get; set; }
+			public string CadastralNumber { get; set; }
+			public string GroupNumber { get; set; }
+			public string ModelCalculationMethod { get; set; }
+		}
+
+		#endregion
+	}
+}

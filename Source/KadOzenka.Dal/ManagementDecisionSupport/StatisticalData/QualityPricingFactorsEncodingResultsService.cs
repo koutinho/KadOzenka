@@ -101,30 +101,5 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
 			return result;
 		}
-
-
-		public List<QualityPricingFactorsEncodingResultsGroupingDto> GetGroupingData(long[] taskIdList, long tourId)
-		{
-			if (QueryManager.IsRequestCancellationToken())
-			{
-				return new List<QualityPricingFactorsEncodingResultsGroupingDto>();
-			}
-			var codeGroupAttr = _statisticalDataService.GetGroupAttributeFromTourSettings(tourId);
-			if (codeGroupAttr == null)
-			{
-				throw new Exception($"Для тура {tourId} не заданы настройки '{KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}'");
-			}
-
-			string contents;
-			using (var sr = new StreamReader(_statisticalDataService.GetSqlQueryFileStream(_reportGroupingSqlFileName)))
-			{
-				contents = sr.ReadToEnd();
-			}
-
-			var sql = string.Format(contents, string.Join(", ", taskIdList), codeGroupAttr.Id);
-			var result = QueryManager.ExecuteSql<QualityPricingFactorsEncodingResultsGroupingDto>(sql);
-
-			return result;
-		}
 	}
 }

@@ -10,6 +10,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.KO;
 using Serilog;
 using SerilogTimings.Extensions;
 
@@ -169,6 +170,14 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			}
 
 			return unitCount;
+		}
+
+		protected long GetTourFromTasks(List<long> taskIds)
+		{
+			var tourId = OMTask.Where(x => x.Id == taskIds[0]).Select(x => x.TourId).ExecuteFirstOrDefault().TourId.GetValueOrDefault();
+			Logger.Debug("ИД тура '{TourId}'", tourId);
+
+			return tourId;
 		}
 
 		private void SendMessageInternal(OMQueue processQueue, string mainMessage, string urlToDownload)

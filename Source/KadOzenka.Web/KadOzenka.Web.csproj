@@ -254,6 +254,7 @@
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
     <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
@@ -625,6 +626,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1962,6 +1966,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Constructions.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\get_parent_info_function.sql" />

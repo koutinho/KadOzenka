@@ -248,8 +248,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		
 		private string GetBaseSql(ReportLongProcessInputParameters parameters)
 		{
-			var tourId = OMTask.Where(x => x.Id == parameters.TaskIds[0]).Select(x => x.TourId).ExecuteFirstOrDefault().TourId.GetValueOrDefault();
-			Logger.Debug("ИД тура '{TourId}'", tourId);
+			var tourId = GetTourFromTasks(parameters.TaskIds);
 
 			var baseFolderWithSql = "PricingFactorsComposition";
 			var sql = StatisticalDataService.GetSqlFileContent(baseFolderWithSql, "OksForLongProcess");
