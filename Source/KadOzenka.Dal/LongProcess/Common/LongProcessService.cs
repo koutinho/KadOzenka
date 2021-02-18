@@ -8,6 +8,7 @@ namespace KadOzenka.Dal.LongProcess.Common
 	public interface ILongProcessService
 	{
 		bool HasActiveProcessInQueue(long processId, long? objectId);
+		bool HasOtherActiveProcessInQueue(long queueId, long processId, long? objectId);
 		OMQueue GetProcessActiveQueue(long processId, long? objectId);
 		OMQueue GetLastSuccessfulCompletedQueue(long processId);
 	}
@@ -23,6 +24,11 @@ namespace KadOzenka.Dal.LongProcess.Common
 		public bool HasActiveProcessInQueue(long processId, long? objectId)
 		{
 			return GetBaseQueryToActiveProcessInQueue(processId, objectId).ExecuteExists();
+		}
+
+		public bool HasOtherActiveProcessInQueue(long queueId, long processId, long? objectId)
+		{
+			return GetBaseQueryToActiveProcessInQueue(processId, objectId).And(x => x.Id != queueId).ExecuteExists();
 		}
 
 		public OMQueue GetProcessActiveQueue(long processId, long? objectId)
