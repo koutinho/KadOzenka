@@ -70,6 +70,7 @@ function filter{className}(dataSource, query) {{
 	}}
 
 	if (data) {{
+		$('input.{className}').data('kendoDropDownTree').options.autoClose = false;
 		dataSource.filter({{ field: 'hidden', operator: 'neq', value: true }});
 	}}
 
@@ -94,6 +95,8 @@ function clearDataSource{className}(dataSource) {{
 	}}
 }}
 ";
+			string closeOnClick = $"var checkExist = setInterval(function() {{ if ($('input.{className}').data('kendoDropDownTree') != undefined) {{" +
+				$"$('input.{className}').data('kendoDropDownTree').treeview.bind('select', (e)=> {{ if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} else {{$('input.{className}').data('kendoDropDownTree').close(); clearInterval(checkExist); }}}}, 100);}}}});";
 
 			string onSelected =
 		        $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}";
@@ -102,13 +105,13 @@ function clearDataSource{className}(dataSource) {{
                     $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} if('{onSelectEvent}'){{{onSelectEvent}.call({{e}});}}}}";
             var script = "<script>" +
                          onChange + onFiltering +
-						 $@"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value('');  
+                         $@"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value('');  
 							$('input.{className}').data('kendoDropDownTree').trigger('change'); 
 							$('input.{className}').data('kendoDropDownTree').filterInput.val('');
 							$('input.{className}').data('kendoDropDownTree').trigger('filtering', [ true ]);}}" +
-                         $"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});" +
-						 $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});" +
-                         onSelected + "</script>";
+                         $"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});\n" +
+                         $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});\n" +
+                         closeOnClick + onSelected + "</script>";
 
             List<DropDownTreeItemModel> dataSource = data.ToList();
 
