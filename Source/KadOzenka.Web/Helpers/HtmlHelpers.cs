@@ -21,10 +21,9 @@ namespace KadOzenka.Web.Helpers
 {
 	public static class HtmlHelpers
 	{
-
 		public static IHtmlContent KendoDropDownListTreeWithButton<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable<DropDownTreeItemModel> data, string dataTextField = "Text",
-			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null, string onSelectEvent = null)
+			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null)
 		{
 			ModelExplorer modelExplorer =
 				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
@@ -38,81 +37,8 @@ namespace KadOzenka.Web.Helpers
 				className = className + idPrefix;
 			}
 
-			string onChange =
-					$"function onChange{className}(e) {{if($('#{className}Wrapper').data('kendoTooltip')){{ $('#{className}Wrapper').data('kendoTooltip').options.content = this.text(); " +
-					$"$('#{className}Wrapper').data('kendoTooltip').refresh();}}}}";
-
-			string onFiltering =
-				$@"
-function onFiltering{className}(e) {{
-	e.preventDefault(); 
-	var query = e instanceof Array && e[0] ? '' : e.filter.value;
-	if(query)
-		query = query.toLowerCase();
-	var dataSource = e.sender.dataSource;
-	if(query == '')
-		clearDataSource{className}(dataSource);
-	filter{className}(dataSource, query);
-	e.sender.trigger('onFiltered');
-}}
-function filter{className}(dataSource, query) {{
-	var hasVisibleChildren = false;
-	var data = dataSource instanceof kendo.data.HierarchicalDataSource && dataSource.data();
-
-	for (var i = 0; i < data.length; i++) {{
-		var item = data[i];
-		var text = item.text.toLowerCase();
-		var itemVisible =
-			query === '' || text.indexOf(query) >= 0;
-		var anyVisibleChildren = filter{className}(item.children, query);
-		hasVisibleChildren = hasVisibleChildren || anyVisibleChildren || itemVisible;
-		item.hidden = (!item.hasChildren && !itemVisible) || (item.hasChildren && !anyVisibleChildren);
-	}}
-
-	if (data) {{
-		$('input.{className}').data('kendoDropDownTree').options.autoClose = false;
-		dataSource.filter({{ field: 'hidden', operator: 'neq', value: true }});
-	}}
-
-	return hasVisibleChildren;
-}}
-
-function clearDataSource{className}(dataSource) {{
-	var data = dataSource._data;
-	if(data && data.length > 0){{
-		for(var i = 0; i < data.length; i++){{
-			data[i].dirty = false;
-			data[i].dirtyFields = {{}};
-			data[i].expanded = false;
-			if(data[i].hasChildren){{
-				for(var j = 0; j < data[i].items.length; j++){{
-					data[i].items[j].dirty = false;
-					data[i].items[j].dirtyFields = {{}};
-					data[i].items[j].selected = false;
-				}}
-			}}
-		}}
-	}}
-}}
-";
-			string closeOnClick = $"var checkExist = setInterval(function() {{ if ($('input.{className}').data('kendoDropDownTree') != undefined) {{" +
-				$"$('input.{className}').data('kendoDropDownTree').treeview.bind('select', (e)=> {{ if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} else {{$('input.{className}').data('kendoDropDownTree').close(); clearInterval(checkExist); }}}}, 100);}}}});";
-
-			string onSelected =
-		        $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}}}}";
-            if (onSelectEvent != null)
-                onSelected =
-                    $"function onSelected{className}(e) {{if(e.sender.dataItem(e.node).hasChildren) {{e.preventDefault()}} if('{onSelectEvent}'){{{onSelectEvent}.call({{e}});}}}}";
-            var script = "<script>" +
-                         onChange + onFiltering +
-                         $@"function clearField{className}() {{ $('input.{className}').data('kendoDropDownTree').value('');  
-							$('input.{className}').data('kendoDropDownTree').trigger('change'); 
-							$('input.{className}').data('kendoDropDownTree').filterInput.val('');
-							$('input.{className}').data('kendoDropDownTree').trigger('filtering', [ true ]);}}" +
-                         $"$(document).ready(function(){{$('.add-button-{className}').on('click', {addFunction});}});\n" +
-                         $"$(document).ready(function(){{$('.clear-button-{className}').on('click', clearField{className});}});\n" +
-                         closeOnClick + onSelected + "</script>";
-
+			var script = $"<script src='/js/dropdowns.js'></script><script>" +
+			             $"init('{className}',{addFunction})</script>";
             List<DropDownTreeItemModel> dataSource = data.ToList();
 
 			var clearTag = new TagBuilder("a");
@@ -133,9 +59,9 @@ function clearDataSource{className}(dataSource) {{
 				.Name(name)
 				.Filter(filter)
 				.BindTo(dataSource)
-				.Events(x =>
-					x.Change($"onChange{className}").Select($"onSelected{className}").Filtering($"onFiltering{className}")
-				)
+//				.Events(x =>
+//					x.Select($"onSelected").Filtering("onFiltering")
+//				)
 				.ClearButton(false)
 				.Value(modelExplorer.Model?.ToString());
 

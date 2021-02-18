@@ -2,6 +2,13 @@
 @using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.GbuObject.PartialCharacteristicViewModel
 
+<script>
+function addButton() {
+		$('.existing-attribute-result').hide(500);
+		$('.new-attribute-result').show(500);
+		$('#@(nameof(Model.IsNewAttribute))').val(true);
+	}
+</script>
 @Html.HiddenFor(m => m.IsNewAttribute)
 <div class="form-group existing-attribute-result" style="@(!Model.IsNewAttribute ? "" : "display: none")">
 	<div class="col-sm-2">
@@ -97,11 +104,7 @@
         $('#@nameof(Model.NameNewAttribute)').val("");
 	}
 
-	function addButton() {
-		$('.existing-attribute-result').hide(500);
-		$('.new-attribute-result').show(500);
-		$('#@(nameof(Model.IsNewAttribute))').val(true);
-	}
+
 	$(document).ready(function() {
 		$('#exist-attr').on('click',
 			function () {

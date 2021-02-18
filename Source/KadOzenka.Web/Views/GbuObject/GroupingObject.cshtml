@@ -563,7 +563,6 @@
         var filtered = arr.filter(v=>!changedEntries.includes(v));
         filtered.push(dataItem.value);
         blockAlreadySelectedNodes(filtered);
-        $.find('input[class^=Level]').concat($.find('input[class^=Attribute]')).forEach(d=>$(d).data('kendoDropDownTree').close());
     }
 
     function updateStates() {
@@ -574,9 +573,8 @@
 
     function addSelectionHandlersForDropDowns() {
         getDataSource().forEach(function (d) {
-                d.treeview.unbind('select');
+                d.treeview.unbind('select', e => updateSelected(e));
                 d.treeview.bind('select', e => updateSelected(e));
-                d.options.autoClose = false;
             }
         );
 
