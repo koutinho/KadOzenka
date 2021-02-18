@@ -62,13 +62,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return GetProcessConfigFromSettings("StateOrIndividualCadastralCostDeterminationResults", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			if (GroupIds.Count == 0)
 				return 0;
 
-			return GetMaxUnitsCountInternal(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
 		}
 
 		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)

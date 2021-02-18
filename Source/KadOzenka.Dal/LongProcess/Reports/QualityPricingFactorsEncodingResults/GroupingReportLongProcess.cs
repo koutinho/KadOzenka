@@ -48,15 +48,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return GetProcessConfigFromSettings("QualityPricingFactorsEncodingResultsForGrouping", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxUnitsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
 			QueryManager queryManager)
 		{
-			return GetMaxUnitsCountInternal(BaseUnitsCondition, queryManager);
-		}
-
-		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
-		{
-			return "У заданий на оценку нет единиц оценки";
+			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)

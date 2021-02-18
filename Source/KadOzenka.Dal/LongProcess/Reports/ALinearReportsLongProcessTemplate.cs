@@ -39,13 +39,17 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract string ReportName { get; }
 		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
-		protected abstract int GetMaxUnitsCount(TInputParameters inputParameters, QueryManager queryManager);
-		protected abstract string GetMessageForReportsWithoutUnits(TInputParameters inputParameters);
+		protected abstract int GetMaxItemsCount(TInputParameters inputParameters, QueryManager queryManager);
 		protected abstract Func<TReportItem, string> GetSortingCondition();
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
 		protected abstract List<object> GenerateReportReportRow(int index, TReportItem item);
 		protected abstract string GetSql(int packageIndex, int packageSize);
+		
 		protected virtual void PrepareVariables(TInputParameters inputParameters) { }
+		protected virtual string GetMessageForReportsWithoutUnits(TInputParameters inputParameters)
+		{
+			return "У заданий на оценку нет единиц оценки";
+		}
 
 
 		public override void AddToQueue(object input)
@@ -67,7 +71,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			if (!AreInputParametersValid(parameters))
 			{
 				NotificationSender.SendNotification(processQueue, MessageSubject,
-					$"Не переданы параметры для построения отчета '{processQueue.Parameters}'.");
+					$"Неверные параметры для построения отчета '{processQueue.Parameters}'.");
 				return;
 			}
 			PrepareVariables(parameters);
@@ -78,7 +82,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				var config = GetProcessConfig();
 				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
 				{
-					var unitsCount = GetMaxUnitsCount(parameters, _queryManager);
+					var unitsCount = GetMaxItemsCount(parameters, _queryManager);
 					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
 					if (unitsCount == 0)
 					{
@@ -156,7 +160,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		#region Support Methods
 
 		//пока неизвестно - все ли линейные отчеты связаны с юнитами
-		protected int GetMaxUnitsCountInternal(string baseUnitsCondition, QueryManager queryManager)
+		protected int GetMaxUnitsCount(string baseUnitsCondition, QueryManager queryManager)
 		{
 			var columnName = "count";
 			var countSql = $@"select count(*) as {columnName} from ko_unit unit {baseUnitsCondition}";
