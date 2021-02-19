@@ -273,16 +273,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return sqlWithParameters;
 		}
 
-		private string ProcessDate(string dateStr)
-		{
-			if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
-			{
-				dateStr = date.ToString("dd.MM.yyyy");
-			}
-
-			return dateStr;
-		}
-
 		#endregion
 
 

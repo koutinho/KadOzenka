@@ -19,12 +19,8 @@
 </style>
 
 <!-- Модальное окно для отчетов, в которых нужны дополнительные параметры -->
-<div id="reportsWithAdditionalConfigurationModal" style="display: none; padding: 1% 2% 0 2%;">
-    <div class="form-horizontal col-sm-12">
-        <div class="col-sm-12">
-            <div id="reportsWithAdditionalConfigurationModalContent"></div>
-        </div>
-    </div>
+<div id="reportsWithAdditionalConfigurationModal" style="display: none; padding: 1%;">
+    <div id="reportsWithAdditionalConfigurationModalContent"></div>
 </div>
 
 
@@ -386,7 +382,7 @@
             if (response) {
                 $("#reportsWithAdditionalConfigurationModalContent").html(response);
                 var modal = $("#reportsWithAdditionalConfigurationModal");
-                ShowModal(modal, '50%', '25%', "Параметры отчета");
+                ShowModal(modal, '80%', '50%', "Параметры отчета");
             } else {
                 Common.ShowMessage("Процесс поставлен в очередь");
             }

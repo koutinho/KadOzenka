@@ -5,7 +5,6 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
@@ -140,7 +139,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		#region Entities
 
-		public class ReportItem : InfoFromTourSettings
+		public class ReportItem
 		{
 			public string PropertyType { get; set; }
 			public string CadastralNumber { get; set; }

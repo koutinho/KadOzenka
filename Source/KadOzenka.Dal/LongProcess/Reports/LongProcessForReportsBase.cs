@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using Microsoft.Extensions.Configuration;
@@ -55,6 +56,16 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			Logger.ForContext("ResultConfigs", config, true).Debug("Итоговые настройки конфигурации для секции {SectionName}", reportSectionName);
 
 			return config;
+		}
+
+		protected string ProcessDate(string dateStr)
+		{
+			if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
+			{
+				dateStr = date.ToString("dd.MM.yyyy");
+			}
+
+			return dateStr;
 		}
 	}
 }

@@ -75,7 +75,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
-			var widthForDates = 3;
 			var columns = new List<GbuReportService.Column>
 			{
 				new GbuReportService.Column
@@ -101,7 +100,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата образования",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
@@ -146,17 +145,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата определения кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата утверждения кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
@@ -166,7 +165,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата акта об утверждении кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
@@ -176,12 +175,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата начала применения кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата подачи заявления о пересмотре кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				}
 			};
 

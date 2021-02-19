@@ -28,6 +28,8 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		private readonly QueryManager _queryManager;
 		private string MessageSubject => $"Отчет '{ReportName}'";
 
+		protected int ColumnWidthForDates = 3;
+
 		protected ALinearReportsLongProcessTemplate(ILogger logger) : base(logger)
 		{
 			_locker = new object();

@@ -1,5 +1,5 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0})
+	select unit.object_id from ko_unit unit {0}
 ),
 --ROSREESTR ATTRIBUTES
 parcelNameAttrValues as (
@@ -54,7 +54,7 @@ subGroupNumberAttrValues as (
 ),
 
 initial_data as (
-SELECT distinct
+SELECT 
 	--unit.ID,
 	--unit.OBJECT_ID,
     unit.CADASTRAL_NUMBER as CadastralNumber,
@@ -95,13 +95,10 @@ SELECT distinct
             LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
-		WHERE unit.TASK_ID IN ({0})
-        AND
-        (unit.PROPERTY_TYPE_CODE = 4 and unit.OBJECT_ID is not null)
-		ORDER BY unit.CADASTRAL_NUMBER
+		{0}
 )
         
-select DISTINCT ON (CadastralNumber) 
+select
   CadastralNumber, 
   Square, 
   Upks, 

@@ -29,7 +29,8 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 			new Dictionary<long?, string>
 			{
 				{(long) StatisticalDataType.PricingFactorsCompositionForPreviousTours, nameof(ManagementDecisionSupportController.PreviousToursReportConfiguration)},
-				{(long) StatisticalDataType.CadastralCostDeterminationResults, nameof(ManagementDecisionSupportController.CadastralCostDeterminationResultsConfiguration)}
+				{(long) StatisticalDataType.CadastralCostDeterminationResults, nameof(ManagementDecisionSupportController.CadastralCostDeterminationResultsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForParcels, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForZuConfiguration)}
 			};
 
 		private readonly List<long?> _reportsEnabledWithoutTasks = 
