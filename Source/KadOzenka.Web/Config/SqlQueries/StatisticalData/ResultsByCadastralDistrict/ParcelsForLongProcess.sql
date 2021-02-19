@@ -51,9 +51,8 @@ cadastralQuartalAttrValues as (
 ),
 subGroupNumberAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {16})
-),
+)
 
-initial_data as (
 SELECT 
 	--unit.ID,
 	--unit.OBJECT_ID,
@@ -96,28 +95,3 @@ SELECT
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
 		{0}
-)
-        
-select
-  CadastralNumber, 
-  Square, 
-  Upks, 
-  CadastralCost, 
-  ParcelName,
-  Location,
-  Address,
-  FormationDate,
-  ParcelCategory,
-  TypeOfUseByDocuments,
-  TypeOfUseByClassifier,
-  InfoAboutExistenceOfOtherObjects,
-  InfoSource,
-  Segment,
-  UsageTypeCode,
-  UsageTypeName,
-  UsageTypeCodeSource,
-  ObjectType,
-  CadastralQuartal,
-  SubGroupNumber,
-  CadastralDistrict
-from initial_data

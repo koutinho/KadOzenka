@@ -20,6 +20,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
 using Kendo.Mvc;
 using Kendo.Mvc.Infrastructure;
@@ -604,22 +605,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public ActionResult ResultsByCadastralDistrictForZuConfiguration(StatisticalDataModel model)
         {
-	        var gbuAttributes = GbuObjectService.GetGbuAttributesTree()
-		        .Select(x => new DropDownTreeItemModel
-		        {
-			        Value = Guid.NewGuid().ToString(),
-			        Text = x.Text,
-			        Items = x.Items.Select(y => new DropDownTreeItemModel
-			        {
-				        Value = y.Value,
-				        Text = y.Text
-			        }).ToList()
-		        }).ToList();
-
-			var reportConfigurationModel = new ResultsByCadastralDistrictForZuConfigurationModel
+	        var reportConfigurationModel = new ResultsByCadastralDistrictForZuConfigurationModel
 			{
 		        TaskIds = model.TaskFilter,
-		        GbuAttributes = gbuAttributes
+		        GbuAttributes = GetGbuAttributesTree()
 			};
 
 	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrictForZuConfiguration.cshtml", reportConfigurationModel);
@@ -643,7 +632,75 @@ namespace KadOzenka.Web.Controllers
 
 			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForZuReportLongProcess().AddToQueue(inputParameters);
 
-	        return Ok();
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ResultsByCadastralDistrictForBuildingsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new ResultsByCadastralDistrictForBuildingsConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+			};
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrictForBuildingsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessResultsByCadastralDistrictForBuildingsReport(ResultsByCadastralDistrictForBuildingsConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForBuildingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForBuildingsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ResultsByCadastralDistrictForConstructionsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new ResultsByCadastralDistrictForConstructionsConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrictForConstructionsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessResultsByCadastralDistrictForConstructionsReport(ResultsByCadastralDistrictForConstructionsConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+	        ////TODO для тестирования
+	        //new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForConstructionsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+	        //{
+		       // Status_Code = Status.Added,
+		       // Parameters = inputParameters.SerializeToXml()
+	        //}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForConstructionsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
         }
 
 		#endregion

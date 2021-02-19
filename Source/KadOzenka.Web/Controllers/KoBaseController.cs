@@ -127,7 +127,7 @@ namespace KadOzenka.Web.Controllers
                 }).ToList();
         }
 
-        protected IEnumerable<DropDownTreeItemModel> GetGbuAttributesTree()
+        protected List<DropDownTreeItemModel> GetGbuAttributesTree()
         {
 	        return new GbuObjectService().GetGbuAttributesTree()
 		        .Select(x => new DropDownTreeItemModel
@@ -139,7 +139,7 @@ namespace KadOzenka.Web.Controllers
 				        Value = y.Value,
 				        Text = y.Text
 			        }).ToList()
-		        }).AsEnumerable();
+		        }).ToList();
         }
 
         protected FileSize CalculateFileSize(string storageKey, DateTime fileDateOnServer, string fileName)

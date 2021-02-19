@@ -119,15 +119,6 @@
     <Compile Update="FastReports\StatisticalData\QualityPricingFactorsEncodingResults\QualityPricingFactorsEncodingResultsZuReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\BuildingsReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ConstructionsReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ParcelsReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ParkingReport.cs">
       <SubType>Component</SubType>
     </Compile>

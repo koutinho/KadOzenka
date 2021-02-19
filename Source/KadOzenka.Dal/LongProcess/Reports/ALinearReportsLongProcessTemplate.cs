@@ -87,9 +87,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				var config = GetProcessConfig();
 				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
 				{
-					var unitsCount = GetMaxItemsCount(parameters, _queryManager);
-					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
-					if (unitsCount == 0)
+					var maxItemsCount = GetMaxItemsCount(parameters, _queryManager);
+					Logger.Debug("Всего в БД {UnitsCount} ЕО.", maxItemsCount);
+					if (maxItemsCount == 0)
 					{
 						message = GetMessageForReportsWithoutUnits(parameters);
 						return;
@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						CancellationToken = localCancelTokenSource.Token,
 						MaxDegreeOfParallelism = config.ThreadsCount
 					};
-					var numberOfPackages = unitsCount / config.PackageSize + 1;
+					var numberOfPackages = maxItemsCount / config.PackageSize + 1;
 					var processedPackageCount = 0;
 					var processedItemsCount = 0;
 					Parallel.For(0, numberOfPackages, options, (i, s) =>
@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						{
 							currentOperations = _queryManager.ExecuteSql<TReportItem>(sql).OrderBy(GetSortingCondition()).ToList();
 							processedItemsCount += currentOperations.Count;
-							Logger.Debug("Выкачено {ProcessedItemsCount} записей", processedItemsCount);
+							Logger.Debug("Выкачено {ProcessedItemsCount} записей из {MaxItemsCount}", processedItemsCount, maxItemsCount);
 						}
 
 						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);

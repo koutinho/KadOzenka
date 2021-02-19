@@ -30,7 +30,9 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 			{
 				{(long) StatisticalDataType.PricingFactorsCompositionForPreviousTours, nameof(ManagementDecisionSupportController.PreviousToursReportConfiguration)},
 				{(long) StatisticalDataType.CadastralCostDeterminationResults, nameof(ManagementDecisionSupportController.CadastralCostDeterminationResultsConfiguration)},
-				{(long) StatisticalDataType.ResultsByKRForParcels, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForZuConfiguration)}
+				{(long) StatisticalDataType.ResultsByKRForParcels, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForZuConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForBuildings, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForBuildingsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForConstructions, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForConstructionsConfiguration)}
 			};
 
 		private readonly List<long?> _reportsEnabledWithoutTasks = 
