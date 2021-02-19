@@ -9,6 +9,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
@@ -29,11 +30,13 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		private string MessageSubject => $"Отчет '{ReportName}'";
 
 		protected int ColumnWidthForDates = 3;
+		protected StatisticalDataService StatisticalDataService { get; set; }
 
 		protected ALinearReportsLongProcessTemplate(ILogger logger) : base(logger)
 		{
 			_locker = new object();
 			_queryManager = new QueryManager();
+			StatisticalDataService = new StatisticalDataService();
 		}
 
 

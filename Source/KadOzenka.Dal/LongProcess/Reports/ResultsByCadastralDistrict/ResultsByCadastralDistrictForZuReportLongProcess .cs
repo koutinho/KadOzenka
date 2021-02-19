@@ -16,17 +16,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 	{
 		protected override string ReportName => "Результаты в разрезе КР (ЗУ)";
 		protected override string ProcessName => nameof(ResultsByCadastralDistrictForZuReportLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
 
 
-		public ResultsByCadastralDistrictForZuReportLongProcess() : base(
-			Log.ForContext<ResultsByCadastralDistrictForZuReportLongProcess>())
+		public ResultsByCadastralDistrictForZuReportLongProcess() : base(Log.ForContext<ResultsByCadastralDistrictForZuReportLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 

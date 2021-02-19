@@ -16,7 +16,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	{
 		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ОКС)";
 		protected override string ProcessName => nameof(OksReportLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
@@ -25,7 +24,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 

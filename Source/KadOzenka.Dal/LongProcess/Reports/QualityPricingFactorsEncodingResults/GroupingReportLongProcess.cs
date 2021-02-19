@@ -13,7 +13,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 	{
 		protected override string ReportName => "Группировка объектов недвижимости";
 		protected override string ProcessName => nameof(GroupingReportLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
@@ -21,7 +20,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		public GroupingReportLongProcess() : base(Log.ForContext<GroupingReportLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 		}
 
 
