@@ -1,5 +1,5 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0})
+	select unit.object_id from ko_unit unit {0}
 ),
 --ROSREESTR ATTRIBUTES
 commissioningYearAttrValues as (
@@ -69,7 +69,7 @@ subGroupNumberAttrValues as (
 
 
 initial_data as (
-SELECT distinct
+SELECT 
     unit.CADASTRAL_NUMBER as CadastralNumber,
     unit.SQUARE as Square,
 	unit.UPKS as Upks,
@@ -115,14 +115,7 @@ SELECT distinct
             LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
-		WHERE unit.TASK_ID IN ({0})
-        AND
-        (unit.PROPERTY_TYPE_CODE = 11 and unit.OBJECT_ID is not null)
-        --(для тестирования)
-        --Id задачи - 38676792
-		--Id единиц, у которых есть паренты 
-        --and unit.Id=12435691 or unit.Id=1
-		ORDER BY unit.CADASTRAL_NUMBER
+		{0}
 ),
 
 
@@ -131,7 +124,7 @@ parentsInfo as (
 )
        
 
-select DISTINCT ON (CadastralNumber) 
+select 
   CadastralNumber, 
   Square, 
   Upks, 
