@@ -4,9 +4,9 @@ using System.Linq;
 using KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict.Entities;
 using Kendo.Mvc.UI;
 
-namespace KadOzenka.Web.Models.ManagementDecisionSupport
+namespace KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport
 {
-	public class ResultsByCadastralDistrictForZuConfigurationModel : IValidatableObject
+	public class ZuConfigurationModel : IValidatableObject
 	{
 		public long[] TaskIds { get; set; }
 		
