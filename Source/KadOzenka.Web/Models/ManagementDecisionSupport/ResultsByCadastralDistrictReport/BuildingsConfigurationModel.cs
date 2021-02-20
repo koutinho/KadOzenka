@@ -4,9 +4,9 @@ using System.Linq;
 using KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict.Entities;
 using Kendo.Mvc.UI;
 
-namespace KadOzenka.Web.Models.ManagementDecisionSupport
+namespace KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport
 {
-	public class ResultsByCadastralDistrictForConstructionsConfigurationModel : IValidatableObject
+	public class BuildingsConfigurationModel : IValidatableObject
 	{
 		public long[] TaskIds { get; set; }
 		
@@ -64,9 +64,9 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 		}
 
 
-		public InputParametersForConstructions MapToInputParameters()
+		public InputParametersForBuildings MapToInputParameters()
 		{
-			return new InputParametersForConstructions
+			return new InputParametersForBuildings
 			{
 				TaskIds = TaskIds.ToList(),
 				SegmentAttributeId = SegmentAttributeId.GetValueOrDefault(),

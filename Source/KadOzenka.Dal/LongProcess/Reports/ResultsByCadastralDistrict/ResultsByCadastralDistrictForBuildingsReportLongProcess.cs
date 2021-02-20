@@ -238,6 +238,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			};
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета";
+		}
 
 
 		#region Support Methods

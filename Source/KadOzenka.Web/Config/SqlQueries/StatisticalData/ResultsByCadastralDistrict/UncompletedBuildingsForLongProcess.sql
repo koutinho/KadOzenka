@@ -1,5 +1,5 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0})
+	select unit.object_id from ko_unit unit {0}
 ),
 --ROSREESTR ATTRIBUTES
 buildYearAttrValues as (
@@ -62,11 +62,11 @@ cadastralQuartalAttrValues as (
 ),
 subGroupNumberAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {19})
-),
+)
 
 
-initial_data as (
-SELECT distinct
+
+SELECT 
     unit.CADASTRAL_NUMBER as CadastralNumber,
     unit.SQUARE as Square,
 	unit.UPKS as Upks,
@@ -110,34 +110,4 @@ SELECT distinct
             LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
-		WHERE unit.TASK_ID IN ({0})
-        AND
-        (unit.PROPERTY_TYPE_CODE = 8 and unit.OBJECT_ID is not null)
-		ORDER BY unit.CADASTRAL_NUMBER
-)
-        
-select DISTINCT ON (CadastralNumber) 
-  CadastralNumber, 
-  Square, 
-  Upks, 
-  CadastralCost, 
-  BuildYear,
-  FormationDate,
-  UndergroundFloorsNumber,
-  FloorsNumber,
-  WallMaterial,
-  Location,
-  Address,
-  BuildingPurpose,
-  ObjectName,
-  ReadinessPercentage,
-  Segment,
-  UsageTypeName,
-  UsageTypeCode,
-  UsageTypeCodeSource,
-  SubGroupUsageTypeCode,
-  FunctionalSubGroupName,
-  ObjectType,
-  CadastralQuartal,
-  SubGroupNumber
-from initial_data
+		{0}

@@ -1,8 +1,8 @@
 ﻿@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictForBuildingsConfigurationModel
+@model KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport.ConstructionsConfigurationModel
 
 <div class="form-horizontal" style="padding: 2%">
-    @using (Html.BeginForm("ProcessResultsByCadastralDistrictForBuildingsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
+    @using (Html.BeginForm("ProcessResultsByCadastralDistrictForConstructionsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
     {
         if (Model.TaskIds == null || Model.TaskIds.Length == 0)
         {
@@ -95,7 +95,7 @@
 
 
     function processReport() {
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('#getReportForm'), true);
         var form = $('#getReportForm');
         var formObject = Common.Functions.FormToObject(form);
         $.ajax({
@@ -116,7 +116,7 @@
                 Common.ShowError(response.responseText);
             },
             complete: function() {
-                kendo.ui.progress($('body'), false);
+                kendo.ui.progress($('#getReportForm'), false);
             }
         });
     }

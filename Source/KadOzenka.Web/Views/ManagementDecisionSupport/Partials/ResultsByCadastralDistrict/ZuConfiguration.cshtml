@@ -1,8 +1,8 @@
 ﻿@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictForConstructionsConfigurationModel
+@model KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport.ZuConfigurationModel
 
 <div class="form-horizontal" style="padding: 2%">
-    @using (Html.BeginForm("ProcessResultsByCadastralDistrictForConstructionsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
+    @using (Html.BeginForm("ProcessResultsByCadastralDistrictForZuReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
     {
         if (Model.TaskIds == null || Model.TaskIds.Length == 0)
         {
@@ -19,22 +19,28 @@
 
             <div class="form-group">
                 <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.InfoAboutExistenceOfOtherObjectsAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.InfoAboutExistenceOfOtherObjectsAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.InfoSourceAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.InfoSourceAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-5">
                     @Html.CustomLabelFor(m => m.SegmentAttributeId)
                 </div>
                 <div class="col-sm-7">
                     @Html.KendoDropDownListTreeWithButton(m => m.SegmentAttributeId, Model.GbuAttributes)
                 </div>
             </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.UsageTypeNameAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeNameAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-
             <div class="form-group">
                 <div class="col-sm-5">
                     @Html.CustomLabelFor(m => m.UsageTypeCodeAttributeId)
@@ -43,7 +49,14 @@
                     @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeCodeAttributeId, Model.GbuAttributes)
                 </div>
             </div>
-
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.UsageTypeNameAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeNameAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
             <div class="form-group">
                 <div class="col-sm-5">
                     @Html.CustomLabelFor(m => m.UsageTypeCodeSourceAttributeId)
@@ -52,25 +65,6 @@
                     @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeCodeSourceAttributeId, Model.GbuAttributes)
                 </div>
             </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.SubGroupUsageTypeCodeAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.SubGroupUsageTypeCodeAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.FunctionalSubGroupNameAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.FunctionalSubGroupNameAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-           
 
             <div class="form-group">
                 <div class="col-sm-2 col-sm-offset-10">
@@ -95,7 +89,7 @@
 
 
     function processReport() {
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('#getReportForm'), true);
         var form = $('#getReportForm');
         var formObject = Common.Functions.FormToObject(form);
         $.ajax({
@@ -116,7 +110,7 @@
                 Common.ShowError(response.responseText);
             },
             complete: function() {
-                kendo.ui.progress($('body'), false);
+                kendo.ui.progress($('#getReportForm'), false);
             }
         });
     }
