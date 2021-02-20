@@ -49,8 +49,17 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
 		protected abstract List<object> GenerateReportReportRow(int index, TReportItem item);
 		protected abstract string GetSql(int packageIndex, int packageSize);
-		
-		protected virtual void PrepareVariables(TInputParameters inputParameters) { }
+
+		protected virtual void PrepareVariables(TInputParameters inputParameters)
+		{
+
+		}
+
+		protected virtual string GenerateReportTitle()
+		{
+			return string.Empty;
+		}
+
 		protected virtual string GetMessageForReportsWithoutUnits(TInputParameters inputParameters)
 		{
 			return "У заданий на оценку нет единиц оценки";
@@ -203,6 +212,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			var excelFileGenerator = new GemBoxExcelFileGenerator();
 
 			var headerColumns = GenerateReportHeaders();
+			var reportTitle = GenerateReportTitle();
+
+			excelFileGenerator.AddTitle(reportTitle, headerColumns.Count);
 			excelFileGenerator.AddHeaders(headerColumns);
 
 			for (var i = 0; i < reportItems.Count; i++)

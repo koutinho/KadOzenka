@@ -75,6 +75,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			return x => x.CadastralNumber;
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета";
+		}
+
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
 			var columns = new List<GbuReportService.Column>
