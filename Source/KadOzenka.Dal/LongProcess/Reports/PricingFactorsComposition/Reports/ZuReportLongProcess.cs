@@ -5,14 +5,12 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public class ZuReportLongProcess : ALinearReportsLongProcessTemplate<ZuReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class ZuReportLongProcess : ALinearReportsLongProcessTemplate<ZuReportLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ЗУ)";
 		protected override string ProcessName => nameof(ZuReportLongProcess);
@@ -28,12 +26,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -51,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return GetProcessConfigFromSettings("PricingFactorsCompositionForZu", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
@@ -220,7 +218,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		#region Support Methods
 		
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var tourId = GetTourFromTasks(parameters.TaskIds);
 

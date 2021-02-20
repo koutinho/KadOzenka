@@ -10,7 +10,6 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -44,7 +43,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.Re
 
 		public override void AddToQueue(object input)
 		{
-			var parameters = input as ReportLongProcessInputParameters;
+			var parameters = input as ReportLongProcessOnlyTasksInputParameters;
 			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 				throw new Exception("Не переданы ИД задач");
 
@@ -58,7 +57,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.Re
 			Logger.Debug("Начат фоновый процесс.");
 			WorkerCommon.SetProgress(processQueue, 0);
 
-			var parameters = processQueue?.Parameters?.DeserializeFromXml<ReportLongProcessInputParameters>();
+			var parameters = processQueue?.Parameters?.DeserializeFromXml<ReportLongProcessOnlyTasksInputParameters>();
 			if (parameters?.TaskIds == null || parameters.TaskIds.Count == 0)
 			{
 				NotificationSender.SendNotification(processQueue, MessageSubject, "Не переданы ИД задач для построения отчета");

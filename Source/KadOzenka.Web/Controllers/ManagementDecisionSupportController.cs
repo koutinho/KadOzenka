@@ -34,7 +34,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
-using ReportLongProcessInputParameters = KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities.ReportLongProcessInputParameters;
+using ReportLongProcessOnlyTasksInputParameters = KadOzenka.Dal.LongProcess.Reports.ReportLongProcessOnlyTasksInputParameters;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -466,7 +466,7 @@ namespace KadOzenka.Web.Controllers
 			//3. отчеты, которые идут через свои собственные процессы и требуют дополнительных входных параметров - model.IsWithAdditionalConfiguration
 			if (model.IsForBackground)
 			{
-				var parameters = new ReportLongProcessInputParameters
+				var parameters = new ReportLongProcessOnlyTasksInputParameters
 				{
 					TaskIds = model.TaskFilter.ToList()
 				};
