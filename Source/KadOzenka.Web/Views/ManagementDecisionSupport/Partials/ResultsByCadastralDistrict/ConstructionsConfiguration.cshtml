@@ -95,7 +95,7 @@
 
 
     function processReport() {
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('#getReportForm'), true);
         var form = $('#getReportForm');
         var formObject = Common.Functions.FormToObject(form);
         $.ajax({
@@ -116,7 +116,7 @@
                 Common.ShowError(response.responseText);
             },
             complete: function() {
-                kendo.ui.progress($('body'), false);
+                kendo.ui.progress($('#getReportForm'), false);
             }
         });
     }
