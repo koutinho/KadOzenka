@@ -1976,6 +1976,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Parkings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Placements.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildings.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildingsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
   </ItemGroup>

@@ -128,9 +128,6 @@
     <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ResultsByCadastralDistrictBaseReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildingReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalReport.cs">
       <SubType>Component</SubType>
     </Compile>
