@@ -34,7 +34,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
-using ReportLongProcessOnlyTasksInputParameters = KadOzenka.Dal.LongProcess.Reports.ReportLongProcessOnlyTasksInputParameters;
+using ReportLongProcessOnlyTasksInputParameters = KadOzenka.Dal.LongProcess.Reports.Entities.ReportLongProcessOnlyTasksInputParameters;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers

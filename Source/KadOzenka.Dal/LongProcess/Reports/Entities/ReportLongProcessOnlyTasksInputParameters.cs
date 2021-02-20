@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KadOzenka.Dal.LongProcess.Reports
+namespace KadOzenka.Dal.LongProcess.Reports.Entities
 {
 	public class ReportLongProcessOnlyTasksInputParameters
 	{
