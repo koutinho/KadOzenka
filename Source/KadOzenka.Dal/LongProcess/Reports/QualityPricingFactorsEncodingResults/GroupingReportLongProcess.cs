@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
