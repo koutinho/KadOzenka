@@ -10,7 +10,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ОКС)";
 		protected override string ProcessName => nameof(OksReportLongProcess);
@@ -26,12 +26,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -49,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return GetProcessConfigFromSettings("PricingFactorsCompositionForOks", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
@@ -237,7 +237,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		#region Support Methods
 		
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var tourId = GetTourFromTasks(parameters.TaskIds);
 
