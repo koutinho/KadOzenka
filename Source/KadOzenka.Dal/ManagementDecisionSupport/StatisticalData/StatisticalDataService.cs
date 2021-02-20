@@ -16,6 +16,7 @@ using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition;
 using KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults;
+using KadOzenka.Dal.LongProcess.Reports.ResultsForApproval;
 using KadOzenka.Dal.Tours;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -37,7 +38,8 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		        {(long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform, typeof(NonUniformReportLongProcess)},
 		        {(long) StatisticalDataType.PricingFactorsCompositionForOks, typeof(OksReportLongProcess)},
 		        {(long) StatisticalDataType.PricingFactorsCompositionForZu, typeof(ZuReportLongProcess)},
-		        {(long) StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping, typeof(GroupingReportLongProcess)}
+		        {(long) StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping, typeof(GroupingReportLongProcess)},
+		        {(long) StatisticalDataType.ResultsForApproval, typeof(ResultsForApprovalLongProcess)}
 	        };
 
         public StatisticalDataService()
