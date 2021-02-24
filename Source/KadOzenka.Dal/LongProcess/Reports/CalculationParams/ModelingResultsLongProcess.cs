@@ -84,7 +84,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 		protected override string GetSql(int packageIndex, int packageSize)
 		{
 			return $@"{BaseSql}
-					{BaseUnitsCondition}";
+					{BaseUnitsCondition}
+					order by unit.id 
+					limit {packageSize} offset {packageIndex * packageSize}";
 		}
 
 		protected override Func<ReportItem, string> GetSortingCondition()

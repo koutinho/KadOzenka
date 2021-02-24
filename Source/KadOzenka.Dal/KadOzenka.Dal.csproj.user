@@ -62,9 +62,6 @@
     <Compile Update="FastReports\StatisticalData\GeneralizedIndicators\UPKSAverageValuesByCadastralQuartersReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\InfoAboutCadastralCostDeterminingMethodReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\KRSummaryResults\KRSummaryResultsOksReport.cs">
       <SubType>Component</SubType>
     </Compile>
