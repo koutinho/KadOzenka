@@ -63,6 +63,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return x => x.CadastralNumber;
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Группировка объектов недвижимости";
+		}
+
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
 			var columns = new List<GbuReportService.Column>
