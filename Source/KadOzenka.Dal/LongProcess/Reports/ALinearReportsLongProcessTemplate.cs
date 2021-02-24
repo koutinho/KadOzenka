@@ -62,7 +62,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			return string.Empty;
 		}
 
-		protected virtual List<MergedColumns> GenerateReportCommonHeaders()
+		protected virtual List<MergedColumns> GenerateReportMergedHeaders()
 		{
 			return new List<MergedColumns>();
 		}
@@ -219,7 +219,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			var excelFileGenerator = new GemBoxExcelFileGenerator();
 
 			var reportTitle = GenerateReportTitle();
-			var mergedColumnsHeaders = GenerateReportCommonHeaders();
+			var mergedColumnsHeaders = GenerateReportMergedHeaders();
 			var generalColumnsHeaders = GenerateReportHeaders();
 			
 			excelFileGenerator.AddTitle(reportTitle, generalColumnsHeaders.Count);
