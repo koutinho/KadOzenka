@@ -75,6 +75,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 			return x => x.CadastralNumber;
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ОКС)";
+		}
+
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
 			var columns = new List<GbuReportService.Column>

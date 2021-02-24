@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
+using Kendo.Mvc.UI;
 
 namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {
@@ -13,6 +13,8 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 		[Required]
 		[Display(Name = "КН родителя")]
 		public long ParentKnAttributeId { get; set; }
+
+		public List<DropDownTreeItemModel> GbuAttributes { get; set; }
 
 
 		public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

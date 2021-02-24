@@ -812,7 +812,8 @@ namespace KadOzenka.Web.Controllers
         {
 	        var reportConfigurationModel = new KRSummaryResultsOksModel
 	        {
-		        TaskIds = model.TaskFilter
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
 	        };
 
 	        return PartialView("~/Views/ManagementDecisionSupport/Partials/KRSummaryResultsOksConfiguration.cshtml", reportConfigurationModel);
@@ -831,6 +832,13 @@ namespace KadOzenka.Web.Controllers
 		        KladrAttributeId = model.KladrAttributeId,
 		        ParentKnAttributeId = model.ParentKnAttributeId
 	        };
+
+	        ////TODO для тестирования
+//	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+//	        {
+//	        	Status_Code = Status.Added,
+//	        	Parameters = inputParameters.SerializeToXml()
+//	        }, new CancellationToken());
 
 	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().AddToQueue(inputParameters);
 

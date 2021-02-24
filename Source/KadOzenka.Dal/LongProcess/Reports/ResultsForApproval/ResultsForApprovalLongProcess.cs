@@ -4,7 +4,6 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -12,7 +11,7 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 {
-	public class ResultsForApprovalLongProcess : ALinearReportsLongProcessTemplate<ResultsForApprovalLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class ResultsForApprovalLongProcess : ALinearReportsLongProcessTemplate<ResultsForApprovalLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Результаты на утверждение";
 		protected override string ProcessName => nameof(ResultsForApprovalLongProcess);
@@ -28,12 +27,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -50,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 			return GetProcessConfigFromSettings("ResultsForApproval", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
@@ -111,7 +110,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 
 		#region Support Methods
 
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var notCadastralQuarterType = new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code),
 				QSConditionType.NotEqual, (long) PropertyTypes.CadastralQuartal);

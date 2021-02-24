@@ -1,8 +1,8 @@
-﻿@using KadOzenka.Dal.LongProcess.Reports.KRSummaryResults.Entities
+﻿@using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.ManagementDecisionSupport.KRSummaryResultsOksModel
 
 <div class="form-horizontal col-sm-12" style="padding: 5%">
-    @using (Html.BeginForm("ProcessCadastralCostDeterminationResultsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
+    @using (Html.BeginForm("KRSummaryResultsOksConfiguration", "ManagementDecisionSupport", FormMethod.Post, new {id = "getReportForm"}))
     {
         if (Model.TaskIds == null || Model.TaskIds.Length == 0)
         {
@@ -21,13 +21,9 @@
                 <div class="col-sm-2">
                     @Html.LabelFor(x => x.KladrAttributeId)
                 </div>
-            </div>
 
-            <div style="padding-left: 5%">
-                <div class="form-group">
-                    <div class="col-sm-10">
-
-                    </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.KladrAttributeId, Model.GbuAttributes)
                 </div>
             </div>
 
@@ -35,26 +31,21 @@
                 <div class="col-sm-2">
                     @Html.LabelFor(x => x.ParentKnAttributeId)
                 </div>
-            </div>
 
-            <div style="padding-left: 5%">
-                <div class="form-group">
-                    <div class="col-sm-10">
-
-                    </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.ParentKnAttributeId, Model.GbuAttributes)
                 </div>
             </div>
 
 
             <div class="form-group">
                 <div class="col-sm-2 col-sm-offset-10">
-                    <input type="button" id="getReportBtn" class="k-button" value="Сформировать отчет" />
+                    <input type="button" id="getReportBtn" class="k-button" value="Сформировать отчет"/>
                 </div>
             </div>
         }
     }
 </div>
-
 
 
 <script src="~/js/common-modals.js"></script>
