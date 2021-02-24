@@ -27,6 +27,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
 		private List<FactorsService.PricingFactors> GroupedFactors { get; set; }
+		private List<FactorsService.Attribute> AllAttributes { get; set; }
 		private long? ModelId { get; set; }
 		private long GroupId { get; set; }
 
@@ -55,6 +56,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			GroupedFactors = ModelId == null
 				? new List<FactorsService.PricingFactors>()
 				: FactorsService.GetGroupedModelFactors(ModelId.Value, _queryManager);
+			AllAttributes = GroupedFactors.SelectMany(x => x.Attributes).OrderBy(x => x.Name).ToList();
 
 			BaseUnitsCondition = $@" WHERE unit.TASK_ID in ({TaskIdsStr}) and 
 										unit.GROUP_ID= {GroupId} and 
@@ -92,8 +94,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 
 		protected override List<ReportItem> GetReportItems(string sql)
 		{
-			var generalAttributes = GetGeneralAttributes();
-
 			var dataTable = _queryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
 			var items = new List<ReportItem>();
@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 					Square = row[nameof(ReportItem.Square)].ParseToDecimalNullable(),
 					Upks = row[nameof(ReportItem.Upks)].ParseToDecimalNullable(),
 					CadastralCost = row[nameof(ReportItem.CadastralCost)].ParseToDecimalNullable(),
-					Factors = FactorsService.ProcessModelFactors(row, generalAttributes)
+					Factors = FactorsService.ProcessModelFactors(row, AllAttributes)
 				};
 
 				items.Add(item);
@@ -160,7 +160,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			};
 
 			var factors = new List<GbuReportService.Column>();
-			GetGeneralAttributes().ForEach(x =>
+			AllAttributes.ForEach(x =>
 			{
 				factors.Add(new GbuReportService.Column
 				{
@@ -174,17 +174,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 				new GbuReportService.Column
 				{
 					Header = "Площадь",
-					Width = 3
+					Width = ColumnWidthForDecimals
 				},
 				new GbuReportService.Column
 				{
 					Header = "Удельный показатель кадастровой стоимости",
-					Width = 3
+					Width = ColumnWidthForDecimals
 				},
 				new GbuReportService.Column
 				{
 					Header = "Кадастровая стоимость",
-					Width = ColumnWidthForCadastralNumber
+					Width = ColumnWidthForDecimals
 				}
 			};
 
@@ -195,6 +195,31 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			firstPart.ForEach(x => x.Index = counter++);
 
 			return firstPart;
+		}
+
+		protected override List<MergedColumns> GenerateReportMergedHeaders()
+		{
+			if (GroupedFactors.Count == 0)
+				return new List<MergedColumns>();
+
+			var numberOfColumnsBeforeFactors = 5;
+			return new List<MergedColumns>
+			{
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					Text = string.Empty,
+					StartColumnIndex = 0,
+					EndColumnIndex =  numberOfColumnsBeforeFactors - 1
+				},
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					Text = "Значения ценообразующих факторов",
+					StartColumnIndex = numberOfColumnsBeforeFactors,
+					EndColumnIndex =  numberOfColumnsBeforeFactors + AllAttributes.Count - 1
+				}
+			};
 		}
 
 		protected override List<object> GenerateReportReportRow(int index, ReportItem item)
@@ -230,11 +255,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 
 
 		#region Support Methods
-
-		private List<FactorsService.Attribute> GetGeneralAttributes()
-		{
-			return GroupedFactors.SelectMany(x => x.Attributes).OrderBy(x => x.Name).ToList();
-		}
 
 		private string GetBaseSql()
 		{
