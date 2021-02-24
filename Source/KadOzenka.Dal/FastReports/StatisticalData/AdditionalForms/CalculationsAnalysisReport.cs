@@ -76,6 +76,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 		public DataTable GetReportDataTable(List<CalculationsAnalysisReportItem> reportItems)
 		{
 			var dataTable = new DataTable("Data");
+			dataTable.Columns.Add("Number", typeof(string));
 			dataTable.Columns.Add("CadastralNumber", typeof(string));
 			dataTable.Columns.Add("Type", typeof(string));
 			dataTable.Columns.Add("Square", typeof(string));
@@ -105,9 +106,11 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.AdditionalForms
 			dataTable.Columns.Add("CountInYear", typeof(decimal));
 			dataTable.Columns.Add("CountInDays", typeof(decimal));
 
+			var counter = 1;
 			foreach (var item in reportItems)
 			{
-				dataTable.Rows.Add(item.CadastralNumber,
+				dataTable.Rows.Add(counter++,
+					item.CadastralNumber,
 					item.TypeEnum.GetEnumDescription(),
 					item.RosreestrSquareValue,
 					item.ObjectNameTypeOfUse,

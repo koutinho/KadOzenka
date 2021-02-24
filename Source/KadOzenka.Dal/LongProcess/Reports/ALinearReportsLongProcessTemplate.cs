@@ -62,6 +62,11 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			return string.Empty;
 		}
 
+		protected virtual List<MergedColumns> GenerateReportMergedHeaders()
+		{
+			return new List<MergedColumns>();
+		}
+
 		protected virtual string GetMessageForReportsWithoutUnits(TInputParameters inputParameters)
 		{
 			return "У заданий на оценку нет единиц оценки";
@@ -213,11 +218,13 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		{
 			var excelFileGenerator = new GemBoxExcelFileGenerator();
 
-			var headerColumns = GenerateReportHeaders();
 			var reportTitle = GenerateReportTitle();
-
-			excelFileGenerator.AddTitle(reportTitle, headerColumns.Count);
-			excelFileGenerator.AddHeaders(headerColumns);
+			var mergedColumnsHeaders = GenerateReportMergedHeaders();
+			var generalColumnsHeaders = GenerateReportHeaders();
+			
+			excelFileGenerator.AddTitle(reportTitle, generalColumnsHeaders.Count);
+			excelFileGenerator.AddMergedHeaders(mergedColumnsHeaders);
+			excelFileGenerator.AddSeparateColumnsHeaders(generalColumnsHeaders);
 
 			for (var i = 0; i < reportItems.Count; i++)
 			{
@@ -228,7 +235,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 					Logger.Debug("Обрабатывается строка №{i} из {ReportItemsCount}.", i, reportItems.Count);
 			}
 
-			excelFileGenerator.SetIndividualWidth(headerColumns);
+			excelFileGenerator.SetIndividualWidth(generalColumnsHeaders);
 			excelFileGenerator.SetStyle();
 
 			//попытка принудительно освободить память
