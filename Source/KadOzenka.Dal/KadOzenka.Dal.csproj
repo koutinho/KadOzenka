@@ -65,7 +65,6 @@
     <Folder Include="LongProcess\Consts\" />
     <Folder Include="LongProcess\Modeling\" />
     <Folder Include="LongProcess\Modeling\Entities\" />
-    <Folder Include="LongProcess\Reports\AdditionalForms\AnalysisOfCalculations\" />
     <Folder Include="Modeling\Dto\Factors\" />
     <Folder Include="Seman\" />
   </ItemGroup>

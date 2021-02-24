@@ -2,48 +2,26 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculations.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculations
 {
-	public class AnalysisOfCalculationsLongProcess: ALinearReportsLongProcessTemplate<AnalysisOfCalculationsLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
+	public class AnalysisOfCalculationsLongProcess: ALinearReportsLongProcessTemplate<ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		private readonly string _reportSqlFileName = "AdditionalForms_CalculationAnalysis";
 		private readonly GbuCodRegisterService _gbuCodRegisterService;
 		private readonly RosreestrRegisterService _rosreestrRegisterService;
 		private List<long> _taskIdList;
 		private string UnitsConditionToCount { get; set; }
+		public static readonly int PrecisionForDecimalValues = 2;
+		public static readonly string DateFormat = "dd.MM.yyyy";
 
-		public class ReportItem
-		{
-			public string Address { get; set; }
-			public string Location { get; set; }
-			public string EvaluationSubgroup2018 { get; set; }
-			public string Upks2018 { get; set; }
-			public string CadastralCost2018 { get; set; }
-			public string CadastralQuartal2018 { get; set; }
-			public string TaskType { get; set; }
-			public string EvaluationSubgroup { get; set; }
-			public string Upks { get; set; }
-			public string CadastralCost { get; set; }
-			public string CadastralQuartal { get; set; }
-			public string EGRNChangeDate { get; set; }
-			public string Status { get; set; }
-			public string Changes { get; set; }
-			public string MinUpksByCadastralQuartal { get; set; }
-			public string AverageUpksByCadastralQuartal { get; set; }
-			public string MaxUpksByCadastralQuartal { get; set; }
-			public string MinUpksByZone { get; set; }
-			public string AverageUpksByZone { get; set; }
-			public string MaxUpksByZone { get; set; }
-			public string ParticipatingCount { get; set; }
-			public string CountInYear { get; set; }
-			public string CountInDays { get; set; }
-		}
 
 		public AnalysisOfCalculationsLongProcess() : base(Log.ForContext<AnalysisOfCalculationsLongProcess>())
 		{
@@ -79,60 +57,21 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 
 		protected override Func<ReportItem, string> GetSortingCondition()
 		{
-			throw new NotImplementedException();
+			return x => "";
 		}
 
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
-			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "1",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "2",
-					Width = 5
-				},
-				new GbuReportService.Column
-				{
-					Header = "3",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "4",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "5",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "6",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "7",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "8",
-					Width = 4
-				},
-
+			var columns = new List<GbuReportService.Column>();
+			List<string> names = new List<string>{ "№ п/п", "Кадастровый номер", "Тип", "Площадь", "Наименование (для ОКС)/Вид использование (для ЗУ)", "Назначение", "Адрес",
+				"Местоположение", "Оценочная подгруппа 2018","УПКС 2018", "КС 2018", "Кадастровый квартал 2018", "Тип(годовая, ежедневная, обращение)", "Оценочная подгруппа",
+				"УПКС", "КС", "Кадастровый квартал", "Дата изменения в ЕГРН", "Статус", "Изменения", "Минимальное УПКС по КК", "Среднее УПКС по КК", "Максимальное УПКС по КК",
+				"Минимальное УПКС по Зоне", "Среднее УПКС по Зоне", "Максимальное УПКС по Зоне", "Количество раз участие в оценке", "Количество в годовом", "Количество в ежедневках"
 			};
+			names.ForEach(name => columns.Add(new GbuReportService.Column{Header = name, Width = 4}));
+			columns[4].Width = 6;
+			columns[8].Width = 6;
+			columns[13].Width = 6;
 
 			var counter = 0;
 			columns.ForEach(x => x.Index = counter++);
@@ -140,30 +79,100 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 			return columns;
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Анализ расчетов";
+		}
+
+		protected override List<MergedColumns> GenerateReportMergedHeaders()
+		{
+			return new List<MergedColumns>
+			{
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					StartColumnIndex = 0,
+					EndColumnIndex = 6,
+					Text = "Характеристики ОН"
+				},
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					StartColumnIndex = 7,
+					EndColumnIndex = 10,
+					Text = "Отчет ГКО 2018"
+				},
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					StartColumnIndex = 11,
+					EndColumnIndex = 18,
+					Text = "ВУОН"
+				},
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					StartColumnIndex = 19,
+					EndColumnIndex = 25,
+					Text = "Справочная информация"
+				},
+				new MergedColumns
+				{
+					OrderNumber = 1,
+					StartColumnIndex = 26,
+					EndColumnIndex = 28,
+					Text = "Участие в оценке"
+				}
+
+			};
+		}
+
 		protected override List<object> GenerateReportReportRow(int index, ReportItem item)
 		{
 			return new List<object>
 			{
 				(index + 1).ToString(),
+				item.CadastralNumber,
+				item.TypeEnum.GetEnumDescription(),
+				item.RosreestrSquareValue,
+				item.ObjectNameTypeOfUse,
+				item.Purpose,
 				item.Address,
 				item.Location,
 				item.EvaluationSubgroup2018,
-				item.Upks2018,
+				(item.Upks2018.HasValue
+					? Math.Round(item.Upks2018.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
 				item.CadastralCost2018,
-				item.TaskType,
+				item.CadastralQuartal2018,
+				item.TaskTypeEnum.GetEnumDescription(),
 				item.EvaluationSubgroup,
-				item.Upks,
+				(item.Upks.HasValue
+					? Math.Round(item.Upks.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
 				item.CadastralCost,
 				item.CadastralQuartal,
-				item.EGRNChangeDate,
-				item.Status,
+				item.EGRNChangeDate.HasValue ? item.EGRNChangeDate.Value.ToString(DateFormat) : null,
+				item.StatusEnum.GetEnumDescription(),
 				item.Changes,
-				item.MinUpksByCadastralQuartal,
-				item.AverageUpksByCadastralQuartal,
-				item.MaxUpksByCadastralQuartal,
-				item.MinUpksByZone,
-				item.AverageUpksByZone,
-				item.MaxUpksByZone,
+				(item.MinUpksByCadastralQuartal.HasValue
+					? Math.Round(item.MinUpksByCadastralQuartal.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
+				(item.AverageUpksByCadastralQuartal.HasValue
+					? Math.Round(item.AverageUpksByCadastralQuartal.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
+				(item.MaxUpksByCadastralQuartal.HasValue
+					? Math.Round(item.MaxUpksByCadastralQuartal.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
+				(item.MinUpksByZone.HasValue
+					? Math.Round(item.MinUpksByZone.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
+				(item.AverageUpksByZone.HasValue
+					? Math.Round(item.AverageUpksByZone.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
+				(item.MaxUpksByZone.HasValue
+					? Math.Round(item.MaxUpksByZone.Value, PrecisionForDecimalValues)
+					: (decimal?)null),
 				item.ParticipatingCount,
 				item.CountInYear,
 				item.CountInDays
@@ -174,7 +183,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 		{
 			_taskIdList = inputParameters.TaskIds;
 
-			UnitsConditionToCount = $"where TASK_ID in {string.Join(", ", _taskIdList)} and property_type_code<>2190";
+			UnitsConditionToCount = $"where TASK_ID in ({string.Join(", ", _taskIdList)}) and property_type_code<>2190";
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)

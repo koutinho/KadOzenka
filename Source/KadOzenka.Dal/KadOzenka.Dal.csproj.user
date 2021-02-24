@@ -29,9 +29,6 @@
     <Compile Update="FastReports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationsAnalysisReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationStatisticsReport.cs">
       <SubType>Component</SubType>
     </Compile>
