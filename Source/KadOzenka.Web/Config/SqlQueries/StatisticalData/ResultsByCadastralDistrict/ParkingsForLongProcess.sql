@@ -1,8 +1,8 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0})
+	select unit.object_id from ko_unit unit {0}
 ),
 --ROSREESTR ATTRIBUTES
-ñommissioningYearAttrValues as (
+commissioningYearAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {1})
 ),
 buildYearAttrValues as (
@@ -69,12 +69,12 @@ subGroupNumberAttrValues as (
 
 
 initial_data as (
-SELECT distinct
+SELECT 
     unit.CADASTRAL_NUMBER as CadastralNumber,
     unit.SQUARE as Square,
 	unit.UPKS as Upks,
 	unit.CADASTRAL_COST as CadastralCost,
-	ñommissioningYearAttr.attributeValue as ÑommissioningYear,
+	commissioningYearAttr.attributeValue as CommissioningYear,
     buildYearAttr.attributeValue as BuildYear,
     undergroundFloorsNumberAttr.attributeValue as UndergroundFloorsNumber,
     floorsNumberAttr.attributeValue as FloorsNumber,
@@ -95,7 +95,7 @@ SELECT distinct
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
 		FROM KO_UNIT unit
-			LEFT JOIN ñommissioningYearAttrValues ñommissioningYearAttr ON unit.object_id=ñommissioningYearAttr.objectId
+			LEFT JOIN commissioningYearAttrValues commissioningYearAttr ON unit.object_id=commissioningYearAttr.objectId
             LEFT JOIN buildYearAttrValues buildYearAttr ON unit.object_id=buildYearAttr.objectId
             LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON unit.object_id=undergroundFloorsNumberAttr.objectId
             LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON unit.object_id=floorsNumberAttr.objectId
@@ -115,10 +115,7 @@ SELECT distinct
             LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
-		WHERE unit.TASK_ID IN ({0})
-        AND
-        (unit.PROPERTY_TYPE_CODE = 6 and unit.OBJECT_ID is not null)    
-		ORDER BY unit.CADASTRAL_NUMBER
+		{0}
 ),
 
 
@@ -127,12 +124,12 @@ parentsInfo as (
 )
        
 
-select DISTINCT ON (CadastralNumber) 
+select 
   CadastralNumber, 
   Square, 
   Upks, 
   CadastralCost, 
-  ÑommissioningYear,
+  CommissioningYear,
   BuildYear,
   UndergroundFloorsNumber,
   FloorsNumber,
