@@ -850,6 +850,8 @@ namespace ObjectModel.KO
     }
     public partial class OMGroup
     {
+	    public string FullGroupName => $"{Number}. {GroupName}";
+
         static readonly ILogger _log = Serilog.Log.ForContext<OMGroup>();
 
         public static int? GetFactorReestrId(OMGroup current)
