@@ -69,6 +69,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return x => x.CadastralNumber;
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Состав данных по перечню объектов недвижимости, подлежащих государственной кадастровой оценке (земельные участки)";
+		}
+
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
 			var columns = new List<GbuReportService.Column>
