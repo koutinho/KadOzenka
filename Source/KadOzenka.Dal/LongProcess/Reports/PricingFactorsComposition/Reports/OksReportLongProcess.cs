@@ -5,18 +5,15 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ОКС)";
 		protected override string ProcessName => nameof(OksReportLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
@@ -25,17 +22,16 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -53,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return GetProcessConfigFromSettings("PricingFactorsCompositionForOks", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
@@ -241,7 +237,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		#region Support Methods
 		
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var tourId = GetTourFromTasks(parameters.TaskIds);
 
@@ -271,16 +267,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
 			return sqlWithParameters;
-		}
-
-		private string ProcessDate(string dateStr)
-		{
-			if (!string.IsNullOrWhiteSpace(dateStr) && DateTime.TryParse(dateStr, out var date))
-			{
-				dateStr = date.ToString("dd.MM.yyyy");
-			}
-
-			return dateStr;
 		}
 
 		#endregion

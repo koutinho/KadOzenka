@@ -30,6 +30,12 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 			{
 				{(long) StatisticalDataType.PricingFactorsCompositionForPreviousTours, nameof(ManagementDecisionSupportController.PreviousToursReportConfiguration)},
 				{(long) StatisticalDataType.CadastralCostDeterminationResults, nameof(ManagementDecisionSupportController.CadastralCostDeterminationResultsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForParcels, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForZuConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForBuildings, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForBuildingsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForConstructions, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForConstructionsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForUncompletedBuildings, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForUncompletedBuildingsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForPlacements, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForPlacementsConfiguration)},
+				{(long) StatisticalDataType.ResultsByKRForParking, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForParkingsConfiguration)},
 				{(long) StatisticalDataType.KRSummaryResultsOks, nameof(ManagementDecisionSupportController.KRSummaryResultsOksConfiguration)},
 			};
 

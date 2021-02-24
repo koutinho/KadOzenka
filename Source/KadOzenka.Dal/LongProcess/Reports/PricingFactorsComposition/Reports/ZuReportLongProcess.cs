@@ -5,18 +5,15 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
-	public class ZuReportLongProcess : ALinearReportsLongProcessTemplate<ZuReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class ZuReportLongProcess : ALinearReportsLongProcessTemplate<ZuReportLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Состав данных по перечню объектов недвижимости (ЗУ)";
 		protected override string ProcessName => nameof(ZuReportLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
@@ -25,17 +22,16 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		public ZuReportLongProcess() : base(Log.ForContext<ZuReportLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -53,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return GetProcessConfigFromSettings("PricingFactorsCompositionForZu", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
@@ -73,9 +69,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return x => x.CadastralNumber;
 		}
 
+		protected override string GenerateReportTitle()
+		{
+			return "Состав данных по перечню объектов недвижимости, подлежащих государственной кадастровой оценке (земельные участки)";
+		}
+
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
 		{
-			var widthForDates = 3;
 			var columns = new List<GbuReportService.Column>
 			{
 				new GbuReportService.Column
@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата образования",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
@@ -146,17 +146,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата определения кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата утверждения кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
@@ -166,7 +166,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата акта об утверждении кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
@@ -176,12 +176,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new GbuReportService.Column
 				{
 					Header = "Дата начала применения кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				},
 				new GbuReportService.Column
 				{
 					Header = "Дата подачи заявления о пересмотре кадастровой стоимости",
-					Width = widthForDates
+					Width = ColumnWidthForDates
 				}
 			};
 
@@ -223,7 +223,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
 		#region Support Methods
 		
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var tourId = GetTourFromTasks(parameters.TaskIds);
 

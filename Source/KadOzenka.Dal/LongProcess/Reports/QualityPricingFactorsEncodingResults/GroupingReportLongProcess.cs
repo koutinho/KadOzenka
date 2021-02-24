@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 {
-	public class GroupingReportLongProcess : ALinearReportsLongProcessTemplate<GroupingReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class GroupingReportLongProcess : ALinearReportsLongProcessTemplate<GroupingReportLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Группировка объектов недвижимости";
 		protected override string ProcessName => nameof(GroupingReportLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
@@ -22,16 +18,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		public GroupingReportLongProcess() : base(Log.ForContext<GroupingReportLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -48,7 +43,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return GetProcessConfigFromSettings("QualityPricingFactorsEncodingResultsForGrouping", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
 			QueryManager queryManager)
 		{
 			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
@@ -66,6 +61,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		protected override Func<ReportItem, string> GetSortingCondition()
 		{
 			return x => x.CadastralNumber;
+		}
+
+		protected override string GenerateReportTitle()
+		{
+			return "Группировка объектов недвижимости";
 		}
 
 		protected override List<GbuReportService.Column> GenerateReportHeaders()
@@ -121,7 +121,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		#region Support Methods
 
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var tourId = GetTourFromTasks(parameters.TaskIds);
 
@@ -140,7 +140,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		#region Entities
 
-		public class ReportItem : InfoFromTourSettings
+		public class ReportItem
 		{
 			public string PropertyType { get; set; }
 			public string CadastralNumber { get; set; }

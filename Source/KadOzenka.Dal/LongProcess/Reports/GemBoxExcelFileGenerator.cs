@@ -4,13 +4,16 @@ using System.IO;
 using System.Linq;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 
 namespace KadOzenka.Dal.LongProcess.Reports
 {
 	public class GemBoxExcelFileGenerator
 	{
 		private readonly ExcelFile _excelFile;
+		private CellStyle GeneralCellStyle { get; }
 		private int _currentRowIndex;
+		private bool _hasTitle;
 
 
 		public GemBoxExcelFileGenerator()
@@ -18,21 +21,66 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			_excelFile = new ExcelFile();
 			var sheet = _excelFile.Worksheets.Add("Лист 1");
 			sheet.Cells.Style.Font.Name = "Times New Roman";
+
+			GeneralCellStyle = new CellStyle
+			{
+				HorizontalAlignment = HorizontalAlignmentStyle.Center,
+				VerticalAlignment = VerticalAlignmentStyle.Center,
+				WrapText = true
+			};
+			GeneralCellStyle.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 		}
 
 
 
-		public void AddHeaders(List<string> values)
+		public void AddTitle(string title, int maxColumnsCount)
+		{
+			if (string.IsNullOrWhiteSpace(title))
+				return;
+
+			_hasTitle = true;
+
+			var mergedCell = new MergedColumns
+			{
+				OrderNumber = 0,
+				Text = title,
+				StartColumnIndex = 0,
+				EndColumnIndex = maxColumnsCount - 1
+			};
+			var titleCellStyle = new CellStyle
+			{
+				HorizontalAlignment = HorizontalAlignmentStyle.Left
+			};
+
+			AddMergedHeaders(new List<MergedColumns> {mergedCell}, titleCellStyle);
+		}
+
+		public void AddMergedHeaders(List<MergedColumns> commonHeaders, CellStyle style = null)
+		{
+			var sheet = _excelFile.Worksheets[0];
+			
+			commonHeaders.OrderBy(x => x.OrderNumber).GroupBy(x => x.OrderNumber).ToList().ForEach(groupedColumns =>
+			{
+				groupedColumns.ToList().ForEach(columns =>
+				{
+					var cells = sheet.Cells.GetSubrangeAbsolute(_currentRowIndex, columns.StartColumnIndex, _currentRowIndex, columns.EndColumnIndex);
+					cells.Merged = true;
+					cells.Value = columns.Text;
+
+					cells.Style = style ?? GeneralCellStyle;
+				});
+
+				_currentRowIndex++;
+			});
+		}
+
+		public void AddSeparateColumnsHeaders(List<string> values)
 		{
 			var columnIndex = 0;
-			var sheet = _excelFile.Worksheets[0];
+			var row = _excelFile.Worksheets[0].Rows[_currentRowIndex];
 			foreach (var value in values)
 			{
-				sheet.Rows[_currentRowIndex].Cells[columnIndex].SetValue(value);
-				sheet.Rows[_currentRowIndex].Cells[columnIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-				sheet.Rows[_currentRowIndex].Cells[columnIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-				sheet.Rows[_currentRowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-				sheet.Rows[_currentRowIndex].Cells[columnIndex].Style.WrapText = true;
+				row.Cells[columnIndex].SetValue(value);
 				columnIndex++;
 			}
 
@@ -49,10 +97,10 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			columns.ForEach(x => { SetIndividualWidth(x.Index, x.Width); });
 		}
 
-		public void AddHeaders(List<GbuObject.GbuReportService.Column> columns)
+		public void AddSeparateColumnsHeaders(List<GbuObject.GbuReportService.Column> columns)
 		{
 			var headers = columns.Select(x => x.Header).ToList();
-			AddHeaders(headers);
+			AddSeparateColumnsHeaders(headers);
 		}
 
 		public void AddRow(List<object> values)
@@ -70,7 +118,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			var countColumns = sheet.CalculateMaxUsedColumns();
 			var errCount = 0;
 
-			for (var i = 0; i < countRows; i++)
+			//чтобы не сбросить стиль заголовкка
+			var startRowIndex = _hasTitle ? 1 : 0;
+			for (var i = startRowIndex; i < countRows; i++)
 			{
 				for (var j = 0; j < countColumns; j++)
 				{
@@ -78,10 +128,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 					{
 						try
 						{
-							sheet.Rows[i].Cells[j].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-							sheet.Rows[i].Cells[j].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
-							sheet.Rows[i].Cells[j].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-							sheet.Rows[i].Cells[j].Style.WrapText = true;
+							sheet.Rows[i].Cells[j].Style = GeneralCellStyle;
 						}
 						catch (Exception ex)
 						{

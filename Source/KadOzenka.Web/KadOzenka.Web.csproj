@@ -1968,11 +1968,17 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\BuildingsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Constructions.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ConstructionsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\get_parent_info_function.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ParcelsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Parkings.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ParkingsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Placements.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\PlacementsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildings.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildingsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
   </ItemGroup>

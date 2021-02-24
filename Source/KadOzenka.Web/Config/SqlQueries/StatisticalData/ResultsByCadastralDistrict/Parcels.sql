@@ -55,12 +55,12 @@ subGroupNumberAttrValues as (
 
 initial_data as (
 SELECT distinct
-	--L1_R201.ID,
-	--L1_R201.OBJECT_ID,
-    L1_R201.CADASTRAL_NUMBER as CadastralNumber,
-    L1_R201.SQUARE as Square,
-	L1_R201.UPKS as Upks,
-	L1_R201.CADASTRAL_COST as CadastralCost,
+	--unit.ID,
+	--unit.OBJECT_ID,
+    unit.CADASTRAL_NUMBER as CadastralNumber,
+    unit.SQUARE as Square,
+	unit.UPKS as Upks,
+	unit.CADASTRAL_COST as CadastralCost,
 	parcelNameAttr.attributeValue as ParcelName,
     locationAttr.attributeValue as Location,
     addressAttr.attributeValue as Address,
@@ -78,27 +78,27 @@ SELECT distinct
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber,
     SUBSTRING(cadastralQuartalAttr.attributeValue, 0, 6) as CadastralDistrict			
-		FROM KO_UNIT L1_R201
-			LEFT JOIN parcelNameAttrValues parcelNameAttr ON L1_R201.object_id=parcelNameAttr.objectId
-            LEFT JOIN locationAttrValues locationAttr ON L1_R201.object_id=locationAttr.objectId
-            LEFT JOIN addressAttrValues addressAttr ON L1_R201.object_id=addressAttr.objectId
-            LEFT JOIN formationDateAttrValues formationDateAttr ON L1_R201.object_id=formationDateAttr.objectId
-            LEFT JOIN formationDateAttrValues parcelCategoryAttr ON L1_R201.object_id=parcelCategoryAttr.objectId
-            LEFT JOIN formationDateAttrValues typeOfUseByDocumentsAttr ON L1_R201.object_id=typeOfUseByDocumentsAttr.objectId
-            LEFT JOIN typeOfUseByClassifierAttrValues typeOfUseByClassifierAttr ON L1_R201.object_id=typeOfUseByClassifierAttr.objectId
-            LEFT JOIN infoAboutExistenceOfOtherObjectsAttrValues infoAboutExistenceOfOtherObjectsAttr ON L1_R201.object_id=infoAboutExistenceOfOtherObjectsAttr.objectId
-            LEFT JOIN infoSourceAttrValues infoSourceAttr ON L1_R201.object_id=infoSourceAttr.objectId
-            LEFT JOIN segmentAttrValues segmentAttr ON L1_R201.object_id=segmentAttr.objectId
-            LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON L1_R201.object_id=usageTypeCodeAttr.objectId
-            LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON L1_R201.object_id=usageTypeNameAttr.objectId
-            LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON L1_R201.object_id=usageTypeCodeSourceAttr.objectId
-            LEFT JOIN objectTypeAttrValues objectTypeAttr ON L1_R201.object_id=objectTypeAttr.objectId
-            LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON L1_R201.object_id=cadastralQuartalAttr.objectId
-            LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON L1_R201.object_id=subGroupNumberAttr.objectId
-		WHERE L1_R201.TASK_ID IN ({0})
+		FROM KO_UNIT unit
+			LEFT JOIN parcelNameAttrValues parcelNameAttr ON unit.object_id=parcelNameAttr.objectId
+            LEFT JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
+            LEFT JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
+            LEFT JOIN formationDateAttrValues formationDateAttr ON unit.object_id=formationDateAttr.objectId
+            LEFT JOIN parcelCategoryAttrValues parcelCategoryAttr ON unit.object_id=parcelCategoryAttr.objectId
+            LEFT JOIN typeOfUseByDocumentsAttrValues typeOfUseByDocumentsAttr ON unit.object_id=typeOfUseByDocumentsAttr.objectId
+            LEFT JOIN typeOfUseByClassifierAttrValues typeOfUseByClassifierAttr ON unit.object_id=typeOfUseByClassifierAttr.objectId
+            LEFT JOIN infoAboutExistenceOfOtherObjectsAttrValues infoAboutExistenceOfOtherObjectsAttr ON unit.object_id=infoAboutExistenceOfOtherObjectsAttr.objectId
+            LEFT JOIN infoSourceAttrValues infoSourceAttr ON unit.object_id=infoSourceAttr.objectId
+            LEFT JOIN segmentAttrValues segmentAttr ON unit.object_id=segmentAttr.objectId
+            LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON unit.object_id=usageTypeCodeAttr.objectId
+            LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON unit.object_id=usageTypeNameAttr.objectId
+            LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON unit.object_id=usageTypeCodeSourceAttr.objectId
+            LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
+            LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
+            LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
+		WHERE unit.TASK_ID IN ({0})
         AND
-        (L1_R201.PROPERTY_TYPE_CODE = 4 and L1_R201.OBJECT_ID is not null)
-		ORDER BY L1_R201.CADASTRAL_NUMBER
+        (unit.PROPERTY_TYPE_CODE = 4 and unit.OBJECT_ID is not null)
+		ORDER BY unit.CADASTRAL_NUMBER
 )
         
 select DISTINCT ON (CadastralNumber) 

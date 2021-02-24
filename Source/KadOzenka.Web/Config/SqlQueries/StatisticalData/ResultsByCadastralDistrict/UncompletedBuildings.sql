@@ -67,10 +67,10 @@ subGroupNumberAttrValues as (
 
 initial_data as (
 SELECT distinct
-    L1_R201.CADASTRAL_NUMBER as CadastralNumber,
-    L1_R201.SQUARE as Square,
-	L1_R201.UPKS as Upks,
-	L1_R201.CADASTRAL_COST as CadastralCost,
+    unit.CADASTRAL_NUMBER as CadastralNumber,
+    unit.SQUARE as Square,
+	unit.UPKS as Upks,
+	unit.CADASTRAL_COST as CadastralCost,
     buildYearAttr.attributeValue as BuildYear,
     formationDateAttr.attributeValue as FormationDate,
     undergroundFloorsNumberAttr.attributeValue as UndergroundFloorsNumber,
@@ -90,30 +90,30 @@ SELECT distinct
     objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
-		FROM KO_UNIT L1_R201
-            LEFT JOIN buildYearAttrValues buildYearAttr ON L1_R201.object_id=buildYearAttr.objectId
-            LEFT JOIN formationDateAttrValues formationDateAttr ON L1_R201.object_id=formationDateAttr.objectId
-            LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON L1_R201.object_id=undergroundFloorsNumberAttr.objectId
-            LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON L1_R201.object_id=floorsNumberAttr.objectId
-            LEFT JOIN wallMaterialAttrValues wallMaterialAttr ON L1_R201.object_id=wallMaterialAttr.objectId
-            LEFT JOIN locationAttrValues locationAttr ON L1_R201.object_id=locationAttr.objectId
-            LEFT JOIN addressAttrValues addressAttr ON L1_R201.object_id=addressAttr.objectId
-            LEFT JOIN buildingPurposeAttrValues buildingPurposeAttr ON L1_R201.object_id=buildingPurposeAttr.objectId
-            LEFT JOIN objectNameAttrValues objectNameAttr ON L1_R201.object_id=objectNameAttr.objectId
-            LEFT JOIN readinessPercentageAttrValues readinessPercentageAttr ON L1_R201.object_id=readinessPercentageAttr.objectId
-            LEFT JOIN segmentAttrValues segmentAttr ON L1_R201.object_id=segmentAttr.objectId
-            LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON L1_R201.object_id=usageTypeNameAttr.objectId
-            LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON L1_R201.object_id=usageTypeCodeAttr.objectId
-            LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON L1_R201.object_id=usageTypeCodeSourceAttr.objectId
-            LEFT JOIN subGroupUsageTypeCodeAttrValues subGroupUsageTypeCodeAttr ON L1_R201.object_id=subGroupUsageTypeCodeAttr.objectId
-            LEFT JOIN functionalSubGroupNameAttrValues functionalSubGroupNameAttr ON L1_R201.object_id=functionalSubGroupNameAttr.objectId
-            LEFT JOIN objectTypeAttrValues objectTypeAttr ON L1_R201.object_id=objectTypeAttr.objectId
-            LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON L1_R201.object_id=cadastralQuartalAttr.objectId
-            LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON L1_R201.object_id=subGroupNumberAttr.objectId
-		WHERE L1_R201.TASK_ID IN ({0})
+		FROM KO_UNIT unit
+            LEFT JOIN buildYearAttrValues buildYearAttr ON unit.object_id=buildYearAttr.objectId
+            LEFT JOIN formationDateAttrValues formationDateAttr ON unit.object_id=formationDateAttr.objectId
+            LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON unit.object_id=undergroundFloorsNumberAttr.objectId
+            LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON unit.object_id=floorsNumberAttr.objectId
+            LEFT JOIN wallMaterialAttrValues wallMaterialAttr ON unit.object_id=wallMaterialAttr.objectId
+            LEFT JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
+            LEFT JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
+            LEFT JOIN buildingPurposeAttrValues buildingPurposeAttr ON unit.object_id=buildingPurposeAttr.objectId
+            LEFT JOIN objectNameAttrValues objectNameAttr ON unit.object_id=objectNameAttr.objectId
+            LEFT JOIN readinessPercentageAttrValues readinessPercentageAttr ON unit.object_id=readinessPercentageAttr.objectId
+            LEFT JOIN segmentAttrValues segmentAttr ON unit.object_id=segmentAttr.objectId
+            LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON unit.object_id=usageTypeNameAttr.objectId
+            LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON unit.object_id=usageTypeCodeAttr.objectId
+            LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON unit.object_id=usageTypeCodeSourceAttr.objectId
+            LEFT JOIN subGroupUsageTypeCodeAttrValues subGroupUsageTypeCodeAttr ON unit.object_id=subGroupUsageTypeCodeAttr.objectId
+            LEFT JOIN functionalSubGroupNameAttrValues functionalSubGroupNameAttr ON unit.object_id=functionalSubGroupNameAttr.objectId
+            LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
+            LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
+            LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
+		WHERE unit.TASK_ID IN ({0})
         AND
-        (L1_R201.PROPERTY_TYPE_CODE = 8 and L1_R201.OBJECT_ID is not null)
-		ORDER BY L1_R201.CADASTRAL_NUMBER
+        (unit.PROPERTY_TYPE_CODE = 8 and unit.OBJECT_ID is not null)
+		ORDER BY unit.CADASTRAL_NUMBER
 )
         
 select DISTINCT ON (CadastralNumber) 

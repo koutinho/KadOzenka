@@ -5,8 +5,6 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults

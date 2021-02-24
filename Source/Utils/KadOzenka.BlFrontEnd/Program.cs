@@ -51,9 +51,8 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
+using KadOzenka.Dal.LongProcess.Reports;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
@@ -653,7 +652,7 @@ namespace KadOzenka.BlFrontEnd
 				{
 					Status_Code = Status.Added,
 					UserId = SRDSession.GetCurrentUserId(),
-					Parameters = new ReportLongProcessInputParameters {TaskIds = new List<long>{ 15534573 }}.SerializeToXml()
+					Parameters = new ReportLongProcessOnlyTasksInputParameters {TaskIds = new List<long>{ 15534573 }}.SerializeToXml()
 				}, cancelToken);
 			});
 

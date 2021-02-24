@@ -9,6 +9,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
@@ -28,10 +29,16 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		private readonly QueryManager _queryManager;
 		private string MessageSubject => $"Отчет '{ReportName}'";
 
+		protected int ColumnWidthForDates = 3;
+		protected int ColumnWidthForCadastralNumber = 6;
+		protected int ColumnWidthForAddresses = 6;
+		protected StatisticalDataService StatisticalDataService { get; set; }
+
 		protected ALinearReportsLongProcessTemplate(ILogger logger) : base(logger)
 		{
 			_locker = new object();
 			_queryManager = new QueryManager();
+			StatisticalDataService = new StatisticalDataService();
 		}
 
 
@@ -44,8 +51,22 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
 		protected abstract List<object> GenerateReportReportRow(int index, TReportItem item);
 		protected abstract string GetSql(int packageIndex, int packageSize);
-		
-		protected virtual void PrepareVariables(TInputParameters inputParameters) { }
+
+		protected virtual void PrepareVariables(TInputParameters inputParameters)
+		{
+
+		}
+
+		protected virtual string GenerateReportTitle()
+		{
+			return string.Empty;
+		}
+
+		protected virtual List<MergedColumns> GenerateReportMergedHeaders()
+		{
+			return new List<MergedColumns>();
+		}
+
 		protected virtual string GetMessageForReportsWithoutUnits(TInputParameters inputParameters)
 		{
 			return "У заданий на оценку нет единиц оценки";
@@ -64,7 +85,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			_queryManager.SetBaseToken(cancellationToken);
-			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Начат фоновый процесс. Входные параметры");
+			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Начат фоновый процесс {ProcessDescription}. Входные параметры", processType.Description);
 			WorkerCommon.SetProgress(processQueue, 0);
 
 			var parameters = processQueue.Parameters?.DeserializeFromXml<TInputParameters>();
@@ -82,9 +103,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				var config = GetProcessConfig();
 				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
 				{
-					var unitsCount = GetMaxItemsCount(parameters, _queryManager);
-					Logger.Debug("Всего в БД {UnitsCount} ЕО.", unitsCount);
-					if (unitsCount == 0)
+					var maxItemsCount = GetMaxItemsCount(parameters, _queryManager);
+					Logger.Debug("Всего в БД {UnitsCount} ЕО.", maxItemsCount);
+					if (maxItemsCount == 0)
 					{
 						message = GetMessageForReportsWithoutUnits(parameters);
 						return;
@@ -96,7 +117,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						CancellationToken = localCancelTokenSource.Token,
 						MaxDegreeOfParallelism = config.ThreadsCount
 					};
-					var numberOfPackages = unitsCount / config.PackageSize + 1;
+					var numberOfPackages = maxItemsCount / config.PackageSize + 1;
 					var processedPackageCount = 0;
 					var processedItemsCount = 0;
 					Parallel.For(0, numberOfPackages, options, (i, s) =>
@@ -110,7 +131,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						{
 							currentOperations = _queryManager.ExecuteSql<TReportItem>(sql).OrderBy(GetSortingCondition()).ToList();
 							processedItemsCount += currentOperations.Count;
-							Logger.Debug("Выкачено {ProcessedItemsCount} записей", processedItemsCount);
+							Logger.Debug("Выкачено {ProcessedItemsCount} записей из {MaxItemsCount}", processedItemsCount, maxItemsCount);
 						}
 
 						CheckCancellationToken(cancellationToken, localCancelTokenSource, options);
@@ -197,8 +218,13 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		{
 			var excelFileGenerator = new GemBoxExcelFileGenerator();
 
-			var headerColumns = GenerateReportHeaders();
-			excelFileGenerator.AddHeaders(headerColumns);
+			var reportTitle = GenerateReportTitle();
+			var mergedColumnsHeaders = GenerateReportMergedHeaders();
+			var generalColumnsHeaders = GenerateReportHeaders();
+			
+			excelFileGenerator.AddTitle(reportTitle, generalColumnsHeaders.Count);
+			excelFileGenerator.AddMergedHeaders(mergedColumnsHeaders);
+			excelFileGenerator.AddSeparateColumnsHeaders(generalColumnsHeaders);
 
 			for (var i = 0; i < reportItems.Count; i++)
 			{
@@ -209,7 +235,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 					Logger.Debug("Обрабатывается строка №{i} из {ReportItemsCount}.", i, reportItems.Count);
 			}
 
-			excelFileGenerator.SetIndividualWidth(headerColumns);
+			excelFileGenerator.SetIndividualWidth(generalColumnsHeaders);
 			excelFileGenerator.SetStyle();
 
 			//попытка принудительно освободить память

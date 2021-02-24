@@ -1,0 +1,123 @@
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport.ConstructionsConfigurationModel
+
+<div class="form-horizontal" style="padding: 2%">
+    @using (Html.BeginForm("ProcessResultsByCadastralDistrictForConstructionsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
+    {
+        if (Model.TaskIds == null || Model.TaskIds.Length == 0)
+        {
+            <div class="form-group">
+                <span style="color: red">Не выбраны задания на оценку</span>
+            </div>
+        }
+        else
+        {
+            for (var i = 0; i < Model.TaskIds?.Length; i++)
+            {
+                @Html.HiddenFor(m => m.TaskIds[i])
+            }
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.SegmentAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.SegmentAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.UsageTypeNameAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeNameAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.UsageTypeCodeAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeCodeAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.UsageTypeCodeSourceAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeCodeSourceAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.SubGroupUsageTypeCodeAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.SubGroupUsageTypeCodeAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.FunctionalSubGroupNameAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.FunctionalSubGroupNameAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+           
+
+            <div class="form-group">
+                <div class="col-sm-2 col-sm-offset-10">
+                    <input type="button" id="getReportBtn" class="k-button" value="Сформировать" />
+                </div>
+            </div>
+        }
+    }
+</div>
+
+
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js" charset="utf-8"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#getReportBtn").click(processReport);
+    });
+
+
+
+
+    function processReport() {
+        kendo.ui.progress($('#getReportForm'), true);
+        var form = $('#getReportForm');
+        var formObject = Common.Functions.FormToObject(form);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            traditional: true,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage("Процесс добавлен в очередь. Результат будет отправлен на почту.");
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('#getReportForm'), false);
+            }
+        });
+    }
+</script>
