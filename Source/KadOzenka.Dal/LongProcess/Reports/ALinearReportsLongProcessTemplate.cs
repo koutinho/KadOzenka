@@ -30,6 +30,8 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		private string MessageSubject => $"Отчет '{ReportName}'";
 
 		protected int ColumnWidthForDates = 3;
+		protected int ColumnWidthForCadastralNumber = 6;
+		protected int ColumnWidthForAddresses = 6;
 		protected StatisticalDataService StatisticalDataService { get; set; }
 
 		protected ALinearReportsLongProcessTemplate(ILogger logger) : base(logger)

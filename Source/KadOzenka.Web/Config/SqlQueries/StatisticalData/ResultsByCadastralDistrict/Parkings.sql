@@ -70,10 +70,10 @@ subGroupNumberAttrValues as (
 
 initial_data as (
 SELECT distinct
-    L1_R201.CADASTRAL_NUMBER as CadastralNumber,
-    L1_R201.SQUARE as Square,
-	L1_R201.UPKS as Upks,
-	L1_R201.CADASTRAL_COST as CadastralCost,
+    unit.CADASTRAL_NUMBER as CadastralNumber,
+    unit.SQUARE as Square,
+	unit.UPKS as Upks,
+	unit.CADASTRAL_COST as CadastralCost,
 	commissioningYearAttr.attributeValue as CommissioningYear,
     buildYearAttr.attributeValue as BuildYear,
     undergroundFloorsNumberAttr.attributeValue as UndergroundFloorsNumber,
@@ -94,35 +94,35 @@ SELECT distinct
     objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
-		FROM KO_UNIT L1_R201
-			LEFT JOIN commissioningYearAttrValues commissioningYearAttr ON L1_R201.object_id=commissioningYearAttr.objectId
-            LEFT JOIN buildYearAttrValues buildYearAttr ON L1_R201.object_id=buildYearAttr.objectId
-            LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON L1_R201.object_id=undergroundFloorsNumberAttr.objectId
-            LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON L1_R201.object_id=floorsNumberAttr.objectId
-            LEFT JOIN wallMaterialAttrValues wallMaterialAttr ON L1_R201.object_id=wallMaterialAttr.objectId
-            LEFT JOIN locationAttrValues locationAttr ON L1_R201.object_id=locationAttr.objectId
-            LEFT JOIN addressAttrValues addressAttr ON L1_R201.object_id=addressAttr.objectId
-            LEFT JOIN parentCadastralNumberAttrValues parentCadastralNumberAttr ON L1_R201.object_id=parentCadastralNumberAttr.objectId
-            LEFT JOIN placementPurposeAttrValues placementPurposeAttr ON L1_R201.object_id=placementPurposeAttr.objectId
-            LEFT JOIN objectNameAttrValues objectNameAttr ON L1_R201.object_id=objectNameAttr.objectId
-            LEFT JOIN floorAttrValues floorAttr ON L1_R201.object_id=floorAttr.objectId
-            LEFT JOIN segmentAttrValues segmentAttr ON L1_R201.object_id=segmentAttr.objectId
-            LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON L1_R201.object_id=usageTypeNameAttr.objectId
-            LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON L1_R201.object_id=usageTypeCodeAttr.objectId
-            LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON L1_R201.object_id=usageTypeCodeSourceAttr.objectId
-            LEFT JOIN subGroupUsageTypeCodeAttrValues subGroupUsageTypeCodeAttr ON L1_R201.object_id=subGroupUsageTypeCodeAttr.objectId
-            LEFT JOIN functionalSubGroupNameAttrValues functionalSubGroupNameAttr ON L1_R201.object_id=functionalSubGroupNameAttr.objectId
-            LEFT JOIN objectTypeAttrValues objectTypeAttr ON L1_R201.object_id=objectTypeAttr.objectId
-            LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON L1_R201.object_id=cadastralQuartalAttr.objectId
-            LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON L1_R201.object_id=subGroupNumberAttr.objectId
-		WHERE L1_R201.TASK_ID IN ({0})
+		FROM KO_UNIT unit
+			LEFT JOIN commissioningYearAttrValues commissioningYearAttr ON unit.object_id=commissioningYearAttr.objectId
+            LEFT JOIN buildYearAttrValues buildYearAttr ON unit.object_id=buildYearAttr.objectId
+            LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON unit.object_id=undergroundFloorsNumberAttr.objectId
+            LEFT JOIN floorsNumberAttrValues floorsNumberAttr ON unit.object_id=floorsNumberAttr.objectId
+            LEFT JOIN wallMaterialAttrValues wallMaterialAttr ON unit.object_id=wallMaterialAttr.objectId
+            LEFT JOIN locationAttrValues locationAttr ON unit.object_id=locationAttr.objectId
+            LEFT JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
+            LEFT JOIN parentCadastralNumberAttrValues parentCadastralNumberAttr ON unit.object_id=parentCadastralNumberAttr.objectId
+            LEFT JOIN placementPurposeAttrValues placementPurposeAttr ON unit.object_id=placementPurposeAttr.objectId
+            LEFT JOIN objectNameAttrValues objectNameAttr ON unit.object_id=objectNameAttr.objectId
+            LEFT JOIN floorAttrValues floorAttr ON unit.object_id=floorAttr.objectId
+            LEFT JOIN segmentAttrValues segmentAttr ON unit.object_id=segmentAttr.objectId
+            LEFT JOIN usageTypeNameAttrValues usageTypeNameAttr ON unit.object_id=usageTypeNameAttr.objectId
+            LEFT JOIN usageTypeCodeAttrValues usageTypeCodeAttr ON unit.object_id=usageTypeCodeAttr.objectId
+            LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON unit.object_id=usageTypeCodeSourceAttr.objectId
+            LEFT JOIN subGroupUsageTypeCodeAttrValues subGroupUsageTypeCodeAttr ON unit.object_id=subGroupUsageTypeCodeAttr.objectId
+            LEFT JOIN functionalSubGroupNameAttrValues functionalSubGroupNameAttr ON unit.object_id=functionalSubGroupNameAttr.objectId
+            LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
+            LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
+            LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
+		WHERE unit.TASK_ID IN ({0})
         AND
-        (L1_R201.PROPERTY_TYPE_CODE = 11 and L1_R201.OBJECT_ID is not null)
+        (unit.PROPERTY_TYPE_CODE = 11 and unit.OBJECT_ID is not null)
         --(для тестирования)
         --Id задачи - 38676792
 		--Id единиц, у которых есть паренты 
-        --and L1_R201.Id=12435691 or L1_R201.Id=1
-		ORDER BY L1_R201.CADASTRAL_NUMBER
+        --and unit.Id=12435691 or unit.Id=1
+		ORDER BY unit.CADASTRAL_NUMBER
 ),
 
 

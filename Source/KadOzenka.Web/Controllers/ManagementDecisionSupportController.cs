@@ -34,7 +34,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
-using ReportLongProcessOnlyTasksInputParameters = KadOzenka.Dal.LongProcess.Reports.ReportLongProcessOnlyTasksInputParameters;
+using ReportLongProcessOnlyTasksInputParameters = KadOzenka.Dal.LongProcess.Reports.Entities.ReportLongProcessOnlyTasksInputParameters;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -734,6 +734,74 @@ namespace KadOzenka.Web.Controllers
 			//}, new CancellationToken());
 
 			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForUncompletedBuildingsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ResultsByCadastralDistrictForPlacementsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new PlacementsConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrict/PlacementsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessResultsByCadastralDistrictForPlacementsReport(PlacementsConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForPlacementsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForPlacementsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ResultsByCadastralDistrictForParkingsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new ParkingsConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrict/ParkingsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessResultsByCadastralDistrictForParkingsReport(ParkingsConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForParkingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForParkingsReportLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }
