@@ -596,6 +596,36 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsOksConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new KRSummaryResultsOksModel
+	        {
+		        TaskIds = model.TaskFilter
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/KRSummaryResultsOksConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsOksConfiguration(KRSummaryResultsOksModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = new Dal.LongProcess.Reports.KRSummaryResults.Entities.OksReportLongProcessInputParameters()
+	        {
+		        TaskIds = model.TaskIds?.ToList(),
+		        KladrAttributeId = model.KladrAttributeId,
+		        ParentKnAttributeId = model.ParentKnAttributeId
+	        };
+
+	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().AddToQueue(inputParameters);
+
+	        return Ok();}
+
 		#endregion
 
 		#endregion StatisticalData
