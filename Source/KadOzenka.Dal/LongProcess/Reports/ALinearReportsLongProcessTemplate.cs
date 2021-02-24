@@ -26,10 +26,12 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		where TInputParameters : class
 	{
 		private readonly object _locker;
-		private readonly QueryManager _queryManager;
+		//TODO rename
+		protected readonly QueryManager _queryManager;
 		private string MessageSubject => $"Отчет '{ReportName}'";
 
 		protected int ColumnWidthForDates = 3;
+		protected int ColumnWidthForDecimals = 3;
 		protected int ColumnWidthForCadastralNumber = 6;
 		protected int ColumnWidthForAddresses = 6;
 		protected StatisticalDataService StatisticalDataService { get; set; }
@@ -46,6 +48,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract string ReportName { get; }
 		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
+		//TODO remove queryManager as input parameter
 		protected abstract int GetMaxItemsCount(TInputParameters inputParameters, QueryManager queryManager);
 		protected abstract Func<TReportItem, string> GetSortingCondition();
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
@@ -55,6 +58,11 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected virtual void PrepareVariables(TInputParameters inputParameters)
 		{
 
+		}
+
+		protected virtual List<TReportItem> GetReportItems(string sql)
+		{
+			return _queryManager.ExecuteSql<TReportItem>(sql);
 		}
 
 		protected virtual string GenerateReportTitle()
@@ -129,7 +137,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						List<TReportItem> currentOperations;
 						using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
 						{
-							currentOperations = _queryManager.ExecuteSql<TReportItem>(sql).OrderBy(GetSortingCondition()).ToList();
+							currentOperations = GetReportItems(sql).OrderBy(GetSortingCondition()).ToList();
 							processedItemsCount += currentOperations.Count;
 							Logger.Debug("Выкачено {ProcessedItemsCount} записей из {MaxItemsCount}", processedItemsCount, maxItemsCount);
 						}

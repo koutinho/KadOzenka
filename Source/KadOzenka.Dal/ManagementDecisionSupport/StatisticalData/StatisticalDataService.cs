@@ -39,6 +39,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		        {(long) StatisticalDataType.PricingFactorsCompositionForOks, typeof(OksReportLongProcess)},
 		        {(long) StatisticalDataType.PricingFactorsCompositionForZu, typeof(ZuReportLongProcess)},
 		        {(long) StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping, typeof(GroupingReportLongProcess)},
+		        {(long) StatisticalDataType.InfoAboutCadastralCostDeterminingMethod, typeof(InfoAboutCadastralCostDeterminingMethodReportLongProcess)},
 		        {(long) StatisticalDataType.ResultsForApproval, typeof(ResultsForApprovalLongProcess)}
 	        };
 

@@ -6,6 +6,7 @@ using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.InputParameters;
@@ -47,6 +48,7 @@ namespace KadOzenka.Web.Controllers
 		private readonly StatisticsReportsWidgetExportService _statisticsReportsWidgetExportService;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly TourService _tourService;
+		private GroupService GroupService { get; }
 		private IGbuObjectService GbuObjectService { get; }
 		private ILongProcessService LongProcessService { get; }
 		private readonly int dataPageSize = 30;
@@ -55,7 +57,8 @@ namespace KadOzenka.Web.Controllers
 		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
             StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
-            StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService)
+            StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService,
+            GroupService groupService)
         {
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
@@ -65,7 +68,7 @@ namespace KadOzenka.Web.Controllers
             _statisticalDataService = statisticalDataService;
             LongProcessService = longProcessService;
             GbuObjectService = gbuObjectService;
-
+            GroupService = groupService;
         }
 
         #region MapBuilding
@@ -802,6 +805,43 @@ namespace KadOzenka.Web.Controllers
 			//}, new CancellationToken());
 
 			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForParkingsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ModelingsResultsConfiguration(StatisticalDataModel model)
+        {
+			var possibleGroups = GroupService.GetSortedGroupsWithNumbersByTasks(model.TaskFilter.ToList())
+				.Select(x => new DropDownTreeItemModel { Value = x.Id.ToString(), Text = x.CombinedName }).ToList();
+
+			var reportConfigurationModel = new ModelingResultsModel
+			{
+		        TaskIds = model.TaskFilter,
+		        PossibleGroups = possibleGroups
+			};
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ModelingResultsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessModelingsResultsReport(ModelingResultsModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.CalculationParams.ModelingResultsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.CalculationParams.ModelingResultsLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }
