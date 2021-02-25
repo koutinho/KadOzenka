@@ -914,7 +914,7 @@ namespace KadOzenka.Web.Controllers
 //	        	Parameters = inputParameters.SerializeToXml()
 //	        }, new CancellationToken());
 
-	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().AddToQueue(inputParameters);
+	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryOksReportLongProcess().AddToQueue(inputParameters);
 
 	        return Ok();
         }
@@ -946,13 +946,13 @@ namespace KadOzenka.Web.Controllers
 	        };
 
 	        ////TODO для тестирования
-	        new Dal.LongProcess.Reports.KRSummaryResults.ZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
-	        {
-	        	Status_Code = Status.Added,
-	        	Parameters = inputParameters.SerializeToXml()
-	        }, new CancellationToken());
+//	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+//	        {
+//	        	Status_Code = Status.Added,
+//	        	Parameters = inputParameters.SerializeToXml()
+//	        }, new CancellationToken());
 
-	        //new Dal.LongProcess.Reports.KRSummaryResults.ZuReportLongProcess().AddToQueue(inputParameters);
+	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().AddToQueue(inputParameters);
 
 	        return Ok();
         }
