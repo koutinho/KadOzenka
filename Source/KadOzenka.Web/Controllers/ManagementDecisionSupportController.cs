@@ -22,6 +22,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
+using KadOzenka.Web.Models.ManagementDecisionSupport.QualityPricingFactorsEncodingResults;
 using KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport;
 using Kendo.Mvc;
 using Kendo.Mvc.Infrastructure;
