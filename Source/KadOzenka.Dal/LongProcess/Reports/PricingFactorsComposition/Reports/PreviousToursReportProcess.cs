@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Core.Register.LongProcessManagment;
-using ObjectModel.Core.LongProcess;
-using System.Threading;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess.InputParameters;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using Core.ErrorManagment;
+using Core.Register.LongProcessManagment;
+using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.LongProcess.Reports;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using ObjectModel.Core.LongProcess;
 
-namespace KadOzenka.Dal.LongProcess
+namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
+    //TODO поменять namespace в таблице 
     public class PreviousToursReportProcess : LongProcess
     {
         private readonly ExcelFile _excelTemplate;
