@@ -15,25 +15,16 @@
 
         <div class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabelFor("Задания на оценку:")
+                @Html.CustomLabelFor(m => m.SelectedTasks)
             </div>
             <div class="col-sm-9">
                 <div id="taskFilterForReport"></div>
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor("Фоновое создание:")
-            </div>
-            <div class="col-sm-9">
-                @Html.CheckBoxFor(x => x.IsInBackground)
-            </div>
-        </div>
-
         <div id="groupBlock" class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabelFor("Группа:")
+                @Html.CustomLabelFor(x => x.GroupId)
             </div>
             <div class="col-sm-9">
                 <div id="groupFilterForReport"></div>
@@ -42,11 +33,12 @@
 
         <div class="form-group">
             <div class="col-sm-2 col-sm-offset-10">
-                <input type="button" id="getReportBtn" class="k-button" value="Сформировать отчет" />
+                <input type="button" id="getReportBtn" class="k-button" value="Сформировать" />
             </div>
         </div>
     }
 </div>
+
 
 
 <script src="~/js/common-modals.js"></script>
@@ -62,9 +54,9 @@
             $(this).change(initTasks);
         });
 
-        $("#IsInBackground").change(setGroupBlockVisibility);
-        $("#getReportBtn").click(getReport);
+        $("#getReportBtn").click(processReport);
     });
+
 
 
     function initTasks() {
@@ -87,7 +79,6 @@
             tasks = $('#taskFilterForReport').kendoMultiSelect({
                 dataTextField: 'Text',
                 dataValueField: 'Value',
-                optionLabel: " ",
                 dataSource: dataSource,
                 filter: "contains"
             }).data("kendoMultiSelect");
@@ -98,7 +89,6 @@
 
     function initGroups() {
         var taskIds = getSelectedTasks();
-        console.log('initGroups', taskIds);
         var dataSource = new kendo.data.DataSource({
             transport: {
                 read: {
@@ -125,16 +115,6 @@
     }
 
 
-    function setGroupBlockVisibility() {
-        var isBackground = $("#IsInBackground:checked").val();
-        if (isBackground) {
-            $("#groupBlock").show();
-        } else {
-            $("#groupBlock").hide();
-        }
-    }
-
-
     function getCheckedTours() {
         var checkedTours = [];
         $('#checkboxes input:checked').each(function() {
@@ -149,12 +129,12 @@
     }
 
 
-    function getReport() {
+    function processReport() {
         var form = $('#getReportForm');
         var formObject = Common.Functions.FormToObject(form);
         formObject.GroupId = $("#groupFilterForReport").data("kendoDropDownList").value();
         formObject.SelectedTasks = getSelectedTasks();
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('#getReportForm'), true);
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),
@@ -166,17 +146,14 @@
                     Common.ShowError(errors);
                     return;
                 } else {
-                    if (response.Message)
-                        Common.ShowMessage(response.Message);
-                    if (!formObject.IsInBackground)
-                        openReportViewer(response);
+                    Common.ShowMessage("Процесс добавлен в очередь. Результат будет отправлен на почту.");
                 }
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
             },
             complete: function() {
-                kendo.ui.progress($('body'), false);
+                kendo.ui.progress($('#getReportForm'), false);
             }
         });
     }

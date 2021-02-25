@@ -542,31 +542,19 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            if (model.IsInBackground)
-            {
-                var inputParameters = new PreviousToursReportInputParameters
-                {
-                    GroupId = model.GroupId.Value,
-                    TaskIds = model.SelectedTasks.ToList()
-                };
+            var inputParameters = model.MapToInputParameters();
 
-                ////TODO для тестирования
-                //new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
-                //{
-                //    Status_Code = Status.Added,
-                //    Parameters = inputParameters.SerializeToXml()
-                //}, new CancellationToken());
+			////TODO для тестирования
+			//new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
 
-                PreviousToursReportProcess.AddProcessToQueue(inputParameters);
+			PreviousToursReportProcess.AddProcessToQueue(inputParameters);
 
-                return Content(
-                    JsonConvert.SerializeObject(new
-                        {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
-                    "application/json");
-            }
-
-            return GetStatisticalDataReportUrl(model.Map());
-        }
+			return Ok();
+		}
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
