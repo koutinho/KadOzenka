@@ -255,6 +255,7 @@
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
@@ -633,6 +634,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1971,6 +1975,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\BuildingsForLongProcess.sql" />

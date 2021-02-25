@@ -881,6 +881,41 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult DataCompositionWithCrviForZuConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new DataCompositionWithCrviForZuConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/QualityPricingFactorsEncodingResults/DataCompositionWithCrviForZuConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessDataCompositionWithCrviForZuReport(DataCompositionWithCrviForZuConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
 		#endregion
 
 		#endregion StatisticalData
