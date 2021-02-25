@@ -223,3 +223,4 @@ from unit_data main_data
 	left outer join ConstructionPurposeAttrValues ConstructionPurpose on main_data.GbuObjectId=ConstructionPurpose.objectId
 	left outer join AddressAttrValues Address on main_data.GbuObjectId=Address.objectId
 	left outer join LocationAttrValues Location on main_data.GbuObjectId=Location.objectId
+	limit {10} offset {11} * {10}

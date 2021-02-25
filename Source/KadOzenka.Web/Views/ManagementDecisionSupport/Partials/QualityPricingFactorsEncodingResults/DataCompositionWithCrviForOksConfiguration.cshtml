@@ -1,8 +1,7 @@
 ﻿@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport.UncompletedBuildingsConfigurationModel
-
+@model KadOzenka.Web.Models.ManagementDecisionSupport.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForOksConfigurationModel
 <div class="form-horizontal" style="padding: 2%">
-    @using (Html.BeginForm("ProcessResultsByCadastralDistrictForUncompletedBuildingsReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
+    @using (Html.BeginForm("ProcessDataCompositionWithCrviForOksReport", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
     {
         if (Model.TaskIds == null || Model.TaskIds.Length == 0)
         {
@@ -19,58 +18,66 @@
 
             <div class="form-group">
                 <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.ParentKnAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.ParentKnAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.TypeOfUsingNameAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.TypeOfUsingNameAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.TypeOfUsingCodeAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.TypeOfUsingCodeAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.TypeOfUsingCodeSourceAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.TypeOfUsingCodeSourceAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.TypeOfUsingGroupCodeAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.TypeOfUsingGroupCodeAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-5">
+                    @Html.CustomLabelFor(m => m.FunctionalGroupNameAttributeId)
+                </div>
+                <div class="col-sm-7">
+                    @Html.KendoDropDownListTreeWithButton(m => m.FunctionalGroupNameAttributeId, Model.GbuAttributes)
+                </div>
+            </div>
+           
+            <div class="form-group">
+                <div class="col-sm-5">
                     @Html.CustomLabelFor(m => m.SegmentAttributeId)
                 </div>
                 <div class="col-sm-7">
                     @Html.KendoDropDownListTreeWithButton(m => m.SegmentAttributeId, Model.GbuAttributes)
                 </div>
             </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.UsageTypeNameAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeNameAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.UsageTypeCodeAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeCodeAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.UsageTypeCodeSourceAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.UsageTypeCodeSourceAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.SubGroupUsageTypeCodeAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.SubGroupUsageTypeCodeAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-sm-5">
-                    @Html.CustomLabelFor(m => m.FunctionalSubGroupNameAttributeId)
-                </div>
-                <div class="col-sm-7">
-                    @Html.KendoDropDownListTreeWithButton(m => m.FunctionalSubGroupNameAttributeId, Model.GbuAttributes)
-                </div>
-            </div>
-           
 
             <div class="form-group">
                 <div class="col-sm-2 col-sm-offset-10">

@@ -14,6 +14,7 @@ using Core.SRD;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.LongProcess.Reports.AdditionalForms;
+using KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculations;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition;
 using KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults;
@@ -40,6 +41,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 		        {(long) StatisticalDataType.PricingFactorsCompositionForOks, typeof(OksReportLongProcess)},
 		        {(long) StatisticalDataType.PricingFactorsCompositionForZu, typeof(ZuReportLongProcess)},
 		        {(long) StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping, typeof(GroupingReportLongProcess)},
+		        {(long) StatisticalDataType.AdditionalFormsCalculationsAnalysis, typeof(AnalysisOfCalculationsLongProcess)},
 		        {(long) StatisticalDataType.InfoAboutCadastralCostDeterminingMethod, typeof(InfoAboutCadastralCostDeterminingMethodReportLongProcess)},
 		        {(long) StatisticalDataType.ResultsForApproval, typeof(ResultsForApprovalLongProcess)},
 		        {(long) StatisticalDataType.AdditionalFormsChangesUploading, typeof(ChangesUploadingReportLongProcess)}

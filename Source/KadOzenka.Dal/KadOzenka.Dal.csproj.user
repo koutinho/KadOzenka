@@ -29,9 +29,6 @@
     <Compile Update="FastReports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationsAnalysisReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationStatisticsReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -105,9 +102,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PreviousToursReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\QualityPricingFactorsEncodingResults\QualityPricingFactorsEncodingResultsOksReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\QualityPricingFactorsEncodingResults\QualityPricingFactorsEncodingResultsZuReport.cs">

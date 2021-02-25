@@ -38,7 +38,8 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 				{(long) StatisticalDataType.ResultsByKRForParking, nameof(ManagementDecisionSupportController.ResultsByCadastralDistrictForParkingsConfiguration)},
 				{(long) StatisticalDataType.KRSummaryResultsOks, nameof(ManagementDecisionSupportController.KRSummaryResultsOksConfiguration)},
 				{(long) StatisticalDataType.KRSummaryResultsZu, nameof(ManagementDecisionSupportController.KRSummaryResultsZuConfiguration)},
-				{(long) StatisticalDataType.ModelingResults, nameof(ManagementDecisionSupportController.ModelingsResultsConfiguration)}
+				{(long) StatisticalDataType.ModelingResults, nameof(ManagementDecisionSupportController.ModelingsResultsConfiguration)},
+				{(long) StatisticalDataType.QualityPricingFactorsEncodingResultsOks, nameof(ManagementDecisionSupportController.DataCompositionWithCrviForOksConfiguration)}
 			};
 
 		private readonly List<long?> _reportsEnabledWithoutTasks = 
