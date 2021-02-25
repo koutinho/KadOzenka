@@ -21,8 +21,8 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
-using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
+using KadOzenka.Web.Models.ManagementDecisionSupport.QualityPricingFactorsEncodingResults;
 using KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport;
 using Kendo.Mvc;
 using Kendo.Mvc.Infrastructure;
@@ -57,7 +57,7 @@ namespace KadOzenka.Web.Controllers
 		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
             StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
-            StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService, 
+            StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService,
             GroupService groupService)
         {
             _mapBuildingService = mapBuildingService;
@@ -842,6 +842,152 @@ namespace KadOzenka.Web.Controllers
 			//}, new CancellationToken());
 
 			new Dal.LongProcess.Reports.CalculationParams.ModelingResultsLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult DataCompositionWithCrviForOksConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new DataCompositionWithCrviForOksConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/QualityPricingFactorsEncodingResults/DataCompositionWithCrviForOksConfiguration.cshtml", reportConfigurationModel);
+		}
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessDataCompositionWithCrviForOksReport(DataCompositionWithCrviForOksConfigurationModel model)
+        {
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
+
+			var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForOksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForOksReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+		}
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsOksConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new KRSummaryResultsOksModel
+	        {
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/KRSummaryResultsOksConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsOksConfiguration(KRSummaryResultsOksModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = new Dal.LongProcess.Reports.KRSummaryResults.Entities.OksReportLongProcessInputParameters()
+	        {
+		        TaskIds = model.TaskIds?.ToList(),
+		        KladrAttributeId = model.KladrAttributeId,
+		        ParentKnAttributeId = model.ParentKnAttributeId
+	        };
+
+	        ////TODO для тестирования
+//	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+//	        {
+//	        	Status_Code = Status.Added,
+//	        	Parameters = inputParameters.SerializeToXml()
+//	        }, new CancellationToken());
+
+	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryOksReportLongProcess().AddToQueue(inputParameters);
+
+	        return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsZuConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new KRSummaryResultsZuModel
+	        {
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/KRSummaryResultsZuConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsZuConfiguration(KRSummaryResultsZuModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = new Dal.LongProcess.Reports.KRSummaryResults.Entities.ZuReportLongProcessInputParameters()
+	        {
+		        TaskIds = model.TaskIds?.ToList(),
+		        KladrAttributeId = model.KladrAttributeId,
+	        };
+
+	        ////TODO для тестирования
+//	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+//	        {
+//	        	Status_Code = Status.Added,
+//	        	Parameters = inputParameters.SerializeToXml()
+//	        }, new CancellationToken());
+
+	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().AddToQueue(inputParameters);
+
+	        return Ok();
+        }
+
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult DataCompositionWithCrviForZuConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new DataCompositionWithCrviForZuConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/QualityPricingFactorsEncodingResults/DataCompositionWithCrviForZuConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessDataCompositionWithCrviForZuReport(DataCompositionWithCrviForZuConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }
