@@ -537,7 +537,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
+        public IActionResult ProcessPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
@@ -551,7 +551,7 @@ namespace KadOzenka.Web.Controllers
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
-			PreviousToursReportProcess.AddProcessToQueue(inputParameters);
+	        PreviousToursReportProcess.AddProcessToQueue(inputParameters);
 
 			return Ok();
 		}

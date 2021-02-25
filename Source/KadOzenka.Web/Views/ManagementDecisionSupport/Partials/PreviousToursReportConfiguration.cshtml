@@ -1,7 +1,7 @@
 ﻿@model KadOzenka.Web.Models.ManagementDecisionSupport.PreviousToursConfigurationModel
 
 <div class="form-horizontal col-sm-12">
-    @using (Html.BeginForm("GetPreviousToursReportReport", "ManagementDecisionSupport", FormMethod.Post, htmlAttributes: new { id = "getReportForm" }))
+    @using (Html.BeginForm("ProcessPreviousToursReportReport", "ManagementDecisionSupport", FormMethod.Post, htmlAttributes: new { id = "getReportForm" }))
     {
         foreach (var tour in Model.AvailableTours)
         {
