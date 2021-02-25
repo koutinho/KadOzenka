@@ -26,7 +26,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		protected override bool AreInputParametersValid(InputParametersForOks inputParameters)
 		{
-			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
+			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0 &&
+				inputParameters.ParentKnAttributeId != 0 &&
+				inputParameters.TypeOfUsingNameAttributeId != 0 &&
+				inputParameters.TypeOfUsingCodeAttributeId != 0 &&
+				inputParameters.TypeOfUsingCodeSourceAttributeId != 0 &&
+				inputParameters.TypeOfUsingGroupCodeAttributeId != 0 &&
+				inputParameters.SegmentAttributeId != 0 &&
+				inputParameters.FunctionalGroupNameAttributeId != 0;
 		}
 
 		protected override void PrepareVariables(InputParametersForOks inputParameters)
