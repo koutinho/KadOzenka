@@ -173,14 +173,14 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             var longProcess = (LongProcessForReportsBase)Activator.CreateInstance(longProcessType);
 
 			////TODO код для отладки
-			longProcess.StartProcess(new OMProcessType(), new OMQueue
-			{
-				Status_Code = Status.Added,
-				UserId = SRDSession.GetCurrentUserId(),
-				Parameters = parameters.SerializeToXml()
-			}, new CancellationToken());
+			//longProcess.StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = parameters.SerializeToXml()
+			//}, new CancellationToken());
 
-			//longProcess.AddToQueue(parameters);
+			longProcess.AddToQueue(parameters);
 		}
 
         #endregion
