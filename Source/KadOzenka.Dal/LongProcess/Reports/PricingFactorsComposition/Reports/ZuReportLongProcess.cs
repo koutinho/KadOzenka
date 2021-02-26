@@ -77,8 +77,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 4},
-				new Column {Header = "КН", Width = 6},
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "КН", Width = ColumnWidthForCadastralNumber},
 				new Column {Header = "Вид использования по документам", Width = 6},
 				new Column {Header = "Вид использования по классификатору", Width = 6},
 				new Column {Header = "Дата образования", Width = ColumnWidthForDates},
@@ -86,10 +86,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				new Column {Header = "Местоположение", Width = 6},
 				new Column {Header = "Адрес", Width = 8},
 				new Column {Header = "Наименование земельного участка", Width = 6},
-				new Column {Header = "Площадь", Width = 4},
+				new Column {Header = "Площадь", Width = ColumnWidthForDecimals},
 				new Column {Header = "Тип объекта", Width = 6},
 				new Column {Header = "Кадастровый квартал", Width = 6},
-				new Column {Header = "Значение кадастровой стоимости", Width = 6},
+				new Column {Header = "Значение кадастровой стоимости", Width = ColumnWidthForDecimals},
 				new Column {Header = "Дата определения кадастровой стоимости", Width = ColumnWidthForDates},
 				new Column {Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН", Width = ColumnWidthForDates},
 				new Column {Header = "Дата утверждения кадастровой стоимости", Width = ColumnWidthForDates},

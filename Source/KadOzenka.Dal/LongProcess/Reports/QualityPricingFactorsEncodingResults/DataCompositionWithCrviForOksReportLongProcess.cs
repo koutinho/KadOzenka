@@ -82,29 +82,29 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 3},
-				new Column {Header = "Тип объекта", Width = 3},
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Тип объекта"},
 				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
 				new Column {Header = "Площадь", Width = ColumnWidthForDecimals},
-				new Column {Header = "Наименование", Width = 3},
-				new Column {Header = "Назначение", Width = 3},
+				new Column {Header = "Наименование"},
+				new Column {Header = "Назначение"},
 				new Column {Header = "Адрес", Width = ColumnWidthForAddresses},
 				new Column {Header = "Местоположение", Width = ColumnWidthForAddresses},
-				new Column {Header = "Кадастровый квартал", Width = 3},
-				new Column {Header = "КН родителя (для помещения)", Width = 3},
+				new Column {Header = "Кадастровый квартал"},
+				new Column {Header = "КН родителя (для помещения)"},
 				new Column {Header = "Кадастровый номер земельного участка", Width = ColumnWidthForCadastralNumber},
 				new Column {Header = "Год постройки", Width = ColumnWidthForDates},
 				new Column {Header = "Год ввода в эксплуатацию", Width = ColumnWidthForDates},
-				new Column {Header = "Кол-во этажей", Width = 3},
-				new Column {Header = "Подземных этажей", Width = 3},
-				new Column {Header = "Этаж (для помещения)", Width = 3},
-				new Column {Header = "Материал стен", Width = 3},
-				new Column {Header = "Наименование вида использования", Width = 3},
-				new Column {Header = "Код вида использования", Width = 3},
-				new Column {Header = "Источник информации кода вида использования", Width = 3},
-				new Column {Header = "Код подгруппы вида использования", Width = 3},
-				new Column {Header = "Наименование функциональной подгруппы", Width = 3},
-				new Column {Header = "Сегмент", Width = 3}
+				new Column {Header = "Кол-во этажей"},
+				new Column {Header = "Подземных этажей"},
+				new Column {Header = "Этаж (для помещения)"},
+				new Column {Header = "Материал стен"},
+				new Column {Header = "Наименование вида использования"},
+				new Column {Header = "Код вида использования"},
+				new Column {Header = "Источник информации кода вида использования"},
+				new Column {Header = "Код подгруппы вида использования"},
+				new Column {Header = "Наименование функциональной подгруппы"},
+				new Column {Header = "Сегмент"}
 			};
 
 			var counter = 0;

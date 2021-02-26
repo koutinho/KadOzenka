@@ -64,11 +64,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts
 				new Column {Header = "№ п/п", Width = 2},
 				new Column {Header = "КН", Width = 4},
 				new Column {Header = "Тип", Width = 5},
-				new Column {Header = "Площадь", Width = 3},
+				new Column {Header = "Площадь"},
 				new Column {Header = "Прош. УПКС", Width = 4},
 				new Column {Header = "Прош. КС", Width = 4},
-				new Column {Header = "окн. УПКС", Width = 3},
-				new Column {Header = "окн. КС", Width = 3}, 
+				new Column {Header = "окн. УПКС"},
+				new Column {Header = "окн. КС"}, 
 				new Column {Header = "Статус", Width = 5}
 			};
 			columns.ForEach(item => item.Index = counter++);

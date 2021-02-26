@@ -79,41 +79,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms
         {
             var columns = new List<Column>
             {
-                new Column
-                {
-                    Header = "КН",
-                    Width = 5
-                },
-                new Column
-                {
-                    Header = "Дата изменения сведений",
-                    Width = 3
-                },
-                new Column
-                {
-                    Header = "Тип",
-                    Width = 5
-                },
-                new Column
-                {
-                    Header = "Статус",
-                    Width = 3
-                },
-                new Column
-                {
-                    Header = "Старое значение",
-                    Width = 5
-                },
-                new Column
-                {
-                    Header = "Новое значение",
-                    Width = 5
-                },
-                new Column
-                {
-                    Header = "Изменение",
-                    Width = 5
-                }
+                new Column {Header = "КН", Width = ColumnWidthForCadastralNumber},
+                new Column {Header = "Дата изменения сведений", Width = ColumnWidthForDates},
+                new Column {Header = "Тип", Width = 5},
+                new Column {Header = "Статус"},
+                new Column {Header = "Старое значение", Width = 5},
+                new Column {Header = "Новое значение", Width = 5},
+                new Column {Header = "Изменение", Width = 5}
             };
 
             var counter = 0;

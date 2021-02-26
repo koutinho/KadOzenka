@@ -71,11 +71,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 3},
-				new Column {Header = "Тип", Width = 3},
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Тип"},
 				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
-				new Column {Header = "Номер подгруппы", Width = 4},
-				new Column {Header = "Метод оценки", Width = 4}
+				new Column {Header = "Номер подгруппы"},
+				new Column {Header = "Метод оценки"}
 			};
 
 			var counter = 0;

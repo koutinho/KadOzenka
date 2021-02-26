@@ -80,21 +80,21 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 3},
-				new Column {Header = "Тип объекта", Width = 3},
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Тип объекта"},
 				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
 				new Column {Header = "Площадь", Width = ColumnWidthForDecimals},
-				new Column {Header = "Наименование", Width = 3},
-				new Column {Header = "Разрешенное использование", Width = 3},
+				new Column {Header = "Наименование"},
+				new Column {Header = "Разрешенное использование"},
 				new Column {Header = "Адрес", Width = ColumnWidthForAddresses},
 				new Column {Header = "Местоположение", Width = ColumnWidthForAddresses},
-				new Column {Header = "Кадастровый квартал", Width = 3},
+				new Column {Header = "Кадастровый квартал"},
 				new Column {Header = "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости", Width = 3},
 				new Column {Header = "Источник информации о нахождении на земельном участке других связанных с ним объектов недвижимости", Width = 3},
-				new Column {Header = "Сегмент", Width = 3},
-				new Column {Header = "Наименование вида использования", Width = 3},
-				new Column {Header = "Код вида использования", Width = 3},
-				new Column {Header = "Источник информации кода вида использования", Width = 3}
+				new Column {Header = "Сегмент"},
+				new Column {Header = "Наименование вида использования"},
+				new Column {Header = "Код вида использования"},
+				new Column {Header = "Источник информации кода вида использования"}
 			};
 
 			var counter = 0;

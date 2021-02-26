@@ -67,8 +67,8 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 3},
-				new Column {Header = "Тип", Width = 3},
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Тип"},
 				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
 				new Column {Header = "Подгруппа", Width = 6},
 				new Column {Header = "Способ", Width = 6},

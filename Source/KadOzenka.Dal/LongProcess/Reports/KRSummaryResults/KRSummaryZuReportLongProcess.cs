@@ -83,8 +83,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 		{
 			var columns = new List<Column>
 			{
-				new Column{Header = "№ п/п",Width = 3},
-				new Column{Header = "КН",Width = 5},
+				new Column{Header = "№ п/п",Width = 2},
+				new Column{Header = "КН",Width = ColumnWidthForCadastralNumber},
 				new Column{Header = "Тип",Width = 5},
 				new Column{Header = "Площадь",Width = 3},
 				new Column{Header = "Разрешенное использование",Width = 6},

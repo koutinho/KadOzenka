@@ -15,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 	{
 		protected override string ReportName => "Результаты на утверждение";
 		protected override string ProcessName => nameof(ResultsForApprovalLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
@@ -23,7 +22,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 
 		public ResultsForApprovalLongProcess() : base(Log.ForContext<ResultsForApprovalLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 		}
 
 
@@ -72,9 +70,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 3},
-				new Column {Header = "Кадастровый номер", Width = 5},
-				new Column {Header = "Кадастровая стоимость, рублей", Width = 7}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Кадастровая стоимость, рублей", Width = ColumnWidthForDecimals}
 			};
 
 			var counter = 0;

@@ -33,12 +33,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 		{
 			var columns = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 4},
+				new Column {Header = "№ п/п"},
 				new Column {Header = "Кадастровый номер объекта недвижимости", Width = 6},
 				new Column {Header = "Вид объекта недвижимости", Width = 5},
-				new Column {Header = "Общая площадь объекта недвижимости, кв.м.", Width = 4},
-				new Column {Header = "УПКС объекта недвижимости, руб./кв.м.", Width = 4},
-				new Column {Header = "Кадастровая стоимость объекта недвижимости, руб.", Width = 4}
+				new Column {Header = "Общая площадь объекта недвижимости, кв.м."},
+				new Column {Header = "УПКС объекта недвижимости, руб./кв.м."},
+				new Column {Header = "Кадастровая стоимость объекта недвижимости, руб."}
 			};
 
 			var counter = 0;

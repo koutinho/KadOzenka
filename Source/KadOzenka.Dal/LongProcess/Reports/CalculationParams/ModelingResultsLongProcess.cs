@@ -133,9 +133,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 		{
 			var firstPart = new List<Column>
 			{
-				new Column {Header = "№ п/п", Width = 3},
-				new Column {Header = "Номер кадастрового района", Width = 3},
-				new Column {Header = "Вид объекта недвижимости", Width = 3},
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Номер кадастрового района"},
+				new Column {Header = "Вид объекта недвижимости"},
 				new Column {Header = "Кадастровый номер объекта недвижимости", Width = ColumnWidthForCadastralNumber},
 				new Column {Header = "Адрес (местоположение) объекта недвижимости", Width = ColumnWidthForAddresses}
 			};

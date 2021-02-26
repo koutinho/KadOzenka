@@ -83,10 +83,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 		{
 			var columns = new List<Column>
 			{
-				new Column{Header = "№ п/п",Width = 3},
-				new Column{Header = "КН",Width = 5},
+				new Column{Header = "№ п/п",Width = 2},
+				new Column{Header = "КН",Width = ColumnWidthForCadastralNumber},
 				new Column{Header = "Тип",Width = 5},
-				new Column{Header = "Площадь",Width = 3},
+				new Column{Header = "Площадь"},
 				new Column{Header = "Наименование",Width = 6},
 				new Column{Header = "Назначение",Width = 6},
 				new Column{Header = "Адрес",Width = 9},
@@ -95,13 +95,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 				new Column{Header = "Местоположение",Width = 9},
 				new Column{Header = "Кадастровый квартал",Width = 5},
 				new Column{Header = "Кадастровый номер земельного участка",Width = 5},
-				new Column{Header = "Год постройки",Width = 3},
-				new Column{Header = "Год ввода в эксплуатацию",Width = 3},
-				new Column{Header = "Кол-во этажей",Width = 3},
-				new Column{Header = "Подземных этажей",Width = 3},
-				new Column{Header = "Этаж (для помещения)",Width = 3},
+				new Column{Header = "Год постройки"},
+				new Column{Header = "Год ввода в эксплуатацию"},
+				new Column{Header = "Кол-во этажей"},
+				new Column{Header = "Подземных этажей"},
+				new Column{Header = "Этаж (для помещения)"},
 				new Column{Header = "Материал стен",Width = 5},
-				new Column{Header = "Процент готовности",Width = 3},
+				new Column{Header = "Процент готовности"},
 				new Column{Header = "УПКС объекта недвижимости, руб./кв.м.",Width = 7},
 				new Column{Header = "Кадастровая стоимость объекта недвижимости, руб.",Width = 7},
 			};
