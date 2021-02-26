@@ -32,13 +32,7 @@
     <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationStatisticsReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\AdditionalForms\ChangesUploadingReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\AdditionalForms\MarketDataInfoReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\AdditionalForms\ResultsAnalysisReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\CadastralCostDeterminationResults\CadastralCostDeterminationResultsMainReport.cs">
@@ -57,12 +51,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\GeneralizedIndicators\UPKSAverageValuesByCadastralQuartersReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\KRSummaryResults\KRSummaryResultsOksReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\KRSummaryResults\KRSummaryResultsZuReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\MinMaxAverageByGroups\BaseMinMaxAverageByGroupsReport.cs">
@@ -105,9 +93,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ResultsByCadastralDistrictBaseReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageByAdministrativeDistrictsReport.cs">

@@ -12,10 +12,10 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 {
-	public class OksReportLongProcess : ALinearReportsLongProcessTemplate<OksReportLongProcess.KRSummaryResultsOksDto, OksReportLongProcessInputParameters>
+	public class KRSummaryOksReportLongProcess : ALinearReportsLongProcessTemplate<KRSummaryOksReportLongProcess.KRSummaryResultsOksDto, OksReportLongProcessInputParameters>
 	{
 		protected override string ReportName => "Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ОКС)";
-		protected override string ProcessName => nameof(OksReportLongProcess);
+		protected override string ProcessName => nameof(KRSummaryOksReportLongProcess);
 		protected StatisticalDataService StatisticalDataService { get; set; }
 		protected RosreestrRegisterService RosreestrRegisterService { get; set; }
 		protected GbuCodRegisterService GbuCodRegisterService { get; set; }
@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 
 		private readonly string _reportOksSqlFileName = "KRSummaryResultsOKS";
 
-		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())
+		public KRSummaryOksReportLongProcess() : base(Log.ForContext<KRSummaryOksReportLongProcess>())
 		{
 			StatisticalDataService = new StatisticalDataService();
 			RosreestrRegisterService = new RosreestrRegisterService();
