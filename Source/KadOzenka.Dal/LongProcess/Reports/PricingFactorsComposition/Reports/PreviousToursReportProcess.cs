@@ -6,7 +6,6 @@ using System.Linq;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
@@ -19,6 +18,7 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
+    //запрос для подбора данных для тестирования лежит в файле previous_tours_test_data.sql
     //TODO поменять namespace в таблице 
     public class PreviousToursReportProcess : ALinearReportsLongProcessTemplate<PreviousTourReportItem, PreviousToursReportInputParameters>
     {

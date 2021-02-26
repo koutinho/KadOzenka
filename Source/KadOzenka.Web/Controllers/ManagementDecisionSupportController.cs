@@ -552,7 +552,7 @@ namespace KadOzenka.Web.Controllers
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
-	        PreviousToursReportProcess.AddProcessToQueue(inputParameters);
+			new PreviousToursReportProcess().AddToQueue(inputParameters);
 
 			return Ok();
 		}
