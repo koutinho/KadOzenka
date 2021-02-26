@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using Core.Td;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -48,9 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract string ReportName { get; }
 		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
-		//TODO remove queryManager as input parameter
 		protected abstract int GetMaxItemsCount(TInputParameters inputParameters);
-		protected abstract Func<TReportItem, string> GetSortingCondition();
 		protected abstract List<Column> GenerateReportHeaders();
 		protected abstract List<object> GenerateReportReportRow(int index, TReportItem item);
 		protected abstract string GetSql(int packageIndex, int packageSize);
@@ -60,7 +59,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		}
 
-		protected virtual Func<TReportItem, object> GetSecondSortingCondition()
+		protected virtual Func<IEnumerable<TReportItem>, IEnumerable<TReportItem>> FuncForDownloadedItems()
 		{
 			return null;
 		}
@@ -142,12 +141,11 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						List<TReportItem> currentOperations;
 						using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
 						{
-							//todo убрать условие
-							var orderedItems = GetReportItems(sql).OrderBy(GetSortingCondition());
-							
-							currentOperations = GetSecondSortingCondition() != null 
-								? orderedItems.ThenBy(GetSecondSortingCondition()).ToList() 
-								: GetReportItems(sql).OrderBy(GetSortingCondition()).ToList();
+							currentOperations = GetReportItems(sql);
+
+							var func = FuncForDownloadedItems();
+							if (func != null)
+								currentOperations = func(currentOperations).ToList();
 
 							processedItemsCount += currentOperations.Count;
 							Logger.Debug("Выкачено {ProcessedItemsCount} записей из {MaxItemsCount}", processedItemsCount, maxItemsCount);

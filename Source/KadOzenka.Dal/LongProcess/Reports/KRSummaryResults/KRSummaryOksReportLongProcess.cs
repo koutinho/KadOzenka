@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Core.Register;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
@@ -69,9 +70,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 			return string.Format(BaseSql, unitsCondition);
 		}
 
-		protected override Func<KRSummaryResultsOksDto, string> GetSortingCondition()
+		protected override Func<IEnumerable<KRSummaryResultsOksDto>, IEnumerable<KRSummaryResultsOksDto>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralNumber;
+			return x => x.OrderBy(y => y.CadastralNumber);
 		}
 
 		protected override string GenerateReportTitle()

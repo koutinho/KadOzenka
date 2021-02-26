@@ -50,11 +50,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 			return GetMaxUnitsCount(UnitsConditionToCount);
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
-		{
-			return x => "";
-		}
-
 		protected override List<Column> GenerateReportHeaders()
 		{
 			var columns = new List<Column>();

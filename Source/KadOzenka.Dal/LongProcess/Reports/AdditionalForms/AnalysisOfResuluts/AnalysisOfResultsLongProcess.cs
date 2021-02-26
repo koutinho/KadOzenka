@@ -47,11 +47,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts
 			return 0;
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
-		{
-			return x => "";
-		}
-
 		protected override string GenerateReportTitle()
 		{
 			return "Анализ результатов";

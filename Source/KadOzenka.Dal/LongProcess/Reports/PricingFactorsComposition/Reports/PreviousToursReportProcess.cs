@@ -95,13 +95,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	        return string.Format(BaseSql, unitsCondition);
         }
 
-        protected override Func<PreviousTourReportItem, string> GetSortingCondition()
+        protected override Func<IEnumerable<PreviousTourReportItem>, IEnumerable<PreviousTourReportItem>> FuncForDownloadedItems()
         {
-	        return x => x.CadastralNumber;
-        }
-        protected override Func<PreviousTourReportItem, object> GetSecondSortingCondition()
-        {
-	        return x => x.TourYear;
+	        return x => x.OrderBy(y => y.CadastralNumber).ThenBy(x => x.TourYear);
         }
 
         protected override List<PreviousTourReportItem> GetReportItems(string sql)
