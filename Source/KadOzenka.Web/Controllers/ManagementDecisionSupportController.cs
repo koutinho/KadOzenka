@@ -5,6 +5,7 @@ using System.Threading;
 using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
@@ -548,6 +549,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -585,6 +587,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.CadastralCostDeterminationResults.CadastralCostDeterminationResultsBaseReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -619,6 +622,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -653,6 +657,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForBuildingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -687,6 +692,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForConstructionsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -721,6 +727,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForUncompletedBuildingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -755,6 +762,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForPlacementsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -789,6 +797,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForParkingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -826,6 +835,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.CalculationParams.ModelingResultsLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -860,6 +870,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForOksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -899,6 +910,7 @@ namespace KadOzenka.Web.Controllers
 	        ////TODO для тестирования
 //	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 //	        {
+//				UserId = SRDSession.GetCurrentUserId(),
 //	        	Status_Code = Status.Added,
 //	        	Parameters = inputParameters.SerializeToXml()
 //	        }, new CancellationToken());
@@ -937,6 +949,7 @@ namespace KadOzenka.Web.Controllers
 	        ////TODO для тестирования
 //	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 //	        {
+//				UserId = SRDSession.GetCurrentUserId(),
 //	        	Status_Code = Status.Added,
 //	        	Parameters = inputParameters.SerializeToXml()
 //	        }, new CancellationToken());
@@ -972,6 +985,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
