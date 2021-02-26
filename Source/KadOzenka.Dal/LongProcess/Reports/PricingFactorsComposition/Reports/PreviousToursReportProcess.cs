@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -7,114 +8,258 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
+using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
     //TODO поменять namespace в таблице 
-    public class PreviousToursReportProcess : LongProcess
+    public class PreviousToursReportProcess : ALinearReportsLongProcessTemplate<PreviousTourReportItem, PreviousToursReportInputParameters>
     {
         private readonly ExcelFile _excelTemplate;
         private readonly ExcelWorksheet _mainWorkSheet;
         private int _currentRowIndex;
         private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
         private PreviousToursService PreviousToursService { get; set; }
-        private CustomReportsService CustomReportsService { get; }
+        private FactorsService FactorsService { get; set; }
+        private ModelingService ModelingService { get; set; }
+        protected override string ReportName => "Состав данных о результатах кадастровой оценки предыдущих туров";
+        protected override string ProcessName => nameof(PreviousToursReportProcess);
+        private List<FactorsService.PricingFactors> GroupedFactors { get; set; }
+        private List<FactorsService.Attribute> AllAttributes { get; set; }
+        private List<long> TaskIds { get; set; }
+        private string TaskIdsStr { get; set; }
+        private string BaseUnitsCondition { get; set; }
+        private string BaseSql { get; set; }
+        private long GroupId { get; set; }
+        private long? ModelId { get; set; }
+       
 
 
-        public PreviousToursReportProcess()
+        public PreviousToursReportProcess() : base(Log.ForContext<PreviousToursReportProcess>())
         {
-            PreviousToursService = new PreviousToursService();
-            CustomReportsService = new CustomReportsService();
+	        PreviousToursService = new PreviousToursService();
+            FactorsService = new FactorsService();
+            ModelingService = new ModelingService();
+
             _excelTemplate = new ExcelFile();
             _mainWorkSheet = _excelTemplate.Worksheets.Add("Лист 1");
             _mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
         }
 
-        public static void AddProcessToQueue(PreviousToursReportInputParameters inputParameters)
+        protected override bool AreInputParametersValid(PreviousToursReportInputParameters inputParameters)
         {
-            LongProcessManager.AddTaskToQueue(nameof(PreviousToursReportProcess), parameters: inputParameters.SerializeToXml());
+	        return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0 && inputParameters.GroupId != 0;
         }
 
-        public override void StartProcess(OMProcessType processType, OMQueue processQueue,
-            CancellationToken cancellationToken)
+        protected override void PrepareVariables(PreviousToursReportInputParameters inputParameters)
         {
-            WorkerCommon.SetProgress(processQueue, 0);
-            PreviousToursReportInputParameters inputParameters = null;
-            if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
+	        TaskIds = inputParameters.TaskIds;
+            TaskIdsStr = string.Join(',', inputParameters.TaskIds);
+
+	        GroupId = inputParameters.GroupId;
+	        ModelId = ModelingService.GetActiveModelEntityByGroupId(GroupId)?.Id;
+
+            GroupedFactors = ModelId == null
+		        ? new List<FactorsService.PricingFactors>()
+		        : FactorsService.GetGroupedModelFactors(ModelId.Value, _queryManager);
+            AllAttributes = GroupedFactors.SelectMany(x => x.Attributes).OrderBy(x => x.Name).ToList();
+
+	        BaseUnitsCondition = $@" where unit.task_id IN ({TaskIdsStr}) and unit.group_id = {GroupId} and unit.PROPERTY_TYPE_CODE <> 2190 ";
+
+            BaseSql = GetBaseSql();
+        }
+
+        protected override ReportsConfig GetProcessConfig()
+        {
+	        var defaultPackageSize = 200000;
+	        var defaultThreadsCount = 2;
+
+	        return GetProcessConfigFromSettings("PreviousTours", defaultPackageSize, defaultThreadsCount);
+        }
+
+        protected override int GetMaxItemsCount(PreviousToursReportInputParameters inputParameters, QueryManager queryManager)
+        {
+	        return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+        }
+
+        protected override string GetSql(int packageIndex, int packageSize)
+        {
+	        var unitsCondition = $@"{BaseUnitsCondition}
+										order by unit.id 
+										limit {packageSize} offset {packageIndex * packageSize}";
+
+	        return string.Format(BaseSql, unitsCondition);
+        }
+
+        protected override Func<PreviousTourReportItem, string> GetSortingCondition()
+        {
+	        return x => x.CadastralNumber;
+        }
+        protected override Func<PreviousTourReportItem, object> GetSecondSortingCondition()
+        {
+	        return x => x.TourYear;
+        }
+
+        protected override List<PreviousTourReportItem> GetReportItems(string sql)
+        {
+	        var dataTable = _queryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+
+            var items = new List<PreviousTourReportItem>();
+            foreach (DataRow row in dataTable.Rows)
             {
-                inputParameters = processQueue.Parameters.DeserializeFromXml<PreviousToursReportInputParameters>();
+                var item = new PreviousTourReportItem
+                {
+                    CadastralNumber = row[nameof(PreviousTourReportItem.CadastralNumber)].ParseToStringNullable(),
+                    Square = row[nameof(PreviousTourReportItem.Square)].ParseToDecimalNullable(),
+                    CadastralCost = row[nameof(PreviousTourReportItem.CadastralCost)].ParseToDecimalNullable(),
+                    TourYear = row[nameof(PreviousTourReportItem.TourYear)].ParseToLongNullable(),
+                    ResultName = row[nameof(PreviousTourReportItem.ResultName)].ParseToStringNullable(),
+                    ResultPurpose = row[nameof(PreviousTourReportItem.ResultPurpose)].ParseToStringNullable(),
+                    PermittedUse = row[nameof(PreviousTourReportItem.PermittedUse)].ParseToStringNullable(),
+                    Address = row[nameof(PreviousTourReportItem.Address)].ParseToStringNullable(),
+                    Location = row[nameof(PreviousTourReportItem.Location)].ParseToStringNullable(),
+                    ParentCadastralNumberForOks = row[nameof(PreviousTourReportItem.ParentCadastralNumberForOks)].ParseToStringNullable(),
+                    BuildYear = row[nameof(PreviousTourReportItem.BuildYear)].ParseToStringNullable(),
+                    CommissioningYear = row[nameof(PreviousTourReportItem.CommissioningYear)].ParseToStringNullable(),
+                    FloorsNumber = row[nameof(PreviousTourReportItem.FloorsNumber)].ParseToStringNullable(),
+                    UndergroundFloorsNumber = row[nameof(PreviousTourReportItem.UndergroundFloorsNumber)].ParseToStringNullable(),
+                    WallMaterial = row[nameof(PreviousTourReportItem.WallMaterial)].ParseToStringNullable(),
+                    ObjectType = row[nameof(PreviousTourReportItem.ObjectType)].ParseToStringNullable(),
+                    CadastralQuartal = row[nameof(PreviousTourReportItem.CadastralQuartal)].ParseToStringNullable(),
+                    SubGroupNumber = row[nameof(PreviousTourReportItem.SubGroupNumber)].ParseToStringNullable(),
+                    Factors = FactorsService.ProcessModelFactors(row, AllAttributes)
+                };
+
+                items.Add(item);
             }
-            if (inputParameters?.TaskIds == null || inputParameters.TaskIds.Count == 0) 
-            {
-                WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-                WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-                NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}",
-                    "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
-                return;
-            }
 
-            try
-            {
-                AddLog(processQueue, "Начат сбор данных");
-                var reportInfo = PreviousToursService.GetReportInfo(inputParameters.TaskIds, inputParameters.GroupId);
-                AddLog(processQueue, "Закончен сбор данных");
-                WorkerCommon.SetProgress(processQueue, 50);
+            return items;
+        }
 
-                var tourYears = reportInfo.Tours.Select(x => x.Year.ToString()).ToList();
-                var pricingFactorNames = reportInfo.PricingFactors.Select(x => x.Name).ToList();
+        protected override string GenerateReportTitle()
+        {
+	        throw new NotImplementedException();
+        }
 
-                AddLog(processQueue, "Начато формирование файла");
-                GenerateReportHeader(reportInfo.Title, reportInfo.ColumnTitles, tourYears, pricingFactorNames);
-                GenerateReportBody(reportInfo, tourYears, pricingFactorNames);
-                AddLog(processQueue, "Закончено формирование файла");
+        protected override List<GbuReportService.Column> GenerateReportHeaders()
+        {
+	        throw new NotImplementedException();
+        }
 
-                var reportDownloadUrl = SaveReport();
-                var message = "Операция успешно завершена." +
-                              $@"<a href=""{reportDownloadUrl}"">Скачать результат</a>";
-                NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
+        protected override List<object> GenerateReportReportRow(int index, PreviousTourReportItem item)
+        {
+	       throw new NotImplementedException();
+        }
 
-                WorkerCommon.SetProgress(processQueue, 100);
-            }
-            catch (Exception ex)
-            {
-                var errorId = ErrorManager.LogError(ex);
-                var message = $"Ошибка построения (журнал: {errorId})";
-                NotificationSender.SendNotification(processQueue, $"Отчет {_reportName}", message);
-                throw;
-            }
+
+        protected override MemoryStream GetReportStream(List<PreviousTourReportItem> reportItems)
+        {
+	        var tourYears = GetToursByTasks(TaskIds).OrderBy(x => x.Year).Select(x => x.Year.ToString()).ToList();
+	        var pricingFactorNames = AllAttributes.Select(x => x.Name).ToList();
+	        
+	        GenerateReportHeader(tourYears, pricingFactorNames);
+	        
+	        GenerateReportBody(reportItems, tourYears, pricingFactorNames);
+
+            //TODO добавить стилей
+	        //_excelFile.Worksheets[0].Columns[column].SetWidth(width, LengthUnit.Centimeter);
+
+            //попытка принудительно освободить память
+            reportItems = null;
+	        GC.Collect();
+
+	        var stream = new MemoryStream();
+	        _excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+	        stream.Seek(0, SeekOrigin.Begin);
+
+	        return stream;
         }
 
 
         #region Support Methods
 
-        private void GenerateReportHeader(string reportTitle, List<string> columnTitles, List<string> tourYears, List<string> pricingFactorNames)
+        private string GetBaseSql()
         {
-            var columnsWithoutTourSeparation = new List<string>
-            {
-                "№ п/п",
-                "Кадастровый номер"
-            };
+            var sqlFileContent = StatisticalDataService.GetSqlFileContent("PricingFactorsComposition", "PreviousToursForLongProcess");
 
-            var allColumnTitles = new List<string>();
-            allColumnTitles.AddRange(columnsWithoutTourSeparation);
-            allColumnTitles.AddRange(columnTitles);
-            allColumnTitles.AddRange(pricingFactorNames);
+            var rosreestrRegisterService = new RosreestrRegisterService();
 
-            //для колонки с № п/п и КН  не нужны подзаголовки с турами
-            var tourColumns = new List<string>();
-            tourColumns.AddRange(columnsWithoutTourSeparation);
-            tourColumns.AddRange(Enumerable
-                .Repeat(tourYears, allColumnTitles.Count - columnsWithoutTourSeparation.Count)
-                .SelectMany(x => x.ToList()).ToList());
+            var oksName = rosreestrRegisterService.GetObjectNameAttribute();
+            var zuName = rosreestrRegisterService.GetParcelNameAttribute();
+            var buildingPurpose = rosreestrRegisterService.GetBuildingPurposeAttribute();
+            var placementPurpose = rosreestrRegisterService.GetPlacementPurposeAttribute();
+            var constructionPurpose = rosreestrRegisterService.GetConstructionPurposeAttribute();
+            var permittedUse = rosreestrRegisterService.GetTypeOfUseByDocumentsAttribute();
+            var address = rosreestrRegisterService.GetAddressAttribute();
+            var location = rosreestrRegisterService.GetLocationAttribute();
+            var parentCadastralNumberForOks = rosreestrRegisterService.GetParcelAttribute();
+            var buildYear = rosreestrRegisterService.GetBuildYearAttribute();
+            var commissioningYear = rosreestrRegisterService.GetCommissioningYearAttribute();
+            var floorsNumber = rosreestrRegisterService.GetFloorsNumberAttribute();
+            var undergroundFloorsNumber = rosreestrRegisterService.GetUndergroundFloorsNumberAttribute();
+            var wallMaterial = rosreestrRegisterService.GetWallMaterialAttribute();
 
-            AddTitle(reportTitle, allColumnTitles.Count * tourYears.Count);
-            AddHeaders(allColumnTitles, tourYears.Count, columnsWithoutTourSeparation.Count);
-            AddRow(tourColumns, true);
+            var sqlForModelFactors = FactorsService.GetSqlForModelFactors(ModelId, GroupedFactors);
+            if (!string.IsNullOrWhiteSpace(sqlForModelFactors.Columns))
+                sqlForModelFactors.Columns = $", {sqlForModelFactors.Columns}";
+
+            var sqlWithParameters = string.Format(sqlFileContent, "{0}", GroupId, oksName.Id,
+                zuName.Id, buildingPurpose.Id, placementPurpose.Id, constructionPurpose.Id, permittedUse.Id, address.Id,
+                location.Id, parentCadastralNumberForOks.Id, buildYear.Id, commissioningYear.Id, floorsNumber.Id,
+                undergroundFloorsNumber.Id, wallMaterial.Id, sqlForModelFactors.Columns, sqlForModelFactors.Tables);
+
+            return sqlWithParameters;
         }
+
+        private List<OMTour> GetToursByTasks(List<long> taskIds)
+        {
+            return OMTask.Where(x => taskIds.Contains(x.Id))
+                .Select(x => new
+                {
+                    x.ParentTour.Id,
+                    x.ParentTour.Year
+                })
+                .OrderBy(x => x.ParentTour.Year)
+                .Execute()
+                .Select(x => x.ParentTour)
+                .DistinctBy(x => x.Id)
+                .ToList();
+        }
+
+        private void GenerateReportHeader(List<string> tourYears, List<string> pricingFactorNames)
+        {
+			var columnsWithoutTourSeparation = new List<string>
+			{
+				"№ п/п",
+				"Кадастровый номер"
+			};
+
+			var allColumnTitles = new List<string>();
+			allColumnTitles.AddRange(columnsWithoutTourSeparation);
+			allColumnTitles.AddRange(PreviousToursService.ColumnTitles);
+			allColumnTitles.AddRange(pricingFactorNames);
+
+			//для колонки с № п/п и КН  не нужны подзаголовки с турами
+			var tourColumns = new List<string>();
+			tourColumns.AddRange(columnsWithoutTourSeparation);
+			tourColumns.AddRange(Enumerable
+				.Repeat(tourYears, allColumnTitles.Count - columnsWithoutTourSeparation.Count)
+				.SelectMany(x => x.ToList()).ToList());
+
+			AddTitle("Таблица. Состав данных о результатах кадастровой оценки предыдущих туров", allColumnTitles.Count * tourYears.Count);
+			AddHeaders(allColumnTitles, tourYears.Count, columnsWithoutTourSeparation.Count);
+			AddRow(tourColumns, true);
+		}
 
         private void AddTitle(string title, int mergedColumnsCount)
         {
@@ -193,18 +338,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
         /// <summary>
         /// Построчная генерация отчета
         /// </summary>
-        /// <param name="reportInfo"></param>
-        /// <param name="tourYears"></param>
-        /// <param name="pricingFactorNames"></param>
-        private void GenerateReportBody(PreviousToursReportInfo reportInfo, List<string> tourYears, List<string> pricingFactorNames)
+        private void GenerateReportBody(List<PreviousTourReportItem> items, List<string> tourYears, List<string> pricingFactorNames)
         {
             var index = 1;
-            var groupedReportItems = reportInfo.Items.GroupBy(x => x.CadastralNumber).ToList();
+            var groupedReportItems = items.GroupBy(x => x.CadastralNumber).ToList();
             groupedReportItems.ForEach(groupedItem =>
             {
                 var rowValues = new List<string> { index.ToString(), groupedItem.Key };
 
-                reportInfo.ColumnTitles.ForEach(title =>
+                PreviousToursService.ColumnTitles.ForEach(title =>
                 {
                     tourYears.ForEach(tourYear =>
                     {
@@ -226,15 +368,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
                 index++;
                 AddRow(rowValues);
             });
-        }
-
-        private string SaveReport()
-        {
-	        var stream = new MemoryStream();
-	        _excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-	        stream.Seek(0, SeekOrigin.Begin);
-
-	        return CustomReportsService.SaveFile(stream, _reportName, "xlsx");
         }
 
         #endregion

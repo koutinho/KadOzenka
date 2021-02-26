@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +59,11 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected virtual void PrepareVariables(TInputParameters inputParameters)
 		{
 
+		}
+
+		protected virtual Func<TReportItem, object> GetSecondSortingCondition()
+		{
+			return null;
 		}
 
 		protected virtual List<TReportItem> GetReportItems(string sql)
@@ -137,7 +143,13 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						List<TReportItem> currentOperations;
 						using (Logger.TimeOperation("Сбор данных для пакета №{i}", i))
 						{
-							currentOperations = GetReportItems(sql).OrderBy(GetSortingCondition()).ToList();
+							//todo убрать условие
+							var orderedItems = GetReportItems(sql).OrderBy(GetSortingCondition());
+							
+							currentOperations = GetSecondSortingCondition() != null 
+								? orderedItems.ThenBy(GetSecondSortingCondition()).ToList() 
+								: GetReportItems(sql).OrderBy(GetSortingCondition()).ToList();
+
 							processedItemsCount += currentOperations.Count;
 							Logger.Debug("Выкачено {ProcessedItemsCount} записей из {MaxItemsCount}", processedItemsCount, maxItemsCount);
 						}
@@ -224,12 +236,25 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		private void GenerateReport(List<TReportItem> reportItems)
 		{
+			var stream = GetReportStream(reportItems);
+
+			lock (_locker)
+			{
+				using (Logger.TimeOperation("Добавление zip-файла"))
+				{
+					CustomReportsService.AddExcelFileToGeneralZipArchive(stream, ReportName);
+				}
+			}
+		}
+
+		protected virtual MemoryStream GetReportStream(List<TReportItem> reportItems)
+		{
 			var excelFileGenerator = new GemBoxExcelFileGenerator();
 
 			var reportTitle = GenerateReportTitle();
 			var mergedColumnsHeaders = GenerateReportMergedHeaders();
 			var generalColumnsHeaders = GenerateReportHeaders();
-			
+
 			excelFileGenerator.AddTitle(reportTitle, generalColumnsHeaders.Count);
 			excelFileGenerator.AddMergedHeaders(mergedColumnsHeaders);
 			excelFileGenerator.AddSeparateColumnsHeaders(generalColumnsHeaders);
@@ -250,13 +275,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			reportItems = null;
 			GC.Collect();
 
-			lock (_locker)
-			{
-				using (Logger.TimeOperation("Добавление zip-файла"))
-				{
-					CustomReportsService.AddExcelFileToGeneralZipArchive(excelFileGenerator.GetStream(), ReportName);
-				}
-			}
+			return excelFileGenerator.GetStream();
 		}
 
 		#endregion

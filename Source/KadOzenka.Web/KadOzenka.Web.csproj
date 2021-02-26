@@ -252,6 +252,7 @@
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />
@@ -619,6 +620,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql">
@@ -1972,6 +1976,7 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />

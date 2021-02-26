@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			_currentRowIndex++;
 		}
 
-
+		//todo убрать обратоку из цикла
 		public void SetStyle()
 		{
 			var sheet = _excelFile.Worksheets[0];
