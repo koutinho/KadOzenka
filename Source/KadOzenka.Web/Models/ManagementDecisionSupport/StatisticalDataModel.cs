@@ -40,7 +40,8 @@ namespace KadOzenka.Web.Models.ManagementDecisionSupport
 				{(long) StatisticalDataType.KRSummaryResultsZu, nameof(ManagementDecisionSupportController.KRSummaryResultsZuConfiguration)},
 				{(long) StatisticalDataType.ModelingResults, nameof(ManagementDecisionSupportController.ModelingsResultsConfiguration)},
 				{(long) StatisticalDataType.QualityPricingFactorsEncodingResultsOks, nameof(ManagementDecisionSupportController.DataCompositionWithCrviForOksConfiguration)},
-				{(long) StatisticalDataType.QualityPricingFactorsEncodingResultsZu, nameof(ManagementDecisionSupportController.DataCompositionWithCrviForZuConfiguration)}
+				{(long) StatisticalDataType.QualityPricingFactorsEncodingResultsZu, nameof(ManagementDecisionSupportController.DataCompositionWithCrviForZuConfiguration)},
+				{(long) StatisticalDataType.AdditionalFormsMarketDataInfo, nameof(ManagementDecisionSupportController.MarketDataInfoReportConfiguration)}
 			};
 
 		private readonly List<long?> _reportsEnabledWithoutTasks = 

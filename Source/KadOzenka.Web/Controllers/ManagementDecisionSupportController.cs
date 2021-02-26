@@ -22,6 +22,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
+using KadOzenka.Web.Models.ManagementDecisionSupport.AdditionalFormViewModel;
 using KadOzenka.Web.Models.ManagementDecisionSupport.QualityPricingFactorsEncodingResults;
 using KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport;
 using Kendo.Mvc;
@@ -971,7 +972,8 @@ namespace KadOzenka.Web.Controllers
 	        return PartialView("~/Views/ManagementDecisionSupport/Partials/QualityPricingFactorsEncodingResults/DataCompositionWithCrviForZuConfiguration.cshtml", reportConfigurationModel);
         }
 
-        [HttpPost]
+
+		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
         public IActionResult ProcessDataCompositionWithCrviForZuReport(DataCompositionWithCrviForZuConfigurationModel model)
         {
@@ -988,6 +990,39 @@ namespace KadOzenka.Web.Controllers
 			//}, new CancellationToken());
 
 			new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult MarketDataInfoReportConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new MarketDataInfoReportViewModel
+			{
+				TaskIds = model.TaskFilter?.ToList(), 
+				GbuAttributes = GetGbuAttributesTree()
+			};
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/AdditionalForms/MarketDataInfoReportConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult MarketDataInfoReportConfiguration(MarketDataInfoReportViewModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			{
+				Status_Code = Status.Added,
+				Parameters = inputParameters.SerializeToXml()
+			}, new CancellationToken());
+			//new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }

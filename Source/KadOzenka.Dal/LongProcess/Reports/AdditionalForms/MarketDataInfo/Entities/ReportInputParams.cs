@@ -4,8 +4,14 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.Entit
 {
 	public class ReportInputParams
 	{
-		private DateTime? DateFrom { get; set; }
+		public DateTime? DateFrom { get; set; }
 
-		private DateTime? DateTo { get; set; }
+		public DateTime? DateTo { get; set; }
+
+		public long TypeOfUseCodeAttributeId { get; set; }
+
+		public long OksGroupAttributeId { get; set; }
+
+		public long TypeOfUseAttributeId { get; set; }
 	}
 }
