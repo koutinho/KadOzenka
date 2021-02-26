@@ -76,13 +76,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public void AddSeparateColumnsHeaders(List<string> values)
 		{
-			var columnIndex = 0;
-			var row = _excelFile.Worksheets[0].Rows[_currentRowIndex];
-			foreach (var value in values)
-			{
-				row.Cells[columnIndex].SetValue(value);
-				columnIndex++;
-			}
+			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 
 			_currentRowIndex++;
 		}
@@ -105,41 +99,40 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public void AddRow(List<object> values)
 		{
-			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray());
+			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 			_currentRowIndex++;
 		}
 
-		//todo убрать обратоку из цикла
-		public void SetStyle()
-		{
-			var sheet = _excelFile.Worksheets[0];
+		//public void SetStyle()
+		//{
+		//	var sheet = _excelFile.Worksheets[0];
 
-			var countRows = sheet.Rows.Count;
-			var countColumns = sheet.CalculateMaxUsedColumns();
-			var errCount = 0;
+		//	var countRows = sheet.Rows.Count;
+		//	var countColumns = sheet.CalculateMaxUsedColumns();
+		//	var errCount = 0;
 
-			//чтобы не сбросить стиль заголовкка
-			var startRowIndex = _hasTitle ? 1 : 0;
-			for (var i = startRowIndex; i < countRows; i++)
-			{
-				for (var j = 0; j < countColumns; j++)
-				{
-					if (sheet.Rows[i] != null && sheet.Rows[i].Cells[j] != null)
-					{
-						try
-						{
-							sheet.Rows[i].Cells[j].Style = GeneralCellStyle;
-						}
-						catch (Exception ex)
-						{
-							if (errCount < 5)
-								Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
-							errCount++;
-						}
-					}
-				}
-			}
-		}
+		//	//чтобы не сбросить стиль заголовкка
+		//	var startRowIndex = _hasTitle ? 1 : 0;
+		//	for (var i = startRowIndex; i < countRows; i++)
+		//	{
+		//		for (var j = 0; j < countColumns; j++)
+		//		{
+		//			if (sheet.Rows[i] != null && sheet.Rows[i].Cells[j] != null)
+		//			{
+		//				try
+		//				{
+		//					sheet.Rows[i].Cells[j].Style = GeneralCellStyle;
+		//				}
+		//				catch (Exception ex)
+		//				{
+		//					if (errCount < 5)
+		//						Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+		//					errCount++;
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 
 		public MemoryStream GetStream()
 		{

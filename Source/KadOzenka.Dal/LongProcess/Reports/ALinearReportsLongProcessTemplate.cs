@@ -270,7 +270,6 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			}
 
 			excelFileGenerator.SetIndividualWidth(generalColumnsHeaders);
-			excelFileGenerator.SetStyle();
 
 			//попытка принудительно освободить память
 			reportItems = null;

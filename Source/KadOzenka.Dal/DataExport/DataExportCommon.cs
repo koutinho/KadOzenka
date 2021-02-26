@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.DataExport
         /// <summary>
         /// Добавление в Excel строки данных в строку с индексом Row
         /// </summary>
-        public static void AddRow(ExcelWorksheet sheet, int Row, object[] values)
+        public static void AddRow(ExcelWorksheet sheet, int Row, object[] values, CellStyle cellStyle = null)
         {
             int Col = 0;
             foreach (object value in values)
@@ -104,6 +104,10 @@ namespace KadOzenka.Dal.DataExport
                 }
 
                 sheet.Rows[Row].Cells[Col].Style.Borders.SetBorders(GemBox.Spreadsheet.MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+
+                if (cellStyle != null)
+	                sheet.Rows[Row].Cells[Col].Style = cellStyle;
+
                 Col++;
             }
         }

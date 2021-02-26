@@ -189,13 +189,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 				new MergedColumns
 				{
 					OrderNumber = 1,
-					Text = string.Empty,
-					StartColumnIndex = 0,
-					EndColumnIndex =  numberOfColumnsBeforeFactors - 1
-				},
-				new MergedColumns
-				{
-					OrderNumber = 1,
 					Text = "Значения ценообразующих факторов",
 					StartColumnIndex = numberOfColumnsBeforeFactors,
 					EndColumnIndex =  numberOfColumnsBeforeFactors + AllAttributes.Count - 1
