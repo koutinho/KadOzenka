@@ -57,16 +57,38 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 
 		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<Column>();
-			List<string> names = new List<string>{ "№ п/п", "Кадастровый номер", "Тип", "Площадь", "Наименование (для ОКС)/Вид использование (для ЗУ)", "Назначение", "Адрес",
-				"Местоположение", "Оценочная подгруппа 2018","УПКС 2018", "КС 2018", "Кадастровый квартал 2018", "Тип(годовая, ежедневная, обращение)", "Оценочная подгруппа",
-				"УПКС", "КС", "Кадастровый квартал", "Дата изменения в ЕГРН", "Статус", "Изменения", "Минимальное УПКС по КК", "Среднее УПКС по КК", "Максимальное УПКС по КК",
-				"Минимальное УПКС по Зоне", "Среднее УПКС по Зоне", "Максимальное УПКС по Зоне", "Количество раз участие в оценке", "Количество в годовом", "Количество в ежедневках"
+			var columns = new List<Column>
+			{
+				new Column{Header = "№ п/п"},
+				new Column{Header = "Кадастровый номер"},
+				new Column{Header = "Тип"},
+				new Column{Header = "Площадь"},
+				new Column{Header = "Наименование (для ОКС)/Вид использование (для ЗУ)", Width = 6},
+				new Column{Header = "Назначение"},
+				new Column{Header = "Адрес"},
+				new Column{Header = "Местоположение"},
+				new Column{Header = "Оценочная подгруппа 2018", Width = 6},
+				new Column{Header = "УПКС 2018"},
+				new Column{Header = "КС 2018"},
+				new Column{Header = "Кадастровый квартал 2018"},
+				new Column{Header = "Тип(годовая, ежедневная, обращение)"},
+				new Column{Header = "Оценочная подгруппа", Width = 6},
+				new Column{Header = "УПКС"},
+				new Column{Header = "КС"},
+				new Column{Header = "Кадастровый квартал"},
+				new Column{Header = "Дата изменения в ЕГРН"},
+				new Column{Header = "Статус"},
+				new Column{Header = "Изменения"},
+				new Column{Header = "Минимальное УПКС по КК"},
+				new Column{Header = "Среднее УПКС по КК"},
+				new Column{Header = "Максимальное УПКС по КК"},
+				new Column{Header = "Минимальное УПКС по Зоне"},
+				new Column{Header = "Среднее УПКС по Зоне"},
+				new Column{Header = "Максимальное УПКС по Зоне"},
+				new Column{Header = "Количество раз участие в оценке"},
+				new Column{Header = "Количество в годовом"},
+				new Column{Header = "Количество в ежедневках"},
 			};
-			names.ForEach(name => columns.Add(new Column{Header = name, Width = 4}));
-			columns[4].Width = 6;
-			columns[8].Width = 6;
-			columns[13].Width = 6;
 
 			var counter = 0;
 			columns.ForEach(x => x.Index = counter++);

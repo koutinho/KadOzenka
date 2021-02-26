@@ -32,9 +32,6 @@
     <Compile Update="FastReports\StatisticalData\AdditionalForms\CalculationStatisticsReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\StatisticalData\AdditionalForms\MarketDataInfoReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\StatisticalData\CadastralCostDeterminationResults\CadastralCostDeterminationResultsMainReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -87,9 +84,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FastReports\StatisticalData\PricingFactorsComposition\PreviousToursReport.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Update="FastReports\StatisticalData\ResultsByCadastralDistrict\ResultsByCadastralDistrictBaseReport.cs">

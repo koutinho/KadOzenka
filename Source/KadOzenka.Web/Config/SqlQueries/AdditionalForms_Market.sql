@@ -12,7 +12,7 @@ select * from (
 		L1_R100.URL AS Link,
 		L1_R100.PHONE_NUMBER AS Phone,
 		COALESCE(L1_R100.LAST_DATE_UPDATE, L1_R100.PARSER_TIME) as Date,
-		L1_R100.DESCRIPTION as AdText,
+		--L1_R100.DESCRIPTION as AdText,
 		L1_R100.PROPERTY_TYPETS_CIPJS as TypeOfProperty,
 		L1_R100.ROOMS_COUNT as RoomCount,
 		L1_R100.DEAL_TYPE as DealSuggestion,
@@ -80,4 +80,4 @@ from market_data d
 	left outer join TypeOfUseCodeAttrValues TypeOfUseCode on d.GbuObjectId=TypeOfUseCode.objectId
 	left outer join OksGroupAttrValues OksGroup on d.GbuObjectId=OksGroup.objectId
 	left outer join TypeOfUseAttrValues TypeOfUse on d.GbuObjectId=TypeOfUse.objectId
-	
+	limit {5} offset {6} * {5}

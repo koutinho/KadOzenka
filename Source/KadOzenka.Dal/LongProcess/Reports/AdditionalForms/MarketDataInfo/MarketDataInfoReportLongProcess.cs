@@ -40,14 +40,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 			return GetProcessConfigFromSettings(" MarketDataInfoReport", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportInputParams inputParameters, QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportInputParams inputParameters)
 		{
-			if (inputParameters != null && inputParameters.DateFrom < inputParameters.DateTo)
-			{
-				return GetMaxAnalogCount(CommonConditionToCount, queryManager);
-			}
-
-			return 0;
+			return GetMaxAnalogCount(CommonConditionToCount);
 		}
 
 		protected override Func<ReportItem, string> GetSortingCondition()
@@ -61,15 +56,33 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 		}
 
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				}
+				new Column {Header = "№ п/п"},
+				new Column {Header = "Уникальный номер"},
+				new Column {Header = "Кадастровый номер", Width = 4},
+				new Column {Header = "Группа сегмента рынка"},
+				new Column {Header = "Код вида использования"},
+				new Column {Header = "Группа ОКС"},
+				new Column {Header = "Код субъекта РФ"},
+				new Column {Header = "Код муниципального образования (ОКТМО)"},
+				new Column {Header = "Адресный ориентир", Width = 6},
+				new Column {Header = "Метро"},
+				new Column {Header = "Источник информации"},
+				new Column {Header = "Адрес ссылки"},
+				new Column {Header = "Номер телефона"},
+				new Column {Header = "Дата предложения (сделки)"},
+				new Column {Header = "Вид объекта недвижимости"},
+				new Column {Header = "Вид использования (функциональное назначение)"},
+				new Column {Header = "Вид права"},
+				new Column {Header = "Количество комнат"},
+				new Column {Header = "Факт сделки (сделка, предложения)"},
+				new Column {Header = "Площадь"},
+				new Column {Header = "Цена сделки/предложения"},
+				new Column {Header = "Удельная цена сделки/предложения"},
+				new Column {Header = "Удельная годовая ставка аренды"}
 			};
 
 			var counter = 0;
@@ -96,7 +109,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 				item.Link,
 				item.Phone,
 				item.Date?.ToString(DateFormat),
-				item.AdText,
 				item.TypeOfProperty,
 				item.TypeOfUseCode,
 				item.TypeOfRight,
@@ -116,12 +128,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 		protected override void PrepareVariables(ReportInputParams inputParameters)
 		{
 			_inputReportData = inputParameters;
-			CommonConditionToCount = "where PROCESS_TYPE_CODE = 742 " +
-			                         $"and (IS_ACTIVE <> 0 or IS_ACTIVE is null) and (case when {inputParameters.DateFrom} is not null" +
-			                         $" then((LAST_DATE_UPDATE IS NOT NULL AND L1_R100.LAST_DATE_UPDATE >= {inputParameters.DateFrom})" +
-			                         $"or LAST_DATE_UPDATE IS NULL AND L1_R100.PARSER_TIME >= {inputParameters.DateFrom})) else true end)" +
-			                         $"and (case when {inputParameters.DateTo} then ((LAST_DATE_UPDATE IS NOT NULL AND L1_R100.LAST_DATE_UPDATE <= {inputParameters.DateTo})" +
-			                         $"or (LAST_DATE_UPDATE IS NULL AND PARSER_TIME <= {inputParameters.DateTo}))else true end)";
+			var dateFrom = _inputReportData.DateFrom.HasValue
+				? CrossDBSQL.ToDate(_inputReportData.DateFrom.Value)
+				: "null";
+
+			var dateTo = _inputReportData.DateTo.HasValue ? CrossDBSQL.ToDate(_inputReportData.DateTo.Value) : "null";
+			CommonConditionToCount = "where (PROCESS_TYPE_CODE = 742 " +
+			                         $"and (gbu.IS_ACTIVE <> 0 or gbu.IS_ACTIVE is null) and (case when {dateFrom} is not null" +
+			                         $" then((LAST_DATE_UPDATE IS NOT NULL AND LAST_DATE_UPDATE >= {dateFrom})" +
+			                         $"or (LAST_DATE_UPDATE IS NULL AND PARSER_TIME >= {dateFrom})) else true end)" +
+			                         $"and (case when {dateTo} is not null then ((LAST_DATE_UPDATE IS NOT NULL AND LAST_DATE_UPDATE <= {dateTo})" +
+			                         $"or (LAST_DATE_UPDATE IS NULL AND PARSER_TIME <= {dateTo}))else true end))";
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -137,16 +154,19 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 				_inputReportData.DateTo.HasValue ? CrossDBSQL.ToDate(_inputReportData.DateTo.Value) : "null",
 				RegisterCache.GetAttributeData(_inputReportData.TypeOfUseCodeAttributeId).Id,
 				RegisterCache.GetAttributeData(_inputReportData.OksGroupAttributeId).Id,
-				RegisterCache.GetAttributeData(_inputReportData.TypeOfUseAttributeId).Id);
+				RegisterCache.GetAttributeData(_inputReportData.TypeOfUseAttributeId).Id,
+				packageSize,
+				packageIndex
+				);
 
 			return sql;
 		}
 
-		private int GetMaxAnalogCount(string baseCondition, QueryManager queryManager)
+		private int GetMaxAnalogCount(string baseCondition)
 		{
 			var columnName = "count";
-			var countSql = $@"select count(*) as {columnName} from  MARKET_CORE_OBJECT analog {baseCondition}";
-			var dataSet = queryManager.ExecuteSqlStringToDataSet(countSql);
+			var countSql = $@"select count(*) as {columnName} from  MARKET_CORE_OBJECT analog left JOIN GBU_MAIN_OBJECT gbu ON analog.CADASTRAL_NUMBER = gbu.CADASTRAL_NUMBER {baseCondition}";
+			var dataSet = QueryManager.ExecuteSqlStringToDataSet(countSql);
 
 			var count = 0;
 			var row = dataSet.Tables[0]?.Rows[0];

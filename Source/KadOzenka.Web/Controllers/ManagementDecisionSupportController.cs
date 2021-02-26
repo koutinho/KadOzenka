@@ -5,6 +5,7 @@ using System.Threading;
 using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
@@ -1006,12 +1007,13 @@ namespace KadOzenka.Web.Controllers
 	        var inputParameters = model.MapToInputParameters();
 
 			////TODO для тестирования
-			new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
-			{
-				Status_Code = Status.Added,
-				Parameters = inputParameters.SerializeToXml()
-			}, new CancellationToken());
-			//new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().AddToQueue(inputParameters);
+			//new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml(),
+			//	UserId = SRDSession.GetCurrentUserId()
+			//}, new CancellationToken());
+			new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }

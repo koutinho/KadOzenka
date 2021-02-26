@@ -17,7 +17,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.Entit
 		public string Link { get; set; }
 		public string Phone { get; set; }
 		public DateTime? Date { get; set; }
-		public string AdText { get; set; }
 		public string TypeOfProperty { get; set; }
 		public string TypeOfUse { get; set; }
 		public string TypeOfRight { get; set; }
