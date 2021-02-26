@@ -11,6 +11,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
 using SerilogTimings.Extensions;
@@ -171,12 +172,14 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			catch (OperationCanceledException)
 			{
 				message = "Формирование отчета было отменено пользователем";
+				SaveQueueFaultedStatus(processQueue);
 				Logger.Error(message);
 			}
 			catch (Exception exception)
 			{
 				var errorId = ErrorManager.LogError(exception);
 				Logger.Fatal(exception, "Ошибка построения отчета");
+				SaveQueueFaultedStatus(processQueue);
 
 				message = $"Операция завершена с ошибкой: {exception.Message} (Подробнее в журнале: {errorId})";
 			}
@@ -274,6 +277,12 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			GC.Collect();
 
 			return excelFileGenerator.GetStream();
+		}
+
+		private void SaveQueueFaultedStatus(OMQueue processQueue)
+		{
+			processQueue.Status_Code = Status.Faulted;
+			processQueue.Save();
 		}
 
 		#endregion
