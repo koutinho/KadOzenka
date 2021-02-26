@@ -14,7 +14,6 @@
 
 //namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 //{
-//    //TODO поменять namespace в таблице 
 //    public class PreviousToursReportProcessOld : LongProcess
 //    {
 //        private readonly ExcelFile _excelTemplate;

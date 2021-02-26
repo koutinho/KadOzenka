@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CalculationParams.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -88,9 +86,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 					limit {packageSize} offset {packageIndex * packageSize}";
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralDistrict;
+			return x => x.OrderBy(y => y.CadastralDistrict);
 		}
 
 		protected override List<ReportItem> GetReportItems(string sql)

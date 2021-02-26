@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
@@ -63,9 +64,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return string.Format(BaseSql, unitsCondition);
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralNumber;
+			return x => x.OrderBy(y => y.CadastralNumber);
 		}
 
 		protected override string GenerateReportTitle()

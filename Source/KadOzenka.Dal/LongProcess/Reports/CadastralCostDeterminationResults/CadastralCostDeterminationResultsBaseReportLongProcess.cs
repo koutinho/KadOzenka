@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
@@ -110,9 +111,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return sql;
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralDistrict;
+			return x => x.OrderBy(y => y.CadastralDistrict);
 		}
 
 		protected override List<Column> GenerateReportHeaders()

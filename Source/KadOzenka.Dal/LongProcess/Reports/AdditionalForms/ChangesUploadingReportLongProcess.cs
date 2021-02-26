@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
@@ -65,9 +66,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms
             return string.Format(BaseSql, unitsCondition);
         }
 
-        protected override Func<ReportItem, string> GetSortingCondition()
+        protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
         {
-            return x => x.CadastralNumber;
+	        return x => x.OrderBy(y => y.CadastralNumber);
         }
 
         protected override string GenerateReportTitle()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
@@ -58,9 +59,9 @@ namespace KadOzenka.Dal.LongProcess.Reports
 						limit {packageSize} offset {packageIndex * packageSize}";
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralNumber;
+			return x => x.OrderBy(y => y.CadastralNumber);
 		}
 
 		protected override List<Column> GenerateReportHeaders()
