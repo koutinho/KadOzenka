@@ -72,31 +72,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		{
 			var columns = new List<GbuReportService.Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер подгруппы",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Метод оценки",
-					Width = 4
-				}
+				new GbuReportService.Column {Header = "№ п/п", Width = 3},
+				new GbuReportService.Column {Header = "Тип", Width = 3},
+				new GbuReportService.Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new GbuReportService.Column {Header = "Номер подгруппы", Width = 4},
+				new GbuReportService.Column {Header = "Метод оценки", Width = 4}
 			};
 
 			var counter = 0;

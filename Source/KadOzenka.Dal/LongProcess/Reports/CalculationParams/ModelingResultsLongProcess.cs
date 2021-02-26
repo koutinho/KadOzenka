@@ -134,31 +134,11 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 		{
 			var firstPart = new List<GbuReportService.Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер кадастрового района",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Вид объекта недвижимости",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер объекта недвижимости",
-					Width = ColumnWidthForCadastralNumber
-				},
-				new GbuReportService.Column
-				{
-					Header = "Адрес (местоположение) объекта недвижимости",
-					Width = ColumnWidthForAddresses
-				}
+				new GbuReportService.Column {Header = "№ п/п", Width = 3},
+				new GbuReportService.Column {Header = "Номер кадастрового района", Width = 3},
+				new GbuReportService.Column {Header = "Вид объекта недвижимости", Width = 3},
+				new GbuReportService.Column {Header = "Кадастровый номер объекта недвижимости", Width = ColumnWidthForCadastralNumber},
+				new GbuReportService.Column {Header = "Адрес (местоположение) объекта недвижимости", Width = ColumnWidthForAddresses}
 			};
 
 			var factors = new List<GbuReportService.Column>();

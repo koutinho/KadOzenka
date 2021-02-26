@@ -81,81 +81,21 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		{
 			var columns = new List<GbuReportService.Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип объекта",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = ColumnWidthForCadastralNumber
-				},
-				new GbuReportService.Column
-				{
-					Header = "Площадь",
-					Width = ColumnWidthForDecimals
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Разрешенное использование",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Адрес",
-					Width = ColumnWidthForAddresses
-				},
-				new GbuReportService.Column
-				{
-					Header = "Местоположение",
-					Width = ColumnWidthForAddresses
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый квартал",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Источник информации о нахождении на земельном участке других связанных с ним объектов недвижимости",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Сегмент",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование вида использования",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Код вида использования",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Источник информации кода вида использования",
-					Width = 3
-				}
+				new GbuReportService.Column {Header = "№ п/п", Width = 3},
+				new GbuReportService.Column {Header = "Тип объекта", Width = 3},
+				new GbuReportService.Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new GbuReportService.Column {Header = "Площадь", Width = ColumnWidthForDecimals},
+				new GbuReportService.Column {Header = "Наименование", Width = 3},
+				new GbuReportService.Column {Header = "Разрешенное использование", Width = 3},
+				new GbuReportService.Column {Header = "Адрес", Width = ColumnWidthForAddresses},
+				new GbuReportService.Column {Header = "Местоположение", Width = ColumnWidthForAddresses},
+				new GbuReportService.Column {Header = "Кадастровый квартал", Width = 3},
+				new GbuReportService.Column {Header = "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости", Width = 3},
+				new GbuReportService.Column {Header = "Источник информации о нахождении на земельном участке других связанных с ним объектов недвижимости", Width = 3},
+				new GbuReportService.Column {Header = "Сегмент", Width = 3},
+				new GbuReportService.Column {Header = "Наименование вида использования", Width = 3},
+				new GbuReportService.Column {Header = "Код вида использования", Width = 3},
+				new GbuReportService.Column {Header = "Источник информации кода вида использования", Width = 3}
 			};
 
 			var counter = 0;

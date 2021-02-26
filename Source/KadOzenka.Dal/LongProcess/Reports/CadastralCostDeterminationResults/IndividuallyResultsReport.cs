@@ -32,36 +32,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 		{
 			var columns = new List<GbuReportService.Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер объекта недвижимости",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Вид объекта недвижимости",
-					Width = 5
-				},
-				new GbuReportService.Column
-				{
-					Header = "Общая площадь объекта недвижимости, кв.м.",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "УПКС объекта недвижимости, руб./кв.м.",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровая стоимость объекта недвижимости, руб.",
-					Width = 4
-				}
+				new GbuReportService.Column {Header = "№ п/п", Width = 4},
+				new GbuReportService.Column {Header = "Кадастровый номер объекта недвижимости", Width = 6},
+				new GbuReportService.Column {Header = "Вид объекта недвижимости", Width = 5},
+				new GbuReportService.Column {Header = "Общая площадь объекта недвижимости, кв.м.", Width = 4},
+				new GbuReportService.Column {Header = "УПКС объекта недвижимости, руб./кв.м.", Width = 4},
+				new GbuReportService.Column {Header = "Кадастровая стоимость объекта недвижимости, руб.", Width = 4}
 			};
 
 			var counter = 0;
@@ -69,5 +45,5 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 
 			return columns;
 		}
-	}
+    }
 }
