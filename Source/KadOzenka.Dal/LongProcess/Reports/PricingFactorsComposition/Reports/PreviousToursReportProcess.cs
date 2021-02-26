@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using Core.ErrorManagment;
-using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
@@ -16,7 +14,6 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using Serilog;
 
@@ -25,13 +22,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
     //TODO поменять namespace в таблице 
     public class PreviousToursReportProcess : ALinearReportsLongProcessTemplate<PreviousTourReportItem, PreviousToursReportInputParameters>
     {
-        private readonly ExcelFile _excelTemplate;
+        private readonly ExcelFile _excelFile;
         private readonly ExcelWorksheet _mainWorkSheet;
         private int _currentRowIndex;
-        private string _reportName = "\"Состав данных о результатах кадастровой оценки предыдущих туров\"";
-        private PreviousToursService PreviousToursService { get; set; }
-        private FactorsService FactorsService { get; set; }
-        private ModelingService ModelingService { get; set; }
+        private PreviousToursService PreviousToursService { get; }
+        private FactorsService FactorsService { get; }
+        private ModelingService ModelingService { get; }
         protected override string ReportName => "Состав данных о результатах кадастровой оценки предыдущих туров";
         protected override string ProcessName => nameof(PreviousToursReportProcess);
         private List<FactorsService.PricingFactors> GroupedFactors { get; set; }
@@ -51,9 +47,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
             FactorsService = new FactorsService();
             ModelingService = new ModelingService();
 
-            _excelTemplate = new ExcelFile();
-            _mainWorkSheet = _excelTemplate.Worksheets.Add("Лист 1");
-            _mainWorkSheet.Cells.Style.Font.Name = "Times New Roman";
+            _excelFile = new ExcelFile();
+            _mainWorkSheet = _excelFile.Worksheets.Add("Лист 1");
         }
 
         protected override bool AreInputParametersValid(PreviousToursReportInputParameters inputParameters)
@@ -171,15 +166,18 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	        
 	        GenerateReportBody(reportItems, tourYears, pricingFactorNames);
 
-            //TODO добавить стилей
-	        //_excelFile.Worksheets[0].Columns[column].SetWidth(width, LengthUnit.Centimeter);
+	        var lastUsedColumnIndex = _mainWorkSheet.CalculateMaxUsedColumns();
+	        for (var i = 0; i < lastUsedColumnIndex; i++)
+	        {
+		        _mainWorkSheet.Columns[i].SetWidth(4, LengthUnit.Centimeter);
+            }
 
-            //попытка принудительно освободить память
+	        //попытка принудительно освободить память
             reportItems = null;
 	        GC.Collect();
 
 	        var stream = new MemoryStream();
-	        _excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+	        _excelFile.Save(stream, SaveOptions.XlsxDefault);
 	        stream.Seek(0, SeekOrigin.Begin);
 
 	        return stream;
@@ -261,11 +259,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			AddRow(tourColumns, true);
 		}
 
-        private void AddTitle(string title, int mergedColumnsCount)
+        private void AddTitle(string title, int allColumnsCount)
         {
-            mergedColumnsCount--;
-            var startColumnIndex = 0;
-            var endColumnIndex = startColumnIndex + mergedColumnsCount;
+	        var startColumnIndex = 0;
+            var endColumnIndex = startColumnIndex + allColumnsCount - 1;
 
             _mainWorkSheet.Rows[_currentRowIndex].Cells[startColumnIndex].SetValue(title);
 
@@ -328,9 +325,10 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
                 VerticalAlignment = VerticalAlignmentStyle.Center,
                 WrapText = true
             };
+            style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 
-            if(isHeaderCellStyle)
-                style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+            if (isHeaderCellStyle)
+	            style.Font.Weight = ExcelFont.BoldWeight;
 
             return style;
         }
