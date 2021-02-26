@@ -27,8 +27,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		where TInputParameters : class
 	{
 		private readonly object _locker;
-		//TODO rename
-		protected readonly QueryManager _queryManager;
+		protected readonly QueryManager QueryManager;
 		private string MessageSubject => $"Отчет '{ReportName}'";
 
 		protected int ColumnWidthForDates = 3;
@@ -40,7 +39,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected ALinearReportsLongProcessTemplate(ILogger logger) : base(logger)
 		{
 			_locker = new object();
-			_queryManager = new QueryManager();
+			QueryManager = new QueryManager();
 			StatisticalDataService = new StatisticalDataService();
 		}
 
@@ -50,7 +49,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
 		//TODO remove queryManager as input parameter
-		protected abstract int GetMaxItemsCount(TInputParameters inputParameters, QueryManager queryManager);
+		protected abstract int GetMaxItemsCount(TInputParameters inputParameters);
 		protected abstract Func<TReportItem, string> GetSortingCondition();
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
 		protected abstract List<object> GenerateReportReportRow(int index, TReportItem item);
@@ -68,7 +67,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		protected virtual List<TReportItem> GetReportItems(string sql)
 		{
-			return _queryManager.ExecuteSql<TReportItem>(sql);
+			return QueryManager.ExecuteSql<TReportItem>(sql);
 		}
 
 		protected virtual string GenerateReportTitle()
@@ -98,7 +97,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			_queryManager.SetBaseToken(cancellationToken);
+			QueryManager.SetBaseToken(cancellationToken);
 			Logger.ForContext("InputParameters", processQueue.Parameters).Debug("Начат фоновый процесс {ProcessDescription}. Входные параметры", processType.Description);
 			WorkerCommon.SetProgress(processQueue, 0);
 
@@ -117,7 +116,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				var config = GetProcessConfig();
 				using (Logger.TimeOperation("Общее время обработки всех пакетов"))
 				{
-					var maxItemsCount = GetMaxItemsCount(parameters, _queryManager);
+					var maxItemsCount = GetMaxItemsCount(parameters);
 					Logger.Debug("Всего в БД {UnitsCount} ЕО.", maxItemsCount);
 					if (maxItemsCount == 0)
 					{
@@ -201,11 +200,11 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		#region Support Methods
 
 		//пока неизвестно - все ли линейные отчеты связаны с юнитами
-		protected int GetMaxUnitsCount(string baseUnitsCondition, QueryManager queryManager)
+		protected int GetMaxUnitsCount(string baseUnitsCondition)
 		{
 			var columnName = "count";
 			var countSql = $@"select count(*) as {columnName} from ko_unit unit {baseUnitsCondition}";
-			var dataSet = queryManager.ExecuteSqlStringToDataSet(countSql);
+			var dataSet = QueryManager.ExecuteSqlStringToDataSet(countSql);
 
 			var unitCount = 0;
 			var row = dataSet.Tables[0]?.Rows[0];

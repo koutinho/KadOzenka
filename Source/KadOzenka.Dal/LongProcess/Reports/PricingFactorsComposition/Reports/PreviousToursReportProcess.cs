@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
             GroupedFactors = ModelId == null
 		        ? new List<FactorsService.PricingFactors>()
-		        : FactorsService.GetGroupedModelFactors(ModelId.Value, _queryManager);
+		        : FactorsService.GetGroupedModelFactors(ModelId.Value, QueryManager);
             AllAttributes = GroupedFactors.SelectMany(x => x.Attributes).OrderBy(x => x.Name).ToList();
 
 	        BaseUnitsCondition = $@" where unit.task_id IN ({TaskIdsStr}) and unit.group_id = {GroupId} and unit.PROPERTY_TYPE_CODE <> 2190 ";
@@ -81,9 +81,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	        return GetProcessConfigFromSettings("PreviousTours", defaultPackageSize, defaultThreadsCount);
         }
 
-        protected override int GetMaxItemsCount(PreviousToursReportInputParameters inputParameters, QueryManager queryManager)
+        protected override int GetMaxItemsCount(PreviousToursReportInputParameters inputParameters)
         {
-	        return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+	        return GetMaxUnitsCount(BaseUnitsCondition);
         }
 
         protected override string GetSql(int packageIndex, int packageSize)
@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 
         protected override List<PreviousTourReportItem> GetReportItems(string sql)
         {
-	        var dataTable = _queryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+	        var dataTable = QueryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
             var items = new List<PreviousTourReportItem>();
             foreach (DataRow row in dataTable.Rows)

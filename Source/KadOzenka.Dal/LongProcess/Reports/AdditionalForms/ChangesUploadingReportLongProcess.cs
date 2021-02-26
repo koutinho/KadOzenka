@@ -51,10 +51,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms
             return GetProcessConfigFromSettings("ResultsForApproval", defaultPackageSize, defaultThreadsCount);
         }
 
-        protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
-            QueryManager queryManager)
+        protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
         {
-            return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+            return GetMaxUnitsCount(BaseUnitsCondition);
         }
 
         protected override string GetSql(int packageIndex, int packageSize)

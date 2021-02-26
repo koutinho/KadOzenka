@@ -55,10 +55,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 			return GetProcessConfigFromSettings("KRSummaryResultsOKS", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ZuReportLongProcessInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ZuReportLongProcessInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)

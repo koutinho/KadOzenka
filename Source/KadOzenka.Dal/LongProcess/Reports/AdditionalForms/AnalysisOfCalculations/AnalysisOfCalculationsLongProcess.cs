@@ -45,14 +45,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 			return GetProcessConfigFromSettings("AnalysisOfCalculationsReport", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters, QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
-			if(inputParameters != null && inputParameters.TaskIds?.Count > 0)
-			{
-				return GetMaxUnitsCount(UnitsConditionToCount, queryManager);
-			}
-
-			return 0;
+			return GetMaxUnitsCount(UnitsConditionToCount);
 		}
 
 		protected override Func<ReportItem, string> GetSortingCondition()

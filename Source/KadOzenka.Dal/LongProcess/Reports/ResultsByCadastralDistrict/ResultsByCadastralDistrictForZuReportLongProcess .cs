@@ -56,10 +56,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			return GetProcessConfigFromSettings("ResultsByCadastralDistrictForZu", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(InputParametersForZu inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(InputParametersForZu inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)

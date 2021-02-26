@@ -55,7 +55,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 
 			GroupedFactors = ModelId == null
 				? new List<FactorsService.PricingFactors>()
-				: FactorsService.GetGroupedModelFactors(ModelId.Value, _queryManager);
+				: FactorsService.GetGroupedModelFactors(ModelId.Value, QueryManager);
 			AllAttributes = GroupedFactors.SelectMany(x => x.Attributes).OrderBy(x => x.Name).ToList();
 
 			BaseUnitsCondition = $@" WHERE unit.TASK_ID in ({TaskIdsStr}) and 
@@ -75,10 +75,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			return GetProcessConfigFromSettings("ModelingResults", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -96,7 +95,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 
 		protected override List<ReportItem> GetReportItems(string sql)
 		{
-			var dataTable = _queryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+			var dataTable = QueryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
 			var items = new List<ReportItem>();
 			foreach (DataRow row in dataTable.Rows)
