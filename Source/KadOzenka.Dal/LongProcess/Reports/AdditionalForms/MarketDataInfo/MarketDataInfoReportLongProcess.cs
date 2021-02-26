@@ -45,11 +45,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 			return GetMaxAnalogCount(CommonConditionToCount);
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
-		{
-			return x => "";
-		}
-
 		protected override string GenerateReportTitle()
 		{
 			return $"Состав данных о рыночной информации (с {_inputReportData.DateFrom?.ToString(DateFormat)} по {_inputReportData.DateTo?.ToString(DateFormat)})";
