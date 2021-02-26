@@ -79,31 +79,31 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 			return "Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ОКС)";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column{Header = "№ п/п",Width = 3},
-				new GbuReportService.Column{Header = "КН",Width = 5},
-				new GbuReportService.Column{Header = "Тип",Width = 5},
-				new GbuReportService.Column{Header = "Площадь",Width = 3},
-				new GbuReportService.Column{Header = "Наименование",Width = 6},
-				new GbuReportService.Column{Header = "Назначение",Width = 6},
-				new GbuReportService.Column{Header = "Адрес",Width = 9},
-				new GbuReportService.Column{Header = "КЛАДР",Width = 9},
-				new GbuReportService.Column{Header = "КН родителя",Width = 5},
-				new GbuReportService.Column{Header = "Местоположение",Width = 9},
-				new GbuReportService.Column{Header = "Кадастровый квартал",Width = 5},
-				new GbuReportService.Column{Header = "Кадастровый номер земельного участка",Width = 5},
-				new GbuReportService.Column{Header = "Год постройки",Width = 3},
-				new GbuReportService.Column{Header = "Год ввода в эксплуатацию",Width = 3},
-				new GbuReportService.Column{Header = "Кол-во этажей",Width = 3},
-				new GbuReportService.Column{Header = "Подземных этажей",Width = 3},
-				new GbuReportService.Column{Header = "Этаж (для помещения)",Width = 3},
-				new GbuReportService.Column{Header = "Материал стен",Width = 5},
-				new GbuReportService.Column{Header = "Процент готовности",Width = 3},
-				new GbuReportService.Column{Header = "УПКС объекта недвижимости, руб./кв.м.",Width = 7},
-				new GbuReportService.Column{Header = "Кадастровая стоимость объекта недвижимости, руб.",Width = 7},
+				new Column{Header = "№ п/п",Width = 3},
+				new Column{Header = "КН",Width = 5},
+				new Column{Header = "Тип",Width = 5},
+				new Column{Header = "Площадь",Width = 3},
+				new Column{Header = "Наименование",Width = 6},
+				new Column{Header = "Назначение",Width = 6},
+				new Column{Header = "Адрес",Width = 9},
+				new Column{Header = "КЛАДР",Width = 9},
+				new Column{Header = "КН родителя",Width = 5},
+				new Column{Header = "Местоположение",Width = 9},
+				new Column{Header = "Кадастровый квартал",Width = 5},
+				new Column{Header = "Кадастровый номер земельного участка",Width = 5},
+				new Column{Header = "Год постройки",Width = 3},
+				new Column{Header = "Год ввода в эксплуатацию",Width = 3},
+				new Column{Header = "Кол-во этажей",Width = 3},
+				new Column{Header = "Подземных этажей",Width = 3},
+				new Column{Header = "Этаж (для помещения)",Width = 3},
+				new Column{Header = "Материал стен",Width = 5},
+				new Column{Header = "Процент готовности",Width = 3},
+				new Column{Header = "УПКС объекта недвижимости, руб./кв.м.",Width = 7},
+				new Column{Header = "Кадастровая стоимость объекта недвижимости, руб.",Width = 7},
 			};
 
 			var counter = 0;

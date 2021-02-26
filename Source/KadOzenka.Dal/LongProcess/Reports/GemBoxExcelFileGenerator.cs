@@ -92,12 +92,12 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			_excelFile.Worksheets[0].Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
-		public void SetIndividualWidth(List<GbuObject.GbuReportService.Column> columns)
+		public void SetIndividualWidth(List<Column> columns)
 		{
 			columns.ForEach(x => { SetIndividualWidth(x.Index, x.Width); });
 		}
 
-		public void AddSeparateColumnsHeaders(List<GbuObject.GbuReportService.Column> columns)
+		public void AddSeparateColumnsHeaders(List<Column> columns)
 		{
 			var headers = columns.Select(x => x.Header).ToList();
 			AddSeparateColumnsHeaders(headers);

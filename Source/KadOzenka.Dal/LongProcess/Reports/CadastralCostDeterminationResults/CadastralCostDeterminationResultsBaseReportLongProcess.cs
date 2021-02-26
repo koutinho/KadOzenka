@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return x => x.CadastralDistrict;
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
 			return ConcreteReport.GenerateReportHeaders();
 		}

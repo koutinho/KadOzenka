@@ -73,31 +73,31 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return "Состав данных по перечню объектов недвижимости, подлежащих государственной кадастровой оценке (земельные участки)";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column {Header = "№ п/п", Width = 4},
-				new GbuReportService.Column {Header = "КН", Width = 6},
-				new GbuReportService.Column {Header = "Вид использования по документам", Width = 6},
-				new GbuReportService.Column {Header = "Вид использования по классификатору", Width = 6},
-				new GbuReportService.Column {Header = "Дата образования", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Категория земель", Width = 6},
-				new GbuReportService.Column {Header = "Местоположение", Width = 6},
-				new GbuReportService.Column {Header = "Адрес", Width = 8},
-				new GbuReportService.Column {Header = "Наименование земельного участка", Width = 6},
-				new GbuReportService.Column {Header = "Площадь", Width = 4},
-				new GbuReportService.Column {Header = "Тип объекта", Width = 6},
-				new GbuReportService.Column {Header = "Кадастровый квартал", Width = 6},
-				new GbuReportService.Column {Header = "Значение кадастровой стоимости", Width = 6},
-				new GbuReportService.Column {Header = "Дата определения кадастровой стоимости", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Дата утверждения кадастровой стоимости", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Номер акта об утверждении кадастровой стоимости", Width = 6},
-				new GbuReportService.Column {Header = "Дата акта об утверждении кадастровой стоимости", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Наименование документа об утверждении кадастровой стоимости", Width = 6},
-				new GbuReportService.Column {Header = "Дата начала применения кадастровой стоимости", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Дата подачи заявления о пересмотре кадастровой стоимости", Width = ColumnWidthForDates}
+				new Column {Header = "№ п/п", Width = 4},
+				new Column {Header = "КН", Width = 6},
+				new Column {Header = "Вид использования по документам", Width = 6},
+				new Column {Header = "Вид использования по классификатору", Width = 6},
+				new Column {Header = "Дата образования", Width = ColumnWidthForDates},
+				new Column {Header = "Категория земель", Width = 6},
+				new Column {Header = "Местоположение", Width = 6},
+				new Column {Header = "Адрес", Width = 8},
+				new Column {Header = "Наименование земельного участка", Width = 6},
+				new Column {Header = "Площадь", Width = 4},
+				new Column {Header = "Тип объекта", Width = 6},
+				new Column {Header = "Кадастровый квартал", Width = 6},
+				new Column {Header = "Значение кадастровой стоимости", Width = 6},
+				new Column {Header = "Дата определения кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН", Width = ColumnWidthForDates},
+				new Column {Header = "Дата утверждения кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Номер акта об утверждении кадастровой стоимости", Width = 6},
+				new Column {Header = "Дата акта об утверждении кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Наименование документа об утверждении кадастровой стоимости", Width = 6},
+				new Column {Header = "Дата начала применения кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Дата подачи заявления о пересмотре кадастровой стоимости", Width = ColumnWidthForDates}
 			};
 
 			var counter = 0;

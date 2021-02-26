@@ -57,55 +57,19 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts
 			return "Анализ результатов";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
 			var counter = 0;
-			var columns  = new List<GbuReportService.Column>{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 2,
-				},
-				new GbuReportService.Column
-				{
-					Header = "КН",
-					Width = 4,
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип",
-					Width = 5,
-				},
-				new GbuReportService.Column
-				{
-					Header = "Площадь",
-					Width = 3,
-				},
-				new GbuReportService.Column
-				{
-					Header = "Прош. УПКС",
-					Width = 4,
-				},
-				new GbuReportService.Column
-				{
-					Header = "Прош. КС",
-					Width = 4,
-				},
-				new GbuReportService.Column
-				{
-					Header = "окн. УПКС",
-					Width = 3,
-				},
-				new GbuReportService.Column
-				{
-					Header = "окн. КС",
-					Width = 3,
-				},
-				new GbuReportService.Column
-				{
-					Header = "Статус",
-					Width = 5,
-				}
+			var columns  = new List<Column>{
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "КН", Width = 4},
+				new Column {Header = "Тип", Width = 5},
+				new Column {Header = "Площадь", Width = 3},
+				new Column {Header = "Прош. УПКС", Width = 4},
+				new Column {Header = "Прош. КС", Width = 4},
+				new Column {Header = "окн. УПКС", Width = 3},
+				new Column {Header = "окн. КС", Width = 3}, 
+				new Column {Header = "Статус", Width = 5}
 			};
 			columns.ForEach(item => item.Index = counter++);
 

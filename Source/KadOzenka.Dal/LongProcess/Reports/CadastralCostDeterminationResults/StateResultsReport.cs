@@ -2,6 +2,7 @@
 using System.Linq;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
@@ -28,17 +29,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 		    };
 	    }
 
-	    public List<GbuReportService.Column> GenerateReportHeaders()
+	    public List<Column> GenerateReportHeaders()
 	    {
-		    var columns = new List<GbuReportService.Column>
+		    var columns = new List<Column>
 		    {
-			    new GbuReportService.Column {Header = "№ п/п", Width = 4},
-			    new GbuReportService.Column {Header = "Кадастровый район", Width = 3},
-			    new GbuReportService.Column {Header = "Кадастровый номер объекта недвижимости", Width = 6},
-			    new GbuReportService.Column {Header = "Вид объекта недвижимости", Width = 5},
-			    new GbuReportService.Column {Header = "Общая площадь объекта недвижимости, кв.м.", Width = 4},
-			    new GbuReportService.Column {Header = "УПКС объекта недвижимости, руб./кв.м.", Width = 4},
-			    new GbuReportService.Column {Header = "Кадастровая стоимость объекта недвижимости, руб.", Width = 4}
+			    new Column {Header = "№ п/п", Width = 4},
+			    new Column {Header = "Кадастровый район", Width = 3},
+			    new Column {Header = "Кадастровый номер объекта недвижимости", Width = 6},
+			    new Column {Header = "Вид объекта недвижимости", Width = 5},
+			    new Column {Header = "Общая площадь объекта недвижимости, кв.м.", Width = 4},
+			    new Column {Header = "УПКС объекта недвижимости, руб./кв.м.", Width = 4},
+			    new Column {Header = "Кадастровая стоимость объекта недвижимости, руб.", Width = 4}
 			};
 
 		    var counter = 0;

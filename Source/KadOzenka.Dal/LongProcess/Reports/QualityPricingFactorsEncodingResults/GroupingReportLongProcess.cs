@@ -67,15 +67,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return "Группировка объектов недвижимости";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column {Header = "№ п/п", Width = 3},
-				new GbuReportService.Column {Header = "Тип", Width = 3},
-				new GbuReportService.Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
-				new GbuReportService.Column {Header = "Номер подгруппы", Width = 4},
-				new GbuReportService.Column {Header = "Метод оценки", Width = 4}
+				new Column {Header = "№ п/п", Width = 3},
+				new Column {Header = "Тип", Width = 3},
+				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Номер подгруппы", Width = 4},
+				new Column {Header = "Метод оценки", Width = 4}
 			};
 
 			var counter = 0;

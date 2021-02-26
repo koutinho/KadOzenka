@@ -68,25 +68,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 			return x => x.CadastralNumber;
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = 5
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровая стоимость, рублей",
-					Width = 7
-				}
+				new Column {Header = "№ п/п", Width = 3},
+				new Column {Header = "Кадастровый номер", Width = 5},
+				new Column {Header = "Кадастровая стоимость, рублей", Width = 7}
 			};
 
 			var counter = 0;

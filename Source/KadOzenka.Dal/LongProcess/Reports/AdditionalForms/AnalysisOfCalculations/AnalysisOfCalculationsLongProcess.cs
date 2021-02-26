@@ -55,15 +55,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 			return x => "";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>();
+			var columns = new List<Column>();
 			List<string> names = new List<string>{ "№ п/п", "Кадастровый номер", "Тип", "Площадь", "Наименование (для ОКС)/Вид использование (для ЗУ)", "Назначение", "Адрес",
 				"Местоположение", "Оценочная подгруппа 2018","УПКС 2018", "КС 2018", "Кадастровый квартал 2018", "Тип(годовая, ежедневная, обращение)", "Оценочная подгруппа",
 				"УПКС", "КС", "Кадастровый квартал", "Дата изменения в ЕГРН", "Статус", "Изменения", "Минимальное УПКС по КК", "Среднее УПКС по КК", "Максимальное УПКС по КК",
 				"Минимальное УПКС по Зоне", "Среднее УПКС по Зоне", "Максимальное УПКС по Зоне", "Количество раз участие в оценке", "Количество в годовом", "Количество в ежедневках"
 			};
-			names.ForEach(name => columns.Add(new GbuReportService.Column{Header = name, Width = 4}));
+			names.ForEach(name => columns.Add(new Column{Header = name, Width = 4}));
 			columns[4].Width = 6;
 			columns[8].Width = 6;
 			columns[13].Width = 6;

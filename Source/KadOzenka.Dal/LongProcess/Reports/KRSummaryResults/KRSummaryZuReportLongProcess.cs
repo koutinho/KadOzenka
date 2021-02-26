@@ -79,22 +79,22 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 			return "Сводные результаты государственной кадастровой оценки объектов недвижимости по кадастровому району (ЗУ)";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column{Header = "№ п/п",Width = 3},
-				new GbuReportService.Column{Header = "КН",Width = 5},
-				new GbuReportService.Column{Header = "Тип",Width = 5},
-				new GbuReportService.Column{Header = "Площадь",Width = 3},
-				new GbuReportService.Column{Header = "Разрешенное использование",Width = 6},
-				new GbuReportService.Column{Header = "Адрес",Width = 9},
-				new GbuReportService.Column{Header = "КЛАДР",Width = 9},
-				new GbuReportService.Column{Header = "Местоположение",Width = 9},
-				new GbuReportService.Column{Header = "Кадастровый квартал",Width = 5},
-				new GbuReportService.Column{Header = "Категория земель",Width = 3},
-				new GbuReportService.Column{Header = "УПКС объекта недвижимости, руб./кв.м.",Width = 7},
-				new GbuReportService.Column{Header = "Кадастровая стоимость объекта недвижимости, руб.",Width = 7},
+				new Column{Header = "№ п/п",Width = 3},
+				new Column{Header = "КН",Width = 5},
+				new Column{Header = "Тип",Width = 5},
+				new Column{Header = "Площадь",Width = 3},
+				new Column{Header = "Разрешенное использование",Width = 6},
+				new Column{Header = "Адрес",Width = 9},
+				new Column{Header = "КЛАДР",Width = 9},
+				new Column{Header = "Местоположение",Width = 9},
+				new Column{Header = "Кадастровый квартал",Width = 5},
+				new Column{Header = "Категория земель",Width = 3},
+				new Column{Header = "УПКС объекта недвижимости, руб./кв.м.",Width = 7},
+				new Column{Header = "Кадастровая стоимость объекта недвижимости, руб.",Width = 7},
 			};
 
 			var counter = 0;

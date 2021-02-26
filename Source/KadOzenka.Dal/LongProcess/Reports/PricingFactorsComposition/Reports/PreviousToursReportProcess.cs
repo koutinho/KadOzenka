@@ -145,7 +145,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 	        throw new NotImplementedException();
         }
 
-        protected override List<GbuReportService.Column> GenerateReportHeaders()
+        protected override List<Column> GenerateReportHeaders()
         {
 	        throw new NotImplementedException();
         }

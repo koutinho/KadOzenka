@@ -79,34 +79,34 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			return "Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column {Header = "№ п/п", Width = 3},
-				new GbuReportService.Column {Header = "КН", Width = ColumnWidthForCadastralNumber},
-				new GbuReportService.Column {Header = "Год ввода в эксплуатацию", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Год постройки", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Дата образования", Width = ColumnWidthForDates},
-				new GbuReportService.Column {Header = "Количество подземных этажей", Width = 3},
-				new GbuReportService.Column {Header = "Количество этажей", Width = 3},
-				new GbuReportService.Column {Header = "Материал стен", Width = 3},
-				new GbuReportService.Column {Header = "Местоположение", Width = ColumnWidthForAddresses},
-				new GbuReportService.Column {Header = "Адрес", Width = ColumnWidthForAddresses},
-				new GbuReportService.Column {Header = "Назначение сооружения", Width = 3},
-				new GbuReportService.Column {Header = "Наименование объекта", Width = 3},
-				new GbuReportService.Column {Header = "Площадь", Width = 3},
-				new GbuReportService.Column {Header = "Тип объекта", Width = 3},
-				new GbuReportService.Column {Header = "Кадастровый квартал ", Width = 3},
-				new GbuReportService.Column {Header = "Сегмент", Width = 3},
-				new GbuReportService.Column {Header = "Наименование вида использования", Width = 3},
-				new GbuReportService.Column {Header = "Код вида использования", Width = 3},
-				new GbuReportService.Column {Header = "Источник информации кода вида использования", Width = 3},
-				new GbuReportService.Column {Header = "Код подгруппы вида использования", Width = 3},
-				new GbuReportService.Column {Header = "Наименование функциональной подгруппы", Width = 3},
-				new GbuReportService.Column {Header = "Номер подгруппы", Width = 3},
-				new GbuReportService.Column {Header = "УПКС объекта недвижимости, руб./кв.м.", Width = 3},
-				new GbuReportService.Column {Header = "Кадастровая стоимость объекта недвижимости, руб.", Width = 3}
+				new Column {Header = "№ п/п", Width = 3},
+				new Column {Header = "КН", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Год ввода в эксплуатацию", Width = ColumnWidthForDates},
+				new Column {Header = "Год постройки", Width = ColumnWidthForDates},
+				new Column {Header = "Дата образования", Width = ColumnWidthForDates},
+				new Column {Header = "Количество подземных этажей", Width = 3},
+				new Column {Header = "Количество этажей", Width = 3},
+				new Column {Header = "Материал стен", Width = 3},
+				new Column {Header = "Местоположение", Width = ColumnWidthForAddresses},
+				new Column {Header = "Адрес", Width = ColumnWidthForAddresses},
+				new Column {Header = "Назначение сооружения", Width = 3},
+				new Column {Header = "Наименование объекта", Width = 3},
+				new Column {Header = "Площадь", Width = 3},
+				new Column {Header = "Тип объекта", Width = 3},
+				new Column {Header = "Кадастровый квартал ", Width = 3},
+				new Column {Header = "Сегмент", Width = 3},
+				new Column {Header = "Наименование вида использования", Width = 3},
+				new Column {Header = "Код вида использования", Width = 3},
+				new Column {Header = "Источник информации кода вида использования", Width = 3},
+				new Column {Header = "Код подгруппы вида использования", Width = 3},
+				new Column {Header = "Наименование функциональной подгруппы", Width = 3},
+				new Column {Header = "Номер подгруппы", Width = 3},
+				new Column {Header = "УПКС объекта недвижимости, руб./кв.м.", Width = 3},
+				new Column {Header = "Кадастровая стоимость объекта недвижимости, руб.", Width = 3}
 			};
 
 			var counter = 0;

@@ -8,7 +8,6 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Core.LongProcess;
@@ -51,7 +50,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		//TODO remove queryManager as input parameter
 		protected abstract int GetMaxItemsCount(TInputParameters inputParameters);
 		protected abstract Func<TReportItem, string> GetSortingCondition();
-		protected abstract List<GbuReportService.Column> GenerateReportHeaders();
+		protected abstract List<Column> GenerateReportHeaders();
 		protected abstract List<object> GenerateReportReportRow(int index, TReportItem item);
 		protected abstract string GetSql(int packageIndex, int packageSize);
 

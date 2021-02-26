@@ -129,40 +129,40 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			return $"Результаты моделирования {group?.FullGroupName}";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var firstPart = new List<GbuReportService.Column>
+			var firstPart = new List<Column>
 			{
-				new GbuReportService.Column {Header = "№ п/п", Width = 3},
-				new GbuReportService.Column {Header = "Номер кадастрового района", Width = 3},
-				new GbuReportService.Column {Header = "Вид объекта недвижимости", Width = 3},
-				new GbuReportService.Column {Header = "Кадастровый номер объекта недвижимости", Width = ColumnWidthForCadastralNumber},
-				new GbuReportService.Column {Header = "Адрес (местоположение) объекта недвижимости", Width = ColumnWidthForAddresses}
+				new Column {Header = "№ п/п", Width = 3},
+				new Column {Header = "Номер кадастрового района", Width = 3},
+				new Column {Header = "Вид объекта недвижимости", Width = 3},
+				new Column {Header = "Кадастровый номер объекта недвижимости", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Адрес (местоположение) объекта недвижимости", Width = ColumnWidthForAddresses}
 			};
 
-			var factors = new List<GbuReportService.Column>();
+			var factors = new List<Column>();
 			AllAttributes.ForEach(x =>
 			{
-				factors.Add(new GbuReportService.Column
+				factors.Add(new Column
 				{
 					Header = x.Name,
 					Width = 4
 				});
 			});
 
-			var secondPart = new List<GbuReportService.Column>
+			var secondPart = new List<Column>
 			{
-				new GbuReportService.Column
+				new Column
 				{
 					Header = "Площадь",
 					Width = ColumnWidthForDecimals
 				},
-				new GbuReportService.Column
+				new Column
 				{
 					Header = "Удельный показатель кадастровой стоимости",
 					Width = ColumnWidthForDecimals
 				},
-				new GbuReportService.Column
+				new Column
 				{
 					Header = "Кадастровая стоимость",
 					Width = ColumnWidthForDecimals
