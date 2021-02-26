@@ -41,7 +41,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         private const string GroupOrSubgroupTitle = "Группа/ Подгруппа";
         private const string CadastralCostTitle = "Кадастровая стоимость";
 
-        private readonly List<string> _columnTitles = new List<string>
+        public static readonly List<string> ColumnTitles = new List<string>
         {
             TypeTitle, SquareTitle, NameTitle, PurposeTitle, PermittedUseTitle,
             AddressTitle, LocationTitle, CadastralQuartalTitle, ParentCadastralNumberTitle,
@@ -131,7 +131,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return new PreviousToursReportInfo
             {
                 Title = ReportTitle,
-                ColumnTitles = _columnTitles,
+                ColumnTitles = ColumnTitles,
                 Items = items.ToList(),
                 Tours = GetToursByTasks(taskIds).OrderBy(x => x.Year).ToList(),
                 PricingFactors = generalAttributes.OrderBy(x => x.Name).ToList()

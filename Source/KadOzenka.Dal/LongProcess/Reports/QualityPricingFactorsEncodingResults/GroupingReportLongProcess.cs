@@ -43,10 +43,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return GetProcessConfigFromSettings("QualityPricingFactorsEncodingResultsForGrouping", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -68,35 +67,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return "Группировка объектов недвижимости";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер подгруппы",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Метод оценки",
-					Width = 4
-				}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Тип"},
+				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Номер подгруппы"},
+				new Column {Header = "Метод оценки"}
 			};
 
 			var counter = 0;

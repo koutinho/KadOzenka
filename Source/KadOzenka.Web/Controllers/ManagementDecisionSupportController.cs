@@ -12,6 +12,7 @@ using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
@@ -538,36 +539,24 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
+        public IActionResult ProcessPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            if (model.IsInBackground)
-            {
-                var inputParameters = new PreviousToursReportInputParameters
-                {
-                    GroupId = model.GroupId.Value,
-                    TaskIds = model.SelectedTasks.ToList()
-                };
+            var inputParameters = model.MapToInputParameters();
 
-                ////TODO для тестирования
-                //new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
-                //{
-                //    Status_Code = Status.Added,
-                //    Parameters = inputParameters.SerializeToXml()
-                //}, new CancellationToken());
+			////TODO для тестирования
+			//new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
 
-                PreviousToursReportProcess.AddProcessToQueue(inputParameters);
+			new PreviousToursReportProcess().AddToQueue(inputParameters);
 
-                return Content(
-                    JsonConvert.SerializeObject(new
-                        {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
-                    "application/json");
-            }
-
-            return GetStatisticalDataReportUrl(model.Map());
-        }
+			return Ok();
+		}
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]

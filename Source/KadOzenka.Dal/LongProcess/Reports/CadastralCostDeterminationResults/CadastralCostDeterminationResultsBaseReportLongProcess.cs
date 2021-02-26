@@ -60,13 +60,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return GetProcessConfigFromSettings("StateOrIndividualCadastralCostDeterminationResults", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters)
 		{
 			if (GroupIds.Count == 0)
 				return 0;
 
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
@@ -116,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return x => x.CadastralDistrict;
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
 			return ConcreteReport.GenerateReportHeaders();
 		}

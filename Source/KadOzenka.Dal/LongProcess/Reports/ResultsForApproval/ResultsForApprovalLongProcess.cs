@@ -15,7 +15,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 	{
 		protected override string ReportName => "Результаты на утверждение";
 		protected override string ProcessName => nameof(ResultsForApprovalLongProcess);
-		protected StatisticalDataService StatisticalDataService { get; set; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
@@ -23,7 +22,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 
 		public ResultsForApprovalLongProcess() : base(Log.ForContext<ResultsForApprovalLongProcess>())
 		{
-			StatisticalDataService = new StatisticalDataService();
 		}
 
 
@@ -49,10 +47,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 			return GetProcessConfigFromSettings("ResultsForApproval", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -69,25 +66,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 			return x => x.CadastralNumber;
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = 5
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровая стоимость, рублей",
-					Width = 7
-				}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Кадастровая стоимость, рублей", Width = ColumnWidthForDecimals}
 			};
 
 			var counter = 0;

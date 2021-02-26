@@ -49,10 +49,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return GetProcessConfigFromSettings("PricingFactorsCompositionForOks", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -69,131 +68,34 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			return x => x.CadastralNumber;
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "КН",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Год ввода в эксплуатацию",
-					Width = 5
-				},
-				new GbuReportService.Column
-				{
-					Header = "Год постройки",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата образования",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Количество подземных этажей",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Количество этажей",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Материал стен",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Местоположение",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Адрес",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Назначение здания",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование объекта",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Площадь",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип объекта",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый квартал",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Значение кадастровой стоимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата определения кадастровой стоимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата утверждения кадастровой стоимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер акта об утверждении кадастровой стоимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата акта об утверждении кадастровой стоимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование документа об утверждении кадастровой стоимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата начала применения кадастровой стоимости",
-					Width = 4
-				}
-				,
-				new GbuReportService.Column
-				{
-					Header = "Дата подачи заявления о пересмотре кадастровой стоимости",
-					Width = 4
-				}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "КН", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Год ввода в эксплуатацию", Width = ColumnWidthForDates},
+				new Column {Header = "Год постройки", Width = ColumnWidthForDates}, 
+				new Column {Header = "Дата образования", Width = ColumnWidthForDates},
+				new Column {Header = "Количество подземных этажей"},
+				new Column {Header = "Количество этажей"},
+				new Column {Header = "Материал стен"},
+				new Column {Header = "Местоположение", Width = ColumnWidthForAddresses},
+				new Column {Header = "Адрес", Width = ColumnWidthForAddresses},
+				new Column {Header = "Назначение здания"},
+				new Column {Header = "Наименование объекта"},
+				new Column {Header = "Площадь"},
+				new Column {Header = "Тип объекта"},
+				new Column {Header = "Кадастровый квартал"},
+				new Column {Header = "Значение кадастровой стоимости"},
+				new Column {Header = "Дата определения кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Дата внесения сведений о кадастровой стоимости в ЕГРН", Width = ColumnWidthForDates},
+				new Column {Header = "Дата утверждения кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Номер акта об утверждении кадастровой стоимости"},
+				new Column {Header = "Дата акта об утверждении кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Наименование документа об утверждении кадастровой стоимости"},
+				new Column {Header = "Дата начала применения кадастровой стоимости", Width = ColumnWidthForDates},
+				new Column {Header = "Дата подачи заявления о пересмотре кадастровой стоимости", Width = ColumnWidthForDates}
 			};
 
 			var counter = 0;

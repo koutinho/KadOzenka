@@ -1,67 +1,43 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.ManagementDecisionSupport.Enums;
+using System.Linq;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {
     public class PreviousToursConfigurationModel : IValidatableObject
     {
-        public bool IsInBackground { get; set; }
-        public List<SelectListItem> AvailableTours { get; set; }
+	    public List<SelectListItem> AvailableTours { get; set; }
+
+	    [Display(Name = "Задания на оценку")]
         public long[] SelectedTasks{ get; set; }
+
+        [Display(Name = "Группа")]
         public long? GroupId { get; set; }
 
         public PreviousToursConfigurationModel()
         {
-            IsInBackground = true;
-            AvailableTours = new List<SelectListItem>();
+	        AvailableTours = new List<SelectListItem>();
         }
 
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var errors = new List<ValidationResult>();
+	        if (SelectedTasks == null || SelectedTasks.Length == 0)
+		        yield return new ValidationResult("Не выбраны задания на оценку");
 
-            if (IsInBackground)
-                ValidateForBackground(errors);
-            else
-                ValidateForRealTime(errors);
-
-            return errors;
+	        if (GroupId.GetValueOrDefault() == 0)
+		        yield return new ValidationResult("Не выбрана группа");
         }
 
-        public StatisticalDataModel Map()
+        public PreviousToursReportInputParameters MapToInputParameters()
         {
-            return new StatisticalDataModel
+            return new PreviousToursReportInputParameters
             {
-                ReportType = (long)StatisticalDataType.PricingFactorsCompositionForPreviousTours,
-                TaskFilter = SelectedTasks
+	            GroupId = GroupId.GetValueOrDefault(),
+	            TaskIds = SelectedTasks.ToList()
             };
         }
-
-
-        #region Support Methods
-
-        private void ValidateForBackground(List<ValidationResult> errors)
-        {
-            ValidateSelectedTasks(errors);
-
-            if (GroupId == null || GroupId == 0)
-                errors.Add(new ValidationResult("Не выбрана группа."));
-        }
-
-        private void ValidateForRealTime(List<ValidationResult> errors)
-        {
-            ValidateSelectedTasks(errors);
-        }
-
-        private void ValidateSelectedTasks(List<ValidationResult> errors)
-        {
-            if (SelectedTasks == null || SelectedTasks.Length == 0)
-                errors.Add(new ValidationResult("Не выбраны задания на оценку."));
-        }
-
-        #endregion
     }
 }

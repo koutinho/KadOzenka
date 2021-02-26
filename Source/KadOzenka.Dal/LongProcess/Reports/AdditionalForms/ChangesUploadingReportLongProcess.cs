@@ -51,10 +51,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms
             return GetProcessConfigFromSettings("ResultsForApproval", defaultPackageSize, defaultThreadsCount);
         }
 
-        protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters,
-            QueryManager queryManager)
+        protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
         {
-            return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+            return GetMaxUnitsCount(BaseUnitsCondition);
         }
 
         protected override string GetSql(int packageIndex, int packageSize)
@@ -76,45 +75,17 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms
             return "Выгрузка изменений";
         }
 
-        protected override List<GbuReportService.Column> GenerateReportHeaders()
+        protected override List<Column> GenerateReportHeaders()
         {
-            var columns = new List<GbuReportService.Column>
+            var columns = new List<Column>
             {
-                new GbuReportService.Column
-                {
-                    Header = "КН",
-                    Width = 5
-                },
-                new GbuReportService.Column
-                {
-                    Header = "Дата изменения сведений",
-                    Width = 3
-                },
-                new GbuReportService.Column
-                {
-                    Header = "Тип",
-                    Width = 5
-                },
-                new GbuReportService.Column
-                {
-                    Header = "Статус",
-                    Width = 3
-                },
-                new GbuReportService.Column
-                {
-                    Header = "Старое значение",
-                    Width = 5
-                },
-                new GbuReportService.Column
-                {
-                    Header = "Новое значение",
-                    Width = 5
-                },
-                new GbuReportService.Column
-                {
-                    Header = "Изменение",
-                    Width = 5
-                }
+                new Column {Header = "КН", Width = ColumnWidthForCadastralNumber},
+                new Column {Header = "Дата изменения сведений", Width = ColumnWidthForDates},
+                new Column {Header = "Тип", Width = 5},
+                new Column {Header = "Статус"},
+                new Column {Header = "Старое значение", Width = 5},
+                new Column {Header = "Новое значение", Width = 5},
+                new Column {Header = "Изменение", Width = 5}
             };
 
             var counter = 0;

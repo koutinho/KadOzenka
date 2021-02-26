@@ -55,7 +55,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 
 			GroupedFactors = ModelId == null
 				? new List<FactorsService.PricingFactors>()
-				: FactorsService.GetGroupedModelFactors(ModelId.Value, _queryManager);
+				: FactorsService.GetGroupedModelFactors(ModelId.Value, QueryManager);
 			AllAttributes = GroupedFactors.SelectMany(x => x.Attributes).OrderBy(x => x.Name).ToList();
 
 			BaseUnitsCondition = $@" WHERE unit.TASK_ID in ({TaskIdsStr}) and 
@@ -75,10 +75,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			return GetProcessConfigFromSettings("ModelingResults", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -96,7 +95,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 
 		protected override List<ReportItem> GetReportItems(string sql)
 		{
-			var dataTable = _queryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
+			var dataTable = QueryManager.ExecuteSqlStringToDataSet(sql).Tables[0];
 
 			var items = new List<ReportItem>();
 			foreach (DataRow row in dataTable.Rows)
@@ -130,60 +129,40 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			return $"Результаты моделирования {group?.FullGroupName}";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var firstPart = new List<GbuReportService.Column>
+			var firstPart = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер кадастрового района",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Вид объекта недвижимости",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер объекта недвижимости",
-					Width = ColumnWidthForCadastralNumber
-				},
-				new GbuReportService.Column
-				{
-					Header = "Адрес (местоположение) объекта недвижимости",
-					Width = ColumnWidthForAddresses
-				}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Номер кадастрового района"},
+				new Column {Header = "Вид объекта недвижимости"},
+				new Column {Header = "Кадастровый номер объекта недвижимости", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Адрес (местоположение) объекта недвижимости", Width = ColumnWidthForAddresses}
 			};
 
-			var factors = new List<GbuReportService.Column>();
+			var factors = new List<Column>();
 			AllAttributes.ForEach(x =>
 			{
-				factors.Add(new GbuReportService.Column
+				factors.Add(new Column
 				{
 					Header = x.Name,
 					Width = 4
 				});
 			});
 
-			var secondPart = new List<GbuReportService.Column>
+			var secondPart = new List<Column>
 			{
-				new GbuReportService.Column
+				new Column
 				{
 					Header = "Площадь",
 					Width = ColumnWidthForDecimals
 				},
-				new GbuReportService.Column
+				new Column
 				{
 					Header = "Удельный показатель кадастровой стоимости",
 					Width = ColumnWidthForDecimals
 				},
-				new GbuReportService.Column
+				new Column
 				{
 					Header = "Кадастровая стоимость",
 					Width = ColumnWidthForDecimals
@@ -207,13 +186,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			var numberOfColumnsBeforeFactors = 5;
 			return new List<MergedColumns>
 			{
-				new MergedColumns
-				{
-					OrderNumber = 1,
-					Text = string.Empty,
-					StartColumnIndex = 0,
-					EndColumnIndex =  numberOfColumnsBeforeFactors - 1
-				},
 				new MergedColumns
 				{
 					OrderNumber = 1,

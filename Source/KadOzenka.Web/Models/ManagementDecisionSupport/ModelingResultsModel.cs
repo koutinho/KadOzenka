@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using KadOzenka.Dal.LongProcess.Reports.CalculationParams.Entities;
 using Kendo.Mvc.UI;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KadOzenka.Web.Models.ManagementDecisionSupport
 {

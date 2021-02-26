@@ -1,5 +1,5 @@
 with object_ids as (
-	select u.object_id from ko_unit u where u.task_id IN ({0}) and u.group_id = {1} and u.PROPERTY_TYPE_CODE<>2190 --and u.id=15280959
+	select unit.object_id from ko_unit unit {0}
 ),
 
 --ROSREESTR ATTRIBUTES
@@ -104,8 +104,5 @@ SELECT
         LEFT JOIN undergroundFloorsNumberAttrValues undergroundFloorsNumberAttr ON unit.object_id=undergroundFloorsNumberAttr.objectId
         LEFT JOIN wallMaterialAttrValues wallMaterialAttr ON unit.object_id=wallMaterialAttr.objectId
     	{17}
-       
-    WHERE unit.TASK_ID in ({0}) and unit.GROUP_ID = {1} and unit.object_id is not null
-    --and unit.id=15280959
-    order by unit.cadastral_number, tour.year
+        {0}
                     
