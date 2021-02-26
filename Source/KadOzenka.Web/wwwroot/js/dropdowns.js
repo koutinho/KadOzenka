@@ -65,7 +65,7 @@ function setAutoClose(classNameTag) {
             tree.options.autoClose = false;
             tree.treeview.bind('select', e => onSelected(e));
             tree.bind('change', () => onChange(classNameTag));
-            //tree.bind('filtering', e => onFiltering(e));
+            tree.bind('filtering', e => onFiltering(e));
             clearInterval(checkExist);
         }
     });

@@ -59,9 +59,6 @@ namespace KadOzenka.Web.Helpers
 				.Name(name)
 				.Filter(filter)
 				.BindTo(dataSource)
-//				.Events(x =>
-//					x.Select($"onSelected").Filtering("onFiltering")
-//				)
 				.ClearButton(false)
 				.Value(modelExplorer.Model?.ToString());
 
