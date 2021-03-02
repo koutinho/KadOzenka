@@ -12,8 +12,8 @@
 {
     @Html.HiddenFor(x => x.Id)
     <div id="toolbar"></div>
-    <div class="form-horizontal col-sm-12" style="margin-top: 10px">
-        <div style="margin: 2%;">
+    <div id="SectionMainData" class="toolbarVisible form-horizontal col-sm-12">
+        <div>
             @{
                 await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
             }
@@ -74,6 +74,10 @@
     $(document).ready(function () {
         $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
         $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
+
+        if (isReadOnly){
+            $('#SectionMainData').switchClass('toolbarVisible', 'toolbarHidden', 0);
+        }
 
         $('#toolbar').kendoToolBar({
             items: [
@@ -459,4 +463,10 @@
             border-width: 1px 0;
             left: -1px; top: -1px;
         }
+    .toolbarVisible{
+        padding-top: 6%;
+     }
+     .toolbarHidden{
+        padding-top: 1%;
+     }
 </style>

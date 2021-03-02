@@ -54,7 +54,7 @@
 
     <ul id="ls_panelbar" class="panelbar">
         <div id="mainToolbar" style=""></div>
-        <li id="SectionMainData" data-expand style="padding-top: 7%">
+        <li id="SectionMainData" data-expand class="toolbarVisible">
             <span>Основные данные</span>
             <div class="form-horizontal col-sm-12" style="padding: 2%">
                 <div style="padding: 0%">
@@ -119,7 +119,6 @@
     #ls_panelbar {
         width: 99% !important;
     }
-
     .k-dropdowntree {
         width: 100%;
     }
@@ -132,9 +131,13 @@
         border-width: 1px 0;
         left: -1px; top: -1px;
     }
+    .toolbarVisible{
+        padding-top: 6%;
+    }
+    .toolbarHidden{
+        padding-top: 1%;
+    }
 </style>
-
-
 
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
@@ -233,6 +236,7 @@
         if (isReadOnly) {
             $('#mainToolbar').hide();
             $('#attributesToolbar').hide();
+            $('#SectionMainData').switchClass('toolbarVisible', 'toolbarHidden', 0);
         }
 
         $('#grid').kendoGrid({
@@ -321,15 +325,11 @@
         $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onAlgorithmTypeChange);
     });
 
-
-
-
     function closeConfirmWindow(e) {
         var window = e.closest('[data-role=window]').data('kendoWindow');
         window.close();
         window.destroy();
     }
-
 
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
@@ -371,7 +371,6 @@
             $("#allModelTypeBtn").addClass('k-state-disabled');
     }
 
-
     function showModelTypeWindow() {
         var modal = $("#modelTypeWindow");
         ShowModal(modal, '60%', '12%', "Выбор типа модели");
@@ -385,7 +384,6 @@
         else
             predictModel(e.indices);
     }
-
 
     function updateModel() {
         var form = $('#updateModelModelForm');
@@ -415,7 +413,6 @@
 		});
     }
 
-
     function onFormObjectArrayBtnClick() {
         kendo.ui.progress($('body'), true);
         $.ajax({
@@ -433,7 +430,6 @@
             }
         });
     }
-
 
     function trainModel(modelType) {
         kendo.ui.progress($('body'), true);
@@ -459,7 +455,6 @@
         });
     }
 
-
     function predictModel(modelTypeButtons) {
         kendo.ui.progress($('body'), true);
         $.ajax({
@@ -483,7 +478,6 @@
             }
         });
     }
-
 
     function getStatistic() {
         var modal = $("#statisticWindow");
@@ -510,6 +504,7 @@
             }
         });
     }
+
     function generateGridWithStatistic(attributes) {
         $('#statisticGrid').kendoGrid({
             dataSource: {
@@ -554,10 +549,6 @@
         });
     }
 
-
-
-
-
     function addAttribute() {
         Common.UI.ShowWindow('Добавление фактора',
             '@Url.Action("AddAutomaticModelFactor", "Modeling", new { generalModelId = Model.Id})',
@@ -574,7 +565,6 @@
             reloadGrid,
             800, 400);
     }
-
 
     function deleteAttribute() {
         var selectedRowData = getSelectedRowInFactorsGrid();
@@ -604,7 +594,6 @@
         });
     }
 
-
     function changeToolBarButtonsClass() {
         var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
         $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
@@ -618,7 +607,6 @@
 			$('#deleteAttributeBtn').removeClass('k-state-disabled');
 		}
     }
-
 
     function getSelectedRowInGrid() {
 		var grid = $("#grid").data("kendoGrid");
@@ -634,17 +622,14 @@
         }
     }
 
-
     function reloadGrid() {
         $('#grid').data('kendoGrid').dataSource.read();
     }
-
 
     function getDataForModelAttributesDownloader() {
         var modelType = $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').value();
         return { modelId: '@Model.Id', type: modelType }
     }
-
 
     function onAlgorithmTypeChange() {
         reloadGrid();
@@ -665,5 +650,4 @@
             }
         });
     }
-
 </script>

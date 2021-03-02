@@ -65,7 +65,7 @@ function setAutoClose(classNameTag) {
             tree.options.autoClose = false;
             tree.treeview.bind('select', e => onSelected(e));
             tree.bind('change', () => onChange(classNameTag));
-            //tree.bind('filtering', e => onFiltering(e));
+            tree.bind('filtering', e => onFiltering(e));
             clearInterval(checkExist);
         }
     });
@@ -82,8 +82,9 @@ function onSelected(e) {
 function clearField(classNameTag) {
     let tree = $('input.' + classNameTag).data('kendoDropDownTree');
     tree.value('');
-    tree.trigger('change');
     tree.filterInput.val('');
+    tree._prev = '';
+    tree.trigger('change');
     tree.trigger('filtering', [true]);
 }
 
