@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 {
 	/// <summary>
 	/// Базовый класс для линейных отчетов.
-	/// (линейные отчеты - это отчеты без группировки с большим объемом данных)
+	/// (линейные отчеты - это отчеты без группировки и с большим объемом данных)
 	/// </summary>
 	public abstract class ALinearReportsLongProcessTemplate<TReportItem, TInputParameters> : LongProcessForReportsBase 
 		where TReportItem : class, new()
