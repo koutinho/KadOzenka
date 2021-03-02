@@ -22,14 +22,14 @@
     <Delay>30</Delay>
   </MessageSettings>
 
-  <MailServer>
-    <Host>pochta.mos.ru</Host>
-    <Port>25</Port>
-    <Login>ops_system@property.mos.ru</Login>
-    <Password></Password>
-    <EnableSsl>false</EnableSsl>
-    <FromEmail>ops_noreply@property.mos.ru</FromEmail>
-  </MailServer>
+	<MailServer>
+		<Host>mx.genix.pro</Host>
+		<Port>25</Port>
+		<Login>rsm_cloud_support@genix.pro</Login>
+		<Password>rsm7rsm</Password>
+		<EnableSsl>false</EnableSsl>
+		<FromEmail>rsm_cloud_support@genix.pro</FromEmail>
+	</MailServer>
 
   <ErrorManagment>
     <Phone></Phone>
