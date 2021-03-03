@@ -561,8 +561,11 @@ namespace KadOzenka.Dal.DataExport
                 if (objectIds == null)
                     objectIds = OMUnit.Where(x => x.GroupId == _subgroup.Id && x.TaskId == _taskId && x.CadastralCost > 0)
                         .Select(x=>x.ObjectId).Execute().Select(x => x.ObjectId.GetValueOrDefault()).ToList();
-                var allAttributes =
+                var allAttributes = new List<GbuObjectAttribute>();
+                using (Log.TimeOperation("Получение ГБУ атрибутов"))
+                {
                     new GbuObjectService().GetAllAttributes(objectIds, null, new List<long> {3, 4, 5, 8, 600});
+                }
                 Log.Verbose("Получено {attributesCount} атрибутов для {objectsCount} объектов", allAttributes.Count,
                     objectIds.Count);
                 var res = allAttributes.GroupBy(x => x.ObjectId).ToDictionary(x => x.Key, x => x.ToList());
