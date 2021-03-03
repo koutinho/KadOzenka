@@ -59,7 +59,7 @@ namespace KadOzenka.Web.Controllers
 		public IModelingService ModelingService { get; set; }
 		public IModelObjectsService ModelObjectsService { get; set; }
         public TourFactorService TourFactorService { get; set; }
-        public RegisterAttributeService RegisterAttributeService { get; set; }
+        public IRegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
         public ModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
@@ -69,7 +69,7 @@ namespace KadOzenka.Web.Controllers
 
 
         public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
-	        RegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+	        IRegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService)

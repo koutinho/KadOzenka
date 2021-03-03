@@ -48,10 +48,10 @@ namespace KadOzenka.Web.Controllers
 		private ViewRenderService _viewRenderService;
 		private TourFactorService TourFactorService { get; set; }
 
-		public RegisterAttributeService RegisterAttributeService { get; set; }
+		public IRegisterAttributeService RegisterAttributeService { get; set; }
 
 		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService,
-			ScoreCommonService scoreCommonService, TourFactorService tourFactorService, RegisterAttributeService registerAttributeService, EsHubService esHubService)
+			ScoreCommonService scoreCommonService, TourFactorService tourFactorService, IRegisterAttributeService registerAttributeService, EsHubService esHubService)
 		{
 			_service = service;
 			_viewRenderService = viewRenderService;

@@ -28,9 +28,9 @@ namespace KadOzenka.Dal.Tours
 
         public TourFactorService()
         {
-            RegisterService = new RegisterService();
+	        RecycleBinService = new RecycleBinService();
+            RegisterService = new RegisterService(RecycleBinService);
             RegisterAttributeService = new RegisterAttributeService();
-            RecycleBinService = new RecycleBinService();
         }
 
         public List<OMAttribute> GetTourAttributes(long tourId, ObjectTypeExtended objectType)
