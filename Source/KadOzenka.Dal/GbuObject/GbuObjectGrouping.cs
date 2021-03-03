@@ -513,7 +513,7 @@ namespace KadOzenka.Dal.GbuObject
                     item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
         }
 
-        private ValueItem GetDataLevelForObject(LevelItem level, GroupingItem obj, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> dictionary,
+        private ValueItem GetDataLevel(LevelItem level, GroupingItem item, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> dictionary,
             ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? docId, out DataLevel dataLevel)
         {
             dataLevel =  new DataLevel();
@@ -521,7 +521,7 @@ namespace KadOzenka.Dal.GbuObject
             if (level.IdFactor != null)
             {
                 dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-                   valueLevel = GetValueFactor(obj.Id, level.IdFactor, dateActual);
+                   valueLevel = GetValueFactor(item.ObjectId, level.IdFactor, dateActual);
                 if (level.UseDictionary)
                 {
                     if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
@@ -548,9 +548,9 @@ namespace KadOzenka.Dal.GbuObject
                         }
                         else
                         {
-                            LogNotFoundDictionaryValues(valueLevel,dataLevel,dictionary,obj);
+                            LogNotFoundDictionaryValues(valueLevel,dataLevel,dictionary,item);
                             errorCOD = true;
-                            errorCODStr += obj.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine;
+                            errorCODStr += item.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine;
                         }
                     }
 
@@ -566,70 +566,6 @@ namespace KadOzenka.Dal.GbuObject
                         {
                             Source = doc.Description;
                             docId = doc.Id;
-                        }
-                    }
-                }
-            }
-
-            return valueLevel;
-        }
-
-        private ValueItem GetDataLevelForUnit(LevelItem level, GroupingItem unit, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> dictionary,
-            ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? DocId, out DataLevel dataLevel)
-        {
-            dataLevel = new DataLevel();
-            ValueItem valueLevel = new ValueItem();
-            if (level.IdFactor != null)
-            {
-                dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-                valueLevel = GetValueFactor(unit.ObjectId, level.IdFactor, dateActual);
-                if (level.UseDictionary)
-                {
-                    if (new Random().Next(0, 10000) > 9960)
-                        Log.Debug("Значение атрибута уровня {Value} {FactorId}", valueLevel.Value, dataLevel.FactorId);
-                    if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
-                    {
-                        var dictionaryRecord =  dictionary.Find(x => CompareDictToValue(x,valueLevel));
-
-                        if (dictionaryRecord != null)
-                        {
-                            string code = dictionaryRecord.Code.Replace(" ", "");
-                            if (code != "0")
-                            {
-                                Code = code;
-                                dataLevel.Code = code;
-
-                                if (valueLevel.IdDocument != null)
-                                {
-                                    OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
-                                    if (doc != null)
-                                    {
-                                        Source = doc.Description;
-                                        DocId = doc.Id;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            LogNotFoundDictionaryValues(valueLevel,dataLevel,dictionary,unit);
-                            errorCOD = true;
-                            errorCODStr += (unit.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine);
-                        }
-                    }
-
-                }
-                else
-                {
-                    Code = valueLevel.Value.Replace(" ", "");
-                    dataLevel.Code = Code;
-                    if (valueLevel.IdDocument != null)
-                    {
-                        OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
-                        if (doc != null)
-                        {
-                            Source = doc.Description;
-                            DocId = doc.Id;
                         }
                     }
                 }
@@ -699,17 +635,17 @@ namespace KadOzenka.Dal.GbuObject
             ValueItem Level10 = new ValueItem();
             ValueItem Level11 = new ValueItem();
             {
-                Level1 = GetDataLevelForObject(setting.Level1, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
-                Level2 = GetDataLevelForObject(setting.Level2, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
-                Level3 = GetDataLevelForObject(setting.Level3, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
-                Level4 = GetDataLevelForObject(setting.Level4, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
-                Level5 = GetDataLevelForObject(setting.Level5, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
-                Level6 = GetDataLevelForObject(setting.Level6, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
-                Level7 = GetDataLevelForObject(setting.Level7, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
-                Level8 = GetDataLevelForObject(setting.Level8, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
-                Level9 = GetDataLevelForObject(setting.Level9, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
-                Level10 = GetDataLevelForObject(setting.Level10, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
-                Level11 = GetDataLevelForObject(setting.Level11, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
+                Level1 = GetDataLevel(setting.Level1, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
+                Level2 = GetDataLevel(setting.Level2, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
+                Level3 = GetDataLevel(setting.Level3, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
+                Level4 = GetDataLevel(setting.Level4, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
+                Level5 = GetDataLevel(setting.Level5, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
+                Level6 = GetDataLevel(setting.Level6, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
+                Level7 = GetDataLevel(setting.Level7, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
+                Level8 = GetDataLevel(setting.Level8, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
+                Level9 = GetDataLevel(setting.Level9, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
+                Level10 = GetDataLevel(setting.Level10, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
+                Level11 = GetDataLevel(setting.Level11, obj, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
                 try {
                     lock (PriorityGrouping.locked)
@@ -978,17 +914,17 @@ namespace KadOzenka.Dal.GbuObject
                 #endregion
 
                 {
-                    Level1 = GetDataLevelForUnit(setting.Level1, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
-                    Level2 = GetDataLevelForUnit(setting.Level2, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
-                    Level3 = GetDataLevelForUnit(setting.Level3, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
-                    Level4 = GetDataLevelForUnit(setting.Level4, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
-                    Level5 = GetDataLevelForUnit(setting.Level5, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
-                    Level6 = GetDataLevelForUnit(setting.Level6, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
-                    Level7 = GetDataLevelForUnit(setting.Level7, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
-                    Level8 = GetDataLevelForUnit(setting.Level8, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
-                    Level9 = GetDataLevelForUnit(setting.Level9, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
-                    Level10 = GetDataLevelForUnit(setting.Level10, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
-                    Level11 = GetDataLevelForUnit(setting.Level11, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
+                    Level1 = GetDataLevel(setting.Level1, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
+                    Level2 = GetDataLevel(setting.Level2, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
+                    Level3 = GetDataLevel(setting.Level3, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
+                    Level4 = GetDataLevel(setting.Level4, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
+                    Level5 = GetDataLevel(setting.Level5, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
+                    Level6 = GetDataLevel(setting.Level6, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
+                    Level7 = GetDataLevel(setting.Level7, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
+                    Level8 = GetDataLevel(setting.Level8, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
+                    Level9 = GetDataLevel(setting.Level9, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
+                    Level10 = GetDataLevel(setting.Level10, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
+                    Level11 = GetDataLevel(setting.Level11, unit, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
                     lock (PriorityGrouping.locked)
                     {
