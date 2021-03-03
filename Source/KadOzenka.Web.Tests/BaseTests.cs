@@ -12,6 +12,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
+using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
@@ -125,6 +126,9 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IObjectsCharacteristicsService), typeof(ObjectsCharacteristicsService));
 			container.AddTransient(typeof(IObjectsCharacteristicsSourceService), typeof(ObjectsCharacteristicsSourceService));
 			container.AddTransient(typeof(IObjectCharacteristicsRepository), typeof(ObjectsCharacteristicsRepository));
+			container.AddTransient(typeof(ISRDSessionWrapper), typeof(SRDSessionWrapper));
+			container.AddTransient(typeof(IRegisterConfiguratorWrapper), typeof(RegisterConfiguratorWrapper));
+			container.AddTransient(typeof(IRegisterCacheWrapper), typeof(RegisterCacheWrapper));
 
 			AddServicesToContainer(container);
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+﻿using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics
 {

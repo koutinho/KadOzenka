@@ -3,6 +3,10 @@ using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
 using Core.Register;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
+using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
+using KadOzenka.Dal.ObjectsCharacteristics.Resources;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Gbu;
 using Platform.Configurator;
@@ -14,16 +18,23 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
     {
 	    public IRegisterAttributeService RegisterAttributeService { get; }
         public IObjectCharacteristicsRepository ObjectCharacteristicsRepository { get; }
+        public ISRDSessionWrapper SRDSessionWrapper { get; }
+        public IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
+        public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
-        public ObjectsCharacteristicsService(IRegisterAttributeService registerAttributeService, IObjectCharacteristicsRepository objectCharacteristicsRepository)
+        public ObjectsCharacteristicsService(IRegisterAttributeService registerAttributeService, IObjectCharacteristicsRepository objectCharacteristicsRepository,
+	        ISRDSessionWrapper srdSessionWrapper, IRegisterConfiguratorWrapper registerConfiguratorWrapper, IRegisterCacheWrapper registerCacheWrapper)
         {
 	        RegisterAttributeService = registerAttributeService;
 	        ObjectCharacteristicsRepository = objectCharacteristicsRepository;
+	        SRDSessionWrapper = srdSessionWrapper;
+	        RegisterConfiguratorWrapper = registerConfiguratorWrapper;
+	        RegisterCacheWrapper = registerCacheWrapper;
         }
 
         public OMAttributeSettings GetRegisterAttributeSettings(long attributeId)
         {
-	        return OMAttributeSettings.Where(x => x.AttributeId == attributeId).SelectAll().ExecuteFirstOrDefault();
+            return ObjectCharacteristicsRepository.GetRegisterAttributeSettings(attributeId);
         }
 
         public long AddCharacteristic(CharacteristicDto characteristicDto)
@@ -39,17 +50,17 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
                 //TODO если будут еще различия, то разнести по двум разным сервисам
                 //TODO (для ресстров с разделением по типу данных и реестров с разделением по атрибуту)
-                var register = RegisterCache.GetRegisterData((int) characteristicDto.RegisterId);
+                var register = RegisterCacheWrapper.GetRegisterData((int) characteristicDto.RegisterId);
                 if (register.AllpriPartitioning == AllpriPartitioningType.AttributeId)
                 {
-	                SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, exceptionOnAccessDenied: true);
-	                RegisterConfigurator.CreateDbTableForRegister(characteristicDto.RegisterId);
+	                SRDSessionWrapper.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, true);
+	                RegisterConfiguratorWrapper.CreateDbTableForRegister(characteristicDto.RegisterId);
 	                //DataCompositionByCharacteristicsService.CreateTriggerForRegister(register.Id, id);
                 }
 	            else
 	            {
-		            var dbConfigurator = RegisterConfigurator.GetDbConfigurator();
-		            RegisterConfigurator.CreateDbColumnForRegister(omAttribute, dbConfigurator);
+		            var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
+		            RegisterConfiguratorWrapper.CreateDbColumnForRegister(omAttribute, dbConfigurator);
                 }
 
                 ObjectCharacteristicsRepository.CreateOrUpdateCharacteristicSetting(id,
@@ -76,15 +87,14 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 
         public void DeleteCharacteristic(long characteristicId)
         {
-	        SRDSession.Current.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, exceptionOnAccessDenied: true);
-            RegisterAttributeService.RemoveRegisterAttribute(characteristicId);
+	        SRDSessionWrapper.CheckAccessToFunction(ObjectModel.SRD.SRDCoreFunctions.ADMIN, true);
+	        RegisterAttributeService.RemoveRegisterAttribute(characteristicId);
         }
-
 
         private void ValidateCharacteristic(CharacteristicDto characteristicDto)
         {
             if (string.IsNullOrWhiteSpace(characteristicDto.Name))
-                throw new ArgumentException("Имя характеристики не может быть пустым");
+                throw new EmptyCharacteristicNameException();
         }
     }
 }

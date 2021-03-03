@@ -43,6 +43,7 @@ using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
+using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
@@ -131,6 +132,9 @@ namespace CIPJS
             services.AddTransient(typeof(IObjectsCharacteristicsService), typeof(ObjectsCharacteristicsService));
             services.AddTransient(typeof(IObjectsCharacteristicsSourceService), typeof(ObjectsCharacteristicsSourceService));
             services.AddTransient(typeof(IObjectCharacteristicsRepository), typeof(ObjectsCharacteristicsRepository));
+            services.AddTransient(typeof(ISRDSessionWrapper), typeof(SRDSessionWrapper));
+            services.AddTransient(typeof(IRegisterConfiguratorWrapper), typeof(RegisterConfiguratorWrapper));
+            services.AddTransient(typeof(IRegisterCacheWrapper), typeof(RegisterCacheWrapper));
 
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>

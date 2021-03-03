@@ -1,28 +1,33 @@
-﻿using System;
-using System.Transactions;
+﻿using System.Transactions;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
+using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
+using KadOzenka.Dal.ObjectsCharacteristics.Resources;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
-using Platform.Configurator;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics
 {
 	public class ObjectsCharacteristicsSourceService : IObjectsCharacteristicsSourceService
 	{
+		public static readonly int RegisterStorageType = 5;
 		public IRegisterService RegisterService { get; }
 		public IObjectCharacteristicsRepository ObjectCharacteristicsRepository { get; }
+		public IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
 
-        public ObjectsCharacteristicsSourceService(IRegisterService registerService, IObjectCharacteristicsRepository objectCharacteristicsRepository)
+        public ObjectsCharacteristicsSourceService(IRegisterService registerService, IObjectCharacteristicsRepository objectCharacteristicsRepository, IRegisterConfiguratorWrapper registerConfiguratorWrapper)
 		{
 			RegisterService = registerService;
 			ObjectCharacteristicsRepository = objectCharacteristicsRepository;
+			RegisterConfiguratorWrapper = registerConfiguratorWrapper;
         }
 
         public SourceDto GetSource(long registerId)
         {
             var register = RegisterService.GetRegister(registerId);
             if (register == null)
-                throw new Exception($"Источник с Id {registerId} не найден");
+                throw new SourceDoesNotExistException(registerId);
 
             return new SourceDto
             {
@@ -40,14 +45,14 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             {
                 var numberOfExistingRegistersWithCharacteristics = ObjectCharacteristicsRepository.GetNumberOfExistingRegistersWithCharacteristics();
                 numberOfExistingRegistersWithCharacteristics++;
-                var registerName = $"Gbu.Custom.Source{numberOfExistingRegistersWithCharacteristics}";
-                var allpriTable = $"gbu_custom_source_{numberOfExistingRegistersWithCharacteristics}";
-                var registerDescription = $"Источник: {sourceDto.RegisterDescription}";
-                omRegister = RegisterService.CreateRegister(registerName, registerDescription, "GBU_MAIN_OBJECT", allpriTable, 5);
+                var registerName = string.Format(Fields.RegisterName, numberOfExistingRegistersWithCharacteristics);
+                var allpriTable = string.Format(Fields.AllpriTable, numberOfExistingRegistersWithCharacteristics);
+                var registerDescription = string.Format(Fields.RegisterDescription, numberOfExistingRegistersWithCharacteristics);
+                omRegister = RegisterService.CreateRegister(registerName, registerDescription, Fields.QuantTable, allpriTable, RegisterStorageType);
 
                 RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
 
-                RegisterConfigurator.CreateDbTableForRegister(omRegister.RegisterId);
+                RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
 
                 //DataCompositionByCharacteristicsService.CreateTriggerForRegister(omRegister.RegisterId);
 
@@ -64,14 +69,17 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             ValidateSource(sourceDto);
 
             var register = RegisterService.GetRegister(sourceDto.RegisterId);
+            if (register == null)
+	            throw new SourceDoesNotExistException(sourceDto.RegisterId);
+
             register.RegisterDescription = sourceDto.RegisterDescription;
-            register.Save();
+            ObjectCharacteristicsRepository.SaveRegister(register);
         }
 
         private void ValidateSource(SourceDto sourceDto)
         {
             if (string.IsNullOrWhiteSpace(sourceDto.RegisterDescription))
-                throw new ArgumentException("Имя источника не может быть пустым");
+	            throw new EmptyCharacteristicSourceNameException();
         }
 	}
 }

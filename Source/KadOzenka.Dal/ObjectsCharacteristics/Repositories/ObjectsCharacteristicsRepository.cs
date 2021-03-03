@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.ObjectsCharacteristics
+namespace KadOzenka.Dal.ObjectsCharacteristics.Repositories
 {
 	public class ObjectsCharacteristicsRepository : IObjectCharacteristicsRepository
 	{
@@ -36,6 +34,16 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 			{
 				RegisterId = registerId
 			}.Save();
+		}
+
+		public OMAttributeSettings GetRegisterAttributeSettings(long attributeId)
+		{
+			return OMAttributeSettings.Where(x => x.AttributeId == attributeId).SelectAll().ExecuteFirstOrDefault();
+		}
+
+		public void SaveRegister(OMRegister omRegister)
+		{
+			omRegister.Save();
 		}
 	}
 }
