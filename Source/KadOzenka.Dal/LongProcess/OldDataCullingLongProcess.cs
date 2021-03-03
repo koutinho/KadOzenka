@@ -38,6 +38,7 @@ namespace KadOzenka.Dal.LongProcess
         private TimeSpan errorLogRetain = TimeSpan.FromDays(7);
         private TimeSpan messagesRetain = TimeSpan.FromDays(30);
         private TimeSpan processQueueRetain = TimeSpan.FromDays(30);
+
         private void Clear()
         {
             var errorLogLastRetainDay = DateTime.Today - errorLogRetain;
@@ -57,12 +58,13 @@ namespace KadOzenka.Dal.LongProcess
         /// <param name="lastRetainDay"></param>
         private static void CleanMessages(DateTime lastRetainDay)
         {
-            var messages = OMMessage.Where(x => x.WasSended < lastRetainDay).Select(x => x.Id).Execute().Select(x=> x.Id).ToList();
+            var messages = OMMessage.Where(x => x.WasSended < lastRetainDay).Select(x => x.Id).Execute()
+                .Select(x => x.Id).ToList();
             var messageRegisterId = OMMessage.GetRegisterId();
             Log.Information("Найдено {messageCount} сообщений для удаления", messages.Count);
 
             var messageToRegisterId = OMMessageTo.GetRegisterId();
-            var messageToIdColumn = OMMessageTo.GetColumn(x => x.Id);
+            var messageToIdColumn = OMMessageTo.GetColumn(x => x.MessageId);
             var messageWasSendedColumn = OMMessage.GetColumn(x => x.WasSended);
             var query = new QSQuery
             {
@@ -82,17 +84,17 @@ namespace KadOzenka.Dal.LongProcess
                                 LeftOperand = messageWasSendedColumn,
                                 RightOperand = new QSColumnConstant(lastRetainDay)
                             },
-                            Columns = new List<QSColumn>{OMMessage.GetColumn(x=>x.Id)}
+                            Columns = new List<QSColumn> {OMMessage.GetColumn(x => x.Id)}
                         }
                     }
-                },
-                Columns = new List<QSColumn>{OMMessageTo.GetColumn(x=>x.Id)}
+                }
             };
-            var messageTo = query.ExecuteQuery<OMMessageTo>().Select(x=>x.Id).ToList();
-            Log.Information("Найдено {messageToCount} сообщений на почту для удаления", messageTo.Count);
+            var messageTo = query.ExecuteQuery<MessageToIdDto>();
+            var messageToForRemoval = messageTo.Select(x => x.Id).ToList();
+            Log.Information("Найдено {messageToCount} сообщений на почту для удаления", messageToForRemoval.Count);
 
-            RemoveRecords(messages,messageRegisterId);
-            RemoveRecords(messageTo,messageToRegisterId);
+            RemoveRecords(messages, messageRegisterId);
+            RemoveRecords(messageToForRemoval, messageToRegisterId);
         }
 
 
@@ -102,10 +104,12 @@ namespace KadOzenka.Dal.LongProcess
         /// <param name="lastRetainDay"></param>
         private static void CleanLongProcessQueue(DateTime lastRetainDay)
         {
-            var queues = OMQueue.Where(x => x.CreateDate < lastRetainDay).Select(x => x.Id).Execute().Select(x=>x.Id).ToList();;
+            var queues = OMQueue.Where(x => x.CreateDate < lastRetainDay).Select(x => x.Id).Execute().Select(x => x.Id)
+                .ToList();
+            ;
             var queueRegisterId = OMQueue.GetRegisterId();
             Log.Information("Найдено {queuesCount} процессов в очереди для удаления", queues.Count);
-            RemoveRecords(queues,queueRegisterId);
+            RemoveRecords(queues, queueRegisterId);
         }
 
         /// <summary>
@@ -114,7 +118,8 @@ namespace KadOzenka.Dal.LongProcess
         /// <param name="lastRetainDay"></param>
         private static void CleanErrorLogs(DateTime lastRetainDay)
         {
-            var errorLogs = OMErrorLog.Where(x => x.ErrorDate < lastRetainDay).Select(x => x.Id).Execute().Select(x=>x.Id).ToList();
+            var errorLogs = OMErrorLog.Where(x => x.ErrorDate < lastRetainDay).Select(x => x.Id).Execute()
+                .Select(x => x.Id).ToList();
             var registerId = OMErrorLog.GetRegisterId();
             Log.Information("Найдено {errorLogCount} логов ошибок для удаления", errorLogs.Count);
             RemoveRecords(errorLogs, registerId);
@@ -124,6 +129,11 @@ namespace KadOzenka.Dal.LongProcess
         {
             var objectList = errorLogs.Select(x => new RegisterObject(registerId, x.ParseToInt())).ToList();
             RegisterStorage.Destroy(objectList);
+        }
+
+        private class MessageToIdDto
+        {
+            public long Id { get; set; }
         }
     }
 }
