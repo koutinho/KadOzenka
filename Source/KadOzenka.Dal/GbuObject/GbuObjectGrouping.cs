@@ -33,6 +33,7 @@ namespace KadOzenka.Dal.GbuObject
         public string Code;
         public long FactorId;
     }
+
     public class PriorityItem
     {
         static readonly ILogger Log = Serilog.Log.ForContext<PriorityItem>();
@@ -647,8 +648,9 @@ namespace KadOzenka.Dal.GbuObject
                 Level10 = GetDataLevel(setting.Level10, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
                 Level11 = GetDataLevel(setting.Level11, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
-                try {
-                    lock (PriorityGrouping.locked)
+                try 
+                {
+	                lock (PriorityGrouping.locked)
                     {
                         var levelsData = new List<DataLevel>
                         {
@@ -902,6 +904,7 @@ namespace KadOzenka.Dal.GbuObject
         }
     }
 
+
     /// <summary>
     /// Приоритет группировки
     /// </summary>
@@ -1006,15 +1009,19 @@ namespace KadOzenka.Dal.GbuObject
             var actualDate = setting.DateActual?.Date ?? DateTime.Now.Date;
             itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.ObjectChangeStatus, actualDate);
 
-            List<ObjectModel.KO.OMCodDictionary> DictionaryItem = new List<ObjectModel.KO.OMCodDictionary>();
+            var dictionaryItems = new List<OMCodDictionary>();
             if (setting.IdCodJob != null)
-                DictionaryItem = ObjectModel.KO.OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
+                dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
+            _log.ForContext("CodDictionaryId", setting.IdCodJob).Debug("Найдено {Count} значений словаря", dictionaryItems?.Count);
 
             bool useTask = false;
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
 
             var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
 
+            //TODO для тестирования
+            //var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618 };
+            //var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
             var items = itemsGetter.GetItems();
             MaxCount = items.Count;
             CurrentCount = 0;
@@ -1035,7 +1042,7 @@ namespace KadOzenka.Dal.GbuObject
 
 	            try
 	            {
-		            new PriorityItem().SetPriorityGroup(setting, DictionaryItem, item, localActualDate, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
+		            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, item, localActualDate, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
 	            }
 	            catch (Exception ex)
 	            {
@@ -1046,17 +1053,9 @@ namespace KadOzenka.Dal.GbuObject
 
             items.Clear();
 
-            try
-            {
-	            reportId = reportService.SaveReport();
+            reportId = reportService.SaveReport();
 
-                return reportService.GetUrlToDownloadFile(reportId);
-            }
-            catch (Exception ex)
-            {
-                _log.Error(ex, "Сохранение отчета завершилось с ошибкой");
-                throw;
-            }
+            return reportService.GetUrlToDownloadFile(reportId);
         }
 
         public static ReportHeaderWithColumnDic GenerateReportHeaderWithColumnNumber(GroupingSettings setting)
@@ -1079,7 +1078,6 @@ namespace KadOzenka.Dal.GbuObject
                         var lItem = (LevelItem)propertyInfo.GetValue(setting);
                         resHeaderList.AddRange(new List<string>{ GbuObjectService.GetAttributeNameById(lItem.IdFactor.GetValueOrDefault()), $"(Уровень - {levelTitle}) Источник информации" });
                         
-                       /// Serilog.Context.LogContext.PushProperty("lItem.IdFactor", lItem.IdFactor);
                         Log.Verbose("Атрибут ОН. {FactorName}, Id {FactorID}", lItem.IdFactor.GetValueOrDefault(), lItem.IdFactor);
                         
                         dicColumns.Add(lItem.IdFactor.GetValueOrDefault(), lastColumn);
