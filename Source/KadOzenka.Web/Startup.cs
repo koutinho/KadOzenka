@@ -50,6 +50,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
 using SerilogTimings;
@@ -126,8 +127,9 @@ namespace CIPJS
             services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
             services.AddTransient(typeof(IGbuReportService), typeof(GbuReportService));
             services.AddTransient(typeof(ILongProcessService), typeof(LongProcessService));
-
+            services.AddSingleton<BackgroundProcessWidgetService>();
             services.AddHttpContextAccessor();
+
                 services.AddSession(options =>
                 {
                     options.Cookie.Name = "CIPJS.Session";
@@ -211,6 +213,7 @@ namespace CIPJS
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                 routes.MapHub<UrgentMessageHub>("/coreMessageData");
                 routes.MapHub<NotificationMessageHub>("/coreMessagesList");
+                routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
             });
 
                 app.UseMvc(routes =>
