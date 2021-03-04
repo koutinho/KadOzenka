@@ -16,6 +16,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Exceptions;
 using Serilog;
 using Newtonsoft.Json;
 using ObjectModel.KO;
@@ -708,7 +709,14 @@ namespace KadOzenka.Dal.GbuObject
                             else
                             if (source.Contains("11")) id_doc = Doc_Id_11;
 
-                            AddValueFactor(inputItem.ObjectId, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+                            try
+                            {
+	                            AddValueFactor(inputItem.ObjectId, setting.IdAttributeResult, id_doc, dateActual, resGroup);
+							}
+                            catch (Exception e)
+                            {
+	                            throw new GroupingAttributeSavingException($"Ошибка при сохрании значения '{resGroup}' в Характеристику", e);
+                            }
 
                             lock (PriorityGrouping.locked)
                             {
@@ -786,8 +794,15 @@ namespace KadOzenka.Dal.GbuObject
 
                                 if (setting.IdAttributeSource != null)
                                 {
-                                    AddValueFactor(inputItem.ObjectId, setting.IdAttributeSource, null, dateActual, strsource);
-                                }
+	                                try
+                                    {
+										AddValueFactor(inputItem.ObjectId, setting.IdAttributeSource, null, dateActual, strsource);
+									}
+                                    catch (Exception e)
+                                    {
+	                                    throw new GroupingAttributeSavingException($"Ошибка при сохрании значения '{strsource}' в Источник", e);
+                                    }
+								}
                             }
                             if (setting.IdAttributeDocument != null)
                             {
@@ -841,8 +856,16 @@ namespace KadOzenka.Dal.GbuObject
                                     }
                                 }
                                 strsource = strsource.Trim().TrimEnd(';');
-                                AddValueFactor(inputItem.ObjectId, setting.IdAttributeDocument, null, dateActual, strsource);
-                            }
+                                
+                                try
+                                {
+									AddValueFactor(inputItem.ObjectId, setting.IdAttributeDocument, null, dateActual, strsource);
+								}
+                                catch (Exception e)
+                                {
+	                                throw new GroupingAttributeSavingException($"Ошибка при сохрании значения '{strsource}' в Документ", e);
+                                }
+							}
 
                             lock (PriorityGrouping.locked)
                             {
@@ -859,22 +882,34 @@ namespace KadOzenka.Dal.GbuObject
                     }
                     #endregion
             }
+            catch (GroupingAttributeSavingException exception)
+            {
+	            var message = exception.Message;
+	            LogException(message, inputItem, reportService, exception.InnerException, currentRow);
+            }
             catch (Exception ex)
             {
-	            lock (PriorityGrouping.locked)
-	            {
-		            var errorId = ErrorManager.LogError(ex);
-		            var message = $"В ходе обработки оъекта возникла ошибка. Подробности в журнале ({errorId}). {ex.Message}";
-		            reportService.AddValue(message, PriorityGrouping.ErrorColumn, currentRow);
-	            }
-
-	            Serilog.Log.Logger.ForContext("Item", JsonConvert.SerializeObject(inputItem))
-		            .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
+	            var message = "В ходе обработки оъекта возникла ошибка.";
+	            LogException(message, inputItem, reportService, ex, currentRow);
             }
+        }
+
+        private static void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex, GbuReportService.Row currentRow)
+        {
+	        lock (PriorityGrouping.locked)
+	        {
+		        var errorId = ErrorManager.LogError(ex);
+		        var fullMessage = $"{message}. Подробности в журнале ({errorId}).";
+		        reportService.AddValue(fullMessage, PriorityGrouping.GeneralErrorColumn, currentRow);
+	        }
+
+	        Serilog.Log.Logger.ForContext("Item", JsonConvert.SerializeObject(inputItem))
+		        .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
         }
 
         #endregion
     }
+
 
 
     public class PriorityGroupingItemsGetter : AItemsGetter<GroupingItem>
@@ -947,6 +982,8 @@ namespace KadOzenka.Dal.GbuObject
 
         public static int ErrorColumn = 4;
 
+        public static int GeneralErrorColumn = 5;
+
 
         #endregion
 
@@ -1003,6 +1040,7 @@ namespace KadOzenka.Dal.GbuObject
 	            reportService.SetIndividualWidth(ValueColumn, 3);
 	            reportService.SetIndividualWidth(SourceColumn, 6);
 	            reportService.SetIndividualWidth(ErrorColumn, 5);
+	            reportService.SetIndividualWidth(GeneralErrorColumn, 5);
 
 	            foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
 	            {
@@ -1097,11 +1135,11 @@ namespace KadOzenka.Dal.GbuObject
 
         public static ReportHeaderWithColumnDic GenerateReportHeaderWithColumnNumber(GroupingSettings setting)
         {
-            List<string> resHeaderList = new List<string>{ "КН", "Поле в которое вносилось значение", "Внесенное значение", "Источник внесенного значения", "Ошибка" };
+            List<string> resHeaderList = new List<string>{ "КН", "Поле в которое вносилось значение", "Внесенное значение", "Источник внесенного значения", "Ошибка внесенного значения", "Ошибка" };
             ReportHeaderWithColumnDic res = new ReportHeaderWithColumnDic();
 
             var dicColumns = new Dictionary<long, long>();
-            int lastColumn = ErrorColumn;
+            int lastColumn = GeneralErrorColumn;
             int levelTitle = 1;
             foreach (FieldInfo propertyInfo in typeof(GroupingSettings).GetFields(BindingFlags.Instance |
                                                                                      BindingFlags.NonPublic |
