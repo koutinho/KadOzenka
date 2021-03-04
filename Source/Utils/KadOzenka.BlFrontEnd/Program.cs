@@ -657,6 +657,24 @@ namespace KadOzenka.BlFrontEnd
 				}, cancelToken);
 			});
 
+            consoleHelper.AddCommand("566", "Тестирование отмены нормализации", () =>
+            {
+	            //TODO тестирование отмены процесса
+	            var cancelSource = new CancellationTokenSource();
+	            var cancelToken = cancelSource.Token;
+	            Task.Factory.StartNew(() =>
+	            {
+		            Thread.Sleep(5000);
+		            cancelSource.Cancel();
+	            });
+	            new SetPriorityGroupProcess().StartProcess(new OMProcessType(), new OMQueue
+	            {
+		            Status_Code = Status.Added,
+		            UserId = SRDSession.GetCurrentUserId(),
+		            Parameters = new GroupingSettings().SerializeToXml()
+	            }, cancelToken);
+            });
+
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));
 		}

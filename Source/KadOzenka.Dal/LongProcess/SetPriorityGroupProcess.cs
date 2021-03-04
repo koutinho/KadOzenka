@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Gbu.GroupingAlgoritm;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
@@ -32,7 +30,7 @@ namespace KadOzenka.Dal.LongProcess
 				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettings>();
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => PriorityGrouping.MaxCount, () => PriorityGrouping.CurrentCount);
 
-				var url = PriorityGrouping.SetPriorityGroup(settings);
+				var url = PriorityGrouping.SetPriorityGroup(settings, cancellationToken);
 				//TestLongRunningProcess(settings);
 
 				LongProcessProgressLogger.StopLogProgress();
