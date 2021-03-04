@@ -82,7 +82,6 @@
     <None Remove="Config\Param\ReonService.Ppr.xml" />
     <None Remove="Config\ReadMe.txt" />
     <None Remove="Config\Registers\SearchPanels\CalculatePerson.xml" />
-    <None Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreLongProcessService.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreMessages.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreRegisterAttribute.xml" />
@@ -956,6 +955,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\CharacteristicsList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\CoreLongProcessQueue.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
@@ -1874,6 +1876,7 @@
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
     <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\SearchPanels\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
