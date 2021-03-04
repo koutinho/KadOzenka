@@ -7,11 +7,14 @@ using ObjectModel.Gbu;
 
 namespace KadOzenka.Web.Models.ObjectsCharacteristics
 {
-    public class CharacteristicModel
+    public class CharacteristicModel : IValidatableObject
     {
+	    public const string EmptyDictionaryNameErrorMessage = "Имя характеристики не может быть пустым";
+	    public const string ReferenceTypeWithoutReferenceLinkErrorMessage = "Поле Cправочник обязательное для данного типа характеристики";
+
         public long Id { get; set; }
 
-        [Required(ErrorMessage = "Имя характеристики не может быть пустым")]
+        [Required(ErrorMessage = EmptyDictionaryNameErrorMessage)]
         [Display(Name = "Имя характеристики")]
         public string Name { get; set; }
 
@@ -69,7 +72,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         {
             if (Type == RegisterAttributeType.REFERENCE && !ReferenceId.HasValue)
             {
-                yield return new ValidationResult(errorMessage: "Поле Cправочник обязательное для данного типа характеристики",
+                yield return new ValidationResult(errorMessage: ReferenceTypeWithoutReferenceLinkErrorMessage,
                     memberNames: new[] { nameof(ReferenceId) });
             }
         }

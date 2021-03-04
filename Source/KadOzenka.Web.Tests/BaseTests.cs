@@ -35,6 +35,10 @@ namespace KadOzenka.Web.Tests
 		protected Mock<IModelingService> ModelingService { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
 		protected Mock<ILongProcessService> LongProcessService { get; set; }
+		protected Mock<IObjectsCharacteristicsService> ObjectsCharacteristicsService { get; set; }
+		protected Mock<IObjectsCharacteristicsSourceService> ObjectsCharacteristicsSourceService { get; set; }
+		protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
+
 
 		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
 
@@ -46,6 +50,9 @@ namespace KadOzenka.Web.Tests
 			ModelingService = new Mock<IModelingService>();
 			GbuObjectService = new Mock<IGbuObjectService>();
 			LongProcessService = new Mock<ILongProcessService>();
+			ObjectsCharacteristicsService = new Mock<IObjectsCharacteristicsService>();
+			ObjectsCharacteristicsSourceService = new Mock<IObjectsCharacteristicsSourceService>();
+			RegisterAttributeService = new Mock<IRegisterAttributeService>();
 
 			ConfigureServices();
 		}
@@ -121,14 +128,10 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
 			container.AddTransient(typeof(ILongProcessService), sp => LongProcessService.Object);
 			container.AddTransient(typeof(IRecycleBinService), typeof(RecycleBinService));
-			container.AddTransient(typeof(IRegisterAttributeService), typeof(RegisterAttributeService));
-			container.AddTransient(typeof(IRegisterService), typeof(RegisterService));
-			container.AddTransient(typeof(IObjectsCharacteristicsService), typeof(ObjectsCharacteristicsService));
-			container.AddTransient(typeof(IObjectsCharacteristicsSourceService), typeof(ObjectsCharacteristicsSourceService));
-			container.AddTransient(typeof(IObjectCharacteristicsRepository), typeof(ObjectsCharacteristicsRepository));
-			container.AddTransient(typeof(ISRDSessionWrapper), typeof(SRDSessionWrapper));
-			container.AddTransient(typeof(IRegisterConfiguratorWrapper), typeof(RegisterConfiguratorWrapper));
-			container.AddTransient(typeof(IRegisterCacheWrapper), typeof(RegisterCacheWrapper));
+			container.AddTransient(typeof(IObjectsCharacteristicsService), sp => ObjectsCharacteristicsService.Object);
+			container.AddTransient(typeof(IObjectsCharacteristicsSourceService),
+				sp => ObjectsCharacteristicsSourceService.Object);
+			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
 
 			AddServicesToContainer(container);
 
