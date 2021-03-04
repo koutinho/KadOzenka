@@ -52,6 +52,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
 using SerilogTimings;

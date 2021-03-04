@@ -4,7 +4,7 @@ using Platform.Configurator.DbConfigurator;
 
 namespace KadOzenka.Dal.CommonFunctions
 {
-	public class RegisterConfiguratorWrapper
+	public class RegisterConfiguratorWrapper : IRegisterConfiguratorWrapper
 	{
 		public void CreateDbTableForRegister(long registerId)
 		{

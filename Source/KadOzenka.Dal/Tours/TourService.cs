@@ -20,11 +20,11 @@ namespace KadOzenka.Dal.Tours
 	{
         private TourFactorService TourFactorService { get; set; }
         private GroupService GroupService { get; set; }
-        private RecycleBinService RecycleBinService { get; }
+        private IRecycleBinService RecycleBinService { get; }
         private ITourRepository TourRepository { get; }
 
         public TourService(TourFactorService tourFactorService, GroupService groupService,
-	        RecycleBinService recycleBinService, ITourRepository tourRepository)
+	        IRecycleBinService recycleBinService, ITourRepository tourRepository)
         {
             TourFactorService = tourFactorService;
             GroupService = groupService;
