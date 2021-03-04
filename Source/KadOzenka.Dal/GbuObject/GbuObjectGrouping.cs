@@ -1032,7 +1032,12 @@ namespace KadOzenka.Dal.GbuObject
 
             var dictionaryItems = new List<OMCodDictionary>();
             if (setting.IdCodJob != null)
-                dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).SelectAll().Execute();
+	            dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).Select(x => new
+	            {
+		            x.IdCodjob,
+		            x.Value,
+		            x.Code
+	            }).Execute();
             _log.ForContext("CodDictionaryId", setting.IdCodJob).Debug("Найдено {Count} значений словаря", dictionaryItems?.Count);
 
             bool useTask = false;
