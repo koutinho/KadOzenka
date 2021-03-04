@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
-using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.Entities;
 using KadOzenka.Dal.Registers.GbuRegistersServices;

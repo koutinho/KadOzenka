@@ -81,7 +81,7 @@ WallMaterialAttrValues as (
 ),
 
 cadastralQuartalAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {14})
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from unit_data), {19})
 )
 
 select
