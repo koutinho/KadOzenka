@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -514,8 +515,10 @@ namespace KadOzenka.Dal.GbuObject
                     item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
         }
 
-        private ValueItem GetDataLevel(LevelItem level, GroupingItem item, DateTime dateActual, List<ObjectModel.KO.OMCodDictionary> dictionary,
-            ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? docId, out DataLevel dataLevel)
+        private ValueItem GetDataLevel(LevelItem level, GroupingItem item, DateTime dateActual,
+	        List<OMCodDictionary> dictionary, ConcurrentDictionary<long, OMInstance> documents,
+	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? docId,
+	        out DataLevel dataLevel)
         {
             dataLevel =  new DataLevel();
             ValueItem valueLevel = new ValueItem();
@@ -528,7 +531,6 @@ namespace KadOzenka.Dal.GbuObject
                     if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
                     {
                         var dictionaryRecord = dictionary.Find(x => CompareDictToValue(x,valueLevel));
-
                         if (dictionaryRecord != null)
                         {
                             string code = dictionaryRecord.Code.Replace(" ", "");
@@ -538,8 +540,8 @@ namespace KadOzenka.Dal.GbuObject
                                 dataLevel.Code = code;
                                 if (valueLevel.IdDocument != null)
                                 {
-                                    OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
-                                    if (doc != null)
+	                                var doc = GetDocument(documents, valueLevel.IdDocument.Value);
+	                                if (doc != null)
                                     {
                                         Source = doc.Description;
                                         docId = doc.Id;
@@ -561,7 +563,7 @@ namespace KadOzenka.Dal.GbuObject
                     dataLevel.Code = Code;
                     if (valueLevel.IdDocument != null)
                     {
-                        OMInstance doc = OMInstance.Where(x => x.Id == valueLevel.IdDocument.Value).SelectAll().ExecuteFirstOrDefault();
+	                    var doc = GetDocument(documents, valueLevel.IdDocument.Value);
                         if (doc != null)
                         {
                             Source = doc.Description;
@@ -574,8 +576,23 @@ namespace KadOzenka.Dal.GbuObject
             return valueLevel;
         }
 
-        public void SetPriorityGroup(GroupingSettings setting, List<ObjectModel.KO.OMCodDictionary> DictionaryItem, GroupingItem inputItem, 
-            DateTime dateActual, GbuReportService reportService, Dictionary<long, long> dicColumns)
+        private OMInstance GetDocument(ConcurrentDictionary<long, OMInstance> documents, long documentId)
+        {
+	        if(documents.ContainsKey(documentId))
+	        {
+		        return documents[documentId];
+	        }
+
+	        var document = OMInstance.Where(x => x.Id == documentId).Select(x => x.Description).ExecuteFirstOrDefault();
+	        documents.TryAdd(document.Id, document);
+	        Serilog.Log.Logger.Debug("Документ с ИД {DocumentId} добавлен в словарь", document.Id);
+
+            return document;
+        }
+
+        public void SetPriorityGroup(GroupingSettings setting, List<OMCodDictionary> DictionaryItem, GroupingItem inputItem, 
+	        DateTime dateActual, GbuReportService reportService, Dictionary<long, long> dicColumns,
+	        ConcurrentDictionary<long, OMInstance> documents)
         {
             GbuReportService.Row currentRow;
             lock (PriorityGrouping.locked)
@@ -636,17 +653,17 @@ namespace KadOzenka.Dal.GbuObject
             ValueItem Level11 = new ValueItem();
             try
             {
-                Level1 = GetDataLevel(setting.Level1, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
-                Level2 = GetDataLevel(setting.Level2, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
-                Level3 = GetDataLevel(setting.Level3, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
-                Level4 = GetDataLevel(setting.Level4, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
-                Level5 = GetDataLevel(setting.Level5, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
-                Level6 = GetDataLevel(setting.Level6, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
-                Level7 = GetDataLevel(setting.Level7, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
-                Level8 = GetDataLevel(setting.Level8, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
-                Level9 = GetDataLevel(setting.Level9, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
-                Level10 = GetDataLevel(setting.Level10, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
-                Level11 = GetDataLevel(setting.Level11, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
+                Level1 = GetDataLevel(setting.Level1, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
+                Level2 = GetDataLevel(setting.Level2, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
+                Level3 = GetDataLevel(setting.Level3, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
+                Level4 = GetDataLevel(setting.Level4, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
+                Level5 = GetDataLevel(setting.Level5, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
+                Level6 = GetDataLevel(setting.Level6, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
+                Level7 = GetDataLevel(setting.Level7, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
+                Level8 = GetDataLevel(setting.Level8, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
+                Level9 = GetDataLevel(setting.Level9, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
+                Level10 = GetDataLevel(setting.Level10, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
+                Level11 = GetDataLevel(setting.Level11, inputItem, dateActual, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
                     lock (PriorityGrouping.locked)
                     {
@@ -1035,6 +1052,7 @@ namespace KadOzenka.Dal.GbuObject
 			            ? "Нормализация по Заданиям на оценку. Всего {Count} единиц оценки"
 			            : "Нормализация по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
 
+            var documents = new ConcurrentDictionary<long, OMInstance>();
             Parallel.ForEach(items, options, item =>
             {
 	            //если работаем с единицами оценки, дата актуальности должна браться из них
@@ -1044,7 +1062,8 @@ namespace KadOzenka.Dal.GbuObject
 
 	            SetThreadCurrentPrincipal(userId);
 
-	            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, item, localActualDate, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
+	            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, item, localActualDate, reportService,
+		            dataHeaderAndColumnNumber.DictionaryColumns, documents);
             });
 
             items.Clear();
