@@ -554,7 +554,6 @@ namespace KadOzenka.Dal.GbuObject
                             errorCODStr += item.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine;
                         }
                     }
-
                 }
                 else
                 {
@@ -635,6 +634,7 @@ namespace KadOzenka.Dal.GbuObject
             ValueItem Level9 = new ValueItem();
             ValueItem Level10 = new ValueItem();
             ValueItem Level11 = new ValueItem();
+            try
             {
                 Level1 = GetDataLevel(setting.Level1, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
                 Level2 = GetDataLevel(setting.Level2, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
@@ -648,9 +648,7 @@ namespace KadOzenka.Dal.GbuObject
                 Level10 = GetDataLevel(setting.Level10, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
                 Level11 = GetDataLevel(setting.Level11, inputItem, dateActual, DictionaryItem, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
-                try 
-                {
-	                lock (PriorityGrouping.locked)
+                    lock (PriorityGrouping.locked)
                     {
                         var levelsData = new List<DataLevel>
                         {
@@ -841,12 +839,18 @@ namespace KadOzenka.Dal.GbuObject
                         }
                     }
                     #endregion
-                }
-                catch (Exception ex)
-                {
-                    if(PriorityGrouping.CurrentCount < 10)
-                        Serilog.Log.Logger.Warning("SetPriorityGroup", ex);
-                }
+            }
+            catch (Exception ex)
+            {
+	            lock (PriorityGrouping.locked)
+	            {
+		            var errorId = ErrorManager.LogError(ex);
+		            var message = $"В ходе обработки оъекта возникла ошибка. Подробности в журнале ({errorId}). {ex.Message}";
+		            reportService.AddValue(message, PriorityGrouping.ErrorColumn, currentRow);
+	            }
+
+	            Serilog.Log.Logger.ForContext("Item", JsonConvert.SerializeObject(inputItem))
+		            .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
             }
         }
 
@@ -1019,11 +1023,11 @@ namespace KadOzenka.Dal.GbuObject
 
             var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
 
-            //TODO для тестирования
-            //var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618 };
-            //var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
-            var items = itemsGetter.GetItems();
-            MaxCount = items.Count;
+			////TODO для тестирования
+			//var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618 };
+			//var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
+			var items = itemsGetter.GetItems();
+			MaxCount = items.Count;
             CurrentCount = 0;
             _log.ForContext("useTask", useTask)
 	            .ForContext("Objs_0", JsonConvert.SerializeObject(items.ElementAtOrDefault(0)))
@@ -1040,15 +1044,7 @@ namespace KadOzenka.Dal.GbuObject
 
 	            SetThreadCurrentPrincipal(userId);
 
-	            try
-	            {
-		            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, item, localActualDate, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
-	            }
-	            catch (Exception ex)
-	            {
-		            _log.ForContext("Param", JsonConvert.SerializeObject(item))
-			            .Error(ex, "Ошибка группировки по КН {CadastralNumber}", item.CadastralNumber);
-	            }
+	            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, item, localActualDate, reportService, dataHeaderAndColumnNumber.DictionaryColumns);
             });
 
             items.Clear();
