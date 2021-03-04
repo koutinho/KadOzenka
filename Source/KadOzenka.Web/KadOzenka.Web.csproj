@@ -774,6 +774,9 @@
     <None Update="ConfigCore\Registers\Views\CoreAuditCommon.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="ConfigCore\Registers\Views\CoreBackgroundExports.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="ConfigCore\Registers\Views\CoreLongProcessQueue.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
