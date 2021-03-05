@@ -586,7 +586,7 @@ namespace KadOzenka.Dal.GbuObject
             return document;
         }
 
-        public void SetPriorityGroup(GroupingSettings setting, List<OMCodDictionary> DictionaryItem,
+        public void SetPriorityGroup(GroupingSettings setting, List<OMCodDictionary> dictionaryItems,
 	        List<long> allAttributeIds, GroupingItem inputItem,  DateTime dateActual, 
 	        GbuReportService reportService, Dictionary<long, long> dicColumns,
 	        ConcurrentDictionary<long, OMInstance> documents, QueryManager queryManager)
@@ -662,17 +662,17 @@ namespace KadOzenka.Dal.GbuObject
                 });
 				
 
-                Level1 = GetDataLevel(setting.Level1, valueItems[0], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
-                Level2 = GetDataLevel(setting.Level2, valueItems[1], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
-                Level3 = GetDataLevel(setting.Level3, valueItems[2], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
-                Level4 = GetDataLevel(setting.Level4, valueItems[3], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
-                Level5 = GetDataLevel(setting.Level5, valueItems[4], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
-                Level6 = GetDataLevel(setting.Level6, valueItems[5], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
-                Level7 = GetDataLevel(setting.Level7, valueItems[6], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
-                Level8 = GetDataLevel(setting.Level8, valueItems[7], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
-                Level9 = GetDataLevel(setting.Level9, valueItems[8], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
-                Level10 = GetDataLevel(setting.Level10, valueItems[9], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
-                Level11 = GetDataLevel(setting.Level11, valueItems[10], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
+                Level1 = GetDataLevel(setting.Level1, valueItems[0], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
+                Level2 = GetDataLevel(setting.Level2, valueItems[1], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
+                Level3 = GetDataLevel(setting.Level3, valueItems[2], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
+                Level4 = GetDataLevel(setting.Level4, valueItems[3], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
+                Level5 = GetDataLevel(setting.Level5, valueItems[4], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
+                Level6 = GetDataLevel(setting.Level6, valueItems[5], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
+                Level7 = GetDataLevel(setting.Level7, valueItems[6], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
+                Level8 = GetDataLevel(setting.Level8, valueItems[7], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
+                Level9 = GetDataLevel(setting.Level9, valueItems[8], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
+                Level10 = GetDataLevel(setting.Level10, valueItems[9], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
+                Level11 = GetDataLevel(setting.Level11, valueItems[10], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
                     lock (PriorityGrouping.locked)
                     {
