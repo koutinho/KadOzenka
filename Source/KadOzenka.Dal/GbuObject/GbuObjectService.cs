@@ -204,8 +204,6 @@ namespace KadOzenka.Dal.GbuObject
 						{columnsToSelect.TrimEnd(',')}
 
                     from {registerData.AllpriTable}_{postfix} a
-                    --left join core_srd_user u on u.id = a.change_user_id
-                    --left join core_td_instance td on td.id = a.change_doc_id
                     where a.object_id in ({string.Join(",", objectIds)})";
 			}
 			
@@ -284,21 +282,21 @@ namespace KadOzenka.Dal.GbuObject
 
 		public static string GetSqlForColumns(List<GbuColumnsToDownload> attributes, string valueColumnAlias, string attributeIdColumnName)
 		{
-			var selectedColumns = new StringBuilder();
+			var selectedColumnsSql = new StringBuilder();
 			attributes.ForEach(x =>
 			{
-				var isAttributeInList = x.GetEnumDescription();
+				var columnName = x.GetEnumDescription();
 				if (x == GbuColumnsToDownload.Value)
 				{
-					isAttributeInList += $" as {valueColumnAlias}";
+					columnName += $" as {valueColumnAlias}";
 				}
-				selectedColumns.AppendLine(isAttributeInList);
+				selectedColumnsSql.AppendLine($"{columnName},");
 			});
 
 			var allColumns = $@" 
 						a.object_id as ObjectId,
 	                    {attributeIdColumnName} as AttributeId,
-	                    {selectedColumns} ";
+	                    {selectedColumnsSql} ";
 
 			return allColumns.TrimEnd().TrimEnd(',');
 

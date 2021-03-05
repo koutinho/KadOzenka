@@ -17,6 +17,7 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.GbuObject.Exceptions;
 using Serilog;
 using Newtonsoft.Json;
@@ -650,7 +651,9 @@ namespace KadOzenka.Dal.GbuObject
             ValueItem Level11 = new ValueItem();
             try
             {
-	            var objectAttributes = new GbuObjectService(queryManager).GetAllAttributes(inputItem.ObjectId, null, allAttributeIds, dateActual);
+	            var objectAttributes = new GbuObjectService(queryManager).GetAllAttributes(inputItem.ObjectId, 
+		            null, allAttributeIds, dateActual, 
+		            attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId });
 
                 //по начальному порядку находим значение ГБУ-атрибута всех уровней
 				var valueItems = new List<ValueItem>();
