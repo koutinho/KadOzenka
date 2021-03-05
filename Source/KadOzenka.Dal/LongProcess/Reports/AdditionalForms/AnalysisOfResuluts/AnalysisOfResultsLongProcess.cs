@@ -62,8 +62,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts
 				new Column {Header = "Площадь"},
 				new Column {Header = "Прош. УПКС", Width = 4},
 				new Column {Header = "Прош. КС", Width = 4},
-				new Column {Header = "окн. УПКС"},
-				new Column {Header = "окн. КС"}, 
+				new Column {Header = "окон. УПКС"},
+				new Column {Header = "окон. КС"}, 
 				new Column {Header = "Статус", Width = 5}
 			};
 			columns.ForEach(item => item.Index = counter++);
