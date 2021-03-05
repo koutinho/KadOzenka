@@ -35,6 +35,7 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Practices.ObjectBuilder2;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
@@ -87,7 +88,7 @@ namespace KadOzenka.Web.Controllers
             {
                 Id = tour.Id,
                 GroupName = tour.Year.ToString(),
-                UrlForEdit = Url.Action("TourSubCard", "Tour", new { tourId = tour.Id }),
+                UrlForEdit = Url.Action("TourSubCard", "Tour", new {tourId = tour.Id}),
                 GroupType = GroupType.Undefined,
                 Items = new List<GroupTreeModel>
                 {
@@ -120,13 +121,13 @@ namespace KadOzenka.Web.Controllers
             var isReadOnly = false;
             switch (groupId)
             {
-                case (long)KoGroupAlgoritm.MainParcel:
+                case (long) KoGroupAlgoritm.MainParcel:
                     groupDto.Name = KoGroupAlgoritm.MainParcel.GetEnumDescription();
                     groupDto.GroupType = GroupType.Main;
                     isReadOnly = true;
                     break;
 
-                case (long)KoGroupAlgoritm.MainOKS:
+                case (long) KoGroupAlgoritm.MainOKS:
                     groupDto.Name = KoGroupAlgoritm.MainOKS.GetEnumDescription();
                     groupDto.GroupType = GroupType.Main;
                     isReadOnly = true;
@@ -183,7 +184,7 @@ namespace KadOzenka.Web.Controllers
 
             GroupService.UpdateGroupToMarketSegmentRelation(model.GroupId, model.MarketSegment, model.TerritoryType);
 
-            return new JsonResult(new { Message = "Обновление выполнено" });
+            return new JsonResult(new {Message = "Обновление выполнено"});
         }
 
         #endregion
@@ -195,7 +196,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GroupExplanationSettingsSubCard(long groupId)
         {
             var settings = GroupService.GetGroupExplanationSettings(groupId);
-            return PartialView("~/Views/Tour/Partials/GroupExplanationSettingsSubCard.cshtml", GroupExplanationSettingsModel.FromDto(settings));
+            return PartialView("~/Views/Tour/Partials/GroupExplanationSettingsSubCard.cshtml",
+                GroupExplanationSettingsModel.FromDto(settings));
         }
 
         [HttpPost]
@@ -207,7 +209,7 @@ namespace KadOzenka.Web.Controllers
 
             GroupService.UpdateGroupExplanationSettings(model.ToDto());
 
-            return new JsonResult(new { Message = "Обновление выполнено" });
+            return new JsonResult(new {Message = "Обновление выполнено"});
         }
 
         #endregion Настройка для разъяснений
@@ -219,24 +221,27 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GroupCadastralCostDefinitionActSettingsSubCard(long groupId)
         {
             var settings = GroupService.GetGroupCadastralCostDefinitionActSettings(groupId);
-            return PartialView("~/Views/Tour/Partials/GroupCadastralCostDefinitionActSettingsSubCard.cshtml", GroupCadastralCostDefinitionActSettingsModel.FromDto(settings));
+            return PartialView("~/Views/Tour/Partials/GroupCadastralCostDefinitionActSettingsSubCard.cshtml",
+                GroupCadastralCostDefinitionActSettingsModel.FromDto(settings));
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
-        public JsonResult GroupCadastralCostDefinitionActSettingsSubCard(GroupCadastralCostDefinitionActSettingsModel model)
+        public JsonResult GroupCadastralCostDefinitionActSettingsSubCard(
+            GroupCadastralCostDefinitionActSettingsModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
             GroupService.UpdateGroupCadastralCostDefinitionActSettings(model.ToDto());
 
-            return new JsonResult(new { Message = "Обновление выполнено" });
+            return new JsonResult(new {Message = "Обновление выполнено"});
         }
 
         #endregion Настройка для акта определения
 
         #region Настройки атрибутов тура
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ATTRIBUTE_SETTINGS)]
         public ActionResult AddGroup(long tourId, long complianceId)
@@ -261,6 +266,7 @@ namespace KadOzenka.Web.Controllers
             {
                 return GenerateMessageNonValidModel();
             }
+
             OMComplianceGuide compliance = null;
 
             if (model.Id != -1)
@@ -273,7 +279,7 @@ namespace KadOzenka.Web.Controllers
                 compliance = AddGroupViewModel.ToEntity(compliance ?? new OMComplianceGuide(), model);
                 var id = compliance.Save();
 
-                return Json(new { message = "Сохранение выполненно успешно" , id});
+                return Json(new {message = "Сохранение выполненно успешно", id});
             }
             catch (Exception e)
             {
@@ -281,7 +287,6 @@ namespace KadOzenka.Web.Controllers
                 Console.WriteLine(e);
                 return SendErrorMessage("При сохранении возникли ошибки. Подробнее в журнале ошибок.");
             }
-
         }
 
         [HttpGet]
@@ -300,11 +305,12 @@ namespace KadOzenka.Web.Controllers
             {
                 return SendErrorMessage("Не выбрана запись");
             }
+
             var compliance = OMComplianceGuide.Where(x => x.Id == model.Id).SelectAll().ExecuteFirstOrDefault();
 
             compliance.Destroy();
 
-            return Json(new { Success = true });
+            return Json(new {Success = true});
         }
 
         [HttpGet]
@@ -315,9 +321,9 @@ namespace KadOzenka.Web.Controllers
             {
                 throw new Exception("Не задан тур");
             }
+
             ViewBag.TourId = tourId;
             return View();
-
         }
 
         [HttpPost]
@@ -328,6 +334,7 @@ namespace KadOzenka.Web.Controllers
             {
                 return SendErrorMessage("Не задан Тур");
             }
+
             var compliance = OMComplianceGuide.Where(x => x.TourId == model.TourId).SelectAll().Execute();
 
             try
@@ -338,9 +345,9 @@ namespace KadOzenka.Web.Controllers
                     {
                         item.Destroy();
                     }
+
                     ts.Complete();
                 }
-
             }
             catch (Exception e)
             {
@@ -349,7 +356,7 @@ namespace KadOzenka.Web.Controllers
                 return SendErrorMessage("Во время удаления произошла ошибка. Подробнее в журнале ошибок");
             }
 
-            return Json(new { Success = true });
+            return Json(new {Success = true});
         }
 
         [HttpGet]
@@ -382,9 +389,9 @@ namespace KadOzenka.Web.Controllers
 
                 using (Stream stream = file.OpenReadStream())
                 {
-                    TourComplianceImportService.ImportComplianceFromFile(stream, importFileDto, model.ObjectType, model.TourId.GetValueOrDefault());
+                    TourComplianceImportService.ImportComplianceFromFile(stream, importFileDto, model.ObjectType,
+                        model.TourId.GetValueOrDefault());
                 }
-
             }
             catch (Exception e)
             {
@@ -392,6 +399,7 @@ namespace KadOzenka.Web.Controllers
                 ErrorManager.LogError(e);
                 return SendErrorMessage(e.Message);
             }
+
             return Json(new {message = "Данные успешно загружены"});
         }
 
@@ -400,16 +408,16 @@ namespace KadOzenka.Web.Controllers
         public ActionResult TourAttributeSettings()
         {
             ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-             .Select(x => new DropDownTreeItemModel
-             {
-                 Value = Guid.NewGuid().ToString(),
-                 Text = x.Text,
-                 Items = x.Items.Select(y => new DropDownTreeItemModel
-                 {
-                     Value = y.Value,
-                     Text = y.Text
-                 }).ToList()
-             }).AsEnumerable();
+                .Select(x => new DropDownTreeItemModel
+                {
+                    Value = Guid.NewGuid().ToString(),
+                    Text = x.Text,
+                    Items = x.Items.Select(y => new DropDownTreeItemModel
+                    {
+                        Value = y.Value,
+                        Text = y.Text
+                    }).ToList()
+                }).AsEnumerable();
 
             return View(new TourAttributeSettingsModel());
         }
@@ -460,7 +468,7 @@ namespace KadOzenka.Web.Controllers
                 return SendErrorMessage(e.Message);
             }
 
-            return Json(new { Success = "Сохранено успешно" });
+            return Json(new {Success = "Сохранено успешно"});
         }
 
         #endregion Настройки атрибутов тура
@@ -483,27 +491,27 @@ namespace KadOzenka.Web.Controllers
 
             var tourDto = TourModel.FromModel(tourModel);
 
-            var id = tourModel.Id == -1 
-                ? TourService.AddTour(tourDto) 
+            var id = tourModel.Id == -1
+                ? TourService.AddTour(tourDto)
                 : TourService.UpdateTour(tourDto);
 
-            return Json(new { Id = id });
+            return Json(new {Id = id});
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult CanTourBeDeleted(long id)
         {
-	        var canTourBeDeleted = TourService.CanTourBeDeleted(id);
-	        return Json(new { CanBeDeleted = canTourBeDeleted });
+            var canTourBeDeleted = TourService.CanTourBeDeleted(id);
+            return Json(new {CanBeDeleted = canTourBeDeleted});
         }
 
         [HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
         public IActionResult TourEstimates(int id)
         {
-	        TourService.DeleteTour(id);
-            return Json(new { Success = "Удаление выполнено" });
+            TourService.DeleteTour(id);
+            return Json(new {Success = "Удаление выполнено"});
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_ESTIMATES)]
@@ -535,10 +543,7 @@ namespace KadOzenka.Web.Controllers
             var groups = GroupService.GetGroups();
 
             var groupModels = new List<GroupTreeModel>();
-            groups.ForEach(x =>
-            {
-                groupModels.Add(GroupTreeModel.ToModel(x, Url));
-            });
+            groups.ForEach(x => { groupModels.Add(GroupTreeModel.ToModel(x, Url)); });
 
             return Json(groupModels);
         }
@@ -565,32 +570,32 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult CanGroupBeDeleted(long id)
         {
-	        var canGroupBeDeleted = GroupService.CanGroupBeDeleted(id);
-	        return Json(new { CanBeDeleted = canGroupBeDeleted });
+            var canGroupBeDeleted = GroupService.CanGroupBeDeleted(id);
+            return Json(new {CanBeDeleted = canGroupBeDeleted});
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult CanGroupsBeDeleted(long tourId, bool isOks)
         {
-	        var canGroupsBeDeleted = GroupService.CanGroupsBeDeleted(tourId, isOks);
-	        return Json(new { CanBeDeleted = canGroupsBeDeleted });
+            var canGroupsBeDeleted = GroupService.CanGroupsBeDeleted(tourId, isOks);
+            return Json(new {CanBeDeleted = canGroupsBeDeleted});
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult DeleteGroup(long id)
         {
-	        GroupService.DeleteGroup(id);
-	        return Json(new { Success = "Удаление выполнено" });
+            GroupService.DeleteGroup(id);
+            return Json(new {Success = "Удаление выполнено"});
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public IActionResult DeleteGroups(long tourId, bool isOks)
         {
-	        GroupService.DeleteGroups(tourId, isOks);
-	        return Json(new { Success = "Удаление выполнено" });
+            GroupService.DeleteGroups(tourId, isOks);
+            return Json(new {Success = "Удаление выполнено"});
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
@@ -622,14 +627,14 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
         public JsonResult GetParentGroup(ObjectTypeExtended type, long? tourId)
         {
-            if(tourId == null)
+            if (tourId == null)
                 return Json(new List<SelectListItem>());
 
             var groupAlgorithm = type == ObjectTypeExtended.Oks ? KoGroupAlgoritm.MainOKS : KoGroupAlgoritm.MainParcel;
 
             var allGroups = GroupService.GetGroupsTreeForTour(tourId.Value);
 
-            var groups = allGroups.Where(x => x.Id == (int)groupAlgorithm)
+            var groups = allGroups.Where(x => x.Id == (int) groupAlgorithm)
                 .SelectMany(x => x.Items)
                 .Select(x => new SelectListItem
                 {
@@ -668,13 +673,14 @@ namespace KadOzenka.Web.Controllers
 
             if (parentIsSet)
             {
-                algotitmItems = algotitmItems.Where(x => x.ItemId != (long)KoGroupAlgoritm.MainOKS
-                    && x.ItemId != (long)KoGroupAlgoritm.MainParcel && x.Code != null).ToList();
+                algotitmItems = algotitmItems.Where(x => x.ItemId != (long) KoGroupAlgoritm.MainOKS
+                                                         && x.ItemId != (long) KoGroupAlgoritm.MainParcel &&
+                                                         x.Code != null).ToList();
             }
             else
             {
-                algotitmItems = algotitmItems.Where(x => x.ItemId == (long)KoGroupAlgoritm.MainOKS
-                    || x.ItemId == (long)KoGroupAlgoritm.MainParcel).ToList();
+                algotitmItems = algotitmItems.Where(x => x.ItemId == (long) KoGroupAlgoritm.MainOKS
+                                                         || x.ItemId == (long) KoGroupAlgoritm.MainParcel).ToList();
             }
 
             var mechanism = algotitmItems.Select(x => new SelectListItem
@@ -789,7 +795,7 @@ namespace KadOzenka.Web.Controllers
                 GroupFactorService.UpdateGroupFactor(model.ToDto());
             }
 
-            return Json(new { Success = "Сохранено успешно", Id = model.Id });
+            return Json(new {Success = "Сохранено успешно", Id = model.Id});
         }
 
         [HttpPost]
@@ -797,7 +803,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult DeleteGroupFactor(long id)
         {
             GroupFactorService.DeleteGroupFactor(id);
-            return Json(new { Success = "Удаление выполненно" });
+            return Json(new {Success = "Удаление выполненно"});
         }
 
         #endregion Факторы группы
@@ -887,7 +893,7 @@ namespace KadOzenka.Web.Controllers
         {
             var allGroups = GroupService.GetGroupsTreeForTour(tourId);
 
-            var mainGroupId = isParcel ? (long)KoGroupAlgoritm.MainParcel : (long)KoGroupAlgoritm.MainOKS;
+            var mainGroupId = isParcel ? (long) KoGroupAlgoritm.MainParcel : (long) KoGroupAlgoritm.MainOKS;
             var mainGroups = allGroups.Where(x => x.Id == mainGroupId);
             var groups = mainGroups.SelectMany(x => x.Items);
             var models = groups.Where(x => x.Items?.Count > 0).Select(x => GroupTreeModel.ToModel(x, Url)).ToList();
@@ -946,7 +952,8 @@ namespace KadOzenka.Web.Controllers
         public ActionResult TourFactorObjectCard(long id, long tourId, bool isSteadObjectType, long registerFactorId)
         {
             var omAttribute = OMAttribute.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            var omRegister = OMRegister.Where(x => x.RegisterId == registerFactorId).Select(x => x.RegisterId).ExecuteFirstOrDefault();
+            var omRegister = OMRegister.Where(x => x.RegisterId == registerFactorId).Select(x => x.RegisterId)
+                .ExecuteFirstOrDefault();
 
             var model = new TourFactorObjectModel
             {
@@ -961,7 +968,7 @@ namespace KadOzenka.Web.Controllers
                 model.Name = omAttribute.Name;
                 model.Type = omAttribute.ReferenceId.HasValue
                     ? RegisterAttributeType.REFERENCE
-                    : (RegisterAttributeType)omAttribute.Type;
+                    : (RegisterAttributeType) omAttribute.Type;
                 model.ReferenceId = omAttribute.ReferenceId;
             }
 
@@ -969,7 +976,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [JsonExceptionHandler(Message = "Фактор с данным названием уже существует")]
+        [JsonExceptionHandler]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult EditTourFactorObjectCard(TourFactorObjectModel model)
         {
@@ -981,7 +988,8 @@ namespace KadOzenka.Web.Controllers
             var id = model.Id;
             using (var ts = new TransactionScope())
             {
-                var omRegister = OMRegister.Where(x => x.RegisterId == model.RegisterFactorId).Select(x => x.RegisterId).ExecuteFirstOrDefault();
+                var omRegister = OMRegister.Where(x => x.RegisterId == model.RegisterFactorId).Select(x => x.RegisterId)
+                    .ExecuteFirstOrDefault();
                 if (omRegister == null)
                 {
                     omRegister = TourFactorService.CreateTourFactorRegister(model.TourId, model.IsSteadObjectType);
@@ -990,7 +998,8 @@ namespace KadOzenka.Web.Controllers
 
                 if (model.Id == -1)
                 {
-                    model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId, model.Type, model.ReferenceId);
+                    model.Id = TourFactorService.CreateTourFactorRegisterAttribute(model.Name, omRegister.RegisterId,
+                        model.Type, model.ReferenceId);
                 }
                 else
                 {
@@ -1000,7 +1009,7 @@ namespace KadOzenka.Web.Controllers
                 ts.Complete();
             }
 
-            return Json(new { Success = "Сохранено успешно", data = model });
+            return Json(new {Success = "Сохранено успешно", data = model});
         }
 
         [HttpGet]
@@ -1018,6 +1027,20 @@ namespace KadOzenka.Web.Controllers
                 Id = omAttribute.Id,
                 Name = omAttribute.Name
             };
+
+            var attr = TourFactorService.CheckFactorUsage(id);
+            var canDelete = attr.ApprovedModels.Count == 0;
+            string additionalMessage = String.Empty;
+
+            if (canDelete && attr.AffectedModels.Count > 0)
+            {
+                additionalMessage = attr.AffectedModels.Select(x => $"{x.Name} (Id={x.Id})")
+                    .Aggregate((item1, item2) => item1 + ", " + item2);
+            }
+
+            ViewBag.CanDelete = canDelete;
+            ViewBag.ShowAdditionalMessage = additionalMessage != String.Empty;
+            ViewBag.AdditionalMessage = additionalMessage;
 
             return View(model);
         }
@@ -1090,7 +1113,7 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetSubgroups(long groupId)
         {
             var dtos = GroupService.GetOtherGroupsFromTreeLevelForTour(groupId);
-            var res = dtos.Select(x => new SelectListItem { Value = x.Id.ToString(), Text = x.CombinedName });
+            var res = dtos.Select(x => new SelectListItem {Value = x.Id.ToString(), Text = x.CombinedName});
 
             return Json(res);
         }
@@ -1125,14 +1148,15 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult EditCalcGroup(OMCalcGroup calcGroup)
         {
-            bool isExists = OMCalcGroup.Where(x => x.GroupId == calcGroup.GroupId && x.ParentCalcGroupId == calcGroup.ParentCalcGroupId)
+            bool isExists = OMCalcGroup.Where(x =>
+                    x.GroupId == calcGroup.GroupId && x.ParentCalcGroupId == calcGroup.ParentCalcGroupId)
                 .ExecuteExists();
 
             if (isExists)
                 throw new Exception("Данная группа уже была выбрана ранее");
 
             calcGroup.Save();
-            return Json(new { Success = "Изменения успешно сохранены" });
+            return Json(new {Success = "Изменения успешно сохранены"});
         }
 
         [HttpPost]
@@ -1148,7 +1172,7 @@ namespace KadOzenka.Web.Controllers
             }
 
             calcGroup.Destroy();
-            return Json(new { Success = "Удаление выполненно" });
+            return Json(new {Success = "Удаление выполненно"});
         }
 
         #endregion
