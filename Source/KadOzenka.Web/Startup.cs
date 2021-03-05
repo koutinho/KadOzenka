@@ -221,6 +221,7 @@ namespace CIPJS
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                 routes.MapHub<UrgentMessageHub>("/coreMessageData");
                 routes.MapHub<NotificationMessageHub>("/coreMessagesList");
+                routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
             });
 
                 app.UseMvc(routes =>
