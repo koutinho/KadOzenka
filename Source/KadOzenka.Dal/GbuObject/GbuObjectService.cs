@@ -74,7 +74,7 @@ namespace KadOzenka.Dal.GbuObject
 				if (objectIds == null || objectIds.Count == 0) return new List<GbuObjectAttribute>();
 
 				var uniqueObjectIds = objectIds.Distinct().ToList();
-				var attributes = inputAttributes?.Distinct().ToList();
+				var attributes = inputAttributes?.Distinct().Where(x => x != 0).ToList();
 				if (sources == null)
 				{
 					List<int> registerIds = attributes != null && attributes.Count > 0

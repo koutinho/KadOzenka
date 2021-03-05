@@ -12,6 +12,7 @@ using ObjectModel.Core.TD;
 using Core.ErrorManagment;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
+using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject.Decorators;
@@ -441,27 +442,22 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        private ValueItem GetValueFactor(long objectId, long? idFactor, DateTime? date, QueryManager queryManager)
+        private ValueItem GetValueFactor(List<GbuObjectAttribute> objectAttributes, long? idFactor)
         {
-            ValueItem res = new ValueItem
+	        var res = new ValueItem
             {
                 Value = string.Empty,
                 IdDocument = null,
                 AttributeName = string.Empty
             };
 
-            List<long> lstIds = new List<long>();
-            if (idFactor != null) lstIds.Add(idFactor.Value);
-            List<GbuObjectAttribute> attribs = new GbuObjectService(queryManager).GetAllAttributes(objectId, null, lstIds, date);
-            if (attribs.Count > 0)
-            {
-                if (attribs[0].GetValueInString() != string.Empty && attribs[0].GetValueInString() != null)
-                {
-                    res.Value = attribs[0].GetValueInString();
-                    res.AttributeName = attribs[0].AttributeData.Name;
-                    res.IdDocument = attribs[0].ChangeDocId;
-                }
-            }
+	        var attribute = objectAttributes.FirstOrDefault(x => x.AttributeId == idFactor);
+	        if (attribute == null || string.IsNullOrWhiteSpace(attribute.GetValueInString())) 
+		        return res;
+	        
+	        res.Value = attribute.GetValueInString();
+            res.AttributeName = attribute.AttributeData.Name;
+            res.IdDocument = attribute.ChangeDocId;
 
             return res;
         }
@@ -517,18 +513,15 @@ namespace KadOzenka.Dal.GbuObject
                     item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
         }
 
-        private ValueItem GetDataLevel(LevelItem level, GroupingItem item, DateTime dateActual,
+        private ValueItem GetDataLevel(LevelItem level, ValueItem valueLevel, GroupingItem item, 
 	        List<OMCodDictionary> dictionary, ConcurrentDictionary<long, OMInstance> documents,
-	        QueryManager queryManager,
 	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? docId,
 	        out DataLevel dataLevel)
         {
             dataLevel =  new DataLevel();
-            ValueItem valueLevel = new ValueItem();
             if (level.IdFactor != null)
             {
                 dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-                   valueLevel = GetValueFactor(item.ObjectId, level.IdFactor, dateActual, queryManager);
                 if (level.UseDictionary)
                 {
                     if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
@@ -594,7 +587,8 @@ namespace KadOzenka.Dal.GbuObject
         }
 
         public void SetPriorityGroup(GroupingSettings setting, List<OMCodDictionary> DictionaryItem,
-	        GroupingItem inputItem, DateTime dateActual, GbuReportService reportService, Dictionary<long, long> dicColumns,
+	        List<long> allAttributeIds, GroupingItem inputItem,  DateTime dateActual, 
+	        GbuReportService reportService, Dictionary<long, long> dicColumns,
 	        ConcurrentDictionary<long, OMInstance> documents, QueryManager queryManager)
         {
             GbuReportService.Row currentRow;
@@ -656,17 +650,29 @@ namespace KadOzenka.Dal.GbuObject
             ValueItem Level11 = new ValueItem();
             try
             {
-                Level1 = GetDataLevel(setting.Level1, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
-                Level2 = GetDataLevel(setting.Level2, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
-                Level3 = GetDataLevel(setting.Level3, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
-                Level4 = GetDataLevel(setting.Level4, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
-                Level5 = GetDataLevel(setting.Level5, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
-                Level6 = GetDataLevel(setting.Level6, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
-                Level7 = GetDataLevel(setting.Level7, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
-                Level8 = GetDataLevel(setting.Level8, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
-                Level9 = GetDataLevel(setting.Level9, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
-                Level10 = GetDataLevel(setting.Level10, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
-                Level11 = GetDataLevel(setting.Level11, inputItem, dateActual, DictionaryItem, documents, queryManager, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
+	            var objectAttributes = new GbuObjectService(queryManager).GetAllAttributes(inputItem.ObjectId, null, allAttributeIds, dateActual);
+
+                //по начальному порядку находим значение ГБУ-атрибута всех уровней
+				var valueItems = new List<ValueItem>();
+                allAttributeIds.ForEach(x =>
+                {
+                    ////TODO для тестирования
+                    //var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(c => c.Id == x)?.Name;
+                    valueItems.Add(GetValueFactor(objectAttributes, x));
+                });
+				
+
+                Level1 = GetDataLevel(setting.Level1, valueItems[0], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
+                Level2 = GetDataLevel(setting.Level2, valueItems[1], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
+                Level3 = GetDataLevel(setting.Level3, valueItems[2], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
+                Level4 = GetDataLevel(setting.Level4, valueItems[3], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
+                Level5 = GetDataLevel(setting.Level5, valueItems[4], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
+                Level6 = GetDataLevel(setting.Level6, valueItems[5], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
+                Level7 = GetDataLevel(setting.Level7, valueItems[6], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
+                Level8 = GetDataLevel(setting.Level8, valueItems[7], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
+                Level9 = GetDataLevel(setting.Level9, valueItems[8], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
+                Level10 = GetDataLevel(setting.Level10, valueItems[9], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
+                Level11 = GetDataLevel(setting.Level11, valueItems[10], inputItem, DictionaryItem, documents, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
 
                     lock (PriorityGrouping.locked)
                     {
@@ -1086,7 +1092,7 @@ namespace KadOzenka.Dal.GbuObject
             var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
 
 			////TODO для тестирования
-			//var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618 };
+			//var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618, 11657698 };
 			//var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
 			var items = itemsGetter.GetItems();
 			MaxCount = items.Count;
@@ -1098,6 +1104,7 @@ namespace KadOzenka.Dal.GbuObject
 			            : "Нормализация по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
 
 
+            var allAttributeIds = GetAttributes(setting);
             var queryManager = new QueryManager();
             queryManager.SetBaseToken(processCancellationToken);
             var documents = new ConcurrentDictionary<long, OMInstance>();
@@ -1112,7 +1119,7 @@ namespace KadOzenka.Dal.GbuObject
 
 	            SetThreadCurrentPrincipal(userId);
 
-	            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, item, localActualDate, reportService,
+	            new PriorityItem().SetPriorityGroup(setting, dictionaryItems, allAttributeIds, item, localActualDate, reportService,
 		            dataHeaderAndColumnNumber.DictionaryColumns, documents, queryManager);
             });
 
@@ -1131,6 +1138,19 @@ namespace KadOzenka.Dal.GbuObject
 
 	        localCancellationToken.Cancel();
 	        options.CancellationToken.ThrowIfCancellationRequested();
+        }
+
+        private static List<long> GetAttributes(GroupingSettings setting)
+        {
+            return new List<long>
+            {
+	            setting.Level1.IdFactor.GetValueOrDefault(), setting.Level2.IdFactor.GetValueOrDefault(),
+	            setting.Level3.IdFactor.GetValueOrDefault(), setting.Level4.IdFactor.GetValueOrDefault(),
+	            setting.Level5.IdFactor.GetValueOrDefault(), setting.Level6.IdFactor.GetValueOrDefault(),
+	            setting.Level7.IdFactor.GetValueOrDefault(), setting.Level8.IdFactor.GetValueOrDefault(),
+	            setting.Level9.IdFactor.GetValueOrDefault(), setting.Level10.IdFactor.GetValueOrDefault(),
+	            setting.Level11.IdFactor.GetValueOrDefault()
+            };
         }
 
         public static ReportHeaderWithColumnDic GenerateReportHeaderWithColumnNumber(GroupingSettings setting)
