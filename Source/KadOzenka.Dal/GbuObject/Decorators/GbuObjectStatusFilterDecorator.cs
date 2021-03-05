@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 			var statusAttributesGrouping = GbuObjectService.GetAllAttributes(
 				allItems.Select(x => x.ObjectId).ToList(),
 				new List<long> { RosreestrRegisterService.RegisterId },
-				attributeIds, ActualDate, isLight: true)
+				attributeIds, ActualDate, withValueOnly: true)
 				.GroupBy(x => x.ObjectId).ToList();
 			Logger.Debug($"Найдено {statusAttributesGrouping.Count} ОН со значениями из Росреестра");
 

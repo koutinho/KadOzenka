@@ -132,7 +132,7 @@ namespace KadOzenka.Dal.LongProcess
 			        new List<long> { RosreestrRegisterService.RosreestrRegisterId },
 			        new List<long> { fs.Id },
 			        DateTime.Now.GetEndOfTheDay(),
-			        isLight: true);
+			        withValueOnly: true);
 	        _log.Debug($"Найдено {fsAttributes.Count} ОН со значениями из Росреестра");
 
 	        var resultObjectIds = new List<long>();

@@ -62,12 +62,12 @@ namespace KadOzenka.Dal.GbuObject
 		}
 
         public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null,
-            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
+            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool withValueOnly = false)
         {
-            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, isLight);
+            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, withValueOnly);
         }
 
-        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
+        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool withValueOnly = false)
 		{
 			using (_log.TimeOperation("Получение ГБУ атрибутов"))
 			{
@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.GbuObject
 							else if (postfix == "DT") propName = "DtValue";
 
 							var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName,
-								registerData, isLight);
+								registerData, withValueOnly);
 
 							if (attributes != null && attributes.Count > 0)
 								sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
@@ -164,7 +164,7 @@ namespace KadOzenka.Dal.GbuObject
 							}
 
 							var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName,
-								attributeData, registerData, isLight);
+								attributeData, registerData, withValueOnly);
 
 							if (dateS != null || dateOt != null)
 							{

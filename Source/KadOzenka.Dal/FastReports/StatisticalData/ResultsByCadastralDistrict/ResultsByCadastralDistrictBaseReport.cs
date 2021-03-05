@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             var parentAttributes = GbuObjectService.GetAllAttributes(obj.Id,
                 attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay(), isLight: true);
+                DateTime.Now.GetEndOfTheDay(), withValueOnly: true);
 
             SetAttributes(obj.Id, parentAttributes, attributesDictionary, item);
         }

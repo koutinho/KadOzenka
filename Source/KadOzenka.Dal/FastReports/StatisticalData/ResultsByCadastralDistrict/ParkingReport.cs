@@ -149,7 +149,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay(), isLight: true);
+                DateTime.Now.GetEndOfTheDay(), withValueOnly: true);
 
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>

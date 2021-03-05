@@ -428,7 +428,7 @@ namespace KadOzenka.Dal.GbuObject
 					placements.Select(x => x.ObjectId).Distinct().ToList(),
 					new List<long> { placementPurposeAttribute.RegisterId },
 					new List<long> { placementPurposeAttribute.Id },
-					DateTime.Now.GetEndOfTheDay(), isLight: true);
+					DateTime.Now.GetEndOfTheDay(), withValueOnly: true);
 
 			foreach (var placement in placements)
 			{

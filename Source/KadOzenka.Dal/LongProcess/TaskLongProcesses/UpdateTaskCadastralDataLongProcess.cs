@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				.ForContext("CadastralQuarterAttrId", _cadastralQuarterAttrId)
 				.Debug("Получение значений гбу атрибутов юнитов");
 			var gbuAttrValues = GbuObjectService.GetAllAttributes(units.Select(x => x.ObjectId.Value).Distinct().ToList(), null,
-				gbuAttrIdList, currentDate, isLight: true);
+				gbuAttrIdList, currentDate, withValueOnly: true);
 
 			var cadastralQuartalDictionary = new Dictionary<long, string>();
 			if (_cadastralQuarterAttrId.HasValue)
@@ -230,7 +230,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				var builgingsCadastralQuarterGbuAttr = GbuObjectService.GetAllAttributes(
 					buildingGbuObjects.Select(x => x.Id).Distinct().ToList(), null,
-					new List<long> { _cadastralQuarterAttrId.Value}, currentDate, isLight: true);
+					new List<long> { _cadastralQuarterAttrId.Value}, currentDate, withValueOnly: true);
 				_log.Debug("Найдено {PlacementBuildingCadastralQuarterGbuAttrCount} гбу атрибутов кадастровых кварталов для зданий помещений", builgingsCadastralQuarterGbuAttr.Count);
 				foreach (var placementsObjId in placementGbuObjIds)
 				{

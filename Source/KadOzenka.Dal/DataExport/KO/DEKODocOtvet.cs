@@ -1038,7 +1038,7 @@ namespace KadOzenka.Dal.DataExport
                 List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value,
                     null,
                     new List<long> { transferAttribute.GbuId },
-                    _date, isLight:true);
+                    _date, withValueOnly:true);
 
                 if (attribs.Count > 0)
                 {

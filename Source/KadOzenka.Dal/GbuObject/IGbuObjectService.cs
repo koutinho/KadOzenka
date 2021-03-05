@@ -13,9 +13,9 @@ namespace KadOzenka.Dal.GbuObject
 	public interface IGbuObjectService
 	{
 		List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null,
-			List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false);
+			List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool withValueOnly = false);
 
-		List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false);
+		List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool withValueOnly = false);
 		List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel);
 
 		List<GbuAttributeValueObjectsCountDto> GetAttributeValueKoObjectsCount(long attributeId, KoUnitStatus koUnitStatus, DateTime? taskCreationDateFrom, DateTime? taskCreationDateTo,

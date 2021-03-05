@@ -414,7 +414,7 @@ namespace KadOzenka.Dal.GbuObject
                     allObjects.Select(x => x.ObjectId).ToList(),
                     null,
                     new List<long> { BaseSetting.IdAttributeFilter.Value },
-                    date, isLight: true);
+                    date, withValueOnly: true);
 
                 var resultObjectIds = new List<long?>();
                 var lowerFilterValues = BaseSetting.ValuesFilter.Select(x => x.ToLower()).ToList();
@@ -479,7 +479,7 @@ namespace KadOzenka.Dal.GbuObject
                     new List<long> { buildingPurposeAttribute.RegisterId },
                     new List<long> { buildingPurposeAttribute.Id },
                     BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay(),
-                    isLight: true);
+                    withValueOnly: true);
 
                 var possibleValues = new List<string>();
                 switch (BaseSetting.BuildingPurpose)
@@ -561,7 +561,7 @@ namespace KadOzenka.Dal.GbuObject
                     new List<long> { placementPurposeAttribute.RegisterId },
                     new List<long> { placementPurposeAttribute.Id },
                     BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay(),
-                    isLight: true);
+                    withValueOnly: true);
 
                 var possibleValues = new List<string>();
                 switch (BaseSetting.PlacementPurpose)
