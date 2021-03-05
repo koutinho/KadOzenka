@@ -8,6 +8,7 @@ using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -115,7 +116,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				.ForContext("CadastralQuarterAttrId", _cadastralQuarterAttrId)
 				.Debug("Получение значений гбу атрибутов юнитов");
 			var gbuAttrValues = GbuObjectService.GetAllAttributes(units.Select(x => x.ObjectId.Value).Distinct().ToList(), null,
-				gbuAttrIdList, currentDate, withValueOnly: true);
+				gbuAttrIdList, currentDate,
+				attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
 			var cadastralQuartalDictionary = new Dictionary<long, string>();
 			if (_cadastralQuarterAttrId.HasValue)
@@ -230,7 +232,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				var builgingsCadastralQuarterGbuAttr = GbuObjectService.GetAllAttributes(
 					buildingGbuObjects.Select(x => x.Id).Distinct().ToList(), null,
-					new List<long> { _cadastralQuarterAttrId.Value}, currentDate, withValueOnly: true);
+					new List<long> { _cadastralQuarterAttrId.Value}, currentDate,
+					attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 				_log.Debug("Найдено {PlacementBuildingCadastralQuarterGbuAttrCount} гбу атрибутов кадастровых кварталов для зданий помещений", builgingsCadastralQuarterGbuAttr.Count);
 				foreach (var placementsObjId in placementGbuObjIds)
 				{

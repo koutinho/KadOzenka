@@ -9,6 +9,7 @@ using Core.UI.Registers.Reports.Model;
 using ObjectModel.Directory;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
 
@@ -149,7 +150,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
                 units.Select(x => x.ObjectId.GetValueOrDefault()).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay(), withValueOnly: true);
+                DateTime.Now.GetEndOfTheDay(),
+                attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
             var result = new List<ReportItem>();
             units.ToList().ForEach(unit =>

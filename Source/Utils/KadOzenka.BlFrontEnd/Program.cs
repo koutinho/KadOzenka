@@ -47,6 +47,7 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
@@ -673,6 +674,22 @@ namespace KadOzenka.BlFrontEnd
 		            UserId = SRDSession.GetCurrentUserId(),
 		            Parameters = new GroupingSettings().SerializeToXml()
 	            }, cancelToken);
+            });
+
+
+            consoleHelper.AddCommand("567", "Тестирование сервиса для получения ГБУ-атрибутов", () =>
+            {
+	            var objectIds = new List<long> {53556156};
+	            var date = DateTime.Now.GetEndOfTheDay();
+	            var selectedColumns = new List<GbuColumnsToDownload>();
+				//a.Add(GbuObjectService.GbuObjectAttributeToDownload.Ot);
+
+				var attributes1 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8}, date);
+
+				var attributes2 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8, 545}, date, attributesToDownload: selectedColumns);
+
+				selectedColumns.Add(GbuColumnsToDownload.Value);
+				var attributes3 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8, 545 }, date, attributesToDownload: selectedColumns);
             });
 
 

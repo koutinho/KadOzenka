@@ -7,12 +7,14 @@ using KadOzenka.Web.Models.GbuObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using KadOzenka.Dal.GbuObject.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.GbuObject.Entities;
 using ObjectModel.Directory;
 using Platform.Register;
 using Serilog;
@@ -62,12 +64,15 @@ namespace KadOzenka.Dal.GbuObject
 		}
 
         public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null,
-            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool withValueOnly = false)
+            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, 
+            List<GbuColumnsToDownload> attributesToDownload = null)
         {
-            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, withValueOnly);
+            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, attributesToDownload);
         }
 
-        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool withValueOnly = false)
+		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, 
+			List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, 
+			List<GbuColumnsToDownload> attributesToDownload = null)
 		{
 			using (_log.TimeOperation("Получение ГБУ атрибутов"))
 			{
@@ -111,7 +116,7 @@ namespace KadOzenka.Dal.GbuObject
 							else if (postfix == "DT") propName = "DtValue";
 
 							var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName,
-								registerData, withValueOnly);
+								registerData, attributesToDownload);
 
 							if (attributes != null && attributes.Count > 0)
 								sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
@@ -164,7 +169,7 @@ namespace KadOzenka.Dal.GbuObject
 							}
 
 							var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName,
-								attributeData, registerData, withValueOnly);
+								attributeData, registerData, attributesToDownload);
 
 							if (dateS != null || dateOt != null)
 							{
@@ -188,36 +193,22 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-        private static string GetSqlForRegisterWithDataPartitioning(List<long> objectIds, string postfix, string propName, RegisterData registerData, bool isLight)
-        {
-            if (isLight)
+        private static string GetSqlForRegisterWithDataPartitioning(List<long> objectIds, string postfix, string propName, RegisterData registerData, List<GbuColumnsToDownload> attributesToDownload)
+		{
+			if (attributesToDownload != null)
+			{
+				var columnsToSelect = GetSqlForColumns(attributesToDownload, propName, "a.attribute_id");
+
 				return $@"
                     select 
-	                    --a.id,
-	                    a.object_id as ObjectId,
-	                    a.attribute_id as AttributeId,
-	                    --a.Ot,
-	                    --a.S,
-	                    --{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
-	                    a.value as {propName}--,
-
-	                    --a.change_user_id as ChangeUserId,
-	                    --a.change_doc_id as ChangeDocId,
-	                    --a.change_date as ChangeDate,
-
-	                    --a.change_id as ChangeId,
-
-	                    --u.fullname as UserFullname,
-
-	                    --td.regnumber as DocNumber,
-	                    --td.description as DocType,
-	                    --td.create_date as DocDate
+						{columnsToSelect.TrimEnd(',')}
 
                     from {registerData.AllpriTable}_{postfix} a
                     --left join core_srd_user u on u.id = a.change_user_id
                     --left join core_td_instance td on td.id = a.change_doc_id
                     where a.object_id in ({string.Join(",", objectIds)})";
-
+			}
+			
 			return $@"
                 select 
 	                a.id,
@@ -244,40 +235,26 @@ namespace KadOzenka.Dal.GbuObject
                 left join core_srd_user u on u.id = a.change_user_id
                 left join core_td_instance td on td.id = a.change_doc_id
                 where a.object_id in ({string.Join(",", objectIds)})";
-        }
+		}
 
-        private static string GetSqlForRegisterWithAttributePartitioning(List<long> objectIds, string propName,
-            RegisterAttribute attributeData, RegisterData registerData, bool isLight = false)
-        {
-            if (isLight)
-                return $@"
+		private static string GetSqlForRegisterWithAttributePartitioning(List<long> objectIds, string propName,
+			RegisterAttribute attributeData, RegisterData registerData, List<GbuColumnsToDownload> attributesToDownload = null)
+		{
+			if (attributesToDownload != null)
+			{
+				var columnsToSelect = GetSqlForColumns(attributesToDownload, propName, attributeData.Id.ToString());
+
+				return $@"
                     select 
-	                --a.id,
-	                a.object_id as ObjectId,
-	                {attributeData.Id} as AttributeId,
-	                --a.Ot,
-	                --a.S,
-	                --{(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : string.Empty)}
-	                a.value as {propName}--,
+						{columnsToSelect.TrimEnd(',')} 
+	               
+	                from {registerData.AllpriTable}_{attributeData.Id} a
+	                --left join core_srd_user u on u.id = a.change_user_id
+	                --left join core_td_instance td on td.id = a.change_doc_id
+	                where a.object_id in ({string.Join(",", objectIds)})";
+			}
 
-	                --a.change_user_id as ChangeUserId,
-	                --a.change_doc_id as ChangeDocId,
-	                --a.change_date as ChangeDate,
-
-	                --null as ChangeId,
-
-	                --u.fullname as UserFullname,
-
-	                --td.regnumber as DocNumber,
-	                --td.description as DocType,
-	                --td.create_date as DocDate
-
-                from {registerData.AllpriTable}_{attributeData.Id} a
-                --left join core_srd_user u on u.id = a.change_user_id
-                --left join core_td_instance td on td.id = a.change_doc_id
-                where a.object_id in ({string.Join(",", objectIds)})";
-
-            return $@"
+			return $@"
                 select 
 	                a.id,
 	                a.object_id as ObjectId,
@@ -303,9 +280,51 @@ namespace KadOzenka.Dal.GbuObject
                 left join core_srd_user u on u.id = a.change_user_id
                 left join core_td_instance td on td.id = a.change_doc_id
                 where a.object_id in ({string.Join(",", objectIds)})";
-        }
+		}
 
-        public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
+		public static string GetSqlForColumns(List<GbuColumnsToDownload> attributes, string valueColumnAlias, string attributeIdColumnName)
+		{
+			var selectedColumns = new StringBuilder();
+			attributes.ForEach(x =>
+			{
+				var isAttributeInList = x.GetEnumDescription();
+				if (x == GbuColumnsToDownload.Value)
+				{
+					isAttributeInList += $" as {valueColumnAlias}";
+				}
+				selectedColumns.AppendLine(isAttributeInList);
+			});
+
+			var allColumns = $@" 
+						a.object_id as ObjectId,
+	                    {attributeIdColumnName} as AttributeId,
+	                    {selectedColumns} ";
+
+			return allColumns.TrimEnd().TrimEnd(',');
+
+			//TODO начальный запрос
+			//$@" --a.id,
+			//                  a.object_id as ObjectId,
+			//                  a.attribute_id as AttributeId,
+			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.Ot)} a.Ot,
+			//                  --a.S,
+			//                  --{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
+			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.Value)} a.value as {propName}--,
+
+			//                  --a.change_user_id as ChangeUserId,
+			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.DocumentId)} a.change_doc_id as ChangeDocId,
+			//					--a.change_date as ChangeDate,
+
+			//                  --a.change_id as ChangeId,
+
+			//                  --u.fullname as UserFullname,
+
+			//                  --td.regnumber as DocNumber,
+			//                  --td.description as DocType,
+			//                  --td.create_date as DocDate,";
+		}
+
+		public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
 		{
 			List<AllDataTreeDto> result = new List<AllDataTreeDto>();
 

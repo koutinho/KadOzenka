@@ -11,6 +11,7 @@ using Core.Register.RegisterEntities;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 using Serilog;
@@ -414,7 +415,8 @@ namespace KadOzenka.Dal.GbuObject
                     allObjects.Select(x => x.ObjectId).ToList(),
                     null,
                     new List<long> { BaseSetting.IdAttributeFilter.Value },
-                    date, withValueOnly: true);
+                    date,
+                    attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
                 var resultObjectIds = new List<long?>();
                 var lowerFilterValues = BaseSetting.ValuesFilter.Select(x => x.ToLower()).ToList();
@@ -479,7 +481,7 @@ namespace KadOzenka.Dal.GbuObject
                     new List<long> { buildingPurposeAttribute.RegisterId },
                     new List<long> { buildingPurposeAttribute.Id },
                     BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay(),
-                    withValueOnly: true);
+                    attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
                 var possibleValues = new List<string>();
                 switch (BaseSetting.BuildingPurpose)
@@ -561,7 +563,7 @@ namespace KadOzenka.Dal.GbuObject
                     new List<long> { placementPurposeAttribute.RegisterId },
                     new List<long> { placementPurposeAttribute.Id },
                     BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay(),
-                    withValueOnly: true);
+                    attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
                 var possibleValues = new List<string>();
                 switch (BaseSetting.PlacementPurpose)

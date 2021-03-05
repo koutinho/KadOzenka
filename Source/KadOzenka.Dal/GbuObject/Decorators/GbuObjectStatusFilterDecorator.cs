@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.GbuObject.Entities;
 using Serilog;
 
 namespace KadOzenka.Dal.GbuObject.Decorators
@@ -33,7 +34,8 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 			var statusAttributesGrouping = GbuObjectService.GetAllAttributes(
 				allItems.Select(x => x.ObjectId).ToList(),
 				new List<long> { RosreestrRegisterService.RegisterId },
-				attributeIds, ActualDate, withValueOnly: true)
+				attributeIds, ActualDate,
+				attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value })
 				.GroupBy(x => x.ObjectId).ToList();
 			Logger.Debug($"Найдено {statusAttributesGrouping.Count} ОН со значениями из Росреестра");
 
