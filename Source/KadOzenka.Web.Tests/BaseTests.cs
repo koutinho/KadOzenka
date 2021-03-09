@@ -11,6 +11,8 @@ using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.ObjectsCharacteristics;
+using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
@@ -33,6 +35,10 @@ namespace KadOzenka.Web.Tests
 		protected Mock<IModelingService> ModelingService { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
 		protected Mock<ILongProcessService> LongProcessService { get; set; }
+		protected Mock<IObjectsCharacteristicsService> ObjectsCharacteristicsService { get; set; }
+		protected Mock<IObjectsCharacteristicsSourceService> ObjectsCharacteristicsSourceService { get; set; }
+		protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
+
 
 		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
 
@@ -44,6 +50,9 @@ namespace KadOzenka.Web.Tests
 			ModelingService = new Mock<IModelingService>();
 			GbuObjectService = new Mock<IGbuObjectService>();
 			LongProcessService = new Mock<ILongProcessService>();
+			ObjectsCharacteristicsService = new Mock<IObjectsCharacteristicsService>();
+			ObjectsCharacteristicsSourceService = new Mock<IObjectsCharacteristicsSourceService>();
+			RegisterAttributeService = new Mock<IRegisterAttributeService>();
 
 			ConfigureServices();
 		}
@@ -99,7 +108,6 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient<StatisticsReportsWidgetService>();
 			container.AddTransient<StatisticsReportsWidgetExportService>();
 			container.AddTransient<TourService>();
-			container.AddTransient<RegisterAttributeService>();
 			container.AddTransient<SystemAttributeSettingsService>();
 			container.AddTransient<TemplateService>();
 			container.AddTransient<GroupService>();
@@ -112,7 +120,6 @@ namespace KadOzenka.Web.Tests
 			container.AddSingleton<SignalRMessageService>();
 			container.AddSingleton<StatisticalDataService>();
 			container.AddSingleton<CustomReportsService>();
-			container.AddTransient<RecycleBinService>();
 			container.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 			container.AddTransient(typeof(IModelingService), sp => ModelingService.Object);
@@ -120,6 +127,11 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
 			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
 			container.AddTransient(typeof(ILongProcessService), sp => LongProcessService.Object);
+			container.AddTransient(typeof(IRecycleBinService), typeof(RecycleBinService));
+			container.AddTransient(typeof(IObjectsCharacteristicsService), sp => ObjectsCharacteristicsService.Object);
+			container.AddTransient(typeof(IObjectsCharacteristicsSourceService),
+				sp => ObjectsCharacteristicsSourceService.Object);
+			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
 
 			AddServicesToContainer(container);
 

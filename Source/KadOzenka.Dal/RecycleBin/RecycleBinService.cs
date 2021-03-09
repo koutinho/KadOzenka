@@ -23,7 +23,7 @@ using SerilogTimings;
 
 namespace KadOzenka.Dal.RecycleBin
 {
-	public class RecycleBinService
+	public class RecycleBinService : IRecycleBinService
 	{
 		private static readonly ILogger _log = Log.ForContext<RecycleBinService>();
 

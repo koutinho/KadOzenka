@@ -731,9 +731,9 @@ namespace KadOzenka.Web.Controllers
                     };
                 }).ToList();
 
-            if (numericRegisterAttributes[0] != null)
+            if (numericRegisterAttributes.ElementAtOrDefault(0) != null)
             {
-                _log.ForContext("RegisterAttributes0", JsonConvert.SerializeObject(numericRegisterAttributes[0]))
+                _log.ForContext("RegisterAttributes0", JsonConvert.SerializeObject(numericRegisterAttributes.ElementAtOrDefault(0)))
                     .Debug("Получение списка атрибутов ({AttributesCount}) из РЕОН", numericRegisterAttributes.Count);
             }
 

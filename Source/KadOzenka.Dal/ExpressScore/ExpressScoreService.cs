@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.ExpressScore
 		public decimal SummaryCalculateProgress;
 
 		public ScoreCommonService ScoreCommonService { get; set; }
-		public RegisterAttributeService RegisterAttributeService { get; set; }
+		public IRegisterAttributeService RegisterAttributeService { get; set; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
 
         private const string ToStringFormatCoeffPrecision = "0.##########";
@@ -55,7 +55,7 @@ namespace KadOzenka.Dal.ExpressScore
 		private List<NumberReference> _dateNumb;
 
 		private ExpressScoreReportService ReportService { get; }
-		public ExpressScoreService(ScoreCommonService scoreCommonService, RegisterAttributeService registerAttributeService)
+		public ExpressScoreService(ScoreCommonService scoreCommonService, IRegisterAttributeService registerAttributeService)
 		{
 			ReportService = new ExpressScoreReportService();
 			ScoreCommonService = scoreCommonService;

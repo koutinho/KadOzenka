@@ -11,9 +11,9 @@ using ObjectModel.Core.Shared;
 
 namespace KadOzenka.Dal.Registers
 {
-    public class RegisterAttributeService
+    public class RegisterAttributeService : IRegisterAttributeService
     {
-        public static OMAttribute GetRegisterAttribute(long attributeId)
+        public OMAttribute GetRegisterAttribute(long attributeId)
         {
             return OMAttribute.Where(x => x.Id == attributeId).SelectAll().ExecuteFirstOrDefault();
         }

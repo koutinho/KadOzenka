@@ -9,6 +9,7 @@ using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.ES;
 
@@ -338,8 +339,11 @@ namespace KadOzenka.Dal.Modeling
 			RecalculateFormula(factor.ModelId);
 		}
 
-		public void DeleteAutomaticModelFactor(OMModelFactor factor)
+		public void DeleteAutomaticModelFactor(long? id)
 		{
+			var modelingService = new ModelingService();
+			var factor = GetFactorById(id);
+
 			if (factor == null)
 				throw new Exception("Не передан фактор для удаления");
 
@@ -352,8 +356,22 @@ namespace KadOzenka.Dal.Modeling
 
 				ts.Complete();
 			}
-		}
 
+			modelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
+
+			var model = OMModel.Where(x => x.Id == factor.ModelId)
+				.Select(x => x.ObjectsStatistic)
+				.ExecuteFirstOrDefault();
+
+			var statistic = model?.ObjectsStatistic?.DeserializeFromXml<ModelingObjectsStatistic>();
+			var deletedFactorStatistic = statistic?.ObjectsByAttributeStatistics.FirstOrDefault(x => x.AttributeId == factor.FactorId);
+			if (deletedFactorStatistic != null)
+			{
+				statistic.ObjectsByAttributeStatistics.Remove(deletedFactorStatistic);
+				model.ObjectsStatistic = statistic.SerializeToXml();
+				model.Save();
+			}
+		}
 
 		#region Support Methods
 

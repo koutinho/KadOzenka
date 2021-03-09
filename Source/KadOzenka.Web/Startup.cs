@@ -42,6 +42,8 @@ using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.ObjectsCharacteristics;
+using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
@@ -50,6 +52,7 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
 using SerilogTimings;
@@ -102,7 +105,6 @@ namespace CIPJS
 	        services.AddTransient<StatisticsReportsWidgetService>();
 	        services.AddTransient<StatisticsReportsWidgetExportService>();
 	        services.AddTransient<TourService>();
-	        services.AddTransient<RegisterAttributeService>();
 	        services.AddTransient<SystemAttributeSettingsService>();
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
@@ -115,7 +117,6 @@ namespace CIPJS
             services.AddSingleton<SignalRMessageService>();
             services.AddSingleton<StatisticalDataService>();
             services.AddSingleton<CustomReportsService>();
-            services.AddTransient<RecycleBinService>();
             services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
             services.AddTransient(typeof(IModelingService), typeof(ModelingService));
             services.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
@@ -126,8 +127,17 @@ namespace CIPJS
             services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
             services.AddTransient(typeof(IGbuReportService), typeof(GbuReportService));
             services.AddTransient(typeof(ILongProcessService), typeof(LongProcessService));
-
-            services.AddHttpContextAccessor();
+            services.AddTransient(typeof(IRecycleBinService), typeof(RecycleBinService));
+            services.AddTransient(typeof(IRegisterAttributeService), typeof(RegisterAttributeService));
+            services.AddTransient(typeof(IRegisterService), typeof(RegisterService));
+            services.AddTransient(typeof(IObjectsCharacteristicsService), typeof(ObjectsCharacteristicsService));
+            services.AddTransient(typeof(IObjectsCharacteristicsSourceService), typeof(ObjectsCharacteristicsSourceService));
+            services.AddTransient(typeof(IObjectCharacteristicsRepository), typeof(ObjectsCharacteristicsRepository));
+            services.AddTransient(typeof(ISRDSessionWrapper), typeof(SRDSessionWrapper));
+            services.AddTransient(typeof(IRegisterConfiguratorWrapper), typeof(RegisterConfiguratorWrapper));
+            services.AddTransient(typeof(IRegisterCacheWrapper), typeof(RegisterCacheWrapper));
+            services.AddSingleton<BackgroundProcessWidgetService>();
+                services.AddHttpContextAccessor();
                 services.AddSession(options =>
                 {
                     options.Cookie.Name = "CIPJS.Session";
@@ -211,6 +221,7 @@ namespace CIPJS
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                 routes.MapHub<UrgentMessageHub>("/coreMessageData");
                 routes.MapHub<NotificationMessageHub>("/coreMessagesList");
+                routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
             });
 
                 app.UseMvc(routes =>
