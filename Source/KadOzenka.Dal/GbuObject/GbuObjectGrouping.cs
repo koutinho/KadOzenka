@@ -903,8 +903,8 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        lock (PriorityGrouping.locked)
 	        {
-		        var errorId = ErrorManager.LogError(ex);
-		        var fullMessage = $"{message}. Подробности в журнале ({errorId}).";
+		        //var errorId = ErrorManager.LogError(ex);
+		        var fullMessage = $"{message}. {ex.Message}.";
 		        reportService.AddValue(fullMessage, PriorityGrouping.GeneralErrorColumn, currentRow);
 	        }
 
@@ -1133,14 +1133,20 @@ namespace KadOzenka.Dal.GbuObject
 			};
 
 			var documents = new ConcurrentDictionary<long, OMInstance>();
-            //TODO если в группе будет много юнитов, сделать пагинацию внутри группы
-            var unitsGroupedByCreationDate = units.GroupBy(x => x.CreationDate ?? DateTime.Now.Date).ToDictionary(k => k.Key, v => v.ToList());
+			var unitsGroupedByCreationDate = units.GroupBy(x => x.CreationDate ?? DateTime.Now.Date).ToDictionary(k => k.Key, v => v.ToList());
 			Parallel.ForEach(unitsGroupedByCreationDate, options, groupedUnits =>
 			{
 				CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
 				
 				var localActualDate = groupedUnits.Key;
 				_log.Debug("Начата работа с группой, у которой дата актуальности = '{ActualDate}'. Всего групп: {GroupsCount}", localActualDate, unitsGroupedByCreationDate.Count);
+
+				//TODO если в группе будет много юнитов, сделать пагинацию внутри группы
+				//if (groupedUnits.Value.Count > config.PackageSize)
+				//{
+				//	_log.Debug("Количество ЕО в группе ({CurrentUnitsCount}) больше размера пакета ({PackageSize}), дополнительно отправляем их в пакеты",
+				//		groupedUnits.Value.Count, config.PackageSize);
+				//}
 
 				var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
                 _log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'", objectIds.Count, localActualDate);
@@ -1168,7 +1174,7 @@ namespace KadOzenka.Dal.GbuObject
 		        MaxDegreeOfParallelism = config.ThreadsCountForObjects
             };
 
-            var packageSize = config.PackageSizeForObjects;
+            var packageSize = config.PackageSize;
 	        var numberOfPackages = MaxCount / packageSize + 1;
 	        var documents = new ConcurrentDictionary<long, OMInstance>();
             Parallel.For(0, numberOfPackages, options, (i, s) =>
@@ -1242,11 +1248,11 @@ namespace KadOzenka.Dal.GbuObject
 	        configuration.GetSection(sectionName).Bind(config);
 	        _log.ForContext("Configs", config, true).Debug("Полученные настройки конфигурации для секции {SectionName}", sectionName);
 
-	        var packageSize = config.PackageSizeForObjects == 0 ? 100000 : config.PackageSizeForObjects;
+	        var packageSize = config.PackageSize == 0 ? 100000 : config.PackageSize;
 	        var threadsCountForObjects = config.ThreadsCountForObjects == 0 ? 20 : config.ThreadsCountForObjects;
 	        var threadsCountForUnits = config.ThreadsCountForUnits == 0 ? 20 : config.ThreadsCountForUnits;
 
-	        config.PackageSizeForObjects = packageSize;
+	        config.PackageSize = packageSize;
 	        config.ThreadsCountForObjects = threadsCountForObjects;
 	        config.ThreadsCountForUnits = threadsCountForUnits;
 
@@ -1340,7 +1346,7 @@ namespace KadOzenka.Dal.GbuObject
 
     internal class ProcessConfig
     {
-	    public int PackageSizeForObjects { get; set; }
+	    public int PackageSize { get; set; }
 	    public int ThreadsCountForObjects { get; set; }
 	    public int ThreadsCountForUnits { get; set; }
     }
