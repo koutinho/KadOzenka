@@ -1063,12 +1063,6 @@ namespace KadOzenka.Dal.GbuObject
             ErrorMessages = new List<string>();
             locked = new object();
             PrioritetList = new PriorityGroupList();
-            var localCancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = localCancelTokenSource.Token,
-                MaxDegreeOfParallelism = 20
-            };
 
             var itemsGetter = new PriorityGroupingItemsGetter(_log, setting) as AItemsGetter<GroupingItem>;
             var actualDate = setting.DateActual?.Date ?? DateTime.Now.Date;
@@ -1087,8 +1081,6 @@ namespace KadOzenka.Dal.GbuObject
             bool useTask = false;
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
 
-            var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
-
 			////TODO для тестирования
 			//var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618, 11657698 };
 			//var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
@@ -1106,37 +1098,18 @@ namespace KadOzenka.Dal.GbuObject
             var queryManager = new QueryManager();
             queryManager.SetBaseToken(processCancellationToken);
 
-            List<IGrouping<long, GbuObjectAttribute>> objectAttributes;
             var gbuObjectService = new GbuObjectService(queryManager);
             //TODO если будут еще различия - вынести в интрефейс/класс
             if (useTask)
             {
-	            objectAttributes = DownloadAttributesForUnits(items, allAttributeIds, gbuObjectService, processCancellationToken);
+	            ProcessUnits(setting, dictionaryItems, items, allAttributeIds, gbuObjectService, reportService,
+		            dataHeaderAndColumnNumber, processCancellationToken);
             }
             else
             {
-	            objectAttributes = DownloadAttributesForObjects(items, allAttributeIds, actualDate, gbuObjectService, processCancellationToken);
+	            ProcessObjects(setting, dictionaryItems, items, allAttributeIds, actualDate, gbuObjectService, reportService,
+		            dataHeaderAndColumnNumber, processCancellationToken);
             }
-
-            var objectAttributesDictionary = objectAttributes.ToDictionary(k => k.Key, v => v.ToList());
-            var defaultAttributes = allAttributeIds.Select(x => new GbuObjectAttribute {AttributeId = x}).ToList();
-            var documents = new ConcurrentDictionary<long, OMInstance>();
-            Parallel.ForEach(items, options, item =>
-            {
-	            CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
-
-                //если работаем с единицами оценки, дата актуальности должна браться из них
-                var localActualDate = useTask
-		            ? item.CreationDate?.Date ?? DateTime.Now.Date
-		            : actualDate;
-
-	            SetThreadCurrentPrincipal(userId);
-
-                var currentObjectAttributes = objectAttributesDictionary.TryGetValue(item.ObjectId, out var attributes) ? attributes : defaultAttributes;
-
-                new PriorityItem().SetPriorityGroup(setting, dictionaryItems, allAttributeIds, item, localActualDate,
-	                currentObjectAttributes, reportService, dataHeaderAndColumnNumber.DictionaryColumns, documents);
-            });
 
             items.Clear();
 
@@ -1145,8 +1118,10 @@ namespace KadOzenka.Dal.GbuObject
             return reportService.GetUrlToDownloadFile(reportId);
         }
 
-        private static List<IGrouping<long, GbuObjectAttribute>> DownloadAttributesForUnits(List<GroupingItem> items,
-	        List<long> allAttributeIds, GbuObjectService service, CancellationToken processCancellationToken)
+        private static void ProcessUnits(GroupingSettings setting, List<OMCodDictionary> dictionaryItems, 
+	        List<GroupingItem> units, List<long> allAttributeIds,
+	        GbuObjectService gbuObjectService, GbuReportService reportService, 
+	        ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
 		{
             //TODO to config
 			var localCancelTokenSource = new CancellationTokenSource();
@@ -1156,31 +1131,33 @@ namespace KadOzenka.Dal.GbuObject
 				MaxDegreeOfParallelism = 20
 			};
 
-			var objectAttributes = new List<IGrouping<long, GbuObjectAttribute>>();
-			var unitsGroupedByCreationDate = items.GroupBy(x => x.CreationDate ?? DateTime.Now.Date).ToDictionary(k => k.Key, v => v.ToList());
-			Parallel.ForEach(unitsGroupedByCreationDate, options, item =>
+			var documents = new ConcurrentDictionary<long, OMInstance>();
+            //TODO пагинация внутри группы
+            var unitsGroupedByCreationDate = units.GroupBy(x => x.CreationDate ?? DateTime.Now.Date).ToDictionary(k => k.Key, v => v.ToList());
+			Parallel.ForEach(unitsGroupedByCreationDate, options, groupedUnits =>
 			{
 				CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
 
-                var localActualDate = item.Key;
+                var localActualDate = groupedUnits.Key;
 				_log.Debug("Начата работа с группой, у которой дата актуальности = '{ActualDate}'. Всего групп: {MaxPackagesCount}", localActualDate, unitsGroupedByCreationDate.Count);
 
-                var objectIds = item.Value.Select(x => x.ObjectId).ToList();
+                var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
                 _log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'", objectIds.Count, localActualDate);
 
-                var localAttributes = service.GetAllAttributes(objectIds, null, allAttributeIds, localActualDate,
-	                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId});
-                
-                objectAttributes.AddRange(localAttributes.GroupBy(x => x.ObjectId).ToList());
-                _log.Debug("Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'", localAttributes.Count, localActualDate);
-            });
+                var objectAttributes = gbuObjectService.GetAllAttributes(objectIds, null, allAttributeIds, localActualDate,
+	                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
+	                .GroupBy(x => x.ObjectId).ToList();
+                _log.Debug("Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'", objectAttributes.Count, localActualDate);
 
-            return objectAttributes;
-        }
+                ProcessItems(setting, dictionaryItems, documents, groupedUnits.Value, objectAttributes, allAttributeIds,
+	                true, localActualDate, reportService, dataHeaderAndColumnNumber, processCancellationToken);
+			});
+		}
 
-        private static List<IGrouping<long, GbuObjectAttribute>> DownloadAttributesForObjects(List<GroupingItem> items,
-	        List<long> allAttributeIds, DateTime actualDate, GbuObjectService gbuObjectService,
-	        CancellationToken processCancellationToken)
+        private static void ProcessObjects(GroupingSettings setting, List<OMCodDictionary> dictionaryItems,
+	        List<GroupingItem> objects, List<long> allAttributeIds, DateTime actualDate,
+	        GbuObjectService gbuObjectService, GbuReportService reportService,
+	        ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
         {
 	        //TODO to config
             var localCancelTokenSource = new CancellationTokenSource();
@@ -1193,24 +1170,62 @@ namespace KadOzenka.Dal.GbuObject
 	        //TODO to config
             var packageSize = 100000;
 	        var numberOfPackages = MaxCount / packageSize + 1;
-	        var objectAttributes = new List<IGrouping<long, GbuObjectAttribute>>();
-	        Parallel.For(0, numberOfPackages, options, (i, s) =>
+	        var documents = new ConcurrentDictionary<long, OMInstance>();
+            Parallel.For(0, numberOfPackages, options, (i, s) =>
 	        {
 		        CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
 
                 _log.Debug("Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 
-                var objects = items.Skip(i * packageSize).Take(packageSize).Select(x => x.ObjectId).ToList();
-                _log.Debug("Отобрано {ObjectsCount} объектов для пакета №{PackageNumber} из {MaxPackagesCount}", objects.Count, i, numberOfPackages);
+                var objectsPage = objects.Skip(i * packageSize).Take(packageSize).ToList();
+                _log.Debug("Отобрано {ObjectsCount} объектов для пакета №{PackageNumber} из {MaxPackagesCount}", objectsPage.Count, i, numberOfPackages);
 
-                var localAttributes = gbuObjectService.GetAllAttributes(objects, null, allAttributeIds, actualDate,
-		                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId});
-                
-                objectAttributes.AddRange(localAttributes.GroupBy(x => x.ObjectId).ToList());
-                _log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}", localAttributes.Count, i, numberOfPackages);
+                var objectAttributes = gbuObjectService.GetAllAttributes(objectsPage.Select(x => x.ObjectId).ToList(), null, allAttributeIds, actualDate,
+		                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
+	                .GroupBy(x => x.ObjectId).ToList();
+                _log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}", objectAttributes.Count, i, numberOfPackages);
+
+                ProcessItems(setting, dictionaryItems, documents, objectsPage, objectAttributes, allAttributeIds,
+	                false, actualDate, reportService, dataHeaderAndColumnNumber, processCancellationToken);
             });
+        }
 
-            return objectAttributes;
+
+        private static void ProcessItems(GroupingSettings setting, 
+	        List<OMCodDictionary> dictionaryItems, ConcurrentDictionary<long, OMInstance> documents,
+            List<GroupingItem> items, List<IGrouping<long, GbuObjectAttribute>> objectAttributes, List<long> allAttributeIds, 
+	        bool useTask, DateTime actualDate,
+	        GbuReportService reportService, ReportHeaderWithColumnDic dataHeaderAndColumnNumber, 
+	        CancellationToken processCancellationToken)
+        {
+	        var localCancelTokenSource = new CancellationTokenSource();
+	        var options = new ParallelOptions
+	        {
+		        CancellationToken = localCancelTokenSource.Token,
+		        MaxDegreeOfParallelism = 20
+	        };
+
+	        var objectAttributesDictionary = objectAttributes.ToDictionary(k => k.Key, v => v.ToList());
+	        var defaultAttributes = allAttributeIds.Select(x => new GbuObjectAttribute { AttributeId = x }).ToList();
+	        var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
+	        Parallel.ForEach(items, options, item =>
+	        {
+		        CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
+
+		        //если работаем с единицами оценки, дата актуальности должна браться из них
+		        var localActualDate = useTask
+			        ? item.CreationDate?.Date ?? DateTime.Now.Date
+			        : actualDate;
+
+		        SetThreadCurrentPrincipal(userId);
+
+		        var currentObjectAttributes = objectAttributesDictionary.TryGetValue(item.ObjectId, out var attributes)
+			        ? attributes
+			        : defaultAttributes;
+
+		        new PriorityItem().SetPriorityGroup(setting, dictionaryItems, allAttributeIds, item, localActualDate,
+			        currentObjectAttributes, reportService, dataHeaderAndColumnNumber.DictionaryColumns, documents);
+	        });
         }
 
         private static void CheckCancellationToken(CancellationToken processCancellationToken,
