@@ -909,6 +909,7 @@ namespace KadOzenka.Dal.GbuObject
 	        }
 
 	        Serilog.Log.Logger.ForContext("Item", JsonConvert.SerializeObject(inputItem))
+		        .ForContext("HumanMessage", message)
 		        .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
         }
 
