@@ -11,7 +11,6 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 		protected AItemsGetter(ILogger logger)
         {
 	        Logger = logger;
-
         }
 
 

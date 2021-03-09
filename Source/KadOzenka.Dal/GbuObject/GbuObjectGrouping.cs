@@ -918,7 +918,7 @@ namespace KadOzenka.Dal.GbuObject
 
     public class PriorityGroupingItemsGetter : AItemsGetter<GroupingItem>
     {
-        public GroupingSettings Settings { get; set; }
+        private GroupingSettings Settings { get; }
 
         public PriorityGroupingItemsGetter(ILogger logger, GroupingSettings setting) : base(logger)
         {

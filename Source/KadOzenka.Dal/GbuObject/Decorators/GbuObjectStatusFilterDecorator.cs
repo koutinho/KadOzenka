@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Entities;
 using Serilog;
@@ -13,8 +12,8 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 		public List<ObjectChangeStatus> Statuses { get; set; }
 		public DateTime ActualDate { get; set; }
 
-		public GbuObjectStatusFilterDecorator(AItemsGetter<T> comp, ILogger logger, List<ObjectChangeStatus> statuses, DateTime actualDate) 
-			: base(comp, logger)
+		public GbuObjectStatusFilterDecorator(AItemsGetter<T> itemsGetter, ILogger logger, List<ObjectChangeStatus> statuses, DateTime actualDate) 
+			: base(itemsGetter, logger)
 		{
 			Statuses = statuses;
 			ActualDate = actualDate;
@@ -55,6 +54,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 		private List<long> GetAttributeIds()
 		{
 			var attributeIds = new List<long>();
+
 			Statuses.ForEach(status =>
 			{
 				switch (status)
@@ -75,6 +75,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 						throw new ArgumentOutOfRangeException(nameof(status), status, null);
 				}
 			});
+
 			return attributeIds;
 		}
 	}
