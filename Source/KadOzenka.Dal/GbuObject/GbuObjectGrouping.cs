@@ -19,6 +19,7 @@ using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.GbuObject.Exceptions;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 using Newtonsoft.Json;
 using ObjectModel.KO;
@@ -1123,25 +1124,25 @@ namespace KadOzenka.Dal.GbuObject
 	        GbuObjectService gbuObjectService, GbuReportService reportService, 
 	        ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
 		{
-            //TODO to config
+			var config = GetProcessConfigFromSettings();
 			var localCancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
 			{
 				CancellationToken = localCancelTokenSource.Token,
-				MaxDegreeOfParallelism = 20
+				MaxDegreeOfParallelism = config.ThreadsCountForUnits
 			};
 
 			var documents = new ConcurrentDictionary<long, OMInstance>();
-            //TODO пагинация внутри группы
+            //TODO если в группе будет много юнитов, сделать пагинацию внутри группы
             var unitsGroupedByCreationDate = units.GroupBy(x => x.CreationDate ?? DateTime.Now.Date).ToDictionary(k => k.Key, v => v.ToList());
 			Parallel.ForEach(unitsGroupedByCreationDate, options, groupedUnits =>
 			{
 				CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
+				
+				var localActualDate = groupedUnits.Key;
+				_log.Debug("Начата работа с группой, у которой дата актуальности = '{ActualDate}'. Всего групп: {GroupsCount}", localActualDate, unitsGroupedByCreationDate.Count);
 
-                var localActualDate = groupedUnits.Key;
-				_log.Debug("Начата работа с группой, у которой дата актуальности = '{ActualDate}'. Всего групп: {MaxPackagesCount}", localActualDate, unitsGroupedByCreationDate.Count);
-
-                var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
+				var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
                 _log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'", objectIds.Count, localActualDate);
 
                 var objectAttributes = gbuObjectService.GetAllAttributes(objectIds, null, allAttributeIds, localActualDate,
@@ -1159,16 +1160,15 @@ namespace KadOzenka.Dal.GbuObject
 	        GbuObjectService gbuObjectService, GbuReportService reportService,
 	        ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
         {
-	        //TODO to config
+	        var config = GetProcessConfigFromSettings();
             var localCancelTokenSource = new CancellationTokenSource();
 	        var options = new ParallelOptions
 	        {
 		        CancellationToken = localCancelTokenSource.Token,
-		        MaxDegreeOfParallelism = 20
-	        };
+		        MaxDegreeOfParallelism = config.ThreadsCountForObjects
+            };
 
-	        //TODO to config
-            var packageSize = 100000;
+            var packageSize = config.PackageSizeForObjects;
 	        var numberOfPackages = MaxCount / packageSize + 1;
 	        var documents = new ConcurrentDictionary<long, OMInstance>();
             Parallel.For(0, numberOfPackages, options, (i, s) =>
@@ -1226,6 +1226,33 @@ namespace KadOzenka.Dal.GbuObject
 		        new PriorityItem().SetPriorityGroup(setting, dictionaryItems, allAttributeIds, item, localActualDate,
 			        currentObjectAttributes, reportService, dataHeaderAndColumnNumber.DictionaryColumns, documents);
 	        });
+        }
+
+        private static ProcessConfig GetProcessConfigFromSettings()
+        {
+	        var fileName = "appsettings.json";
+	        _log.Debug("Поиск настроек конфигурации из файла {FileName}", fileName);
+
+	        var configuration = new ConfigurationBuilder()
+		        .AddJsonFile(path: fileName, optional: false, reloadOnChange: true)
+		        .Build();
+
+	        var config = new ProcessConfig();
+	        var sectionName = "MainOperations:Grouping";
+	        configuration.GetSection(sectionName).Bind(config);
+	        _log.ForContext("Configs", config, true).Debug("Полученные настройки конфигурации для секции {SectionName}", sectionName);
+
+	        var packageSize = config.PackageSizeForObjects == 0 ? 100000 : config.PackageSizeForObjects;
+	        var threadsCountForObjects = config.ThreadsCountForObjects == 0 ? 20 : config.ThreadsCountForObjects;
+	        var threadsCountForUnits = config.ThreadsCountForUnits == 0 ? 20 : config.ThreadsCountForUnits;
+
+	        config.PackageSizeForObjects = packageSize;
+	        config.ThreadsCountForObjects = threadsCountForObjects;
+	        config.ThreadsCountForUnits = threadsCountForUnits;
+
+	        _log.ForContext("ResultConfigs", config, true).Debug("Итоговые настройки конфигурации для секции {SectionName}", sectionName);
+
+	        return config;
         }
 
         private static void CheckCancellationToken(CancellationToken processCancellationToken,
@@ -1309,6 +1336,13 @@ namespace KadOzenka.Dal.GbuObject
     {
         public string CadastralNumber { get; set; }
         public DateTime? CreationDate { get; set; }
+    }
+
+    internal class ProcessConfig
+    {
+	    public int PackageSizeForObjects { get; set; }
+	    public int ThreadsCountForObjects { get; set; }
+	    public int ThreadsCountForUnits { get; set; }
     }
 
     #endregion
