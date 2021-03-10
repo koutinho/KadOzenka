@@ -6,6 +6,7 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
 using Microsoft.Practices.ObjectBuilder2;
@@ -14,6 +15,7 @@ using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -72,31 +74,41 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected void CreateMarkCatalog(long? groupId, List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
 		{
-			AddLog(queue, "Начато формирование каталога меток", logger: Logger);
-
-			attributes.ForEach(attribute =>
+			using (Logger.TimeOperation("Формирование каталога меток"))
 			{
-				var numberOfMarks = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
-				AddLog(queue, $"Удалено {numberOfMarks} предыдущих меток для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", logger: Logger);
-			});
+				AddLog(queue, "Начато формирование каталога меток", logger: Logger);
 
-			for (var i = 0; i < modelObjects.Count; i++)
-			{
-				var modelObject = modelObjects[i];
-				var objectCoefficients = modelObject.DeserializeCoefficient();
-
-				foreach (var attribute in attributes)
+				using (Logger.TimeOperation("Удаление всех предыдущих меток"))
 				{
-					var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
-					if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
-					    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
-						continue;
-
-					ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient, attribute.AttributeId, groupId);
+					attributes.ForEach(attribute =>
+					{
+						var numberOfMarks = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
+						Logger.Debug("Удалено {numberOfMarks} предыдущих меток для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", numberOfMarks, attribute.AttributeName, attribute.AttributeId);
+					});
 				}
-			}
 
-			AddLog(queue, "Закончено формирование каталога меток", logger: Logger);
+				using (Logger.TimeOperation("Создание новых меток"))
+				{
+					for (var i = 0; i < modelObjects.Count; i++)
+					{
+						var modelObject = modelObjects[i];
+						var objectCoefficients = modelObject.DeserializeCoefficient();
+
+						foreach (var attribute in attributes)
+						{
+							var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
+							if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
+							    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
+								continue;
+
+							ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient,
+								attribute.AttributeId, groupId);
+						}
+					}
+				}
+
+				AddLog(queue, "Закончено формирование каталога меток", logger: Logger);
+			}
 		}
 
 		protected void SaveStatistic(List<OMModelToMarketObjects> objects, List<ModelAttributePure> attributes, OMModel model, OMQueue queue)
