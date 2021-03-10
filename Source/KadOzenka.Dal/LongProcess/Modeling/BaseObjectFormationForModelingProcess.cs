@@ -8,9 +8,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using ExCSS.Model.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
-using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Dto;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
@@ -124,6 +122,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					{
 						InsertMarks(rowsToInsertSql);
 					}
+
 					Logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
 				}
 				

@@ -17,6 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.Modeling
@@ -71,13 +72,14 @@ namespace KadOzenka.Dal.Modeling
 
         public int DestroyModelMarketObjects(OMModel model)
         {
-	        var existedModelObjects = OMModelToMarketObjects.Where(x => x.ModelId == model.Id).Execute();
-	        existedModelObjects.ForEach(x => x.Destroy());
-	        
-	        model.ObjectsStatistic = null;
+	        var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {model.Id}";
+	        var command = DBMngr.Main.GetSqlStringCommand(sql);
+	        var deletedModelObjectsCount = DBMngr.Main.ExecuteNonQuery(command);
+
+			model.ObjectsStatistic = null;
 	        model.Save();
 
-	        return existedModelObjects.Count;
+	        return deletedModelObjectsCount;
         }
 
         public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)

@@ -6,7 +6,6 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using DevExpress.CodeParser;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
@@ -185,7 +184,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                     //сохраняем в список, чтобы не выкачивать повторно
                     ModelObjects.Add(modelToMarketObjectRelation);
 
-                    if (i % 100 == 0)
+                    if (i % 500 == 0)
                         AddLog(Queue, $"{i}, ", false, logger: Logger);
                 });
 
