@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMModel Model { get; set; }
         private OMTour Tour { get; set; }
         private OMQueue Queue { get; set; }
-        private List<OMModelToMarketObjects> ModelObjects { get; }
+        private List<OMModelToMarketObjects> ModelObjects { get; set; }
         private ILongProcessService LongProcessService { get; }
         private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
