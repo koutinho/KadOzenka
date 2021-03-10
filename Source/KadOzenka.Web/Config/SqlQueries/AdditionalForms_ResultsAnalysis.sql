@@ -41,5 +41,6 @@ select ud.CadastralNumber,
 	ud.Status
 	from unit_data ud
 		left join prev_unit_with_the_same_kn_data prev_ud on ud.CadastralNumber=prev_ud.CadastralNumber
+		limit {1} offset {2} * {1}
 	
 

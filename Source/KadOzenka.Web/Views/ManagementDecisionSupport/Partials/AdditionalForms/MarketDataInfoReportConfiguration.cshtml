@@ -1,0 +1,76 @@
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.ManagementDecisionSupport.AdditionalFormViewModel.MarketDataInfoReportViewModel
+
+<div class="form-horizontal" style="padding: 2%">
+	@using (Html.BeginForm("MarketDataInfoReportConfiguration", "ManagementDecisionSupport", FormMethod.Post, new { id = "getReportForm" }))
+	{
+		if (Model.TaskIds == null || Model.TaskIds.Count == 0)
+		{
+			<div class="form-group">
+				<span style="color: red">Не выбраны задания на оценку</span>
+			</div>
+		}
+		else
+		{
+
+			<div class="form-group">
+				<div class="col-sm-5">
+					@Html.CustomLabelFor(m => m.DateFrom)
+				</div>
+				<div class="col-sm-7">
+					@Html.KendoDatePickerFor(m => m.DateFrom, false)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-5">
+					@Html.CustomLabelFor(m => m.DateTo)
+				</div>
+				<div class="col-sm-7">
+					@Html.KendoDatePickerFor(m => m.DateTo, false)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-5">
+					@Html.CustomLabelFor(m => m.TypeOfUseAttributeId)
+				</div>
+				<div class="col-sm-7">
+					@Html.KendoDropDownListTreeWithButton(m => m.TypeOfUseAttributeId, Model.GbuAttributes)
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-sm-5">
+					@Html.CustomLabelFor(m => m.OksGroupAttributeId)
+				</div>
+				<div class="col-sm-7">
+					@Html.KendoDropDownListTreeWithButton(m => m.OksGroupAttributeId, Model.GbuAttributes)
+				</div>
+			</div>
+
+			<div class="form-group">
+				<div class="col-sm-5">
+					@Html.CustomLabelFor(m => m.TypeOfUseCodeAttributeId)
+				</div>
+				<div class="col-sm-7">
+					@Html.KendoDropDownListTreeWithButton(m => m.TypeOfUseCodeAttributeId, Model.GbuAttributes)
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 col-sm-offset-10">
+					<input type="button" id="getReportBtn" class="k-button" value="Сформировать" />
+				</div>
+			</div>
+		}
+	}
+</div>
+
+
+
+<script src="~/js/common-reports.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#getReportBtn").click(processReport);
+    });
+
+</script>

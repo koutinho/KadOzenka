@@ -5,12 +5,15 @@ using System.Threading;
 using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using Core.SRD;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport;
 using KadOzenka.Dal.LongProcess.ManagementDecisionSupport.Settings;
+using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticsReports;
@@ -20,8 +23,9 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Dal.Tours;
-using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.ManagementDecisionSupport;
+using KadOzenka.Web.Models.ManagementDecisionSupport.AdditionalFormViewModel;
+using KadOzenka.Web.Models.ManagementDecisionSupport.QualityPricingFactorsEncodingResults;
 using KadOzenka.Web.Models.ManagementDecisionSupport.ResultsByCadastralDistrictReport;
 using Kendo.Mvc;
 using Kendo.Mvc.Infrastructure;
@@ -34,7 +38,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
-using ReportLongProcessInputParameters = KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities.ReportLongProcessInputParameters;
+using ReportLongProcessOnlyTasksInputParameters = KadOzenka.Dal.LongProcess.Reports.Entities.ReportLongProcessOnlyTasksInputParameters;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -47,6 +51,7 @@ namespace KadOzenka.Web.Controllers
 		private readonly StatisticsReportsWidgetExportService _statisticsReportsWidgetExportService;
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly TourService _tourService;
+		private GroupService GroupService { get; }
 		private IGbuObjectService GbuObjectService { get; }
 		private ILongProcessService LongProcessService { get; }
 		private readonly int dataPageSize = 30;
@@ -55,7 +60,8 @@ namespace KadOzenka.Web.Controllers
 		public ManagementDecisionSupportController(MapBuildingService mapBuildingService,
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
             StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
-            StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService)
+            StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService,
+            GroupService groupService)
         {
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
@@ -65,7 +71,7 @@ namespace KadOzenka.Web.Controllers
             _statisticalDataService = statisticalDataService;
             LongProcessService = longProcessService;
             GbuObjectService = gbuObjectService;
-
+            GroupService = groupService;
         }
 
         #region MapBuilding
@@ -466,7 +472,7 @@ namespace KadOzenka.Web.Controllers
 			//3. отчеты, которые идут через свои собственные процессы и требуют дополнительных входных параметров - model.IsWithAdditionalConfiguration
 			if (model.IsForBackground)
 			{
-				var parameters = new ReportLongProcessInputParameters
+				var parameters = new ReportLongProcessOnlyTasksInputParameters
 				{
 					TaskIds = model.TaskFilter.ToList()
 				};
@@ -534,36 +540,25 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
-        public IActionResult GetPreviousToursReportReport(PreviousToursConfigurationModel model)
+        public IActionResult ProcessPreviousToursReportReport(PreviousToursConfigurationModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            if (model.IsInBackground)
-            {
-                var inputParameters = new PreviousToursReportInputParameters
-                {
-                    GroupId = model.GroupId.Value,
-                    TaskIds = model.SelectedTasks.ToList()
-                };
+            var inputParameters = model.MapToInputParameters();
 
-                ////TODO для тестирования
-                //new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
-                //{
-                //    Status_Code = Status.Added,
-                //    Parameters = inputParameters.SerializeToXml()
-                //}, new CancellationToken());
+			////TODO для тестирования
+			//new PreviousToursReportProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
 
-                PreviousToursReportProcess.AddProcessToQueue(inputParameters);
+			new PreviousToursReportProcess().AddToQueue(inputParameters);
 
-                return Content(
-                    JsonConvert.SerializeObject(new
-                        {Message = "Процесс добавлен в очередь. Результат будет отправлен на почту."}),
-                    "application/json");
-            }
-
-            return GetStatisticalDataReportUrl(model.Map());
-        }
+			return Ok();
+		}
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
@@ -593,6 +588,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.CadastralCostDeterminationResults.CadastralCostDeterminationResultsBaseReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -627,6 +623,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -661,6 +658,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForBuildingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -695,6 +693,7 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForConstructionsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
@@ -729,11 +728,305 @@ namespace KadOzenka.Web.Controllers
 			////TODO для тестирования
 			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForUncompletedBuildingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
 			//	Status_Code = Status.Added,
 			//	Parameters = inputParameters.SerializeToXml()
 			//}, new CancellationToken());
 
 			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForUncompletedBuildingsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ResultsByCadastralDistrictForPlacementsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new PlacementsConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrict/PlacementsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessResultsByCadastralDistrictForPlacementsReport(PlacementsConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForPlacementsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForPlacementsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ResultsByCadastralDistrictForParkingsConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new ParkingsConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ResultsByCadastralDistrict/ParkingsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessResultsByCadastralDistrictForParkingsReport(ParkingsConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForParkingsReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.ResultsByCadastralDistrict.ResultsByCadastralDistrictForParkingsReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult ModelingsResultsConfiguration(StatisticalDataModel model)
+        {
+			var possibleGroups = GroupService.GetSortedGroupsWithNumbersByTasks(model.TaskFilter.ToList())
+				.Select(x => new DropDownTreeItemModel { Value = x.Id.ToString(), Text = x.CombinedName }).ToList();
+
+			var reportConfigurationModel = new ModelingResultsModel
+			{
+		        TaskIds = model.TaskFilter,
+		        PossibleGroups = possibleGroups
+			};
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/ModelingResultsConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessModelingsResultsReport(ModelingResultsModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.CalculationParams.ModelingResultsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.CalculationParams.ModelingResultsLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult DataCompositionWithCrviForOksConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new DataCompositionWithCrviForOksConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/QualityPricingFactorsEncodingResults/DataCompositionWithCrviForOksConfiguration.cshtml", reportConfigurationModel);
+		}
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessDataCompositionWithCrviForOksReport(DataCompositionWithCrviForOksConfigurationModel model)
+        {
+			if (!ModelState.IsValid)
+				return GenerateMessageNonValidModel();
+
+			var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForOksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForOksReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+		}
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsOksConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new KRSummaryResultsOksModel
+	        {
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/KRSummaryResultsOksConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsOksConfiguration(KRSummaryResultsOksModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = new Dal.LongProcess.Reports.KRSummaryResults.Entities.OksReportLongProcessInputParameters()
+	        {
+		        TaskIds = model.TaskIds?.ToList(),
+		        KladrAttributeId = model.KladrAttributeId,
+		        ParentKnAttributeId = model.ParentKnAttributeId
+	        };
+
+	        ////TODO для тестирования
+//	        new Dal.LongProcess.Reports.KRSummaryResults.OksReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+//	        {
+//				UserId = SRDSession.GetCurrentUserId(),
+//	        	Status_Code = Status.Added,
+//	        	Parameters = inputParameters.SerializeToXml()
+//	        }, new CancellationToken());
+
+	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryOksReportLongProcess().AddToQueue(inputParameters);
+
+	        return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsZuConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new KRSummaryResultsZuModel
+	        {
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/KRSummaryResultsZuConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult KRSummaryResultsZuConfiguration(KRSummaryResultsZuModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = new Dal.LongProcess.Reports.KRSummaryResults.Entities.ZuReportLongProcessInputParameters()
+	        {
+		        TaskIds = model.TaskIds?.ToList(),
+		        KladrAttributeId = model.KladrAttributeId,
+	        };
+
+	        ////TODO для тестирования
+//	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+//	        {
+//				UserId = SRDSession.GetCurrentUserId(),
+//	        	Status_Code = Status.Added,
+//	        	Parameters = inputParameters.SerializeToXml()
+//	        }, new CancellationToken());
+
+	        new Dal.LongProcess.Reports.KRSummaryResults.KRSummaryZuReportLongProcess().AddToQueue(inputParameters);
+
+	        return Ok();
+        }
+
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult DataCompositionWithCrviForZuConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new DataCompositionWithCrviForZuConfigurationModel
+			{
+		        TaskIds = model.TaskFilter,
+		        GbuAttributes = GetGbuAttributesTree()
+	        };
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/QualityPricingFactorsEncodingResults/DataCompositionWithCrviForZuConfiguration.cshtml", reportConfigurationModel);
+        }
+
+
+		[HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public IActionResult ProcessDataCompositionWithCrviForZuReport(DataCompositionWithCrviForZuConfigurationModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
+
+			new Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.DataCompositionWithCrviForZuReportLongProcess().AddToQueue(inputParameters);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult MarketDataInfoReportConfiguration(StatisticalDataModel model)
+        {
+	        var reportConfigurationModel = new MarketDataInfoReportViewModel
+			{
+				TaskIds = model.TaskFilter?.ToList(), 
+				GbuAttributes = GetGbuAttributesTree()
+			};
+
+	        return PartialView("~/Views/ManagementDecisionSupport/Partials/AdditionalForms/MarketDataInfoReportConfiguration.cshtml", reportConfigurationModel);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.DECISION_SUPPORT)]
+        public ActionResult MarketDataInfoReportConfiguration(MarketDataInfoReportViewModel model)
+        {
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
+
+	        var inputParameters = model.MapToInputParameters();
+
+			////TODO для тестирования
+			//new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	Parameters = inputParameters.SerializeToXml(),
+			//	UserId = SRDSession.GetCurrentUserId()
+			//}, new CancellationToken());
+			new Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.MarketDataInfoReportLongProcess().AddToQueue(inputParameters);
 
 			return Ok();
         }

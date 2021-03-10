@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Register;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
@@ -56,10 +57,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			return GetProcessConfigFromSettings("ResultsByCadastralDistrictForZu", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(InputParametersForZu inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(InputParametersForZu inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -71,9 +71,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			return string.Format(BaseSql, unitsCondition);
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralNumber;
+			return x => x.OrderBy(y => y.CadastralNumber);
 		}
 
 		protected override string GenerateReportTitle()
@@ -81,120 +81,32 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			return "Состав данных о результатах кадастровой оценки по характеристикам объектов недвижимости и с присвоенными группами и кодами видов расчета";
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
-			var columns = new List<GbuReportService.Column>
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый квартал",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый район",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип объекта",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Площадь",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование земельного участка",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Местоположение",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Адрес",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Дата образования",
-					Width = ColumnWidthForDates
-				},
-				new GbuReportService.Column
-				{
-					Header = "Категория земель",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Вид использования по документам",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Вид использования по классификатору",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Источник информации",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Сегмент",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Код вида использования",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Наименование вида использования",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Источник информации кода вида использования",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер подгруппы",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "УПКС объекта недвижимости, руб./кв.м.",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровая стоимость объекта недвижимости, руб.",
-					Width = 4
-				}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Кадастровый квартал"}, 
+				new Column {Header = "Кадастровый район"},
+				new Column {Header = "Тип объекта"},
+				new Column {Header = "Площадь"},
+				new Column {Header = "Наименование земельного участка"},
+				new Column {Header = "Местоположение"},
+				new Column {Header = "Адрес"},
+				new Column {Header = "Дата образования", Width = ColumnWidthForDates},
+				new Column {Header = "Категория земель"},
+				new Column {Header = "Вид использования по документам"},
+				new Column {Header = "Вид использования по классификатору"},
+				new Column {Header = "Сведения о нахождении на земельном участке других связанных с ним объектов недвижимости"},
+				new Column {Header = "Источник информации"},
+				new Column {Header = "Сегмент"},
+				new Column {Header = "Код вида использования"},
+				new Column {Header = "Наименование вида использования"},
+				new Column {Header = "Источник информации кода вида использования"},
+				new Column {Header = "Номер подгруппы"},
+				new Column {Header = "УПКС объекта недвижимости, руб./кв.м."},
+				new Column {Header = "Кадастровая стоимость объекта недвижимости, руб."}
 			};
 
 			var counter = 0;

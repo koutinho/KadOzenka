@@ -50,9 +50,9 @@ wallMaterialAttrValues as (
 --TOURS ATTRIBUTES
 tourAttrValues as (
 	select tour_id, attribute_using_type_code, attribute_id from KO_TOUR_ATTRIBUTE_SETTINGS
-),
+)
 
-initial_data as (
+
 SELECT
     tour.year as TourYear,
     unit.cadastral_number as CadastralNumber,
@@ -108,7 +108,4 @@ SELECT
     WHERE unit.TASK_ID in ({0}) and unit.GROUP_ID = {1} and unit.object_id is not null
     --and unit.id=15280959
     order by unit.cadastral_number, tour.year
-)
-        
-select * from initial_data   
                     

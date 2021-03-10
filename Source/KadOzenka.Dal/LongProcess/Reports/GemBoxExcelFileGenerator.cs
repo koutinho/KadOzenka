@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.LongProcess.Reports.Entities;
 
 namespace KadOzenka.Dal.LongProcess.Reports
 {
 	public class GemBoxExcelFileGenerator
 	{
 		private readonly ExcelFile _excelFile;
+		private CellStyle GeneralCellStyle { get; }
 		private int _currentRowIndex;
 		private bool _hasTitle;
 
@@ -19,7 +21,16 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			_excelFile = new ExcelFile();
 			var sheet = _excelFile.Worksheets.Add("Лист 1");
 			sheet.Cells.Style.Font.Name = "Times New Roman";
+
+			GeneralCellStyle = new CellStyle
+			{
+				HorizontalAlignment = HorizontalAlignmentStyle.Center,
+				VerticalAlignment = VerticalAlignmentStyle.Center,
+				WrapText = true
+			};
+			GeneralCellStyle.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
 		}
+
 
 
 		public void AddTitle(string title, int maxColumnsCount)
@@ -28,28 +39,44 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				return;
 
 			_hasTitle = true;
-			var sheet = _excelFile.Worksheets[0];
-			sheet.Rows[_currentRowIndex].Cells[0].SetValue(title);
 
-			var maxColumnIndex = maxColumnsCount - 1;
-			var cells = sheet.Cells.GetSubrangeAbsolute(_currentRowIndex, 0, _currentRowIndex, maxColumnIndex);
-			cells.Merged = true;
+			var mergedCell = new MergedColumns
+			{
+				OrderNumber = 0,
+				Text = title,
+				StartColumnIndex = 0,
+				EndColumnIndex = maxColumnsCount - 1
+			};
+			var titleCellStyle = new CellStyle
+			{
+				HorizontalAlignment = HorizontalAlignmentStyle.Left
+			};
 
-			SetGeneralCellStyle(sheet, _currentRowIndex, maxColumnIndex);
-			cells.Style.HorizontalAlignment = HorizontalAlignmentStyle.Left;
-
-			_currentRowIndex++;
+			AddMergedHeaders(new List<MergedColumns> {mergedCell}, titleCellStyle);
 		}
 
-		public void AddHeaders(List<string> values)
+		public void AddMergedHeaders(List<MergedColumns> commonHeaders, CellStyle style = null)
 		{
-			var columnIndex = 0;
-			var row = _excelFile.Worksheets[0].Rows[_currentRowIndex];
-			foreach (var value in values)
+			var sheet = _excelFile.Worksheets[0];
+			
+			commonHeaders.OrderBy(x => x.OrderNumber).GroupBy(x => x.OrderNumber).ToList().ForEach(groupedColumns =>
 			{
-				row.Cells[columnIndex].SetValue(value);
-				columnIndex++;
-			}
+				groupedColumns.ToList().ForEach(columns =>
+				{
+					var cells = sheet.Cells.GetSubrangeAbsolute(_currentRowIndex, columns.StartColumnIndex, _currentRowIndex, columns.EndColumnIndex);
+					cells.Merged = true;
+					cells.Value = columns.Text;
+
+					cells.Style = style ?? GeneralCellStyle;
+				});
+
+				_currentRowIndex++;
+			});
+		}
+
+		public void AddSeparateColumnsHeaders(List<string> values)
+		{
+			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 
 			_currentRowIndex++;
 		}
@@ -59,54 +86,53 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			_excelFile.Worksheets[0].Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 
-		public void SetIndividualWidth(List<GbuObject.GbuReportService.Column> columns)
+		public void SetIndividualWidth(List<Column> columns)
 		{
 			columns.ForEach(x => { SetIndividualWidth(x.Index, x.Width); });
 		}
 
-		public void AddHeaders(List<GbuObject.GbuReportService.Column> columns)
+		public void AddSeparateColumnsHeaders(List<Column> columns)
 		{
 			var headers = columns.Select(x => x.Header).ToList();
-			AddHeaders(headers);
+			AddSeparateColumnsHeaders(headers);
 		}
 
 		public void AddRow(List<object> values)
 		{
-			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray());
+			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 			_currentRowIndex++;
 		}
 
+		//public void SetStyle()
+		//{
+		//	var sheet = _excelFile.Worksheets[0];
 
-		public void SetStyle()
-		{
-			var sheet = _excelFile.Worksheets[0];
+		//	var countRows = sheet.Rows.Count;
+		//	var countColumns = sheet.CalculateMaxUsedColumns();
+		//	var errCount = 0;
 
-			var countRows = sheet.Rows.Count;
-			var countColumns = sheet.CalculateMaxUsedColumns();
-			var errCount = 0;
-
-			//чтобы не сбросить стиль заголовкка
-			var startRowIndex = _hasTitle ? 1 : 0;
-			for (var i = startRowIndex; i < countRows; i++)
-			{
-				for (var j = 0; j < countColumns; j++)
-				{
-					if (sheet.Rows[i] != null && sheet.Rows[i].Cells[j] != null)
-					{
-						try
-						{
-							SetGeneralCellStyle(sheet, i, j);
-						}
-						catch (Exception ex)
-						{
-							if (errCount < 5)
-								Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
-							errCount++;
-						}
-					}
-				}
-			}
-		}
+		//	//чтобы не сбросить стиль заголовкка
+		//	var startRowIndex = _hasTitle ? 1 : 0;
+		//	for (var i = startRowIndex; i < countRows; i++)
+		//	{
+		//		for (var j = 0; j < countColumns; j++)
+		//		{
+		//			if (sheet.Rows[i] != null && sheet.Rows[i].Cells[j] != null)
+		//			{
+		//				try
+		//				{
+		//					sheet.Rows[i].Cells[j].Style = GeneralCellStyle;
+		//				}
+		//				catch (Exception ex)
+		//				{
+		//					if (errCount < 5)
+		//						Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка применения стилей в Excel {mainWorkSheetRow} {mainWorkSheetCell}", i, j);
+		//					errCount++;
+		//				}
+		//			}
+		//		}
+		//	}
+		//}
 
 		public MemoryStream GetStream()
 		{
@@ -116,20 +142,5 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			
 			return stream;
 		}
-
-
-		#region Support Methods
-
-		private void SetGeneralCellStyle(ExcelWorksheet sheet, int rowIndex, int columnIndex)
-		{
-			var cellStyle = sheet.Rows[rowIndex].Cells[columnIndex].Style;
-
-			cellStyle.HorizontalAlignment = HorizontalAlignmentStyle.Center;
-			cellStyle.VerticalAlignment = VerticalAlignmentStyle.Center;
-			cellStyle.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
-			cellStyle.WrapText = true;
-		}
-
-		#endregion
 	}
 }

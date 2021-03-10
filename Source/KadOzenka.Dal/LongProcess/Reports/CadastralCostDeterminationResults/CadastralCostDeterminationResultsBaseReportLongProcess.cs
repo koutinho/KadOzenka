@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
@@ -60,13 +61,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return GetProcessConfigFromSettings("StateOrIndividualCadastralCostDeterminationResults", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters)
 		{
 			if (GroupIds.Count == 0)
 				return 0;
 
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetMessageForReportsWithoutUnits(ReportLongProcessInputParameters inputParameters)
@@ -111,12 +111,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 			return sql;
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralDistrict;
+			return x => x.OrderBy(y => y.CadastralDistrict);
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override List<Column> GenerateReportHeaders()
 		{
 			return ConcreteReport.GenerateReportHeaders();
 		}

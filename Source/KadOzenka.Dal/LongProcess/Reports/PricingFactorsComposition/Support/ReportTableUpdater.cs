@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;

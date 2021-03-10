@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
-using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Entities;
-using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 {
-	public class GroupingReportLongProcess : ALinearReportsLongProcessTemplate<GroupingReportLongProcess.ReportItem, ReportLongProcessInputParameters>
+	public class GroupingReportLongProcess : ALinearReportsLongProcessTemplate<GroupingReportLongProcess.ReportItem, ReportLongProcessOnlyTasksInputParameters>
 	{
 		protected override string ReportName => "Группировка объектов недвижимости";
 		protected override string ProcessName => nameof(GroupingReportLongProcess);
@@ -23,12 +22,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		}
 
 
-		protected override bool AreInputParametersValid(ReportLongProcessInputParameters inputParameters)
+		protected override bool AreInputParametersValid(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			return inputParameters?.TaskIds != null && inputParameters.TaskIds.Count != 0;
 		}
 
-		protected override void PrepareVariables(ReportLongProcessInputParameters inputParameters)
+		protected override void PrepareVariables(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
 			BaseSql = GetBaseSql(inputParameters);
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
@@ -45,10 +44,9 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return GetProcessConfigFromSettings("QualityPricingFactorsEncodingResultsForGrouping", defaultPackageSize, defaultThreadsCount);
 		}
 
-		protected override int GetMaxItemsCount(ReportLongProcessInputParameters inputParameters,
-			QueryManager queryManager)
+		protected override int GetMaxItemsCount(ReportLongProcessOnlyTasksInputParameters inputParameters)
 		{
-			return GetMaxUnitsCount(BaseUnitsCondition, queryManager);
+			return GetMaxUnitsCount(BaseUnitsCondition);
 		}
 
 		protected override string GetSql(int packageIndex, int packageSize)
@@ -60,40 +58,25 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 			return string.Format(BaseSql, unitsCondition);
 		}
 
-		protected override Func<ReportItem, string> GetSortingCondition()
+		protected override Func<IEnumerable<ReportItem>, IEnumerable<ReportItem>> FuncForDownloadedItems()
 		{
-			return x => x.CadastralNumber;
+			return x => x.OrderBy(y => y.CadastralNumber);
 		}
 
-		protected override List<GbuReportService.Column> GenerateReportHeaders()
+		protected override string GenerateReportTitle()
 		{
-			var columns = new List<GbuReportService.Column>
+			return "Группировка объектов недвижимости";
+		}
+
+		protected override List<Column> GenerateReportHeaders()
+		{
+			var columns = new List<Column>
 			{
-				new GbuReportService.Column
-				{
-					Header = "№ п/п",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Тип",
-					Width = 3
-				},
-				new GbuReportService.Column
-				{
-					Header = "Кадастровый номер",
-					Width = 6
-				},
-				new GbuReportService.Column
-				{
-					Header = "Номер подгруппы",
-					Width = 4
-				},
-				new GbuReportService.Column
-				{
-					Header = "Метод оценки",
-					Width = 4
-				}
+				new Column {Header = "№ п/п", Width = 2},
+				new Column {Header = "Тип"},
+				new Column {Header = "Кадастровый номер", Width = ColumnWidthForCadastralNumber},
+				new Column {Header = "Номер подгруппы"},
+				new Column {Header = "Метод оценки"}
 			};
 
 			var counter = 0;
@@ -118,7 +101,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 
 		#region Support Methods
 
-		private string GetBaseSql(ReportLongProcessInputParameters parameters)
+		private string GetBaseSql(ReportLongProcessOnlyTasksInputParameters parameters)
 		{
 			var tourId = GetTourFromTasks(parameters.TaskIds);
 

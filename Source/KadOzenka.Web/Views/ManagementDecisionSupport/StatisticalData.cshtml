@@ -346,6 +346,7 @@
         var currentReportType = $('input[type="radio"][name="ReportType"]:checked').val();
         if (currentReportType != '@((long)StatisticalDataType.AdditionalFormsMarketDataInfo)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsOks)' &&
+            currentReportType != '@((long)StatisticalDataType.PricingFactorsCompositionForPreviousTours)' &&
             currentReportType != '@((long)StatisticalDataType.OnTheNumberOfObjectsByZoneAndSubgroupsZu)') {
             var value = this.value();
             if (value.length == 0) {
@@ -449,9 +450,6 @@
             $('.secondTourParam').hide();
             enableTaskFilter(true);
             enableTour(true);
-        }
-        if (this.value == '@((long)StatisticalDataType.CadastralCostDeterminationResults)') {
-            disableFormButton();
         }
     }
 

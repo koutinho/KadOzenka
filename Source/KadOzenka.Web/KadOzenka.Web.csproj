@@ -251,8 +251,11 @@
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />
+    <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql" />
     <None Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
     <None Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
@@ -618,6 +621,9 @@
     <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -628,6 +634,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql">
@@ -1970,8 +1982,11 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\BuildingsForLongProcess.sql" />
@@ -1980,7 +1995,9 @@
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\get_parent_info_function.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ParcelsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Parkings.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ParkingsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Placements.sql" />
+	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\PlacementsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildings.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildingsForLongProcess.sql" />
 	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
