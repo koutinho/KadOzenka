@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					attributes.ForEach(attribute =>
 					{
 						var numberOfMarks = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
-						Logger.Debug("Удалено {numberOfMarks} предыдущих меток для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", numberOfMarks, attribute.AttributeName, attribute.AttributeId);
+						Logger.Debug("Удалено {numberOfMarks} предыдущих меток для фактора '{AttributeName}' (ИД {AttributeId})", numberOfMarks, attribute.AttributeName, attribute.AttributeId);
 					});
 				}
 
