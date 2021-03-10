@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Register.QuerySubsystem;
@@ -31,10 +32,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private ILongProcessService LongProcessService { get; }
         private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
+        private object _locker { get; set; }
 
         public ObjectFormationForModelingProcess() : base(Log.ForContext<ObjectFormationForModelingProcess>())
         {
-	        ModelObjects = new List<OMModelToMarketObjects>();
+	        _locker = new object();
+            ModelObjects = new List<OMModelToMarketObjects>();
 	        LongProcessService = new LongProcessService();
         }
 
@@ -121,18 +124,27 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	            AddLog(Queue, $"Получено {marketObjectToUnitsRelation.Count(x => x.Unit?.Id != null)} Единиц оценки для всех объектов.", logger: Logger);
             }
             
-            var i = 0;
+            var counter = 0;
             AddLog(Queue, "Обработано объектов: ", logger: Logger);
             //берем 75% от всего числа объектов, из них первая половина для обучающей выборки, вторая - для контрольной 
             var objectsCount = marketObjectToUnitsRelation.Count * 75 / 100;
             var firstHalf = objectsCount / 2.0;
-            var packageSize = 1000;
-            var packageIndex = 0;
-            for (var packageCounter = packageIndex * packageSize; packageCounter < (packageIndex + 1) * packageSize; packageCounter++)
+
+            var localCancelTokenSource = new CancellationTokenSource();
+            var options = new ParallelOptions
             {
+	            CancellationToken = localCancelTokenSource.Token,
+	            MaxDegreeOfParallelism = 5
+            };
+            var packageSize = 1500;
+            var numberOfPackages = marketObjectToUnitsRelation.Count / packageSize + 1;
+            Parallel.For(0, numberOfPackages, options, (packageIndex, s) =>
+            {
+	            Logger.Debug("Начата работа с пакетом №{PackageIndex} из {MaxPackagesCount}", packageIndex, numberOfPackages);
+
                 var marketObjectToUnitsPage = marketObjectToUnitsRelation.Skip(packageIndex * packageSize).Take(packageSize).ToList();
                 if (marketObjectToUnitsPage.Count == 0)
-                    break;
+                    return;
 
                 var marketObjectIds = marketObjectToUnitsPage.Select(x => x.MarketObject.Id).ToList();
                 var unitIds = marketObjectToUnitsPage.Where(x => x.Unit?.Id != null).Select(x => x.Unit.Id.Value).Distinct().ToList();
@@ -145,9 +157,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                     var marketObject = marketObjectToUnitRelation.MarketObject;
                     var unit = marketObjectToUnitRelation.Unit;
 
-                    var isForTraining = i < firstHalf;
-                    var isForControl = i >= firstHalf && i <= objectsCount;
-                    i++;
+                    var isForTraining = counter < firstHalf;
+                    var isForControl = counter >= firstHalf && counter <= objectsCount;
                     var modelToMarketObjectRelation = new OMModelToMarketObjects
                     {
                         ModelId = Model.Id,
@@ -164,13 +175,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                         ? coefficients
                         : new List<CoefficientForObject>();
 
-                    var currentUnitCoefficients = unitsCoefficients.Where(x => x.Key == unit?.Id).SelectMany(x => x.Value).ToList();
+                    var currentUnitCoefficients = unit != null && unitsCoefficients.TryGetValue(unit.Id.GetValueOrDefault(), out var unitCoefficients) 
+	                    ? unitCoefficients 
+	                    : new List<CoefficientForObject>();
 
                     currentMarketObjectCoefficients.AddRange(currentUnitCoefficients);
 
                     //если для объекта не найдены коэффициенты, заполняем их значением null
-                    var resultCoefficients = new List<CoefficientForObject>(modelAttributes.Count);
-                    modelAttributes.ForEach(x => resultCoefficients.Add(new CoefficientForObject(x.AttributeId)));
+                    var resultCoefficients = modelAttributes.Select(x => new CoefficientForObject(x.AttributeId)).ToList();
                     currentMarketObjectCoefficients.ForEach(currentCoefficient =>
                     {
 	                    var baseCoefficient = resultCoefficients.First(x => x.AttributeId == currentCoefficient.AttributeId);
@@ -181,19 +193,22 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                     modelToMarketObjectRelation.Coefficients = resultCoefficients.SerializeCoefficient();
                     modelToMarketObjectRelation.Save();
 
-                    //сохраняем в список, чтобы не выкачивать повторно
-                    ModelObjects.Add(modelToMarketObjectRelation);
-
-                    if (i % 500 == 0)
-                        AddLog(Queue, $"{i}, ", false, logger: Logger);
+                    lock (_locker)
+                    {
+	                    //сохраняем в список, чтобы не выкачивать повторно
+	                    ModelObjects.Add(modelToMarketObjectRelation);
+                        counter++;
+                        if (counter % packageSize == 0)
+	                        AddLog(Queue, $"{counter}, ", false, logger: Logger);
+                    }
                 });
 
-                packageIndex++;
-            }
+                Logger.Debug("Закончена работа с пакетом №{PackageIndex} из {MaxPackagesCount}.", packageIndex, numberOfPackages);
+            });
 
-            AddLog(Queue, $"{i}.", false, logger: Logger);
+            AddLog(Queue, $"{counter}.", false, logger: Logger);
 
-            return i;
+            return counter;
         }
 
         private List<OMModelingDictionary> GetDictionaries(List<ModelAttributePure> modelAttributes)
