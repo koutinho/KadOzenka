@@ -10,6 +10,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.ES;
 
@@ -344,9 +345,6 @@ namespace KadOzenka.Dal.Modeling
 			var modelingService = new ModelingService();
 			var factor = GetFactorById(id);
 
-			if (factor == null)
-				throw new Exception("Не передан фактор для удаления");
-
 			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
 				.Execute();
 
@@ -360,7 +358,11 @@ namespace KadOzenka.Dal.Modeling
 			modelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId)
-				.Select(x => x.ObjectsStatistic)
+				.Select(x => new
+				{
+					x.GroupId,
+					x.ObjectsStatistic
+				})
 				.ExecuteFirstOrDefault();
 
 			var statistic = model?.ObjectsStatistic?.DeserializeFromXml<ModelingObjectsStatistic>();
@@ -371,6 +373,8 @@ namespace KadOzenka.Dal.Modeling
 				model.ObjectsStatistic = statistic.SerializeToXml();
 				model.Save();
 			}
+
+			DeleteMarks(model?.GroupId, factor.FactorId);
 		}
 
 		#region Support Methods
@@ -529,11 +533,14 @@ namespace KadOzenka.Dal.Modeling
 
 		public int DeleteMarks(long? groupId, long? factorId)
 		{
-			var marks = GetMarks(groupId, factorId);
+			//реализовано удаление по фактору, чтобы было более подробное логирование
+			//сделано не через ОРМ для улучшения производительности
+			//можно ускорить, если удалять сразу по группе
 
-			marks.ForEach(x => x.Destroy());
+			var sql = $"delete from ko_mark_catalog where group_id = {groupId} and factor_id = {factorId}";
 
-			return marks.Count;
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			return DBMngr.Main.ExecuteNonQuery(command);
 		}
 
 
