@@ -897,6 +897,11 @@ namespace KadOzenka.Dal.GbuObject
 	            var message = "В ходе обработки оъекта возникла ошибка";
 	            LogException(message, inputItem, reportService, ex, currentRow);
             }
+
+            if (PriorityGrouping.CurrentCount % 1000 == 0)
+            {
+	            Serilog.Log.Logger.Debug("Обрабатывается объект {CurrentCount} из {MaxCount}", PriorityGrouping.CurrentCount, PriorityGrouping.MaxCount);
+            }
         }
 
         private static void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex, GbuReportService.Row currentRow)
@@ -968,7 +973,6 @@ namespace KadOzenka.Dal.GbuObject
         }
     }
 
-
     /// <summary>
     /// Приоритет группировки
     /// </summary>
@@ -1032,6 +1036,8 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static string SetPriorityGroup(GroupingSettings setting, CancellationToken processCancellationToken)
         {
+            _log.Debug("Старт нормализации");
+
             using var reportService =  new GbuReportService("Отчет нормализации");
             var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
           
@@ -1070,16 +1076,8 @@ namespace KadOzenka.Dal.GbuObject
             var actualDate = setting.DateActual?.Date ?? DateTime.Now.Date;
             itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.ObjectChangeStatus, actualDate);
 
-            var dictionaryItems = new List<OMCodDictionary>();
-            if (setting.IdCodJob != null)
-	            dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).Select(x => new
-	            {
-		            x.IdCodjob,
-		            x.Value,
-		            x.Code
-	            }).Execute();
-            _log.ForContext("CodDictionaryId", setting.IdCodJob).Debug("Найдено {Count} значений словаря", dictionaryItems?.Count);
-
+            var dictionaryItems = GetDictionaryItems(setting);
+            
             bool useTask = false;
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
 
@@ -1095,11 +1093,9 @@ namespace KadOzenka.Dal.GbuObject
 			            ? "Нормализация по Заданиям на оценку. Всего {Count} единиц оценки"
 			            : "Нормализация по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
 
-
             var allAttributeIds = GetAttributes(setting);
             var queryManager = new QueryManager();
             queryManager.SetBaseToken(processCancellationToken);
-
             var gbuObjectService = new GbuObjectService(queryManager);
             //TODO если будут еще различия - вынести в интрефейс/класс
             if (useTask)
@@ -1113,11 +1109,34 @@ namespace KadOzenka.Dal.GbuObject
 		            dataHeaderAndColumnNumber, processCancellationToken);
             }
 
-            items.Clear();
+            _log.Debug("Закончена обработка всех элементов");
+            //попытка принудительно освободить память
+            items = null;
 
+            _log.Debug("Старт генерации отчета");
             reportId = reportService.SaveReport();
 
+            _log.Debug("Финиш нормализации");
+
             return reportService.GetUrlToDownloadFile(reportId);
+        }
+
+        private static List<OMCodDictionary> GetDictionaryItems(GroupingSettings setting)
+        {
+	        var dictionaryItems = new List<OMCodDictionary>();
+	        if (setting.IdCodJob == null) 
+		        return dictionaryItems;
+
+	        dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).Select(x => new
+	        {
+		        x.IdCodjob,
+		        x.Value,
+		        x.Code
+	        }).Execute();
+
+	        _log.ForContext("CodDictionaryId", setting.IdCodJob).Debug("Найдено {Count} значений словаря", dictionaryItems.Count);
+
+	        return dictionaryItems;
         }
 
         private static void ProcessUnits(GroupingSettings setting, List<OMCodDictionary> dictionaryItems, 
@@ -1157,8 +1176,9 @@ namespace KadOzenka.Dal.GbuObject
 	                .GroupBy(x => x.ObjectId).ToList();
                 _log.Debug("Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'", objectAttributes.Count, localActualDate);
 
-                ProcessItems(setting, dictionaryItems, documents, groupedUnits.Value, objectAttributes, allAttributeIds,
-	                true, localActualDate, reportService, dataHeaderAndColumnNumber, processCancellationToken);
+                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, groupedUnits.Value,
+	                objectAttributes, allAttributeIds, true, localActualDate, reportService, dataHeaderAndColumnNumber,
+	                processCancellationToken, config));
 			});
 		}
 
@@ -1192,37 +1212,33 @@ namespace KadOzenka.Dal.GbuObject
 	                .GroupBy(x => x.ObjectId).ToList();
                 _log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}", objectAttributes.Count, i, numberOfPackages);
 
-                ProcessItems(setting, dictionaryItems, documents, objectsPage, objectAttributes, allAttributeIds,
-	                false, actualDate, reportService, dataHeaderAndColumnNumber, processCancellationToken);
-            });
+                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, objectsPage,
+	                objectAttributes, allAttributeIds, false, actualDate, reportService, dataHeaderAndColumnNumber,
+	                processCancellationToken, config));
+	        });
         }
 
 
-        private static void ProcessItems(GroupingSettings setting, 
-	        List<OMCodDictionary> dictionaryItems, ConcurrentDictionary<long, OMInstance> documents,
-            List<GroupingItem> items, List<IGrouping<long, GbuObjectAttribute>> objectAttributes, List<long> allAttributeIds, 
-	        bool useTask, DateTime actualDate,
-	        GbuReportService reportService, ReportHeaderWithColumnDic dataHeaderAndColumnNumber, 
-	        CancellationToken processCancellationToken)
+        private static void ProcessItems(ProcessItemInputParameters inputParameters)
         {
 	        var localCancelTokenSource = new CancellationTokenSource();
 	        var options = new ParallelOptions
 	        {
 		        CancellationToken = localCancelTokenSource.Token,
-		        MaxDegreeOfParallelism = 20
+		        MaxDegreeOfParallelism = inputParameters.ProcessConfig.ThreadsCountForItemsHandling
 	        };
 
-	        var objectAttributesDictionary = objectAttributes.ToDictionary(k => k.Key, v => v.ToList());
-	        var defaultAttributes = allAttributeIds.Select(x => new GbuObjectAttribute { AttributeId = x }).ToList();
+	        var objectAttributesDictionary = inputParameters.ObjectAttributes.ToDictionary(k => k.Key, v => v.ToList());
+	        var defaultAttributes = inputParameters.AllAttributeIds.Select(x => new GbuObjectAttribute { AttributeId = x }).ToList();
 	        var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
-	        Parallel.ForEach(items, options, item =>
+	        Parallel.ForEach(inputParameters.Items, options, item =>
 	        {
-		        CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
+		        CheckCancellationToken(inputParameters.ProcessCancellationToken, localCancelTokenSource, options);
 
 		        //если работаем с единицами оценки, дата актуальности должна браться из них
-		        var localActualDate = useTask
+		        var localActualDate = inputParameters.UseTask
 			        ? item.CreationDate?.Date ?? DateTime.Now.Date
-			        : actualDate;
+			        : inputParameters.ActualDate;
 
 		        SetThreadCurrentPrincipal(userId);
 
@@ -1230,8 +1246,8 @@ namespace KadOzenka.Dal.GbuObject
 			        ? attributes
 			        : defaultAttributes;
 
-		        new PriorityItem().SetPriorityGroup(setting, dictionaryItems, allAttributeIds, item, localActualDate,
-			        currentObjectAttributes, reportService, dataHeaderAndColumnNumber.DictionaryColumns, documents);
+		        new PriorityItem().SetPriorityGroup(inputParameters.Setting, inputParameters.DictionaryItems, inputParameters.AllAttributeIds, item, localActualDate,
+			        currentObjectAttributes, inputParameters.ReportService, inputParameters.DataHeaderAndColumnNumber.DictionaryColumns, inputParameters.Documents);
 	        });
         }
 
@@ -1252,10 +1268,12 @@ namespace KadOzenka.Dal.GbuObject
 	        var packageSize = config.PackageSize == 0 ? 100000 : config.PackageSize;
 	        var threadsCountForObjects = config.ThreadsCountForObjects == 0 ? 20 : config.ThreadsCountForObjects;
 	        var threadsCountForUnits = config.ThreadsCountForUnits == 0 ? 20 : config.ThreadsCountForUnits;
+	        var threadsCountForItemsHandling = config.ThreadsCountForItemsHandling == 0 ? 20 : config.ThreadsCountForItemsHandling;
 
 	        config.PackageSize = packageSize;
 	        config.ThreadsCountForObjects = threadsCountForObjects;
 	        config.ThreadsCountForUnits = threadsCountForUnits;
+	        config.ThreadsCountForItemsHandling = threadsCountForItemsHandling;
 
 	        _log.ForContext("ResultConfigs", config, true).Debug("Итоговые настройки конфигурации для секции {SectionName}", sectionName);
 
@@ -1350,6 +1368,43 @@ namespace KadOzenka.Dal.GbuObject
 	    public int PackageSize { get; set; }
 	    public int ThreadsCountForObjects { get; set; }
 	    public int ThreadsCountForUnits { get; set; }
+	    public int ThreadsCountForItemsHandling { get; set; }
+    }
+
+    internal class ProcessItemInputParameters
+    {
+	    public ProcessItemInputParameters(GroupingSettings setting, List<OMCodDictionary> dictionaryItems,
+		    ConcurrentDictionary<long, OMInstance> documents, List<GroupingItem> items,
+		    List<IGrouping<long, GbuObjectAttribute>> objectAttributes, List<long> allAttributeIds, bool useTask,
+		    DateTime actualDate, GbuReportService reportService, ReportHeaderWithColumnDic dataHeaderAndColumnNumber,
+		    CancellationToken processCancellationToken, ProcessConfig processConfig)
+	    {
+		    Setting = setting;
+		    DictionaryItems = dictionaryItems;
+		    Documents = documents;
+		    Items = items;
+		    ObjectAttributes = objectAttributes;
+		    AllAttributeIds = allAttributeIds;
+		    UseTask = useTask;
+		    ActualDate = actualDate;
+		    ReportService = reportService;
+		    DataHeaderAndColumnNumber = dataHeaderAndColumnNumber;
+		    ProcessCancellationToken = processCancellationToken;
+		    ProcessConfig = processConfig;
+	    }
+
+	    public GroupingSettings Setting { get; }
+	    public List<OMCodDictionary> DictionaryItems { get; }
+	    public ConcurrentDictionary<long, OMInstance> Documents { get; }
+	    public List<GroupingItem> Items { get; }
+	    public List<IGrouping<long, GbuObjectAttribute>> ObjectAttributes { get; }
+	    public List<long> AllAttributeIds { get; }
+	    public bool UseTask { get; }
+	    public DateTime ActualDate { get; }
+	    public GbuReportService ReportService { get; }
+	    public ReportHeaderWithColumnDic DataHeaderAndColumnNumber { get; }
+	    public CancellationToken ProcessCancellationToken { get; }
+	    public ProcessConfig ProcessConfig { get; }
     }
 
     #endregion
