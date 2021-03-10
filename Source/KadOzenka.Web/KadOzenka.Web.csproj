@@ -82,7 +82,6 @@
     <None Remove="Config\Param\ReonService.Ppr.xml" />
     <None Remove="Config\ReadMe.txt" />
     <None Remove="Config\Registers\SearchPanels\CalculatePerson.xml" />
-    <None Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreLongProcessService.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreMessages.xml" />
     <None Remove="Config\Registers\SearchPanels\CoreRegisterAttribute.xml" />
@@ -695,7 +694,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.661" />
+    <PackageReference Include="Platform.Web" Version="1.0.671" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -785,6 +784,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ConfigCore\Registers\Views\CoreAuditCommon.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ConfigCore\Registers\Views\CoreBackgroundExports.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="ConfigCore\Registers\Views\CoreLongProcessQueue.xml">
@@ -968,6 +970,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\CharacteristicsList.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\Registers\SearchPanels\CoreLongProcessQueue.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Config\Registers\SearchPanels\DeclarationsBookSelect.xml">
@@ -1886,6 +1891,7 @@
     <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
     <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
     <ConfigPath Remove="Config\Registers\SearchPanels\CharacteristicsList.xml" />
+    <ConfigPath Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
     <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
     <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />

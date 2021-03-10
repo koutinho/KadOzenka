@@ -13,9 +13,9 @@ namespace KadOzenka.Web.Controllers
 {
 	public class RecycleBinController : KoBaseController
 	{
-		public RecycleBinService RecycleBinService { get; }
+		public IRecycleBinService RecycleBinService { get; }
 
-		public RecycleBinController(RecycleBinService recycleBinService)
+		public RecycleBinController(IRecycleBinService recycleBinService)
 		{
 			RecycleBinService = recycleBinService;
 		}

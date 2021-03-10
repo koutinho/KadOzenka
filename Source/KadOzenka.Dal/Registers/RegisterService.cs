@@ -8,13 +8,13 @@ using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.Registers
 {
-    public class RegisterService
+    public class RegisterService : IRegisterService
     {
-	    public RecycleBinService RecycleBinService { get; }
+	    public IRecycleBinService RecycleBinService { get; }
 
-	    public RegisterService()
+	    public RegisterService(IRecycleBinService recycleBinService)
 	    {
-		    RecycleBinService = new RecycleBinService();
+		    RecycleBinService = recycleBinService;
 	    }
 
         public OMRegister GetRegister(long? registerId)

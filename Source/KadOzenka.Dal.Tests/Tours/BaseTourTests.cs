@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.Tests.Tours
 			container.AddTransient<TourService>();
 			container.AddTransient<TourFactorService>();
 			container.AddTransient<GroupService>();
-			container.AddTransient<RecycleBinService>();
+			container.AddTransient(typeof(IRecycleBinService), typeof(RecycleBinService));
 			container.AddTransient(typeof(ITourRepository), sp => TourRepository.Object);
 		}
 	}

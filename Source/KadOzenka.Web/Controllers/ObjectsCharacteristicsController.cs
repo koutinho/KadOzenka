@@ -12,13 +12,16 @@ namespace KadOzenka.Web.Controllers
 {
     public class ObjectsCharacteristicsController : KoBaseController
     {
-        private ObjectsCharacteristicsService ObjectsCharacteristicsService { get; }
-        private RegisterAttributeService RegisterAttributeService { get; }
+        private IObjectsCharacteristicsService ObjectsCharacteristicsService { get; }
+        private IObjectsCharacteristicsSourceService ObjectsCharacteristicsSourceService { get; }
+        private IRegisterAttributeService RegisterAttributeService { get; }
 
-        public ObjectsCharacteristicsController()
+        public ObjectsCharacteristicsController(IObjectsCharacteristicsService objectsCharacteristicsService, IObjectsCharacteristicsSourceService objectsCharacteristicsSourceService, 
+	        IRegisterAttributeService registerAttributeService)
         {
-            ObjectsCharacteristicsService = new ObjectsCharacteristicsService();
-            RegisterAttributeService = new RegisterAttributeService();
+            ObjectsCharacteristicsService = objectsCharacteristicsService;
+            ObjectsCharacteristicsSourceService = objectsCharacteristicsSourceService;
+            RegisterAttributeService = registerAttributeService;
         }
 
 
@@ -40,7 +43,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJ_PARAM_EDIT_SOURCE)]
         public ActionResult EditSource(long registerId)
         {
-            var source = ObjectsCharacteristicsService.GetSource(registerId);
+            var source = ObjectsCharacteristicsSourceService.GetSource(registerId);
             
             var model = SourceModel.Map(source);
 
@@ -57,12 +60,12 @@ namespace KadOzenka.Web.Controllers
             string message;
             if (model.RegisterId == -1)
             {
-                ObjectsCharacteristicsService.AddSource(SourceModel.UnMap(model));
+                ObjectsCharacteristicsSourceService.AddSource(SourceModel.UnMap(model));
                 message = "Источник успешно сохранен";
             }
             else
             {
-                ObjectsCharacteristicsService.EditSource(SourceModel.UnMap(model));
+                ObjectsCharacteristicsSourceService.EditSource(SourceModel.UnMap(model));
                 message = "Источник успешно обновлен";
             }
 

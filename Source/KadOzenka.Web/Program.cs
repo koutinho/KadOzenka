@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Microsoft.Extensions.Configuration;
 using KadOzenka.Dal.WorkerCheckerDataBase;
+using Platform.Web.Configurator.FeatureToggleConfigManager;
 
 namespace CIPJS
 {
@@ -25,7 +26,7 @@ namespace CIPJS
             try
             {
                 Log.Warning("Application KadOzenka.Web starting up");
-                BuildWebHost(args).Run();
+                BuildWebHost(args, configuration).Run();
             }
             catch (Exception ex)
             {
@@ -37,10 +38,11 @@ namespace CIPJS
             }
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
+        public static IWebHost BuildWebHost(string[] args, IConfigurationRoot config) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .UseStartup<Startup>()
+                .StartFeatureSubscribe(config)
                 .Build();
 
     }
