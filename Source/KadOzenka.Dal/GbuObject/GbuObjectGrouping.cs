@@ -1114,6 +1114,7 @@ namespace KadOzenka.Dal.GbuObject
             _log.Debug("Закончена обработка всех элементов");
             //попытка принудительно освободить память
             items = null;
+            GC.Collect();
 
             _log.Debug("Старт генерации отчета");
             reportId = reportService.SaveReport();
@@ -1171,7 +1172,7 @@ namespace KadOzenka.Dal.GbuObject
 				//}
 
 				var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
-                _log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'", objectIds.Count, localActualDate);
+                _log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'", objectIds.Count, localActualDate.ToShortDateString());
 
                 var objectAttributes = gbuObjectService.GetAllAttributes(objectIds, null, allAttributeIds, localActualDate,
 	                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
@@ -1219,7 +1220,6 @@ namespace KadOzenka.Dal.GbuObject
 	                processCancellationToken, config));
 	        });
         }
-
 
         private static void ProcessItems(ProcessItemInputParameters inputParameters)
         {
