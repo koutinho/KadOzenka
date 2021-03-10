@@ -9,10 +9,8 @@ using Core.SRD;
 using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.Directory;
 using ObjectModel.Core.TD;
-using Core.ErrorManagment;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
-using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject.Decorators;
@@ -23,7 +21,6 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Newtonsoft.Json;
 using ObjectModel.KO;
-using Serilog.Context;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -42,7 +39,12 @@ namespace KadOzenka.Dal.GbuObject
 
     public class PriorityItem
     {
-        static readonly ILogger Log = Serilog.Log.ForContext<PriorityItem>();
+	    private readonly ILogger Log;
+
+        public PriorityItem(ILogger log)
+        {
+	        Log = log;
+        }
 
         #region Коды из разных источников
         private string Code_Source_01 = string.Empty;
@@ -482,7 +484,7 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
         }
 
-        private static bool CompareDictToValue(OMCodDictionary dict, ValueItem val)
+        private bool CompareDictToValue(OMCodDictionary dict, ValueItem val)
         {
             string CleanUp(string x)
             {
@@ -505,7 +507,7 @@ namespace KadOzenka.Dal.GbuObject
             return cleanUpResult;
         }
 
-        private static void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list, GroupingItem item)
+        private void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list, GroupingItem item)
         {
             var codId = list?[0].IdCodjob;
             Log.ForContext("ValueLevel", valueLevel, true)
@@ -583,7 +585,7 @@ namespace KadOzenka.Dal.GbuObject
 
 	        var document = OMInstance.Where(x => x.Id == documentId).Select(x => x.Description).ExecuteFirstOrDefault();
 	        documents.TryAdd(document.Id, document);
-	        Serilog.Log.Logger.Debug("Документ с ИД {DocumentId} добавлен в словарь", document.Id);
+	        Log.Debug("Документ с ИД {DocumentId} добавлен в словарь", document.Id);
 
             return document;
         }
@@ -900,11 +902,11 @@ namespace KadOzenka.Dal.GbuObject
 
             if (PriorityGrouping.CurrentCount % 1000 == 0)
             {
-	            Serilog.Log.Logger.Debug("Обрабатывается объект {CurrentCount} из {MaxCount}", PriorityGrouping.CurrentCount, PriorityGrouping.MaxCount);
+	            Log.Debug("Обработан объект {CurrentCount} из {MaxCount}", PriorityGrouping.CurrentCount, PriorityGrouping.MaxCount);
             }
         }
 
-        private static void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex, GbuReportService.Row currentRow)
+        private void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex, GbuReportService.Row currentRow)
         {
 	        lock (PriorityGrouping.locked)
 	        {
@@ -913,7 +915,7 @@ namespace KadOzenka.Dal.GbuObject
 		        reportService.AddValue(fullMessage, PriorityGrouping.GeneralErrorColumn, currentRow);
 	        }
 
-	        Serilog.Log.Logger.ForContext("Item", JsonConvert.SerializeObject(inputItem))
+	        Log.ForContext("Item", JsonConvert.SerializeObject(inputItem))
 		        .ForContext("HumanMessage", message)
 		        .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
         }
@@ -1246,7 +1248,7 @@ namespace KadOzenka.Dal.GbuObject
 			        ? attributes
 			        : defaultAttributes;
 
-		        new PriorityItem().SetPriorityGroup(inputParameters.Setting, inputParameters.DictionaryItems, inputParameters.AllAttributeIds, item, localActualDate,
+		        new PriorityItem(_log).SetPriorityGroup(inputParameters.Setting, inputParameters.DictionaryItems, inputParameters.AllAttributeIds, item, localActualDate,
 			        currentObjectAttributes, inputParameters.ReportService, inputParameters.DataHeaderAndColumnNumber.DictionaryColumns, inputParameters.Documents);
 	        });
         }
