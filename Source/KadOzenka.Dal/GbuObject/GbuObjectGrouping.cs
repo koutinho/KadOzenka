@@ -10,8 +10,11 @@ using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.Directory;
 using ObjectModel.Core.TD;
 using System.Security.Principal;
+using System.Text;
 using System.Text.RegularExpressions;
+using Core.Register;
 using Core.Shared.Extensions;
+using ExCSS.Model.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -1038,7 +1041,8 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static string SetPriorityGroup(GroupingSettings setting, CancellationToken processCancellationToken)
         {
-            _log.Debug("Старт нормализации");
+            _log.ForContext("InputParameters", setting).Debug("Старт нормализации. Входные параметры.");
+            ValidateInputParameters(setting);
 
             using var reportService =  new GbuReportService("Отчет нормализации");
             var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
@@ -1122,6 +1126,31 @@ namespace KadOzenka.Dal.GbuObject
             _log.Debug("Финиш нормализации");
 
             return reportService.GetUrlToDownloadFile(reportId);
+        }
+
+        private static void ValidateInputParameters(GroupingSettings setting)
+        {
+	        var message = new StringBuilder();
+
+	        CheckAttributeIsStringType(setting.IdAttributeResult, "Характеристика", ref message);
+	        CheckAttributeIsStringType(setting.IdAttributeSource, "Источник", ref message);
+	        CheckAttributeIsStringType(setting.IdAttributeDocument, "Документ", ref message);
+
+	        if (message.Length <= 0) 
+		        return;
+
+	        //убираем последную запятую
+	        message.Length--;
+	        throw new Exception($"Атрибут(ы): '{message}' должны быть типа строка.");
+        }
+
+        private static void CheckAttributeIsStringType(long? attributeId, string name, ref StringBuilder message)
+        {
+	        var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == attributeId);
+	        if (attribute != null && attribute.Type != RegisterAttributeType.STRING)
+	        {
+		        message.Append($"{name} ({attribute.Name}),");
+	        }
         }
 
         private static List<OMCodDictionary> GetDictionaryItems(GroupingSettings setting)
