@@ -13,6 +13,7 @@ using ObjectModel.Core.TD;
 using Core.Main.FileStorages;
 using System.IO;
 using Core.Register;
+using Core.Register.RegisterEntities;
 using KadOzenka.Web.Attributes;
 
 namespace KadOzenka.Web.Controllers
@@ -136,22 +137,38 @@ namespace KadOzenka.Web.Controllers
                 }).ToList();
         }
 
-        protected List<DropDownTreeItemModel> GetGbuAttributesTree()
+        protected List<DropDownTreeItemModel> GetGbuAttributesTree(List<RegisterAttributeType> availableTypes = null)
         {
 	        var gbuRegisterIds = GbuObjectService.GetGbuRegistersIds();
 
 	        return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id))
-		        .Select(x => new DropDownTreeItemModel
+		        .Select(register =>
 		        {
-			        Value = Guid.NewGuid().ToString(),
-                    Text = x.Description,
-			        Items = RegisterCache.RegisterAttributes.Values
-				        .Where(y => y.RegisterId == x.Id && y.IsDeleted == false)
-				        .Select(y => new DropDownTreeItemModel
-				        {
-					        Text = y.Name,
-					        Value = y.Id.ToString()
-				        }).ToList()
+			        Func<RegisterAttribute, bool> attributeSearchExpression;
+			        if (availableTypes == null)
+			        {
+				        attributeSearchExpression = attribute =>
+					        attribute.RegisterId == register.Id && attribute.IsDeleted == false;
+			        }
+			        else
+			        {
+				        attributeSearchExpression = attribute =>
+					        attribute.RegisterId == register.Id && attribute.IsDeleted == false &&
+					        availableTypes.Contains(attribute.Type);
+			        }
+
+			        return new DropDownTreeItemModel
+			        {
+				        Value = Guid.NewGuid().ToString(),
+				        Text = register.Description,
+				        Items = RegisterCache.RegisterAttributes.Values
+					        .Where(attributeSearchExpression)
+					        .Select(attribute => new DropDownTreeItemModel
+					        {
+						        Text = attribute.Name,
+						        Value = attribute.Id.ToString()
+					        }).ToList()
+			        };
 		        }).ToList();
         }
 

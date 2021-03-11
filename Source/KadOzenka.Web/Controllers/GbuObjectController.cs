@@ -161,7 +161,8 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-            ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.TreeAttributes = GetGbuAttributesTree();
+            ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
 
 			return View(new GroupingObject());
 		}
