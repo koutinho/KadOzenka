@@ -508,22 +508,6 @@ from (select
 				.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
 		}
 
-		public List<GbuAttributesTreeDto> GetGbuAttributesTree()
-		{
-			var gbuRegisterIds = GetGbuRegistersIds();
-			return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id)).Select(x => new GbuAttributesTreeDto
-			{
-				Text = x.Description,
-				Value = x.Id.ToString(),
-				Items = RegisterCache.RegisterAttributes.Values.Where(y => y.RegisterId == x.Id && y.IsDeleted == false)
-					.Select(y => new SelectListItem
-					{
-						Text = y.Name,
-						Value = y.Id.ToString()
-					}).ToList()
-			}).ToList();
-		}
-
         public List<OMAttribute> GetGbuAttributes()
         {
 	        return OMAttribute.Where(x => GetGbuRegistersIds().Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false).SelectAll().Select(x => x.ParentRegister.RegisterDescription).Execute();

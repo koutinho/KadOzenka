@@ -12,13 +12,24 @@ using Kendo.Mvc.UI;
 using ObjectModel.Core.TD;
 using Core.Main.FileStorages;
 using System.IO;
+using Core.Register;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Web.Attributes;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KadOzenka.Web.Controllers
 {
     public class KoBaseController : BaseController
 	{
-		[HttpGet]
+        protected IGbuObjectService GbuObjectService { get; set; }
+
+        public KoBaseController()
+        {
+	        GbuObjectService = new GbuObjectService();
+        }
+
+
+        [HttpGet]
 		[SRDFunction(Tag = "")]
 		public IActionResult DownloadExcelFileFromSessionByName(string fileName)
 		{
@@ -129,8 +140,8 @@ namespace KadOzenka.Web.Controllers
 
         protected List<DropDownTreeItemModel> GetGbuAttributesTree()
         {
-	        return new GbuObjectService().GetGbuAttributesTree()
-		        .Select(x => new DropDownTreeItemModel
+	        return GetGbuAttributesTreeInternal()
+                .Select(x => new DropDownTreeItemModel
 		        {
 			        Value = Guid.NewGuid().ToString(),
 			        Text = x.Text,
@@ -160,5 +171,39 @@ namespace KadOzenka.Web.Controllers
 	        }
 	        return fileSize;
         }
+
+
+        #region Support Methods
+
+        private List<GbuAttributesTreeDto> GetGbuAttributesTreeInternal()
+        {
+	        var gbuRegisterIds = GbuObjectService.GetGbuRegistersIds();
+	        return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id)).Select(x => new GbuAttributesTreeDto
+	        {
+		        Text = x.Description,
+		        Value = x.Id.ToString(),
+		        Items = RegisterCache.RegisterAttributes.Values.Where(y => y.RegisterId == x.Id && y.IsDeleted == false)
+			        .Select(y => new SelectListItem
+			        {
+				        Text = y.Name,
+				        Value = y.Id.ToString()
+			        }).ToList()
+	        }).ToList();
+        }
+
+        #endregion
+
+
+        #region Entities
+
+        public class GbuAttributesTreeDto
+        {
+	        public string Text { get; set; }
+	        public string Value { get; set; }
+
+	        public List<SelectListItem> Items { get; set; }
+        }
+
+        #endregion
     }
 }

@@ -28,8 +28,6 @@ namespace KadOzenka.Dal.GbuObject
 
 		List<long> GetGbuRegistersIds();
 
-		List<GbuAttributesTreeDto> GetGbuAttributesTree();
-
 		List<OMAttribute> GetGbuAttributes();
 
 		int AddNewVirtualAttribute(string attributeName, long registerId, RegisterAttributeType type);
