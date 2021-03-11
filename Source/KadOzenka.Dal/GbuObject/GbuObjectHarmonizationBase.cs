@@ -305,20 +305,21 @@ namespace KadOzenka.Dal.GbuObject
             var objects = new List<Item>();
             BaseSetting.TaskFilter.ForEach(taskId =>
             {
-                var units = OMUnit.Where(x => x.PropertyType_Code == objectType && x.TaskId == taskId && x.ObjectId != null)
-                    .Select(x => new
-                    {
-                        x.ObjectId,
-                        x.CadastralNumber,
-                        x.CreationDate
-                    })
-                    .Execute()
-                    .Select(x => new Item
-                    {
-	                    CadastralNumber = x.CadastralNumber,
-	                    ObjectId = x.ObjectId.GetValueOrDefault(),
-	                    Date = x.CreationDate ?? DateTime.Now
-                    }).ToList();
+	            var units = OMUnit.Where(x => x.PropertyType_Code == objectType && x.TaskId == taskId && x.ObjectId != null)
+		            .Select(x => new
+		            {
+			            x.ObjectId,
+			            x.CadastralNumber,
+			            x.CreationDate
+		            })
+		            .Execute();
+
+	            objects.AddRange(units.Select(x => new Item
+	            {
+		            CadastralNumber = x.CadastralNumber,
+		            ObjectId = x.ObjectId.GetValueOrDefault(),
+		            Date = x.CreationDate ?? DateTime.Now
+	            }));
 
                 Logger.Debug("Загружено {UnitsCount} ЕО для задания на оценку {TaskId}", units.Count, taskId);
             });
