@@ -12,7 +12,6 @@ using Core.SRD;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.GbuObject.Entities;
-using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Directory;
 using Serilog;
 
@@ -25,7 +24,6 @@ namespace KadOzenka.Dal.GbuObject
         protected object Locked;
         public int MaxObjectsCount;
         public int CurrentCount;
-        public int LogCount;
 
         private const int KnColumnNumber = 0;
         private const int ResultColumnNumber = 1;
@@ -78,7 +76,6 @@ namespace KadOzenka.Dal.GbuObject
             reportService.SetIndividualWidth(ErrorColumnNumber, 5);
 
             _log.Debug("Получение объектов для обработки");
-
             //добавление фильтров на лету через декоратор
             var itemsGetter = new HarmonizationItemsGetter(BaseSetting, _log) as AItemsGetter<Item>;
             itemsGetter = new HarmonizationBuildingFilterDecorator<Item>(itemsGetter, _log, BaseSetting);
@@ -87,16 +84,11 @@ namespace KadOzenka.Dal.GbuObject
 	            BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay());
 
             var objects = itemsGetter.GetItems();
-            _log.Debug("Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);
+            MaxObjectsCount = objects.Count;
+            _log.Debug("Получено {ObjectsCount} объектов для дальнейшей обработки", MaxObjectsCount);
 
             var levelsAttributesIds = GetLevelsAttributesIds();
             _log.Debug("Получен список атрибутов-уровней: {LevelsAttributesIds}", levelsAttributesIds);
-            MaxObjectsCount = objects.Count;
-            LogCount = MaxObjectsCount < 100
-	            ? MaxObjectsCount
-	            : Math.Round(MaxObjectsCount * 0.1) > 100
-		            ? 100
-		            : (int)Math.Round(MaxObjectsCount * 0.1);
 
             Locked = new object();
             var cancelTokenSource = new CancellationTokenSource();
@@ -113,6 +105,11 @@ namespace KadOzenka.Dal.GbuObject
                 lock (Locked)
                 {
 	                CurrentCount++;
+
+	                if (CurrentCount % 1000 == 0)
+	                {
+		                _log.Debug("Завершена обработка объекта №{CurrentCount} из {MaxCount}", CurrentCount, MaxObjectsCount);
+	                }
                 }
             });
             _log.Debug("Обработка объектов завершена");
@@ -227,58 +224,16 @@ namespace KadOzenka.Dal.GbuObject
 
         private void ProcessOneObject(Item item, List<long> levelsAttributeIds, GbuReportService reportService)
         {
-	        if (CurrentCount <= LogCount)
-	        {
-		        _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
-			        .ForContext("ItemDate", item.Date)
-			        .Verbose("Обработка объекта {ItemObjectId}", item.ObjectId);
-	        }
-
-            var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
+	        var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
             foreach (var sourceAttributeId in levelsAttributeIds)
             {
                 var sourceAttribute = gbuAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
                 if (sourceAttribute == null)
                     continue;
 
-                lock (Locked)
-                {
-	                if (CurrentCount <= LogCount)
-		                _log.ForContext("SourceAttributeId", sourceAttributeId)
-                            .ForContext("SourceAttributeValue", sourceAttribute.GetValueInString())
-                            .ForContext("ItemCadastralNumber", item.CadastralNumber)
-                            .ForContext("ItemDate", item.Date)
-                            .Verbose(
-                            "Обработка значения левел атрибута '{SourceAttributeName}' для объекта {ItemObjectId}",
-                            sourceAttribute.AttributeData.Name, item.ObjectId);
-                }
-
                 var isDataSaved = CopyLevelData(item, sourceAttribute, reportService);
                 if (isDataSaved)
-                {
-	                lock (Locked)
-	                {
-		                if (CurrentCount <= LogCount)
-			                _log.ForContext("SourceAttributeId", sourceAttributeId)
-				                .ForContext("SourceAttributeValue", sourceAttribute.GetValueInString())
-				                .ForContext("ItemCadastralNumber", item.CadastralNumber)
-				                .ForContext("ItemDate", item.Date)
-				                .Verbose(
-                                    "Для объекта {ItemObjectId} взяты данные левел атрибута '{SourceAttributeName}'",
-					                item.ObjectId, sourceAttribute.AttributeData.Name);
-	                }
-
 	                return;
-                }
-            }
-
-            lock (Locked)
-            {
-	            if (CurrentCount <= LogCount)
-		            _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
-			            .ForContext("ItemDate", item.Date)
-			            .Verbose(
-                            "Для объекта {ItemObjectId} не найдено значение в левел атрибутах", item.ObjectId);
             }
 
             SaveFailResult(item, reportService);
