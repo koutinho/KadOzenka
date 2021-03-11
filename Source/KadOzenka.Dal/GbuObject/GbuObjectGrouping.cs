@@ -1177,7 +1177,7 @@ namespace KadOzenka.Dal.GbuObject
                 var objectAttributes = gbuObjectService.GetAllAttributes(objectIds, null, allAttributeIds, localActualDate,
 	                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
 	                .GroupBy(x => x.ObjectId).ToList();
-                _log.Debug("Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'", objectAttributes.Count, localActualDate);
+                _log.Debug("Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'", objectAttributes.Count, localActualDate.ToShortDateString());
 
                 ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, groupedUnits.Value,
 	                objectAttributes, allAttributeIds, true, localActualDate, reportService, dataHeaderAndColumnNumber,
