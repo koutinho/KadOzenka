@@ -312,18 +312,18 @@ namespace KadOzenka.Dal.GbuObject
                         x.CadastralNumber,
                         x.CreationDate
                     })
-                    .Execute();
-                Logger.Debug($"Загружено {units.Count} ЕО для задания на оценку {taskId}");
+                    .Execute()
+                    .Select(x => new Item
+                    {
+	                    CadastralNumber = x.CadastralNumber,
+	                    ObjectId = x.ObjectId.GetValueOrDefault(),
+	                    Date = x.CreationDate ?? DateTime.Now
+                    }).ToList();
 
-                objects.AddRange(units.Select(x => new Item
-                {
-                    CadastralNumber = x.CadastralNumber,
-                    ObjectId = x.ObjectId.GetValueOrDefault(),
-                    Date = x.CreationDate ?? DateTime.Now
-                }));
+                Logger.Debug("Загружено {UnitsCount} ЕО для задания на оценку {TaskId}", units.Count, taskId);
             });
 
-            Logger.Debug($"Общее количество загруженных ЕО: {objects.Count}");
+            Logger.Debug("Общее количество загруженных ЕО: {ResultObjectsCount}", objects.Count);
 
             return FilterObjects(objects);
         }
@@ -342,7 +342,7 @@ namespace KadOzenka.Dal.GbuObject
                     Date = DateTime.Now
                 }).ToList();
 
-            Logger.Debug($"Общее количество загруженных ОН: {allObjects.Count}");
+            Logger.Debug("Общее количество загруженных ОН: {AllObjectsCount}", allObjects.Count);
 
             if (BaseSetting.SelectAllObject)
                 return allObjects;
@@ -386,7 +386,8 @@ namespace KadOzenka.Dal.GbuObject
 
                 result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
-            Logger.Debug($"Выбрано {result.Count} объектов после фильтрации по Значению");
+
+            Logger.Debug("Выбрано {ResultCount} объектов после фильтрации по Значению", result.Count);
 
             return result;
         }
@@ -469,7 +470,7 @@ namespace KadOzenka.Dal.GbuObject
                 result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
 
-            Logger.Debug($"Выбрано {result.Count} объектов после фильтрации по атрибуту 'Назначение здания'");
+            Logger.Debug("Выбрано {ResultCount} объектов после фильтрации по атрибуту 'Назначение здания'", result.Count);
 
             return result;
         }
@@ -544,7 +545,7 @@ namespace KadOzenka.Dal.GbuObject
                 result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
 
-            Logger.Debug($"Выбрано {result.Count} объектов после фильтрации по атрибуту 'Назначение помещения'");
+            Logger.Debug("Выбрано {ResultCount} объектов после фильтрации по атрибуту 'Назначение помещения'", result.Count);
 
             return result;
         }
