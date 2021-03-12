@@ -162,7 +162,8 @@ namespace KadOzenka.Web.Controllers
 			}).AsEnumerable();
 
 			ViewBag.TreeAttributes = GetGbuAttributesTree();
-            ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
+			ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING })
+					.Where(x => x.Items.Count > 0).ToList();
 
 			return View(new GroupingObject());
 		}
