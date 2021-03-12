@@ -4,6 +4,8 @@ namespace KadOzenka.Dal.GbuObject.Entities
 {
 	public enum GbuColumnsToDownload
 	{
+		[Description("a.S")]
+		S,
 		[Description("a.Ot")]
 		Ot,
 		[Description("a.value")]

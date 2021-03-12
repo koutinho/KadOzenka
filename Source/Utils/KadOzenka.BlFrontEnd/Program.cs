@@ -687,6 +687,9 @@ namespace KadOzenka.BlFrontEnd
 
 				var attributes2 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8, 545}, date, attributesToDownload: selectedColumns);
 
+				selectedColumns.Add(GbuColumnsToDownload.DocumentId);
+				selectedColumns.Add(GbuColumnsToDownload.S);
+				selectedColumns.Add(GbuColumnsToDownload.Ot);
 				selectedColumns.Add(GbuColumnsToDownload.Value);
 				var attributes3 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8, 545 }, date, attributesToDownload: selectedColumns);
             });

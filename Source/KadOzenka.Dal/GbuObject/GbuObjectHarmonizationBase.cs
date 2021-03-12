@@ -224,7 +224,13 @@ namespace KadOzenka.Dal.GbuObject
 
         private void ProcessOneObject(Item item, List<long> levelsAttributeIds, GbuReportService reportService)
         {
-	        var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
+	        var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date,
+		        attributesToDownload: new List<GbuColumnsToDownload>
+		        {
+			        GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId, GbuColumnsToDownload.S,
+			        GbuColumnsToDownload.Ot
+		        });
+
             foreach (var sourceAttributeId in levelsAttributeIds)
             {
                 var sourceAttribute = gbuAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
