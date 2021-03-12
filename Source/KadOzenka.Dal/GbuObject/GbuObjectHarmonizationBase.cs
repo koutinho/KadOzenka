@@ -11,7 +11,7 @@ using Core.Register.RegisterEntities;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.Registers.GbuRegistersServices;
+using KadOzenka.Dal.GbuObject.Entities;
 using ObjectModel.Directory;
 using Serilog;
 
@@ -24,7 +24,6 @@ namespace KadOzenka.Dal.GbuObject
         protected object Locked;
         public int MaxObjectsCount;
         public int CurrentCount;
-        public int LogCount;
 
         private const int KnColumnNumber = 0;
         private const int ResultColumnNumber = 1;
@@ -77,7 +76,6 @@ namespace KadOzenka.Dal.GbuObject
             reportService.SetIndividualWidth(ErrorColumnNumber, 5);
 
             _log.Debug("Получение объектов для обработки");
-
             //добавление фильтров на лету через декоратор
             var itemsGetter = new HarmonizationItemsGetter(BaseSetting, _log) as AItemsGetter<Item>;
             itemsGetter = new HarmonizationBuildingFilterDecorator<Item>(itemsGetter, _log, BaseSetting);
@@ -86,16 +84,11 @@ namespace KadOzenka.Dal.GbuObject
 	            BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay());
 
             var objects = itemsGetter.GetItems();
-            _log.Debug("Получено {ObjectsCount} объектов для дальнейшей обработки", objects.Count);
+            MaxObjectsCount = objects.Count;
+            _log.Debug("Получено {ObjectsCount} объектов для дальнейшей обработки", MaxObjectsCount);
 
             var levelsAttributesIds = GetLevelsAttributesIds();
             _log.Debug("Получен список атрибутов-уровней: {LevelsAttributesIds}", levelsAttributesIds);
-            MaxObjectsCount = objects.Count;
-            LogCount = MaxObjectsCount < 100
-	            ? MaxObjectsCount
-	            : Math.Round(MaxObjectsCount * 0.1) > 100
-		            ? 100
-		            : (int)Math.Round(MaxObjectsCount * 0.1);
 
             Locked = new object();
             var cancelTokenSource = new CancellationTokenSource();
@@ -112,6 +105,11 @@ namespace KadOzenka.Dal.GbuObject
                 lock (Locked)
                 {
 	                CurrentCount++;
+
+	                if (CurrentCount % 1000 == 0)
+	                {
+		                _log.Debug("Завершена обработка объекта №{CurrentCount} из {MaxCount}", CurrentCount, MaxObjectsCount);
+	                }
                 }
             });
             _log.Debug("Обработка объектов завершена");
@@ -226,58 +224,16 @@ namespace KadOzenka.Dal.GbuObject
 
         private void ProcessOneObject(Item item, List<long> levelsAttributeIds, GbuReportService reportService)
         {
-	        if (CurrentCount <= LogCount)
-	        {
-		        _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
-			        .ForContext("ItemDate", item.Date)
-			        .Verbose("Обработка объекта {ItemObjectId}", item.ObjectId);
-	        }
-
-            var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
+	        var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date);
             foreach (var sourceAttributeId in levelsAttributeIds)
             {
                 var sourceAttribute = gbuAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
                 if (sourceAttribute == null)
                     continue;
 
-                lock (Locked)
-                {
-	                if (CurrentCount <= LogCount)
-		                _log.ForContext("SourceAttributeId", sourceAttributeId)
-                            .ForContext("SourceAttributeValue", sourceAttribute.GetValueInString())
-                            .ForContext("ItemCadastralNumber", item.CadastralNumber)
-                            .ForContext("ItemDate", item.Date)
-                            .Verbose(
-                            "Обработка значения левел атрибута '{SourceAttributeName}' для объекта {ItemObjectId}",
-                            sourceAttribute.AttributeData.Name, item.ObjectId);
-                }
-
                 var isDataSaved = CopyLevelData(item, sourceAttribute, reportService);
                 if (isDataSaved)
-                {
-	                lock (Locked)
-	                {
-		                if (CurrentCount <= LogCount)
-			                _log.ForContext("SourceAttributeId", sourceAttributeId)
-				                .ForContext("SourceAttributeValue", sourceAttribute.GetValueInString())
-				                .ForContext("ItemCadastralNumber", item.CadastralNumber)
-				                .ForContext("ItemDate", item.Date)
-				                .Verbose(
-                                    "Для объекта {ItemObjectId} взяты данные левел атрибута '{SourceAttributeName}'",
-					                item.ObjectId, sourceAttribute.AttributeData.Name);
-	                }
-
 	                return;
-                }
-            }
-
-            lock (Locked)
-            {
-	            if (CurrentCount <= LogCount)
-		            _log.ForContext("ItemCadastralNumber", item.CadastralNumber)
-			            .ForContext("ItemDate", item.Date)
-			            .Verbose(
-                            "Для объекта {ItemObjectId} не найдено значение в левел атрибутах", item.ObjectId);
             }
 
             SaveFailResult(item, reportService);
@@ -349,25 +305,26 @@ namespace KadOzenka.Dal.GbuObject
             var objects = new List<Item>();
             BaseSetting.TaskFilter.ForEach(taskId =>
             {
-                var units = OMUnit.Where(x => x.PropertyType_Code == objectType && x.TaskId == taskId && x.ObjectId != null)
-                    .Select(x => new
-                    {
-                        x.ObjectId,
-                        x.CadastralNumber,
-                        x.CreationDate
-                    })
-                    .Execute();
-                Logger.Debug($"Загружено {units.Count} ЕО для задания на оценку {taskId}");
+	            var units = OMUnit.Where(x => x.PropertyType_Code == objectType && x.TaskId == taskId && x.ObjectId != null)
+		            .Select(x => new
+		            {
+			            x.ObjectId,
+			            x.CadastralNumber,
+			            x.CreationDate
+		            })
+		            .Execute();
 
-                objects.AddRange(units.Select(x => new Item
-                {
-                    CadastralNumber = x.CadastralNumber,
-                    ObjectId = x.ObjectId.GetValueOrDefault(),
-                    Date = x.CreationDate ?? DateTime.Now
-                }));
+	            objects.AddRange(units.Select(x => new Item
+	            {
+		            CadastralNumber = x.CadastralNumber,
+		            ObjectId = x.ObjectId.GetValueOrDefault(),
+		            Date = x.CreationDate ?? DateTime.Now
+	            }));
+
+                Logger.Debug("Загружено {UnitsCount} ЕО для задания на оценку {TaskId}", units.Count, taskId);
             });
 
-            Logger.Debug($"Общее количество загруженных ЕО: {objects.Count}");
+            Logger.Debug("Общее количество загруженных ЕО: {ResultObjectsCount}", objects.Count);
 
             return FilterObjects(objects);
         }
@@ -386,7 +343,7 @@ namespace KadOzenka.Dal.GbuObject
                     Date = DateTime.Now
                 }).ToList();
 
-            Logger.Debug($"Общее количество загруженных ОН: {allObjects.Count}");
+            Logger.Debug("Общее количество загруженных ОН: {AllObjectsCount}", allObjects.Count);
 
             if (BaseSetting.SelectAllObject)
                 return allObjects;
@@ -414,7 +371,8 @@ namespace KadOzenka.Dal.GbuObject
                     allObjects.Select(x => x.ObjectId).ToList(),
                     null,
                     new List<long> { BaseSetting.IdAttributeFilter.Value },
-                    date, isLight: true);
+                    date,
+                    attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
                 var resultObjectIds = new List<long?>();
                 var lowerFilterValues = BaseSetting.ValuesFilter.Select(x => x.ToLower()).ToList();
@@ -429,7 +387,8 @@ namespace KadOzenka.Dal.GbuObject
 
                 result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
-            Logger.Debug($"Выбрано {result.Count} объектов после фильтрации по Значению");
+
+            Logger.Debug("Выбрано {ResultCount} объектов после фильтрации по Значению", result.Count);
 
             return result;
         }
@@ -479,7 +438,7 @@ namespace KadOzenka.Dal.GbuObject
                     new List<long> { buildingPurposeAttribute.RegisterId },
                     new List<long> { buildingPurposeAttribute.Id },
                     BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay(),
-                    isLight: true);
+                    attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
                 var possibleValues = new List<string>();
                 switch (BaseSetting.BuildingPurpose)
@@ -512,7 +471,7 @@ namespace KadOzenka.Dal.GbuObject
                 result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
 
-            Logger.Debug($"Выбрано {result.Count} объектов после фильтрации по атрибуту 'Назначение здания'");
+            Logger.Debug("Выбрано {ResultCount} объектов после фильтрации по атрибуту 'Назначение здания'", result.Count);
 
             return result;
         }
@@ -561,7 +520,7 @@ namespace KadOzenka.Dal.GbuObject
                     new List<long> { placementPurposeAttribute.RegisterId },
                     new List<long> { placementPurposeAttribute.Id },
                     BaseSetting.DateActual ?? DateTime.Now.GetEndOfTheDay(),
-                    isLight: true);
+                    attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
                 var possibleValues = new List<string>();
                 switch (BaseSetting.PlacementPurpose)
@@ -587,7 +546,7 @@ namespace KadOzenka.Dal.GbuObject
                 result = allObjects.Where(x => resultObjectIds.Contains(x.ObjectId)).ToList();
             }
 
-            Logger.Debug($"Выбрано {result.Count} объектов после фильтрации по атрибуту 'Назначение помещения'");
+            Logger.Debug("Выбрано {ResultCount} объектов после фильтрации по атрибуту 'Назначение помещения'", result.Count);
 
             return result;
         }

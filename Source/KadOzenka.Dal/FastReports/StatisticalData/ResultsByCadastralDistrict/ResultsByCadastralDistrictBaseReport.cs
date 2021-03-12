@@ -6,6 +6,7 @@ using Core.Register.RegisterEntities;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.FastReports.StatisticalData.Common;
+using KadOzenka.Dal.GbuObject.Entities;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 
@@ -56,7 +57,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.ResultsByCadastralDistrict
             var parentAttributes = GbuObjectService.GetAllAttributes(obj.Id,
                 attributesDictionary.Values.Select(x => (long)x.RegisterId).Distinct().ToList(),
                 attributesDictionary.Values.Select(x => x.Id).Distinct().ToList(),
-                DateTime.Now.GetEndOfTheDay(), isLight: true);
+                DateTime.Now.GetEndOfTheDay(),
+                attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
             SetAttributes(obj.Id, parentAttributes, attributesDictionary, item);
         }

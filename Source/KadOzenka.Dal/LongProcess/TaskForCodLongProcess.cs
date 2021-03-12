@@ -7,6 +7,7 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks;
@@ -132,7 +133,7 @@ namespace KadOzenka.Dal.LongProcess
 			        new List<long> { RosreestrRegisterService.RosreestrRegisterId },
 			        new List<long> { fs.Id },
 			        DateTime.Now.GetEndOfTheDay(),
-			        isLight: true);
+				   attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 	        _log.Debug($"Найдено {fsAttributes.Count} ОН со значениями из Росреестра");
 
 	        var resultObjectIds = new List<long>();

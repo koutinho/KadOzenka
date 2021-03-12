@@ -11,6 +11,7 @@ using Core.Shared.Extensions;
 using GemBox.Document;
 using GemBox.Document.Tables;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Entities;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -1038,7 +1039,8 @@ namespace KadOzenka.Dal.DataExport
                 List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value,
                     null,
                     new List<long> { transferAttribute.GbuId },
-                    _date, isLight:true);
+                    _date, 
+                    attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value});
 
                 if (attribs.Count > 0)
                 {

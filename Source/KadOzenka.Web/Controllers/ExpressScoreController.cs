@@ -493,17 +493,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.EXPRESSSCORE_CONSTRUCTOR_EDIT)]
 		public ActionResult SetCommonSetting()
 		{
-			ViewData["TreeAttributes"] = new GbuObjectService().GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			var setting = OMSettingsParams.Where(x => x.SegmentType_Code == MarketSegment.NoSegment).SelectAll()
 				.ExecuteFirstOrDefault();
