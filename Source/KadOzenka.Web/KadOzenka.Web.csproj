@@ -18,28 +18,22 @@
     <PlatformTarget>x64</PlatformTarget>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
 	<EnvironmentName>Development</EnvironmentName>
+	<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
   </PropertyGroup>
 
-  <ItemGroup>
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Development.pubxml" />
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_QA.pubxml" />
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Release.pubxml" />
-  </ItemGroup>
-
-  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QA|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QA|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
 	<EnvironmentName>QA</EnvironmentName>
 	<ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
-  </PropertyGroup>-->
+  </PropertyGroup>
  
-  <!--<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
 	<EnvironmentName>Demo</EnvironmentName>
 	<ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
-  </PropertyGroup>-->
+  </PropertyGroup>
 	
 	
 	<!--PackageReference-->
@@ -138,6 +132,11 @@
 		<Copy SourceFiles="@(ConfigCorePath)" DestinationFolder="$(PublishDir)ConfigCore\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
 	</Target> 
 
+	<ItemGroup>
+		<ConfigPath Include="$(ProjectDir)Config\**\*.*" />
+		<ConfigCorePath Include="$(ProjectDir)ConfigCore\**\*.*" />
+	</ItemGroup>
+
 	<Choose>
 		<When Condition=" '$(Configuration)'=='Debug' ">
 			<PropertyGroup>
@@ -147,10 +146,6 @@
 				<OutputPath>.\bin\Debug\</OutputPath>
 				<DefineConstants>DEBUG;TRACE</DefineConstants>
 			</PropertyGroup>
-			<ItemGroup>
-				<Compile Include="UnitTesting\*.cs" />
-				<Reference Include="NUnit.dll" />
-			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'=='Release' ">
 			<PropertyGroup>
@@ -158,288 +153,25 @@
 				<DebugType>None</DebugType>
 				<Optimize>true</Optimize>
 				<EnvironmentName>Production</EnvironmentName>
-				<!--<OutputPath>.\bin\Debug\</OutputPath>
-				<DefineConstants>DEBUG;TRACE</DefineConstants>-->
 			</PropertyGroup>
-			<ItemGroup>
-				<ConfigPath Include="$(ProjectDir)Config\**\*.*" />
-				<ConfigCorePath Include="$(ProjectDir)ConfigCore\**\*.*" />
-			</ItemGroup>
-
 		</When>
 	</Choose>
  
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 		<Exec Command="if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\SqlQueries&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\ExcelTemplates&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\Reports&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;" />
 	</Target>  
+
 	<PropertyGroup>
 		<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
 	</PropertyGroup>
-     <!--<PropertyGroup>
-    <MvcRazorCompileOnPublish>false</MvcRazorCompileOnPublish>
-  </PropertyGroup>-->
-
-  <!--<ItemGroup>
-    <Compile Remove="wwwroot\Config\**" />
-    <Content Remove="wwwroot\Config\**" />
-    <EmbeddedResource Remove="wwwroot\Config\**" />
-    <None Remove="wwwroot\Config\**" />
-    <Compile Remove="Pages\**" />
-    <EmbeddedResource Remove="Pages\**" />
-    <None Remove="Pages\**" />
-    <Content Remove="Pages\**" />
-  </ItemGroup>-->
-
- <!--<ItemGroup>
-    <None Remove="Config\Common\MainMenu.xml" />
-    <None Remove="Config\ExcelTemplates\*.*" />
-    <None Remove="Config\Param\*.xml" />
-    <None Remove="Config\ReadMe.txt" />
-    <None Remove="Config\Registers\SearchPanels\*.xml" />
-    <None Remove="Config\Registers\Views\*.xml" />
-    <None Remove="Config\Reports\*.frx" />
-    <None Remove="Config\SqlQueries\*.sql" />
-    <None Remove="___Create_Plugins_Folder_for_WinService.bat" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Config\Registers\*\*.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-	  <Content Include="Config\SqlQueries\*.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-	<Content Update="Config\Reports\*.frx">
-	  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</Content>
-  </ItemGroup>-->
-  <!--<ItemGroup>
-	  <None Update="Config\Bti\*.xml">
-	      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    </None>
-	  <None Update="Config\Ehd\*.xml">
-	      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	    </None>
-		<None Update="Config\Mfc\*\*\*.xml">
-          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-  </ItemGroup>-->
-
-  <!--<ItemGroup>
-    <Folder Include="Config\LeftPanel\" />
-    <Folder Include="Config\MapTilesConfigFiles\" />
-	  <Folder Include="Views\GknDataImport\" />
-	  <Folder Include="Views\DataImportByTemplate\" />
-    <Folder Include="wwwroot\images\Icons\Panels\" />
-    <Folder Include="wwwroot\images\Cursors\" />
-    <Folder Include="wwwroot\MapImageLayer\QuartalLayer\" />
-    <Folder Include="wwwroot\Map\" />
-  </ItemGroup>-->
-
- 
-
-
-  <!--<ItemGroup>
-    <Content Update="app.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Views\ExpressScore\Index.cshtml">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Update="Views\GbuObject\GroupingObject.cshtml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Views\_ViewImports.cshtml">
-      <Pack>$(IncludeRazorContentInPack)</Pack>
-    </Content>
-    <Content Update="web.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
 	
-  </ItemGroup>-->
-  <!--<ItemGroup>
-	  <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct.htm">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HelpInstructions\Instructions\admin_instruct_files\*.*">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual.htm">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\HelpInstructions\Instructions\user_manual_files\*.*">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\images\Cursors\cursor_col_resize.png">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\MapIcons\arrow_left.svg">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="wwwroot\MapIcons\arrow_right.svg">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-  </ItemGroup>-->
+	<ItemGroup>
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Development.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_QA.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Release.pubxml" />
+	</ItemGroup>
 
-
-  <!--<ItemGroup>
-    <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCost.xlsx" />
-    <ConfigPath Remove="Config\ExcelTemplates\ActDeterminingCadastralCostMUitem122.xlsx" />
-    <ConfigPath Remove="Config\Param\DataComparingConfig.Dev.xml" />
-    <ConfigPath Remove="Config\Param\DataComparingConfig.Ppr.Ppr.xml" />
-    <ConfigPath Remove="Config\Param\DataComparingConfig.Ppr.Test.xml" />
-    <ConfigPath Remove="Config\Param\DataComparingConfig.Prod.xml" />
-    <ConfigPath Remove="Config\Param\MapTilesConfig.Dev.xml" />
-    <ConfigPath Remove="Config\Param\MapTilesConfig.Ppr.Ppr.xml" />
-    <ConfigPath Remove="Config\Param\MapTilesConfig.Ppr.Test.xml" />
-    <ConfigPath Remove="Config\Param\MapTilesConfig.Prod.xml" />
-    <ConfigPath Remove="Config\Param\ModelingProcessConfig.Dev.xml" />
-    <ConfigPath Remove="Config\Param\ModelingProcessConfig.xml" />
-    <ConfigPath Remove="Config\Param\ReonService.Ppr.xml" />
-    <ConfigPath Remove="Config\Param\ReonServiceConfig.xml" />
-    <ConfigPath Remove="Config\ExcelTemplates\GknXmlToExcel.xls" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\CharacteristicsList.xml" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\CoreLongProcessQueue.xml" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\KoToursFactorsList.xml" />
-    <ConfigPath Remove="Config\Registers\SearchPanels\ModelingDictionaryValues.xml" />
-    <ConfigPath Remove="Config\Registers\Views\CharacteristicsList.xml" />
-    <ConfigPath Remove="Config\Registers\Views\CommonRecycleBin.xml" />
-    <ConfigPath Remove="Config\Registers\Views\CreatedReports.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DataExporterByTemplate.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DataImporter.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsBook.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsBookSelect.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsSignatory.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsSpdRegister.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsSubject.xml" />
-    <ConfigPath Remove="Config\Registers\Views\DeclarationsSubjectSelect.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsConstructorCard.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsReferenceItems.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsReferences.xml" />
-    <ConfigPath Remove="Config\Registers\Views\EsWallMaterials.xml" />
-    <ConfigPath Remove="Config\Registers\Views\GbuObjects.xml" />
-    <ConfigPath Remove="Config\Registers\Views\GbuOperationsReports.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoApprovedModels.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoModels.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoObjectsCard.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoResultSendJournal.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoTaskGknFilesCard.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoTasks.xml" />
-    <ConfigPath Remove="Config\Registers\Views\KoTours.xml" />
-    <ConfigPath Remove="Config\Registers\Views\MdsStatisticalDataCard.xml" />
-    <ConfigPath Remove="Config\Registers\Views\ModelingDictionaries.xml" />
-    <ConfigPath Remove="Config\Registers\Views\ModelingDictionaryValues.xml" />
-    <ConfigPath Remove="Config\Registers\Views\ObjectsCharacteristics.xml" />
-    <ConfigPath Remove="Config\Registers\Views\SudObjects.xml" />
-    <ConfigPath Remove="Config\Registers\Views\SudObjectsRemoved.xml" />
-    <ConfigPath Remove="Config\Registers\Views\SudObjectsSimpleCard.xml" />
-    <ConfigPath Remove="Config\Registers\Views\SudSpdRegister.xml" />
-    <ConfigPath Remove="Config\Reports\AccountingInfoFromDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\AdditionalFormsCalculationStatisticsReport.frx" />
-    <ConfigPath Remove="Config\Reports\AdditionalFormsResultsAnalysisReport.frx" />
-    <ConfigPath Remove="Config\Reports\AdoptionOfDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\GeneralizedIndicatorsReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsByRegionsReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByAdministrativeDistrictsReport.frx" />
-    <ConfigPath Remove="Config\Reports\MinMaxAverageUPKSByCadastralQuartersReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypesReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForQuartersReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsForRegionsReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsByGroupsReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport(ErrorInScript).frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByAdministrativeDistrictsBySubjectReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByGroupsReport.frx" />
-    <ConfigPath Remove="Config\Reports\NumberOfObjectsByZoneAndSubgroupsZuOksReport.frx" />
-    <ConfigPath Remove="Config\Reports\RefusalOfAccountingInformationFromDeclarationNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\RefusalToDeclarationReviewAndReturnDocsNotificationReport.frx" />
-    <ConfigPath Remove="Config\Reports\RegisteredChangedObjectsReport.frx" />
-    <ConfigPath Remove="Config\Reports\RegisteredObjectsByPropertyTypeReport.frx" />
-    <ConfigPath Remove="Config\Reports\RegisteredObjectsByTypeOfUseReport.frx" />
-    <ConfigPath Remove="Config\Reports\RegisteredObjectsDefaultReport.frx" />
-    <ConfigPath Remove="Config\Reports\ResultsForApprovalReport.frx" />
-    <ConfigPath Remove="Config\Reports\ResultsForApprovalUpksAverageReport.frx" />
-    <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeAndPurposeReport.frx" />
-    <ConfigPath Remove="Config\Reports\SubjectsUPKSByTypeReport.frx" />
-	  <ConfigPath Remove="Config\Reports\TestBackgroundReport2.frx" />
-	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationAnalysis.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_CalculationStatistics.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\AdditionalForms_ResultsAnalysis.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\CodeGroupAttr_Initial_OKS.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\CodeGroupAttr_Initial_ZU.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\GeneralizedIndicators.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsOKS.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\KRSummaryResultsZU.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSByCadastralQuarters.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPKSZu.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\MinMaxAverageUPRSGetMarketObject.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroupsAndTypes_DistrictsRegionNumbers.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByAdministrativeDistrictsByGroups_Districts.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByGroupsDto_isNotOksReportType.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_Initial_OKS.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_Initial_ZU.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_VUON_OKS.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\NumberOfObjectsByZoneAndSubgroupsData_VUON_ZU.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsGrouping.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsOks.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\QualityPricingFactorsEncodingResultsZu.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\ResultsForApprovalUpksAverage.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForOks.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UpksForZu.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForOks.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\MinMaxAverageUpksAndUprsByGroups\UprsForZu.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Oks.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\OksForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousTours.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\PreviousToursForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\Zu.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\PricingFactorsComposition\ZuForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForOks.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\CrviForZu.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\QualityPricingFactorsEncodingResults\GroupingForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Buildings.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\BuildingsForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Constructions.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ConstructionsForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\get_parent_info_function.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ParcelsForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Parkings.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\ParkingsForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\Placements.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\PlacementsForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildings.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\StatisticalData\ResultsByCadastralDistrict\UncompletedBuildingsForLongProcess.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByType.sql" />
-	  <ConfigPath Remove="Config\SqlQueries\SubjectsUPKS_ByTypeAndPurpose.sql" />
-  </ItemGroup>-->
-
-
-  <!--<ItemGroup>
-		<None Include="Views\Tour\Partials\GroupSubCard.cshtml" />
-		<None Include="Views\Tour\Partials\TourSubCard.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\GbuObject\GroupingObject.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\GbuObject\GroupingObject.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Tour\DeleteTourFactorObject.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Helpers\Messages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Helpers\Messages.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>-->
   <!--<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>-->
  
 </Project>
