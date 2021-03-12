@@ -9,9 +9,11 @@ using ObjectModel.KO;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.SRD;
+using DevExpress.Data.Extensions;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.GbuObject.Entities;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Directory;
 using Serilog;
 
@@ -88,36 +90,87 @@ namespace KadOzenka.Dal.GbuObject
             _log.Debug("Получено {ObjectsCount} объектов для дальнейшей обработки", MaxObjectsCount);
 
             var levelsAttributesIds = GetLevelsAttributesIds();
-            _log.Debug("Получен список атрибутов-уровней: {LevelsAttributesIds}", levelsAttributesIds);
+            _log.ForContext("InputParameters", levelsAttributesIds, true).Debug("Получен список атрибутов-уровней");
 
             Locked = new object();
-            var cancelTokenSource = new CancellationTokenSource();
-            var options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 20
-            };
-            _log.Debug("Обработка объектов");
-            Parallel.ForEach(objects, options, obj =>
-            {
-                ProcessOneObject(obj, levelsAttributesIds, reportService);
-
-                lock (Locked)
-                {
-	                CurrentCount++;
-
-	                if (CurrentCount % 1000 == 0)
-	                {
-		                _log.Debug("Завершена обработка объекта №{CurrentCount} из {MaxCount}", CurrentCount, MaxObjectsCount);
-	                }
-                }
-            });
-            _log.Debug("Обработка объектов завершена");
+            ProcessItems(objects, levelsAttributesIds, reportService);
 
             _log.Debug("Сохранение отчета");
             var reportId = reportService.SaveReport();
 
             return reportService.GetUrlToDownloadFile(reportId);
+        }
+
+        private void ProcessItems(List<Item> allItems, List<long> levelsAttributesIds, GbuReportService reportService)
+        {
+	        var localCancelTokenSource = new CancellationTokenSource();
+            var options = new ParallelOptions
+            {
+                CancellationToken = localCancelTokenSource.Token,
+                MaxDegreeOfParallelism = 5
+            };
+
+            var packageSize = 100000;
+            var groupedItems = allItems.GroupBy(x => x.Date).ToDictionary(k => k.Key, v => v.ToList());
+            groupedItems.ForEach(group =>
+            {
+	            var actualDate = group.Key;
+	            var items = group.Value;
+	            var numberOfPackages = group.Value.Count / packageSize + 1;
+                Parallel.For(0, numberOfPackages, options, (i, s) =>
+				{
+					_log.Debug("Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
+
+					var itemsPage = items.Skip(i * packageSize).Take(packageSize).ToList();
+					_log.Debug("Отобрано {ObjectsCount} объектов для пакета №{PackageNumber} из {MaxPackagesCount}", itemsPage.Count, i, numberOfPackages);
+
+					var objectAttributes = GbuObjectService.GetAllAttributes(itemsPage.Select(x => x.ObjectId).ToList(), null, levelsAttributesIds, actualDate,
+							attributesToDownload: new List<GbuColumnsToDownload>
+							{
+								GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId, GbuColumnsToDownload.S,
+								GbuColumnsToDownload.Ot
+							}).GroupBy(x => x.ObjectId).ToList();
+					_log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}", objectAttributes.Count, i, numberOfPackages);
+
+					DoHarmonization(itemsPage, levelsAttributesIds, objectAttributes, reportService);
+				});
+			});
+        }
+
+        private void DoHarmonization(List<Item> objects, List<long> levelsAttributesIds,
+	        List<IGrouping<long, GbuObjectAttribute>> objectAttributes, GbuReportService reportService)
+        {
+	        _log.Debug("Старт обработки объектов");
+
+	        var cancelTokenSource = new CancellationTokenSource();
+	        var options = new ParallelOptions
+	        {
+		        CancellationToken = cancelTokenSource.Token,
+		        MaxDegreeOfParallelism = 20
+	        };
+
+	        var objectAttributesDictionary = objectAttributes.ToDictionary(k => k.Key, v => v.ToList());
+	        var defaultAttributes = levelsAttributesIds.Select(x => new GbuObjectAttribute {AttributeId = x}).ToList();
+	        Parallel.ForEach(objects, options, obj =>
+	        {
+		        var currentObjectAttributes = objectAttributesDictionary.TryGetValue(obj.ObjectId, out var attributes)
+			        ? attributes
+			        : defaultAttributes;
+
+		        ProcessOneObject(obj, levelsAttributesIds, currentObjectAttributes, reportService);
+
+		        lock (Locked)
+		        {
+			        CurrentCount++;
+
+			        if (CurrentCount % 1000 == 0)
+			        {
+				        _log.Debug("Завершена обработка объекта №{CurrentCount} из {MaxCount}", CurrentCount, MaxObjectsCount);
+			        }
+		        }
+	        });
+
+	        _log.Debug("Финиш обработки объектов ");
         }
 
         protected abstract bool CopyLevelData(Item item, GbuObjectAttribute sourceAttribute, GbuReportService reportService);
@@ -222,27 +275,21 @@ namespace KadOzenka.Dal.GbuObject
             return allLevelsAttributeIds.Where(x => x != null).Select(x => x.Value).ToList();
         }
 
-        private void ProcessOneObject(Item item, List<long> levelsAttributeIds, GbuReportService reportService)
+        private void ProcessOneObject(Item item, List<long> levelsAttributeIds, List<GbuObjectAttribute> gbuAttributes,
+	        GbuReportService reportService)
         {
-	        var gbuAttributes = GbuObjectService.GetAllAttributes(item.ObjectId, null, levelsAttributeIds, item.Date,
-		        attributesToDownload: new List<GbuColumnsToDownload>
-		        {
-			        GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId, GbuColumnsToDownload.S,
-			        GbuColumnsToDownload.Ot
-		        });
+	        foreach (var sourceAttributeId in levelsAttributeIds)
+	        {
+		        var sourceAttribute = gbuAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
+		        if (sourceAttribute == null)
+			        continue;
 
-            foreach (var sourceAttributeId in levelsAttributeIds)
-            {
-                var sourceAttribute = gbuAttributes.FirstOrDefault(x => x.AttributeId == sourceAttributeId);
-                if (sourceAttribute == null)
-                    continue;
+		        var isDataSaved = CopyLevelData(item, sourceAttribute, reportService);
+		        if (isDataSaved)
+			        return;
+	        }
 
-                var isDataSaved = CopyLevelData(item, sourceAttribute, reportService);
-                if (isDataSaved)
-	                return;
-            }
-
-            SaveFailResult(item, reportService);
+	        SaveFailResult(item, reportService);
         }
 
         private string GetErrorMessage(string value, RegisterAttributeType type)
@@ -324,7 +371,7 @@ namespace KadOzenka.Dal.GbuObject
 	            {
 		            CadastralNumber = x.CadastralNumber,
 		            ObjectId = x.ObjectId.GetValueOrDefault(),
-		            Date = x.CreationDate ?? DateTime.Now
+		            Date = x.CreationDate ?? DateTime.Now.GetEndOfTheDay()
 	            }));
 
                 Logger.Debug("Загружено {UnitsCount} ЕО для задания на оценку {TaskId}", units.Count, taskId);
@@ -346,7 +393,7 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     CadastralNumber = x.CadastralNumber,
                     ObjectId = x.Id,
-                    Date = DateTime.Now
+                    Date = DateTime.Now.GetEndOfTheDay()
                 }).ToList();
 
             Logger.Debug("Общее количество загруженных ОН: {AllObjectsCount}", allObjects.Count);
