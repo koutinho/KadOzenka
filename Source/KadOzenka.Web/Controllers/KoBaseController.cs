@@ -169,7 +169,7 @@ namespace KadOzenka.Web.Controllers
 						        Value = attribute.Id.ToString()
 					        }).ToList()
 			        };
-		        }).ToList();
+		        }).Where(x => x.Items.Count > 0).ToList();
         }
 
         protected FileSize CalculateFileSize(string storageKey, DateTime fileDateOnServer, string fileName)
