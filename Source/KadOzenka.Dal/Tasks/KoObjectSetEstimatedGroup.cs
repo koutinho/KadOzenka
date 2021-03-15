@@ -97,13 +97,6 @@ namespace KadOzenka.Dal.KoObject
 			Logger.Debug($"Найдено {units.Count} ЕО");
 			CountAllUnits = units.Count;
 
-			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-			ParallelOptions options = new ParallelOptions
-			{
-				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 1
-			};
-
 			var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
 			var codeGroupAttribute = RegisterCache.GetAttributeData((int)param.IdCodeGroup);
 			var attributeQuarter = RegisterCache.GetAttributeData((int)param.IdCodeQuarter);
@@ -112,10 +105,15 @@ namespace KadOzenka.Dal.KoObject
 			var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
 
 			// обрабатываем юниты порциями по 1000 для уменьшения числа запросов к бд
-			var partitionSize = 1000;
+			var partitionSize = 100000;
 			var partitionCount = units.Count / partitionSize + 1;
-
-			for (var i = 0; i < partitionCount; i++)
+			var generalCancelTokenSource = new CancellationTokenSource();
+			var generalOptions = new ParallelOptions
+			{
+				CancellationToken = generalCancelTokenSource.Token,
+				MaxDegreeOfParallelism = 5
+			};
+			Parallel.For(0, partitionCount, generalOptions, (i, s) => 
 			{
 				var currentUnitsPartition = units.Skip(i * partitionSize).Take(partitionSize).ToList();
 				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
@@ -152,6 +150,12 @@ namespace KadOzenka.Dal.KoObject
 				var territoryTypes = GetValueFactors(gbuQuarterObjectIds, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
 
+				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+				ParallelOptions options = new ParallelOptions
+				{
+					CancellationToken = cancelTokenSource.Token,
+					MaxDegreeOfParallelism = 10
+				};
 				Logger.Debug("Начата обработка каждого юнита");
 				Parallel.ForEach(currentUnitsPartition, options, item =>
 				{
@@ -215,7 +219,7 @@ namespace KadOzenka.Dal.KoObject
 						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					}
 				});
-			}
+			});
 
 			var reportId = reportService.SaveReport();
 
@@ -223,6 +227,7 @@ namespace KadOzenka.Dal.KoObject
 
 			return reportService.GetUrlToDownloadFile(reportId);
 		}
+
 
 		#region Help Methods
 
