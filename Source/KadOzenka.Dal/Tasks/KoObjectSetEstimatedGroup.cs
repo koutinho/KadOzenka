@@ -118,18 +118,13 @@ namespace KadOzenka.Dal.KoObject
 			for (var i = 0; i < partitionCount; i++)
 			{
 				var currentUnitsPartition = units.Skip(i * partitionSize).Take(partitionSize).ToList();
+				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
 				Logger.ForContext("CurrentHandledCount", CurrentCount)
 					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
 					.ForContext("CountAllUnits", CountAllUnits)
 					.Debug("Обаботка пакета юнитов");
 
-				var gbuObjects = new List<OMMainObject>();
-				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
-				if (gbuObjectIds.IsNotEmpty())
-					gbuObjects = OMMainObject.Where(x => gbuObjectIds.Contains(x.Id)).Select(x => x.CadastralNumber).Execute();
-				Logger.ForContext("GbuObjectsCount", gbuObjects.Count).Debug("Получение связанных с юнитами ГБУ объектов");
-
-				var codeGroups = GetValueFactors(gbuObjects, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
+				var codeGroups = GetValueFactors(gbuObjectIds, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				Logger.Verbose("Получение значений атрибута кода группы ГБУ объектов");
 
 				var currentComplianceGuides = new List<OMComplianceGuide>();
@@ -141,7 +136,7 @@ namespace KadOzenka.Dal.KoObject
 				}
 				Logger.Verbose("Получение значений из таблицы соответствий кода и группы");
 
-				var codeQuarters = GetValueFactors(gbuObjects, attributeQuarter.RegisterId, attributeQuarter.Id);
+				var codeQuarters = GetValueFactors(gbuObjectIds, attributeQuarter.RegisterId, attributeQuarter.Id);
 				Logger.Verbose("Получение значений атрибута кадастровый квартал ГБУ объектов");
 
 				var gbuQuarterObjects = new List<OMMainObject>();
@@ -153,7 +148,8 @@ namespace KadOzenka.Dal.KoObject
 				Logger.ForContext("GbuQuarterObjectsCount", gbuQuarterObjects.Count)
 					.Verbose("Получение ГБУ объектов кадастровых кварталов");
 
-				var territoryTypes = GetValueFactors(gbuQuarterObjects, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
+				var gbuQuarterObjectIds = gbuQuarterObjects.Select(x => x.Id).ToList();
+				var territoryTypes = GetValueFactors(gbuQuarterObjectIds, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
 
 				Logger.Debug("Начата обработка каждого юнита");
@@ -164,17 +160,10 @@ namespace KadOzenka.Dal.KoObject
 						CurrentCount++;
 					}
 
-					var gbuObject = gbuObjects.FirstOrDefault(x => x.Id == item.ObjectId);
-					if (gbuObject == null)
-					{
-						AddErrorRow(item.CadastralNumber, $"Не найден объект для единицы оценки {item.CadastralNumber}", reportService);
-						return;
-					}
-
-					codeGroups.TryGetValue(gbuObject.Id, out var codeGroup);
+					codeGroups.TryGetValue(item.ObjectId, out var codeGroup);
 					if (string.IsNullOrEmpty(codeGroup.Value))
 					{
-						AddErrorRow(item.CadastralNumber, $"Не найдено значение справочника ЦОД у объекта {gbuObject.CadastralNumber}", reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найдено значение справочника ЦОД у объекта {item.CadastralNumber}", reportService);
 						return;
 					}
 
@@ -182,20 +171,20 @@ namespace KadOzenka.Dal.KoObject
 
 					if (complianceGuides.IsEmpty())
 					{
-						AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления {item.CadastralNumber}", reportService);
 					} 
 					else if (complianceGuides.Count == 1)
 					{
 						var value = complianceGuides[0].Group;
-						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+						AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
 						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					} 
 					else
 					{
-						codeQuarters.TryGetValue(gbuObject.Id, out var codeQuarter);
+						codeQuarters.TryGetValue(item.ObjectId, out var codeQuarter);
 						if (string.IsNullOrEmpty(codeQuarter.Value))
 						{
-							AddErrorRow(item.CadastralNumber, $"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", reportService);
+							AddErrorRow(item.CadastralNumber, $"Не найден кадастровый квартал для объекта {item.CadastralNumber}.", reportService);
 							return;
 						}
 
@@ -222,7 +211,7 @@ namespace KadOzenka.Dal.KoObject
 							return;
 						}
 						var value = complianceGuid.Group;
-						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+						AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
 						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					}
 				});
@@ -251,13 +240,13 @@ namespace KadOzenka.Dal.KoObject
 			return allComplianceGuidesInTour;
 		}
 
-		private void AddValueFactor(OMMainObject mObject, long? idFactor, long? idDoc, DateTime date, string value)
+		private void AddValueFactor(long objectId, long? idFactor, long? idDoc, DateTime date, string value)
 		{
 			var attributeValue = new GbuObjectAttribute
 			{
 				Id = -1,
 				AttributeId = idFactor.Value,
-				ObjectId = mObject.Id,
+				ObjectId = objectId,
 				ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
 				S = date.Date,
 				ChangeUserId = SRDSession.Current.UserID,
@@ -268,15 +257,15 @@ namespace KadOzenka.Dal.KoObject
 			attributeValue.Save();
 		}
 
-		private Dictionary<long, ValueItem> GetValueFactors(List<OMMainObject> objs, long idRegister, long idFactor)
+		private Dictionary<long, ValueItem> GetValueFactors(List<long> objectIds, long idRegister, long idFactor)
 		{
 			var result = new Dictionary<long, ValueItem>();
 
-			var attribs = GbuObjectService.GetAllAttributes(objs.Select(x => x.Id).ToList(),
+			var attributes = GbuObjectService.GetAllAttributes(objectIds,
 				new List<long> {idRegister}, new List<long> {idFactor}, DateTime.Now.Date,
 				attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId});
 
-			foreach (var mainObject in objs)
+			foreach (var id in objectIds)
 			{
 				ValueItem res = new ValueItem
 				{
@@ -284,7 +273,7 @@ namespace KadOzenka.Dal.KoObject
 					IdDocument = null,
 				};
 
-				var objAttr = attribs.FirstOrDefault(x => x.ObjectId == mainObject.Id);
+				var objAttr = attributes.FirstOrDefault(x => x.ObjectId == id);
 				if (objAttr != null)
 				{
 					var valueInString = objAttr.GetValueInString();
@@ -295,7 +284,7 @@ namespace KadOzenka.Dal.KoObject
 					}
 				}
 
-				result.Add(mainObject.Id, res);
+				result.Add(id, res);
 			}
 
 			return result;
