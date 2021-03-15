@@ -109,6 +109,7 @@ namespace KadOzenka.Dal.KoObject
 			var attributeQuarter = RegisterCache.GetAttributeData((int)param.IdCodeQuarter);
 			var attributeTerritoryType = RegisterCache.GetAttributeData((int)param.IdTerritoryType);
 			var tourId = OMTask.Where(x => x.Id == param.IdTask).Select(x => x.TourId).ExecuteFirstOrDefault().TourId;
+			var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
 
 			// обрабатываем юниты порциями по 1000 для уменьшения числа запросов к бд
 			var partitionSize = 1000;
@@ -131,13 +132,12 @@ namespace KadOzenka.Dal.KoObject
 				var codeGroups = GetValueFactors(gbuObjects, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				Logger.Verbose("Получение значений атрибута кода группы ГБУ объектов");
 
-				var allComplianceGuides = new List<OMComplianceGuide>();
+				var currentComplianceGuides = new List<OMComplianceGuide>();
 				if (currentUnitsPartition.IsNotEmpty() && codeGroups.Values.Any(x => !string.IsNullOrEmpty(x.Value)))
 				{
 					var propertyTypeValues = currentUnitsPartition.Select(x => x.PropertyType).Distinct().ToList();
 					var codeGroupValues = codeGroups.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
-					allComplianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId && codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty))
-						.Select(x => new{x.SubGroup, x.TypeProperty, x.Code}).Execute();
+					currentComplianceGuides = allComplianceGuidesInTour.Where(x => codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty)).ToList();
 				}
 				Logger.Verbose("Получение значений из таблицы соответствий кода и группы");
 
@@ -178,7 +178,7 @@ namespace KadOzenka.Dal.KoObject
 						return;
 					}
 
-					var complianceGuides = GetComplianceGuides(allComplianceGuides.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).ToList());
+					var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).ToList());
 
 					if (complianceGuides.IsEmpty())
 					{
@@ -236,6 +236,20 @@ namespace KadOzenka.Dal.KoObject
 		}
 
 		#region Help Methods
+
+		private List<OMComplianceGuide> GetAllComplianceGuidesInTour(long? tourId)
+		{
+			var allComplianceGuidesInTour = OMComplianceGuide.Where(x => x.TourId == tourId).Select(x => new
+			{
+				x.SubGroup,
+				x.TypeProperty,
+				x.Code
+			}).Execute();
+
+			Logger.Debug("Найдено {ComplianceCount} строк из Таблицы соответствия кода и группы");
+
+			return allComplianceGuidesInTour;
+		}
 
 		private void AddValueFactor(OMMainObject mObject, long? idFactor, long? idDoc, DateTime date, string value)
 		{
