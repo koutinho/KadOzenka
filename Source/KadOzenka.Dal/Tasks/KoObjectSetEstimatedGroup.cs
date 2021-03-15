@@ -84,6 +84,9 @@ namespace KadOzenka.Dal.KoObject
 			unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger,
 				param.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
+			//TODO для тестирования
+			//var cadasterNumbersForTesting = new List<string> { "77:02:0023003:88", "50:21:0110114:855", "50:26:0150506:743" };
+			//var units = unitsGetter.GetItems().Where(x => cadasterNumbersForTesting.Contains(x.CadastralNumber)).ToList();
 			var units = unitsGetter.GetItems();
 			Logger.Debug($"Найдено {units.Count} ЕО");
 			CountAllUnits = units.Count;
@@ -112,15 +115,13 @@ namespace KadOzenka.Dal.KoObject
 				Logger.ForContext("CurrentHandledCount", CurrentCount)
 					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
 					.ForContext("CountAllUnits", CountAllUnits)
-					.Debug("Получение необходимых данных из базы для текущей порции юнитов");
+					.Debug("Обаботка пакета юнитов");
 
 				var gbuObjects = new List<OMMainObject>();
 				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
 				if (gbuObjectIds.IsNotEmpty())
 					gbuObjects = OMMainObject.Where(x => gbuObjectIds.Contains(x.Id)).Select(x => x.CadastralNumber).Execute();
-				Logger.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
-					.ForContext("GbuObjectsCount", gbuObjects.Count)
-					.Verbose("Получение связанных с юнитами ГБУ объектов");
+				Logger.ForContext("GbuObjectsCount", gbuObjects.Count).Debug("Получение связанных с юнитами ГБУ объектов");
 
 				var codeGroups = GetValueFactors(gbuObjects, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				Logger.Verbose("Получение значений атрибута кода группы ГБУ объектов");
@@ -145,16 +146,12 @@ namespace KadOzenka.Dal.KoObject
 					gbuQuarterObjects = OMMainObject.Where(x => codeQuartersValues.Contains(x.CadastralNumber)).Select(x => x.CadastralNumber).Execute();
 				}
 				Logger.ForContext("GbuQuarterObjectsCount", gbuQuarterObjects.Count)
-					.ForContext("GbuObjectsCount", gbuObjects.Count)
 					.Verbose("Получение ГБУ объектов кадастровых кварталов");
 
 				var territoryTypes = GetValueFactors(gbuQuarterObjects, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
 
-				Logger.ForContext("CurrentHandledCount", CurrentCount)
-					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
-					.ForContext("CountAllUnits", CountAllUnits)
-					.Debug("Обработка каждого юнита");
+				Logger.Debug("Начат обработка каждого юнита");
 				Parallel.ForEach(currentUnitsPartition, options, item =>
 				{
 					lock (locked)
