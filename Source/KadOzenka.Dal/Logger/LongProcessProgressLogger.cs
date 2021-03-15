@@ -67,7 +67,10 @@ namespace KadOzenka.Dal.Logger
 			var newProgress = (long)Math.Round(((double)currentCount / maxCount) * 100);
 			//убираем 100, т.к. после обработки объектов процесс обычно выполняет еще какие-нибудь действия
 			if (newProgress != processQueue.Progress && newProgress != 100)
+			{
+				Serilog.Log.Logger.Debug("Обрабатывается объект {CurrentCount} из {MaxCount}", currentCount, maxCount);
 				WorkerCommon.SetProgress(processQueue, newProgress);
+			}
 		}
 	}
 }

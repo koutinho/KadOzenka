@@ -1,5 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 using Core.Register;
+using Kendo.Mvc.UI;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
@@ -34,5 +37,10 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		public bool IsNewAttribute { get; set; } = false;
 
+		/// <summary>
+		/// Дерево с атрибутами, которые доступны для каждой операции
+		/// </summary>
+		[XmlIgnore]
+		public List<DropDownTreeItemModel> PossibleAttributes { get; set; }
 	}
 }

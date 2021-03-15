@@ -11,6 +11,7 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
@@ -223,7 +224,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(), 
 				new List<long> {evaluativeGroupAttribute.RegisterId},
 				new List<long> {evaluativeGroupAttribute.Id}, 
-				DateTime.Now.GetEndOfTheDay(), isLight: true);
+				DateTime.Now.GetEndOfTheDay(),
+				attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 			_log.Debug("Найдено {GbuEvaluativeGroupValuesCount} значений ГБУ-атрибутов", gbuEvaluativeGroupValues.Count);
 
 			var tourGroupsInfo = GroupService.GetTourGroupsInfo(task.TourId, ObjectTypeExtended.Both);
@@ -273,7 +275,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				new List<long> { RosreestrRegisterService.RegisterId },
 				new List<long> { group.Id },
 				DateTime.Now.GetEndOfTheDay(),
-				isLight: true);
+				attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 			_log.Debug($"Найдено {groupAttributes.Count} ОН со значениями из Росреестра");
 
 			var resultObjectIds = new List<long>();

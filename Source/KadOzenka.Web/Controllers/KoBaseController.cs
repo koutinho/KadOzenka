@@ -12,13 +12,23 @@ using Kendo.Mvc.UI;
 using ObjectModel.Core.TD;
 using Core.Main.FileStorages;
 using System.IO;
+using Core.Register;
+using Core.Register.RegisterEntities;
 using KadOzenka.Web.Attributes;
 
 namespace KadOzenka.Web.Controllers
 {
     public class KoBaseController : BaseController
 	{
-		[HttpGet]
+        protected IGbuObjectService GbuObjectService { get; set; }
+
+        public KoBaseController()
+        {
+	        GbuObjectService = new GbuObjectService();
+        }
+
+
+        [HttpGet]
 		[SRDFunction(Tag = "")]
 		public IActionResult DownloadExcelFileFromSessionByName(string fileName)
 		{
@@ -127,19 +137,39 @@ namespace KadOzenka.Web.Controllers
                 }).ToList();
         }
 
-        protected List<DropDownTreeItemModel> GetGbuAttributesTree()
+        protected List<DropDownTreeItemModel> GetGbuAttributesTree(List<RegisterAttributeType> availableTypes = null)
         {
-	        return new GbuObjectService().GetGbuAttributesTree()
-		        .Select(x => new DropDownTreeItemModel
+	        var gbuRegisterIds = GbuObjectService.GetGbuRegistersIds();
+
+	        return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id))
+		        .Select(register =>
 		        {
-			        Value = Guid.NewGuid().ToString(),
-			        Text = x.Text,
-			        Items = x.Items.Select(y => new DropDownTreeItemModel
+			        Func<RegisterAttribute, bool> attributeSearchExpression;
+			        if (availableTypes == null)
 			        {
-				        Value = y.Value,
-				        Text = y.Text
-			        }).ToList()
-		        }).ToList();
+				        attributeSearchExpression = attribute =>
+					        attribute.RegisterId == register.Id && attribute.IsDeleted == false;
+			        }
+			        else
+			        {
+				        attributeSearchExpression = attribute =>
+					        attribute.RegisterId == register.Id && attribute.IsDeleted == false &&
+					        availableTypes.Contains(attribute.Type);
+			        }
+
+			        return new DropDownTreeItemModel
+			        {
+				        Value = Guid.NewGuid().ToString(),
+				        Text = register.Description,
+				        Items = RegisterCache.RegisterAttributes.Values
+					        .Where(attributeSearchExpression)
+					        .Select(attribute => new DropDownTreeItemModel
+					        {
+						        Text = attribute.Name,
+						        Value = attribute.Id.ToString()
+					        }).ToList()
+			        };
+		        }).Where(x => x.Items.Count > 0).ToList();
         }
 
         protected FileSize CalculateFileSize(string storageKey, DateTime fileDateOnServer, string fileName)
@@ -160,5 +190,5 @@ namespace KadOzenka.Web.Controllers
 	        }
 	        return fileSize;
         }
-    }
+	}
 }

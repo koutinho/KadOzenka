@@ -7,12 +7,14 @@ using KadOzenka.Web.Models.GbuObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using KadOzenka.Dal.GbuObject.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.GbuObject.Entities;
 using ObjectModel.Directory;
 using Platform.Register;
 using Serilog;
@@ -62,159 +64,149 @@ namespace KadOzenka.Dal.GbuObject
 		}
 
         public List<GbuObjectAttribute> GetAllAttributes(long objectId, List<long> sources = null,
-            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
+            List<long> attributes = null, DateTime? dateS = null, DateTime? dateOt = null, 
+            List<GbuColumnsToDownload> attributesToDownload = null)
         {
-            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, isLight);
+            return GetAllAttributes(new List<long> {objectId}, sources, attributes, dateS, dateOt, attributesToDownload);
         }
 
-        public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, bool isLight = false)
+		public List<GbuObjectAttribute> GetAllAttributes(List<long> objectIds, List<long> sources = null, 
+			List<long> inputAttributes = null, DateTime? dateS = null, DateTime? dateOt = null, 
+			List<GbuColumnsToDownload> attributesToDownload = null)
 		{
-			if (objectIds == null || objectIds.Count == 0) return new List<GbuObjectAttribute>();
-
-			var uniqueObjectIds = objectIds.Distinct().ToList();
-			var attributes = inputAttributes?.Distinct().ToList();
-			if (sources == null)
+			using (_log.TimeOperation("Получение ГБУ атрибутов"))
 			{
-				List<int> registerIds = attributes != null && attributes.Count > 0
-					? RegisterCache.RegisterAttributes.Values
-						.Where(x => attributes.Contains(x.Id))
-						.Select(x => x.RegisterId)
-						.ToList()
-					: null;
+				if (objectIds == null || objectIds.Count == 0) return new List<GbuObjectAttribute>();
 
-				var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
-
-				sources = RegisterCache.Registers.Values
-					.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id &&
-					            (registerIds == null || registerIds.Contains(x.Id)))
-					.Select(x => (long) x.Id)
-					.ToList();
-			}
-
-			var uniqueSources = sources.Distinct().ToList();
-			var result = new List<GbuObjectAttribute>();
-			foreach (var registerId in uniqueSources)
-			{
-				var registerData = RegisterCache.GetRegisterData((int) registerId);
-
-				if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
+				var uniqueObjectIds = objectIds.Distinct().ToList();
+				var attributes = inputAttributes?.Distinct().Where(x => x != 0).ToList();
+				if (sources == null)
 				{
-					var postfixes = new List<string> {"TXT", "NUM", "DT"};
+					List<int> registerIds = attributes != null && attributes.Count > 0
+						? RegisterCache.RegisterAttributes.Values
+							.Where(x => attributes.Contains(x.Id))
+							.Select(x => x.RegisterId)
+							.ToList()
+						: null;
 
-					foreach (var postfix in postfixes)
+					var mainRegister = RegisterCache.GetRegisterData(ObjectModel.Gbu.OMMainObject.GetRegisterId());
+
+					sources = RegisterCache.Registers.Values
+						.Where(x => x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id &&
+						            (registerIds == null || registerIds.Contains(x.Id)))
+						.Select(x => (long) x.Id)
+						.ToList();
+				}
+
+				var uniqueSources = sources.Distinct().ToList();
+				var result = new List<GbuObjectAttribute>();
+				foreach (var registerId in uniqueSources)
+				{
+					var registerData = RegisterCache.GetRegisterData((int) registerId);
+
+					if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.DataType)
 					{
-						var propName = "StringValue";
+						var postfixes = new List<string> {"TXT", "NUM", "DT"};
 
-						if (postfix == "NUM") propName = "NumValue";
-						else if (postfix == "DT") propName = "DtValue";
-
-						var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName,
-							registerData, isLight);
-
-						if (attributes != null && attributes.Count > 0)
-							sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
-
-						if (dateS != null || dateOt != null)
+						foreach (var postfix in postfixes)
 						{
-							string dateSFilter = dateS == null
-								? String.Empty
-								: $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
-							string dateOtFilter = dateOt == null
-								? String.Empty
-								: $"AND A3.Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+							var propName = "StringValue";
 
-							sql =
-								$"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
+							if (postfix == "NUM") propName = "NumValue";
+							else if (postfix == "DT") propName = "DtValue";
+
+							var sql = GetSqlForRegisterWithDataPartitioning(uniqueObjectIds, postfix, propName,
+								registerData, attributesToDownload);
+
+							if (attributes != null && attributes.Count > 0)
+								sql = $"{sql} and a.attribute_id in ({String.Join(",", attributes)})";
+
+							if (dateS != null || dateOt != null)
+							{
+								string dateSFilter = dateS == null
+									? String.Empty
+									: $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
+								string dateOtFilter = dateOt == null
+									? String.Empty
+									: $"AND A3.Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+
+								sql =
+									$"{sql} and A.ID = (SELECT MAX(a2.id) FROM {registerData.AllpriTable}_{postfix} a2 WHERE a2.object_id = a.object_id AND a2.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a2")} AND a2.ot = (SELECT MAX(a3.ot) FROM {registerData.AllpriTable}_{postfix} a3 WHERE a3.object_id = a.object_id AND a3.attribute_id = a.attribute_id {dateSFilter.Replace("[A]", "a3")} {dateOtFilter}))";
+							}
+
+							result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
 						}
+					}
+					else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
+					{
+						List<RegisterAttribute> attributesData;
 
-						result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+						if (attributes == null)
+							attributesData = RegisterCache.RegisterAttributes.Values.ToList()
+								.Where(x => x.RegisterId == registerId).ToList();
+						else
+							attributesData = RegisterCache.RegisterAttributes.Values.ToList()
+								.Where(x => attributes.Contains(x.Id) && x.RegisterId == registerId).ToList();
+
+						foreach (var attributeData in attributesData)
+						{
+							if (attributeData.IsPrimaryKey) continue;
+
+							var propName = "StringValue";
+							switch (attributeData.Type)
+							{
+								case RegisterAttributeType.INTEGER:
+								case RegisterAttributeType.DECIMAL:
+								case RegisterAttributeType.BOOLEAN:
+									propName = "NumValue";
+									break;
+								case RegisterAttributeType.DATE:
+									propName = "DtValue";
+									break;
+								default:
+									propName = "StringValue";
+									break;
+							}
+
+							var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName,
+								attributeData, registerData, attributesToDownload);
+
+							if (dateS != null || dateOt != null)
+							{
+								string dateSFilter = dateS == null
+									? String.Empty
+									: $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
+								string dateOtFilter = dateOt == null
+									? String.Empty
+									: $"AND [A].Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
+
+								sql =
+									$"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
+							}
+
+							result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
+						}
 					}
 				}
-				else if (registerData.AllpriPartitioning == Platform.Register.AllpriPartitioningType.AttributeId)
-				{
-					List<RegisterAttribute> attributesData;
 
-					if (attributes == null)
-						attributesData = RegisterCache.RegisterAttributes.Values.ToList()
-							.Where(x => x.RegisterId == registerId).ToList();
-					else
-						attributesData = RegisterCache.RegisterAttributes.Values.ToList()
-							.Where(x => attributes.Contains(x.Id) && x.RegisterId == registerId).ToList();
-
-					foreach (var attributeData in attributesData)
-					{
-						if (attributeData.IsPrimaryKey) continue;
-
-						var propName = "StringValue";
-						switch (attributeData.Type)
-						{
-							case RegisterAttributeType.INTEGER:
-							case RegisterAttributeType.DECIMAL:
-							case RegisterAttributeType.BOOLEAN:
-								propName = "NumValue";
-								break;
-							case RegisterAttributeType.DATE:
-								propName = "DtValue";
-								break;
-							default:
-								propName = "StringValue";
-								break;
-						}
-
-						var sql = GetSqlForRegisterWithAttributePartitioning(uniqueObjectIds, propName,
-							attributeData, registerData, isLight);
-
-						if (dateS != null || dateOt != null)
-						{
-							string dateSFilter = dateS == null
-								? String.Empty
-								: $"AND [A].s <= {CrossDBSQL.ToDate(dateS.Value)}";
-							string dateOtFilter = dateOt == null
-								? String.Empty
-								: $"AND [A].Ot <= {CrossDBSQL.ToDate(dateOt.Value)}";
-
-							sql =
-								$"{sql} {dateSFilter.Replace("[A]", "A")} and A.OT = (SELECT MAX(A2.OT) FROM {registerData.AllpriTable}_{attributeData.Id} A2 WHERE A2.object_id = A.object_id  {dateSFilter.Replace("[A]", "A2")} {dateOtFilter.Replace("[A]", "A2")})";
-						}
-
-						result.AddRange(_queryManager != null ? _queryManager.ExecuteSql<GbuObjectAttribute>(sql) : QSQuery.ExecuteSql<GbuObjectAttribute>(sql));
-					}
-				}
+				return result;
 			}
-
-			return result;
 		}
 
-        private static string GetSqlForRegisterWithDataPartitioning(List<long> objectIds, string postfix, string propName, RegisterData registerData, bool isLight)
-        {
-            if (isLight)
+        private static string GetSqlForRegisterWithDataPartitioning(List<long> objectIds, string postfix, string propName, RegisterData registerData, List<GbuColumnsToDownload> attributesToDownload)
+		{
+			if (attributesToDownload != null)
+			{
+				var columnsToSelect = GetSqlForColumns(attributesToDownload, propName, "a.attribute_id");
+
 				return $@"
                     select 
-	                    --a.id,
-	                    a.object_id as ObjectId,
-	                    a.attribute_id as AttributeId,
-	                    --a.Ot,
-	                    --a.S,
-	                    --{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
-	                    a.value as {propName}--,
-
-	                    --a.change_user_id as ChangeUserId,
-	                    --a.change_doc_id as ChangeDocId,
-	                    --a.change_date as ChangeDate,
-
-	                    --a.change_id as ChangeId,
-
-	                    --u.fullname as UserFullname,
-
-	                    --td.regnumber as DocNumber,
-	                    --td.description as DocType,
-	                    --td.create_date as DocDate
+						{columnsToSelect.TrimEnd(',')}
 
                     from {registerData.AllpriTable}_{postfix} a
-                    --left join core_srd_user u on u.id = a.change_user_id
-                    --left join core_td_instance td on td.id = a.change_doc_id
                     where a.object_id in ({string.Join(",", objectIds)})";
-
+			}
+			
 			return $@"
                 select 
 	                a.id,
@@ -241,40 +233,26 @@ namespace KadOzenka.Dal.GbuObject
                 left join core_srd_user u on u.id = a.change_user_id
                 left join core_td_instance td on td.id = a.change_doc_id
                 where a.object_id in ({string.Join(",", objectIds)})";
-        }
+		}
 
-        private static string GetSqlForRegisterWithAttributePartitioning(List<long> objectIds, string propName,
-            RegisterAttribute attributeData, RegisterData registerData, bool isLight = false)
-        {
-            if (isLight)
-                return $@"
+		private static string GetSqlForRegisterWithAttributePartitioning(List<long> objectIds, string propName,
+			RegisterAttribute attributeData, RegisterData registerData, List<GbuColumnsToDownload> attributesToDownload = null)
+		{
+			if (attributesToDownload != null)
+			{
+				var columnsToSelect = GetSqlForColumns(attributesToDownload, propName, attributeData.Id.ToString());
+
+				return $@"
                     select 
-	                --a.id,
-	                a.object_id as ObjectId,
-	                {attributeData.Id} as AttributeId,
-	                --a.Ot,
-	                --a.S,
-	                --{(attributeData.Type == RegisterAttributeType.STRING ? "a.ref_item_id as RefItemId," : string.Empty)}
-	                a.value as {propName}--,
+						{columnsToSelect.TrimEnd(',')} 
+	               
+	                from {registerData.AllpriTable}_{attributeData.Id} a
+	                --left join core_srd_user u on u.id = a.change_user_id
+	                --left join core_td_instance td on td.id = a.change_doc_id
+	                where a.object_id in ({string.Join(",", objectIds)})";
+			}
 
-	                --a.change_user_id as ChangeUserId,
-	                --a.change_doc_id as ChangeDocId,
-	                --a.change_date as ChangeDate,
-
-	                --null as ChangeId,
-
-	                --u.fullname as UserFullname,
-
-	                --td.regnumber as DocNumber,
-	                --td.description as DocType,
-	                --td.create_date as DocDate
-
-                from {registerData.AllpriTable}_{attributeData.Id} a
-                --left join core_srd_user u on u.id = a.change_user_id
-                --left join core_td_instance td on td.id = a.change_doc_id
-                where a.object_id in ({string.Join(",", objectIds)})";
-
-            return $@"
+			return $@"
                 select 
 	                a.id,
 	                a.object_id as ObjectId,
@@ -300,9 +278,51 @@ namespace KadOzenka.Dal.GbuObject
                 left join core_srd_user u on u.id = a.change_user_id
                 left join core_td_instance td on td.id = a.change_doc_id
                 where a.object_id in ({string.Join(",", objectIds)})";
-        }
+		}
 
-        public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
+		public static string GetSqlForColumns(List<GbuColumnsToDownload> attributes, string valueColumnAlias, string attributeIdColumnName)
+		{
+			var selectedColumnsSql = new StringBuilder();
+			attributes.ForEach(x =>
+			{
+				var columnName = x.GetEnumDescription();
+				if (x == GbuColumnsToDownload.Value)
+				{
+					columnName += $" as {valueColumnAlias}";
+				}
+				selectedColumnsSql.AppendLine($"{columnName},");
+			});
+
+			var allColumns = $@" 
+						a.object_id as ObjectId,
+	                    {attributeIdColumnName} as AttributeId,
+	                    {selectedColumnsSql} ";
+
+			return allColumns.TrimEnd().TrimEnd(',');
+
+			//TODO начальный запрос
+			//$@" --a.id,
+			//                  a.object_id as ObjectId,
+			//                  a.attribute_id as AttributeId,
+			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.Ot)} a.Ot,
+			//                  --a.S,
+			//                  --{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
+			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.Value)} a.value as {propName}--,
+
+			//                  --a.change_user_id as ChangeUserId,
+			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.DocumentId)} a.change_doc_id as ChangeDocId,
+			//					--a.change_date as ChangeDate,
+
+			//                  --a.change_id as ChangeId,
+
+			//                  --u.fullname as UserFullname,
+
+			//                  --td.regnumber as DocNumber,
+			//                  --td.description as DocType,
+			//                  --td.create_date as DocDate,";
+		}
+
+		public List<AllDataTreeDto> GetAllDataTree(long objectId, string parentNodeId, long nodeLevel)
 		{
 			List<AllDataTreeDto> result = new List<AllDataTreeDto>();
 
@@ -486,22 +506,6 @@ from (select
 		{
 			return OMObjectsCharacteristicsRegister.Where(x => true)
 				.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
-		}
-
-		public List<GbuAttributesTreeDto> GetGbuAttributesTree()
-		{
-			var gbuRegisterIds = GetGbuRegistersIds();
-			return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id)).Select(x => new GbuAttributesTreeDto
-			{
-				Text = x.Description,
-				Value = x.Id.ToString(),
-				Items = RegisterCache.RegisterAttributes.Values.Where(y => y.RegisterId == x.Id && y.IsDeleted == false)
-					.Select(y => new SelectListItem
-					{
-						Text = y.Name,
-						Value = y.Id.ToString()
-					}).ToList()
-			}).ToList();
 		}
 
         public List<OMAttribute> GetGbuAttributes()

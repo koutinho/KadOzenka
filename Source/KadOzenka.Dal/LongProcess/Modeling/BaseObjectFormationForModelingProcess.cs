@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using ExCSS.Model.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Dto;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -72,31 +75,74 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected void CreateMarkCatalog(long? groupId, List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
 		{
-			AddLog(queue, "Начато формирование каталога меток", logger: Logger);
-
-			attributes.ForEach(attribute =>
+			using (Logger.TimeOperation("Формирование каталога меток"))
 			{
-				var numberOfMarks = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
-				AddLog(queue, $"Удалено {numberOfMarks} предыдущих меток для фактора '{attribute.AttributeName}' (ИД {attribute.AttributeId})", logger: Logger);
-			});
+				AddLog(queue, "Начато формирование каталога меток", logger: Logger);
 
-			for (var i = 0; i < modelObjects.Count; i++)
-			{
-				var modelObject = modelObjects[i];
-				var objectCoefficients = modelObject.DeserializeCoefficient();
-
-				foreach (var attribute in attributes)
+				using (Logger.TimeOperation("Удаление всех предыдущих меток"))
 				{
-					var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
-					if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
-					    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
-						continue;
-
-					ModelFactorsService.CreateMark(objectCoefficient.Value, objectCoefficient.Coefficient, attribute.AttributeId, groupId);
+					attributes.ForEach(attribute =>
+					{
+						var deletedMarksCount = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
+						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для фактора '{AttributeName}' (ИД {AttributeId})", deletedMarksCount, attribute.AttributeName, attribute.AttributeId);
+					});
 				}
-			}
 
-			AddLog(queue, "Закончено формирование каталога меток", logger: Logger);
+				using (Logger.TimeOperation("Создание новых меток"))
+				{
+					var rowsToInsertSql = new StringBuilder();
+					var marksCounter = 0;
+					for (var i = 0; i < modelObjects.Count; i++)
+					{
+						var modelObject = modelObjects[i];
+						var objectCoefficients = modelObject.DeserializeCoefficient();
+
+						foreach (var attribute in attributes)
+						{
+							var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
+							if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
+							    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
+								continue;
+
+							var value = objectCoefficient.Value.Replace(',', '.');
+							var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
+							rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {groupId}, {attribute.AttributeId}, {value}, {metka}),");
+
+							//добавляем метки пакетом по 1000 записей
+							marksCounter++;
+							if (marksCounter % 2500 == 0)
+							{
+								InsertMarks(rowsToInsertSql);
+								rowsToInsertSql = new StringBuilder();
+							}
+						}
+					}
+
+					if (rowsToInsertSql.Length > 0)
+					{
+						InsertMarks(rowsToInsertSql);
+					}
+
+					Logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
+				}
+				
+				AddLog(queue, "Закончено формирование каталога меток", logger: Logger);
+			}
+		}
+
+		private void InsertMarks(StringBuilder rowsToInsertSql)
+		{
+			//убираем последний перевод строки и знак ','
+			rowsToInsertSql.TrimLastLine().Length--;
+
+			var sql = @$"INSERT INTO ko_mark_catalog (id, group_id, factor_id, value_factor, metka_factor)
+							VALUES
+							{rowsToInsertSql}";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			var insertedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
+
+			Logger.Debug("В БД добавлено {numberOfMarks} меток", insertedMarksCount);
 		}
 
 		protected void SaveStatistic(List<OMModelToMarketObjects> objects, List<ModelAttributePure> attributes, OMModel model, OMQueue queue)

@@ -149,7 +149,7 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-        #region GroupingObject
+        #region Нормализация
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
@@ -161,7 +161,8 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-            ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
 
 			return View(new GroupingObject());
 		}
@@ -398,17 +399,7 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			ViewData["Documents"] = GetDocumentsForPartialView();
 
@@ -477,17 +468,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GetRow([FromForm] int rowNumber)
 		{
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			ViewData["RowNumber"] = rowNumber.ToString();
 			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", new PartialAttribute());
@@ -496,17 +477,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GetRows(int startRowNumber, int rowCount, int[] rowValues)
 		{
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 			ViewData["StartRowNumber"] = startRowNumber;
 			ViewData["RowCount"] = rowCount;
 
@@ -525,17 +496,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_INHERITANCE)]
 		public ActionResult Inheritance()
 		{
-			ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-				.Select(x => new DropDownTreeItemModel
-				{
-					Value = Guid.NewGuid().ToString(),
-					Text = x.Text,
-					Items = x.Items.Select(y => new DropDownTreeItemModel
-					{
-						Value = y.Value,
-						Text = y.Text
-					}).ToList()
-				}).AsEnumerable();
+			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 			long[] arr = new long[5];
 			return View(new InheritanceViewModel{Attributes = new List<long>(arr.ToList())});
@@ -578,17 +539,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_SET_ESTIMATED_GROUP)]
 		public ActionResult SetEstimatedGroup()
 	    {
-	        ViewData["TreeAttributes"] = _service.GetGbuAttributesTree()
-	            .Select(x => new DropDownTreeItemModel
-	            {
-	                Value = Guid.NewGuid().ToString(),
-	                Text = x.Text,
-	                Items = x.Items.Select(y => new DropDownTreeItemModel
-	                {
-	                    Value = y.Value,
-	                    Text = y.Text
-	                }).ToList()
-	            }).AsEnumerable();
+	        ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
 	        return View();
 	    }
@@ -649,21 +600,6 @@ namespace KadOzenka.Web.Controllers
 			return RegisterCache.Registers.Values.Where(x => _service.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
-        private IEnumerable<DropDownTreeItemModel> GetGbuAttributesTree()
-        {
-            return _service.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
-        }
-
-        #endregion
+		#endregion
     }
 }

@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Units.Repositories;
@@ -81,7 +82,7 @@ namespace KadOzenka.Dal.Tests.Tasks.LongProcess
 		protected void MockGbuObjectServiceGetAllAttributes(List<GbuObjectAttribute> output)
 		{
 			GbuObjectService.Setup(x => x.GetAllAttributes(It.IsAny<List<long>>(), It.IsAny<List<long>>(),
-					It.IsAny<List<long>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<bool>()))
+					It.IsAny<List<long>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<List<GbuColumnsToDownload>>()))
 				.Returns(output);
 		}
 

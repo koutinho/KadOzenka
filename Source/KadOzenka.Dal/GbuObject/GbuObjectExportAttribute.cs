@@ -12,6 +12,7 @@ using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -428,7 +429,8 @@ namespace KadOzenka.Dal.GbuObject
 					placements.Select(x => x.ObjectId).Distinct().ToList(),
 					new List<long> { placementPurposeAttribute.RegisterId },
 					new List<long> { placementPurposeAttribute.Id },
-					DateTime.Now.GetEndOfTheDay(), isLight: true);
+					DateTime.Now.GetEndOfTheDay(),
+					attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });
 
 			foreach (var placement in placements)
 			{

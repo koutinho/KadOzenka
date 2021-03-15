@@ -47,6 +47,7 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
@@ -655,6 +656,40 @@ namespace KadOzenka.BlFrontEnd
 					Parameters = new ReportLongProcessOnlyTasksInputParameters {TaskIds = new List<long>{ 15534573 }}.SerializeToXml()
 				}, cancelToken);
 			});
+
+            consoleHelper.AddCommand("566", "Тестирование отмены нормализации", () =>
+            {
+	            //TODO тестирование отмены процесса
+	            var cancelSource = new CancellationTokenSource();
+	            var cancelToken = cancelSource.Token;
+	            Task.Factory.StartNew(() =>
+	            {
+		            Thread.Sleep(5000);
+		            cancelSource.Cancel();
+	            });
+	            new SetPriorityGroupProcess().StartProcess(new OMProcessType(), new OMQueue
+	            {
+		            Status_Code = Status.Added,
+		            UserId = SRDSession.GetCurrentUserId(),
+		            Parameters = new GroupingSettings().SerializeToXml()
+	            }, cancelToken);
+            });
+
+
+            consoleHelper.AddCommand("567", "Тестирование сервиса для получения ГБУ-атрибутов", () =>
+            {
+	            var objectIds = new List<long> {53556156};
+	            var date = DateTime.Now.GetEndOfTheDay();
+	            var selectedColumns = new List<GbuColumnsToDownload>();
+				//a.Add(GbuObjectService.GbuObjectAttributeToDownload.Ot);
+
+				var attributes1 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8}, date);
+
+				var attributes2 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8, 545}, date, attributesToDownload: selectedColumns);
+
+				selectedColumns.Add(GbuColumnsToDownload.Value);
+				var attributes3 = new GbuObjectService().GetAllAttributes(objectIds, sources: null, inputAttributes: new List<long> {8, 545 }, date, attributesToDownload: selectedColumns);
+            });
 
 
 			//consoleHelper.AddCommand("555", "Корректировка на этажность", () => new Dal.Correction.CorrectionByStageService().MakeCorrection(new DateTime(2020, 3, 1)));

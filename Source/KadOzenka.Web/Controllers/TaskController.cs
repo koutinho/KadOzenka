@@ -164,17 +164,7 @@ namespace KadOzenka.Web.Controllers
         {
             var model = new ExportAttributesModel();
 
-            ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
+            ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
             ViewData["KoAttributes"] = new List<DropDownTreeItemModel>();
 
@@ -187,17 +177,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_TRANSFER_ATTRIBUTES)]
         public JsonResult GetRegisterAttributes()
         {
-            var res = GbuObjectService.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
+            var res = GetGbuAttributesTree();
+
             return Json(res);
         }
 
@@ -207,17 +188,7 @@ namespace KadOzenka.Web.Controllers
         {
             var model = new ExportAttributesModel();
 
-            ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
+            ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
             ViewData["KoAttributes"] = new List<string>();
 
@@ -338,17 +309,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GetRowExport([FromForm] int rowNumber, [FromForm] long tourId,
             [FromForm] ObjectTypeExtended objectType, [FromForm] bool create)
         {
-            ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
+            ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
             var koAttributes = GetOmAttributesForKo(tourId, objectType, null) ?? new List<OMAttribute>();
 
@@ -368,17 +329,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GetRowExports(int startRowNumber, int rowCount, List<PartialExportAttributesRowModel> rowValues, long tourId,
              ObjectTypeExtended objectType)
         {
-            ViewData["TreeAttributes"] = GbuObjectService.GetGbuAttributesTree()
-                .Select(x => new DropDownTreeItemModel
-                {
-                    Value = Guid.NewGuid().ToString(),
-                    Text = x.Text,
-                    Items = x.Items.Select(y => new DropDownTreeItemModel
-                    {
-                        Value = y.Value,
-                        Text = y.Text
-                    }).ToList()
-                }).AsEnumerable();
+            ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
             var koAttributes = GetOmAttributesForKo(tourId, objectType, null) ?? new List<OMAttribute>();
 
