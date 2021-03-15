@@ -246,7 +246,7 @@ namespace KadOzenka.Dal.KoObject
 				x.Code
 			}).Execute();
 
-			Logger.Debug("Найдено {ComplianceCount} строк из Таблицы соответствия кода и группы");
+			Logger.Debug("Найдено {ComplianceCount} строк из Таблицы соответствия кода и группы", allComplianceGuidesInTour.Count);
 
 			return allComplianceGuidesInTour;
 		}
