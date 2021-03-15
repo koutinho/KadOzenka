@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.DataExport
                     //foreach (var taskId in setting.TaskFilter)
                 {
                     Log.Debug("Начата работа с ЗнО {TaskId}", taskId);
-                    var export = new DEKOGroupExport(setting, subgroup, taskId);
+                    var export = new DEKOGroupExport(setting, subgroup, taskId, unloadResultQueue.Id);
                     export.Export(curr, res);
 
                     lock (syncRoot)
@@ -114,18 +114,20 @@ namespace KadOzenka.Dal.DataExport
             private readonly XmlDocument _xmlFile;
             private readonly OMModel _model;
             private readonly Stopwatch _stopwatch;
+            private long _unloadId;
             private long _unitCount;
             private Dictionary<long?, List<OMMarkCatalog>> _marks;
             private CancellationToken _token;
 
-            protected DEKOGroupExportBase(KOUnloadSettings setting, OMGroup subgroup, long taskId) : this(subgroup,
-                taskId)
+            protected DEKOGroupExportBase(KOUnloadSettings setting, OMGroup subgroup, long taskId, long unloadId) : this(subgroup,
+                taskId, unloadId)
             {
                 _setting = setting;
             }
 
-            protected DEKOGroupExportBase(OMGroup subgroup, long taskId)
+            protected DEKOGroupExportBase(OMGroup subgroup, long taskId, long unloadId)
             {
+                _unloadId = unloadId;
                 _subgroup = subgroup;
                 _taskId = taskId;
                 _singleQueryMode = true;
@@ -188,7 +190,7 @@ namespace KadOzenka.Dal.DataExport
                             {
                                 zf.Save(fs);
                                 fs.Seek(0, SeekOrigin.Begin);
-                                id = SaveReportDownload.SaveReport(fileName + ".zip", fs, OMGroup.GetRegisterId());
+                                id = SaveUnloadResult.SaveResult(fileName, fs, _unloadId, "zip", KoUnloadResultType.UnloadXML2);
                             }
                         }
 
@@ -1156,8 +1158,8 @@ namespace KadOzenka.Dal.DataExport
 
         internal class DEKOGroupExport : DEKOGroupExportBase
         {
-            public DEKOGroupExport(KOUnloadSettings setting, OMGroup subgroup, long taskId)
-                : base(setting, subgroup, taskId)
+            public DEKOGroupExport(KOUnloadSettings setting, OMGroup subgroup, long taskId, long unloadId)
+                : base(setting, subgroup, taskId, unloadId)
             {
             }
 
@@ -1169,8 +1171,8 @@ namespace KadOzenka.Dal.DataExport
 
         internal class DEKOGroupExportForVuon : DEKOGroupExportBase
         {
-            public DEKOGroupExportForVuon(OMGroup subgroup, long taskId)
-                : base(subgroup, taskId)
+            public DEKOGroupExportForVuon(OMGroup subgroup, long taskId, long unloadId)
+                : base(subgroup, taskId, unloadId)
             {
             }
 

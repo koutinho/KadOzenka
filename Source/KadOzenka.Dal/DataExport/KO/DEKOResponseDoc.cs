@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.DataExport
                 zipFile.AlternateEncodingUsage = ZipOption.AsNecessary;
 
                 int num_pp = 0;
-                list_bads.AddRange(CalcXMLResponseDoc(ref num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, setting.DirectoryName, zipFile));
+                list_bads.AddRange(CalcXMLResponseDoc(unloadResultQueue.Id, ref num_pp, units, _doc, out List<ActOpredel> list_act_out, out List<OMInstance> list_doc_out, setting.DirectoryName, zipFile));
                 setProgress(20, progressMessage: progressMessage);
                 KOUnloadResult.SetCurrentProgress(unloadResultQueue, 20);
                 list_doc_out.ForEach(x => { if (list_doc_in.Find(y => y.Id == x.Id) == null) list_doc_in.Add(x); });
@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.DataExport
                 zipFile.Save(stream);
                 stream.Seek(0, SeekOrigin.Begin);
                 var fileName = $"Выгрузка XML результатов Кадастровой оценки по исходящим документам ({ _doc.RegNumber} { _doc.Description})";
-                long id = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
+                long id = SaveUnloadResult.SaveResult(fileName, stream, unloadResultQueue.Id, "zip", KoUnloadResultType.UnloadDEKOResponseDocExportToXml);
                 var fileResult = new ResultKoUnloadSettings
                 {
                     FileId = id,
@@ -80,7 +80,8 @@ namespace KadOzenka.Dal.DataExport
             return result;
         }
 
-        private static string[] CalcXMLResponseDoc(ref int _num_pp, List<OMUnit> _units, OMInstance _doc_out,
+        private static string[] CalcXMLResponseDoc(long unloadId, ref int _num_pp, List<OMUnit> _units,
+            OMInstance _doc_out,
             out List<ActOpredel> _list_act,
             out List<OMInstance> _list_doc_in,
             string _dir_name, ZipFile zipFile)
@@ -142,7 +143,7 @@ namespace KadOzenka.Dal.DataExport
                         stream.Seek(0, SeekOrigin.Begin);
                         zipFile.AddEntry(fileName, stream);
 
-                        XmlVuonExport(group_unit, unit, "", doc_in, _doc_out, dictNodes, zipFile);
+                        XmlVuonExport(unloadId, group_unit, unit, "", doc_in, _doc_out, dictNodes, zipFile);
                         XmlWebExport(group_unit, unit, "", doc_in, _doc_out, zipFile);
                         GetOtvetDocX(unit, "", _doc_out, _num_pp, zipFile);
                         bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
@@ -168,7 +169,7 @@ namespace KadOzenka.Dal.DataExport
                         stream.Seek(0, SeekOrigin.Begin);
                         zipFile.AddEntry(fileName, stream);
 
-                        XmlVuonExport(group_unit, unit, "", doc_in, _doc_out, dictNodes, zipFile);
+                        XmlVuonExport(unloadId, group_unit, unit, "", doc_in, _doc_out, dictNodes, zipFile);
                         GetOtvetDocX(unit, "", _doc_out, _num_pp, zipFile);
                         bads.Add("g|" + unit.CadastralNumber + "|" + ((unit.CadastralCost == null) ? 0 : (decimal)unit.CadastralCost).ToString("0.00"));
 
@@ -383,15 +384,15 @@ namespace KadOzenka.Dal.DataExport
 
         }
 
-        public static bool XmlVuonExport(OMGroup _group_unit, OMUnit _unit, string _dir_name,
+        public static bool XmlVuonExport(long unloadId, OMGroup _group_unit, OMUnit _unit, string _dir_name,
             OMInstance _doc_in, OMInstance _doc_out,
-            Dictionary<Int64, XmlNode> dictNodes, ZipFile zipFile)
+            Dictionary<long, XmlNode> dictNodes, ZipFile zipFile)
         {
             List<OMUnit> units = new List<OMUnit> { _unit };
             _group_unit.Unit = units;
             if (units.Count > 0)
             {
-                var export = new DEKOGroup.DEKOGroupExportForVuon(_group_unit, _unit.TaskId.GetValueOrDefault());
+                var export = new DEKOGroup.DEKOGroupExportForVuon(_group_unit, _unit.TaskId.GetValueOrDefault(), unloadId);
                 //int lenobjs = units.Length;
 //                XmlDocument xmlFile = new XmlDocument();
 //                XmlNode xnLandValuation = xmlFile.CreateElement("FD_State_Cadastral_Valuation");

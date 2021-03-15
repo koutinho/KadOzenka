@@ -86,7 +86,7 @@ namespace KadOzenka.Dal.DataExport
                             long id;
                             using (Log.TimeOperation($"Сохранение файла '{fileName}'"))
                             {
-                                id = SaveReportDownload.SaveReport(fileName, resultFile, OMUnit.GetRegisterId());
+                                id = SaveUnloadResult.SaveResult(fileName, resultFile, unloadResultQueue.Id, "xml", KoUnloadResultType.UnloadXML1);
                             }
 
                             var resFile = new ResultKoUnloadSettings

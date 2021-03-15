@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.DataExport
                     {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
 
                         count_file++;
-                        var fileResult = SaveExcel4(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
+                        var fileResult = SaveExcel4(unloadResultQueue.Id, units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
                             taskId, message);
                         res.Add(fileResult);
                         units_curr.Clear();
@@ -67,7 +67,7 @@ namespace KadOzenka.Dal.DataExport
                 if (units_curr.Count > 0)
                 {
                     count_file++;
-                    var fileResult = SaveExcel4(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message);
+                    var fileResult = SaveExcel4(unloadResultQueue.Id, units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName, taskId, message);
                     res.Add(fileResult);
                 }
 
@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        private static ResultKoUnloadSettings SaveExcel4(List<OMUnit> _units_curr, ref int _num_pp, int _count_file,
+        private static ResultKoUnloadSettings SaveExcel4(long unloadId, List<OMUnit> _units_curr, ref int _num_pp, int _count_file,
             string _cad_num, string _dir_name, long _taskid, string _mess)
         {
             ExcelFile excel_edit = new ExcelFile();
@@ -128,7 +128,7 @@ namespace KadOzenka.Dal.DataExport
                                + " " + _cad_num.Replace(":", "_")
                                + "." + _count_file.ToString().PadLeft(5, '0');
 
-            long id =  SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id =  SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable04);
             
             //excel_edit.Save(_dir_name + "\\" + file_name + ".xlsx"); //temp
             
@@ -220,12 +220,12 @@ namespace KadOzenka.Dal.DataExport
 
                         if ((subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Model) || (subgroup.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon))
                         {
-                            var fileResult = SaveExcel5Model(units, subgroup, setting.DirectoryName, taskId, message);
+                            var fileResult = SaveExcel5Model(units, subgroup, unloadResultQueue.Id, setting.DirectoryName, taskId, message);
                             res.Add(fileResult);
                         }
                         else
                         {
-                            var fileResult = SaveExcel5Upksz(units, subgroup, setting.DirectoryName, taskId, message);
+                            var fileResult = SaveExcel5Upksz(units, subgroup, unloadResultQueue.Id, setting.DirectoryName, taskId, message);
                             res.Add(fileResult);
                         }
                         taskCounter++;
@@ -242,7 +242,7 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        private static ResultKoUnloadSettings SaveExcel5Model(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, long _taskid, string _message)
+        private static ResultKoUnloadSettings SaveExcel5Model(List<OMUnit> _units, OMGroup _subgroup, long unloadId, string _dir_name, long _taskid, string _message)
         {
             OMModel model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
             if (model == null)
@@ -327,7 +327,7 @@ namespace KadOzenka.Dal.DataExport
 
             string file_name = "Task_" + _taskid + "_Таблица 5. Модельная стоимость"
                                + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
-            long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable05);
 
             return new ResultKoUnloadSettings
             {
@@ -342,7 +342,7 @@ namespace KadOzenka.Dal.DataExport
         /// Сохранение в Excel "Таблица 5. Метод УПКС".
         /// </summary>
         /// <param name="_subgroup"></param>
-        private static ResultKoUnloadSettings SaveExcel5Upksz(List<OMUnit> _units, OMGroup _subgroup, string _dir_name, long _taskid, string _message)
+        private static ResultKoUnloadSettings SaveExcel5Upksz(List<OMUnit> _units, OMGroup _subgroup, long unloadId, string _dir_name, long _taskid, string _message)
         {
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -388,7 +388,7 @@ namespace KadOzenka.Dal.DataExport
 
             string file_name =  "Task_" + _taskid + "\\Таблица 5. Метод УПКС"
                                 + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
-            long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable05);
 
             return new ResultKoUnloadSettings
             {
@@ -625,7 +625,7 @@ namespace KadOzenka.Dal.DataExport
 
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
-            var fileResult = SaveExcel7(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName,
+            var fileResult = SaveExcel7(list_statistics, unloadResultQueue.Id, setting.UnloadParcel, count_group, setting.DirectoryName,
                 setting.TaskFilter.FirstOrDefault());
             result.Add(fileResult);
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
@@ -669,7 +669,7 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-        private static ResultKoUnloadSettings SaveExcel7(List<GeneralizedValuesUPKSZ> _statistics, bool _is_parsel, int _count_group, string _dir_name, long firrsTaskId)
+        private static ResultKoUnloadSettings SaveExcel7(List<GeneralizedValuesUPKSZ> _statistics, long unloadId, bool _is_parsel, int _count_group, string _dir_name, long firrsTaskId)
         {
             FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_is_parsel) ?"Table7_zu": "Table7_oks", ".xlsx", "ExcelTemplates");
             ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
@@ -702,7 +702,7 @@ namespace KadOzenka.Dal.DataExport
             string file_name =  "Таблица 7. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым районам города Москвы"
                                 + "." + ((_is_parsel) ? "ЗУ" : "ОКС");
 
-            long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable07);
 
             return new ResultKoUnloadSettings
             {
@@ -822,7 +822,7 @@ namespace KadOzenka.Dal.DataExport
 
             #region Формирование отчета
             Console.WriteLine("Формирование отчета ...");
-            var fileResult = SaveExcel8(list_statistics, setting.UnloadParcel, count_group, setting.DirectoryName,
+            var fileResult = SaveExcel8(list_statistics, unloadResultQueue.Id, setting.UnloadParcel, count_group, setting.DirectoryName,
                 setting.TaskFilter.FirstOrDefault());
             result.Add(fileResult);
             KOUnloadResult.SetCurrentProgress(unloadResultQueue, 100);
@@ -868,7 +868,7 @@ namespace KadOzenka.Dal.DataExport
             }
         }
 
-        private static ResultKoUnloadSettings SaveExcel8(List<GeneralizedValuesUPKSZ> _statistics, bool _is_parsel, int _count_group, string _dir_name, long firstTaskId)
+        private static ResultKoUnloadSettings SaveExcel8(List<GeneralizedValuesUPKSZ> _statistics, long unloadId, bool _is_parsel, int _count_group, string _dir_name, long firstTaskId)
         {
             FileStream fileStream = Core.ConfigParam.Configuration.GetFileStream((_is_parsel) ? "Table8_zu" : "Table8_oks", ".xlsx", "ExcelTemplates");
             ExcelFile excel_edit = ExcelFile.Load(fileStream, GemBox.Spreadsheet.LoadOptions.XlsxDefault);
@@ -902,7 +902,7 @@ namespace KadOzenka.Dal.DataExport
             string file_name ="Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
                               + "." + ((_is_parsel) ? "ЗУ" : "ОКС");
 
-            long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable08);
             // excel_edit.Save(file_name);
 
             return new ResultKoUnloadSettings
@@ -945,7 +945,7 @@ namespace KadOzenka.Dal.DataExport
                     if (cad_num_curr != cad_num)
                     {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
                         count_file++;
-                        var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
+                        var fileResult = SaveExcel9(units_curr, unloadResultQueue.Id, ref num_pp, count_file, cad_num, setting.DirectoryName,
                             taskId, message);
                         res.Add(fileResult);
                         units_curr.Clear();
@@ -961,7 +961,7 @@ namespace KadOzenka.Dal.DataExport
                 if (units_curr.Count > 0)
                 {
                     count_file++;
-                    var fileResult = SaveExcel9(units_curr, ref num_pp, count_file, cad_num_curr, setting.DirectoryName,
+                    var fileResult = SaveExcel9(units_curr, unloadResultQueue.Id, ref num_pp, count_file, cad_num_curr, setting.DirectoryName,
                         taskId, message);
                     res.Add(fileResult);
                 }
@@ -974,7 +974,8 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        private static ResultKoUnloadSettings SaveExcel9(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num, string _dir_name, long _taskid, string _mess)
+        private static ResultKoUnloadSettings SaveExcel9(List<OMUnit> _units_curr, long unloadId, ref int _num_pp,
+            int _count_file, string _cad_num, string _dir_name, long _taskid, string _mess)
         {
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");
@@ -1020,7 +1021,7 @@ namespace KadOzenka.Dal.DataExport
                                + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0');
             //excel_edit.Save(file_name);
 
-            long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable09);
 
             return new ResultKoUnloadSettings
             {
@@ -1093,7 +1094,7 @@ namespace KadOzenka.Dal.DataExport
                     {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
 
                         count_file++;
-                        var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num, setting.DirectoryName,
+                        var fileResult = SaveExcel10(units_curr, unloadResultQueue.Id, ref num_pp, count_file, cad_num, setting.DirectoryName,
                             taskId, message);
                         res.Add(fileResult);
                         units_curr.Clear();
@@ -1109,7 +1110,7 @@ namespace KadOzenka.Dal.DataExport
                 if (units_curr.Count > 0)
                 {
                     count_file++;
-                    var fileResult = SaveExcel10(units_curr, ref num_pp, count_file, cad_num_curr,
+                    var fileResult = SaveExcel10(units_curr, unloadResultQueue.Id, ref num_pp, count_file, cad_num_curr,
                         setting.DirectoryName, taskId, message);
                     res.Add(fileResult);
                 }
@@ -1121,7 +1122,8 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        private static ResultKoUnloadSettings SaveExcel10(List<OMUnit> _units_curr, ref int _num_pp, int _count_file, string _cad_num,
+        private static ResultKoUnloadSettings SaveExcel10(List<OMUnit> _units_curr, long unloadId, ref int _num_pp,
+            int _count_file, string _cad_num,
             string _dir_name, long _taskid, string _mess)
         {
             ExcelFile excel_edit = new ExcelFile();
@@ -1173,7 +1175,7 @@ namespace KadOzenka.Dal.DataExport
                                + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0');
             //excel_edit.Save(file_name);
 
-            long id = SaveReportDownload.SaveReportExcel(file_name, excel_edit, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable10);
 
             return new ResultKoUnloadSettings
             {
@@ -1283,7 +1285,7 @@ namespace KadOzenka.Dal.DataExport
                         {  // Если начались объекты из другого кадастрового района, то предыдущие сохраняем в файл 
 
                             count_file++;
-                            var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num,
+                            var fileResult = SaveExcel11(unloadResultQueue.Id, prop_type, units_curr, ref num_pp, count_file, cad_num,
                                 setting.DirectoryName, taskId, message1);
                             res.Add(fileResult);
                             units_curr.Clear();
@@ -1299,7 +1301,7 @@ namespace KadOzenka.Dal.DataExport
                     if (units_curr.Count > 0)
                     {
                         count_file++;
-                        var fileResult = SaveExcel11(prop_type, units_curr, ref num_pp, count_file, cad_num_curr,
+                        var fileResult = SaveExcel11(unloadResultQueue.Id, prop_type, units_curr, ref num_pp, count_file, cad_num_curr,
                             setting.DirectoryName, taskId, message1);
                         res.Add(fileResult);
                     }
@@ -1312,7 +1314,8 @@ namespace KadOzenka.Dal.DataExport
             return res;
         }
 
-        private static ResultKoUnloadSettings SaveExcel11(PropertyTypes _prop_type, List<OMUnit> _units_curr, ref int _num_pp,
+        private static ResultKoUnloadSettings SaveExcel11(long unloadId, PropertyTypes _prop_type,
+            List<OMUnit> _units_curr, ref int _num_pp,
             int _count_file, string _cad_num, string _dir_name, long _taskid, string _mess)
         {
             int start_rows = 3;
@@ -1436,7 +1439,7 @@ namespace KadOzenka.Dal.DataExport
                                + "." + _prop_type.GetEnumDescription()
                                + "." + _count_file.ToString().PadLeft(5, '0');
 
-            long id = SaveReportDownload.SaveReportExcel(file_name, excelTemplate, OMUnit.GetRegisterId());
+            long id = SaveUnloadResult.SaveResult(file_name, excelTemplate, unloadId, KoUnloadResultType.UnloadTable11);
 
             //excelTemplate.Save(file_name);
             return new ResultKoUnloadSettings

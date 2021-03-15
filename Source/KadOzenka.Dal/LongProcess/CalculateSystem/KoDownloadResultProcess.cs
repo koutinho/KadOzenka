@@ -134,7 +134,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 					.Debug("{ProcessType}: Найдено объектов {ResCount}.", processType.Description, res.Count);
 
 				var correctRes = res.Where(x => !x.NoResult).ToList();
-				var zipExportId = GetFinalZipExportId(correctRes.Where(x => x.FileId != 0).ToList());
+				var zipExportId = GetFinalZipExportId(correctRes.Where(x => x.FileId != 0).ToList(), unloadResultQueue.Id);
 				unloadResultQueue.FinalArchiveExportId = zipExportId;
 				unloadResultQueue.Save();
 
@@ -220,7 +220,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 			return msgResult;
 		}
 
-		public long GetFinalZipExportId(List<ResultKoUnloadSettings> result)
+		public long GetFinalZipExportId(List<ResultKoUnloadSettings> result, long unloadId)
 		{
 			long fileId;
 			using (ZipFile zipFile = new ZipFile())
@@ -230,8 +230,9 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 
 				foreach (var entry in result)
 				{
-					var entryStream = DataExporterCommon.GetExportResultFileStream(entry.FileId);
-					var isZip = ZipFile.IsZipFile(entryStream,false);
+					var extension = UnloadResultStorageManager.GetUnloadResultFileExtension(entry.FileId);
+					var entryStream = UnloadResultStorageManager.GetUnloadResultFileById(entry.FileId);
+					var isZip = ZipFile.IsZipFile(entryStream,false) && extension == "zip";
 					entryStream.Seek(0, SeekOrigin.Begin);
 					if (isZip)
 					{
@@ -266,7 +267,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 					}
 					else
 					{
-						zipFile.AddEntry(DataExporterCommon.GetDownloadResultFileName(entry.FileId), entryStream);
+						zipFile.AddEntry(UnloadResultStorageManager.GetUnloadResultFileName(entry.FileId), entryStream);
 					}
 				}
 
@@ -274,7 +275,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 				zipFile.Save(stream);
 				stream.Seek(0, SeekOrigin.Begin);
 				var fileName = "Результаты оценки";
-				fileId = SaveReportDownload.SaveReport(fileName, stream, OMUnit.GetRegisterId(), reportExtension: "zip");
+				fileId = SaveUnloadResult.SaveResult(fileName, stream, unloadId, "zip");
 			}
 
 			return fileId;
@@ -282,7 +283,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 
 		public string GetFinalZipLink(long? finalZipId)
 		{
-			return $"<a href='/DataExport/DownloadExportResult?exportId={finalZipId}'>Результаты оценки</a>" + "<br>";
+			return $"<a href='/UnloadResults/DownloadResult?resultFileId={finalZipId}'>Результаты оценки</a>" + "<br>";
 		}
 
 		public string GetFaultReportMessage(List<ResultKoUnloadSettings> faultResult)

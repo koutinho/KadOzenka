@@ -416,23 +416,20 @@ namespace KadOzenka.Dal.DataExport
         /// </summary>
         public static bool GetObjectAttribute(OMUnit _unit, long _number, out string _value)
         {
-            using (Log.Logger.TimeOperation("Получение атрибутов объекта"))
+            bool result = false;
+            _value = "";
+            List<long> lstIds = new List<long>();
+            lstIds.Add(_number);
+            List<GbuObjectAttribute> attribs =
+                new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value, null, lstIds,
+                    _unit.CreationDate.Value);
+            if (attribs.Count > 0)
             {
-                bool result = false;
-                _value = "";
-                List<long> lstIds = new List<long>();
-                lstIds.Add(_number);
-                List<GbuObjectAttribute> attribs =
-                    new GbuObjectService().GetAllAttributes(_unit.ObjectId.Value, null, lstIds,
-                        _unit.CreationDate.Value);
-                if (attribs.Count > 0)
-                {
-                    _value = attribs[0].StringValue;
-                    result = true;
-                }
-
-                return result;
+                _value = attribs[0].StringValue;
+                result = true;
             }
+
+            return result;
         }
 
         public static bool GetObjectAttribute(List<GbuObjectAttribute> list, OMUnit unit, long attrNumber, out string value)

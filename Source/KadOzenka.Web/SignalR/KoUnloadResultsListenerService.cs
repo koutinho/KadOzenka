@@ -131,7 +131,7 @@ namespace KadOzenka.Web.SignalR
 						LongProcessUrl = $"/RegistersView/CoreLongProcessQueue?Transition=1&97500100={omQueue?.Id}",
 						ExportFile = unloadResultQueue.FinalArchiveExportId.HasValue
 							? new UnloadSettingsQueueExportFileModel {FileId = unloadResultQueue.FinalArchiveExportId.Value, FileName = "Результаты оценки",
-								DownloadUrl = $"/DataExport/DownloadExportResult?exportId={unloadResultQueue.FinalArchiveExportId}"}
+								DownloadUrl = $"/UnloadResults/DownloadResult?resultFileId={unloadResultQueue.FinalArchiveExportId}"}
 							: null
 					});
 			}
