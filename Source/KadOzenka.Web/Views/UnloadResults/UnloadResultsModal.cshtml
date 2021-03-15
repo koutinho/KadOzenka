@@ -1,0 +1,19 @@
+﻿@model KadOzenka.Web.Models.UnloadResults.UnloadResultsDownloadModel
+
+<div class="center">
+    @if (Model.FileExists)
+        {
+            @Html.ActionLink($"Скачать {Model.FileName}", "DownloadResult", "UnloadResults", new { resultFileId = Model.Id}, new {@class = "k-button"});
+        }
+        else {
+            <p>Файл не найден на сервере</p>
+        }
+</div>
+
+<style>
+    .mainContent{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+    }
+</style>
