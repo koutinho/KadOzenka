@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Register;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Entities;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
@@ -90,12 +93,8 @@ namespace KadOzenka.Dal.KoObject
 			unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger,
 				param.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
-			////TODO для тестирования
-			//var cadasterNumbersForTesting = new List<string> { "77:02:0023003:88", "50:21:0110114:855", "50:26:0150506:743" };
-			//var units = unitsGetter.GetItems().Where(x => cadasterNumbersForTesting.Contains(x.CadastralNumber)).ToList();
-			var units = unitsGetter.GetItems();
-			Logger.Debug($"Найдено {units.Count} ЕО");
-			CountAllUnits = units.Count;
+			CountAllUnits = unitsGetter.GetItemsCount();
+			Logger.Debug("Всего в БД {MaxUnitsCount} ЕО", CountAllUnits);
 
 			var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
 			var codeGroupAttribute = RegisterCache.GetAttributeData((int)param.IdCodeGroup);
@@ -104,23 +103,25 @@ namespace KadOzenka.Dal.KoObject
 			var tourId = OMTask.Where(x => x.Id == param.IdTask).Select(x => x.TourId).ExecuteFirstOrDefault().TourId;
 			var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
 
-			// обрабатываем юниты порциями по 1000 для уменьшения числа запросов к бд
-			var partitionSize = 100000;
-			var partitionCount = units.Count / partitionSize + 1;
+			var packageSize = 100000;
+			var numberOfPackages = CountAllUnits / packageSize + 1;
 			var generalCancelTokenSource = new CancellationTokenSource();
 			var generalOptions = new ParallelOptions
 			{
 				CancellationToken = generalCancelTokenSource.Token,
-				MaxDegreeOfParallelism = 5
+				MaxDegreeOfParallelism = 3
 			};
-			Parallel.For(0, partitionCount, generalOptions, (i, s) => 
+			Parallel.For(0, numberOfPackages, generalOptions, (i, s) => 
 			{
-				var currentUnitsPartition = units.Skip(i * partitionSize).Take(partitionSize).ToList();
+				////TODO для тестирования
+				//var cadasterNumbersForTesting = new List<string> { "77:02:0023003:88", "50:21:0110114:855", "50:26:0150506:743" };
+				//var currentUnitsPartition = unitsGetter.GetItems(i, packageSize).Where(x => cadasterNumbersForTesting.Contains(x.CadastralNumber)).ToList();
+				var currentUnitsPartition = unitsGetter.GetItems(i, packageSize);
 				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
 				Logger.ForContext("CurrentHandledCount", CurrentCount)
 					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
 					.ForContext("CountAllUnits", CountAllUnits)
-					.Debug("Обаботка пакета юнитов");
+					.Debug("Обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i, numberOfPackages);
 
 				var codeGroups = GetValueFactors(gbuObjectIds, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
 				Logger.Verbose("Получение значений атрибута кода группы ГБУ объектов");
@@ -150,8 +151,8 @@ namespace KadOzenka.Dal.KoObject
 				var territoryTypes = GetValueFactors(gbuQuarterObjectIds, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
 
-				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-				ParallelOptions options = new ParallelOptions
+				var cancelTokenSource = new CancellationTokenSource();
+				var options = new ParallelOptions
 				{
 					CancellationToken = cancelTokenSource.Token,
 					MaxDegreeOfParallelism = 10
@@ -219,6 +220,11 @@ namespace KadOzenka.Dal.KoObject
 						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					}
 				});
+
+				Logger.Debug("Закончена обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i, numberOfPackages);
+				//попытка принудительно освободить память
+				currentUnitsPartition = null;
+				GC.Collect();
 			});
 
 			var reportId = reportService.SaveReport();
@@ -349,33 +355,47 @@ namespace KadOzenka.Dal.KoObject
 	public class EstimatedGroupAffixingUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
 	{
 		public EstimatedGroupModel Settings { get; set; }
+		private string BaseUnitsCondition { get; set; }
 
 		public EstimatedGroupAffixingUnitsGetter(ILogger logger, EstimatedGroupModel setting) : base(logger)
 		{
 			Settings = setting;
+
+			BaseUnitsCondition = $@" where unit.TASK_ID = {Settings.IdTask}";
 		}
 
 
-		public override List<SetEstimatedGroupUnitPure> GetItems()
+		public override List<SetEstimatedGroupUnitPure> GetItems(int packageIndex, int packageSize)
 		{
 			if (Settings.IdTask == 0)
 				return new List<SetEstimatedGroupUnitPure>();
 
-			return OMUnit.Where(x => x.TaskId == Settings.IdTask && x.ObjectId != null)
-				.Select(x => new
-				{
-					x.ObjectId,
-					x.CadastralNumber,
-					x.PropertyType
-				})
-				.Execute()
-				.Select(x => new SetEstimatedGroupUnitPure
-				{
-					Id = x.Id,
-					ObjectId = x.ObjectId.GetValueOrDefault(),
-					CadastralNumber = x.CadastralNumber,
-					PropertyType = x.PropertyType
-				}).ToList();
+			var sql = $@"select OBJECT_ID as {nameof(SetEstimatedGroupUnitPure.ObjectId)}, 
+								CADASTRAL_NUMBER as {nameof(SetEstimatedGroupUnitPure.CadastralNumber)}, 
+								PROPERTY_TYPE as {nameof(SetEstimatedGroupUnitPure.PropertyType)}
+										from ko_unit unit
+										{BaseUnitsCondition}
+										order by unit.id 
+										limit {packageSize} offset {packageIndex * packageSize}";
+
+			return QSQuery.ExecuteSql<SetEstimatedGroupUnitPure>(sql);
+		}
+
+		public override int GetItemsCount()
+		{
+			var columnName = "count";
+			var countSql = $@"select count(*) as {columnName} from ko_unit unit {BaseUnitsCondition}";
+			var command = DBMngr.Main.GetSqlStringCommand(countSql);
+			var dataSet = DBMngr.Main.ExecuteDataSet(command);
+
+			var unitCount = 0;
+			var row = dataSet.Tables[0]?.Rows[0];
+			if (row != null)
+			{
+				unitCount = row[columnName].ParseToInt();
+			}
+
+			return unitCount;
 		}
 	}
 
