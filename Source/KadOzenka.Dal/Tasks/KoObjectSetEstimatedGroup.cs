@@ -9,10 +9,7 @@ using Core.SRD;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
-using KadOzenka.Dal.GbuObject.Dto;
 using Newtonsoft.Json;
-using ObjectModel.Core.Register;
-using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using Serilog;
@@ -259,7 +256,7 @@ namespace KadOzenka.Dal.KoObject
 		{
 			var result = new Dictionary<long, ValueItem>();
 
-			List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(objs.Select(x => x.Id).ToList(), new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now.Date);
+			var attribs = new GbuObjectService().GetAllAttributes(objs.Select(x => x.Id).ToList(), new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now.Date);
 			foreach (var mainObject in objs)
 			{
 				ValueItem res = new ValueItem
@@ -268,14 +265,14 @@ namespace KadOzenka.Dal.KoObject
 					IdDocument = null,
 				};
 
-				var objAttr = attribs.Where(x => x.ObjectId == mainObject.Id).ToList();
-				if (objAttr.Count > 0)
+				var objAttr = attribs.FirstOrDefault(x => x.ObjectId == mainObject.Id);
+				if (objAttr != null)
 				{
-					var valueInString = objAttr[0].GetValueInString();
+					var valueInString = objAttr.GetValueInString();
 					if (!string.IsNullOrEmpty(valueInString))
 					{
 						res.Value = valueInString;
-						res.IdDocument = objAttr[0].ChangeDocId;
+						res.IdDocument = objAttr.ChangeDocId;
 					}
 				}
 
