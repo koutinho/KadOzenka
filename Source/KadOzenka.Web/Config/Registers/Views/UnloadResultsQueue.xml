@@ -7,6 +7,7 @@
                 <ConditionGroup HideOrDisable="Disable">
                     <Conditions>
                         <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
+                        <Condition Key="[26201400]" Operation="Equal" Value="" />
                     </Conditions>
                 </ConditionGroup>
             </ConditionGroups>

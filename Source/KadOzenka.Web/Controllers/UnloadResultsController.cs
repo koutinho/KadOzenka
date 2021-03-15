@@ -20,7 +20,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = "")]
 		public FileResult DownloadResult(long resultFileId)
 		{
-			var fileName = UnloadResultStorageManager.GetUnloadResultFileName(resultFileId);
+			var fileName = UnloadResultStorageManager.GetUnloadResultFileNameOrDefault(resultFileId);
 			var content = UnloadResultStorageManager.GetUnloadResultFileById(resultFileId);
 			var contentType = UnloadResultStorageManager.GetUnloadResultContentType(resultFileId);
 			return File(content, contentType, fileName);
@@ -39,7 +39,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				var id = resultFileId.Value;
 				var exists = UnloadResultStorageManager.CheckIfFileExists(id);
-				var fileName = UnloadResultStorageManager.GetUnloadResultFileName(id);
+				var fileName = UnloadResultStorageManager.GetUnloadResultFileNameOrDefault(id);
 				model = new UnloadResultsDownloadModel {FileExists = exists, FileName = fileName, Id = id};
 			}
 

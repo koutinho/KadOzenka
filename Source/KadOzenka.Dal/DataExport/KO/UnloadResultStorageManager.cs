@@ -12,14 +12,14 @@ namespace KadOzenka.Dal.DataExport
         public const string FileStorageName = "UnloadResultStorage";
 
         public static string GetUnloadResultFileName(OMUnloadResultFiles export) => $"{export.FileName}.{export.FileExtension}";
-        public static string GetUnloadResultFileName(long resultFileId){
+        public static string GetUnloadResultFileNameOrDefault(long resultFileId){
             var file = GetUnloadResultFile(resultFileId);
-            return $"{file.FileName}.{file.FileExtension}";
+            return file == null ? String.Empty : $"{file.FileName}.{file.FileExtension}";
         }
 
-        public static string GetUnloadResultFileExtension(long resultFileId){
+        public static string GetUnloadResultFileExtensionOrDefault(long resultFileId){
             var file = GetUnloadResultFile(resultFileId);
-            return file.FileExtension;
+            return file == null ? String.Empty : file.FileExtension;
         }
 
         public static List<OMUnloadResultFiles> GetAllFilesFromUnloadQueue(OMUnloadResultQueue queue)

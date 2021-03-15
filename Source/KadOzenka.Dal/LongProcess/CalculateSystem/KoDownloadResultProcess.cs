@@ -230,7 +230,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 
 				foreach (var entry in result)
 				{
-					var extension = UnloadResultStorageManager.GetUnloadResultFileExtension(entry.FileId);
+					var extension = UnloadResultStorageManager.GetUnloadResultFileExtensionOrDefault(entry.FileId);
 					var entryStream = UnloadResultStorageManager.GetUnloadResultFileById(entry.FileId);
 					var isZip = ZipFile.IsZipFile(entryStream,false) && extension == "zip";
 					entryStream.Seek(0, SeekOrigin.Begin);
@@ -267,7 +267,7 @@ namespace KadOzenka.Dal.LongProcess.CalculateSystem
 					}
 					else
 					{
-						zipFile.AddEntry(UnloadResultStorageManager.GetUnloadResultFileName(entry.FileId), entryStream);
+						zipFile.AddEntry(UnloadResultStorageManager.GetUnloadResultFileNameOrDefault(entry.FileId), entryStream);
 					}
 				}
 
