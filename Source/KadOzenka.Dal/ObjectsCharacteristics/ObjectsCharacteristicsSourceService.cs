@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 numberOfExistingRegistersWithCharacteristics++;
                 var registerName = string.Format(Fields.RegisterName, numberOfExistingRegistersWithCharacteristics);
                 var allpriTable = string.Format(Fields.AllpriTable, numberOfExistingRegistersWithCharacteristics);
-                var registerDescription = string.Format(Fields.RegisterDescription, numberOfExistingRegistersWithCharacteristics);
+                var registerDescription = string.Format(Fields.RegisterDescription, sourceDto.RegisterDescription);
                 omRegister = RegisterService.CreateRegister(registerName, registerDescription, Fields.QuantTable, allpriTable, RegisterStorageType);
 
                 RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
