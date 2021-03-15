@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 	public class TaskSetEstimatedGroup : LongProcess
 	{
 		public const string LongProcessName = "SetEstimatedGroup";
-		private readonly ILogger _log = Log.ForContext<HarmonizationProcess>();
+		private readonly ILogger _log = Log.ForContext<TaskSetEstimatedGroup>();
 
 		public static long AddProcessToQueue(int registerId, long objectId, EstimatedGroupModel param)
 		{
