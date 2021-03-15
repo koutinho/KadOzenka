@@ -9,6 +9,7 @@ using Core.SRD;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
+using KadOzenka.Dal.GbuObject.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
@@ -60,11 +61,16 @@ namespace KadOzenka.Dal.KoObject
 	public class KoObjectSetEstimatedGroup
 	{
 		private static readonly ILogger Logger = Log.ForContext<KoObjectSetEstimatedGroup>();
-
+		private GbuObjectService GbuObjectService { get; }
 		private object locked;
 
 		public int CountAllUnits { get; private set; }
 		public int CurrentCount { get; private set; }
+
+		public KoObjectSetEstimatedGroup()
+		{
+			GbuObjectService = new GbuObjectService();
+		}
 
 
 		public string Run(EstimatedGroupModel param)
@@ -84,7 +90,7 @@ namespace KadOzenka.Dal.KoObject
 			unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger,
 				param.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
-			//TODO для тестирования
+			////TODO для тестирования
 			//var cadasterNumbersForTesting = new List<string> { "77:02:0023003:88", "50:21:0110114:855", "50:26:0150506:743" };
 			//var units = unitsGetter.GetItems().Where(x => cadasterNumbersForTesting.Contains(x.CadastralNumber)).ToList();
 			var units = unitsGetter.GetItems();
@@ -111,7 +117,6 @@ namespace KadOzenka.Dal.KoObject
 			for (var i = 0; i < partitionCount; i++)
 			{
 				var currentUnitsPartition = units.Skip(i * partitionSize).Take(partitionSize).ToList();
-
 				Logger.ForContext("CurrentHandledCount", CurrentCount)
 					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
 					.ForContext("CountAllUnits", CountAllUnits)
@@ -151,7 +156,7 @@ namespace KadOzenka.Dal.KoObject
 				var territoryTypes = GetValueFactors(gbuQuarterObjects, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
 				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
 
-				Logger.Debug("Начат обработка каждого юнита");
+				Logger.Debug("Начата обработка каждого юнита");
 				Parallel.ForEach(currentUnitsPartition, options, item =>
 				{
 					lock (locked)
@@ -253,7 +258,10 @@ namespace KadOzenka.Dal.KoObject
 		{
 			var result = new Dictionary<long, ValueItem>();
 
-			var attribs = new GbuObjectService().GetAllAttributes(objs.Select(x => x.Id).ToList(), new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now.Date);
+			var attribs = GbuObjectService.GetAllAttributes(objs.Select(x => x.Id).ToList(),
+				new List<long> {idRegister}, new List<long> {idFactor}, DateTime.Now.Date,
+				attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId});
+
 			foreach (var mainObject in objs)
 			{
 				ValueItem res = new ValueItem
