@@ -86,7 +86,7 @@ namespace KadOzenka.Dal.KoObject
 			reportService.SetIndividualWidth((int)ReportColumns.ErrorColumn, 5);
 			locked = new object();
 
-			var unitsGetter = new InheritanceUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
+			var unitsGetter = new EstimatedGroupAffixingUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
 			unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger,
 				param.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
@@ -346,11 +346,11 @@ namespace KadOzenka.Dal.KoObject
 		public string PropertyType { get; set; }
 	}
 
-	public class InheritanceUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
+	public class EstimatedGroupAffixingUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
 	{
 		public EstimatedGroupModel Settings { get; set; }
 
-		public InheritanceUnitsGetter(ILogger logger, EstimatedGroupModel setting) : base(logger)
+		public EstimatedGroupAffixingUnitsGetter(ILogger logger, EstimatedGroupModel setting) : base(logger)
 		{
 			Settings = setting;
 		}
