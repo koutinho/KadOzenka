@@ -14882,6 +14882,173 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 267 Реестр с файлами выгрузок результатов оценки (KO_UNLOAD_RESULT_FILES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 267)]
+    [Serializable]
+    public partial class OMUnloadResultFiles : OMBaseClass<OMUnloadResultFiles>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26700100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26700100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _unloadid;
+        /// <summary>
+        /// 26700200 Идентификатор выгрузки (UNLOAD_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26700200)]
+        public long UnloadId
+        {
+            get
+            {
+                CheckPropertyInited("UnloadId");
+                return _unloadid;
+            }
+            set
+            {
+                _unloadid = value;
+                NotifyPropertyChanged("UnloadId");
+            }
+        }
+
+
+        private string _unloadtype;
+        /// <summary>
+        /// 26700300 Тип выгрузки ()
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26700300)]
+        public string UnloadType
+        {
+            get
+            {
+                CheckPropertyInited("UnloadType");
+                return _unloadtype;
+            }
+            set
+            {
+                _unloadtype = value;
+                NotifyPropertyChanged("UnloadType");
+            }
+        }
+
+
+        private KoUnloadResultType _unloadtype_Code;
+        /// <summary>
+        /// 26700300 Тип выгрузки (справочный код) (UNLOAD_TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26700300)]
+        public KoUnloadResultType UnloadType_Code
+        {
+            get
+            {
+                CheckPropertyInited("UnloadType_Code");
+                return this._unloadtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_unloadtype))
+                    {
+                         _unloadtype = descr;
+                    }
+                }
+                else
+                {
+                     _unloadtype = descr;
+                }
+
+                this._unloadtype_Code = value;
+                NotifyPropertyChanged("UnloadType");
+                NotifyPropertyChanged("UnloadType_Code");
+            }
+        }
+
+
+        private DateTime _datecreated;
+        /// <summary>
+        /// 26700400 Дата создания (DATE_CREATED)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26700400)]
+        public DateTime DateCreated
+        {
+            get
+            {
+                CheckPropertyInited("DateCreated");
+                return _datecreated;
+            }
+            set
+            {
+                _datecreated = value;
+                NotifyPropertyChanged("DateCreated");
+            }
+        }
+
+
+        private string _filename;
+        /// <summary>
+        /// 26700600 Имя файла (FILE_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26700600)]
+        public string FileName
+        {
+            get
+            {
+                CheckPropertyInited("FileName");
+                return _filename;
+            }
+            set
+            {
+                _filename = value;
+                NotifyPropertyChanged("FileName");
+            }
+        }
+
+
+        private string _fileextension;
+        /// <summary>
+        /// 26700700 Расширение файла (FILE_EXTENSION)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26700700)]
+        public string FileExtension
+        {
+            get
+            {
+                CheckPropertyInited("FileExtension");
+                return _fileextension;
+            }
+            set
+            {
+                _fileextension = value;
+                NotifyPropertyChanged("FileExtension");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
