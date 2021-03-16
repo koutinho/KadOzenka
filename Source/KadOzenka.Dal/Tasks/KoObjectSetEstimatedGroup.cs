@@ -121,10 +121,10 @@ namespace KadOzenka.Dal.KoObject
 				Logger.ForContext("CurrentHandledCount", CurrentCount)
 					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
 					.ForContext("CountAllUnits", CountAllUnits)
-					.Debug("Обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i, numberOfPackages);
+					.Debug("Начата обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i, numberOfPackages);
 
 				var codeGroups = GetValueFactors(gbuObjectIds, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
-				Logger.Verbose("Получение значений атрибута кода группы ГБУ объектов");
+				Logger.Debug("Найдено {CodeGroupsCount} атрибутов с кодом группы для пакета №{PackageIndex}", codeGroups.Count, i);
 
 				var currentComplianceGuides = new List<OMComplianceGuide>();
 				if (currentUnitsPartition.IsNotEmpty() && codeGroups.Values.Any(x => !string.IsNullOrEmpty(x.Value)))
@@ -133,10 +133,10 @@ namespace KadOzenka.Dal.KoObject
 					var codeGroupValues = codeGroups.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
 					currentComplianceGuides = allComplianceGuidesInTour.Where(x => codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty)).ToList();
 				}
-				Logger.Verbose("Получение значений из таблицы соответствий кода и группы");
+				Logger.Debug("Найдено {CurrentComplianceGuidesCount} значений из таблицы соответствий кода и группы для пакета №{PackageIndex}", currentComplianceGuides.Count, i);
 
 				var codeQuarters = GetValueFactors(gbuObjectIds, attributeQuarter.RegisterId, attributeQuarter.Id);
-				Logger.Verbose("Получение значений атрибута кадастровый квартал ГБУ объектов");
+				Logger.Debug("Найдено {CodeQuartersCount} атрибутов кадастрового квартала для пакета №{PackageIndex}", codeQuarters.Count, i);
 
 				var gbuQuarterObjects = new List<OMMainObject>();
 				if (codeQuarters.Values.Any(x => !string.IsNullOrEmpty(x.Value)))
@@ -144,12 +144,11 @@ namespace KadOzenka.Dal.KoObject
 					var codeQuartersValues = codeQuarters.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
 					gbuQuarterObjects = OMMainObject.Where(x => codeQuartersValues.Contains(x.CadastralNumber)).Select(x => x.CadastralNumber).Execute();
 				}
-				Logger.ForContext("GbuQuarterObjectsCount", gbuQuarterObjects.Count)
-					.Verbose("Получение ГБУ объектов кадастровых кварталов");
+				Logger.Debug("Найдено {GbuQuarterObjectsCount} ГБУ объектов кадастровых кварталов для пакета №{PackageIndex}", gbuQuarterObjects.Count, i);
 
 				var gbuQuarterObjectIds = gbuQuarterObjects.Select(x => x.Id).ToList();
 				var territoryTypes = GetValueFactors(gbuQuarterObjectIds, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
-				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
+				Logger.Debug("Найдено {TerritoryTypesCount} атрибутов тип территории для кадастровых кварталов для пакета №{PackageIndex}", territoryTypes.Count, i);
 
 				var cancelTokenSource = new CancellationTokenSource();
 				var options = new ParallelOptions
