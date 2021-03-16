@@ -4,15 +4,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Register;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
-using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
-using ObjectModel.Core.Register;
-using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using Serilog;
@@ -63,11 +64,16 @@ namespace KadOzenka.Dal.KoObject
 	public class KoObjectSetEstimatedGroup
 	{
 		private static readonly ILogger Logger = Log.ForContext<KoObjectSetEstimatedGroup>();
-
+		private GbuObjectService GbuObjectService { get; }
 		private object locked;
 
 		public int CountAllUnits { get; private set; }
 		public int CurrentCount { get; private set; }
+
+		public KoObjectSetEstimatedGroup()
+		{
+			GbuObjectService = new GbuObjectService();
+		}
 
 
 		public string Run(EstimatedGroupModel param)
@@ -83,63 +89,54 @@ namespace KadOzenka.Dal.KoObject
 			reportService.SetIndividualWidth((int)ReportColumns.ErrorColumn, 5);
 			locked = new object();
 
-			var unitsGetter = new InheritanceUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
+			var unitsGetter = new EstimatedGroupAffixingUnitsGetter(Logger, param) as AItemsGetter<SetEstimatedGroupUnitPure>;
 			unitsGetter = new GbuObjectStatusFilterDecorator<SetEstimatedGroupUnitPure>(unitsGetter, Logger,
 				param.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
 
-			var units = unitsGetter.GetItems();
-			Logger.Debug($"Найдено {units.Count} ЕО");
-			CountAllUnits = units.Count;
-
-			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-			ParallelOptions options = new ParallelOptions
-			{
-				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 1
-			};
+			CountAllUnits = unitsGetter.GetItemsCount();
+			Logger.Debug("Всего в БД {MaxUnitsCount} ЕО", CountAllUnits);
 
 			var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
 			var codeGroupAttribute = RegisterCache.GetAttributeData((int)param.IdCodeGroup);
 			var attributeQuarter = RegisterCache.GetAttributeData((int)param.IdCodeQuarter);
 			var attributeTerritoryType = RegisterCache.GetAttributeData((int)param.IdTerritoryType);
 			var tourId = OMTask.Where(x => x.Id == param.IdTask).Select(x => x.TourId).ExecuteFirstOrDefault().TourId;
+			var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
 
-			// обрабатываем юниты порциями по 1000 для уменьшения числа запросов к бд
-			var partitionSize = 1000;
-			var partitionCount = units.Count / partitionSize + 1;
-
-			for (var i = 0; i < partitionCount; i++)
+			var packageSize = 100000;
+			var numberOfPackages = CountAllUnits / packageSize + 1;
+			var generalCancelTokenSource = new CancellationTokenSource();
+			var generalOptions = new ParallelOptions
 			{
-				var currentUnitsPartition = units.Skip(i * partitionSize).Take(partitionSize).ToList();
-
+				CancellationToken = generalCancelTokenSource.Token,
+				MaxDegreeOfParallelism = 3
+			};
+			Parallel.For(0, numberOfPackages, generalOptions, (i, s) => 
+			{
+				////TODO для тестирования
+				//var cadasterNumbersForTesting = new List<string> { "77:02:0023003:88", "50:21:0110114:855", "50:26:0150506:743" };
+				//var currentUnitsPartition = unitsGetter.GetItems(i, packageSize).Where(x => cadasterNumbersForTesting.Contains(x.CadastralNumber)).ToList();
+				var currentUnitsPartition = unitsGetter.GetItems(i, packageSize);
+				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
 				Logger.ForContext("CurrentHandledCount", CurrentCount)
 					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
 					.ForContext("CountAllUnits", CountAllUnits)
-					.Debug("Получение необходимых данных из базы для текущей порции юнитов");
+					.Debug("Начата обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i, numberOfPackages);
 
-				var gbuObjects = new List<OMMainObject>();
-				var gbuObjectIds = currentUnitsPartition.Select(x => x.ObjectId).ToList();
-				if (gbuObjectIds.IsNotEmpty())
-					gbuObjects = OMMainObject.Where(x => gbuObjectIds.Contains(x.Id)).Select(x => x.CadastralNumber).Execute();
-				Logger.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
-					.ForContext("GbuObjectsCount", gbuObjects.Count)
-					.Verbose("Получение связанных с юнитами ГБУ объектов");
+				var codeGroups = GetValueFactors(gbuObjectIds, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
+				Logger.Debug("Найдено {CodeGroupsCount} атрибутов с кодом группы для пакета №{PackageIndex}", codeGroups.Count, i);
 
-				var codeGroups = GetValueFactors(gbuObjects, codeGroupAttribute.RegisterId, codeGroupAttribute.Id);
-				Logger.Verbose("Получение значений атрибута кода группы ГБУ объектов");
-
-				var allComplianceGuides = new List<OMComplianceGuide>();
+				var currentComplianceGuides = new List<OMComplianceGuide>();
 				if (currentUnitsPartition.IsNotEmpty() && codeGroups.Values.Any(x => !string.IsNullOrEmpty(x.Value)))
 				{
 					var propertyTypeValues = currentUnitsPartition.Select(x => x.PropertyType).Distinct().ToList();
 					var codeGroupValues = codeGroups.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
-					allComplianceGuides = OMComplianceGuide.Where(x => x.TourId == tourId && codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty))
-						.Select(x => new{x.SubGroup, x.TypeProperty, x.Code}).Execute();
+					currentComplianceGuides = allComplianceGuidesInTour.Where(x => codeGroupValues.Contains(x.Code) && propertyTypeValues.Contains(x.TypeProperty)).ToList();
 				}
-				Logger.Verbose("Получение значений из таблицы соответствий кода и группы");
+				Logger.Debug("Найдено {CurrentComplianceGuidesCount} значений из таблицы соответствий кода и группы для пакета №{PackageIndex}", currentComplianceGuides.Count, i);
 
-				var codeQuarters = GetValueFactors(gbuObjects, attributeQuarter.RegisterId, attributeQuarter.Id);
-				Logger.Verbose("Получение значений атрибута кадастровый квартал ГБУ объектов");
+				var codeQuarters = GetValueFactors(gbuObjectIds, attributeQuarter.RegisterId, attributeQuarter.Id);
+				Logger.Debug("Найдено {CodeQuartersCount} атрибутов кадастрового квартала для пакета №{PackageIndex}", codeQuarters.Count, i);
 
 				var gbuQuarterObjects = new List<OMMainObject>();
 				if (codeQuarters.Values.Any(x => !string.IsNullOrEmpty(x.Value)))
@@ -147,17 +144,19 @@ namespace KadOzenka.Dal.KoObject
 					var codeQuartersValues = codeQuarters.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
 					gbuQuarterObjects = OMMainObject.Where(x => codeQuartersValues.Contains(x.CadastralNumber)).Select(x => x.CadastralNumber).Execute();
 				}
-				Logger.ForContext("GbuQuarterObjectsCount", gbuQuarterObjects.Count)
-					.ForContext("GbuObjectsCount", gbuObjects.Count)
-					.Verbose("Получение ГБУ объектов кадастровых кварталов");
+				Logger.Debug("Найдено {GbuQuarterObjectsCount} ГБУ объектов кадастровых кварталов для пакета №{PackageIndex}", gbuQuarterObjects.Count, i);
 
-				var territoryTypes = GetValueFactors(gbuQuarterObjects, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
-				Logger.Verbose("Получение значений атрибута тип территории ГБУ объектов кадастровых кварталов");
+				var gbuQuarterObjectIds = gbuQuarterObjects.Select(x => x.Id).ToList();
+				var territoryTypes = GetValueFactors(gbuQuarterObjectIds, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
+				Logger.Debug("Найдено {TerritoryTypesCount} атрибутов тип территории для кадастровых кварталов для пакета №{PackageIndex}", territoryTypes.Count, i);
 
-				Logger.ForContext("CurrentHandledCount", CurrentCount)
-					.ForContext("UnitPartitionCount", currentUnitsPartition.Count)
-					.ForContext("CountAllUnits", CountAllUnits)
-					.Debug("Обработка каждого юнита");
+				var cancelTokenSource = new CancellationTokenSource();
+				var options = new ParallelOptions
+				{
+					CancellationToken = cancelTokenSource.Token,
+					MaxDegreeOfParallelism = 10
+				};
+				Logger.Debug("Начата обработка каждого юнита");
 				Parallel.ForEach(currentUnitsPartition, options, item =>
 				{
 					lock (locked)
@@ -165,38 +164,31 @@ namespace KadOzenka.Dal.KoObject
 						CurrentCount++;
 					}
 
-					var gbuObject = gbuObjects.FirstOrDefault(x => x.Id == item.ObjectId);
-					if (gbuObject == null)
-					{
-						AddErrorRow(item.CadastralNumber, $"Не найден объект для единицы оценки {item.CadastralNumber}", reportService);
-						return;
-					}
-
-					codeGroups.TryGetValue(gbuObject.Id, out var codeGroup);
+					codeGroups.TryGetValue(item.ObjectId, out var codeGroup);
 					if (string.IsNullOrEmpty(codeGroup.Value))
 					{
-						AddErrorRow(item.CadastralNumber, $"Не найдено значение справочника ЦОД у объекта {gbuObject.CadastralNumber}", reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найдено значение справочника ЦОД у объекта {item.CadastralNumber}", reportService);
 						return;
 					}
 
-					var complianceGuides = GetComplianceGuides(allComplianceGuides.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).ToList());
+					var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).ToList());
 
 					if (complianceGuides.IsEmpty())
 					{
-						AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления {gbuObject.CadastralNumber}", reportService);
+						AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления {item.CadastralNumber}", reportService);
 					} 
 					else if (complianceGuides.Count == 1)
 					{
 						var value = complianceGuides[0].Group;
-						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+						AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
 						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					} 
 					else
 					{
-						codeQuarters.TryGetValue(gbuObject.Id, out var codeQuarter);
+						codeQuarters.TryGetValue(item.ObjectId, out var codeQuarter);
 						if (string.IsNullOrEmpty(codeQuarter.Value))
 						{
-							AddErrorRow(item.CadastralNumber, $"Не найден кадастровый квартал для объекта {gbuObject.CadastralNumber}.", reportService);
+							AddErrorRow(item.CadastralNumber, $"Не найден кадастровый квартал для объекта {item.CadastralNumber}.", reportService);
 							return;
 						}
 
@@ -223,11 +215,16 @@ namespace KadOzenka.Dal.KoObject
 							return;
 						}
 						var value = complianceGuid.Group;
-						AddValueFactor(gbuObject, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+						AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
 						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
 					}
 				});
-			}
+
+				Logger.Debug("Закончена обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i, numberOfPackages);
+				//попытка принудительно освободить память
+				currentUnitsPartition = null;
+				GC.Collect();
+			});
 
 			var reportId = reportService.SaveReport();
 
@@ -236,15 +233,30 @@ namespace KadOzenka.Dal.KoObject
 			return reportService.GetUrlToDownloadFile(reportId);
 		}
 
+
 		#region Help Methods
 
-		private void AddValueFactor(OMMainObject mObject, long? idFactor, long? idDoc, DateTime date, string value)
+		private List<OMComplianceGuide> GetAllComplianceGuidesInTour(long? tourId)
+		{
+			var allComplianceGuidesInTour = OMComplianceGuide.Where(x => x.TourId == tourId).Select(x => new
+			{
+				x.SubGroup,
+				x.TypeProperty,
+				x.Code
+			}).Execute();
+
+			Logger.Debug("Найдено {ComplianceCount} строк из Таблицы соответствия кода и группы", allComplianceGuidesInTour.Count);
+
+			return allComplianceGuidesInTour;
+		}
+
+		private void AddValueFactor(long objectId, long? idFactor, long? idDoc, DateTime date, string value)
 		{
 			var attributeValue = new GbuObjectAttribute
 			{
 				Id = -1,
 				AttributeId = idFactor.Value,
-				ObjectId = mObject.Id,
+				ObjectId = objectId,
 				ChangeDocId = (idDoc == null) ? -1 : idDoc.Value,
 				S = date.Date,
 				ChangeUserId = SRDSession.Current.UserID,
@@ -255,12 +267,15 @@ namespace KadOzenka.Dal.KoObject
 			attributeValue.Save();
 		}
 
-		private Dictionary<long, ValueItem> GetValueFactors(List<OMMainObject> objs, long idRegister, long idFactor)
+		private Dictionary<long, ValueItem> GetValueFactors(List<long> objectIds, long idRegister, long idFactor)
 		{
 			var result = new Dictionary<long, ValueItem>();
 
-			List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(objs.Select(x => x.Id).ToList(), new List<long> { idRegister }, new List<long> { idFactor }, DateTime.Now.Date);
-			foreach (var mainObject in objs)
+			var attributes = GbuObjectService.GetAllAttributes(objectIds,
+				new List<long> {idRegister}, new List<long> {idFactor}, DateTime.Now.Date,
+				attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId});
+
+			foreach (var id in objectIds)
 			{
 				ValueItem res = new ValueItem
 				{
@@ -268,18 +283,18 @@ namespace KadOzenka.Dal.KoObject
 					IdDocument = null,
 				};
 
-				var objAttr = attribs.Where(x => x.ObjectId == mainObject.Id).ToList();
-				if (objAttr.Count > 0)
+				var objAttr = attributes.FirstOrDefault(x => x.ObjectId == id);
+				if (objAttr != null)
 				{
-					var valueInString = objAttr[0].GetValueInString();
+					var valueInString = objAttr.GetValueInString();
 					if (!string.IsNullOrEmpty(valueInString))
 					{
 						res.Value = valueInString;
-						res.IdDocument = objAttr[0].ChangeDocId;
+						res.IdDocument = objAttr.ChangeDocId;
 					}
 				}
 
-				result.Add(mainObject.Id, res);
+				result.Add(id, res);
 			}
 
 			return result;
@@ -336,36 +351,50 @@ namespace KadOzenka.Dal.KoObject
 		public string PropertyType { get; set; }
 	}
 
-	public class InheritanceUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
+	public class EstimatedGroupAffixingUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
 	{
 		public EstimatedGroupModel Settings { get; set; }
+		private string BaseUnitsCondition { get; set; }
 
-		public InheritanceUnitsGetter(ILogger logger, EstimatedGroupModel setting) : base(logger)
+		public EstimatedGroupAffixingUnitsGetter(ILogger logger, EstimatedGroupModel setting) : base(logger)
 		{
 			Settings = setting;
+
+			BaseUnitsCondition = $@" where unit.TASK_ID = {Settings.IdTask}";
 		}
 
 
-		public override List<SetEstimatedGroupUnitPure> GetItems()
+		public override List<SetEstimatedGroupUnitPure> GetItems(int packageIndex, int packageSize)
 		{
 			if (Settings.IdTask == 0)
 				return new List<SetEstimatedGroupUnitPure>();
 
-			return OMUnit.Where(x => x.TaskId == Settings.IdTask && x.ObjectId != null)
-				.Select(x => new
-				{
-					x.ObjectId,
-					x.CadastralNumber,
-					x.PropertyType
-				})
-				.Execute()
-				.Select(x => new SetEstimatedGroupUnitPure
-				{
-					Id = x.Id,
-					ObjectId = x.ObjectId.GetValueOrDefault(),
-					CadastralNumber = x.CadastralNumber,
-					PropertyType = x.PropertyType
-				}).ToList();
+			var sql = $@"select OBJECT_ID as {nameof(SetEstimatedGroupUnitPure.ObjectId)}, 
+								CADASTRAL_NUMBER as {nameof(SetEstimatedGroupUnitPure.CadastralNumber)}, 
+								PROPERTY_TYPE as {nameof(SetEstimatedGroupUnitPure.PropertyType)}
+										from ko_unit unit
+										{BaseUnitsCondition}
+										order by unit.id 
+										limit {packageSize} offset {packageIndex * packageSize}";
+
+			return QSQuery.ExecuteSql<SetEstimatedGroupUnitPure>(sql);
+		}
+
+		public override int GetItemsCount()
+		{
+			var columnName = "count";
+			var countSql = $@"select count(*) as {columnName} from ko_unit unit {BaseUnitsCondition}";
+			var command = DBMngr.Main.GetSqlStringCommand(countSql);
+			var dataSet = DBMngr.Main.ExecuteDataSet(command);
+
+			var unitCount = 0;
+			var row = dataSet.Tables[0]?.Rows[0];
+			if (row != null)
+			{
+				unitCount = row[columnName].ParseToInt();
+			}
+
+			return unitCount;
 		}
 	}
 
