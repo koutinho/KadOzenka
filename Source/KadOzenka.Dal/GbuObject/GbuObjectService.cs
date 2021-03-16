@@ -301,16 +301,16 @@ namespace KadOzenka.Dal.GbuObject
 			return allColumns.TrimEnd().TrimEnd(',');
 
 			//TODO начальный запрос
-			//$@" --a.id,
+			//$@"				--a.id,
 			//                  a.object_id as ObjectId,
 			//                  a.attribute_id as AttributeId,
-			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.Ot)} a.Ot,
+			//                  --a.Ot,
 			//                  --a.S,
 			//                  --{(postfix == "TXT" ? "a.ref_item_id as RefItemId," : String.Empty)}
-			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.Value)} a.value as {propName}--,
+			//                  a.value as {propName}--,
 
 			//                  --a.change_user_id as ChangeUserId,
-			//                  {attributes.GetConditionForColumn(GbuObjectAttributeToDownload.DocumentId)} a.change_doc_id as ChangeDocId,
+			//                  --a.change_doc_id as ChangeDocId,
 			//					--a.change_date as ChangeDate,
 
 			//                  --a.change_id as ChangeId,

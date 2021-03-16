@@ -22,6 +22,22 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 		public override List<T> GetItems()
 		{
 			var allItems = base.GetItems();
+
+			return FilterObjects(allItems);
+		}
+
+		public override List<T> GetItems(int packageIndex, int packageSize)
+		{
+			var allItems = base.GetItems(packageIndex, packageSize);
+
+			return FilterObjects(allItems);
+		}
+
+
+		#region Support
+
+		private List<T> FilterObjects(List<T> allItems)
+		{
 			if (allItems.Count == 0 || Statuses == null || Statuses.Count == 0)
 				return allItems;
 
@@ -78,5 +94,7 @@ namespace KadOzenka.Dal.GbuObject.Decorators
 
 			return attributeIds;
 		}
+
+		#endregion
 	}
 }
