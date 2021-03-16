@@ -1,43 +1,50 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Core.Register.Enums;
+using Core.Shared.Extensions;
+using Core.SRD;
+using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Web.Attributes;
-using ObjectModel.Common;
+using KadOzenka.Web.Models.GeneralReports;
+using ObjectModel.Core.Reports;
+using Platform.Reports;
 
 namespace KadOzenka.Web.Controllers
 {
 	public class GeneralReportsController : KoBaseController
 	{
-		private string CustomReportsControllerName => "CustomReports";
-		private string PlatformReportsControllerName => "PlatformReports";
-
-
-		[SRDFunction(Tag = "")]
-		public RedirectToActionResult Download(long reportId)
-		{
-			return CheckIsPlatformReport(reportId)
-				? RedirectToAction("DownloadSavedReport", "Report", new { savedReportId = reportId })
-				: RedirectToAction(nameof(CustomReportsController.Download), CustomReportsControllerName, new { reportId });
-		}
-
 		[HttpGet]
 		[SRDFunction(Tag = "")]
-		public RedirectToActionResult ReportFileCard(long reportId)
+		public IActionResult ReportFileCard(long reportId)
 		{
-			return CheckIsPlatformReport(reportId)
-				? RedirectToAction(nameof(PlatformReportsController.ReportFileCard), PlatformReportsControllerName, new { savedReportId = reportId })
-				: RedirectToAction(nameof(CustomReportsController.ReportFileCard), CustomReportsControllerName, new { reportId });
+			var platformReport = OMSavedReport.Where(x => x.Id == reportId).Select(x => new
+			{
+				x.UserId,
+				x.CreateDate,
+				x.EndDate,
+				x.Title,
+				x.Status,
+				x.FileType
+			}).ExecuteFirstOrDefault();
+			if (platformReport == null)
+				throw new Exception($"Не найден платформенный отчет с ИД '{reportId}'");
+
+			var fileLocation = ReportStorage.GetFileLocation(platformReport.Id, platformReport.FileType);
+			if (!System.IO.File.Exists(fileLocation))
+			{
+				fileLocation = fileLocation.Replace(".pdf", ".zip");
+			}
+
+			var model = new FileGeneralInfoModel
+			{
+				User = SRDCache.Users[(int)platformReport.UserId].FullName,
+				CreationDate = platformReport.CreateDate,
+				FinishDate = platformReport.EndDate,
+				FileName = platformReport.Title,
+				Status = ((RegistersExportStatus)platformReport.Status.GetValueOrDefault()).GetEnumDescription(),
+				FileSize = CalculateFileSize(fileLocation)
+			};
+
+			return View("~/Views/GeneralReports/ReportFileCard.cshtml", model);
 		}
-
-
-		#region Support Methods
-
-		private bool CheckIsPlatformReport(long reportId)
-		{
-			var isPlatformReport = OMAllReportsInSystemView.Where(x => x.Id == reportId).Select(x => x.IsPlatformReport)
-				.ExecuteFirstOrDefault()?.IsPlatformReport;
-
-			return isPlatformReport.GetValueOrDefault();
-		}
-
-		#endregion
 	}
 }

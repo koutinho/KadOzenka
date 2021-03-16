@@ -31,15 +31,6 @@ namespace KadOzenka.Dal.LongProcess.Reports
 		}
 
 
-		public OMReportFiles GetFileInfo(long reportId)
-		{
-			var report = OMReportFiles.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-			if (report == null)
-				throw new Exception($"В журнале с сохраненными отчетами не найдена запись с ИД '{reportId}'");
-
-			return report;
-		}
-
 
 		public void AddZipFileToGeneralZipArchive(MemoryStream stream, string fileName, string fileExtension)
 		{
@@ -124,20 +115,6 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 			//TODO Dal не должен знать о контроллере
 			return $"/GeneralReports/Download?reportId={report.Id}";
-		}
-
-		public CustomReportInfo GetFile(long reportId)
-		{
-			var report = GetFileInfo(reportId);
-
-			var file = FileStorageManager.GetFileStream(FileStorageKey, report.DateOnServer, report.FileNameOnServer);
-
-			return new CustomReportInfo
-			{
-				Stream = file,
-				FullFileName = $"{report.FileName}.{report.FileExtension}",
-				FileExtension = report.FileExtension
-			};
 		}
 	}
 }
