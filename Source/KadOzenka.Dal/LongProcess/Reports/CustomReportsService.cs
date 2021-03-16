@@ -114,7 +114,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			report.Save();
 
 			//TODO Dal не должен знать о контроллере
-			return $"/GeneralReports/Download?reportId={report.Id}";
+			return $"/Report/DownloadSavedReport?savedReportId={report.Id}";
 		}
 	}
 }
