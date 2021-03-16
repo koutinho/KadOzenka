@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using Serilog;
-using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 {
@@ -19,6 +17,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
+		protected override long ReportCode => (long)StatisticalDataType.PricingFactorsCompositionForOks;
+
 
 
 		public OksReportLongProcess() : base(Log.ForContext<OksReportLongProcess>())

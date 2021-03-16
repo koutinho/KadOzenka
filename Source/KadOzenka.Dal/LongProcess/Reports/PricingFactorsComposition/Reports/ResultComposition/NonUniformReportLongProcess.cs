@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.PricingFactorsComposition;
 using Microsoft.Practices.ObjectBuilder2;
 using Serilog;
@@ -12,6 +13,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.Re
 	{
 		protected override string ReportName => "Состав данных по характеристикам объектов недвижимости взаимно увязанных разнородными сведениями по различным источникам";
 		protected override string ProcessName => nameof(NonUniformReportLongProcess);
+		protected override long ReportCode => (long) StatisticalDataType.PricingFactorsCompositionFinalNonuniform;
+
 
 		public NonUniformReportLongProcess() : base(Log.ForContext<NonUniformReportLongProcess>())
 		{

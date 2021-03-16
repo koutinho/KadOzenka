@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using Core.Main.FileStorages;
+using Core.Register.Enums;
+using Core.Shared.Extensions;
 using Core.SRD;
 using Ionic.Zip;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using ObjectModel.Common;
-using ObjectModel.Directory.Common;
+using ObjectModel.Core.Reports;
+using Platform.Reports;
 
 namespace KadOzenka.Dal.LongProcess.Reports
 {
@@ -66,7 +70,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 			_generalZipFile.AddEntry(fullFileName, stream);
 		}
 
-		public string SaveReport(string fileName)
+		public string SaveReport(string fileName, long reportCode, object parameters)
 		{
 			if (_generalZipFile.Entries.Count == 0)
 				return string.Empty;
@@ -87,30 +91,39 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 			stream.Seek(0, SeekOrigin.Begin);
 
-			return SaveFile(stream, fileName, "zip");
+			return SaveFile(stream, fileName, reportCode, parameters);
 		}
 
-		public string SaveFile(MemoryStream stream, string fileName, string fileExtension)
+		public string SaveFile(MemoryStream stream, string fileName, long reportCode, object parameters)
 		{
 			var currentDate = DateTime.Now;
-			var report = new OMReportFiles
+			var report = new OMSavedReport
 			{
+				Code = reportCode,
+				Parameters = parameters.SerializeToXml(),
 				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-				CreationDate = currentDate,
-				Status_Code = ExportStatus.Added,
-				FileName = fileName,
-				FileExtension = string.IsNullOrWhiteSpace(fileExtension) ? "csv" : fileExtension
+				CreateDate = currentDate,
+				Title = fileName,
+				//из-за особенностей плаформы приходится сохрянять с типом pdf
+				FileType = RegistersExportType.Pdf.GetEnumDescription(),
+				Status = (long?) RegistersExportStatus.Created
 			};
 			report.Save();
 
-			FileStorageManager.Save(stream, FileStorageKey, report.DateOnServer, report.FileNameOnServer);
+			var path = FileStorageManager.GetPathForStorage(FileStorageKey);
+			var fullFileName = Path.Combine(path, $"{report.Id}.zip");
+			using (var fs = File.Create(fullFileName))
+			{
+				fs.Seek(0, SeekOrigin.Begin);
+				stream.CopyTo(fs);
+			}
 
-			report.FinishDate = DateTime.Now;
-			report.Status_Code = ExportStatus.Completed;
+			report.EndDate = DateTime.Now;
+			report.Status = (long?) RegistersExportStatus.Finished;
 			report.Save();
 
 			//TODO Dal не должен знать о контроллере
-			return $"/CustomReports/Download?reportId={report.Id}";
+			return $"/GeneralReports/Download?reportId={report.Id}";
 		}
 
 		public CustomReportInfo GetFile(long reportId)

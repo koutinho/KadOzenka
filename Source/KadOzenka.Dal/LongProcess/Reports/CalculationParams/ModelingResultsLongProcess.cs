@@ -5,6 +5,7 @@ using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Reports.CalculationParams.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
@@ -28,6 +29,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 		private List<FactorsService.Attribute> AllAttributes { get; set; }
 		private long? ModelId { get; set; }
 		private long GroupId { get; set; }
+		protected override long ReportCode => (long)StatisticalDataType.ModelingResults;
+
 
 
 		public ModelingResultsLongProcess() : base(Log.ForContext<ModelingResultsLongProcess>())

@@ -9,6 +9,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Modeling;
@@ -37,7 +38,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
         private string BaseSql { get; set; }
         private long GroupId { get; set; }
         private long? ModelId { get; set; }
-       
+        protected override long ReportCode => (long)StatisticalDataType.PricingFactorsCompositionForPreviousTours;
+
 
 
         public PreviousToursReportProcess() : base(Log.ForContext<PreviousToursReportProcess>())

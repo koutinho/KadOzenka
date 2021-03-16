@@ -8,6 +8,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
@@ -19,6 +20,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.MarketDataInfo
 		private ReportInputParams _inputReportData = new ReportInputParams();
 		public static readonly int PrecisionForDecimalValues = 2;
 		public static readonly string DateFormat = "dd.MM.yyyy";
+		protected override long ReportCode => (long)StatisticalDataType.AdditionalFormsMarketDataInfo;
+
 
 		public MarketDataInfoReportLongProcess() : base(Log.ForContext<MarketDataInfoReportLongProcess>())
 		{
