@@ -21,9 +21,9 @@
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="NPetrovich" Version="1.2.0" />
-    <PackageReference Include="Platform" Version="1.0.378" />
-    <PackageReference Include="Platform.Reports" Version="1.0.51" />
-    <PackageReference Include="Platform.Web" Version="1.0.681" />
+    <PackageReference Include="Platform" Version="1.0.379" />
+    <PackageReference Include="Platform.Reports" Version="1.0.52" />
+    <PackageReference Include="Platform.Web" Version="1.0.682" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.Support" Version="3.141.0" />
