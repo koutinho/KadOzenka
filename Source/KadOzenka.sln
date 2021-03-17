@@ -50,27 +50,30 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxy", "Proxy\Proxy.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProxyChecker", "ProxyChecker\ProxyChecker.csproj", "{0361032E-D57F-4110-ABED-1E1E770F65F9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBScripts", "DBScripts", "{6E305F06-3550-4448-8ED7-65954B2A41BE}"
-	ProjectSection(SolutionItems) = preProject
-		Utils\DBScripts\Constraints.sql = Utils\DBScripts\Constraints.sql
-		Utils\DBScripts\Indexes.sql = Utils\DBScripts\Indexes.sql
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScreenshotParser", "ScreenshotParser\ScreenshotParser.csproj", "{5CF3D386-2FA0-4B2C-BB95-81A8E36C508E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{078CA0CD-F126-49E8-9D04-ED68B19545A8}"
-	ProjectSection(SolutionItems) = preProject
-		update_cache_table_for_data_composition_reports_for_main_object.sql = update_cache_table_for_data_composition_reports_for_main_object.sql
-		update_cache_table_for_data_composition_reports_for_registers.sql = update_cache_table_for_data_composition_reports_for_registers.sql
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.Tests", "KadOzenka.Dal.Tests\KadOzenka.Dal.Tests.csproj", "{5EBF6A1E-6A6C-4C22-926E-78CF14C64D54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web.Tests", "KadOzenka.Web.Tests\KadOzenka.Web.Tests.csproj", "{8D4A0956-2547-4190-A95F-CCE130301EC7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbMigrations", "DbMigrations", "{2418597D-176B-4CB6-9299-A3FBF315F622}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbScripts", "DbScripts", "{172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3}"
 	ProjectSection(SolutionItems) = preProject
-		CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs = CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs
+		Utils\DbScripts\Constraints.sql = Utils\DbScripts\Constraints.sql
+		Utils\DbScripts\Indexes.sql = Utils\DbScripts\Indexes.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbMigrations", "DbMigrations", "{4088BCD0-F4BA-4D5C-ACC8-63F0E094A010}"
+	ProjectSection(SolutionItems) = preProject
+		Utils\DbMigrations\CIPJSKO_790_Unload_Results_Queue.sql = Utils\DbMigrations\CIPJSKO_790_Unload_Results_Queue.sql
+		Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs = Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs
+		Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_down.sql = Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_down.sql
+		Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_up.sql = Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_up.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{FFE74E77-D969-46AD-AC64-304FD0DB2700}"
+	ProjectSection(SolutionItems) = preProject
+		Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_main_object.sql = Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_main_object.sql
+		Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_registers.sql = Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_registers.sql
 	EndProjectSection
 EndProject
 Global
@@ -387,10 +390,10 @@ Global
 		{D70D30D5-2A3F-49C7-AB77-97982F483540} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{C9003E80-9E76-4021-A6B9-F71849EACB0C} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{0361032E-D57F-4110-ABED-1E1E770F65F9} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
-		{6E305F06-3550-4448-8ED7-65954B2A41BE} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{5CF3D386-2FA0-4B2C-BB95-81A8E36C508E} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
-		{078CA0CD-F126-49E8-9D04-ED68B19545A8} = {6E305F06-3550-4448-8ED7-65954B2A41BE}
-		{2418597D-176B-4CB6-9299-A3FBF315F622} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{4088BCD0-F4BA-4D5C-ACC8-63F0E094A010} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{FFE74E77-D969-46AD-AC64-304FD0DB2700} = {172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
