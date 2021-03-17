@@ -5,6 +5,7 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -19,6 +20,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsForApproval
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
+		protected override long ReportCode => (long)StatisticalDataType.ResultsForApproval;
+
 
 
 		public ResultsForApprovalLongProcess() : base(Log.ForContext<ResultsForApprovalLongProcess>())

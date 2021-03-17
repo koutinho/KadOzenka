@@ -7,6 +7,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.KRSummaryResults.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Serilog;
@@ -25,6 +26,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.KRSummaryResults
 		private string BaseSql { get; set; }
 
 		private readonly string _reportOksSqlFileName = "KRSummaryResultsOKS";
+		protected override long ReportCode => (long)StatisticalDataType.KRSummaryResultsOks;
+
 
 		public KRSummaryOksReportLongProcess() : base(Log.ForContext<KRSummaryOksReportLongProcess>())
 		{

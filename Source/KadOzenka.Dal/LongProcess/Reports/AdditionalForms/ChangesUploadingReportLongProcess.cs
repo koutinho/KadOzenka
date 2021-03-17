@@ -7,6 +7,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.ResultsForApproval;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -18,15 +19,15 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms
     {
         protected override string ReportName => "Выгрузка изменений";
         protected override string ProcessName => nameof(ChangesUploadingReportLongProcess);
-        protected StatisticalDataService StatisticalDataService { get; set; }
         private string TaskIdsStr { get; set; }
         private string BaseUnitsCondition { get; set; }
         private string BaseSql { get; set; }
+        protected override long ReportCode => (long)StatisticalDataType.AdditionalFormsChangesUploading;
+
 
 
         public ChangesUploadingReportLongProcess() : base(Log.ForContext<ResultsForApprovalLongProcess>())
         {
-            StatisticalDataService = new StatisticalDataService();
         }
 
 

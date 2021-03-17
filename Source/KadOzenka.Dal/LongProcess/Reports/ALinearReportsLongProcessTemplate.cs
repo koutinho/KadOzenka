@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
-using Core.Td;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
@@ -47,6 +46,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		protected abstract bool AreInputParametersValid(TInputParameters inputParameters);
 		protected abstract string ReportName { get; }
+		protected abstract long ReportCode { get; }
 		protected abstract string ProcessName { get; }
 		protected abstract ReportsConfig GetProcessConfig();
 		protected abstract int GetMaxItemsCount(TInputParameters inputParameters);
@@ -186,7 +186,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 				string urlToDownload;
 				using (Logger.TimeOperation("Сохранение zip-файла"))
 				{
-					urlToDownload = CustomReportsService.SaveReport(ReportName);
+					urlToDownload = CustomReportsService.SaveReport(ReportName, ReportCode, parameters);
 				}
 
 				SendMessageInternal(processQueue, message, urlToDownload);

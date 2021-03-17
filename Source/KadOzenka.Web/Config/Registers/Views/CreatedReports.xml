@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="true" RegisterId="1000811" DefaultLayoutId="1000811" Description="Созданные отчеты" LinkedRegistersList="950"
+<RegisterView IsBasic="true" RegisterId="809" DefaultLayoutId="10009365" Description="Созданные отчеты" LinkedRegistersList="950"
               ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="true" SRDFunctionTag="ADMIN.IMPORT">
   <Buttons>
-    <Button Caption="Скачать" NavigateURL="/GeneralReports/Download" OpenInNewWindow="true" Icon="fas fa-file-download">
+    <Button Caption="Скачать" NavigateURL="/Report/DownloadSavedReport" OpenInNewWindow="true" Icon="fas fa-file-download">
       <Parameters>
-        <Parameter Key="reportId" Value="[ObjectID]" />
+        <Parameter Key="savedReportId" Value="[ObjectID]" />
       </Parameters>
       <ConditionGroups>
         <ConditionGroup HideOrDisable="Disable">
           <Conditions>
-              <Condition Key="[81100700]" Operation="NotEqual" Value="Завершена" />
+            <Condition Key="[80901200]" Operation="NotEqual" Value="2" />
           </Conditions>
         </ConditionGroup>
       </ConditionGroups>

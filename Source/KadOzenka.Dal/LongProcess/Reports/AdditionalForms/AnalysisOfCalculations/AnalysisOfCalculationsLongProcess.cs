@@ -7,6 +7,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculations.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Serilog;
 
@@ -21,6 +22,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculatio
 		private string UnitsConditionToCount { get; set; }
 		public static readonly int PrecisionForDecimalValues = 2;
 		public static readonly string DateFormat = "dd.MM.yyyy";
+		protected override long ReportCode => (long)StatisticalDataType.AdditionalFormsCalculationsAnalysis;
+
 
 
 		public AnalysisOfCalculationsLongProcess() : base(Log.ForContext<AnalysisOfCalculationsLongProcess>())

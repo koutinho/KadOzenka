@@ -38,6 +38,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.Re
 			_queryManager = new QueryManager();
 		}
 
+		protected abstract long ReportCode { get; }
 		protected abstract List<string> GenerateReportReportRow(int index, T item);
 		protected abstract List<GbuReportService.Column> GenerateReportHeaders(List<T> info);
 
@@ -156,7 +157,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.Re
 				string urlToDownload;
 				using (Logger.TimeOperation("Сохранение zip-файла"))
 				{
-					urlToDownload = CustomReportsService.SaveReport(ReportName);
+					urlToDownload = CustomReportsService.SaveReport(ReportName, ReportCode, parameters);
 				}
 
 				SendMessageInternal(processQueue, message, urlToDownload);

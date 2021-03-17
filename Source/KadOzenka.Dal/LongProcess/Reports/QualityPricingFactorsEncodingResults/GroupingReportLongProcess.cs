@@ -4,6 +4,7 @@ using System.Linq;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
@@ -15,6 +16,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
+		protected override long ReportCode => (long)StatisticalDataType.QualityPricingFactorsEncodingResultsGrouping;
 
 
 		public GroupingReportLongProcess() : base(Log.ForContext<GroupingReportLongProcess>())

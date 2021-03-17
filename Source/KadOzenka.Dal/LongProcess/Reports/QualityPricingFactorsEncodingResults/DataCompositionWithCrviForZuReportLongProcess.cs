@@ -6,6 +6,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Serilog;
 
@@ -18,6 +19,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.QualityPricingFactorsEncodingResults
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
+		protected override long ReportCode => (long)StatisticalDataType.QualityPricingFactorsEncodingResultsZu;
+
 
 
 		public DataCompositionWithCrviForZuReportLongProcess() : base(Log.ForContext<DataCompositionWithCrviForZuReportLongProcess>())

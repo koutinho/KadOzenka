@@ -5,6 +5,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Serilog;
 
@@ -21,6 +22,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.CadastralCostDeterminationResults
 		protected override string ReportName => ConcreteReport?.ReportName;
 		protected override string ProcessName => nameof(CadastralCostDeterminationResultsBaseReportLongProcess);
 		public static string IndividuallyResultsGroupNamePhrase => "индивидуального расчета";
+		protected override long ReportCode => (long)StatisticalDataType.CadastralCostDeterminationResults;
+
 
 
 		public CadastralCostDeterminationResultsBaseReportLongProcess() : base(Log.ForContext<CadastralCostDeterminationResultsBaseReportLongProcess>())

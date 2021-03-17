@@ -26946,6 +26946,7 @@ namespace ObjectModel.Common
 
 namespace ObjectModel.Common
 {
+    //TODO delete
     /// <summary>
     /// 810 Таблица для созданных отчетов (COMMON_REPORT_FILES)
     /// </summary>

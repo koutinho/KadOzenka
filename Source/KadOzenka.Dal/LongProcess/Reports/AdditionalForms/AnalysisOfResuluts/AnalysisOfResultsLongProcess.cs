@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts.Entities;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
+using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts
@@ -15,6 +14,8 @@ namespace KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfResuluts
 		private string UnitsConditionToCount { get; set; }
 		private List<long> _taskIdList;
 		private readonly int PrecisionForDecimalValues = 2;
+		protected override long ReportCode => (long)StatisticalDataType.AdditionalFormsResultsAnalysis;
+
 
 
 		public AnalysisOfResultsLongProcess() : base(Log.ForContext<AnalysisOfResultsLongProcess>())

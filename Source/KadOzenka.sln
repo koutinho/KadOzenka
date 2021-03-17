@@ -68,6 +68,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.Tests", "KadO
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web.Tests", "KadOzenka.Web.Tests\KadOzenka.Web.Tests.csproj", "{8D4A0956-2547-4190-A95F-CCE130301EC7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbMigrations", "DbMigrations", "{2418597D-176B-4CB6-9299-A3FBF315F622}"
+	ProjectSection(SolutionItems) = preProject
+		CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs = CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -385,6 +390,7 @@ Global
 		{6E305F06-3550-4448-8ED7-65954B2A41BE} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{5CF3D386-2FA0-4B2C-BB95-81A8E36C508E} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{078CA0CD-F126-49E8-9D04-ED68B19545A8} = {6E305F06-3550-4448-8ED7-65954B2A41BE}
+		{2418597D-176B-4CB6-9299-A3FBF315F622} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
