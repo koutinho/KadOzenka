@@ -27,15 +27,24 @@ namespace KadOzenka.Dal.Logger
 			_cancelSourceLogProcess = new CancellationTokenSource();
 			var token = _cancelSourceLogProcess.Token;
 			_taskLogProgress = Task.Run(() => {
-				while (true)
+				try
 				{
-					if (token.IsCancellationRequested)
+					while (true)
 					{
-						break;
-					}
+						
+							if (token.IsCancellationRequested)
+							{
+								break;
+							}
 
-					LogProgress(getMaxCount(), getCurrentCount(), processQueue);
-					Thread.Sleep(1000);
+							LogProgress(getMaxCount(), getCurrentCount(), processQueue);
+							Thread.Sleep(1000);
+					}
+				}
+				catch (Exception ex)
+				{
+					Serilog.Log.Logger.Error(ex, "Ошибка во время логирования прогресса");
+					throw;
 				}
 			}, token);
 		}
@@ -50,6 +59,12 @@ namespace KadOzenka.Dal.Logger
 			try
 			{
 				_taskLogProgress.Wait();
+			}
+			catch (Exception ex)
+			{
+				Serilog.Log.Logger.Error(ex, "Ошибка во время остановки процесса логирования прогресса");
+				_taskLogProgress = null;
+				throw;
 			}
 			finally
 			{
