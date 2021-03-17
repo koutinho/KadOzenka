@@ -10549,6 +10549,13 @@ namespace ObjectModel.Directory
     public enum KoUnloadResultType : long
     {
 		/// <summary>
+		/// Тип не указан (0)
+		/// </summary>
+		[Description("Тип не указан")]
+        [EnumCode("0")]
+        [ShortTitle("Тип не указан")]
+        None = 0,
+		/// <summary>
 		/// Выгрузка изменений (1)
 		/// </summary>
 		[Description("Выгрузка изменений")]

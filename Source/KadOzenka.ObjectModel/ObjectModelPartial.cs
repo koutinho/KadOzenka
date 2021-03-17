@@ -2394,6 +2394,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 267 Реестр с файлами выгрузок результатов оценки
+    /// </summary>
+    public partial class OMUnloadResultFiles
+    {
+
+        public OMUnloadResultFiles()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnloadResultFiles(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

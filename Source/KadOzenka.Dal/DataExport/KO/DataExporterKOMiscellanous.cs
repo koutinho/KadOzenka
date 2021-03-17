@@ -27,11 +27,11 @@ namespace KadOzenka.Dal.DataExport
 
     public class GeneralizedValuesUPKSZ
     {
-        public int       NumberGroup   = 0;  //Количество групп
-        public int       CountObj      = 0;  //Количество объектов в районе
-        public string    CadastralArea = ""; //Номер кадастрового района
-        public string    CadastralBlok = ""; //Номер кадастрового квартала
-        public double[,] MinAvgMax;          //Массив УПКСЗ по группам
+        public int NumberGroup = 0; //Количество групп
+        public int CountObj = 0; //Количество объектов в районе
+        public string CadastralArea = ""; //Номер кадастрового района
+        public string CadastralBlok = ""; //Номер кадастрового квартала
+        public double[,] MinAvgMax; //Массив УПКСЗ по группам
 
         public GeneralizedValuesUPKSZ(int _num)
         {
@@ -39,10 +39,10 @@ namespace KadOzenka.Dal.DataExport
             MinAvgMax = new double[4, NumberGroup];
             for (int i = 0; i < NumberGroup; i++)
             {
-                MinAvgMax[0, i] = -1;  //Минимальное УПКСЗ
-                MinAvgMax[1, i] = 0;   //Среднее УПКСЗ. В начале записывается сумма УПКСЗ. Потом пересчитывается.
-                MinAvgMax[2, i] = 0;   //Максимальное УПКСЗ
-                MinAvgMax[3, i] = 0;   //Количество объектов данной группы.  
+                MinAvgMax[0, i] = -1; //Минимальное УПКСЗ
+                MinAvgMax[1, i] = 0; //Среднее УПКСЗ. В начале записывается сумма УПКСЗ. Потом пересчитывается.
+                MinAvgMax[2, i] = 0; //Максимальное УПКСЗ
+                MinAvgMax[3, i] = 0; //Количество объектов данной группы.
             }
         }
     }
@@ -67,6 +67,7 @@ namespace KadOzenka.Dal.DataExport
         private int _maxValue;
         private int _totalProgress;
         private OMQueue _queue;
+
         public UnloadCounter(KOUnloadSettings settings, OMQueue queue, int maxValue)
         {
             _totalProgress = 0;
@@ -106,6 +107,7 @@ namespace KadOzenka.Dal.DataExport
                     WorkerCommon.LogState(_queue, logMessage);
                 }
             }
+
             var progress = (_completedTasks * 100 + _currentTaskProgress) * _maxValue / (_totalTasks * 100);
             if (progress > _totalProgress)
             {
@@ -117,102 +119,31 @@ namespace KadOzenka.Dal.DataExport
         }
     }
 
-    public class SaveReportDownload
+    public class SaveUnloadResult
     {
-        public static long SaveReportExcel(string nameReport, ExcelFile excel, long registerId, string registerViewId = "KoTasks")
+        public static long SaveResult(string nameReport, ExcelFile excel, long unloadId,
+            KoUnloadResultType unloadResultType = KoUnloadResultType.None)
         {
-            var currentDate = DateTime.Now;
-            long reportId = 0;
-            try
-            {
-                var export = new OMExportByTemplates
-                {
-                    UserId = SRDSession.GetCurrentUserId().Value,
-                    DateCreated = currentDate,
-                    Status = (long)ImportStatus.Added,
-                    FileResultTitle = nameReport,
-                    FileExtension = "xlsx",
-                    MainRegisterId = registerId,
-                    RegisterViewId = registerViewId
-                };
+            MemoryStream stream = new MemoryStream();
+            excel.Save(stream, SaveOptions.XlsxDefault);
+            stream.Seek(0, SeekOrigin.Begin);
 
-                reportId = export.Save();
-
-                export.Status = (long)ImportStatus.Running;
-                export.DateStarted = DateTime.Now;
-                export.Save();
-
-
-                MemoryStream stream = new MemoryStream();
-                excel.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-                stream.Seek(0, SeekOrigin.Begin);
-
-                export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-                export.DateFinished = DateTime.Now;
-                export.Status = (long)ImportStatus.Completed;
-
-                FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
-                export.Save();
-
-                return reportId;
-            }
-            catch (Exception e)
-            {
-                var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-                if (export != null)
-                {
-                    export.DateFinished = DateTime.Now;
-                    export.Status = (long)ImportStatus.Faulted;
-                    export.Save();
-                }
-
-                Console.WriteLine(e);
-                ErrorManager.LogError(e);
-                return 0;
-            }
+            return SaveResult(nameReport, stream, unloadId, "xlsx", unloadResultType);
         }
 
-        public static long SaveReport(string nameReport, Stream stream, long registerId, string registerViewId = "KoTasks", string reportExtension = "xml")
+        public static long SaveResult(string nameReport, Stream stream, long unloadId, string reportExtension = "xml",
+            KoUnloadResultType unloadResultType = KoUnloadResultType.None)
         {
-            var currentDate = DateTime.Now;
-            long reportId = 0;
             try
             {
-                var export = new OMExportByTemplates
-                {
-                    UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-                    DateCreated = currentDate,
-                    Status = (long)ImportStatus.Added,
-                    FileResultTitle = nameReport,
-                    FileExtension = reportExtension,
-                    MainRegisterId = registerId,
-                    RegisterViewId = registerViewId
-                };
-
-                reportId = export.Save();
-
-                export.Status = (long)ImportStatus.Running;
-                export.DateStarted = DateTime.Now;
-                export.Save();
-
-                export.ResultFileName = DataExporterCommon.GetStorageResultFileName(export.Id);
-                export.DateFinished = DateTime.Now;
-                export.Status = (long)ImportStatus.Completed;
-                FileStorageManager.Save(stream, DataExporterCommon.FileStorageName, export.DateFinished.Value, export.ResultFileName);
-                export.Save();
-
+                var reportId = UnloadResultStorageManager.SaveUnloadFile(stream, nameReport, reportExtension, unloadId, unloadResultType);
                 return reportId;
             }
             catch (Exception e)
             {
-                var export = OMExportByTemplates.Where(x => x.Id == reportId).SelectAll().ExecuteFirstOrDefault();
-                export.DateFinished = DateTime.Now;
-                export.Status = (long)ImportStatus.Faulted;
-                Console.WriteLine(e);
                 ErrorManager.LogError(e);
                 return 0;
             }
-
         }
 
         public static void SetCurrentProgress(OMUnloadResultQueue unloadResultQueue, long progress)

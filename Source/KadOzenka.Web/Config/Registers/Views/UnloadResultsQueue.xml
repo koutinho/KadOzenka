@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView IsBasic="true" RegisterId="262" Description="Выгрузки результатов оценки" LinkedRegistersList="262,267,950"
+              ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="false" SRDFunctionTag="">
+    <Buttons>
+        <Button Caption="Скачать файл результата" Icon="icon-excel" NavigateURL="/UnloadResults/UnloadResultsModal" OpenInRadWindow="true" WindowHeight="100" WindowWidth="300">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" AndOr="And" />
+                        <Condition Key="[26201400]" Operation="Equal" Value="" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="resultFileId" Value="[26201400]"/>
+            </Parameters>
+        </Button>
+    </Buttons>
+
+    <Tabs>
+        <Tab Caption="Файлы в выгрузке" NavigateURL="/RegistersView/UnloadResultsCard?Transition=1">
+            <Parameters>
+                <Parameter Key="26700200" Value="[ObjectId]"/>
+            </Parameters>
+        </Tab>
+    </Tabs>
+</RegisterView>

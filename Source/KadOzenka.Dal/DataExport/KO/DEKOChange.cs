@@ -90,7 +90,7 @@ namespace KadOzenka.Dal.DataExport
             }
             else
             {
-                long id = SaveReportDownload.SaveReportExcel(filename, excelTemplate, OMUnit.GetRegisterId());
+                long id = SaveUnloadResult.SaveResult(filename, excelTemplate, unloadResultQueue.Id, KoUnloadResultType.UnloadChange);
                 //excelTemplate.Save(filename, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
                 var resultFile = new ResultKoUnloadSettings
                 {

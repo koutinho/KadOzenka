@@ -9,7 +9,7 @@ using KadOzenka.Dal.Modeling;
 
 namespace KadOzenka.Dal.DataExport
 {
-    public class DataExporterKO
+    public static class DataExporterKO
     {
         /// <summary>
         /// Выгрузка значений меток по фактору и группе в формате Excel
