@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.LongProcess
                 var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationSettings>();
                 _log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
                 
-                var harmonization = new Harmonization(settings, _log);
+                var harmonization = new Harmonization(settings, processQueue.UserId, _log);
                 LongProcessProgressLogger.StartLogProgress(processQueue, () => harmonization.MaxObjectsCount, () => harmonization.CurrentCount);
 
                 var urlToDownload = harmonization.Run();
@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		protected void TestLongRunningProcess(HarmonizationSettings setting)
 		{
-            var harmonization = new Harmonization(setting, _log)
+            var harmonization = new Harmonization(setting, null, _log)
             {
                 MaxObjectsCount = 500,
                 CurrentCount = 0

@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.GbuObject
         private HarmonizationCODSettings Setting { get; }
         private List<OMCodDictionary> CodDictionaryItems { get; }
 
-        public HarmonizationCOD(HarmonizationCODSettings setting, ILogger logger) : base(setting, logger)
+        public HarmonizationCOD(HarmonizationCODSettings setting, long? userId, ILogger logger) : base(setting, userId, logger)
         {
             Setting = setting;
 
