@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.GbuObject
     {
         protected override string ReportName => "Отчет гармонизации";
 
-        public Harmonization(HarmonizationSettings setting, ILogger logger) : base(setting, logger)
+        public Harmonization(HarmonizationSettings setting, long? userId, ILogger logger) : base(setting, userId, logger)
         {
         }
 

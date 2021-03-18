@@ -32,6 +32,7 @@ namespace KadOzenka.Dal.GbuObject
         private const int ValueColumnNumber = 2;
         private const int SourceColumnNUmber = 3;
         private const int ErrorColumnNumber = 4;
+        private long UserId { get; set; }
 
         protected abstract string ReportName { get; }
         private static ABaseHarmonizationSettings BaseSetting { get; set; }
@@ -56,11 +57,14 @@ namespace KadOzenka.Dal.GbuObject
         #endregion
 
 
-        protected GbuObjectHarmonizationBase(ABaseHarmonizationSettings setting, ILogger logger)
+        protected GbuObjectHarmonizationBase(ABaseHarmonizationSettings setting, long? userId, ILogger logger)
         {
             BaseSetting = setting;
             _log = logger;
             GbuObjectService = new GbuObjectService();
+
+            UserId = userId ?? SRDSession.Current.UserID;
+            _log.ForContext("UserIdFromProcess", userId).Debug("ИД Юзера - {ResultUserId}", UserId);
         }
 
 
@@ -185,7 +189,7 @@ namespace KadOzenka.Dal.GbuObject
                 ObjectId = item.ObjectId,
                 ChangeDocId = changeDocId,
                 S = s,
-                ChangeUserId = SRDSession.Current.UserID,
+                ChangeUserId = UserId,
                 ChangeDate = DateTime.Now,
                 Ot = ot
             };

@@ -31,7 +31,7 @@ namespace KadOzenka.Dal.LongProcess
 
 				var settings = processQueue.Parameters.DeserializeFromXml<HarmonizationCODSettings>();
 				_log.Information("{ProcessType}. Настройки: {Settings}", processType.Description, JsonConvert.SerializeObject(settings));
-				var harmonizationCOD = new HarmonizationCOD(settings, _log);
+				var harmonizationCOD = new HarmonizationCOD(settings, processQueue.UserId, _log);
 
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => harmonizationCOD.MaxObjectsCount, () => harmonizationCOD.CurrentCount);
 
