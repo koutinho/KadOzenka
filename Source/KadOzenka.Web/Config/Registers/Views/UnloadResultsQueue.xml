@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView IsBasic="true" RegisterId="262" Description="Выгрузки результатов оценки" LinkedRegistersList="262,267,950"
+<RegisterView IsBasic="true" RegisterId="262" DefaultLayoutId="1000262" Description="Выгрузки результатов оценки" LinkedRegistersList="262,267,950"
               ShowActualDate="false" UseMasterPage="true" DockNavigationPanel="false" SRDFunctionTag="">
     <Buttons>
         <Button Caption="Скачать файл результата" Icon="icon-excel" NavigateURL="/UnloadResults/UnloadResultsModal" OpenInRadWindow="true" WindowHeight="100" WindowWidth="300">

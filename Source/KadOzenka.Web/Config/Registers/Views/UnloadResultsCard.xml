@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<RegisterView RegisterId="267" LinkedRegistersList="262,267"
+<RegisterView RegisterId="267" DefaultLayoutId="1000267" LinkedRegistersList="262,267"
         IsBasic="false" OpenEmpty="false" UseSubMap="true" JoinType="Left"
         ShowListsMenu="false" ShowObjectCards="false" ShowActualDate="false" ShowSettingsPanel="false" ShowFilterMenu="false"
         UseMasterPage="false">
