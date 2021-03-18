@@ -65,15 +65,18 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbMigrations", "DbMigrations", "{4088BCD0-F4BA-4D5C-ACC8-63F0E094A010}"
 	ProjectSection(SolutionItems) = preProject
 		Utils\DbMigrations\CIPJSKO_790_Unload_Results_Queue.sql = Utils\DbMigrations\CIPJSKO_790_Unload_Results_Queue.sql
-		Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs = Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform.cs
-		Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_down.sql = Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_down.sql
-		Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_up.sql = Utils\DbMigrations\CIPJSKO_798_Delete_View_And_Table_For_Reports_Which_Go_Around_Platform_up.sql
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{FFE74E77-D969-46AD-AC64-304FD0DB2700}"
 	ProjectSection(SolutionItems) = preProject
 		Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_main_object.sql = Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_main_object.sql
 		Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_registers.sql = Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_registers.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2738", "2738", "{91DAF843-679E-40D5-97BA-5B196CFC8691}"
+	ProjectSection(SolutionItems) = preProject
+		down.sql = down.sql
+		up.sql = up.sql
 	EndProjectSection
 EndProject
 Global
@@ -394,6 +397,7 @@ Global
 		{172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{4088BCD0-F4BA-4D5C-ACC8-63F0E094A010} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{FFE74E77-D969-46AD-AC64-304FD0DB2700} = {172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3}
+		{91DAF843-679E-40D5-97BA-5B196CFC8691} = {4088BCD0-F4BA-4D5C-ACC8-63F0E094A010}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
