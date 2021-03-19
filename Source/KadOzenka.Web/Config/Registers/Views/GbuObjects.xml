@@ -52,6 +52,14 @@
         <Button Caption="Гармонизация" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1150"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION" Icon="fas fa-wrench"/>
         <Button Caption="Гармонизация по классификатору ЦОД" NavigateURL="/GbuObject/HarmonizationCOD" WindowHeight="800" WindowWidth="1150"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION_COD" Icon="fas fa-wrench"/>
 
+        <Button Caption="Образы" NavigateURL="/RegistersView/CoreSharedAttachment" WindowTitleTemplate="Образы объекта" Icon="far fa-images"
+                NeedRefresh="true" SRDFunctionTag="">
+            <Parameters>
+                <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
+                <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
+                <Parameter Key="NotSetTitle" Value="true" />
+            </Parameters>
+        </Button>
     </Buttons>
 
     <Tabs>
@@ -64,6 +72,13 @@
 
     <RowMenuButtons>
         <Button Caption="Объект недвижимости" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
+        <Button Caption="Образы" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
+            <Parameters>
+                <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
+                <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
+                <Parameter Key="NotSetTitle" Value="true" />
+            </Parameters>
+        </Button>
     </RowMenuButtons>
 
   <ObjectCardButtons>
@@ -74,5 +89,12 @@
       </Parameters>
     </Button>
 
+      <Button Caption="Образы" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
+          <Parameters>
+              <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
+              <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
+              <Parameter Key="NotSetTitle" Value="true" />
+          </Parameters>
+      </Button>
   </ObjectCardButtons>
 </RegisterView>

@@ -13,6 +13,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Идентификатор ГБУ объекта
 		/// </summary>
 		public long Id { get; set; }
+		public int RegisterId { get; set; }
 
 		[Display(Name = "Кадастровый номер")]
 		public string CadastralNumber { get; set; }
@@ -32,6 +33,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				return new GbuObjectViewModel
 				{
 					Id = -1,
+					RegisterId = OMMainObject.GetRegisterId(),
 					DateActual = dateActual,
 				    RegisterDtoList = registerDtoList
                 };
@@ -40,6 +42,7 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GbuObjectViewModel
 			{
 				Id = entity.Id,
+				RegisterId = OMMainObject.GetRegisterId(),
 				CadastralNumber = entity.CadastralNumber,
 				ObjectType = entity.ObjectType_Code,
 				DateActual = dateActual,

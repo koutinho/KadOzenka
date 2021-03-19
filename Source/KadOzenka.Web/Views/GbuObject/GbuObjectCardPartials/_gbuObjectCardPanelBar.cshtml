@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.GbuObject.GbuObjectViewModel
+﻿@using Platform.Web.Models.CoreAttachment
+@model KadOzenka.Web.Models.GbuObject.GbuObjectViewModel
 
 @{
     int registerCounter = 0;
@@ -43,8 +44,25 @@
             </div>
         </div>
     </div>
-    @{
-        foreach (var m in Model.RegisterDtoList)
+    <div id="Section_Attachments" data-expand data-menu-name="Образы">
+        <span>Образы</span>
+        <div>
+            <div class="form-horizontal col-sm-12">
+                <div class="form-group">
+                    <div>
+                        @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                            new AttachmentPartialModel { ObjectId = (int)Model.Id, RegisterId = Model.RegisterId })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <a href="/CoreAttachment/AttachmentView?objectId=@(Model.Id)&registerId=@(Model.RegisterId)">Перейти к просмотру образов</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @{ foreach (var m in Model.RegisterDtoList)
         {
             <div id="Section_@(m.Id)" data-menu-name="@(m.Name)" data-expand>
                 <span>@(m.Name)</span>
