@@ -53,6 +53,8 @@
 /Source/KadOzenka.Web.Tests/bin
 /Source/ImagesProcessor/obj
 /Source/GISStandProject/obj
+/Source/DbMigrations/obj
+/Source/DbMigrations/bin
 /.vs
 /Source/.idea
 /Source/StartProject/obj
