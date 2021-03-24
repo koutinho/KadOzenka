@@ -6,6 +6,8 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using KadOzenka.Dal.ConfigurationManagers;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models;
 
 namespace KadOzenka.Dal.MapModeling
 {
@@ -34,7 +36,7 @@ namespace KadOzenka.Dal.MapModeling
 					foreach (var userImagesKeyValue in ManagementDecisionSupportMapInitialImageCache)
 					{
 						var value = userImagesKeyValue.Value;
-						for (var i = MapTilesConfig.Current.MCMinZoom; i <= MapTilesConfig.Current.MCMaxZoom; i++)
+						for (var i = ConfigurationManager.KoConfig.MapTilesConfig.MCMinZoom; i <= ConfigurationManager.KoConfig.MapTilesConfig.MCMaxZoom; i++)
 						{
 							if (value.ContainsKey(i))
 							{
@@ -58,15 +60,15 @@ namespace KadOzenka.Dal.MapModeling
 				if (ManagementDecisionSupportMapInitialImageCache.ContainsKey(CurrentUserId))
 				{
 					var value = ManagementDecisionSupportMapInitialImageCache[CurrentUserId];
-					for (var i = MapTilesConfig.Current.MCMinZoom; i <= MapTilesConfig.Current.MCMaxZoom; i++)
+					for (var i = ConfigurationManager.KoConfig.MapTilesConfig.MCMinZoom; i <= ConfigurationManager.KoConfig.MapTilesConfig.MCMaxZoom; i++)
 					{
 						if (value.ContainsKey(i))
 						{
 							value[i].Image.Dispose();
 							ManagementDecisionSupportMapInitialImageCache[CurrentUserId].TryRemove(i, out _);
-							if (File.Exists(MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(i)))
+							if (File.Exists(ConfigurationManager.KoConfig.MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(i)))
 							{
-								File.Delete(MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(i));
+								File.Delete(ConfigurationManager.KoConfig.MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(i));
 							}
 						}
 					}
@@ -93,7 +95,7 @@ namespace KadOzenka.Dal.MapModeling
 
 			if (ManagementDecisionSupportMapInitialImageCache[CurrentUserId].TryGetValue(currentZoom, out var imageInstance))
 			{
-				imageInstance.ExpirationTime = DateTime.Now.AddMinutes(MapTilesConfig.Current.InitialImageCacheLifeTime);
+				imageInstance.ExpirationTime = DateTime.Now.AddMinutes(ConfigurationManager.KoConfig.MapTilesConfig.InitialImageCacheLifeTime);
 				return imageInstance.Image;
 			}
 
@@ -108,13 +110,13 @@ namespace KadOzenka.Dal.MapModeling
 					new ConcurrentDictionary<int, InitialImageCacheInstance>());
 			}
 
-			if (File.Exists(MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(zoom)))
+			if (File.Exists(ConfigurationManager.KoConfig.MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(zoom)))
 			{
-				var image = Image.FromFile(MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(zoom));
+				var image = Image.FromFile(ConfigurationManager.KoConfig.MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(zoom));
 				var imageInstance = new InitialImageCacheInstance
 				{
 					Image = image,
-					ExpirationTime = DateTime.Now.AddMinutes(MapTilesConfig.Current.InitialImageCacheLifeTime)
+					ExpirationTime = DateTime.Now.AddMinutes(ConfigurationManager.KoConfig.MapTilesConfig.InitialImageCacheLifeTime)
 				};
 				ManagementDecisionSupportMapInitialImageCache[CurrentUserId].AddOrUpdate(zoom, imageInstance, (key, oldValue) => oldValue);
 			}

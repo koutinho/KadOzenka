@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using KadOzenka.Dal.ConfigurationManagers;
 using ObjectModel.Core.Shared;
 using ObjectModel.Market;
 
@@ -66,7 +67,7 @@ namespace KadOzenka.Dal.MapModeling
 
 		protected override string GetHeatMapInitialImageFileName(int zoom)
 		{
-			return MapTilesConfig.GetMarketHeatMapInitialImageFileName(zoom);
+			return ConfigurationManager.KoConfig.MapTilesConfig.GetMarketHeatMapInitialImageFileName(zoom);
 		}
 
 		protected override Image GetHeatMapInitialImage(int zoom)

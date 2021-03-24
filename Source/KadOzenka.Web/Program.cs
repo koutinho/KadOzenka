@@ -1,4 +1,5 @@
 ﻿using System;
+using KadOzenka.Dal.ConfigurationManagers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
@@ -22,6 +23,8 @@ namespace CIPJS
                 ASPNETCORE_ENVIRONMENT = "Demo";
             #elif RELEASE
                 ASPNETCORE_ENVIRONMENT = "Production";
+             #elif RELEASETEST
+                ASPNETCORE_ENVIRONMENT = "ProductionTest";
             #endif
 
             if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
@@ -60,6 +63,7 @@ namespace CIPJS
                 .UseSerilog()
                 .UseStartup<Startup>()
                 .StartFeatureSubscribe(config)
+                .UseKoConfigManager(config)
                 .Build();
 
     }

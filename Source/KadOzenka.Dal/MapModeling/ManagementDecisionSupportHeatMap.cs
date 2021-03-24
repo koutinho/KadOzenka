@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding;
 
 namespace KadOzenka.Dal.MapModeling
@@ -44,7 +45,7 @@ namespace KadOzenka.Dal.MapModeling
 
 		protected override string GetHeatMapInitialImageFileName(int zoom)
 		{
-			return MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(zoom);
+			return ConfigurationManager.KoConfig.MapTilesConfig.GetManagementDecisionSupportHeatMapInitialImageFileName(zoom);
 		}
 
 		protected override Image GetHeatMapInitialImage(int zoom)

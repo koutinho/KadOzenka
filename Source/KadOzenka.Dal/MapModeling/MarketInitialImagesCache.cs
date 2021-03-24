@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.SRD;
+using KadOzenka.Dal.ConfigurationManagers;
 
 namespace KadOzenka.Dal.MapModeling
 {
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.MapModeling
 					foreach (var userImagesKeyValue in MarketMapInitialImageCache)
 					{
 						var value = userImagesKeyValue.Value;
-						for (var i = MapTilesConfig.Current.MCMinZoom; i <= MapTilesConfig.Current.MCMaxZoom; i++)
+						for (var i = ConfigurationManager.KoConfig.MapTilesConfig.MCMinZoom; i <= ConfigurationManager.KoConfig.MapTilesConfig.MCMaxZoom; i++)
 						{
 							if (value.ContainsKey(i))
 							{
@@ -58,15 +59,15 @@ namespace KadOzenka.Dal.MapModeling
 				if (MarketMapInitialImageCache.ContainsKey(CurrentUserId))
 				{
 					var value = MarketMapInitialImageCache[CurrentUserId];
-					for (var i = MapTilesConfig.Current.MCMinZoom; i <= MapTilesConfig.Current.MCMaxZoom; i++)
+					for (var i = ConfigurationManager.KoConfig.MapTilesConfig.MCMinZoom; i <= ConfigurationManager.KoConfig.MapTilesConfig.MCMaxZoom; i++)
 					{
 						if (value.ContainsKey(i))
 						{
 							value[i].Image.Dispose();
 							MarketMapInitialImageCache[CurrentUserId].TryRemove(i, out _);
-							if (File.Exists(MapTilesConfig.GetMarketHeatMapInitialImageFileName(i)))
+							if (File.Exists(ConfigurationManager.KoConfig.MapTilesConfig.GetMarketHeatMapInitialImageFileName(i)))
 							{
-								File.Delete(MapTilesConfig.GetMarketHeatMapInitialImageFileName(i));
+								File.Delete(ConfigurationManager.KoConfig.MapTilesConfig.GetMarketHeatMapInitialImageFileName(i));
 							}
 						}
 					}
@@ -93,7 +94,7 @@ namespace KadOzenka.Dal.MapModeling
 
 			if (MarketMapInitialImageCache[CurrentUserId].TryGetValue(currentZoom, out var imageInstance))
 			{
-				imageInstance.ExpirationTime = DateTime.Now.AddMinutes(MapTilesConfig.Current.InitialImageCacheLifeTime);
+				imageInstance.ExpirationTime = DateTime.Now.AddMinutes(ConfigurationManager.KoConfig.MapTilesConfig.InitialImageCacheLifeTime);
 				return imageInstance.Image;
 			}
 
@@ -108,13 +109,13 @@ namespace KadOzenka.Dal.MapModeling
 					new ConcurrentDictionary<int, InitialImageCacheInstance>());
 			}
 
-			if (File.Exists(MapTilesConfig.GetMarketHeatMapInitialImageFileName(zoom)))
+			if (File.Exists(ConfigurationManager.KoConfig.MapTilesConfig.GetMarketHeatMapInitialImageFileName(zoom)))
 			{
-				var image = Image.FromFile(MapTilesConfig.GetMarketHeatMapInitialImageFileName(zoom));
+				var image = Image.FromFile(ConfigurationManager.KoConfig.MapTilesConfig.GetMarketHeatMapInitialImageFileName(zoom));
 				var imageInstance = new InitialImageCacheInstance
 				{
 					Image = image,
-					ExpirationTime = DateTime.Now.AddMinutes(MapTilesConfig.Current.InitialImageCacheLifeTime)
+					ExpirationTime = DateTime.Now.AddMinutes(ConfigurationManager.KoConfig.MapTilesConfig.InitialImageCacheLifeTime)
 				};
 				MarketMapInitialImageCache[CurrentUserId].AddOrUpdate(zoom, imageInstance, (key, oldValue) => oldValue);
 			}
