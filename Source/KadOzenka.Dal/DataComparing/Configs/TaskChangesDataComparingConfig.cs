@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.DataComparing.Files;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
@@ -26,9 +27,8 @@ namespace KadOzenka.Dal.DataComparing.Configs
 					}
 				}
 
-				var baseConfig = Core.ConfigParam.Configuration.GetParam<DataComparingConfig>("DataComparingConfig");
-				instance.TaskChangesComparingFolder = baseConfig.TaskChangesComparingFolder;
-				instance.CadastralCostComparingFolder = baseConfig.CadastralCostComparingFolder;
+				instance.TaskChangesComparingFolder = ConfigurationManager.KoConfig.DataComparingConfig.TaskChangesComparingFolder;
+				instance.CadastralCostComparingFolder = ConfigurationManager.KoConfig.DataComparingConfig.CadastralCostComparingFolder;
 
 				return instance;
 			}
