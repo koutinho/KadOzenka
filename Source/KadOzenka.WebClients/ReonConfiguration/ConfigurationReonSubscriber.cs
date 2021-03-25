@@ -24,10 +24,10 @@ namespace KadOzenka.WebClients.ConfigurationManagers
 			Log.Debug("Заполняем конфигурационный менеджер Реон");
 
 			ReonServiceConfig manger = new ReonServiceConfig();
-			config.GetSection("ReonConfig").Bind(manger);
+			config.GetSection("ReonServiceConfig").Bind(manger);
 			_configManager = manger;
 
-			Log.ForContext("ReonConfig", manger, true).Debug("Конфигурационный менеджер кад Реон");
+			Log.ForContext("ReonServiceConfig", manger, true).Debug("Конфигурационный менеджер кад Реон");
 			ChangeToken.OnChange(config.GetReloadToken, InvokeChanged, config);
 
 			return builder;
@@ -41,7 +41,7 @@ namespace KadOzenka.WebClients.ConfigurationManagers
 		private static void InvokeChanged(IConfigurationRoot config)
 		{
 			ReonServiceConfig manger = new ReonServiceConfig();
-			config.GetSection("ReonConfig").Bind(manger);
+			config.GetSection("ReonServiceConfig").Bind(manger);
 			_configManager = manger;
 		}
 	}
