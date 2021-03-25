@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
@@ -32,15 +33,15 @@ namespace KadOzenka.Dal.Modeling
 
         protected override string GetUrl()
         {
-            var baseUrl = ModelingProcessConfig.Current.PredictionBaseUrl;
+            var baseUrl = ConfigurationManager.KoConfig.ModelingProcessConfig.PredictionBaseUrl;
             switch (InputParameters.ModelType)
             {
                 case KoAlgoritmType.Line:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionLinearTypeUrl}/{GeneralModel.InternalName}";
+                    return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.PredictionLinearTypeUrl}/{GeneralModel.InternalName}";
                 case KoAlgoritmType.Exp:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionExponentialTypeUrl}/{GeneralModel.InternalName}";
+                    return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.PredictionExponentialTypeUrl}/{GeneralModel.InternalName}";
                 case KoAlgoritmType.Multi:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.PredictionMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
+                    return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.PredictionMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }

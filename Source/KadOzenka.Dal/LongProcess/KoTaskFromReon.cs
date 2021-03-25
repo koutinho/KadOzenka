@@ -9,14 +9,15 @@ using Core.Register.LongProcessManagment;
 using IO.Swagger.Model;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Tasks;
-using KadOzenka.WebClients;
 using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Documents.Dto;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.WebClients.ConfigurationManagers;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -96,10 +97,9 @@ namespace KadOzenka.Dal.LongProcess
                 ? $"Не удалось обработать все данные, подробно в журнале №{string.Join(", ", errorIds)}" 
                 : "Операция выполнена успешно. Задания созданы. Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение.";
 
-
             var reportId = reportService.SaveReport();
             var message = $"{info}\n" + $@"<a href=""{reportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
-            var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
+            var roleId = ConfigurationManager.ReonConfig.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message, roleId);
 
             WorkerCommon.SetProgress(processQueue, 100);
@@ -206,7 +206,7 @@ namespace KadOzenka.Dal.LongProcess
 
         private void ProcessFile(DocUrl fileInfo, long taskId)
         {
-            var url = ReonServiceConfig.Current.BaseUrl + "/RosreestrData/" + fileInfo.Url;
+            var url = ConfigurationManager.ReonConfig.BaseUrl + "/RosreestrData/" + fileInfo.Url;
             var data = GetFileData(url);
             var stream = new MemoryStream(data);
 

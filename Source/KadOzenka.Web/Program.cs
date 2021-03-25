@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Microsoft.Extensions.Configuration;
 using KadOzenka.Dal.WorkerCheckerDataBase;
+using KadOzenka.WebClients.ConfigurationManagers;
 using Platform.Web.Configurator.FeatureToggleConfigManager;
 
 namespace CIPJS
@@ -64,6 +65,7 @@ namespace CIPJS
                 .UseStartup<Startup>()
                 .StartFeatureSubscribe(config)
                 .UseKoConfigManager(config)
+                .UseReonConfigManager(config)
                 .Build();
 
     }

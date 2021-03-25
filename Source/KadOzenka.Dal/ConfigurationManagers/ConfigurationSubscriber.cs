@@ -41,6 +41,5 @@ namespace KadOzenka.Dal.ConfigurationManagers
 			_configManager = manger;
 		}
 
-
 	}
 }

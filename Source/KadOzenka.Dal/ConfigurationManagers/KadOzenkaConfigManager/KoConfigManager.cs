@@ -7,5 +7,7 @@ namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager
 		public MapTilesConfig MapTilesConfig { get; set; }
 
 		public DataComparingConfig DataComparingConfig { get; set; }
+
+		public ModelingProcessConfig ModelingProcessConfig { get; set; }
 	}
 }

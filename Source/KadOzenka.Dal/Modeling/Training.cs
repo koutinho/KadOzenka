@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
@@ -41,17 +42,17 @@ namespace KadOzenka.Dal.Modeling
 
         protected override string GetUrl()
         {
-            var baseUrl = ModelingProcessConfig.Current.TrainingBaseUrl;
+            var baseUrl = ConfigurationManager.KoConfig.ModelingProcessConfig.TrainingBaseUrl;
             switch (InputParameters.ModelType)
             {
 	            case KoAlgoritmType.None:
-		            return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingAllTypesUrl}/{GeneralModel.InternalName}";
+		            return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.TrainingAllTypesUrl}/{GeneralModel.InternalName}";
                 case KoAlgoritmType.Line:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingLinearTypeUrl}/{GeneralModel.InternalName}";
+                    return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.TrainingLinearTypeUrl}/{GeneralModel.InternalName}";
                 case KoAlgoritmType.Exp:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingExponentialTypeUrl}/{GeneralModel.InternalName}";
+                    return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.TrainingExponentialTypeUrl}/{GeneralModel.InternalName}";
                 case KoAlgoritmType.Multi:
-                    return $"{baseUrl}/{ModelingProcessConfig.Current.TrainingMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
+                    return $"{baseUrl}/{ConfigurationManager.KoConfig.ModelingProcessConfig.TrainingMultiplicativeTypeUrl}/{GeneralModel.InternalName}";
                 default:
                     throw new Exception($"Не известный тип модели: {InputParameters.ModelType.GetEnumDescription()}");
             }

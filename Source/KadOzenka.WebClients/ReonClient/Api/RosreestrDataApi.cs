@@ -16,6 +16,7 @@ using CadAppraisalDataApi.Models;
 using RestSharp;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
+using KadOzenka.WebClients.ConfigurationManagers;
 using Serilog;
 using Serilog.Context;
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected override string GetUrl()
         {
-            return ModelingProcessConfig.Current.CorrelationUrl;
+	        return ConfigurationManager.KoConfig.ModelingProcessConfig.CorrelationUrl;
         }
 
         protected override void PrepareData()

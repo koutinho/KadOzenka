@@ -12,7 +12,7 @@ using Core.SRD;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Registers;
-using KadOzenka.WebClients;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
@@ -150,10 +150,9 @@ namespace KadOzenka.Dal.LongProcess
                 ? $"При загрузке факторов возникли ошибки. Всего единиц оценки: {total}; Успешно: {success}; Ошибки: {errors}"
                 : $"Загрузка факторов выполнена без ошибок. Всего единиц оценки: {total}; Успешно: {success}; Ошибки: {errors}";
             WorkerCommon.SetMessage(processQueue, info);
-
             var reportId = gbuReportService.SaveReport();
             var message = $"{info}\n" + $@"<a href=""{gbuReportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
-            var roleId = ReonServiceConfig.Current.RoleIdForNotification?.ParseToLongNullable();
+            var roleId = ConfigurationManager.ReonConfig.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, messageSubject, message, roleId);
 
             WorkerCommon.SetProgress(processQueue, 100);
