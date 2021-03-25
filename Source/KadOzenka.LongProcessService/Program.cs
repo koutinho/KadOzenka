@@ -15,10 +15,28 @@ namespace KadOzenka.LongProcessService
 {
     public class Program
     {
+        static string ASPNETCORE_ENVIRONMENT;
         public static void Main(string[] args)
         {
+             #if DEBUG
+                ASPNETCORE_ENVIRONMENT = "Development";
+            #elif QA
+                ASPNETCORE_ENVIRONMENT = "QA";
+            #elif DEMO
+                ASPNETCORE_ENVIRONMENT = "Demo";
+            #elif RELEASE
+                ASPNETCORE_ENVIRONMENT = "Production";
+            #endif
+            
+            if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
+            {
+                ASPNETCORE_ENVIRONMENT = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
+            }
+
+            var envConfigFile = $"appsettings.{ASPNETCORE_ENVIRONMENT}.json";
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile(path: envConfigFile, optional: true, reloadOnChange: true)
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
@@ -28,13 +46,13 @@ namespace KadOzenka.LongProcessService
 
             try
             {
-                Log.Information("Starting web host KadOzenka.LongProcessService");
+                Log.ForContext("envConfigFile", envConfigFile).Warning("Starting web host MiomoKadOzenka.LongProcessService");
                 CreateWebHostBuilder(args, configuration).Build().Run();
 
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Host KadOzenka.LongProcessService terminated unexpectedly");
+                Log.Fatal(ex, "Host MiomoKadOzenka.LongProcessService terminated unexpectedly");
 
             }
             finally

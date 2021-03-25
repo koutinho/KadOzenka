@@ -126,6 +126,38 @@
 	  <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
   
+	<ItemGroup>
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Development.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_QA.pubxml" />
+		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Release.pubxml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="appsettings.json" />
+		<Content Remove="appsettings.Development.json" />
+		<Content Remove="appsettings.QA.json" />
+		<Content Remove="appsettings.Demo.json" />
+		<Content Remove="appsettings.Production.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="appsettings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="appsettings.Development.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="appsettings.QA.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="appsettings.Demo.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="appsettings.Production.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
  
 	<Target Name="CopyConfigFiles" AfterTargets="Publish">
 		<Copy SourceFiles="@(ConfigPath)" DestinationFolder="$(PublishDir)Config\%(RecursiveDir)" OverwriteReadOnlyFiles="true" />
@@ -145,7 +177,42 @@
 				<Optimize>false</Optimize>
 				<OutputPath>.\bin\Debug\</OutputPath>
 				<DefineConstants>DEBUG;TRACE</DefineConstants>
+				<EnvironmentName>Development</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
 			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.Development.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)'=='QA' ">
+			<PropertyGroup>
+				<DebugSymbols>true</DebugSymbols>
+				<DebugType>full</DebugType>
+				<Optimize>false</Optimize>
+				<OutputPath>.\bin\QA\</OutputPath>
+				<DefineConstants>DEBUG;TRACE</DefineConstants>
+				<EnvironmentName>QA</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.QA.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)'=='Demo' ">
+			<PropertyGroup>
+				<DebugSymbols>false</DebugSymbols>
+				<DebugType>None</DebugType>
+				<Optimize>true</Optimize>
+				<OutputPath>.\bin\Demo\</OutputPath>
+				<EnvironmentName>Demo</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.Demo.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
 		</When>
 		<When Condition=" '$(Configuration)'=='Release' ">
 			<PropertyGroup>
@@ -153,7 +220,12 @@
 				<DebugType>None</DebugType>
 				<Optimize>true</Optimize>
 				<EnvironmentName>Production</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>Production</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
 			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.Production.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
 		</When>
 	</Choose>
  
@@ -161,17 +233,41 @@
 		<Exec Command="if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\SqlQueries&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\SqlQueries&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\ExcelTemplates&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\ExcelTemplates&quot;&#xD;&#xA;&#xD;&#xA;if not exist &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot; mkdir &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;&#xD;&#xA;xcopy /Y /S &quot;$(ProjectDir)Config\Reports&quot; &quot;$(ProjectDir)..\KadOzenka.LongProcessService\Config\Reports&quot;" />
 	</Target>  
 
-	<PropertyGroup>
-		<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
-	</PropertyGroup>
+ 
 	
-	<ItemGroup>
-		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
-		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Development.pubxml" />
-		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_QA.pubxml" />
-		<_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Release.pubxml" />
-	</ItemGroup>
+	<!--<ItemGroup>
+	  <None Include="appsettings.Demo.json">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
+	  <None Include="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+		<Content Update="appsettings.Development.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	  <None Include="appsettings.Production.json">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
+	  <None Include="appsettings.QA.json">
+	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>-->
+	
+	<!--<ItemGroup>
+		<Content Remove="appsettings.Demo.json" />
+		<Content Remove="appsettings.Development.json" />
+		<Content Remove="appsettings.json" />
+		<Content Remove="appsettings.Production.json" />
+		<Content Remove="appsettings.QA.json" />
+	</ItemGroup>-->
+  
+	
 
+	
+	
+	<Target Name="CreateLogsFolder" AfterTargets="AfterPublish">
+		<MakeDir Directories="$(PublishDir)Logs" Condition="!Exists('$(PublishDir)Logs')" />
+	</Target>
   <!--<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>-->
  
 </Project>

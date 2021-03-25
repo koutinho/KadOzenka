@@ -5,30 +5,63 @@
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
+	<Configurations>Debug;Release;QA;Demo</Configurations>
   </PropertyGroup>
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup><!--<Compile Remove="ConfigCore\**" />
-    <Compile Remove="Log\**" />
-    <Compile Remove="wwwroot\**" />
-    <Content Remove="ConfigCore\**" />
-    <Content Remove="Log\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="ConfigCore\**" />
-    <EmbeddedResource Remove="Log\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="ConfigCore\**" />
-    <None Remove="Log\**" />
-    <None Remove="wwwroot\**" />-->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  	<PlatformTarget>x64</PlatformTarget>
+  	<DefineConstants>DEBUG;TRACE</DefineConstants>
+  	<EnvironmentName>Development</EnvironmentName>
+  	<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
+  </PropertyGroup>
   
-    <Folder Include="Config\Reports\" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QA|AnyCPU'">
+  	<PlatformTarget>AnyCPU</PlatformTarget>
+  	<DefineConstants>DEBUG;TRACE</DefineConstants>
+  	<EnvironmentName>QA</EnvironmentName>
+  	<ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|AnyCPU'">
+  	<PlatformTarget>AnyCPU</PlatformTarget>
+  	<DefineConstants>DEBUG;TRACE</DefineConstants>
+  	<EnvironmentName>Demo</EnvironmentName>
+  	<ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
+  </PropertyGroup>
+  
   <ItemGroup>
-    <!--<Folder Include="wwwroot\" />-->
+    <Content Remove="appsettings.json" />
+    <Content Remove="appsettings.Development.json" />
+    <Content Remove="appsettings.QA.json" />
+    <Content Remove="appsettings.Demo.json" />
+    <Content Remove="appsettings.Production.json" />
   </ItemGroup>
+  
+  <ItemGroup>
+	  <None Include="appsettings.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Include="appsettings.Development.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
+	  <None Include="appsettings.QA.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
+	  <None Include="appsettings.Demo.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      </None>
+	  <None Include="appsettings.Production.json">
+		<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
+  </ItemGroup>
+  
+  <!--<ItemGroup>
+	  <Folder Include="Config\Reports\" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
@@ -65,14 +98,69 @@
 
  
 
-  <!--<ItemGroup>
-    <Reference Include="Kendo.Mvc">
-      <HintPath>..\_DLL\Kendo.Mvc.dll</HintPath>
-    </Reference>
-  </ItemGroup>-->
-
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="attrib -r &quot;$(ProjectDir)Config\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)ConfigCore\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)wwwroot\*.*&quot; /s" />
   </Target>
+	  	<Choose>
+		<When Condition=" '$(Configuration)'=='Debug' ">
+			<PropertyGroup>
+				<DebugSymbols>true</DebugSymbols>
+				<DebugType>full</DebugType>
+				<Optimize>false</Optimize>
+				<OutputPath>.\bin\Debug\</OutputPath>
+				<DefineConstants>DEBUG;TRACE</DefineConstants>
+				<EnvironmentName>Development</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.Development.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)'=='QA' ">
+			<PropertyGroup>
+				<DebugSymbols>true</DebugSymbols>
+				<DebugType>full</DebugType>
+				<Optimize>false</Optimize>
+				<OutputPath>.\bin\QA\</OutputPath>
+				<DefineConstants>DEBUG;TRACE</DefineConstants>
+				<EnvironmentName>QA</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+				
+			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.QA.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
+			
+		</When>
+		<When Condition=" '$(Configuration)'=='Demo' ">
+			<PropertyGroup>
+				<DebugSymbols>false</DebugSymbols>
+				<DebugType>None</DebugType>
+				<Optimize>true</Optimize>
+				<OutputPath>.\bin\Demo\</OutputPath>
+				<EnvironmentName>Demo</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.Demo.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)'=='Release' ">
+			<PropertyGroup>
+				<DebugSymbols>false</DebugSymbols>
+				<DebugType>None</DebugType>
+				<Optimize>true</Optimize>
+				<EnvironmentName>Production</EnvironmentName>
+				<ASPNETCORE_ENVIRONMENT>Production</ASPNETCORE_ENVIRONMENT>
+				<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+			</PropertyGroup>
+			<ItemGroup>
+				<None Include="appsettings.Production.json" CopyToPublishDirectory="PreserveNewest" />
+			</ItemGroup>
 
+		</When>
+	</Choose>                                                                                            
 </Project>

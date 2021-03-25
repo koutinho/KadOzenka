@@ -39,6 +39,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{D70D30D5-2A3F-49C7-AB77-97982F483540}"
 	ProjectSection(SolutionItems) = preProject
 		generate_scriptsDB.ps1 = generate_scriptsDB.ps1
+		..\..\..\..\Downloads\publish.ps1 = ..\..\..\..\Downloads\publish.ps1
 		Utils\PublishScripts\publish_CIPJS_KO_PPR_4042.ps1 = Utils\PublishScripts\publish_CIPJS_KO_PPR_4042.ps1
 		Utils\PublishScripts\publish_CIPJS_KO_PPR_8084.ps1 = Utils\PublishScripts\publish_CIPJS_KO_PPR_8084.ps1
 		Utils\PublishScripts\publish_CIPJS_KO_TEST_4041.ps1 = Utils\PublishScripts\publish_CIPJS_KO_TEST_4041.ps1
@@ -68,7 +69,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{
 		Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_registers.sql = Utils\DbScripts\Functions\update_cache_table_for_data_composition_reports_for_registers.sql
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbMigrations", "DbMigrations\DbMigrations.csproj", "{CD863872-0067-452E-8B42-B0DE2F6BDD8A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbMigrations", "DbMigrations\DbMigrations.csproj", "{CD863872-0067-452E-8B42-B0DE2F6BDD8A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -277,12 +278,12 @@ Global
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Debug|x86.Build.0 = Debug|Any CPU
-		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Demo|Any CPU.ActiveCfg = Debug|Any CPU
-		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Demo|Any CPU.Build.0 = Debug|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Demo|Any CPU.ActiveCfg = Demo|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Demo|Any CPU.Build.0 = Demo|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Demo|x86.ActiveCfg = Demo|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Demo|x86.Build.0 = Demo|Any CPU
-		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.QA|Any CPU.ActiveCfg = Debug|Any CPU
-		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.QA|Any CPU.Build.0 = Debug|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.QA|Any CPU.ActiveCfg = QA|Any CPU
+		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.QA|Any CPU.Build.0 = QA|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.QA|x86.ActiveCfg = QA|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.QA|x86.Build.0 = QA|Any CPU
 		{82CC723A-6CB8-41F8-8949-90BFF202F27A}.Release|Any CPU.ActiveCfg = Release|Any CPU

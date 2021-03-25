@@ -24,9 +24,14 @@ namespace CIPJS
                 ASPNETCORE_ENVIRONMENT = "Production";
             #endif
 
-           var configuration = new ConfigurationBuilder()
+            if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
+            {
+                ASPNETCORE_ENVIRONMENT = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
+            }
+            var envConfigFile = $"appsettings.{ASPNETCORE_ENVIRONMENT}.json";
+            var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile(path: $"appsettings.{ASPNETCORE_ENVIRONMENT}.json", optional: true, reloadOnChange: true)
+                .AddJsonFile(path: envConfigFile, optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
            
@@ -35,15 +40,14 @@ namespace CIPJS
                 //.Enrich.WithProperty("Version", typeof(Program).Assembly.Version)
                 .CreateLogger();
 
-
             try
             {
-                Log.Warning("Application KadOzenka.Web starting up");
+                Log.ForContext("envConfigFile", envConfigFile).Warning("Application MiomoKadOzenka.Web starting up");
                 BuildWebHost(args, configuration).Run();
             }
             catch (Exception ex)
             {
-                Log.Fatal(ex, "Application KadOzenka.Web start-up failed");
+                Log.Fatal(ex, "Application MiomoKadOzenka.Web start-up failed");
             }
             finally
             {
@@ -53,11 +57,6 @@ namespace CIPJS
 
         public static IWebHost BuildWebHost(string[] args, IConfigurationRoot config) =>
             WebHost.CreateDefaultBuilder(args)
-                //.ConfigureAppConfiguration((a, configuration) =>
-                //{
-                //    configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                //    configuration.AddJsonFile($"appsettings.{ASPNETCORE_ENVIRONMENT}.json", optional: true, reloadOnChange: true);
-                //})
                 .UseSerilog()
                 .UseStartup<Startup>()
                 .StartFeatureSubscribe(config)
