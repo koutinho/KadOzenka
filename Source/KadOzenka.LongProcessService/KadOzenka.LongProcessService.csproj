@@ -1,68 +1,67 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup Label="Globals">
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
-	<Configurations>Debug;Release;QA;Demo</Configurations>
+    <Configurations>Debug;Release;QA;Demo;UAT</Configurations>
   </PropertyGroup>
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-  	<PlatformTarget>x64</PlatformTarget>
-  	<DefineConstants>DEBUG;TRACE</DefineConstants>
-  	<EnvironmentName>Development</EnvironmentName>
-  	<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
+    <PlatformTarget>x64</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <EnvironmentName>Development</EnvironmentName>
+    <ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QA|AnyCPU'">
-  	<PlatformTarget>AnyCPU</PlatformTarget>
-  	<DefineConstants>DEBUG;TRACE</DefineConstants>
-  	<EnvironmentName>QA</EnvironmentName>
-  	<ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <EnvironmentName>QA</EnvironmentName>
+    <ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Demo|AnyCPU'">
-  	<PlatformTarget>AnyCPU</PlatformTarget>
-  	<DefineConstants>DEBUG;TRACE</DefineConstants>
-  	<EnvironmentName>Demo</EnvironmentName>
-  	<ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <EnvironmentName>Demo</EnvironmentName>
+    <ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
   </PropertyGroup>
-  
   <ItemGroup>
     <Content Remove="appsettings.json" />
     <Content Remove="appsettings.Development.json" />
     <Content Remove="appsettings.QA.json" />
     <Content Remove="appsettings.Demo.json" />
+    <Content Remove="appsettings.UAT.json" />
     <Content Remove="appsettings.Production.json" />
   </ItemGroup>
-  
   <ItemGroup>
-	  <None Include="appsettings.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Include="appsettings.Development.json">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
-	  <None Include="appsettings.QA.json">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
-	  <None Include="appsettings.Demo.json">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </None>
-	  <None Include="appsettings.Production.json">
-		<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_UAT.pubxml" />
   </ItemGroup>
-  
+  <ItemGroup>
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="appsettings.Development.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="appsettings.QA.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="appsettings.Demo.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="appsettings.UAT.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="appsettings.Production.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <!--<ItemGroup>
 	  <Folder Include="Config\Reports\" />
   </ItemGroup>-->
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
@@ -76,91 +75,200 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Config\Param\*">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-	<None Update="Config\Reports\*">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</None>
-	<None Update="Config\SqlQueries\**\*">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</None>
-	<None Update="Config\ExcelTemplates\*">
-		<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	</None>
+    <None Update="Config\Reports\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\SqlQueries\**\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config\ExcelTemplates\*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
+	<!-- Comfort presentation of configuration files -->
+	<ItemGroup>
+		<None Include="Config\Param\Core.LongProcess.xml" />
+		<None Include="Config\Param\Core.LongProcess.Prod.Web.xml">
+			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.LongProcess.Prod.DB.xml">
+			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.LongProcess.Prod.xml">
+			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.FileStorages.xml" />
+		<None Include="Config\Param\Core.FileStorages.Dev.xml">
+			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="Config\Param\Core.FileStorages.Ppr.Ppr.xml">
+			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="Config\Param\Core.FileStorages.Ppr.Test.xml">
+			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+		<None Include="Config\Param\Core.FileStorages.Prod.xml">
+			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
+		</None>
 
- 
+		<None Include="Config\Param\Core.Srd.xml" />
+		<None Include="Config\Param\Core.Srd.Dev.xml">
+			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.Srd.Ppr.xml">
+			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.Srd.Prod.xml">
+			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.SystemCommon.xml" />
+		<None Include="Config\Param\Core.SystemCommon.Dev.xml">
+			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.SystemCommon.Ppr.Ppr.xml">
+			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.SystemCommon.Ppr.Test.xml">
+			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Core.SystemCommon.Prod.xml">
+			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Postgres.Backup.xml" />
+		<None Include="Config\Param\Postgres.Backup.Dev.xml">
+			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Postgres.Backup.Ppr.xml">
+			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\Postgres.Backup.Prod.xml">
+			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\ReonService.xml" />
+		<None Include="Config\Param\ReonService.Dev.xml">
+			<DependentUpon>Config\Param\ReonService.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\ReonService.Ppr.xml">
+			<DependentUpon>Config\Param\ReonService.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\ModelingProcessConfig.xml" />
+		<None Include="Config\Param\ModelingProcessConfig.Dev.xml">
+			<DependentUpon>Config\Param\ModelingProcessConfig.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\DataComparingConfig.xml" />
+		<None Include="Config\Param\DataComparingConfig.Dev.xml">
+			<DependentUpon>Config\Param\DataComparingConfig.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\DataComparingConfig.Dev.xml">
+			<DependentUpon>Config\Param\DataComparingConfig.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\DataComparingConfig.Ppr.Test.xml">
+			<DependentUpon>Config\Param\DataComparingConfig.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\DataComparingConfig.Ppr.Ppr.xml">
+			<DependentUpon>Config\Param\DataComparingConfig.xml</DependentUpon>
+		</None>
+		<None Include="Config\Param\DataComparingConfig.Prod.xml">
+			<DependentUpon>Config\Param\DataComparingConfig.xml</DependentUpon>
+		</None>
+	</ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="attrib -r &quot;$(ProjectDir)Config\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)ConfigCore\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)wwwroot\*.*&quot; /s" />
   </Target>
-	  	<Choose>
-		<When Condition=" '$(Configuration)'=='Debug' ">
-			<PropertyGroup>
-				<DebugSymbols>true</DebugSymbols>
-				<DebugType>full</DebugType>
-				<Optimize>false</Optimize>
-				<OutputPath>.\bin\Debug\</OutputPath>
-				<DefineConstants>DEBUG;TRACE</DefineConstants>
-				<EnvironmentName>Development</EnvironmentName>
-				<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
-				<CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
-			</PropertyGroup>
-			<ItemGroup>
-				<None Include="appsettings.Development.json" CopyToPublishDirectory="PreserveNewest" />
-			</ItemGroup>
-		</When>
-		<When Condition=" '$(Configuration)'=='QA' ">
-			<PropertyGroup>
-				<DebugSymbols>true</DebugSymbols>
-				<DebugType>full</DebugType>
-				<Optimize>false</Optimize>
-				<OutputPath>.\bin\QA\</OutputPath>
-				<DefineConstants>DEBUG;TRACE</DefineConstants>
-				<EnvironmentName>QA</EnvironmentName>
-				<ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
-				<CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
-				
-			</PropertyGroup>
-			<ItemGroup>
-				<None Include="appsettings.QA.json" CopyToPublishDirectory="PreserveNewest" />
-			</ItemGroup>
-			
-		</When>
-		<When Condition=" '$(Configuration)'=='Demo' ">
-			<PropertyGroup>
-				<DebugSymbols>false</DebugSymbols>
-				<DebugType>None</DebugType>
-				<Optimize>true</Optimize>
-				<OutputPath>.\bin\Demo\</OutputPath>
-				<EnvironmentName>Demo</EnvironmentName>
-				<ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
-				<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
-			</PropertyGroup>
-			<ItemGroup>
-				<None Include="appsettings.Demo.json" CopyToPublishDirectory="PreserveNewest" />
-			</ItemGroup>
-		</When>
-		<When Condition=" '$(Configuration)'=='Release' ">
-			<PropertyGroup>
-				<DebugSymbols>false</DebugSymbols>
-				<DebugType>None</DebugType>
-				<Optimize>true</Optimize>
-				<EnvironmentName>Production</EnvironmentName>
-				<ASPNETCORE_ENVIRONMENT>Production</ASPNETCORE_ENVIRONMENT>
-				<CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
-			</PropertyGroup>
-			<ItemGroup>
-				<None Include="appsettings.Production.json" CopyToPublishDirectory="PreserveNewest" />
-			</ItemGroup>
-
-		</When>
-	</Choose>                                                                                            
+  <Choose>
+    <When Condition=" '$(Configuration)'=='Debug' ">
+      <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>.\bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <EnvironmentName>Development</EnvironmentName>
+        <ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
+        <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+      </PropertyGroup>
+      <ItemGroup>
+        <None Include="appsettings.Development.json" CopyToPublishDirectory="PreserveNewest" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)'=='QA' ">
+      <PropertyGroup>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>.\bin\QA\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <EnvironmentName>QA</EnvironmentName>
+        <ASPNETCORE_ENVIRONMENT>QA</ASPNETCORE_ENVIRONMENT>
+        <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+      </PropertyGroup>
+      <ItemGroup>
+        <None Include="appsettings.QA.json" CopyToPublishDirectory="PreserveNewest" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)'=='Demo' ">
+      <PropertyGroup>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>None</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>.\bin\Demo\</OutputPath>
+        <EnvironmentName>Demo</EnvironmentName>
+        <ASPNETCORE_ENVIRONMENT>Demo</ASPNETCORE_ENVIRONMENT>
+        <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+      </PropertyGroup>
+      <ItemGroup>
+        <None Include="appsettings.Demo.json" CopyToPublishDirectory="PreserveNewest" />
+      </ItemGroup>
+    </When>
+	<When Condition=" '$(Configuration)'=='UAT' ">
+	  <PropertyGroup>
+		  <DebugSymbols>false</DebugSymbols>
+		  <DebugType>None</DebugType>
+		  <Optimize>true</Optimize>
+		  <OutputPath>.\bin\UAT\</OutputPath>
+		  <EnvironmentName>UAT</EnvironmentName>
+		  <ASPNETCORE_ENVIRONMENT>UAT</ASPNETCORE_ENVIRONMENT>
+		  <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+	  </PropertyGroup>
+	  <ItemGroup>
+		  <None Include="appsettings.UAT.json" CopyToPublishDirectory="PreserveNewest" />
+	  </ItemGroup>
+	</When>
+    <When Condition=" '$(Configuration)'=='Release' ">
+      <PropertyGroup>
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>None</DebugType>
+        <Optimize>true</Optimize>
+        <EnvironmentName>Production</EnvironmentName>
+        <ASPNETCORE_ENVIRONMENT>Production</ASPNETCORE_ENVIRONMENT>
+        <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+      </PropertyGroup>
+      <ItemGroup>
+        <None Include="appsettings.Production.json" CopyToPublishDirectory="PreserveNewest" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Web\Microsoft.Web.Publishing.Tasks.dll" />
+  <Target Name="app_config_AfterCompile" AfterTargets="AfterCompile" Condition="Exists('app.$(Configuration).config')">
+    <!--Generate transformed app config in the intermediate directory-->
+    <TransformXml Source="app.config" Destination="$(IntermediateOutputPath)$(TargetFileName).config" Transform="app.$(Configuration).config" />
+    <!--Force build process to use the transformed configuration file from now on.-->
+    <ItemGroup>
+      <AppConfigWithTargetPath Remove="app.config" />
+      <AppConfigWithTargetPath Include="$(IntermediateOutputPath)$(TargetFileName).config">
+        <TargetPath>$(TargetFileName).config</TargetPath>
+      </AppConfigWithTargetPath>
+    </ItemGroup>
+  </Target>
 </Project>

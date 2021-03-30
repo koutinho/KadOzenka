@@ -3,11 +3,11 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost:4041",
+      "applicationUrl": "http://localhost:4050",
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:50250/",
+      "applicationUrl": "http://localhost:50350/",
       "sslPort": 0
     }
   },
@@ -15,47 +15,56 @@
     "IIS Express": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:4041",
+      "launchUrl": "http://localhost:4050",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "nativeDebugging": true
     },
-    "KadOzenka.Web.Development": {
+    "MiomoKadOzenka.Web.Development": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50252/",
+      "launchUrl": "http://localhost:50350/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:50252/"
+      "applicationUrl": "http://localhost:50350/"
     },
-    "KadOzenka.Web.QA": {
+    "MiomoKadOzenka.Web.QA": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50252/",
+      "launchUrl": "http://localhost:50351/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "QA"
       },
-      "applicationUrl": "http://localhost:50252/"
+      "applicationUrl": "http://localhost:50351/"
     },
-    "KadOzenka.Web.Demo": {
+    "MiomoKadOzenka.Web.Demo": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50252/",
+      "launchUrl": "http://localhost:50352/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Demo"
       },
-      "applicationUrl": "http://localhost:50252/"
+      "applicationUrl": "http://localhost:50352/"
     },
-    "KadOzenka.Web.Production": {
+    "MiomoKadOzenka.Web.UAT": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50252/",
+      "launchUrl": "http://localhost:50353/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "UAT"
+      },
+      "applicationUrl": "http://localhost:50353/"
+    },
+    "MiomoKadOzenka.Web.Production": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:50354/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
-      "applicationUrl": "http://localhost:50252/"
+      "applicationUrl": "http://localhost:50354/"
     }
   }
 }
