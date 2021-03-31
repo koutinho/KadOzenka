@@ -15,13 +15,50 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "KadOzenka.LongProcessService": {
+    "MiomoKadOzenka.LongProcessService.Development": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:50360/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5031"
+      "applicationUrl": "http://localhost:50360/"
+    },
+    "MiomoKadOzenka.LongProcessService.QA": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:50361/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "QA"
+      },
+      "applicationUrl": "http://localhost:50361/"
+    },
+    "MiomoKadOzenka.LongProcessService.Demo": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:50362/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Demo"
+      },
+      "applicationUrl": "http://localhost:50362/"
+    },
+    "MiomoKadOzenka.LongProcessService.UAT": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:50363/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "UAT"
+      },
+      "applicationUrl": "http://localhost:50363/"
+    },
+    "MiomoKadOzenka.LongProcessService.Production": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:50364/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "applicationUrl": "http://localhost:50364/"
     }
   }
 }

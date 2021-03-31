@@ -13,6 +13,7 @@
 /Source/KadOzenka.WebClients/bin
 /Source/KadOzenka.Web/bin
 /Source/KadOzenka.Web/obj
+/Source/KadOzenka.Web/Properties/PublishProfiles/*.pubxml.user
 /Source/KadOzenka.Test.ReonWebServiceMock/bin
 /Source/KadOzenka.Test.ReonWebServiceMock/obj
 /Source/.vs
@@ -24,6 +25,7 @@
 /Source/KadOzenka.LongProcessService/Config/Reports
 /Source/KadOzenka.LongProcessService/Config/SqlQueries
 /Source/KadOzenka.LongProcessService/Config/ExcelTemplates
+/Source/KadOzenka.LongProcessService/Properties/PublishProfiles/*.pubxml.user
 /Source/KadOzenka.LongProcessService/wwwroot
 /Source/KadOzenka.Dal/obj
 /Source/KadOzenka.Dal/bin
