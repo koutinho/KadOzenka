@@ -134,68 +134,6 @@
 	</ItemGroup>
 
 	<!-- Comfort presentation of configuration files -->
-	<ItemGroup>
-		<None Include="Config\Param\Core.LongProcess.xml" />
-		<None Include="Config\Param\Core.LongProcess.Prod.Web.xml">
-			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.LongProcess.Prod.DB.xml">
-			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.LongProcess.Prod.xml">
-			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
-		</None>
-
-		<!--<None Include="Config\Param\Core.FileStorages.xml" />
-		<None Include="Config\Param\Core.FileStorages.Dev.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>-->
-		<!--<None Include="Config\Param\Core.FileStorages.Ppr.Ppr.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.FileStorages.Ppr.Test.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.FileStorages.Prod.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Core.Srd.xml" />
-		<None Include="Config\Param\Core.Srd.Dev.xml">
-			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.Srd.Ppr.xml">
-			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.Srd.Prod.xml">
-			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Core.SystemCommon.xml" />
-		<None Include="Config\Param\Core.SystemCommon.Dev.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.SystemCommon.Ppr.Ppr.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.SystemCommon.Ppr.Test.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.SystemCommon.Prod.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Postgres.Backup.xml" />
-		<None Include="Config\Param\Postgres.Backup.Dev.xml">
-			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Postgres.Backup.Ppr.xml">
-			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Postgres.Backup.Prod.xml">
-			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
-		</None>-->
-	</ItemGroup>
 
   <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
