@@ -1,5 +1,5 @@
 ﻿@using KadOzenka.Dal.Oks
-@using Core.Main.ConfigParam.SystemCommon
+@using KadOzenka.Dal.ConfigurationManagers
 <form class="objectsByZonesWidget">
     <div class="form-horizontal col-sm-12">
         <div class="form-group">
@@ -135,7 +135,7 @@
                 }
             ],
             seriesColors: [
-                @Html.Raw(SystemCommon.Current.DashboardChartSeriesColors.IsNotEmpty() ? SystemCommon.Current.DashboardChartSeriesColors : "\"#1c73a8\", \"#27a0ec\", \"#87d5f5\", \"#fdbb37\", \"#fd8c39\", \"#5ab35f\"")
+                @Html.Raw(ConfigurationManager.Core.SystemCommon.DashboardChartSeriesColors.IsNotEmpty() ? ConfigurationManager.Core.SystemCommon.DashboardChartSeriesColors : "\"#1c73a8\", \"#27a0ec\", \"#87d5f5\", \"#fdbb37\", \"#fd8c39\", \"#5ab35f\"")
             ],
             tooltip: {
                 visible: true,

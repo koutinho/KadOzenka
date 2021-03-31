@@ -160,14 +160,6 @@
 			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
 		</None>
 
-		<None Include="Config\Param\Core.DataBase.Connections.xml" />
-		<None Include="Config\Param\Core.DataBase.Connections.Dev.xml">
-			<DependentUpon>Config\Param\Core.DataBase.Connections.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.DataBase.Connections.Prod.xml">
-			<DependentUpon>Config\Param\Core.DataBase.Connections.xml</DependentUpon>
-		</None>
-
 		<None Include="Config\Param\Core.Srd.xml" />
 		<None Include="Config\Param\Core.Srd.Dev.xml">
 			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
