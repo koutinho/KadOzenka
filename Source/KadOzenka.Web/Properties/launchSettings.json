@@ -65,6 +65,15 @@
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "applicationUrl": "http://localhost:50354/"
+    },
+    "MiomoKadOzenka.Web.Local": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:50355/",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Local"
+      },
+      "applicationUrl": "http://localhost:50355/"
     }
   }
 }

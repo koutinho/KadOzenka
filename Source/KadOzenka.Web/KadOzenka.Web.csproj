@@ -8,7 +8,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <Configurations>Debug;Release;QA;Demo;UAT</Configurations>
+    <Configurations>Debug;Release;QA;Demo;UAT;Local</Configurations>
   </PropertyGroup>
 
   <!--PackageReference-->
@@ -125,6 +125,10 @@
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Dev.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
+
+		<None Include="appsettings.Development.json" Condition="'$(Configuration)'=='Local'">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Demo.json" Condition="'$(Configuration)'=='Demo'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.UAT.json" Condition="'$(Configuration)'=='UAT'" />

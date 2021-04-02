@@ -6,7 +6,7 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <Configurations>Debug;Release;QA;Demo;UAT</Configurations>
+    <Configurations>Debug;Release;QA;Demo;UAT;Local</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
