@@ -21,19 +21,6 @@
 	        </Parameters>
 	    </Button>
 
-	    <Button Caption="Импорт классификатора ЦОД" NavigateURL="/GbuCod/ImportCod" WindowHeight="320" WindowWidth="840" SRDFunctionTag="GBU.COD.IMPORT" Icon="fas fa-code">
-        <ConditionGroups>
-          <ConditionGroup HideOrDisable="Disable">
-            <Conditions>
-              <Condition Key="NeedSelectedRow" Operation="" Value="true" />
-            </Conditions>
-          </ConditionGroup>
-        </ConditionGroups>
-	        <Parameters>
-	            <Parameter Key="codJobId" Value="[ObjectID]" />
-	        </Parameters>
-	    </Button>
-
     <Button Caption="Загрузка данных по списку" NavigateURL="~/DataImportByTemplate/CodDictionaryImport" WindowHeight="800" WindowWidth="1000" SRDFunctionTag="GBU.COD.DATA_IMPORT" Icon="fas fa-arrow-circle-down">
       <Parameters>
         <Parameter Key="CodId" Value="[ObjectId]" />

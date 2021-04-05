@@ -277,23 +277,8 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("364", "Экспорт в Word - Ответные документы по объектам.", ExporterKO.ExportDocOtvet);
             consoleHelper.AddCommand("365", "ExportXlsTable4", ExporterKO.ExportXlsTable4);
             consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
-            consoleHelper.AddCommand("401", "Импорт данных ЦОД из Xml", () =>
-			{
-				using (FileStream fstream = File.OpenRead("c:\\WORK\\cod1.xml"))
-				{
-					byte[] array = new byte[fstream.Length];
-					fstream.Read(array, 0, array.Length);
-					fstream.Seek(0, SeekOrigin.Begin);
-					KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(fstream, 2, true);
-				}
-			});
-			consoleHelper.AddCommand("402", "Импорт данных ЦОД из Xml", () =>
-			{
-				XmlDocument xml = new XmlDocument();
-				xml.Load("c:\\WORK\\cod2.xml");
-				KadOzenka.Dal.DataImport.DataImporterCod.ImportDataCodFromXml(xml, 2, true);
-			});
-			consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
+
+            consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
 
             consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
             {

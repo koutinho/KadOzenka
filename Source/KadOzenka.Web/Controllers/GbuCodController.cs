@@ -1,11 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Transactions;
-using Core.ErrorManagment;
-using KadOzenka.Dal.DataImport;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.KO;
 using ObjectModel.SRD;
@@ -180,41 +176,5 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion CodDictionary
-
-		#region CodImport
-
-		[HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_IMPORT)]
-		public ActionResult ImportCod(long codJobId)
-		{
-			var codJob = OMCodJob.Where(x => x.Id == codJobId).SelectAll().ExecuteFirstOrDefault();
-			if (codJob == null)
-			{
-				throw new Exception($"Задание ЦОД с ИД {codJobId} не найдено");
-			}
-
-			return View(CodJobViewModel.FromEntity(codJob));
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_IMPORT)]
-		public ActionResult ImportCod(IFormFile file, long codId, bool deleteOld)
-		{
-			try
-			{
-				using (Stream fileStream = file.OpenReadStream())
-				{
-					DataImporterCod.ImportDataCodFromXml(fileStream, codId, deleteOld);
-				}
-			}
-			catch (Exception ex)
-			{
-				ErrorManager.LogError(ex);
-				return BadRequest();
-			}
-			return Ok();
-		}
-
-		#endregion CodImport
-	}
+    }
 }
