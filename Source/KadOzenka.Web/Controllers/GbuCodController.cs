@@ -25,6 +25,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
 		public ActionResult CodJobObjectCard(CodJobViewModel viewModel)
 		{
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
 			var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
 
 			if (viewModel.Id != -1 && codJob == null)
