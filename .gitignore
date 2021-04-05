@@ -57,6 +57,8 @@
 /Source/GISStandProject/obj
 /Source/DbMigrations/obj
 /Source/DbMigrations/bin
+/Source/ObjectTransfer/obj
+/Source/ObjectTransfer/bin
 /.vs
 /Source/.idea
 /Source/StartProject/obj
