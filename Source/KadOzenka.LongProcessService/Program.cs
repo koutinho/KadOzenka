@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.WorkerCheckerDataBase;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -66,6 +67,7 @@ namespace KadOzenka.LongProcessService
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .StartWorkerChecker(config)
+                .UseKoConfigManager(config)
                 .UseStartup<Startup>();
     }
 }
