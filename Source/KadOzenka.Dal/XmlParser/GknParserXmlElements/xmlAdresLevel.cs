@@ -5,7 +5,7 @@
 	/// </summary>
 	public class xmlAdresLevel
 	{
-		public string Value;
-		public string Type;
+		public string Value { get; set; }
+		public string Type { get; set; }
 	}
 }

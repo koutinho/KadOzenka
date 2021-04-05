@@ -10,30 +10,30 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Код документа
 		/// </summary>
-		public xmlCodeName CodeDocument;
+		public xmlCodeName CodeDocument { get; set; }
 		/// <summary>
 		/// Наименование документа
 		/// </summary>
-		public string Name;
+		public string Name { get; set; }
 		/// <summary>
 		/// Серия документа
 		/// </summary>
-		public string Series;
+		public string Series { get; set; }
 		/// <summary>
 		/// Номер документа
 		/// </summary>
-		public string Number;
+		public string Number { get; set; }
 		/// <summary>
 		/// Дата выдачи (подписания) документа
 		/// </summary>
-		public DateTime Date;
+		public DateTime Date { get; set; }
 		/// <summary>
 		/// Организация, выдавшая документ. Автор документа
 		/// </summary>
-		public string IssueOrgan;
+		public string IssueOrgan { get; set; }
 		/// <summary>
 		/// Особые отметки
 		/// </summary>
-		public string Desc;
+		public string Desc { get; set; }
 	}
 }

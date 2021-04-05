@@ -7,19 +7,19 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Кадастровый номер земельного участка (земельных участков), в пределах которого (которых) расположен данный объект недвижимости
 		/// </summary>
-		public List<string> ParentCadastralNumbers;
+		public List<string> ParentCadastralNumbers { get; set; }
 		/// <summary>
 		/// Назначение
 		/// </summary>
-		public string AssignationName;
+		public string AssignationName { get; set; }
 		/// <summary>
 		/// Степень готовности в процентах
 		/// </summary>
-		public string DegreeReadiness;
+		public string DegreeReadiness { get; set; }
 		/// <summary>
 		/// Основные характеристики и их значения
 		/// </summary>
-		public List<xmlCodeNameValue> KeyParameters;
+		public List<xmlCodeNameValue> KeyParameters { get; set; }
 
 		public xmlObjectUncomplited(xmlObject obj) : base(obj)
 		{

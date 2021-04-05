@@ -7,35 +7,35 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Площадь в квадратных метрах
 		/// </summary>
-		public string Area;
+		public string Area { get; set; }
 		/// <summary>
 		/// Местоположение в объекте недвижимости
 		/// </summary>
-		public List<xmlPosition> PositionsInObject;
+		public List<xmlPosition> PositionsInObject { get; set; }
 		/// <summary>
 		/// Кадастровый номер здания или сооружения, в котором расположено помещение
 		/// </summary>
-		public string CadastralNumberOKS;
+		public string CadastralNumberOKS { get; set; }
 		/// <summary>
 		/// Количество этажей (в том числе подземных)
 		/// </summary>
-		public xmlFloors parentFloors;
+		public xmlFloors parentFloors { get; set; }
 		/// <summary>
 		/// Эксплуатационные характеристики
 		/// </summary>
-		public xmlYear parentYears;
+		public xmlYear parentYears { get; set; }
 		/// <summary>
 		/// Назначение здания
 		/// </summary>
-		public xmlCodeName parentAssignationBuilding;
+		public xmlCodeName parentAssignationBuilding { get; set; }
 		/// <summary>
 		/// Назначение (сооружение, онс)
 		/// </summary>
-		public string parentAssignationName;
+		public string parentAssignationName { get; set; }
 		/// <summary>
 		/// Материал наружных стен здания
 		/// </summary>
-		public List<xmlCodeName> parentWalls;
+		public List<xmlCodeName> parentWalls { get; set; }
 
 		public xmlObjectCarPlace(xmlObject obj) : base(obj)
 		{

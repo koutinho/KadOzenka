@@ -7,31 +7,31 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Кадастровый номер земельного участка (земельных участков), в пределах которого (которых) расположен данный объект недвижимости
 		/// </summary>
-		public List<string> ParentCadastralNumbers;
+		public List<string> ParentCadastralNumbers { get; set; }
 		/// <summary>
 		/// Площадь в квадратных метрах
 		/// </summary>
-		public string Area;
+		public string Area { get; set; }
 		/// <summary>
 		/// Назначение здания
 		/// </summary>
-		public xmlCodeName AssignationBuilding;
+		public xmlCodeName AssignationBuilding { get; set; }
 		/// <summary>
 		/// Количество этажей (в том числе подземных)
 		/// </summary>
-		public xmlFloors Floors;
+		public xmlFloors Floors { get; set; }
 		/// <summary>
 		/// Эксплуатационные характеристики
 		/// </summary>
-		public xmlYear Years;
+		public xmlYear Years { get; set; }
 		/// <summary>
 		/// Наименование ОКС
 		/// </summary>
-		public string Name;
+		public string Name { get; set; }
 		/// <summary>
 		/// Материал наружных стен здания
 		/// </summary>
-		public List<xmlCodeName> Walls;
+		public List<xmlCodeName> Walls { get; set; }
 
 		public xmlObjectBuild(xmlObject obj) : base(obj)
 		{

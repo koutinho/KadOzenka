@@ -10,11 +10,11 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Уровень (этаж)
 		/// </summary>
-		public xmlCodeNameValue Position;
+		public xmlCodeNameValue Position { get; set; }
 		/// <summary>
 		/// Номер на плане
 		/// </summary>
-		public List<string> NumbersOnPlan;
+		public List<string> NumbersOnPlan { get; set; }
 		public xmlPosition()
 		{
 			Position = new xmlCodeNameValue();

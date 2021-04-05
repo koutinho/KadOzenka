@@ -8,26 +8,26 @@
 		/// <summary>
 		/// Наименование
 		/// </summary>
-		public string Description;
+		public string Description { get; set; }
 		/// <summary>
 		/// Вид или наименование по документу
 		/// </summary>
-		public string CodeZoneDoc;
+		public string CodeZoneDoc { get; set; }
 		/// <summary>
 		/// Реестровый номер границы
 		/// </summary>
-		public string AccountNumber;
+		public string AccountNumber { get; set; }
 		/// <summary>
 		/// Содержание ограничения
 		/// </summary>
-		public string ContentRestrictions;
+		public string ContentRestrictions { get; set; }
 		/// <summary>
 		/// Полностью входит в зону
 		/// </summary>
-		public bool FullPartly;
+		public bool FullPartly { get; set; }
 		/// <summary>
 		/// Реквизиты решения
 		/// </summary>
-		public xmlDocument Document;
+		public xmlDocument Document { get; set; }
 	}
 }

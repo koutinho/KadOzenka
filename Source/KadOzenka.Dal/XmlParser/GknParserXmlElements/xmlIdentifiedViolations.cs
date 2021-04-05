@@ -8,14 +8,14 @@
 		/// <summary>
 		/// Площадь (в кв. м)
 		/// </summary>
-		public double Area;
+		public double Area { get; set; }
 		/// <summary>
 		/// Вид выявленного правонарушения
 		/// </summary>
-		public string TypeViolations;
+		public string TypeViolations { get; set; }
 		/// <summary>
 		/// Признаки выявленного правонарушения
 		/// </summary>
-		public string SignViolations;
+		public string SignViolations { get; set; }
 	}
 }

@@ -8,10 +8,10 @@
 		/// <summary>
 		/// Количество этажей
 		/// </summary>
-		public string Floors;
+		public string Floors { get; set; }
 		/// <summary>
 		/// В том числе подземных этажей
 		/// </summary>
-		public string Underground_Floors;
+		public string Underground_Floors { get; set; }
 	}
 }

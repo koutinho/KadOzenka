@@ -8,10 +8,10 @@
 		/// <summary>
 		/// Отметка об устранении выявленного нарушения: 1(true)-устранено
 		/// </summary>
-		public bool EliminationMark;
+		public bool EliminationMark { get; set; }
 		/// <summary>
 		/// Наименование органа, принявшего решение об устранении правонарушения
 		/// </summary>
-		public string EliminationAgency;
+		public string EliminationAgency { get; set; }
 	}
 }

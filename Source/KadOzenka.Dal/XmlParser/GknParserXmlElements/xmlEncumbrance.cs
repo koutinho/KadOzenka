@@ -8,30 +8,30 @@
 		/// <summary>
 		/// Содержание ограничения (обременения)
 		/// </summary>
-		public string Name;
+		public string Name { get; set; }
 		/// <summary>
 		/// Код по справочнику
 		/// </summary>
-		public xmlCodeName Type;
+		public xmlCodeName Type { get; set; }
 		/// <summary>
 		/// Реестровый номер границы зоны, территории
 		/// </summary>
-		public string AccountNumber;
+		public string AccountNumber { get; set; }
 		/// <summary>
 		/// Кадастровый номер ЗУ, в пользу которого установлен сервитут
 		/// </summary>
-		public string CadastralNumberRestriction;
+		public string CadastralNumberRestriction { get; set; }
 		/// <summary>
 		/// Площадь
 		/// </summary>
-		public double Area;
+		public double Area { get; set; }
 		/// <summary>
 		/// Государственная регистрация ограничения (обременения)
 		/// </summary>
-		public xmlNumberDate Registration;
+		public xmlNumberDate Registration { get; set; }
 		/// <summary>
 		/// Реквизиты документа, на основании которого возникает ограничение (обременение)
 		/// </summary>
-		public xmlDocument Document;
+		public xmlDocument Document { get; set; }
 	}
 }

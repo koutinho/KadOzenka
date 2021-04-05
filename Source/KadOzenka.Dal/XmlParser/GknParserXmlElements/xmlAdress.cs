@@ -8,59 +8,59 @@
 		/// <summary>
 		/// КЛАДР
 		/// </summary>
-		public string KLADR;
+		public string KLADR { get; set; }
 		/// <summary>
 		/// Почтовый индекс
 		/// </summary>
-		public string PostalCode;
+		public string PostalCode { get; set; }
 		/// <summary>
 		/// Регион
 		/// </summary>
-		public string Region;
+		public string Region { get; set; }
 		/// <summary>
 		/// Неформализованное описание
 		/// </summary>
-		public string Place;
+		public string Place { get; set; }
 		/// <summary>
 		/// Иное
 		/// </summary>
-		public string Other;
+		public string Other { get; set; }
 		/// <summary>
 		/// Район
 		/// </summary>
-		public xmlAdresLevel District;
+		public xmlAdresLevel District { get; set; }
 		/// <summary>
 		/// Населенный пункт
 		/// </summary>
-		public xmlAdresLevel Locality;
+		public xmlAdresLevel Locality { get; set; }
 		/// <summary>
 		/// Муниципальное образование
 		/// </summary>
-		public xmlAdresLevel City;
+		public xmlAdresLevel City { get; set; }
 		/// <summary>
 		/// Городской район
 		/// </summary>
-		public xmlAdresLevel UrbanDistrict;
+		public xmlAdresLevel UrbanDistrict { get; set; }
 		/// <summary>
 		/// Улица
 		/// </summary>
-		public xmlAdresLevel Street;
+		public xmlAdresLevel Street { get; set; }
 		/// <summary>
 		/// Дом
 		/// </summary>
-		public xmlAdresLevel Level1;
+		public xmlAdresLevel Level1 { get; set; }
 		/// <summary>
 		/// Корпус
 		/// </summary>
-		public xmlAdresLevel Level2;
+		public xmlAdresLevel Level2 { get; set; }
 		/// <summary>
 		/// Строение
 		/// </summary>
-		public xmlAdresLevel Level3;
+		public xmlAdresLevel Level3 { get; set; }
 		/// <summary>
 		/// Квартира
 		/// </summary>
-		public xmlAdresLevel Apartment;
+		public xmlAdresLevel Apartment { get; set; }
 
 		public static string GetTextAdress(xmlAdress adress)
 		{

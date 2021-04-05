@@ -4,12 +4,12 @@ namespace KadOzenka.Dal.XmlParser
 {
 	public class xmlObjectList
 	{
-		public List<xmlObjectBuild> Buildings;
-		public List<xmlObjectConstruction> Constructions;
-		public List<xmlObjectUncomplited> Uncompliteds;
-		public List<xmlObjectFlat> Flats;
-		public List<xmlObjectCarPlace> CarPlaces;
-		public List<xmlObjectParcel> Parcels;
+		public List<xmlObjectBuild> Buildings { get; set; }
+		public List<xmlObjectConstruction> Constructions { get; set; }
+		public List<xmlObjectUncomplited> Uncompliteds { get; set; }
+		public List<xmlObjectFlat> Flats { get; set; }
+		public List<xmlObjectCarPlace> CarPlaces { get; set; }
+		public List<xmlObjectParcel> Parcels { get; set; }
 		public object myLock;
 
 		public xmlObjectList()

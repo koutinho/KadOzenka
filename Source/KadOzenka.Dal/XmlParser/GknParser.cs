@@ -141,7 +141,9 @@ namespace KadOzenka.Dal.XmlParser
                 }
                 if (xnChild.Name == "Date")
                 {
-                    if (!DateTime.TryParse(xnChild.InnerText, out doc.Date)) doc.Date = DateTime.MinValue;
+	                doc.Date = DateTime.TryParse(xnChild.InnerText, out var dateTime) 
+		                ? dateTime 
+		                : DateTime.MinValue;
                 }
                 if (xnChild.Name == "IssueOrgan")
                 {
@@ -187,32 +189,44 @@ namespace KadOzenka.Dal.XmlParser
                         {
                             if (xnChild1.Name == "DateValuation")
                             {
-                                if (!DateTime.TryParse(xnChild1.InnerText, out obj.CadastralCost.DateValuation)) obj.CadastralCost.DateValuation = DateTime.MinValue;
+	                            obj.CadastralCost.DateValuation = DateTime.TryParse(xnChild1.InnerText, out var date) 
+		                            ? date 
+		                            : DateTime.MinValue;
                             }
                             else
                             if (xnChild1.Name == "DateEntering")
                             {
-                                if (!DateTime.TryParse(xnChild1.InnerText, out obj.CadastralCost.DateEntering)) obj.CadastralCost.DateEntering = DateTime.MinValue;
+	                            obj.CadastralCost.DateEntering = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : DateTime.MinValue;
                             }
                             else
                             if (xnChild1.Name == "DocDate")
                             {
-                                if (!DateTime.TryParse(xnChild1.InnerText, out obj.CadastralCost.DocDate)) obj.CadastralCost.DocDate = DateTime.MinValue;
+	                            obj.CadastralCost.DocDate = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : DateTime.MinValue;
                             }
                             else
                             if (xnChild1.Name == "ApplicationDate")
                             {
-                                if (!DateTime.TryParse(xnChild1.InnerText, out obj.CadastralCost.ApplicationDate)) obj.CadastralCost.ApplicationDate = DateTime.MinValue;
+	                            obj.CadastralCost.ApplicationDate = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : DateTime.MinValue;
                             }
                             else
                             if (xnChild1.Name == "DateApproval")
                             {
-                                if (!DateTime.TryParse(xnChild1.InnerText, out obj.CadastralCost.DateApproval)) obj.CadastralCost.DateApproval = DateTime.MinValue;
+	                            obj.CadastralCost.DateApproval = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : DateTime.MinValue;
                             }
                             else
                             if (xnChild1.Name == "RevisalStatementDate")
                             {
-                                if (!DateTime.TryParse(xnChild1.InnerText, out obj.CadastralCost.RevisalStatementDate)) obj.CadastralCost.RevisalStatementDate = DateTime.MinValue;
+	                            obj.CadastralCost.RevisalStatementDate = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : DateTime.MinValue;
                             }
                             else
                             if (xnChild1.Name == "DocNumber")
@@ -654,8 +668,9 @@ namespace KadOzenka.Dal.XmlParser
                                             if (xnChild3.Name == "Encumbrance")
                                             {
                                                 xmlEncumbrance encum = new xmlEncumbrance();
-                                                if (!double.TryParse(area, out encum.Area))
-                                                    encum.Area = double.MinValue;
+                                                encum.Area = double.TryParse(area, out var valResult)
+	                                                ? valResult
+	                                                : double.MinValue;
                                                 foreach (XmlNode xnChild4 in xnChild3.ChildNodes)
                                                 {
                                                     if (xnChild4.Name == "Type")
@@ -799,8 +814,10 @@ namespace KadOzenka.Dal.XmlParser
                                                     }
                                                     if (xnChild6.Name == "Area")
                                                     {
-                                                        if (!double.TryParse(xnChild6.InnerText, out encum.IdentifiedViolations.Area))
-                                                            encum.IdentifiedViolations.Area = double.MinValue;
+	                                                    encum.IdentifiedViolations.Area =
+		                                                    double.TryParse(xnChild6.InnerText, out var areaResult)
+			                                                    ? areaResult
+			                                                    : double.MinValue;
                                                     }
                                                 }
                                             }

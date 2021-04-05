@@ -7,31 +7,31 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Вид объекта недвижимости
 		/// </summary>
-		public enTypeObject TypeObject;
+		public enTypeObject TypeObject { get; set; }
 		/// <summary>
 		/// Тип объекта недвижимости
 		/// </summary>
-		public string TypeRealty;
+		public string TypeRealty { get; set; }
 		/// <summary>
 		/// Дата создания
 		/// </summary>
-		public DateTime DateCreate;
+		public DateTime DateCreate { get; set; }
 		/// <summary>
 		/// Кадастровый номер
 		/// </summary>
-		public string CadastralNumber;
+		public string CadastralNumber { get; set; }
 		/// <summary>
 		/// Номер кадастрового квартала
 		/// </summary>
-		public string CadastralNumberBlock;
+		public string CadastralNumberBlock { get; set; }
 		/// <summary>
 		/// Сведения о кадастровой стоимости
 		/// </summary>
-		public xmlCost CadastralCost;
+		public xmlCost CadastralCost { get; set; }
 		/// <summary>
 		/// Адрес (местоположение)
 		/// </summary>
-		public xmlAdress Adress;
+		public xmlAdress Adress { get; set; }
 
 		public xmlObjectParticular(xmlObject obj)
 		{

@@ -10,38 +10,38 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Наименование органа, проводившего мероприятие по государственному земельному надзору
 		/// </summary>
-		public string Agency;
+		public string Agency { get; set; }
 		/// <summary>
 		/// Мероприятие государственного земельного надзора по соблюдению требований законодательства (плановая, внеплановая проверка, административное обследование)
 		/// </summary>
-		public xmlCodeName EventName;
+		public xmlCodeName EventName { get; set; }
 		/// <summary>
 		/// Форма проведения плановой или внеплановой проверки
 		/// </summary>
-		public xmlCodeName EventForm;
+		public xmlCodeName EventForm { get; set; }
 		/// <summary>
 		/// Дата окончания проверки
 		/// </summary>
-		public DateTime InspectionEnd;
+		public DateTime InspectionEnd { get; set; }
 		/// <summary>
 		/// Наличие нарушения: правонарушение выявлено (1-true)/не выявлено (0-false)
 		/// </summary>
-		public bool AvailabilityViolations;
+		public bool AvailabilityViolations { get; set; }
 		/// <summary>
 		/// Выявленное правонарушение
 		/// </summary>
-		public xmlIdentifiedViolations IdentifiedViolations;
+		public xmlIdentifiedViolations IdentifiedViolations { get; set; }
 		/// <summary>
 		/// Реквизиты оформленных документов
 		/// </summary>
-		public xmlDocument DocRequisites;
+		public xmlDocument DocRequisites { get; set; }
 		/// <summary>
 		/// Сведения об устранении выявленного нарушения
 		/// </summary>
-		public xmlElimination Elimination;
+		public xmlElimination Elimination { get; set; }
 		/// <summary>
 		/// Реквизиты документа, содержащего сведения об устранении правонарушения
 		/// </summary>
-		public xmlDocument EliminationDocRequisites;
+		public xmlDocument EliminationDocRequisites { get; set; }
 	}
 }
