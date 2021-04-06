@@ -1,6 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.CodDictionary.Entities;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.RecycleBin;
+using KadOzenka.Dal.Registers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.KO;
 
@@ -8,10 +13,6 @@ namespace KadOzenka.Web.Models.GbuCod
 {
 	public class CodJobViewModel : IValidatableObject
     {
-        //TODO возможно, вынести в конфиг
-        private const int MaxValuesCount = 9;
-        private const int MinValuesCount = 1;
-
         public long Id { get; set; }
         public bool IsReadOnly => Id != -1;
 
@@ -27,12 +28,13 @@ namespace KadOzenka.Web.Models.GbuCod
         public List<string> Values { get; set; }
 
 
+
         public CodJobViewModel()
         {
             Values = new List<string>();
 			PossibleValuesCount = new List<SelectListItem>();
 
-			for (var i = MinValuesCount; i <= MaxValuesCount; i++)
+            for (var i = CodDictionaryConsts.MinValuesCount; i <= CodDictionaryConsts.MaxValuesCount; i++)
             {
                 PossibleValuesCount.Add(new SelectListItem
                 {
@@ -66,35 +68,20 @@ namespace KadOzenka.Web.Models.GbuCod
 			codJob.ResultJob = viewModel.Result;
 		}
 
+        public CodDictionaryDto ToDto()
+        {
+            return new CodDictionaryDto
+            {
+                Id = Id,
+                Name = Name,
+                Result = Result,
+                Values = Values
+            };
+        }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (string.IsNullOrWhiteSpace(Name))
-            {
-                yield return new ValidationResult("Не указано Имя справочника");
-			}
-
-            if (string.IsNullOrWhiteSpace(Result))
-            {
-                yield return new ValidationResult("Не указан Результат");
-            }
-
-            if (ValuesCount > MaxValuesCount)
-            {
-                yield return new ValidationResult($"Максимальное количество значений - {MaxValuesCount}");
-            }
-
-            if (ValuesCount < MinValuesCount)
-            {
-                yield return new ValidationResult($"Минимальное количество значений - {MinValuesCount}");
-            }
-
-            for (var i = 0; i < ValuesCount; i++)
-            {
-                if (string.IsNullOrWhiteSpace(Values.ElementAtOrDefault(i)))
-                {
-                    yield return new ValidationResult($"Значение {i + 1} не может быть пустым");
-                }
-            }
+            return CodDictionaryService.ValidateCodDictionary(ToDto());
         }
     }
 }

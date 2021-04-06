@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Transactions;
+using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,15 @@ namespace KadOzenka.Web.Controllers
 {
 	public class GbuCodController : KoBaseController
 	{
-		#region CodJob
+		private ICodDictionaryService CodDictionaryService { get; }
+
+		public GbuCodController(ICodDictionaryService codDictionaryService)
+        {
+            CodDictionaryService = codDictionaryService;
+        }
+		
+
+        #region CodJob
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
@@ -21,6 +30,7 @@ namespace KadOzenka.Web.Controllers
 			return View(CodJobViewModel.FromEntity(codJob));
 		}
 
+		//todo KOMO-7
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
 		public ActionResult CodJobObjectCard(CodJobViewModel viewModel)
@@ -28,7 +38,14 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-			var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
+            if (viewModel.Id == -1)
+            {
+                CodDictionaryService.AddCodDictionary(viewModel.ToDto());
+
+                return Json(new { Success = "Сохранено успешно", data = viewModel });
+			}
+
+            var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
 
 			if (viewModel.Id != -1 && codJob == null)
 			{

@@ -22,6 +22,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
+using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ExpressScore;
@@ -136,6 +137,7 @@ namespace CIPJS
             services.AddTransient(typeof(ISRDSessionWrapper), typeof(SRDSessionWrapper));
             services.AddTransient(typeof(IRegisterConfiguratorWrapper), typeof(RegisterConfiguratorWrapper));
             services.AddTransient(typeof(IRegisterCacheWrapper), typeof(RegisterCacheWrapper));
+            services.AddTransient(typeof(ICodDictionaryService), typeof(CodDictionaryService));
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>
