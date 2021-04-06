@@ -67,29 +67,23 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
-		//TODO KOMO-7
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
-		public IActionResult DeleteCodJob(long codJobId)
-		{
-			var codJob = OMCodJob.Where(x => x.Id == codJobId).SelectAll().ExecuteFirstOrDefault();
-			if (codJob == null)
-			{
-				throw new Exception($"Задание ЦОД с ИД {codJobId} не найдено");
-			}
+		public IActionResult DeleteCodJob(long dictionaryId)
+        {
+			var codJob = CodDictionaryService.GetDictionary(dictionaryId);
 
-			return View(CodDictionaryUpdatingModel.ToModel(codJob));
+            ViewBag.DictionaryId = codJob.Id;
+            ViewBag.DictionaryName = codJob.NameJob;
+
+            return View();
 		}
 
-		[HttpPost]
+		[HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
-		public IActionResult DeleteCodJob(CodJobViewModel viewModel)
+		public IActionResult DeleteDictionary(long dictionaryId)
 		{
-			var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
-			if (codJob == null)
-			{
-				throw new Exception($"Задание ЦОД с ИД {viewModel.Id} не найдено");
-			}
+            var codJob = CodDictionaryService.GetDictionary(dictionaryId);
 
 			using (var ts = new TransactionScope())
 			{
@@ -103,7 +97,7 @@ namespace KadOzenka.Web.Controllers
 				ts.Complete();
 			}
 
-			return EmptyResponse();
+			return Ok();
 		}
 
 		#endregion CodJob
