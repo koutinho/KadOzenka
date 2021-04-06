@@ -164,4 +164,13 @@
     </EmbeddedResource>
   </ItemGroup>
 
+	<Choose>
+		<When Condition=" '$(Configuration)'=='Local' ">
+			<ItemGroup>
+				<Reference Include="Platform">
+					<HintPath>..\..\..\PlatformNetCore\Source\Platform\bin\Debug\netcoreapp2.1\Platform.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+	</Choose>
 </Project>
