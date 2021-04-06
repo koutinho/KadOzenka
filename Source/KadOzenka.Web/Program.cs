@@ -11,21 +11,23 @@ namespace CIPJS
 {
     public class Program
     {
-        static string ASPNETCORE_ENVIRONMENT;
+        static string ASPNETCORE_ENVIRONMENT = "Development";
         public static void Main(string[] args)
         {
             
-            #if DEBUG
-                ASPNETCORE_ENVIRONMENT = "Development";
-            #elif QA
-                ASPNETCORE_ENVIRONMENT = "QA";
-            #elif DEMO
-                ASPNETCORE_ENVIRONMENT = "Demo";
-            #elif RELEASE
-                ASPNETCORE_ENVIRONMENT = "Production";
-             #elif RELEASETEST
-                ASPNETCORE_ENVIRONMENT = "ProductionTest";
-            #endif
+    //        #if DEBUG
+    //            ASPNETCORE_ENVIRONMENT = "Development";
+    //        #elif QA
+    //            ASPNETCORE_ENVIRONMENT = "QA";
+    //        #elif DEMO
+    //            ASPNETCORE_ENVIRONMENT = "Demo";
+    //        #elif RELEASE
+    //            ASPNETCORE_ENVIRONMENT = "Production";
+    //         #elif LOCAL
+    //            ASPNETCORE_ENVIRONMENT = "Local";
+    //        #elif UAT
+				//ASPNETCORE_ENVIRONMENT = "UAT";
+    //        #endif
 
             if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
             {
