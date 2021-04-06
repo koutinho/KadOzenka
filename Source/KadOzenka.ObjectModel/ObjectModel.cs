@@ -9246,6 +9246,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long _registerid;
+        /// <summary>
+        /// 21500400 ИД реестра (register_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21500400)]
+        public long RegisterId
+        {
+            get
+            {
+                CheckPropertyInited("RegisterId");
+                return _registerid;
+            }
+            set
+            {
+                _registerid = value;
+                NotifyPropertyChanged("RegisterId");
+            }
+        }
+
     }
 }
 

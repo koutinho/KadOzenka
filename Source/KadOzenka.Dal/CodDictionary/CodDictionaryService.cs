@@ -39,11 +39,11 @@ namespace KadOzenka.Dal.CodDictionary
 
                 CreateColumns(codDictionary.Values, omRegister.RegisterId);
 
-                //TODO добавить register_id
                 new OMCodJob
                 {
                     NameJob = codDictionary.Name,
-                    ResultJob = codDictionary.Result
+                    ResultJob = codDictionary.Result,
+                    RegisterId = omRegister.RegisterId
                 }.Save();
 
                 ts.Complete();
