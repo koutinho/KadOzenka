@@ -17,59 +17,57 @@ namespace KadOzenka.Web.Controllers
         {
             CodDictionaryService = codDictionaryService;
         }
-		
 
-        #region CodJob
+
+		#region CodJob
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public ActionResult CodJobObjectCard(long id)
-		{
-			var codJob = OMCodJob.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+		public ActionResult AddCodDictionary()
+        {
+            var model = new CodDictionaryAdditionModel {Id = -1};
 
-			return View(CodJobViewModel.FromEntity(codJob));
+			return View(model);
 		}
 
-		//todo KOMO-7
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
+        public ActionResult AddDictionary(CodDictionaryAdditionModel viewModel)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            var dto = viewModel.ToDto();
+			CodDictionaryService.AddCodDictionary(dto);
+
+			return Ok();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
+        public ActionResult CodJobObjectCard(long id)
+        {
+            var dictionary = CodDictionaryService.GetDictionary(id);
+
+            var model = CodDictionaryUpdatingModel.ToModel(dictionary);
+
+			return View(model);
+        }
+
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public ActionResult CodJobObjectCard(CodJobViewModel viewModel)
+		public ActionResult CodJobObjectCard(CodDictionaryUpdatingModel viewModel)
 		{
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            if (viewModel.Id == -1)
-            {
-                CodDictionaryService.AddCodDictionary(viewModel.ToDto());
+            var dto = viewModel.ToDto();
+            CodDictionaryService.UpdateCodDictionary(dto);
 
-                return Json(new { Success = "Сохранено успешно", data = viewModel });
-			}
-
-            var codJob = OMCodJob.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
-
-			if (viewModel.Id != -1 && codJob == null)
-			{
-				return NotFound();
-			}
-			if (codJob == null)
-			{
-				codJob = new OMCodJob();
-			}
-
-			CodJobViewModel.ToEntity(viewModel, ref codJob);
-			long id;
-			try
-			{
-                id = codJob.Save();
-			}
-			catch (Exception e)
-			{
-			    return SendErrorMessage(e.Message);
-            }
-			viewModel.Id = id;
-			return Json(new { Success = "Сохранено успешно", data = viewModel });
+			return Ok();
 		}
 
+		//TODO KOMO-7
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
 		public IActionResult DeleteCodJob(long codJobId)
@@ -80,7 +78,7 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"Задание ЦОД с ИД {codJobId} не найдено");
 			}
 
-			return View(CodJobViewModel.FromEntity(codJob));
+			return View(CodDictionaryUpdatingModel.ToModel(codJob));
 		}
 
 		[HttpPost]

@@ -1,60 +1,30 @@
-﻿@model KadOzenka.Web.Models.GbuCod.CodJobViewModel
+﻿@model KadOzenka.Web.Models.GbuCod.CodDictionaryUpdatingModel
+
 
 @using (Html.BeginForm("CodJobObjectCard", "GbuCod", FormMethod.Post))
 {
-    @Html.HiddenFor(m => m.Id)
-    <div class="form-horizontal col-sm-12">
-        <div class="form-group"></div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Name)
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoTextBoxFor(m => m.Name, isReadonly: false)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Result)
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoTextBoxFor(m => m.Result, isReadonly: false)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.ValuesCount)
-            </div>
-            <div class="col-sm-10">
-                @(Html.Kendo().DropDownListFor(x => x.ValuesCount)
-                    .BindTo(Model.PossibleValuesCount)
-                    .Events(e =>
-                    {
-                        e.DataBound("onValuesCountChange");
-                        e.Change("onValuesCountChange");
-                    })
-                    .Enable(!Model.IsReadOnly))
-            </div>
-        </div>
-        <div id="dynamicValuesBlock">
+    <div class="form-horizontal" style="padding: 2%;">
+        @{
+            await Html.RenderPartialAsync("/Views/GbuCod/Partials/_GeneralCodDictionaryInfo.cshtml", Model);
+        }
+        
+		@{
+            
+		}
 
-        </div>
         <div class="form-group">
             <div class="col-sm-12">
-                <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+                <button style="float: right" class="k-button" id="update" type="button">Сохранить</button>
             </div>
         </div>
     </div>
 }
 
-@if (Model.Id != -1)
-{
-    <div style="height: auto;">
-        <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/GbuCodDictionary?Transition=1&21400200=" + @Model.Id)"
-             data-param-CodJobId="@Model.Id" data-param-Pageable="true" data-param-Scrollable="true"
-             data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid214"></div>
-    </div>
-}
+<div style="height: auto;">
+    <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/GbuCodDictionary?Transition=1&21400200=" + @Model.Id)"
+         data-param-CodJobId="@Model.Id" data-param-Pageable="true" data-param-Scrollable="true"
+         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid214"></div>
+</div>
 
 <style>
     #sidePanel-214 {
@@ -71,76 +41,34 @@
     var valuePrefix = "value_";
 
     $(document).ready(function () {
-        $('#save').on('click',
-            function () {
-                kendo.ui.progress($('body'), true);
-                var form = $('form');
-                var formObject = Common.Functions.FormToObject(form);
-                formObject.Values = getValues(formObject);
-                $.post(form.attr('action'), formObject).done(function (response) {
-                    if (response.Errors) {
-                        var errors = getErrors(response.Errors);
-                        Common.ShowError(errors);
-                        return;
-                    }
-
-                    if (response.Success && response.data) {
-                        $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
-                        Common.ShowMessage(response.Success);
-                    }
-                }).fail(function (response, textStatus, errorThrown) {
-                    Common.ShowError(response.responseText);
-                }).always(function () {
-                    kendo.ui.progress($('body'), false);
-                });
-            });
+        $('#update').on('click', updateDictionary);
     });
 
 
 
 
 
+    function updateDictionary() {
+        kendo.ui.progress($('body'), true);
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        $.post(form.attr('action'), formObject).done(function (response) {
+            if (response.Errors) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            Common.ShowMessage("Обновление выполнено");
+        }).fail(function (response, textStatus, errorThrown) {
+            Common.ShowError(response.responseText);
+        }).always(function () {
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+    //для совместимости с основной вьюшкой (см коммент там)
     function onValuesCountChange() {
-        var dynamicValuesBlock = $("#dynamicValuesBlock");
-        dynamicValuesBlock.empty();
-        var isReadOnly = '@Model.IsReadOnly' === "True";
-        iterateValues(function createInput(i) {
-            var inputId = valuePrefix + i;
-            dynamicValuesBlock.append(`
-            <div class="form-group">
-                <div class="col-sm-2">
-                    Значение ${i}
-                </div>
-                <div class="col-sm-10"> 
-                    <input autocomplete="off" id="${inputId}" name="${inputId}"
-                        class="k-textbox ${isReadOnly ? "k-state-disabled" : ""}" 
-                        editmode="true" style="width: 100%;" type="text">
-                </div>
-            </div>`);
-        });
-    }
 
-
-    function getValues(formObject) {
-        var values = [];
-        var formObjectKeys = Object.keys(formObject);
-        iterateValues(function collectValues(i) {
-            var elementName = formObjectKeys.find(key => key.includes(valuePrefix + i));
-            values.push(formObject[elementName]);
-            delete formObject[elementName];
-        });
-        return values;
-    }
-
-
-    function iterateValues(action) {
-        var valuesCount = getValuesCount();
-        for (var i = 1; i <= valuesCount; i++) {
-            action(i);
-        }
-    }
-    function getValuesCount() {
-        return $('#@(nameof(Model.ValuesCount))').data("kendoDropDownList").value();
     }
 
 </script>

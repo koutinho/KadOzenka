@@ -28,18 +28,28 @@ namespace KadOzenka.Dal.CodDictionary
         }
 
 
+        public OMCodJob GetDictionary(long id)
+        {
+            var dictionary = OMCodJob.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            if (dictionary == null)
+                throw new Exception($"Не найден словарь с ИД {id}");
+
+            return dictionary;
+        }
+
+
         public long AddCodDictionary(CodDictionaryDto codDictionary)
         {
-            ValidateCodDictionaryInternal(codDictionary);
+            ValidateCodDictionaryInternal(codDictionary, true);
 
-            OMRegister omRegister;
+            long codDictionaryId;
             using (var ts = new TransactionScope())
             {
-                omRegister = CreateRegister(codDictionary.Name);
+                var omRegister = CreateRegister(codDictionary.Name);
 
                 CreateColumns(codDictionary.Values, omRegister.RegisterId);
 
-                new OMCodJob
+                codDictionaryId = new OMCodJob
                 {
                     NameJob = codDictionary.Name,
                     ResultJob = codDictionary.Result,
@@ -49,10 +59,21 @@ namespace KadOzenka.Dal.CodDictionary
                 ts.Complete();
             }
 
-            return omRegister.RegisterId;
+            return codDictionaryId;
         }
 
-        public static IEnumerable<ValidationResult> ValidateCodDictionary(CodDictionaryDto codDictionary)
+        public void UpdateCodDictionary(CodDictionaryDto codDictionary)
+        {
+            ValidateCodDictionaryInternal(codDictionary, false);
+
+             var dictionary = GetDictionary(codDictionary.Id);
+
+            dictionary.NameJob = codDictionary.Name;
+            dictionary.ResultJob = codDictionary.Result;
+            dictionary.Save();
+        }
+
+        public static IEnumerable<ValidationResult> ValidateCodDictionaryForUpdating(CodDictionaryDto codDictionary)
         {
             if (string.IsNullOrWhiteSpace(codDictionary.Name))
             {
@@ -63,7 +84,18 @@ namespace KadOzenka.Dal.CodDictionary
             {
                 yield return new ValidationResult("Не указан Результат");
             }
+        }
 
+        public static IEnumerable<ValidationResult> ValidateCodDictionaryForAddition(CodDictionaryDto codDictionary)
+        {
+            return ValidateCodDictionaryForUpdating(codDictionary).Concat(ValidateCodDictionaryValues(codDictionary));
+        }
+
+
+        #region Support Methods
+
+        private static IEnumerable<ValidationResult> ValidateCodDictionaryValues(CodDictionaryDto codDictionary)
+        {
             if (codDictionary.Values == null)
             {
                 yield return new ValidationResult("Не указаны Значения");
@@ -89,12 +121,12 @@ namespace KadOzenka.Dal.CodDictionary
             }
         }
 
-
-        #region Support Methods
-
-        private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary)
+        private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary, bool isNewDictionary)
         {
-            var errors = ValidateCodDictionary(codDictionary).ToList();
+            var errors = isNewDictionary
+                ? ValidateCodDictionaryForAddition(codDictionary).ToList()
+                : ValidateCodDictionaryForUpdating(codDictionary).ToList();
+
             if (errors.Count == 0) 
                 return;
 

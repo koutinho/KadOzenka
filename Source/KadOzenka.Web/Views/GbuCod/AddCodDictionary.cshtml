@@ -1,0 +1,94 @@
+﻿@model KadOzenka.Web.Models.GbuCod.CodDictionaryAdditionModel
+
+@using (Html.BeginForm("AddDictionary", "GbuCod", FormMethod.Post))
+{
+    <div class="form-horizontal" style="padding: 2%;">
+        @{
+            await Html.RenderPartialAsync("/Views/GbuCod/Partials/_GeneralCodDictionaryInfo.cshtml", Model);
+        }
+        
+        <div id="dynamicValuesBlock">
+
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    var valuePrefix = "value_";
+
+    $(document).ready(function() {
+        $('#save').on('click', addDictionary);
+    });
+
+
+
+
+    function onValuesCountChange() {
+        console.log('works');
+        var dynamicValuesBlock = $("#dynamicValuesBlock");
+        dynamicValuesBlock.empty();
+        var isReadOnly = '@Model.IsReadOnly' === "True";
+        iterateValues(function createInput(i) {
+            var inputId = valuePrefix + i;
+            dynamicValuesBlock.append(`
+            <div class="form-group">
+                <div class="col-sm-2">
+                    Значение ${i}
+                </div>
+                <div class="col-sm-10"> 
+                    <input autocomplete="off" id="${inputId}" name="${inputId}"
+                        class="k-textbox ${isReadOnly ? "k-state-disabled" : ""}" 
+                        editmode="true" style="width: 100%;" type="text">
+                </div>
+            </div>`);
+        });
+    }
+
+
+    function iterateValues(action) {
+        var valuesCount = $('#@(nameof(Model.ValuesCount))').data("kendoDropDownList").value();
+        for (var i = 1; i <= valuesCount; i++) {
+            action(i);
+        }
+    }
+
+
+    function getValues(formObject) {
+        var values = [];
+        var formObjectKeys = Object.keys(formObject);
+        iterateValues(function collectValues(i) {
+            var elementName = formObjectKeys.find(key => key.includes(valuePrefix + i));
+            values.push(formObject[elementName]);
+            delete formObject[elementName];
+        });
+        return values;
+    }
+
+
+    function addDictionary() {
+        kendo.ui.progress($('body'), true);
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.Values = getValues(formObject);
+        $.post(form.attr('action'), formObject).done(function(response) {
+            if (response.Errors) {
+                var errors = getErrors(response.Errors);
+                Common.ShowError(errors);
+                return;
+            }
+            Common.ShowMessage("Сохранено успешно");
+        }).fail(function(response, textStatus, errorThrown) {
+            Common.ShowError(response.responseText);
+        }).always(function() {
+            kendo.ui.progress($('body'), false);
+        });
+    }
+
+</script>

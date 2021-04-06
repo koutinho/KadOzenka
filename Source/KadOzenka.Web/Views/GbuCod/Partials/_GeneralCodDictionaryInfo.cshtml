@@ -1,0 +1,43 @@
+﻿@model KadOzenka.Web.Models.GbuCod.CodJobViewModel
+
+@Html.HiddenFor(m => m.Id)
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.Name)
+    </div>
+    <div class="col-sm-10">
+        @Html.KendoTextBoxFor(m => m.Name, isReadonly: false)
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(m => m.Result)
+    </div>
+    <div class="col-sm-10">
+        @Html.KendoTextBoxFor(m => m.Result, isReadonly: false)
+    </div>
+</div>
+<div class="form-group">
+    <div class="col-sm-2">
+        @Html.CustomLabelFor(x => x.ValuesCount)
+    </div>
+    <div class="col-sm-10">
+        @*TODO разобраться, почему не работает привязка к событим через .bind('change')*@
+        @(Html.Kendo().DropDownListFor(x => x.ValuesCount)
+            .BindTo(Model.PossibleValuesCount)
+            .Events(e =>
+            {
+                e.DataBound("onValuesCountChange");
+                e.Change("onValuesCountChange");
+            })
+            .Enable(!Model.IsReadOnly))
+    </div>
+</div>
+
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+
+    });
+</script>
