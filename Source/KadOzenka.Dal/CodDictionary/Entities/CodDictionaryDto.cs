@@ -8,8 +8,6 @@ namespace KadOzenka.Dal.CodDictionary.Entities
 
         public string Name { get; set; }
 
-        public string Result { get; set; }
-
         public List<string> Values { get; set; }
     }
 }

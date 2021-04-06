@@ -52,7 +52,6 @@ namespace KadOzenka.Dal.CodDictionary
                 codDictionaryId = new OMCodJob
                 {
                     NameJob = codDictionary.Name,
-                    ResultJob = codDictionary.Result,
                     RegisterId = omRegister.RegisterId
                 }.Save();
 
@@ -71,7 +70,6 @@ namespace KadOzenka.Dal.CodDictionary
              var dictionary = GetDictionary(codDictionary.Id);
 
             dictionary.NameJob = codDictionary.Name;
-            dictionary.ResultJob = codDictionary.Result;
             dictionary.Save();
         }
 
@@ -80,11 +78,6 @@ namespace KadOzenka.Dal.CodDictionary
             if (string.IsNullOrWhiteSpace(codDictionary.Name))
             {
                 yield return new ValidationResult("Не указано Имя справочника");
-            }
-
-            if (string.IsNullOrWhiteSpace(codDictionary.Result))
-            {
-                yield return new ValidationResult("Не указан Результат");
             }
         }
 

@@ -24,7 +24,6 @@ namespace KadOzenka.Web.Models.GbuCod
             {
                 Id = entity.Id,
                 Name = entity.NameJob,
-                Result = entity.ResultJob,
                 ValuesCount = values.Count,
                 Values = values
             };

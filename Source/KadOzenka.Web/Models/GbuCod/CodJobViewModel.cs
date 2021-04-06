@@ -13,9 +13,6 @@ namespace KadOzenka.Web.Models.GbuCod
         [Display(Name="Задание ЦОД")]
 		public string Name { get; set; }
 
-		[Display(Name = "Результат")]
-		public string Result { get; set; }
-
         [Display(Name = "Количество значений")]
         public int ValuesCount { get; set; }
         public List<SelectListItem> PossibleValuesCount { get; set; }
@@ -44,7 +41,6 @@ namespace KadOzenka.Web.Models.GbuCod
             {
                 Id = Id,
                 Name = Name,
-                Result = Result,
                 Values = Values
             };
         }

@@ -9227,26 +9227,6 @@ namespace ObjectModel.KO
         }
 
 
-        private string _resultjob;
-        /// <summary>
-        /// 21500300 Результат (RESULT_JOB)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21500300)]
-        public string ResultJob
-        {
-            get
-            {
-                CheckPropertyInited("ResultJob");
-                return _resultjob;
-            }
-            set
-            {
-                _resultjob = value;
-                NotifyPropertyChanged("ResultJob");
-            }
-        }
-
-
         private long _registerid;
         /// <summary>
         /// 21500400 ИД реестра (register_id)
