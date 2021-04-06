@@ -8,9 +8,17 @@
             await Html.RenderPartialAsync("/Views/GbuCod/Partials/_GeneralCodDictionaryInfo.cshtml", Model);
         }
         
-		@{
-            
-		}
+        @for (var i = 0; i < Model.Values.Count; i++)
+        {
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel($"Значение {i + 1}")
+                </div>
+                <div class="col-sm-10">
+                    @Html.Kendo().TextBox().Name($"value_{i}").Value(Model.Values[i]).Enable(false)
+                </div>
+            </div>
+        }
 
         <div class="form-group">
             <div class="col-sm-12">
@@ -26,6 +34,8 @@
          data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid214"></div>
 </div>
 
+
+
 <style>
     #sidePanel-214 {
         min-height: 440px;
@@ -35,6 +45,8 @@
         height: auto;
     }
 </style>
+
+
 
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">

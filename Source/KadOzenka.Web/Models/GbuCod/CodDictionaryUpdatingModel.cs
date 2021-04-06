@@ -16,15 +16,8 @@ namespace KadOzenka.Web.Models.GbuCod
 
         public static CodDictionaryUpdatingModel ToModel(OMCodJob entity)
         {
-            if (entity == null)
-            {
-                return new CodDictionaryUpdatingModel
-                {
-                    Id = -1
-                };
-            }
-
-            var values = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == entity.RegisterId)
+            var values = RegisterCache.RegisterAttributes.Values
+                .Where(x => x.RegisterId == entity.RegisterId && !x.IsPrimaryKey)
                 .Select(x => x.Name).ToList();
 
             return new CodDictionaryUpdatingModel

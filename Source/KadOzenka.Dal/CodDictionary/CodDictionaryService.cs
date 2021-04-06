@@ -59,6 +59,8 @@ namespace KadOzenka.Dal.CodDictionary
                 ts.Complete();
             }
 
+            RegisterCache.UpdateCache(0, null);
+
             return codDictionaryId;
         }
 

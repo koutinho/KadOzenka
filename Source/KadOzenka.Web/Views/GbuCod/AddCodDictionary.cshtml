@@ -31,10 +31,8 @@
 
 
     function onValuesCountChange() {
-        console.log('works');
         var dynamicValuesBlock = $("#dynamicValuesBlock");
         dynamicValuesBlock.empty();
-        var isReadOnly = '@Model.IsReadOnly' === "True";
         iterateValues(function createInput(i) {
             var inputId = valuePrefix + i;
             dynamicValuesBlock.append(`
@@ -44,8 +42,7 @@
                 </div>
                 <div class="col-sm-10"> 
                     <input autocomplete="off" id="${inputId}" name="${inputId}"
-                        class="k-textbox ${isReadOnly ? "k-state-disabled" : ""}" 
-                        editmode="true" style="width: 100%;" type="text">
+                        class="k-textbox" editmode="true" style="width: 100%;" type="text">
                 </div>
             </div>`);
         });
@@ -84,11 +81,18 @@
                 return;
             }
             Common.ShowMessage("Сохранено успешно");
+            closeMainWindow();
         }).fail(function(response, textStatus, errorThrown) {
             Common.ShowError(response.responseText);
         }).always(function() {
             kendo.ui.progress($('body'), false);
         });
+    }
+
+    function closeMainWindow() {
+        setTimeout(function () {
+            window.parent.parent.location.reload();
+        }, 1000);
     }
 
 </script>
