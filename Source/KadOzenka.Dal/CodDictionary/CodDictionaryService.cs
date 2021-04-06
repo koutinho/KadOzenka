@@ -15,13 +15,15 @@ namespace KadOzenka.Dal.CodDictionary
     public class CodDictionaryService : ICodDictionaryService
     {
         private IRegisterService RegisterService { get; }
+        public IRegisterAttributeService RegisterAttributeService { get; }
         private IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
-        private static readonly StorageType StorageType = StorageType.Type4;
-        private static readonly string _quantTable = "GBU_MAIN_OBJECT";
 
-        public CodDictionaryService(IRegisterService registerService, IRegisterConfiguratorWrapper registerConfiguratorWrapper)
+        public CodDictionaryService(IRegisterService registerService,
+            IRegisterAttributeService registerAttributeService,
+            IRegisterConfiguratorWrapper registerConfiguratorWrapper)
         {
             RegisterService = registerService;
+            RegisterAttributeService = registerAttributeService;
             RegisterConfiguratorWrapper = registerConfiguratorWrapper;
         }
 
@@ -33,17 +35,12 @@ namespace KadOzenka.Dal.CodDictionary
             OMRegister omRegister;
             using (var ts = new TransactionScope())
             {
-                var existedCodDictionariesCount = GetNumberOfExistedCodDictionaries() + 1;
-                var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
-                var tableName = $"gbu_cod_dictionary_{existedCodDictionariesCount}";
-                omRegister = RegisterService.CreateRegister(registerName, codDictionary.Name, tableName, null, (long)StorageType);
+                omRegister = CreateRegister(codDictionary.Name);
 
-                RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
+                CreateColumns(codDictionary.Values, omRegister.RegisterId);
 
-                RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
-
-                //TODO добавить register_id и цикл по колонкам
-                var dictionaryId = new OMCodJob
+                //TODO добавить register_id
+                new OMCodJob
                 {
                     NameJob = codDictionary.Name,
                     ResultJob = codDictionary.Result
@@ -67,7 +64,12 @@ namespace KadOzenka.Dal.CodDictionary
                 yield return new ValidationResult("Не указан Результат");
             }
 
-            var valuesCount = codDictionary.Values.Count;
+            if (codDictionary.Values == null)
+            {
+                yield return new ValidationResult("Не указаны Значения");
+            }
+
+            var valuesCount = codDictionary.Values?.Count ?? 0;
             if (valuesCount > CodDictionaryConsts.MaxValuesCount)
             {
                 yield return new ValidationResult($"Максимальное количество значений - {CodDictionaryConsts.MaxValuesCount}");
@@ -80,17 +82,13 @@ namespace KadOzenka.Dal.CodDictionary
 
             for (var i = 0; i < valuesCount; i++)
             {
-                if (string.IsNullOrWhiteSpace(codDictionary.Values.ElementAtOrDefault(i)))
+                if (string.IsNullOrWhiteSpace(codDictionary.Values?.ElementAtOrDefault(i)))
                 {
                     yield return new ValidationResult($"Значение {i + 1} не может быть пустым");
                 }
             }
         }
 
-        public int GetNumberOfExistedCodDictionaries()
-        {
-            return OMCodJob.Where(x => true).ExecuteCount();
-        }
 
         #region Support Methods
 
@@ -102,6 +100,31 @@ namespace KadOzenka.Dal.CodDictionary
 
             var message = string.Join(';', errors.Select(x => x.ErrorMessage));
             throw new Exception(message);
+        }
+
+        private OMRegister CreateRegister(string name)
+        {
+            var existedCodDictionariesCount = OMCodJob.Where(x => true).ExecuteCount() + 1;
+            var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
+            var tableName = $"gbu_cod_dictionary_{existedCodDictionariesCount}";
+
+            var omRegister = RegisterService.CreateRegister(registerName, name, tableName, null, (long)StorageType.Type4);
+
+            RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
+            RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
+
+            return omRegister;
+        }
+
+        private void CreateColumns(List<string> columns, long registerId)
+        {
+            columns.ForEach(x =>
+            {
+                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(x, registerId, RegisterAttributeType.STRING, true);
+
+                var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
+                RegisterConfiguratorWrapper.CreateDbColumnForRegister(omAttribute, dbConfigurator);
+            });
         }
 
         #endregion
