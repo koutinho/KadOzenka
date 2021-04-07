@@ -1,19 +1,15 @@
 ﻿@model KadOzenka.Web.Models.Modeling.CorrelationModel
-
+<link rel="stylesheet" href="~/css/toolbars.css" />
 @using (Html.BeginForm("Correlation", "Modeling", FormMethod.Post, htmlAttributes: new {id = "calculateForm"}))
 {
-    @Html.HiddenFor(x => x.QsQueryXmlStr)
-    <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
-        <div id="checkboxList"></div>
-        <div class="form-group" id="calculateBtnBlock" style="display: none">
-            <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                @Html.KendoButton("Calculate", "Рассчитать")
-            </div>
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        @Html.HiddenFor(x => x.QsQueryXmlStr)
+        <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
+            <div id="checkboxList"></div>
         </div>
     </div>
 }
-
-
 
 <script>
     var template = kendo.template(
@@ -33,12 +29,18 @@
         if ('@ViewBag.ErrorMessage') {
             Common.ShowError('@ViewBag.ErrorMessage');
         } else {
+            $("#toolbar").kendoToolBar({
+                items: [
+                    {
+                        type: 'button',
+                        id: 'Calculate',
+                        text: 'Рассчитать',
+                    }]
+            });
             getMarketObjectAttributes();
             $("#Calculate").on('click', calculate);
         }
     });
-
-
 
     function getMarketObjectAttributes() {
         kendo.ui.progress($('body'), true);
@@ -58,7 +60,6 @@
             }
         });
     }
-
 
     function calculate() {
         var attributeIds = [];
@@ -101,11 +102,9 @@
         });
     }
 
-
     function CloseMainWindow() {
         setTimeout(function () {
             Common.UI.CloseWindow('registerModalWindow', window.parent);
         }, 5000);
     }
-
 </script>
