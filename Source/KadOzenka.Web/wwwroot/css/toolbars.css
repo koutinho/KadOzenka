@@ -1,0 +1,29 @@
+﻿.top-toolbar{
+    position: fixed;
+    top: 0;
+    /*background-color: white;*/
+    z-index: 2;
+    width: 100%;
+    border-color: #e5e6eb;
+    border-width: 1px 0;
+    align-content: center;
+}
+
+.bottom-main-content{
+    margin-top: 50px;
+}
+
+.bottom-toolbar{
+    position: fixed;
+    bottom: 0;
+    /*background-color: white;*/
+    z-index: 2;
+    width: 100%;
+    border-color: #e5e6eb;
+    border-width: 1px 0;
+    align-content: center;
+}
+
+.top-main-content{
+    margin-bottom: 50px;
+}
