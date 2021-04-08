@@ -1,133 +1,132 @@
 ﻿@using ObjectModel.Directory.Declarations
 @model KadOzenka.Web.Models.Declarations.SubjectModel
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 @using (Html.BeginForm("EditSubject", "Declarations", FormMethod.Post))
 {
-    @Html.HiddenFor(m => m.Id)
-    <div class="form-horizontal col-sm-12">
-        <div class="form-group"></div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Юридическое лицо").Value((long)SubjectType.Ul).Enable(Model.Id == -1))
-            </div>
-            <div class="col-sm-3">
-                @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Физическое лицо").Value((long)SubjectType.Fl).Enable(Model.Id == -1))
-            </div>
-        </div>
-        <div class="form-group ulName">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.Name)
-            </div>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.Name, new { @class = "k-textbox", @style = "width: 100%;" })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.Surname)
-            </div>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.Surname, new { @class = "k-textbox", @style = "width: 100%;" })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.FirstName)
-            </div>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.FirstName, new { @class = "k-textbox", @style = "width: 100%;" })
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.MiddleName)
-            </div>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.MiddleName, new { @class = "k-textbox", @style = "width: 100%;" })
-            </div>
-        </div>
-        <fieldset id="addressFieldset">
-            <legend>Почтовый адрес</legend>
-            <div id="address_multiple_fields">
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.Zip)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(m => m.Zip, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        @Html.HiddenFor(m => m.Id)
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group"></div>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Юридическое лицо").Value((long) SubjectType.Ul).Enable(Model.Id == -1))
                 </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.City)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(m => m.City, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.Street)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(m => m.Street, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.House)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(m => m.House, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.Building)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.TextBoxFor(m => m.Building, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(m => m.Flat)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.KendoNumericTextBoxFor(m => m.Flat, 0, false)
-                    </div>
-                    <div class="col-sm-2 ulName">
-                        @Html.CustomLabelFor(m => m.OfficeNumber)
-                    </div>
-                    <div class="col-sm-4 ulName">
-                        @Html.TextBoxFor(m => m.OfficeNumber, new { @class = "k-textbox", @style = "width: 100%;", @autocomplete = "off" })
-                    </div>
+                <div class="col-sm-3">
+                    @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Физическое лицо").Value((long) SubjectType.Fl).Enable(Model.Id == -1))
                 </div>
             </div>
-        </fieldset>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.Mail)
+            <div class="form-group ulName">
+                <div class="col-sm-3">
+                    @Html.CustomLabelFor(m => m.Name)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.Name, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.Mail, new { @class = "k-textbox", @style = "width: 100%;" })
+            <div class="form-group">
+                <div class="col-sm-3">
+                    @Html.CustomLabelFor(m => m.Surname)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.Surname, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(m => m.Phone)
+            <div class="form-group">
+                <div class="col-sm-3">
+                    @Html.CustomLabelFor(m => m.FirstName)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.FirstName, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-            <div class="col-sm-9">
-                @Html.TextBoxFor(m => m.Phone, new { @class = "k-textbox", @style = "width: 100%;" })
+            <div class="form-group">
+                <div class="col-sm-3">
+                    @Html.CustomLabelFor(m => m.MiddleName)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.MiddleName, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-12">
-                <button disabled="@(Model.Id == -1 ? !Model.IsCreateSubject : !Model.IsEditSubject)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            <fieldset id="addressFieldset">
+                <legend>Почтовый адрес</legend>
+                <div id="address_multiple_fields">
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.Zip)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.Zip, new {@class = "k-textbox", @style = "width: 100%;", @autocomplete = "off"})
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.City)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.City, new {@class = "k-textbox", @style = "width: 100%;", @autocomplete = "off"})
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.Street)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.Street, new {@class = "k-textbox", @style = "width: 100%;", @autocomplete = "off"})
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.House)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.House, new {@class = "k-textbox", @style = "width: 100%;", @autocomplete = "off"})
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.Building)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(m => m.Building, new {@class = "k-textbox", @style = "width: 100%;", @autocomplete = "off"})
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(m => m.Flat)
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.KendoNumericTextBoxFor(m => m.Flat, 0, false)
+                        </div>
+                        <div class="col-sm-2 ulName">
+                            @Html.CustomLabelFor(m => m.OfficeNumber)
+                        </div>
+                        <div class="col-sm-4 ulName">
+                            @Html.TextBoxFor(m => m.OfficeNumber, new {@class = "k-textbox", @style = "width: 100%;", @autocomplete = "off"})
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    @Html.CustomLabelFor(m => m.Mail)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.Mail, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    @Html.CustomLabelFor(m => m.Phone)
+                </div>
+                <div class="col-sm-9">
+                    @Html.TextBoxFor(m => m.Phone, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
         </div>
     </div>
 }
 
 @section styles {
-    <link rel="stylesheet" href="~/css/jquery.fias.min.css" />
-    
+    <link rel="stylesheet" href="~/css/jquery.fias.min.css"/>
+
     <style>
         fieldset#addressFieldset {
             border: 1px solid #c8c6cc;
@@ -142,6 +141,7 @@
 }
 
 @section scripts {
+    <script src="~/js/toolbars.js"></script>
     <script src="~/js/custom-validation.js"></script>
     <script src="~/js/jquery.fias.min.js"></script>
     <script type="text/javascript">
@@ -150,6 +150,16 @@
         const houseTypeShortList = ['д. '];
 
         $(document).ready(function() {
+            let saveEnabled = "@(Model.Id == -1 ? !Model.IsCreateSubject : !Model.IsEditSubject)" !== "True";
+            $("#toolbar").kendoToolBar({
+                items: [
+                    {
+                        type: 'button',
+                        id: 'save',
+                        text: 'Сохранить',
+                        enable: saveEnabled
+                    }]
+            });
             let fieldReadonly = '@((Model.Type == (long) SubjectType.Fl))';
             changeFieldsVisability(fieldReadonly == 'True');
 
