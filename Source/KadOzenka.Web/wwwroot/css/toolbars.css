@@ -12,6 +12,7 @@
 .bottom-main-content{
     margin-top: 60px;
     display: flex;
+    flex-flow: column;
 }
 
 .bottom-toolbar{
@@ -28,4 +29,5 @@
 .top-main-content{
     margin-bottom: 60px;
     display: flex;
+    flex-flow: column;
 }
