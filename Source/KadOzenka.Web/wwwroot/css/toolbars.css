@@ -11,6 +11,7 @@
 
 .bottom-main-content{
     margin-top: 50px;
+    display: flex;
 }
 
 .bottom-toolbar{
@@ -26,4 +27,5 @@
 
 .top-main-content{
     margin-bottom: 50px;
+    display: flex;
 }
