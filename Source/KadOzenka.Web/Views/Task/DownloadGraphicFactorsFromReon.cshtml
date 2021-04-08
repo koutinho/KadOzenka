@@ -1,24 +1,29 @@
 ﻿@model KadOzenka.Web.Models.Task.GraphicFactorsFromReonModel
 
-@using (Html.BeginForm("DownloadGraphicFactorsFromReon", "Task", FormMethod.Post, new { id = "downloadFactorsForm" }))
+<link rel="stylesheet" href="~/css/toolbars.css" />
+@using (Html.BeginForm("DownloadGraphicFactorsFromReon", "Task", FormMethod.Post, new {id = "downloadFactorsForm"}))
 {
-    @Html.HiddenFor(x => x.TaskId)
-    <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
-        <div id="factorsTreeList"></div>
-        <div class="form-group" id="confirmBtnBlock" style="display: none">
-            <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                @Html.KendoButton("confirmBtn", "Загрузить")
-            </div>
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        @Html.HiddenFor(x => x.TaskId)
+        <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
+            <div id="factorsTreeList"></div>
         </div>
     </div>
 }
 
 
-
-
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
+        $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'confirmBtn',
+                    text: 'Загрузить',
+                }]
+        });
         getReonAttributes();
         $("#confirmBtn").on('click', confirm);
     });
