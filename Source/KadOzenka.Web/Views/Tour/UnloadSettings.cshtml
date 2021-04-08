@@ -150,6 +150,7 @@
     </div>
 </div>
 <script src="~/js/custom-validation.js"></script>
+<script src="~/js/toolbars.js"></script>
 <script>
     $(document).ready(function () {
         $("#toolbar").kendoToolBar({
@@ -159,14 +160,7 @@
                     id: 'save',
                     text: 'Расчет',
                 },
-                {
-                    type: 'button',
-                    id: 'helpButton',
-                    text: '',
-                    icon: 'question',
-                    url: '/Help/Help?CurrentLocation=/Tour/UnloadSettings',
-                    attributes: { 'target' : '_blank' }
-                }]
+                helperButtonForToolbar()]
         });
 
         $('[name="Tour"]')
