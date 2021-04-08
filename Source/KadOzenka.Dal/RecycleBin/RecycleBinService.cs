@@ -176,6 +176,9 @@ DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};
 ";
 					}
 
+					restoreDataSql += $@"
+DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};";
+
 					restoreDataSqls.Add(restoreDataSql);
 				}
 			}
@@ -297,7 +300,11 @@ DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};
 
 		private string FormSqlForMovingObjectsToRecycleBinForOneTable(RegisterObjects registerObjects, long eventId, RegisterData registerData, string tableName, List<Column> mainTableColumns)
 		{
-			var sql = string.Empty;
+			var sql = $@"
+INSERT INTO {GetDeletedTableName(tableName)} ({string.Join(", ", mainTableColumns.Select(x => x.ColumnName).ToList())}, EVENT_ID)
+					SELECT {string.Join(", ", mainTableColumns.Select(x => $"{x.ColumnName}").ToList())}, {eventId} 
+					FROM {tableName} 
+					{registerObjects.GetSqlSearchPredicate()};";
 			if (registerData.Id == OMRegister.GetRegisterId() || registerData.Id == OMAttribute.GetRegisterId())
 			{
 				sql += $@"
