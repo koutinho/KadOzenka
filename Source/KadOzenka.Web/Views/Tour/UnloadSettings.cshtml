@@ -3,162 +3,172 @@
 
 @model KadOzenka.Web.Models.Tour.UnloadSettingsDto
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 <style>
     input {
         cursor: pointer;
     }
 </style>
-
-<div class="form-horizontal col-sm-12" style="margin-top: 10px">
-    @Html.RenderHelpButton()
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabel("Тур оценки")
+<div id="toolbar" class="top-toolbar"></div>
+<div class="bottom-main-content">
+    <div class="form-horizontal col-sm-12" style="margin-top: 10px">
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Тур оценки")
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().DropDownList()
+                    .Name("Tour")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    )
+            </div>
         </div>
-        <div class="col-sm-10">
-            @(Html.Kendo().DropDownList()
-                .Name("Tour")
-                .DataTextField("Text")
-                .DataValueField("Value")
-                )
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabel("Задание на оценку")
-        </div>
-        <div class="col-sm-10">
-            @(Html.Kendo().MultiSelectFor(x => x.TaskFilter)
-                .DataTextField("Text")
-                .DataValueField("Value")
-                .Filter("contains")
-                .DataSource(source =>
-                {
-                    source.Read(read =>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Задание на оценку")
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(x => x.TaskFilter)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(source =>
                     {
-                        read.Action("GetTasksData", "GbuObject");
-                    })
-                        .ServerFiltering(false);
-                }))
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabel("Исходящий документ")
-        </div>
-        <div class="col-sm-10">
-            @Html.KendoDropDownListWithAutocompleteFor(m => m.IdResponseDocument, (IEnumerable)ViewData["Documents"])
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabel("Тип объекта")
-        </div>
-        <div class="col-sm-10">
-            <div class="radio-inline">
-                <input type="radio" id="OKS" name="ObjType" class="custom-control-input" checked>ОКС
-            </div>
-            <div class="radio-inline">
-                <input type="radio" id="Parcel" name="ObjType" class="custom-control-input">Земельные участки
+                        source.Read(read => { read.Action("GetTasksData", "GbuObject"); })
+                            .ServerFiltering(false);
+                    }))
             </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2">
-            @Html.CustomLabel("Отправить результат в РЕОН")
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Исходящий документ")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListWithAutocompleteFor(m => m.IdResponseDocument, (IEnumerable) ViewData["Documents"])
+            </div>
         </div>
-        <div class="col-sm-10 ">
-            @Html.CheckBoxFor(x => x.SendResultToReon)
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Тип объекта")
+            </div>
+            <div class="col-sm-10">
+                <div class="radio-inline">
+                    <input type="radio" id="OKS" name="ObjType" class="custom-control-input" checked>ОКС
+                </div>
+                <div class="radio-inline">
+                    <input type="radio" id="Parcel" name="ObjType" class="custom-control-input">Земельные участки
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadChange)
-            @Html.CustomLabel("Выгрузка изменений")
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Отправить результат в РЕОН")
+            </div>
+            <div class="col-sm-10 ">
+                @Html.CheckBoxFor(x => x.SendResultToReon)
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadHistory)
-            @Html.CustomLabel("Выгрузка истории по объектам")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadChange)
+                @Html.CustomLabel("Выгрузка изменений")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable04)
-            @Html.CustomLabel("Таблица 4. Группировка объектов недвижимости")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadHistory)
+                @Html.CustomLabel("Выгрузка истории по объектам")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable05)
-            @Html.CustomLabel("Таблица 5. Результаты моделирования")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable04)
+                @Html.CustomLabel("Таблица 4. Группировка объектов недвижимости")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable07)
-            @Html.CustomLabel("Таблица 7. Обобщенные показатели по кадастровым районам")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable05)
+                @Html.CustomLabel("Таблица 5. Результаты моделирования")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable08)
-            @Html.CustomLabel("Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable07)
+                @Html.CustomLabel("Таблица 7. Обобщенные показатели по кадастровым районам")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable09)
-            @Html.CustomLabel("Таблица 9. Результаты определения кадастровой стоимости")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable08)
+                @Html.CustomLabel("Таблица 8. Минимальные, максимальные, средние УПКС по кадастровым кварталам")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable10)
-            @Html.CustomLabel("Таблица 10. Результаты государственной кадастровой оценки")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable09)
+                @Html.CustomLabel("Таблица 9. Результаты определения кадастровой стоимости")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadTable11)
-            @Html.CustomLabel("Таблица 11. Сводные результаты по кадастровому району")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable10)
+                @Html.CustomLabel("Таблица 10. Результаты государственной кадастровой оценки")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadXML1)
-            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по объектам")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadTable11)
+                @Html.CustomLabel("Таблица 11. Сводные результаты по кадастровому району")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadXML2)
-            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по группам")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadXML1)
+                @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по объектам")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadDEKOResponseDocExportToXml)
-            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по исходящим документам")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadXML2)
+                @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по группам")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
-            @Html.CheckBoxFor(x => x.UnloadDEKOVuonExportToXml)
-            @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки для ВУОН")
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadDEKOResponseDocExportToXml)
+                @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки по исходящим документам")
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-2 col-sm-offset-10">
-            <button class="btn btn-default btn-block" id="save">Расчет</button>
+        <div class="form-group">
+            <div class="col-sm-10 col-sm-offset-2" style="padding-top: 5px;">
+                @Html.CheckBoxFor(x => x.UnloadDEKOVuonExportToXml)
+                @Html.CustomLabel("Выгрузка в XML результатов Кадастровой оценки для ВУОН")
+            </div>
         </div>
     </div>
 </div>
-
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
+        $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'save',
+                    text: 'Расчет',
+                },
+                {
+                    type: 'button',
+                    id: 'helpButton',
+                    text: '',
+                    icon: 'question',
+                    url: '/Help/Help?CurrentLocation=/Tour/UnloadSettings',
+                    attributes: { 'target' : '_blank' }
+                }]
+        });
+
         $('[name="Tour"]')
             .kendoDropDownList({
                 dataTextField: 'Text',
