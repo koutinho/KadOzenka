@@ -83,21 +83,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
 		public IActionResult DeleteDictionary(long dictionaryId)
 		{
-            var codJob = CodDictionaryService.GetDictionary(dictionaryId);
+            CodDictionaryService.DeleteDictionary(dictionaryId);
 
-			using (var ts = new TransactionScope())
-			{
-				var codJobDictionaries =
-					OMCodDictionary.Where(x => x.IdCodjob == codJob.Id).SelectAll().Execute();
-				foreach (var codDictionary in codJobDictionaries)
-				{
-					codDictionary.Destroy();
-				}
-				codJob.Destroy();
-				ts.Complete();
-			}
-
-			return Ok();
+            return Ok();
 		}
 
 		#endregion CodJob

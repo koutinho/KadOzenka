@@ -8,5 +8,6 @@ namespace KadOzenka.Dal.CodDictionary
         long AddCodDictionary(CodDictionaryDto codDictionary);
         void UpdateCodDictionary(CodDictionaryDto codDictionary);
         OMCodJob GetDictionary(long id);
+        void DeleteDictionary(long id);
     }
 }

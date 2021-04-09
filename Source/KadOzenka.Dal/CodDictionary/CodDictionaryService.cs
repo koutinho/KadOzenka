@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Transactions;
 using Core.Register;
+using Core.SRD;
 using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
+using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
@@ -17,14 +20,17 @@ namespace KadOzenka.Dal.CodDictionary
         private IRegisterService RegisterService { get; }
         public IRegisterAttributeService RegisterAttributeService { get; }
         private IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
+        public IRecycleBinService RecycleBinService { get; }
 
         public CodDictionaryService(IRegisterService registerService,
             IRegisterAttributeService registerAttributeService,
-            IRegisterConfiguratorWrapper registerConfiguratorWrapper)
+            IRegisterConfiguratorWrapper registerConfiguratorWrapper,
+            IRecycleBinService recycleBinService)
         {
             RegisterService = registerService;
             RegisterAttributeService = registerAttributeService;
             RegisterConfiguratorWrapper = registerConfiguratorWrapper;
+            RecycleBinService = recycleBinService;
         }
 
 
@@ -55,6 +61,8 @@ namespace KadOzenka.Dal.CodDictionary
                     RegisterId = omRegister.RegisterId
                 }.Save();
 
+                RecycleBinService.CreateDeletedTable(omRegister.RegisterId, omRegister.QuantTable);
+
                 ts.Complete();
             }
 
@@ -71,6 +79,23 @@ namespace KadOzenka.Dal.CodDictionary
 
             dictionary.NameJob = codDictionary.Name;
             dictionary.Save();
+        }
+
+        public void DeleteDictionary(long id)
+        {
+            var dictionary = GetDictionary(id);
+
+            var eventId = new OMRecycleBin
+            {
+                DeletedTime = DateTime.Now,
+                UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+                ObjectRegisterId = OMCodJob.GetRegisterId(),
+                Description = $"Справочник ЦОД '{dictionary.NameJob}'"
+            }.Save();
+
+            RegisterService.RemoveRegister(dictionary.RegisterId, eventId);
+
+            RecycleBinService.MoveObjectToRecycleBin(dictionary.Id, OMCodJob.GetRegisterId(), eventId);
         }
 
         public static IEnumerable<ValidationResult> ValidateCodDictionaryForUpdating(CodDictionaryDto codDictionary)
@@ -129,13 +154,16 @@ namespace KadOzenka.Dal.CodDictionary
             throw new Exception(message);
         }
 
-        private OMRegister CreateRegister(string name)
+        private OMRegister CreateRegister(string description)
         {
-            var existedCodDictionariesCount = OMCodJob.Where(x => true).ExecuteCount() + 1;
-            var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
-            var tableName = $"gbu_cod_dictionary_{existedCodDictionariesCount}";
+            var tableNameTemplate = "gbu_cod_dictionary_";
+            var existedCodDictionariesCount = RegisterCache.Registers.Count(x =>
+                x.Value.QuantTable.StartsWith(tableNameTemplate, StringComparison.InvariantCultureIgnoreCase)) + 1;
 
-            var omRegister = RegisterService.CreateRegister(registerName, name, tableName, null, (long)StorageType.Type4);
+            var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
+            var tableName = $"{tableNameTemplate}{existedCodDictionariesCount}";
+
+            var omRegister = RegisterService.CreateRegister(registerName, description, tableName, null, (long)StorageType.Type4);
 
             RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
             RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
