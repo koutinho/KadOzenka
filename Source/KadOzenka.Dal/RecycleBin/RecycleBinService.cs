@@ -170,10 +170,7 @@ WHERE {pkField} in (SELECT dt.{pkField} FROM {deletedTableName} dt WHERE dt.EVEN
 INSERT INTO {tableName} ({string.Join(", ", mainTableCols)})
 	SELECT {string.Join(", ", mainTableCols)}
 	FROM {deletedTableName} dt
-	WHERE dt.EVENT_ID={eventId};
-
-DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};
-";
+	WHERE dt.EVENT_ID={eventId};";
 					}
 
 					restoreDataSql += $@"
@@ -319,10 +316,6 @@ UPDATE {tableName} SET is_deleted=1, deleted_date=CURRENT_DATE {registerObjects.
 			else
 			{
 				sql += $@"
-INSERT INTO {GetDeletedTableName(tableName)} ({string.Join(", ", mainTableColumns.Select(x => x.ColumnName).ToList())}, EVENT_ID)
-					SELECT {string.Join(", ", mainTableColumns.Select(x => $"{x.ColumnName}").ToList())}, {eventId} 
-					FROM {tableName} 
-					{registerObjects.GetSqlSearchPredicate()};
 DELETE FROM {tableName} {registerObjects.GetSqlSearchPredicate()};";
 			}
 
