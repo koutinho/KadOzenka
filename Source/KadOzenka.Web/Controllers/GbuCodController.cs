@@ -112,7 +112,7 @@ namespace KadOzenka.Web.Controllers
 				.SelectAll()
 				.ExecuteFirstOrDefault();
 
-			var model = CodDictionaryViewModel.FromEntity(codDictionary);
+			var model = CodDictionaryValueModel.FromEntity(codDictionary);
 			model.JobId = codJob.Id;
 
 			return View(model);
@@ -120,11 +120,11 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_ADD)]
-		public ActionResult CodDictionaryObjectCard(CodDictionaryViewModel viewModel)
+		public ActionResult CodDictionaryObjectCard(CodDictionaryValueModel valueModel)
 		{
-			var codDictionary = OMCodDictionary.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
+			var codDictionary = OMCodDictionary.Where(x => x.Id == valueModel.Id).SelectAll().ExecuteFirstOrDefault();
 
-			if (viewModel.Id != -1 && codDictionary == null)
+			if (valueModel.Id != -1 && codDictionary == null)
 			{
 				return NotFound();
 			}
@@ -133,8 +133,8 @@ namespace KadOzenka.Web.Controllers
 				codDictionary = new OMCodDictionary();
 			}
 
-			CodDictionaryViewModel.ToEntity(viewModel, ref codDictionary);
-			long id;
+			CodDictionaryValueModel.ToEntity(valueModel, ref codDictionary);
+            long id;
 			try
 			{
 				id = codDictionary.Save();
@@ -143,8 +143,8 @@ namespace KadOzenka.Web.Controllers
 			{
 			    return SendErrorMessage(e.Message);
 			}
-			viewModel.Id = id;
-			return Json(new { Success = "Сохранено успешно", data = viewModel });
+			valueModel.Id = id;
+			return Json(new { Success = "Сохранено успешно", data = valueModel });
 		}
 
 		[HttpGet]
@@ -157,17 +157,17 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"Справочник ЦОД с ИД {codDictionaryId} не найден");
 			}
 
-			return View(CodDictionaryViewModel.FromEntity(codDictionary));
+			return View(CodDictionaryValueModel.FromEntity(codDictionary));
 		}
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public IActionResult DeleteCodDictionary(CodDictionaryViewModel viewModel)
+		public IActionResult DeleteCodDictionary(CodDictionaryValueModel valueModel)
 		{
-			var codDictionary = OMCodDictionary.Where(x => x.Id == viewModel.Id).SelectAll().ExecuteFirstOrDefault();
+			var codDictionary = OMCodDictionary.Where(x => x.Id == valueModel.Id).SelectAll().ExecuteFirstOrDefault();
 			if (codDictionary == null)
 			{
-				throw new Exception($"Справочник ЦОД с ИД {viewModel.Id} не найден");
+				throw new Exception($"Справочник ЦОД с ИД {valueModel.Id} не найден");
 			}
 
 			codDictionary.Destroy();
