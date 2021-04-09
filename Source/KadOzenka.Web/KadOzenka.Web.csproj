@@ -101,6 +101,7 @@
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
+		<ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
 	<!-- CopyToPublishDirectory configuration files -->
 	<ItemGroup>
 		<None Include="app.config; app.*.config" />
@@ -118,7 +119,7 @@
 		<None CopyToOutputDirectory="PreserveNewest" Update="ConfigCore\**\*.*" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.json" />
-		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\Core.Diagnostics.xml; Config\Param\Core.DocNumeration.xml; Config\Param\Core.HealthCheck.xml; Config\Param\Core.Help.xml; Config\Param\Core.Numeration.xml; Config\Param\FmReportTypes.xml; Config\Param\SpdSettings.xml" />
+		<Resource CopyToOutputDirectory="PreserveNewest" Include="Config\Param\SpdSettings.xml" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Ppr.Test.xml" Condition="'$(Configuration)'=='UAT'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Ppr.Ppr.xml" Condition="'$(Configuration)'=='Release'" />
