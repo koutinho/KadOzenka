@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<HealthCheckConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <HourlyChecks>
+    <HealthCheck>
+      <Name>Проверка журнала ошибок</Name>
+      <Type>SQL</Type>
+      <SQL>select count(1) as error_count from core_error_log t where t.msgtype = 'ERROR' and t.errordate > NOW() - INTERVAL '1 hour'</SQL>
+      <StartCondition>true</StartCondition>
+      <CheckCondition>error_count > 100</CheckCondition>
+      <Message>
+        <To>
+          <UserId>2</UserId>
+        </To>
+        <Subject>Количество ошибок превысило 100</Subject>
+        <Body>Количество ошибок в журнале за последний час: {error_count}</Body>
+        <SendEmail>true</SendEmail>
+      </Message>
+    </HealthCheck>
+
+    <HealthCheck>
+      <Name>Проверка журнала ошибок</Name>
+      <Type>SQL</Type>
+      <SQL>select count(1) as error_count from core_long_process_queue t where t.status = 4 and t.end_date > NOW() - INTERVAL '1 hour'</SQL>
+      <StartCondition>true</StartCondition>
+      <CheckCondition>error_count > 0</CheckCondition>
+      <Message>
+        <To>
+          <UserId>2</UserId>
+        </To>
+        <Subject>Возникли ошибки в фоновых процессах</Subject>
+        <Body>Количество ошибок в фоновых процессах за последний час: {error_count}</Body>
+        <SendEmail>true</SendEmail>
+      </Message>
+    </HealthCheck>
+  </HourlyChecks>
+  <DailyChecks></DailyChecks>
+  <WeeklyChecks></WeeklyChecks>
+</HealthCheckConfiguration>
