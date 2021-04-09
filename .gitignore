@@ -63,3 +63,5 @@
 /Source/.idea
 /Source/StartProject/obj
 /Source/Database/GeneratedScripts/*.*
+/Source/EmbeddedResource/bin
+/Source/EmbeddedResource/obj
