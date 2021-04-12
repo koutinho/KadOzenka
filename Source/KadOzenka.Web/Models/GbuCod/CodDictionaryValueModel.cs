@@ -24,7 +24,7 @@ namespace KadOzenka.Web.Models.GbuCod
 
 
 
-		public static CodDictionaryValueModel ToModel(OMCodJob dictionary)
+		public static CodDictionaryValueModel ToModel(OMCodJob dictionary, CodDictionaryValue dictionaryValue = null)
         {
             var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(dictionary.RegisterId)
                 .Where(x => x.Name != CodDictionaryConsts.CodeColumnName)
@@ -36,13 +36,15 @@ namespace KadOzenka.Web.Models.GbuCod
 
 			return new CodDictionaryValueModel
             {
-                Id = -1,
+                Id = dictionaryValue?.Id ?? -1,
 				DictionaryId = dictionary.Id,
-				RegisterAttributes = registerAttributes
+                Code = dictionaryValue?.Code,
+				RegisterAttributes = registerAttributes,
+                Values = dictionaryValue?.Values ?? new List<CodDictionaryValuePure>()
             };
 		}
 
-		public static CodDictionaryValueModel FromEntity(OMCodDictionary entity)
+        public static CodDictionaryValueModel FromEntity(OMCodDictionary entity)
 		{
 			if (entity == null)
 			{
@@ -62,15 +64,18 @@ namespace KadOzenka.Web.Models.GbuCod
 
         public CodDictionaryValue ToDto()
         {
-            return new CodDictionaryValue(Id, Values)
-            {
-				Code = Code
-            };
+            return new CodDictionaryValue(Id, Code, Values);
         }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             return CodDictionaryService.ValidateDictionaryValue(ToDto());
         }
-	}
+
+
+        #region Support Methods
+
+
+        #endregion
+    }
 }

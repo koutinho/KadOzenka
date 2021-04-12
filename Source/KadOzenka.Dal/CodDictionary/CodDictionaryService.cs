@@ -121,7 +121,7 @@ namespace KadOzenka.Dal.CodDictionary
 
         #region Значения словаря
 
-        public void AddDictionaryValue(long dictionaryId, CodDictionaryValue value)
+        public void UpdateDictionaryValue(long dictionaryId, CodDictionaryValue value)
         {
             ValidateCodDictionaryValueInternal(value);
 
@@ -130,7 +130,7 @@ namespace KadOzenka.Dal.CodDictionary
             var codeAttributeInfo = attributes.First(x => x.Name == CodDictionaryConsts.CodeColumnName);
             attributes.Remove(codeAttributeInfo);
 
-            var registerObject = new RegisterObject((int)dictionary.RegisterId);
+            var registerObject = new RegisterObject((int) dictionary.RegisterId, (int) value.Id);
             attributes.ForEach(attribute =>
             {
                 var currentValue = value.Values.FirstOrDefault(x => x.AttributeId == attribute.Id)?.Value;
@@ -145,6 +145,7 @@ namespace KadOzenka.Dal.CodDictionary
         public List<CodDictionaryValue> GetDictionaryValues(long registerId)
         {
             var attributes = GetDictionaryRegisterAttributes(registerId);
+            var codeAttribute = attributes.First(x => x.Name == CodDictionaryConsts.CodeColumnName);
 
             var query = new QSQuery
             {
@@ -163,16 +164,24 @@ namespace KadOzenka.Dal.CodDictionary
             {
                 var row = table.Rows[i];
                 var id = row["id"].ParseToLong();
+                var code = string.Empty;
                 var rowValues = new List<CodDictionaryValuePure>();
                 attributes.ForEach(attribute =>
                 {
                     var attributeId = attribute.Id;
                     var value = row[attributeId.ToString()].ParseToStringNullable();
 
-                    rowValues.Add(new CodDictionaryValuePure(attributeId, value));
+                    if (attribute.Id == codeAttribute.Id)
+                    {
+                        code = value;
+                    }
+                    else
+                    {
+                        rowValues.Add(new CodDictionaryValuePure(attributeId, value));
+                    }
                 });
 
-                rows.Add(new CodDictionaryValue(id, rowValues));
+                rows.Add(new CodDictionaryValue(id, code, rowValues));
             }
 
             return rows;

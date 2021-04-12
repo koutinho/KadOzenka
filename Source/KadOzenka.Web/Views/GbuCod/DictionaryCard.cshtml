@@ -180,7 +180,8 @@ TODO удалить вместе со view
 
     function generateSchemaFields(registerAttributes) {
         var fields = {
-            Id: {editable: false, nullable: true}
+            Id: {editable: false, nullable: true},
+            Code: {editable: false, nullable: true}
         }
         $.each(registerAttributes, function (index, attribute) {
             var attributeId = attribute.Id;
@@ -195,14 +196,24 @@ TODO удалить вместе со view
         modelAttributes.forEach(function(attribute) {
             var coefficientColumn = {
                 field: objectFieldPrefixForValue + attribute.Id,
-                headerTemplate:'<label style="font-weight: normal;"> ' + attribute.Name + ' </label>',
+                headerTemplate: getColumnHeaderTemplate(attribute.Name),
                 headerAttributes: { "style": "text-align: center;"},
                 sortable: false,
                 width: 200
             };
             additionalColumns.push(coefficientColumn);
         });
-        return additionalColumns;
+        var baseColumns = [
+            {
+                field: "Code",
+                headerTemplate: getColumnHeaderTemplate("Код"),
+                width: 50
+            }
+        ];
+        return additionalColumns.concat(baseColumns);
+    }
+    function getColumnHeaderTemplate(columnName) {
+        return '<label style="font-weight: normal;"> ' + columnName + ' </label>';
     }
 
 
@@ -216,11 +227,26 @@ TODO удалить вместе со view
     }
 
     function updateValue() {
-
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        Common.UI.ShowWindow('Редактирование значения',
+            '@Url.Action("EditDictionaryValue", "GbuCod")' + '?dictionaryId=' + '@Model.Id' +
+            '&dictionaryValueId=' + selectedRowData.Id,
+            'editValueWindow',
+            reloadGrid,
+            800, 400);
     }
 
     function deleteValue() {
 
+    }
+
+    function getSelectedRowInFactorsGrid() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length > 0) {
+            var data = grid.dataItem(row);
+            return data;
+        }
     }
 
     function reloadGrid() {

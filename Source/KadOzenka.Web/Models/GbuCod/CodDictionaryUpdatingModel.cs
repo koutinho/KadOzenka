@@ -20,13 +20,15 @@ namespace KadOzenka.Web.Models.GbuCod
 
         public static CodDictionaryUpdatingModel ToModel(OMCodJob entity)
         {
+            //TODO KOMO-7 унести в сервис
             var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(entity.RegisterId)
+                .Where(x => x.Name != CodDictionaryConsts.CodeColumnName)
                 .Select(x => new AttributePure
                 {
                     Id = x.Id,
                     Name = x.Name
                 }).ToList();
-            var values = registerAttributes.Where(x => x.Name != CodDictionaryConsts.CodeColumnName).Select(x => x.Name).ToList();
+            var values = registerAttributes.Select(x => x.Name).ToList();
 
             return new CodDictionaryUpdatingModel
             {

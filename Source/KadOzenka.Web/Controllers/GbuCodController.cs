@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
@@ -114,6 +115,21 @@ namespace KadOzenka.Web.Controllers
             return View("EditDictionaryValue", model);
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult EditDictionaryValue(long dictionaryId, long dictionaryValueId)
+        {
+            var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
+            var value = CodDictionaryService.GetDictionaryValues(dictionary.RegisterId)
+                .FirstOrDefault(x => x.Id == dictionaryValueId);
+            if (value == null)
+                throw new Exception($"Не найдено значение словаря '{dictionary.NameJob}' с ИД {dictionaryValueId}");
+
+            var model = CodDictionaryValueModel.ToModel(dictionary, value);
+
+            return View("EditDictionaryValue", model);
+        }
+
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult EditDictionaryValue(CodDictionaryValueModel model)
@@ -121,10 +137,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            if (model.Id == -1)
-            {
-				CodDictionaryService.AddDictionaryValue(model.DictionaryId, model.ToDto());
-            }
+            CodDictionaryService.UpdateDictionaryValue(model.DictionaryId, model.ToDto());
 
             return Ok();
         }

@@ -8,9 +8,10 @@ namespace KadOzenka.Dal.CodDictionary.Entities
         public List<CodDictionaryValuePure> Values { get; set; }
         public string Code { get; set; }
 
-        public CodDictionaryValue(long id, List<CodDictionaryValuePure> values)
+        public CodDictionaryValue(long id, string code, List<CodDictionaryValuePure> values)
         {
             Id = id;
+            Code = code;
             Values = values;
         }
     }

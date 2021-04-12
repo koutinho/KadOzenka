@@ -15,6 +15,7 @@ namespace KadOzenka.Dal.CodDictionary
         void DeleteDictionary(long id);
 
         List<CodDictionaryValue> GetDictionaryValues(long registerId);
-        void AddDictionaryValue(long dictionaryId, CodDictionaryValue value);
+
+        void UpdateDictionaryValue(long dictionaryId, CodDictionaryValue value);
     }
 }

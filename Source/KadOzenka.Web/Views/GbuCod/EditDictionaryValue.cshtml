@@ -8,12 +8,14 @@
         @for (var i = 0; i < Model.RegisterAttributes.Count; i++)
         {
             var attribute = Model.RegisterAttributes[i];
+            var value = Model.Values.FirstOrDefault(x => x.AttributeId == attribute.Id)?.Value;
+            var textElementId = $"value_{attribute.Id}";
             <div class="form-group">
                 <div class="col-sm-2">
                     @Html.CustomLabel($"{attribute.Name}")
                 </div>
                 <div class="col-sm-10">
-                    @Html.TextArea($"value_{attribute.Id}", "", 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                    @Html.TextAreaFor(x => value, 2, 0, new { id=textElementId, name=textElementId, @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
                 </div>
             </div>
         }
