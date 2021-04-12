@@ -4,48 +4,43 @@
       "GknDataAttributes": {
         "General": {
           "ObjectTypeAttributeId": "26",
-          "CadastralNumberAttributeId": null,
+          "CadastralNumberAttributeId": "1416",
           "DateCreatedAttributeId": "13",
           "CadastralBlockAttributeId": "601",
 
           "CadastralCostValueAttributeId": "6",
-          "CadastralCostDateValuationAttributeId": null,
-          "CadastralCostDateEnteringAttributeId": null,
-          "CadastralCostDateApprovalAttributeId": null,
-          "CadastralCostDocNumberAttributeId": null,
-          "CadastralCostDocDateAttributeId": null,
-          "CadastralCostApplicationDateAttributeId": null,
-          "CadastralCostRevisalStatementDateAttributeId": null,
-          "CadastralCostApplicationLastDateAttributeId": null,
-          "CadastralCostDocNameAttributeId": null,
+          "CadastralCostDateValuationAttributeId": "1417",
+          "CadastralCostDateEnteringAttributeId": "1418",
+          "CadastralCostDateApprovalAttributeId": "1419",
+          "CadastralCostDocNumberAttributeId": "1420",
+          "CadastralCostDocDateAttributeId": "1421",
+          "CadastralCostApplicationDateAttributeId": "1422",
+          "CadastralCostRevisalStatementDateAttributeId": "1423",
+          "CadastralCostApplicationLastDateAttributeId": "1424",
+          "CadastralCostDocNameAttributeId": "1425",
 
           "LocationAddressInOneStringAttributeId": "600",
-          "LocationFiasAttributeId": null,
-          "LocationOkatoAttributeId": null,
-          "LocationKladrAttributeId": null,
-          "LocationOktmoAttributeId": null,
-          "LocationPostalCodeAttributeId": null,
-          "LocationRussianFederationAttributeId": null,
-          "LocationRegionAttributeId": null,
-          "LocationDistrictAttributeId": null,
-          "LocationCityAttributeId": null,
-          "LocationUrbanDistrictAttributeId": null,
-          "LocationSovietVillageAttributeId": null,
-          "LocationLocalityAttributeId": null,
-          "LocationPlanningElementAttributeId": null,
-          "LocationStreetAttributeId": null,
-          "LocationLevel1AttributeId": null,
-          "LocationLevel2AttributeId": null,
-          "LocationLevel3AttributeId": null,
-          "LocationApartmentAttributeId": null,
-          "LocationOtherAttributeId": null,
+          "LocationFiasAttributeId": "1426",
+          "LocationOkatoAttributeId": "1427",
+          "LocationKladrAttributeId": "1428",
+          "LocationOktmoAttributeId": "1429",
+          "LocationPostalCodeAttributeId": "1430",
+          "LocationRussianFederationAttributeId": "1431",
+          "LocationRegionAttributeId": "1432",
+          "LocationDistrictAttributeId": "1433",
+          "LocationCityAttributeId": "1434",
+          "LocationUrbanDistrictAttributeId": "1435",
+          "LocationSovietVillageAttributeId": "1436",
+          "LocationLocalityAttributeId": "1437",
+          "LocationPlanningElementAttributeId": "1438",
+          "LocationStreetAttributeId": "1439",
+          "LocationLevel1AttributeId": "1440",
+          "LocationLevel2AttributeId": "1441",
+          "LocationLevel3AttributeId": "1442",
+          "LocationApartmentAttributeId": "1443",
+          "LocationOtherAttributeId": "1444",
           "LocationNoteAttributeId": "8",
-          "LocationAddressOrLocationAttributeId": null,
-          "LocationInBoundsAttributeId": null,
-          "LocationPlacedAttributeId": null,
-          "LocationElaborationReferenceMarkAttributeId": null,
-          "LocationElaborationDistanceAttributeId": null,
-          "LocationElaborationDirectionAttributeId": null
+          "LocationAddressOrLocationAttributeId": "1445"
         },
         "Building": {
           "ParentCadastralNumbersAttributeId": "602",
@@ -57,49 +52,49 @@
           "FloorCountAttributeId": "17",
           "FloorUndergroundCountAttributeId": "18",
           "AreaAttributeId": "2",
-          "ObjectPermittedUsesAttributeId": null,
+          "ObjectPermittedUsesAttributeId": "1451",
           "SubBuildings": [
             {
-              "AreaAttributeId": null,
+              "AreaAttributeId": "1452",
               "Encumbrances": [
                 {
-                  "NameAttributeId": null,
-                  "TypeAttributeId": null,
-                  "RegistrationNumberAttributeId": null,
-                  "RegistrationDateAttributeId": null,
+                  "NameAttributeId": "1453",
+                  "TypeAttributeId": "1454",
+                  "RegistrationNumberAttributeId": "1455",
+                  "RegistrationDateAttributeId": "1456",
                   "Document": {
-                    "CodeAttributeId": null,
-                    "NameAttributeId": null,
-                    "SeriesAttributeId": null,
-                    "NumberAttributeId": null,
-                    "DateAttributeId": null,
-                    "IssueOrganAttributeId": null,
-                    "DescAttributeId": null
+                    "CodeAttributeId": "1457",
+                    "NameAttributeId": "1458",
+                    "SeriesAttributeId": "1459",
+                    "NumberAttributeId": "1460",
+                    "DateAttributeId": "1461",
+                    "IssueOrganAttributeId": "1462",
+                    "DescAttributeId": "1463"
                   }
                 }
               ],
-              "NumberRecordAttributeId": null,
-              "DateCreatedAttributeId": null
+              "NumberRecordAttributeId": "1464",
+              "DateCreatedAttributeId": "1465"
             }
           ],
-          "FlatsCadastralNumbersAttributeId": null,
-          "CarParkingSpacesCadastralNumbersAttributeId": null,
-          "UnitedCadastralNumberAttributeId": null,
-          "FacilityCadastralNumberAttributeId": null,
-          "FacilityPurposeAttributeId": null,
+          "FlatsCadastralNumbersAttributeId": "1466",
+          "CarParkingSpacesCadastralNumbersAttributeId": "1467",
+          "UnitedCadastralNumberAttributeId": "1468",
+          "FacilityCadastralNumberAttributeId": "1469",
+          "FacilityPurposeAttributeId": "1470",
           "CulturalHeritage": {
-            "EgroknRegNumAttributeId": null,
-            "EgroknObjCulturalAttributeId": null,
-            "EgroknNameCulturalAttributeId": null,
-            "RequirementsEnsureAttributeId": null,
+            "EgroknRegNumAttributeId": "1471",
+            "EgroknObjCulturalAttributeId": "1472",
+            "EgroknNameCulturalAttributeId": "1473",
+            "RequirementsEnsureAttributeId": "1474",
             "Document": {
-              "CodeAttributeId": null,
-              "NameAttributeId": null,
-              "SeriesAttributeId": null,
-              "NumberAttributeId": null,
-              "DateAttributeId": null,
-              "IssueOrganAttributeId": null,
-              "DescAttributeId": null
+              "CodeAttributeId": "1475",
+              "NameAttributeId": "1476",
+              "SeriesAttributeId": "1477",
+              "NumberAttributeId": "1478",
+              "DateAttributeId": "1479",
+              "IssueOrganAttributeId": "1480",
+              "DescAttributeId": "1481"
             }
           }
         },
@@ -114,56 +109,56 @@
           "KeyParametersAttributeId": "44",
           "KeyParameters": [
             {
-              "KeyParameterAttributeId": null,
-              "KeyParameterValueAttributeId": null
+              "KeyParameterAttributeId": "1482",
+              "KeyParameterValueAttributeId": "1483"
             }
           ],
-          "ObjectPermittedUsesAttributeId": null,
+          "ObjectPermittedUsesAttributeId": "1451",
           "SubConstructions": [
             {
               "KeyParameter": {
-                "KeyParameterAttributeId": null,
-                "KeyParameterValueAttributeId": null
+                "KeyParameterAttributeId": "1484",
+                "KeyParameterValueAttributeId": "1485"
               },
               "Encumbrances": [
                 {
-                  "NameAttributeId": null,
-                  "TypeAttributeId": null,
-                  "RegistrationNumberAttributeId": null,
-                  "RegistrationDateAttributeId": null,
+                  "NameAttributeId": "1486",
+                  "TypeAttributeId": "1487",
+                  "RegistrationNumberAttributeId": "1488",
+                  "RegistrationDateAttributeId": "1489",
                   "Document": {
-                    "CodeAttributeId": null,
-                    "NameAttributeId": null,
-                    "SeriesAttributeId": null,
-                    "NumberAttributeId": null,
-                    "DateAttributeId": null,
-                    "IssueOrganAttributeId": null,
-                    "DescAttributeId": null
+                    "CodeAttributeId": "1490",
+                    "NameAttributeId": "1491",
+                    "SeriesAttributeId": "1492",
+                    "NumberAttributeId": "1493",
+                    "DateAttributeId": "1494",
+                    "IssueOrganAttributeId": "1495",
+                    "DescAttributeId": "1496"
                   }
                 }
               ],
-              "NumberRecordAttributeId": null,
-              "DateCreatedAttributeId": null
+              "NumberRecordAttributeId": "1497",
+              "DateCreatedAttributeId": "1498"
             }
           ],
-          "FlatsCadastralNumbersAttributeId": null,
-          "CarParkingSpacesCadastralNumbersAttributeId": null,
-          "UnitedCadastralNumberAttributeId": null,
-          "FacilityCadastralNumberAttributeId": null,
-          "FacilityPurposeAttributeId": null,
+          "FlatsCadastralNumbersAttributeId": "1466",
+          "CarParkingSpacesCadastralNumbersAttributeId": "1467",
+          "UnitedCadastralNumberAttributeId": "1468",
+          "FacilityCadastralNumberAttributeId": "1469",
+          "FacilityPurposeAttributeId": "1470",
           "CulturalHeritage": {
-            "EgroknRegNumAttributeId": null,
-            "EgroknObjCulturalAttributeId": null,
-            "EgroknNameCulturalAttributeId": null,
-            "RequirementsEnsureAttributeId": null,
+            "EgroknRegNumAttributeId": "1471",
+            "EgroknObjCulturalAttributeId": "1472",
+            "EgroknNameCulturalAttributeId": "1473",
+            "RequirementsEnsureAttributeId": "1474",
             "Document": {
-              "CodeAttributeId": null,
-              "NameAttributeId": null,
-              "SeriesAttributeId": null,
-              "NumberAttributeId": null,
-              "DateAttributeId": null,
-              "IssueOrganAttributeId": null,
-              "DescAttributeId": null
+              "CodeAttributeId": "1475",
+              "NameAttributeId": "1476",
+              "SeriesAttributeId": "1477",
+              "NumberAttributeId": "1478",
+              "DateAttributeId": "1479",
+              "IssueOrganAttributeId": "1480",
+              "DescAttributeId": "1481"
             }
           }
         },
@@ -173,20 +168,20 @@
           "KeyParametersAttributeId": "44",
           "KeyParameters": [
             {
-              "KeyParameterAttributeId": null,
-              "KeyParameterValueAttributeId": null
+              "KeyParameterAttributeId": "1482",
+              "KeyParameterValueAttributeId": "1483"
             }
           ],
           "DegreeReadinessAttributeId": "46",
-          "FacilityCadastralNumberAttributeId": null,
-          "FacilityPurposeAttributeId": null
+          "FacilityCadastralNumberAttributeId": "1469",
+          "FacilityPurposeAttributeId": "1470"
         },
         "Flat": {
           "CadastralNumberFlatAttributeId": "605",
           "CadastralNumberOksAttributeId": "604",
           "ParentOks": {
             "CadastralNumberOksAttributeId": "604",
-            "ObjectTypeAttributeId": null,
+            "ObjectTypeAttributeId": "1499",
             "AssignationBuildingAttributeId": "14",
             "AssignationNameAttributeId": "22",
             "WallMaterialAttributeId": "21",
@@ -198,62 +193,62 @@
           "NameAttributeId": "19",
           "AssignationAssignationCodeAttributeId": "23",
           "AssignationAssignationTypeAttributeId": "603",
-          "AssignationSpecialTypeAttributeId": null,
-          "AssignationTotalAssetsAttributeId": null,
-          "AssignationAuxiliaryFlatAttributeId": null,
+          "AssignationSpecialTypeAttributeId": "1500",
+          "AssignationTotalAssetsAttributeId": "1501",
+          "AssignationAuxiliaryFlatAttributeId": "1502",
           "AreaAttributeId": "2",
 
-          "PositionNumberOnPlanAttributeId": null,
-          "PositionDescriptionAttributeId": null,
+          "PositionNumberOnPlanAttributeId": "1504",
+          "PositionDescriptionAttributeId": "1505",
           "Levels": [
             {
               "NumberAttributeId": "24",
               "TypeAttributeId": "25",
-              "PositionNumberOnPlanAttributeId": null,
-              "PositionDescriptionAttributeId": null
+              "PositionNumberOnPlanAttributeId": "1504",
+              "PositionDescriptionAttributeId": "1505"
             }
           ],
-          "ObjectPermittedUsesAttributeId": null,
+          "ObjectPermittedUsesAttributeId": "1451",
           "SubFlats": [
             {
-              "AreaAttributeId": null,
+              "AreaAttributeId": "1452",
               "Encumbrances": [
                 {
-                  "NameAttributeId": null,
-                  "TypeAttributeId": null,
-                  "RegistrationNumberAttributeId": null,
-                  "RegistrationDateAttributeId": null,
+                  "NameAttributeId": "1453",
+                  "TypeAttributeId": "1454",
+                  "RegistrationNumberAttributeId": "1455",
+                  "RegistrationDateAttributeId": "1456",
                   "Document": {
-                    "CodeAttributeId": null,
-                    "NameAttributeId": null,
-                    "SeriesAttributeId": null,
-                    "NumberAttributeId": null,
-                    "DateAttributeId": null,
-                    "IssueOrganAttributeId": null,
-                    "DescAttributeId": null
+                    "CodeAttributeId": "1457",
+                    "NameAttributeId": "1458",
+                    "SeriesAttributeId": "1459",
+                    "NumberAttributeId": "1460",
+                    "DateAttributeId": "1461",
+                    "IssueOrganAttributeId": "1462",
+                    "DescAttributeId": "1463"
                   }
                 }
               ],
-              "NumberRecordAttributeId": null,
-              "DateCreatedAttributeId": null
+              "NumberRecordAttributeId": "1464",
+              "DateCreatedAttributeId": "1465"
             }
           ],
-          "UnitedCadastralNumberAttributeId": null,
-          "FacilityCadastralNumberAttributeId": null,
-          "FacilityPurposeAttributeId": null,
+          "UnitedCadastralNumberAttributeId": "1468",
+          "FacilityCadastralNumberAttributeId": "1469",
+          "FacilityPurposeAttributeId": "1470",
           "CulturalHeritage": {
-            "EgroknRegNumAttributeId": null,
-            "EgroknObjCulturalAttributeId": null,
-            "EgroknNameCulturalAttributeId": null,
-            "RequirementsEnsureAttributeId": null,
+            "EgroknRegNumAttributeId": "1471",
+            "EgroknObjCulturalAttributeId": "1472",
+            "EgroknNameCulturalAttributeId": "1473",
+            "RequirementsEnsureAttributeId": "1474",
             "Document": {
-              "CodeAttributeId": null,
-              "NameAttributeId": null,
-              "SeriesAttributeId": null,
-              "NumberAttributeId": null,
-              "DateAttributeId": null,
-              "IssueOrganAttributeId": null,
-              "DescAttributeId": null
+              "CodeAttributeId": "1475",
+              "NameAttributeId": "1476",
+              "SeriesAttributeId": "1477",
+              "NumberAttributeId": "1478",
+              "DateAttributeId": "1479",
+              "IssueOrganAttributeId": "1480",
+              "DescAttributeId": "1481"
             }
           }
         },
@@ -261,7 +256,7 @@
           "CadastralNumberOksAttributeId": "604",
           "ParentOks": {
             "CadastralNumberOksAttributeId": "604",
-            "ObjectTypeAttributeId": null,
+            "ObjectTypeAttributeId": "1499",
             "AssignationBuildingAttributeId": "14",
             "AssignationNameAttributeId": "22",
             "WallMaterialAttributeId": "21",
@@ -274,148 +269,154 @@
           "PositionInObject": {
             "NumberAttributeId": "24",
             "TypeAttributeId": "25",
-            "PositionNumberOnPlanAttributeId": null,
-            "PositionDescriptionAttributeId": null
+            "PositionNumberOnPlanAttributeId": "1504",
+            "PositionDescriptionAttributeId": "1505"
           },
-          "UnitedCadastralNumberAttributeId": null,
-          "FacilityCadastralNumberAttributeId": null,
-          "FacilityPurposeAttributeId": null
+          "UnitedCadastralNumberAttributeId": "1468",
+          "FacilityCadastralNumberAttributeId": "1469",
+          "FacilityPurposeAttributeId": "1470"
         },
         "Parcel": {
+          "LocationInBoundsAttributeId": "1446",
+          "LocationPlacedAttributeId": "1447",
+          "LocationElaborationReferenceMarkAttributeId": "1448",
+          "LocationElaborationDistanceAttributeId": "1449",
+          "LocationElaborationDirectionAttributeId": "1450",
           "NameAttributeId": "1",
-          "InnerCadastralNumbersAttributeId": null,
+          "InnerCadastralNumbersAttributeId": "1506",
           "AreaAttributeId": "2",
-          "AreaInaccuracyAttributeId": null,
+          "AreaInaccuracyAttributeId": "1507",
           "CategoryAttributeId": "3",
           "UtilizationUtilizationAttributeId": "5",
           "UtilizationByDocAttributeId": "4",
-          "UtilizationLandUseAttributeId": null,
-          "UtilizationPermittedUseTextAttributeId": null,
+          "UtilizationLandUseAttributeId": "1508",
+          "UtilizationPermittedUseTextAttributeId": "1509",
           "NaturalObjects": [
             {
-              "KindAttributeId": null,
-              "ForestryAttributeId": null,
-              "ForestUseAttributeId": null,
-              "QuarterNumbersAttributeId": null,
-              "TaxationSeparationsAttributeId": null,
-              "ProtectiveForestAttributeId": null,
+              "KindAttributeId": "1510",
+              "ForestryAttributeId": "1511",
+              "ForestUseAttributeId": "1512",
+              "QuarterNumbersAttributeId": "1513",
+              "TaxationSeparationsAttributeId": "1514",
+              "ProtectiveForestAttributeId": "1515",
               "ForestEncumbrances": [
                 {
-                  "ForestEncumbranceAttributeId": null
+                  "ForestEncumbranceAttributeId": "1516"
                 }
               ],
-              "WaterObjectAttributeId": null,
-              "NameOtherAttributeId": null,
-              "CharOtherAttributeId": null
+              "WaterObjectAttributeId": "1517",
+              "NameOtherAttributeId": "1518",
+              "CharOtherAttributeId": "1519"
             }
           ],
           "SubParcels": [
             {
-              "AreaAttributeId": null,
-              "AreaInaccuracyAttributeId": null,
+              "AreaAttributeId": "1520",
+              "AreaInaccuracyAttributeId": "1521",
               "Encumbrances": [
                 {
-                  "NameAttributeId": null,
-                  "TypeAttributeId": null,
-                  "AccountNumberAttributeId": null,
-                  "CadastralNumberRestrictionAttributeId": null,
-                  "RegistrationNumberAttributeId": null,
-                  "RegistrationDateAttributeId": null,
+                  "NameAttributeId": "1522",
+                  "TypeAttributeId": "1523",
+                  "AccountNumberAttributeId": "1524",
+                  "CadastralNumberRestrictionAttributeId": "1525",
+                  "RegistrationNumberAttributeId": "1526",
+                  "RegistrationDateAttributeId": "1527",
                   "Document": {
-                    "CodeAttributeId": null,
-                    "NameAttributeId": null,
-                    "SeriesAttributeId": null,
-                    "NumberAttributeId": null,
-                    "DateAttributeId": null,
-                    "IssueOrganAttributeId": null,
-                    "DescAttributeId": null
+                    "CodeAttributeId": "1528",
+                    "NameAttributeId": "1529",
+                    "SeriesAttributeId": "1530",
+                    "NumberAttributeId": "1531",
+                    "DateAttributeId": "1532",
+                    "IssueOrganAttributeId": "1533",
+                    "DescAttributeId": "1534"
                   }
                 }
               ],
-              "NumberRecordAttributeId": null,
-              "DateCreatedAttributeId": null
+              "NumberRecordAttributeId": "1535",
+              "DateCreatedAttributeId": "1536"
             }
           ],
-          "FacilityCadastralNumberAttributeId": null,
-          "FacilityPurposeAttributeId": null,
+          "FacilityCadastralNumberAttributeId": "1469",
+          "FacilityPurposeAttributeId": "1470",
           "ZonesAndTerritories": [
             {
-              "DescriptionAttributeId": null,
-              "CodeZoneDocAttributeId": null,
-              "AccountNumberAttributeId": null,
-              "FullPartlyAttributeId": null,
+              "DescriptionAttributeId": "1537",
+              "CodeZoneDocAttributeId": "1538",
+              "AccountNumberAttributeId": "1539",
+              "ContentRestrictionsAttributeId": "1540",
+              "FullPartlyAttributeId": "1541",
               "Document": {
-                "CodeAttributeId": null,
-                "NameAttributeId": null,
-                "SeriesAttributeId": null,
-                "NumberAttributeId": null,
-                "DateAttributeId": null,
-                "IssueOrganAttributeId": null,
-                "DescAttributeId": null
+                "CodeAttributeId": "1542",
+                "NameAttributeId": "1543",
+                "SeriesAttributeId": "1544",
+                "NumberAttributeId": "1545",
+                "DateAttributeId": "1546",
+                "IssueOrganAttributeId": "1547",
+                "DescAttributeId": "1548"
               }
             }
           ],
           "GovernmentLandSupervision": [
             {
-              "AgencyAttributeId": null,
-              "EventNameAttributeId": null,
-              "EventFormAttributeId": null,
-              "InspectionEndAttributeId": null,
-              "AvailabilityViolationsAttributeId": null,
-              "IdentifiedViolationsTypeViolationsAttributeId": null,
-              "IdentifiedViolationsSignViolationsAttributeId": null,
-              "IdentifiedViolationsAreaAttributeId": null,
+              "AgencyAttributeId": "1549",
+              "EventNameAttributeId": "1550",
+              "EventFormAttributeId": "1551",
+              "InspectionEndAttributeId": "1552",
+              "AvailabilityViolationsAttributeId": "1553",
+              "IdentifiedViolationsTypeViolationsAttributeId": "1554",
+              "IdentifiedViolationsSignViolationsAttributeId": "1555",
+              "IdentifiedViolationsAreaAttributeId": "1556",
               "DocRequisites": {
-                "CodeAttributeId": null,
-                "NameAttributeId": null,
-                "SeriesAttributeId": null,
-                "NumberAttributeId": null,
-                "DateAttributeId": null,
-                "IssueOrganAttributeId": null,
-                "DescAttributeId": null
+                "CodeAttributeId": "1557",
+                "NameAttributeId": "1558",
+                "SeriesAttributeId": "1559",
+                "NumberAttributeId": "1560",
+                "DateAttributeId": "1561",
+                "IssueOrganAttributeId": "1562",
+                "DescAttributeId": "1563"
               },
-              "EliminationMarkAttributeId": null,
-              "EliminationAgencyAttributeId": null,
+              "EliminationMarkAttributeId": "1564",
+              "EliminationAgencyAttributeId": "1565",
               "EliminationDocRequisites": {
-                "CodeAttributeId": null,
-                "NameAttributeId": null,
-                "SeriesAttributeId": null,
-                "NumberAttributeId": null,
-                "DateAttributeId": null,
-                "IssueOrganAttributeId": null,
-                "DescAttributeId": null
+                "CodeAttributeId": "1566",
+                "NameAttributeId": "1567",
+                "SeriesAttributeId": "1568",
+                "NumberAttributeId": "1569",
+                "DateAttributeId": "1570",
+                "IssueOrganAttributeId": "1571",
+                "DescAttributeId": "1572"
               }
             }
           ],
-          "SurveyingProjectNumAttributeId": null,
+          "SurveyingProjectNumAttributeId": "1573",
           "SurveyingProjectDecisionRequisites": {
-            "CodeAttributeId": null,
-            "NameAttributeId": null,
-            "SeriesAttributeId": null,
-            "NumberAttributeId": null,
-            "DateAttributeId": null,
-            "IssueOrganAttributeId": null,
-            "DescAttributeId": null
+            "CodeAttributeId": "1574",
+            "NameAttributeId": "1575",
+            "SeriesAttributeId": "1576",
+            "NumberAttributeId": "1577",
+            "DateAttributeId": "1578",
+            "IssueOrganAttributeId": "1579",
+            "DescAttributeId": "1580"
           },
           "HiredHouse": {
-            "UseHiredHouseAttributeId": null,
-            "ActBuildingAttributeId": null,
-            "ActDevelopmentAttributeId": null,
-            "ContractBuildingAttributeId": null,
-            "ContractDevelopmentAttributeId": null,
-            "OwnerDecisionAttributeId": null,
-            "ContractSupportAttributeId": null,
+            "UseHiredHouseAttributeId": "1581",
+            "ActBuildingAttributeId": "1582",
+            "ActDevelopmentAttributeId": "1583",
+            "ContractBuildingAttributeId": "1584",
+            "ContractDevelopmentAttributeId": "1585",
+            "OwnerDecisionAttributeId": "1586",
+            "ContractSupportAttributeId": "1587",
             "DocHiredHouse": {
-              "CodeAttributeId": null,
-              "NameAttributeId": null,
-              "SeriesAttributeId": null,
-              "NumberAttributeId": null,
-              "DateAttributeId": null,
-              "IssueOrganAttributeId": null,
-              "DescAttributeId": null
+              "CodeAttributeId": "1588",
+              "NameAttributeId": "1589",
+              "SeriesAttributeId": "1590",
+              "NumberAttributeId": "1591",
+              "DateAttributeId": "1592",
+              "IssueOrganAttributeId": "1593",
+              "DescAttributeId": "1594"
             }
           },
-          "LimitedCirculationAttributeId": null
+          "LimitedCirculationAttributeId": "1595"
         } 
       }
     }

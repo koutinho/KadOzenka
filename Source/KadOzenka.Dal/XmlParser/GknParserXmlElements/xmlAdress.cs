@@ -44,7 +44,8 @@ namespace KadOzenka.Dal.XmlParser
 		/// </summary>
 		public string Other { get; set; }
 		/// <summary>
-		/// Иное
+		/// Признак, позволяющий отличить присвоенный в установленном порядке адрес объекта недвижимости
+		/// и местоположение объекта недвижимости
 		/// </summary>
 		public string AddressOrLocation { get; set; }
 		/// <summary>

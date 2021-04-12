@@ -11,6 +11,10 @@
 		public string AccountNumberAttributeId { get; set; }
 		public long? AccountNumberAttributeIdValue => long.TryParse(AccountNumberAttributeId, out var val) ? val : (long?)null;
 
+		public string ContentRestrictionsAttributeId { get; set; }
+		public long? ContentRestrictionsAttributeIdValue => long.TryParse(ContentRestrictionsAttributeId, out var val) ? val : (long?)null;
+
+
 		public string FullPartlyAttributeId { get; set; }
 		public long? FullPartlyAttributeIdValue => long.TryParse(FullPartlyAttributeId, out var val) ? val : (long?)null;
 

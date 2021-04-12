@@ -652,34 +652,36 @@ namespace KadOzenka.Dal.XmlParser
                         break;
                     case "PositionInObject":
                         #region расположение помещения
-                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+
+                        if (typeobject == enTypeObject.toCarPlace)
                         {
-	                        if (xnChild1.Name == "Level")
+	                        var level = GetXmlLevel(xnChild);
+	                        obj.Levels.Add(level);
+                        }
+                        else
+                        {
+	                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
 	                        {
-		                        var level = GetXmlLevel(xnChild1);
-		                        obj.Levels = new List<xmlLevel>();
-                                obj.Levels.Add(level);
+		                        if (xnChild1.Name == "Levels")
+		                        {
+			                        foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+			                        {
+				                        if (xnChild2.Name == "Level")
+				                        {
+					                        var level = GetXmlLevel(xnChild2);
+					                        obj.Levels.Add(level);
+				                        }
+			                        }
+		                        }
+		                        if (xnChild1.Name == "Position")
+		                        {
+			                        obj.Position = new xmlPos();
+			                        if (xnChild1.Attributes["NumberOnPlan"] != null)
+				                        obj.Position.NumberOnPlan = xnChild1.Attributes["NumberOnPlan"].InnerText;
+			                        if (xnChild1.Attributes["Description"] != null)
+				                        obj.Position.Description = xnChild1.Attributes["Description"].InnerText;
+		                        }
 	                        }
-                            if (xnChild1.Name == "Levels")
-                            {
-	                            obj.Levels = new List<xmlLevel>();
-                                foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
-                                {
-                                    if (xnChild2.Name == "Level")
-                                    {
-	                                    var level = GetXmlLevel(xnChild2);
-	                                    obj.Levels.Add(level);
-                                    }
-                                }
-                            }
-                            if (xnChild1.Name == "Position")
-                            {
-	                            obj.Position = new xmlPos();
-	                            if (xnChild1.Attributes["NumberOnPlan"] != null)
-		                            obj.Position.NumberOnPlan = xnChild1.Attributes["Number"].InnerText;
-	                            if (xnChild1.Attributes["Description"] != null)
-		                            obj.Position.Description = xnChild1.Attributes["Description"].InnerText;
-                            }
                         }
                         #endregion
                         break;
@@ -886,7 +888,17 @@ namespace KadOzenka.Dal.XmlParser
 	                        if (xnChild1.Name == "SubParcel")
 	                        {
 		                        var subParcel = new xmlSubParcel();
-		                        foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+		                        if (xnChild1.Attributes["NumberRecord"] != null)
+		                        {
+			                        subParcel.NumberRecord = xnChild1.Attributes["NumberRecord"].InnerText;
+		                        }
+		                        if (xnChild1.Attributes["DateCreated"] != null)
+		                        {
+			                        subParcel.DateCreated = DateTime.TryParse(xnChild1.Attributes["DateCreated"].InnerText, out var date)
+				                        ? date
+				                        : (DateTime?)null;
+		                        }
+                                foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
 		                        {
 			                        if (xnChild2.Name == "Area")
 			                        {
@@ -901,16 +913,6 @@ namespace KadOzenka.Dal.XmlParser
 					                        ? valResult
 					                        : (double?)null;
                                     }
-			                        if (xnChild2.Attributes["NumberRecord"] != null)
-			                        {
-				                        subParcel.NumberRecord = xnChild2.Attributes["NumberRecord"].InnerText;
-			                        }
-			                        if (xnChild2.Attributes["DateCreated"] != null)
-			                        {
-				                        subParcel.DateCreated = DateTime.TryParse(xnChild2.Attributes["DateCreated"].InnerText, out var date)
-					                        ? date
-					                        : (DateTime?)null;
-			                        }
 			                        if (xnChild2.Name == "Encumbrances")
 			                        {
 				                        subParcel.Encumbrances = GetEncumbrances<xmlEncumbranceZu>(xnChild2);
@@ -930,7 +932,18 @@ namespace KadOzenka.Dal.XmlParser
 		                    if (xnChild1.Name == "SubBuilding" || xnChild1.Name == "SubFlat")
 		                    {
 			                    var subBuildingFlat = new xmlSubBuildingFlat();
-			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+
+			                    if (xnChild1.Attributes["NumberRecord"] != null)
+			                    {
+				                    subBuildingFlat.NumberRecord = xnChild1.Attributes["NumberRecord"].InnerText;
+			                    }
+			                    if (xnChild1.Attributes["DateCreated"] != null)
+			                    {
+				                    subBuildingFlat.DateCreated = DateTime.TryParse(xnChild1.Attributes["DateCreated"].InnerText, out var date)
+					                    ? date
+					                    : (DateTime?)null;
+			                    }
+                                foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
 			                    {
 				                    if (xnChild2.Name == "Area")
 				                    {
@@ -938,17 +951,7 @@ namespace KadOzenka.Dal.XmlParser
 						                    ? valResult
 						                    : (double?)null;
 				                    }
-				                    if (xnChild2.Attributes["NumberRecord"] != null)
-				                    {
-					                    subBuildingFlat.NumberRecord = xnChild2.Attributes["NumberRecord"].InnerText;
-				                    }
-				                    if (xnChild2.Attributes["DateCreated"] != null)
-				                    {
-					                    subBuildingFlat.DateCreated = DateTime.TryParse(xnChild2.Attributes["DateCreated"].InnerText, out var date)
-						                    ? date
-						                    : (DateTime?)null;
-				                    }
-                                    if (xnChild2.Name == "Encumbrances")
+				                    if (xnChild2.Name == "Encumbrances")
                                     {
 	                                    subBuildingFlat.EncumbrancesOks = GetEncumbrances<xmlEncumbranceOks>(xnChild2);
                                     }
@@ -966,7 +969,18 @@ namespace KadOzenka.Dal.XmlParser
 		                    if (xnChild1.Name == "SubConstruction")
 		                    {
 			                    var subConstruction = new xmlSubConstruction();
-			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+
+			                    if (xnChild1.Attributes["NumberRecord"] != null)
+			                    {
+				                    subConstruction.NumberRecord = xnChild1.Attributes["NumberRecord"].InnerText;
+			                    }
+			                    if (xnChild1.Attributes["DateCreated"] != null)
+			                    {
+				                    subConstruction.DateCreated = DateTime.TryParse(xnChild1.Attributes["DateCreated"].InnerText, out var date)
+					                    ? date
+					                    : (DateTime?)null;
+			                    }
+                                foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
 			                    {
 				                    if (xnChild2.Name == "KeyParameter")
 				                    {
@@ -977,16 +991,6 @@ namespace KadOzenka.Dal.XmlParser
 					                    }
 					                    if (xnChild2.Attributes["Value"] != null) 
 						                    subConstruction.KeyParameter.Value = xnChild2.Attributes["Value"].InnerText;
-				                    }
-				                    if (xnChild2.Attributes["NumberRecord"] != null)
-				                    {
-					                    subConstruction.NumberRecord = xnChild2.Attributes["NumberRecord"].InnerText;
-				                    }
-				                    if (xnChild2.Attributes["DateCreated"] != null)
-				                    {
-					                    subConstruction.DateCreated = DateTime.TryParse(xnChild2.Attributes["DateCreated"].InnerText, out var date)
-						                    ? date
-						                    : (DateTime?)null;
 				                    }
 				                    if (xnChild2.Name == "Encumbrances")
 				                    {
@@ -1297,6 +1301,7 @@ namespace KadOzenka.Dal.XmlParser
 		        level.Number = xmlNode.Attributes["Number"].InnerText;
 	        if (xmlNode.Attributes["Type"] != null)
 	        {
+		        level.Type = new xmlCodeName();
 		        level.Type.Code = xmlNode.Attributes["Type"].InnerText;
 		        level.Type.Name = dictStrorey.Records.GetValueByCode(xmlNode.Attributes["Type"].InnerText);
 	        }
@@ -1307,7 +1312,7 @@ namespace KadOzenka.Dal.XmlParser
 		        {
 			        level.Position = new xmlPos();
 			        if (xnChild3.Attributes["NumberOnPlan"] != null)
-				        level.Position.NumberOnPlan = xnChild3.Attributes["Number"].InnerText;
+				        level.Position.NumberOnPlan = xnChild3.Attributes["NumberOnPlan"].InnerText;
 			        if (xnChild3.Attributes["Description"] != null)
 				        level.Position.Description = xnChild3.Attributes["Description"].InnerText;
 		        }

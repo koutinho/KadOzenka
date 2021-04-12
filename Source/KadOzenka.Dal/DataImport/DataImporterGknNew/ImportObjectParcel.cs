@@ -199,6 +199,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 					TryAddGknDataAttribute(zoneAndTerritory.AccountNumberAttributeIdValue, current => ((xmlObjectParcel)current).ZonesAndTerritories[iCounter].AccountNumber,
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
+					TryAddGknDataAttribute(zoneAndTerritory.ContentRestrictionsAttributeIdValue, current => ((xmlObjectParcel)current).ZonesAndTerritories[iCounter].ContentRestrictions,
+						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 					TryAddGknDataAttribute(zoneAndTerritory.FullPartlyAttributeIdValue, current => ((xmlObjectParcel)current).ZonesAndTerritories[iCounter].FullPartly,
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 					TryAddGknDataAttribute(zoneAndTerritory.Document?.CodeAttributeIdValue,
