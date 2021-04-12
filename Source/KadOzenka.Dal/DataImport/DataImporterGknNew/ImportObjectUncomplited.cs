@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
@@ -34,10 +35,25 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		protected override void InitGknDataAttributes()
 		{
 			base.InitGknDataAttributes();
-			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ReadinessPercentageAttributeId, current => string.IsNullOrEmpty(((xmlObjectUncomplited)current).DegreeReadiness) ? (decimal?)null : ((xmlObjectUncomplited)current).DegreeReadiness.ParseToDecimal()));
-			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.PlacementCharacteristicAttributeId, current => xmlCodeNameValue.GetNames(((xmlObjectUncomplited)current).KeyParameters)));
-			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ObjectNameAttributeId, current => ((xmlObjectUncomplited)current).AssignationName));
-			GknDataAttributes.Add(new ImportedAttributeGkn(Consts.ParcelAttributeId, current => xmlCodeName.GetNames(((xmlObjectUncomplited)current).ParentCadastralNumbers)));
+			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Uncompleted.ParentCadastralNumbersAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectUncomplited)current).ParentCadastralNumbers));
+			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Uncompleted.AssignationNameAttributeIdValue, current => ((xmlObjectUncomplited)current).AssignationName);
+			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Uncompleted.KeyParametersAttributeIdValue, current => xmlCodeNameValue.GetNames(((xmlObjectUncomplited)current).KeyParameters));
+			if (DataImporterGknConfig.GknDataAttributes.Uncompleted.KeyParameters.Length > 0)
+			{
+				for (var i = 0; i < DataImporterGknConfig.GknDataAttributes.Uncompleted.KeyParameters.Length; i++)
+				{
+					var keyParameter = DataImporterGknConfig.GknDataAttributes.Uncompleted.KeyParameters[i];
+					var iCounter = i;
+					TryAddGknDataAttribute(keyParameter.KeyParameterAttributeIdValue, current => ((xmlObjectUncomplited)current).KeyParameters[iCounter]?.Name,
+						current => ((xmlObjectUncomplited)current).KeyParameters.Count >= iCounter + 1);
+					TryAddGknDataAttribute(keyParameter.KeyParameterValueAttributeIdValue, current => ((xmlObjectUncomplited)current).KeyParameters[iCounter]?.Value,
+						current => ((xmlObjectUncomplited)current).KeyParameters.Count >= iCounter + 1);
+				}
+			}
+			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Uncompleted.DegreeReadinessAttributeIdValue, current => ((xmlObjectUncomplited)current).DegreeReadiness);
+			
+			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Uncompleted.FacilityCadastralNumberAttributeIdValue, current => ((xmlObjectUncomplited)current).FacilityCadastralNumber);
+			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Uncompleted.FacilityPurposeAttributeIdValue, current => ((xmlObjectUncomplited)current).FacilityPurpose);
 		}
 
         protected override void SetCODTasksFormingAttributesWithChecking(long gbuObjectId, Dictionary<KoChangeStatus, bool> unitChangesDictionary)
@@ -54,8 +70,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 
         protected override void SetAdditionalUnitProperties(OMUnit koUnit, xmlObjectUncomplited current)
         {
-	        if (!string.IsNullOrEmpty(current.DegreeReadiness))
-		        koUnit.DegreeReadiness = current.DegreeReadiness.ParseToLong();
+	        koUnit.DegreeReadiness = current.DegreeReadiness;
         }
     }
 }

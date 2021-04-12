@@ -8,6 +8,8 @@ using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
+using KadOzenka.Dal.ConfigurationManagers;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
@@ -43,6 +45,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         private Action<long, long> UpdateObjectsAttributesAction { get; }
 
 		private OMTour Tour { get; }
+		protected DataImporterGknConfig DataImporterGknConfig { get; }
 
 		protected ImportObjectBase(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
 	        DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
@@ -56,12 +59,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 	        IdDocument = idDocument;
 	        IncreaseImportedObjectsCountAction = increaseImportedObjectsCountAction;
 	        UpdateObjectsAttributesAction = updateObjectsAttributesAction;
-
-	        InitAttributeChangeStatusList();
-            InitGknDataAttributes();
-            InitTaskFormingAttributes();
+	        DataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig;
 
 			Tour = OMTour.Where(x => x.Id == IdTour).Select(x => x.Year).ExecuteFirstOrDefault();
+		}
+
+		public virtual void Init()
+		{
+			InitAttributeChangeStatusList();
+			InitGknDataAttributes();
+			InitTaskFormingAttributes();
 		}
 
         protected virtual void InitAttributeChangeStatusList()
@@ -76,20 +83,66 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 
         protected virtual void InitGknDataAttributes()
         {
-	        GknDataAttributes = new List<ImportedAttributeGkn>
-	        {
-		        new ImportedAttributeGkn(Consts.CreationDateAttributeId,
-			        current => (current.DateCreate == DateTime.MinValue) ? (DateTime?) null : current.DateCreate),
-		        new ImportedAttributeGkn(Consts.ObjectTypeAttributeId, current => current.TypeRealty),
-		        new ImportedAttributeGkn(Consts.CadastralQuarterAttributeId, current => current.CadastralNumberBlock),
-		        new ImportedAttributeGkn(Consts.CadastralCostAttributeId, current => current.CadastralCost.Value.ParseToDecimal(),
-			        current => current.CadastralCost != null),
-		        new ImportedAttributeGkn(Consts.LocationAttributeId, current => xmlAdress.GetTextPlace(current.Adress)),
-		        new ImportedAttributeGkn(Consts.AddressAttributeId, current => xmlAdress.GetTextAdress(current.Adress))
-	        };
+	        GknDataAttributes = new List<ImportedAttributeGkn>();
+
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.ObjectTypeAttributeIdValue, current => current.TypeRealty);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralNumberAttributeIdValue, current => current.CadastralNumber);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.DateCreatedAttributeIdValue, current => current.DateCreate);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralBlockAttributeIdValue, current => current.CadastralNumberBlock);
+
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostValueAttributeIdValue, current => current.CadastralCost?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDateValuationAttributeIdValue, current => current.CadastralCost?.DateValuation);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDateEnteringAttributeIdValue, current => current.CadastralCost?.DateEntering);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDateApprovalAttributeIdValue, current => current.CadastralCost?.DateApproval);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDocNumberAttributeIdValue, current => current.CadastralCost?.DocNumber);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDocDateAttributeIdValue, current => current.CadastralCost?.DocDate);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostApplicationDateAttributeIdValue, current => current.CadastralCost?.ApplicationDate);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostRevisalStatementDateAttributeIdValue, current => current.CadastralCost?.RevisalStatementDate);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostApplicationLastDateAttributeIdValue, current => current.CadastralCost?.ApplicationLastDate);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDocNameAttributeIdValue, current => current.CadastralCost?.DocName);
+
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationAddressInOneStringAttributeIdValue, current => xmlAdress.GetTextAdress(current.Adress));
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationFiasAttributeIdValue, current => current.Adress?.FIAS);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationOkatoAttributeIdValue, current => current.Adress?.OKATO);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationKladrAttributeIdValue, current => current.Adress?.KLADR);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationOktmoAttributeIdValue, current => current.Adress?.OKTMO);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationPostalCodeAttributeIdValue, current => current.Adress?.PostalCode);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationRussianFederationAttributeIdValue, current => current.Adress?.RussianFederation);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationRegionAttributeIdValue, current => current.Adress?.Region);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationDistrictAttributeIdValue, current => current.Adress?.District?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationCityAttributeIdValue, current => current.Adress?.City?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationUrbanDistrictAttributeIdValue, current => current.Adress?.UrbanDistrict?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationSovietVillageAttributeIdValue, current => current.Adress?.SovietVillage?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLocalityAttributeIdValue, current => current.Adress?.Locality?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationPlanningElementAttributeIdValue, current => current.Adress?.PlanningElement?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationStreetAttributeIdValue, current => current.Adress?.Street?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLevel1AttributeIdValue, current => current.Adress?.Level1?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLevel2AttributeIdValue, current => current.Adress?.Level2?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLevel3AttributeIdValue, current => current.Adress?.Level3?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationApartmentAttributeIdValue, current => current.Adress?.Apartment?.Value);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationOtherAttributeIdValue, current => current.Adress?.Other);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationNoteAttributeIdValue, current => current.Adress?.Note);
+	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationAddressOrLocationAttributeIdValue, current => current.Adress?.AddressOrLocation);
         }
 
-        protected virtual void InitTaskFormingAttributes()
+        protected void TryAddGknDataAttribute(long? attributeId, Func<xmlObjectParticular, object> getValue)
+        {
+	        if (!attributeId.HasValue)
+		        return;
+
+	        GknDataAttributes.Add(new ImportedAttributeGkn(attributeId.Value, getValue));
+        }
+
+        protected void TryAddGknDataAttribute(long? attributeId, Func<xmlObjectParticular, object> getValue, Func<xmlObjectParticular, bool> canSetValue)
+        {
+	        if (!attributeId.HasValue)
+		        return;
+
+	        GknDataAttributes.Add(new ImportedAttributeGkn(attributeId.Value, getValue, canSetValue));
+        }
+
+
+		protected virtual void InitTaskFormingAttributes()
         {
 			TaskFormingAttributes = new List<ImportedAttribute> { new ImportedAttribute(Consts.P1GroupAttributeId), new ImportedAttribute(Consts.P2FsAttributeId) };
         }
@@ -399,16 +452,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        var cost = new OMCostRosreestr
                 {
 			        Id = -1,
-			        Applicationdate = (current.CadastralCost.ApplicationDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.ApplicationDate,
-			        Dateapproval = (current.CadastralCost.DateApproval == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateApproval,
-			        Dateentering = (current.CadastralCost.DateEntering == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateEntering,
-			        Datevaluation = (current.CadastralCost.DateValuation == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DateValuation,
-			        Docdate = (current.CadastralCost.DocDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.DocDate,
+			        Applicationdate = current.CadastralCost.ApplicationDate,
+			        Dateapproval = current.CadastralCost.DateApproval,
+			        Dateentering = current.CadastralCost.DateEntering,
+			        Datevaluation = current.CadastralCost.DateValuation,
+			        Docdate = current.CadastralCost.DocDate,
 			        Docnumber = current.CadastralCost.DocNumber,
 			        Docname = current.CadastralCost.DocName,
 			        IdObject = koUnit.Id,
-			        Costvalue = current.CadastralCost.Value.ParseToDecimal(),
-			        Revisalstatementdate = (current.CadastralCost.RevisalStatementDate == DateTime.MinValue) ? (DateTime?)null : current.CadastralCost.RevisalStatementDate,
+			        Costvalue = current.CadastralCost.Value?.ParseToDecimal(),
+			        Revisalstatementdate = current.CadastralCost.RevisalStatementDate,
 		        };
 		        cost.Save();
 	        }

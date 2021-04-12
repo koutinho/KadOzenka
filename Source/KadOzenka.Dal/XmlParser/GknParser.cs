@@ -4,11 +4,13 @@ using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using ObjectModel.Commission;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -29,6 +31,13 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictInspection = null;
         static xsdDictionary dictFormEvents = null;
         static xsdDictionary dictRealty = null;
+        static xsdDictionary dictCultural = null;
+        static xsdDictionary dictSpecialTypeFlat = null;
+        static xsdDictionary dictNaturalObjects = null;
+        static xsdDictionary dictForestUse = null;
+        static xsdDictionary dictForestCategoryProtective = null;
+        static xsdDictionary dictForestEncumbrances = null;
+
         public static void FillDictionary(string pathSchema)
         {
             if (dictAssignationBuild == null)
@@ -61,6 +70,18 @@ namespace KadOzenka.Dal.XmlParser
                 dictFormEvents = new xsdDictionary(pathSchema + "\\dFormEvents_v01.xsd", "dFormEvents");
             if (dictRealty == null)
                 dictRealty = new xsdDictionary(pathSchema + "\\dRealty_v04.xsd", "dRealty");
+            if (dictCultural == null)
+                dictCultural = new xsdDictionary(pathSchema + "\\dCultural_v01.xsd", "dCultural");
+            if(dictSpecialTypeFlat == null)
+	            dictSpecialTypeFlat = new xsdDictionary(pathSchema + "\\dSpecialTypeFlat_v01.xsd", "dSpecialTypeFlat");
+            if(dictNaturalObjects == null)
+                dictNaturalObjects = new xsdDictionary(pathSchema + "\\dNaturalObjects_v01.xsd", "dNaturalObjects");
+            if(dictForestUse == null)
+	            dictForestUse = new xsdDictionary(pathSchema + "\\dForestUse_v01.xsd", "dForestUse");
+            if(dictForestCategoryProtective == null)
+	            dictForestCategoryProtective = new xsdDictionary(pathSchema + "\\dForestCategoryProtective_v01.xsd", "dForestCategoryProtective");
+            if(dictForestEncumbrances == null)
+	            dictForestEncumbrances = new xsdDictionary(pathSchema + "\\dForestEncumbrances_v01.xsd", "dForestEncumbrances");
         }
         public static xmlObjectList GetXmlObject(Stream file)
         {
@@ -122,11 +143,20 @@ namespace KadOzenka.Dal.XmlParser
 
             return objs;
         }
+
         public static xmlDocument GetDocument(XmlNode xnObjectNode)
         {
             xmlDocument doc = new xmlDocument();
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
             {
+	            if (xnChild.Name == "CodeDocument")
+	            {
+		            doc.CodeDocument = new xmlCodeName()
+		            {
+			            Code = xnChild.InnerText,
+			            Name = dictAllDocuments.Records.GetRecByCode(xnChild.InnerText).Value
+		            };
+	            }
                 if (xnChild.Name == "Name")
                 {
                     doc.Name = xnChild.InnerText;
@@ -143,7 +173,7 @@ namespace KadOzenka.Dal.XmlParser
                 {
 	                doc.Date = DateTime.TryParse(xnChild.InnerText, out var dateTime) 
 		                ? dateTime 
-		                : DateTime.MinValue;
+		                : (DateTime?)null;
                 }
                 if (xnChild.Name == "IssueOrgan")
                 {
@@ -152,15 +182,6 @@ namespace KadOzenka.Dal.XmlParser
                 if (xnChild.Name == "Desc")
                 {
                     doc.Desc = xnChild.InnerText;
-                }
-                if (xnChild.Name == "CodeDocument")
-                {
-                    doc.CodeDocument = new xmlCodeName()
-                    {
-                        Code = xnChild.InnerText,
-                        Name = dictAllDocuments.Records.GetRecByCode(xnChild.InnerText).Value
-                    };
-
                 }
             }
             return doc;
@@ -191,47 +212,54 @@ namespace KadOzenka.Dal.XmlParser
                             {
 	                            obj.CadastralCost.DateValuation = DateTime.TryParse(xnChild1.InnerText, out var date) 
 		                            ? date 
-		                            : DateTime.MinValue;
+		                            : (DateTime?)null;
                             }
                             else
                             if (xnChild1.Name == "DateEntering")
                             {
 	                            obj.CadastralCost.DateEntering = DateTime.TryParse(xnChild1.InnerText, out var date)
 		                            ? date
-		                            : DateTime.MinValue;
-                            }
-                            else
-                            if (xnChild1.Name == "DocDate")
-                            {
-	                            obj.CadastralCost.DocDate = DateTime.TryParse(xnChild1.InnerText, out var date)
-		                            ? date
-		                            : DateTime.MinValue;
-                            }
-                            else
-                            if (xnChild1.Name == "ApplicationDate")
-                            {
-	                            obj.CadastralCost.ApplicationDate = DateTime.TryParse(xnChild1.InnerText, out var date)
-		                            ? date
-		                            : DateTime.MinValue;
+		                            : (DateTime?)null;
                             }
                             else
                             if (xnChild1.Name == "DateApproval")
                             {
 	                            obj.CadastralCost.DateApproval = DateTime.TryParse(xnChild1.InnerText, out var date)
 		                            ? date
-		                            : DateTime.MinValue;
+		                            : (DateTime?)null;
+                            }
+                            else
+                            if (xnChild1.Name == "DocNumber")
+                            {
+	                            obj.CadastralCost.DocNumber = xnChild1.InnerText;
+                            }
+                            else
+                            if (xnChild1.Name == "DocDate")
+                            {
+	                            obj.CadastralCost.DocDate = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : (DateTime?)null;
+                            }
+                            else
+                            if (xnChild1.Name == "ApplicationDate")
+                            {
+	                            obj.CadastralCost.ApplicationDate = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : (DateTime?)null;
                             }
                             else
                             if (xnChild1.Name == "RevisalStatementDate")
                             {
 	                            obj.CadastralCost.RevisalStatementDate = DateTime.TryParse(xnChild1.InnerText, out var date)
 		                            ? date
-		                            : DateTime.MinValue;
+		                            : (DateTime?)null;
                             }
                             else
-                            if (xnChild1.Name == "DocNumber")
+                            if (xnChild1.Name == "ApplicationLastDate")
                             {
-                                obj.CadastralCost.DocNumber = xnChild1.InnerText;
+	                            obj.CadastralCost.ApplicationLastDate = DateTime.TryParse(xnChild1.InnerText, out var date)
+		                            ? date
+		                            : (DateTime?)null;
                             }
                             else
                             if (xnChild1.Name == "DocName")
@@ -245,14 +273,22 @@ namespace KadOzenka.Dal.XmlParser
                         #region Площадь
                         if (typeobject != enTypeObject.toParcel)
                         {
-                            obj.Area = xnChild.InnerText;
+	                        obj.Area = double.TryParse(xnChild.InnerText, out var valResult)
+		                        ? valResult
+		                        : (double?) null;
                         }
                         else
                         {
                             foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                             {
                                 if (xnChild1.Name == "Area")
-                                    obj.Area = xnChild1.InnerText;
+                                    obj.Area = double.TryParse(xnChild1.InnerText, out var valResult)
+	                                    ? valResult
+	                                    : (double?)null;
+                                if (xnChild1.Name == "Inaccuracy")
+	                                obj.AreaInaccuracy = double.TryParse(xnChild1.InnerText, out var valResult)
+		                                ? valResult
+		                                : (double?)null;
                             }
                         }
                         #endregion
@@ -303,12 +339,36 @@ namespace KadOzenka.Dal.XmlParser
                         break;
                     case "ParentCadastralNumbers":
                         #region Номера земельных участков
+                        obj.ParentCadastralNumbers = GetCadastralNumbers(xnChild);
+                        #endregion
+                        break;
+                    case "FlatsCadastralNumbers":
+                        #region Кадастровые номера помещений, расположенных в объекте недвижимости
+                        obj.FlatsCadastralNumbers = GetCadastralNumbers(xnChild);
+	                    #endregion
+	                    break;
+                    case "CarParkingSpacesCadastralNumbers":
+                        #region Кадастровые номера машино-мест, расположенных в объекте недвижимости
+                        obj.CarParkingSpacesCadastralNumbers = GetCadastralNumbers(xnChild);
+	                    #endregion
+	                    break;
+                    case "UnitedCadastralNumber":
+                        #region Кадастровый номер единого недвижимого комплекса, если объект недвижимости входит в состав единого недвижимого комплекса
+                        obj.UnitedCadastralNumbers = GetCadastralNumbers(xnChild);
+	                    #endregion
+	                    break;
+                    case "FacilityCadastralNumber":
+                        #region Кадастровый номер и назначение предприятия как имущественного комплекса, если объект недвижимости входит в состав предприятия как имущественного комплекса
                         foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                         {
-                            if (xnChild1.Name == "CadastralNumber")
-                            {
-                                obj.ParentCadastralNumbers.Add(xnChild1.InnerText);
-                            }
+	                        if (xnChild1.Name == "CadastralNumber")
+	                        {
+		                        obj.FacilityCadastralNumber = xnChild1.InnerText;
+	                        }
+	                        if (xnChild1.Name == "Purpose")
+	                        {
+		                        obj.FacilityPurpose = xnChild1.InnerText;
+	                        }
                         }
                         #endregion
                         break;
@@ -341,20 +401,80 @@ namespace KadOzenka.Dal.XmlParser
                         #region Адрес
                         obj.Adress = new xmlAdress();
                         XmlNode nodeadres = xnChild;
-                        foreach (XmlNode xnChild3 in xnChild.ChildNodes)
+                        if (typeobject == enTypeObject.toParcel)
                         {
-                            if (xnChild3.Name == "Address")
-                                nodeadres = xnChild3;
+	                        foreach (XmlNode xnChild3 in xnChild.ChildNodes)
+	                        {
+		                        if (xnChild3.Name == "Address")
+		                        {
+			                        nodeadres = xnChild3;
+		                        }
+		                        if (xnChild3.Name == "inBounds")
+		                        {
+			                        switch (xnChild3.InnerText)
+			                        {
+				                        case "0":
+					                        obj.Adress.InBounds = "Расположение ориентира вне границ участка";
+					                        break;
+				                        case "1":
+					                        obj.Adress.InBounds = "Расположение ориентира в границах участка";
+					                        break;
+				                        case "2":
+					                        obj.Adress.InBounds = "Не определено";
+					                        break;
+			                        }
+		                        }
+		                        if (xnChild3.Name == "Placed")
+		                        {
+			                        obj.Adress.Placed = xnChild3.InnerText;
+		                        }
+		                        if (xnChild3.Name == "Elaboration")
+		                        {
+			                        obj.Adress.Elaboration = new xmlElaborationLocation();
+                                    foreach (XmlNode child in xnChild3.ChildNodes)
+			                        {
+                                        if (child.Name == "ReferenceMark")
+				                        {
+					                        obj.Adress.Elaboration.ReferenceMark = child.InnerText;
+				                        }
+				                        if (child.Name == "Distance")
+				                        {
+					                        obj.Adress.Elaboration.Distance = child.InnerText;
+				                        }
+				                        if (child.Name == "Direction")
+				                        {
+					                        obj.Adress.Elaboration.Direction = child.InnerText;
+				                        }
+                                    }
+		                        }
+                            }
                         }
+
                         foreach (XmlNode xnChild1 in nodeadres.ChildNodes)
                         {
+	                        if (xnChild1.Name == "FIAS")
+	                        {
+		                        obj.Adress.FIAS = xnChild1.InnerText;
+	                        }
+	                        if (xnChild1.Name == "OKATO")
+	                        {
+		                        obj.Adress.OKATO = xnChild1.InnerText;
+	                        }
                             if (xnChild1.Name == "KLADR")
                             {
                                 obj.Adress.KLADR = xnChild1.InnerText;
                             }
+                            if (xnChild1.Name == "OKTMO")
+                            {
+	                            obj.Adress.OKTMO = xnChild1.InnerText;
+                            }
                             if (xnChild1.Name == "PostalCode")
                             {
                                 obj.Adress.PostalCode = xnChild1.InnerText;
+                            }
+                            if (xnChild1.Name == "RussianFederation")
+                            {
+	                            obj.Adress.RussianFederation = xnChild1.InnerText;
                             }
                             if (xnChild1.Name == "Region")
                             {
@@ -362,23 +482,27 @@ namespace KadOzenka.Dal.XmlParser
                             }
                             if (xnChild1.Name == "Note")
                             {
-                                obj.Adress.Place = xnChild1.InnerText;
+                                obj.Adress.Note = xnChild1.InnerText;
                             }
                             if (xnChild1.Name == "Other")
                             {
                                 obj.Adress.Other = xnChild1.InnerText;
                             }
+                            if (xnChild1.Name == "AddressOrLocation")
+                            {
+	                            switch (xnChild1.InnerText)
+	                            {
+                                    case "0":
+	                                    obj.Adress.AddressOrLocation = "Описание местоположения объекта недвижимости";
+                                        break;
+                                    case "1":
+	                                    obj.Adress.AddressOrLocation = "Присвоенный в установленном порядке адрес объекта недвижимости";
+	                                    break;
+	                            }
+                            }
                             if (xnChild1.Name == "District")
                             {
                                 obj.Adress.District = new xmlAdresLevel()
-                                {
-                                    Type = xnChild1.Attributes["Type"].InnerText,
-                                    Value = xnChild1.Attributes["Name"].InnerText
-                                };
-                            }
-                            if (xnChild1.Name == "Locality")
-                            {
-                                obj.Adress.Locality = new xmlAdresLevel()
                                 {
                                     Type = xnChild1.Attributes["Type"].InnerText,
                                     Value = xnChild1.Attributes["Name"].InnerText
@@ -399,6 +523,30 @@ namespace KadOzenka.Dal.XmlParser
                                     Type = xnChild1.Attributes["Type"].InnerText,
                                     Value = xnChild1.Attributes["Name"].InnerText
                                 };
+                            }
+                            if (xnChild1.Name == "SovietVillage")
+                            {
+	                            obj.Adress.SovietVillage = new xmlAdresLevel()
+	                            {
+		                            Type = xnChild1.Attributes["Type"].InnerText,
+		                            Value = xnChild1.Attributes["Name"].InnerText
+	                            };
+                            }
+                            if (xnChild1.Name == "Locality")
+                            {
+	                            obj.Adress.Locality = new xmlAdresLevel()
+	                            {
+		                            Type = xnChild1.Attributes["Type"].InnerText,
+		                            Value = xnChild1.Attributes["Name"].InnerText
+	                            };
+                            }
+                            if (xnChild1.Name == "PlanningElement")
+                            {
+	                            obj.Adress.PlanningElement = new xmlAdresLevel()
+	                            {
+		                            Type = xnChild1.Attributes["Type"].InnerText,
+		                            Value = xnChild1.Attributes["Name"].InnerText
+	                            };
                             }
                             if (xnChild1.Name == "Street")
                             {
@@ -459,7 +607,7 @@ namespace KadOzenka.Dal.XmlParser
                         break;
                     case "DegreeReadiness":
                         #region Процент готовности
-                        obj.DegreeReadiness = xnChild.InnerText;
+                        obj.DegreeReadiness = xnChild.InnerText.ParseToLongNullable();
                         #endregion
                         break;
                     case "Assignation":
@@ -483,6 +631,22 @@ namespace KadOzenka.Dal.XmlParser
                                     Name = dictAssignationFlatType.Records.GetRecByCode(xnChild1.InnerText).Value
                                 };
                             }
+                            if (xnChild1.Name == "SpecialType")
+                            {
+	                            obj.AssignationSpecialType = new xmlCodeName()
+	                            {
+		                            Code = xnChild1.InnerText,
+		                            Name = dictSpecialTypeFlat.Records.GetRecByCode(xnChild1.InnerText).Value
+	                            };
+                            }
+                            if (xnChild1.Name == "TotalAssets")
+                            {
+	                            obj.AssignationTotalAssets = xnChild1.InnerText?.Trim()?.ToLower() == "true";
+                            }
+                            if (xnChild1.Name == "AuxiliaryFlat")
+                            {
+	                            obj.AssignationAuxiliaryFlat = xnChild1.InnerText?.Trim()?.ToLower() == "true";
+                            }
                         }
                         #endregion
                         break;
@@ -490,101 +654,95 @@ namespace KadOzenka.Dal.XmlParser
                         #region расположение помещения
                         foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                         {
+	                        if (xnChild1.Name == "Level")
+	                        {
+		                        var level = GetXmlLevel(xnChild1);
+		                        obj.Levels = new List<xmlLevel>();
+                                obj.Levels.Add(level);
+	                        }
                             if (xnChild1.Name == "Levels")
                             {
+	                            obj.Levels = new List<xmlLevel>();
                                 foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
                                 {
                                     if (xnChild2.Name == "Level")
                                     {
-                                        xmlPosition tmp = new xmlPosition();
-                                        if (xnChild2.Attributes["Number"] != null) tmp.Position.Value = xnChild2.Attributes["Number"].InnerText;
-                                        if (xnChild2.Attributes["Type"] != null)
-                                        {
-                                            tmp.Position.Code = xnChild2.Attributes["Type"].InnerText;
-                                            tmp.Position.Name = dictStrorey.Records.GetValueByCode(xnChild2.Attributes["Type"].InnerText);
-                                        }
-                                        foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
-                                        {
-                                            if (xnChild3.Name == "Position")
-                                            {
-                                                if (xnChild3.Attributes["NumberOnPlan"] != null) tmp.NumbersOnPlan.Add(xnChild3.Attributes["NumberOnPlan"].InnerText);
-                                            }
-                                        }
-                                        obj.PositionsInObject.Add(tmp);
+	                                    var level = GetXmlLevel(xnChild2);
+	                                    obj.Levels.Add(level);
                                     }
                                 }
                             }
                             if (xnChild1.Name == "Position")
                             {
-                                xmlPosition tmp = new xmlPosition();
-                                if (xnChild.Attributes["Number"] != null) tmp.Position.Value = xnChild.Attributes["Number"].InnerText;
-                                if (xnChild.Attributes["Type"] != null)
-                                {
-                                    tmp.Position.Code = xnChild.Attributes["Type"].InnerText;
-                                    tmp.Position.Name = dictStrorey.Records.GetValueByCode(xnChild.Attributes["Type"].InnerText);
-                                }
-                                foreach (XmlNode xnChild3 in xnChild.ChildNodes)
-                                {
-                                    if (xnChild3.Name == "Position")
-                                    {
-                                        if (xnChild3.Attributes["NumberOnPlan"] != null) tmp.NumbersOnPlan.Add(xnChild3.Attributes["NumberOnPlan"].InnerText);
-                                    }
-                                }
-                                obj.PositionsInObject.Add(tmp);
+	                            obj.Position = new xmlPos();
+	                            if (xnChild1.Attributes["NumberOnPlan"] != null)
+		                            obj.Position.NumberOnPlan = xnChild1.Attributes["Number"].InnerText;
+	                            if (xnChild1.Attributes["Description"] != null)
+		                            obj.Position.Description = xnChild1.Attributes["Description"].InnerText;
                             }
                         }
                         #endregion
                         break;
                     case "ParentOKS":
                         #region Характеристики здания
+
+                        obj.ParentOks = new xmlParentOks();
                         foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                         {
                             if (xnChild1.Name == "CadastralNumberOKS")
                             {
-                                obj.CadastralNumberOKS = (xnChild1.InnerText);
+	                            obj.ParentOks.CadastralNumberOKS = xnChild1.InnerText;
                             }
-                            //Этажность
-                            if (xnChild1.Name == "Floors")
+                            if (xnChild1.Name == "ObjectType")
                             {
-                                obj.Floors = new xmlFloors();
-                                if (xnChild1.Attributes["Floors"] != null) obj.Floors.Floors = xnChild1.Attributes["Floors"].InnerText;
-                                if (xnChild1.Attributes["UndergroundFloors"] != null) obj.Floors.Underground_Floors = xnChild1.Attributes["UndergroundFloors"].InnerText;
+	                            obj.ParentOks.ObjectType = new xmlCodeName()
+	                            {
+		                            Code = xnChild1.InnerText,
+		                            Name = dictRealty.Records.GetRecByCode(xnChild1.InnerText).Value
+	                            };
                             }
-                            //Год постройки
-                            if (xnChild1.Name == "ExploitationChar")
-                            {
-                                obj.Years = new xmlYear();
-                                if (xnChild1.Attributes["YearBuilt"] != null) obj.Years.Year_Built = xnChild1.Attributes["YearBuilt"].InnerText;
-                                if (xnChild1.Attributes["YearUsed"] != null) obj.Years.Year_Used = xnChild1.Attributes["YearUsed"].InnerText;
-                            }
-                            //Материал стен
-                            if (xnChild1.Name == "ElementsConstruct")
-                            {
-                                foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
-                                {
-                                    if (xnChild2.Name == "Material")
-                                    {
-                                        if (xnChild2.Attributes["Wall"] != null)
-                                        {
-                                            string wcode = xnChild2.Attributes["Wall"].InnerText;
-                                            obj.Walls.Add(
-                                                new xmlCodeName()
-                                                {
-                                                    Code = wcode,
-                                                    Name = dictWall.Records.GetRecByCode(wcode).Value
-                                                });
-                                        }
-                                    }
-                                }
-                            }
-                            //Назначение здания
                             if (xnChild1.Name == "AssignationBuilding")
                             {
-                                obj.AssignationBuilding = new xmlCodeName()
-                                {
-                                    Code = xnChild1.InnerText,
-                                    Name = dictAssignationBuild.Records.GetRecByCode(xnChild1.InnerText).Value
-                                };
+	                            obj.ParentOks.AssignationBuilding = new xmlCodeName()
+	                            {
+		                            Code = xnChild1.InnerText,
+		                            Name = dictAssignationBuild.Records.GetRecByCode(xnChild1.InnerText).Value
+	                            };
+                            }
+                            if (xnChild1.Name == "AssignationName")
+                            {
+	                            obj.ParentOks.AssignationName = xnChild1.InnerText;
+                            }
+                            if (xnChild1.Name == "ElementsConstruct")
+                            {
+	                            foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+	                            {
+		                            if (xnChild2.Name == "Material")
+		                            {
+			                            if (xnChild2.Attributes["Wall"] != null)
+			                            {
+				                            string wcode = xnChild2.Attributes["Wall"].InnerText;
+				                            obj.ParentOks.Walls.Add(
+					                            new xmlCodeName()
+					                            {
+						                            Code = wcode,
+						                            Name = dictWall.Records.GetRecByCode(wcode).Value
+					                            });
+			                            }
+		                            }
+	                            }
+                            }
+                            if (xnChild1.Name == "ExploitationChar")
+                            {
+	                            obj.ParentOks.Years = new xmlYear();
+	                            if (xnChild1.Attributes["YearBuilt"] != null) obj.ParentOks.Years.Year_Built = xnChild1.Attributes["YearBuilt"].InnerText;
+	                            if (xnChild1.Attributes["YearUsed"] != null) obj.ParentOks.Years.Year_Used = xnChild1.Attributes["YearUsed"].InnerText;
+                            }
+                            if (xnChild1.Name == "Floors")
+                            {
+                                obj.ParentOks.Floors = new xmlFloors();
+                                if (xnChild1.Attributes["Floors"] != null) obj.ParentOks.Floors.Floors = xnChild1.Attributes["Floors"].InnerText;
+                                if (xnChild1.Attributes["UndergroundFloors"] != null) obj.ParentOks.Floors.Underground_Floors = xnChild1.Attributes["UndergroundFloors"].InnerText;
                             }
                         }
                         #endregion
@@ -642,87 +800,205 @@ namespace KadOzenka.Dal.XmlParser
                         }
                         #endregion
                         break;
-                    case "SubParcels":
-                        #region Обременения и ограничения
+                    case "NaturalObjects":
+                        #region Сведения о природных объектах
                         foreach (XmlNode xnChild1 in xnChild.ChildNodes)
-                        {
-                            if (xnChild1.Name == "SubParcel")
-                            {
-                                string area = null;
-                                foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
-                                {
-                                    if (xnChild2.Name == "Area")
+	                    {
+		                    if (xnChild1.Name == "NaturalObject")
+		                    {
+			                    var naturalObject = new xmlNaturalObject();
+			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+								{
+									if (xnChild2.Name == "Kind")
+									{
+										naturalObject.Kind = new xmlCodeName
+										{
+											Code = xnChild2.InnerText,
+											Name = dictNaturalObjects.Records.GetRecByCode(xnChild2.InnerText).Value
+										};
+									}
+									if (xnChild2.Name == "Forestry")
+									{
+										naturalObject.Forestry = xnChild2.InnerText;
+									}
+                                    if (xnChild2.Name == "ForestUse")
+									{
+										naturalObject.ForestUse = new xmlCodeName
+										{
+											Code = xnChild2.InnerText,
+											Name = dictForestUse.Records.GetRecByCode(xnChild2.InnerText).Value
+										};
+									}
+                                    if (xnChild2.Name == "QuarterNumbers")
                                     {
-                                        foreach (XmlNode xnChild5 in xnChild2.ChildNodes)
-                                        {
-                                            if (xnChild5.Name == "Area")
-                                            {
-                                                area = xnChild5.InnerText;
-                                            }
+	                                    naturalObject.QuarterNumbers = xnChild2.InnerText;
+                                    }
+                                    if (xnChild2.Name == "TaxationSeparations")
+                                    {
+	                                    naturalObject.TaxationSeparations = xnChild2.InnerText;
+                                    }
+                                    if (xnChild2.Name == "ProtectiveForest")
+									{
+										naturalObject.ProtectiveForest = new xmlCodeName
+										{
+											Code = xnChild2.InnerText,
+											Name = dictForestCategoryProtective.Records.GetRecByCode(xnChild2.InnerText).Value
+										};
+									}
+                                    if (xnChild2.Name == "ForestEncumbrances")
+                                    {
+	                                    foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
+	                                    {
+		                                    if (xnChild3.Name == "ForestEncumbrance")
+		                                    {
+			                                    var forestEncumbrance = new xmlCodeName
+			                                    {
+				                                    Code = xnChild3.InnerText,
+				                                    Name = dictForestEncumbrances.Records.GetRecByCode(xnChild3.InnerText).Value
+			                                    };
+			                                    naturalObject.ForestEncumbrances.Add(forestEncumbrance);
+		                                    }
                                         }
                                     }
-                                    if (xnChild2.Name == "Encumbrances")
+                                    if (xnChild2.Name == "WaterObject")
                                     {
-                                        foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
-                                        {
-                                            if (xnChild3.Name == "Encumbrance")
-                                            {
-                                                xmlEncumbrance encum = new xmlEncumbrance();
-                                                encum.Area = double.TryParse(area, out var valResult)
-	                                                ? valResult
-	                                                : double.MinValue;
-                                                foreach (XmlNode xnChild4 in xnChild3.ChildNodes)
-                                                {
-                                                    if (xnChild4.Name == "Type")
-                                                    {
-                                                        encum.Type = new xmlCodeName()
-                                                        {
-                                                            Code = xnChild4.InnerText,
-                                                            Name = dictEncumbrance.Records.GetValueByCode(xnChild4.InnerText)
-                                                        };
-                                                    }
-                                                    if (xnChild4.Name == "Name")
-                                                    {
-                                                        encum.Name = xnChild4.InnerText;
-                                                    }
-                                                    if (xnChild4.Name == "AccountNumber")
-                                                    {
-                                                        encum.AccountNumber = xnChild4.InnerText;
-                                                    }
-                                                    if (xnChild4.Name == "CadastralNumberRestriction")
-                                                    {
-                                                        encum.CadastralNumberRestriction = xnChild4.InnerText;
-                                                    }
-                                                    if (xnChild4.Name == "Registration")
-                                                    {
-                                                        encum.Registration = new xmlNumberDate();
-                                                        foreach (XmlNode xnChild5 in xnChild4.ChildNodes)
-                                                        {
-                                                            if (xnChild5.Name == "RightNumber")
-                                                            {
-                                                                encum.Registration.Number = xnChild5.InnerText;
-                                                            }
-                                                            if (xnChild5.Name == "RegistrationDate")
-                                                            {
-                                                                if (!DateTime.TryParse(xnChild5.InnerText, out encum.Registration.Date))
-                                                                    encum.Registration.Date = DateTime.MinValue;
-                                                            }
-                                                        }
-                                                    }
-                                                    if (xnChild4.Name == "Document")
-                                                    {
-                                                        encum.Document = GetDocument(xnChild4);
-                                                    }
-                                                }
-                                                obj.Encumbrances.Add(encum);
-                                            }
-                                        }
+	                                    naturalObject.WaterObject = xnChild2.InnerText;
+                                    }
+                                    if (xnChild2.Name == "NameOther")
+                                    {
+	                                    naturalObject.NameOther = xnChild2.InnerText;
+                                    }
+                                    if (xnChild2.Name == "CharOther")
+                                    {
+	                                    naturalObject.CharOther = xnChild2.InnerText;
                                     }
                                 }
+
+								obj.NaturalObjects.Add(naturalObject);
                             }
+	                    }
+                        #endregion
+                        break;
+                    case "SubParcels":
+                        #region Сведения о частях участка
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+                        {
+	                        if (xnChild1.Name == "SubParcel")
+	                        {
+		                        var subParcel = new xmlSubParcel();
+		                        foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+		                        {
+			                        if (xnChild2.Name == "Area")
+			                        {
+				                        subParcel.Area = double.TryParse(xnChild2.InnerText, out var valResult)
+					                        ? valResult
+					                        : (double?)null;
+			                        }
+
+			                        if (xnChild1.Name == "Inaccuracy")
+			                        {
+				                        subParcel.AreaInaccuracy = double.TryParse(xnChild2.InnerText, out var valResult)
+					                        ? valResult
+					                        : (double?)null;
+                                    }
+			                        if (xnChild2.Attributes["NumberRecord"] != null)
+			                        {
+				                        subParcel.NumberRecord = xnChild2.Attributes["NumberRecord"].InnerText;
+			                        }
+			                        if (xnChild2.Attributes["DateCreated"] != null)
+			                        {
+				                        subParcel.DateCreated = DateTime.TryParse(xnChild2.Attributes["DateCreated"].InnerText, out var date)
+					                        ? date
+					                        : (DateTime?)null;
+			                        }
+			                        if (xnChild2.Name == "Encumbrances")
+			                        {
+				                        subParcel.Encumbrances = GetEncumbrances<xmlEncumbranceZu>(xnChild2);
+			                        }
+		                        }
+
+		                        obj.SubParcels.Add(subParcel);
+	                        }
                         }
                         #endregion
                         break;
+                    case "SubBuildings":
+                    case "SubFlats":
+                        #region Сведения о частях здания / помещения
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "SubBuilding" || xnChild1.Name == "SubFlat")
+		                    {
+			                    var subBuildingFlat = new xmlSubBuildingFlat();
+			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+			                    {
+				                    if (xnChild2.Name == "Area")
+				                    {
+					                    subBuildingFlat.Area = double.TryParse(xnChild2.InnerText, out var valResult)
+						                    ? valResult
+						                    : (double?)null;
+				                    }
+				                    if (xnChild2.Attributes["NumberRecord"] != null)
+				                    {
+					                    subBuildingFlat.NumberRecord = xnChild2.Attributes["NumberRecord"].InnerText;
+				                    }
+				                    if (xnChild2.Attributes["DateCreated"] != null)
+				                    {
+					                    subBuildingFlat.DateCreated = DateTime.TryParse(xnChild2.Attributes["DateCreated"].InnerText, out var date)
+						                    ? date
+						                    : (DateTime?)null;
+				                    }
+                                    if (xnChild2.Name == "Encumbrances")
+                                    {
+	                                    subBuildingFlat.EncumbrancesOks = GetEncumbrances<xmlEncumbranceOks>(xnChild2);
+                                    }
+			                    }
+
+                                obj.SubBuildingFlats.Add(subBuildingFlat);
+		                    }
+	                    }
+	                    #endregion
+	                    break;
+                    case "SubConstructions":
+                        #region Сведения о частях сооружения
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "SubConstruction")
+		                    {
+			                    var subConstruction = new xmlSubConstruction();
+			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+			                    {
+				                    if (xnChild2.Name == "KeyParameter")
+				                    {
+					                    subConstruction.KeyParameter = new xmlCodeNameValue();
+					                    if (xnChild2.Attributes["Type"] != null) {
+						                    subConstruction.KeyParameter.Code = xnChild2.Attributes["Type"].InnerText;
+						                    subConstruction.KeyParameter.Name = dictTypeParameter.Records.GetRecByCode(xnChild2.Attributes["Type"].InnerText).Value;
+					                    }
+					                    if (xnChild2.Attributes["Value"] != null) 
+						                    subConstruction.KeyParameter.Value = xnChild2.Attributes["Value"].InnerText;
+				                    }
+				                    if (xnChild2.Attributes["NumberRecord"] != null)
+				                    {
+					                    subConstruction.NumberRecord = xnChild2.Attributes["NumberRecord"].InnerText;
+				                    }
+				                    if (xnChild2.Attributes["DateCreated"] != null)
+				                    {
+					                    subConstruction.DateCreated = DateTime.TryParse(xnChild2.Attributes["DateCreated"].InnerText, out var date)
+						                    ? date
+						                    : (DateTime?)null;
+				                    }
+				                    if (xnChild2.Name == "Encumbrances")
+				                    {
+					                    subConstruction.EncumbrancesOks = GetEncumbrances<xmlEncumbranceOks>(xnChild2);
+				                    }
+			                    }
+
+			                    obj.SubConstructions.Add(subConstruction);
+		                    }
+	                    }
+	                    #endregion
+	                    break;
                     case "ZonesAndTerritories":
                         #region Сведения о расположении земельного участка в границах зон, территорий
                         foreach (XmlNode xnChild3 in xnChild.ChildNodes)
@@ -748,9 +1024,9 @@ namespace KadOzenka.Dal.XmlParser
                                     {
                                         encum.ContentRestrictions = xnChild4.InnerText;
                                     }
-                                    if (xnChild4.Name == "FullPartly")
+                                    if (xnChild4.Name == "FullPartly" && !string.IsNullOrEmpty(xnChild4.InnerText))
                                     {
-                                        encum.FullPartly = xnChild4.InnerText == "1" ? true : false;
+                                        encum.FullPartly = xnChild4.InnerText?.Trim()?.ToLower() == "true";
                                     }
                                     if (xnChild4.Name == "Document")
                                     {
@@ -791,11 +1067,17 @@ namespace KadOzenka.Dal.XmlParser
                                             Name = dictFormEvents.Records.GetValueByCode(xnChild4.InnerText)
                                         };
                                     }
+                                    if (xnChild4.Name == "InspectionEnd")
+                                    {
+	                                    encum.InspectionEnd = DateTime.TryParse(xnChild4.InnerText, out var date)
+		                                    ? date
+		                                    : (DateTime?)null;
+                                    }
                                     if (xnChild4.Name == "ResultsEvent")
                                     {
                                         foreach (XmlNode xnChild5 in xnChild4.ChildNodes)
                                         {
-                                            if (xnChild5.Name == "AvailabilityViolations")
+                                            if (xnChild5.Name == "AvailabilityViolations" && !string.IsNullOrEmpty(xnChild5.InnerText))
                                             {
                                                 encum.AvailabilityViolations = xnChild5.InnerText == "1";
                                             }
@@ -817,7 +1099,7 @@ namespace KadOzenka.Dal.XmlParser
 	                                                    encum.IdentifiedViolations.Area =
 		                                                    double.TryParse(xnChild6.InnerText, out var areaResult)
 			                                                    ? areaResult
-			                                                    : double.MinValue;
+			                                                    : (double?)null;
                                                     }
                                                 }
                                             }
@@ -853,6 +1135,152 @@ namespace KadOzenka.Dal.XmlParser
                         }
                         #endregion
                         break;
+                    case "SurveyingProject":
+                        #region Сведения о расположении земельного участка в границах территории, в отношении которой утвержден проект межевания территории
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "SurveyProjectNum")
+		                    {
+			                    obj.SurveyingProjectNum = xnChild1.InnerText;
+		                    }
+		                    if (xnChild1.Name == "DecisionRequisites")
+		                    {
+			                    obj.SurveyingProjectDecisionRequisites = GetDocument(xnChild1);
+		                    }
+                        }
+	                    #endregion
+	                    break;
+                    case "HiredHouse":
+                        #region Сведения о создании (эксплуатации) на земельном участке наемного дома
+                        obj.HiredHouse = new xmlHiredHouse();
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "UseHiredHouse")
+		                    {
+			                    obj.HiredHouse.UseHiredHouse = xnChild1.InnerText;
+		                    }
+		                    if (xnChild1.Name == "MunicipalHouse")
+		                    {
+			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+								{
+									if (xnChild2.Name == "ActBuilding")
+									{
+										obj.HiredHouse.ActBuilding = true;
+									}
+									if (xnChild2.Name == "ActDevelopment")
+									{
+										obj.HiredHouse.ActDevelopment = true;
+									}
+									if (xnChild2.Name == "ContractBuilding")
+									{
+										foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
+										{
+											if (xnChild3.Name == "ContractName")
+											{
+												obj.HiredHouse.ContractBuilding = xnChild3.InnerText;
+											}
+										}
+									}
+									if (xnChild2.Name == "ContractDevelopment")
+									{
+										foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
+										{
+											if (xnChild3.Name == "ContractName")
+											{
+												obj.HiredHouse.ContractDevelopment = xnChild3.InnerText;
+											}
+										}
+									}
+                                }
+		                    }
+		                    if (xnChild1.Name == "OwnerHouse")
+		                    {
+			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+			                    {
+				                    if (xnChild2.Name == "OwnerDecision")
+				                    {
+					                    obj.HiredHouse.OwnerDecision = true;
+				                    }
+				                    if (xnChild2.Name == "ContractSupport")
+				                    {
+					                    foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
+					                    {
+						                    if (xnChild3.Name == "ContractName")
+						                    {
+							                    obj.HiredHouse.ContractSupport = xnChild3.InnerText;
+						                    }
+					                    }
+				                    }
+			                    }
+                            }
+		                    if (xnChild1.Name == "DocHiredHouse")
+		                    {
+			                    obj.HiredHouse.DocHiredHouse = GetDocument(xnChild1);
+		                    }
+                        }
+	                    #endregion
+	                    break;
+                    case "LimitedCirculation":
+                        #region Сведения об ограничении оборотоспособности земельного участка в соответствии со статьей 11 Федерального закона от 1 мая 2016 г. № 119-ФЗ
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "RightNumber")
+		                    {
+			                    obj.LimitedCirculation = xnChild1.InnerText;
+		                    }
+	                    }
+	                    #endregion
+	                    break;
+                    case "ObjectPermittedUses":
+                        #region Вид (виды) разрешенного использования
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "ObjectPermittedUse" && !string.IsNullOrEmpty(xnChild1.InnerText))
+		                    {
+			                    obj.ObjectPermittedUses.Add(xnChild1.InnerText);
+		                    }
+	                    }
+	                    #endregion
+	                    break;
+                    case "CulturalHeritage":
+                        #region Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия или об отнесении объекта недвижимости к выявленным объектам культурного наследия
+
+                        obj.CulturalHeritage = new xmlCulturalHeritage();
+                        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	                    {
+		                    if (xnChild1.Name == "InclusionEGROKN" || xnChild1.Name == "AssignmentEGROKN")
+		                    {
+			                    foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+			                    {
+				                    if (xnChild2.Name == "RegNum")
+				                    {
+					                    obj.CulturalHeritage.EgroknRegNum = xnChild2.InnerText;
+				                    }
+				                    if (xnChild2.Name == "ObjCultural")
+				                    {
+					                    obj.CulturalHeritage.EgroknObjCultural = new xmlCodeName()
+					                    {
+						                    Code = xnChild2.InnerText,
+						                    Name = dictCultural.Records.GetRecByCode(xnChild2.InnerText).Value
+					                    };
+				                    }
+				                    if (xnChild2.Name == "NameCultural")
+				                    {
+					                    obj.CulturalHeritage.EgroknNameCultural = xnChild2.InnerText;
+				                    }
+			                    }
+		                    }
+		                    if (xnChild1.Name == "RequirementsEnsure")
+		                    {
+			                    obj.CulturalHeritage.RequirementsEnsure = xnChild1.InnerText;
+		                    }
+		                    if (xnChild1.Name == "Document")
+		                    {
+			                    obj.CulturalHeritage.Document = GetDocument(xnChild1);
+                            }
+                        }
+	                    #endregion
+                        break;
                     default:
                         break;
                 }
@@ -861,16 +1289,125 @@ namespace KadOzenka.Dal.XmlParser
 
             return obj;
         }
+
+        private static xmlLevel GetXmlLevel(XmlNode xmlNode)
+        {
+	        var level = new xmlLevel();
+	        if (xmlNode.Attributes["Number"] != null)
+		        level.Number = xmlNode.Attributes["Number"].InnerText;
+	        if (xmlNode.Attributes["Type"] != null)
+	        {
+		        level.Type.Code = xmlNode.Attributes["Type"].InnerText;
+		        level.Type.Name = dictStrorey.Records.GetValueByCode(xmlNode.Attributes["Type"].InnerText);
+	        }
+
+	        foreach (XmlNode xnChild3 in xmlNode.ChildNodes)
+	        {
+		        if (xnChild3.Name == "Position")
+		        {
+			        level.Position = new xmlPos();
+			        if (xnChild3.Attributes["NumberOnPlan"] != null)
+				        level.Position.NumberOnPlan = xnChild3.Attributes["Number"].InnerText;
+			        if (xnChild3.Attributes["Description"] != null)
+				        level.Position.Description = xnChild3.Attributes["Description"].InnerText;
+		        }
+	        }
+
+	        return level;
+        }
+
+        private static List<T> GetEncumbrances<T>(XmlNode xmlNode) where T: xmlEncumbranceOks, new()
+        {
+	        var result = new List<T>();
+
+            foreach (XmlNode xnChild1 in xmlNode.ChildNodes)
+	        {
+		        if (xnChild1.Name == "Encumbrance")
+		        {
+			        var encumbrance = new T();
+
+			        foreach (XmlNode xnChild2 in xnChild1.ChildNodes)
+			        {
+				        if (xnChild2.Name == "Name")
+				        {
+					        encumbrance.Name = xnChild2.InnerText;
+				        }
+
+				        if (xnChild2.Name == "Type")
+				        {
+					        encumbrance.Type = new xmlCodeName()
+					        {
+						        Code = xnChild2.InnerText,
+						        Name = dictEncumbrance.Records.GetValueByCode(xnChild2.InnerText)
+					        };
+				        }
+
+				        if (xnChild2.Name == "AccountNumber" && encumbrance is xmlEncumbranceZu)
+				        {
+					        (encumbrance as xmlEncumbranceZu).AccountNumber = xnChild2.InnerText;
+				        }
+				        if (xnChild2.Name == "CadastralNumberRestriction" && encumbrance is xmlEncumbranceZu)
+				        {
+					        (encumbrance as xmlEncumbranceZu).CadastralNumberRestriction = xnChild2.InnerText;
+				        }
+
+                        if (xnChild2.Name == "Registration")
+				        {
+					        encumbrance.Registration = new xmlNumberDate();
+					        foreach (XmlNode xnChild3 in xnChild2.ChildNodes)
+					        {
+						        if (xnChild3.Name == "RightNumber")
+						        {
+							        encumbrance.Registration.Number = xnChild3.InnerText;
+						        }
+
+						        if (xnChild3.Name == "RegistrationDate")
+						        {
+							        encumbrance.Registration.Date = DateTime.TryParse(xnChild3.InnerText, out var resultDateTime)
+								        ? resultDateTime
+                                        : (DateTime?) null;
+						        }
+					        }
+				        }
+
+				        if (xnChild2.Name == "Document")
+				        {
+					        encumbrance.Document = GetDocument(xnChild2);
+				        }
+			        }
+
+			        result.Add(encumbrance);
+		        }
+	        }
+
+            return result;
+        }
+
+        private static List<string> GetCadastralNumbers(XmlNode xnChild)
+        {
+	        var numbers = new List<string>();
+	        foreach (XmlNode xnChild1 in xnChild.ChildNodes)
+	        {
+		        if (xnChild1.Name == "CadastralNumber")
+		        {
+			        numbers.Add(xnChild1.InnerText);
+		        }
+	        }
+
+	        return numbers;
+        }
+
         public static xmlObject GetData(ExcelRow row, enTypeObject typeobject)
         {
             string kn = row.Cells[0].Value.ParseToString();
-            DateTime dc = DateTime.MinValue;
-            xmlObject obj = new xmlObject(typeobject, kn, dc);
+            xmlObject obj = new xmlObject(typeobject, kn, null);
 
             if (typeobject==enTypeObject.toParcel)
             {
                 obj.TypeRealty = "Земельный участок";
-                obj.Area = row.Cells[2].Value.ParseToString();
+                obj.Area = double.TryParse(row.Cells[2].Value.ToString(), out var valResult)
+	                ? valResult
+	                : (double?)null;
                 obj.NameParcel = new xmlCodeName()
                 {
                     Code = string.Empty,
@@ -879,7 +1416,7 @@ namespace KadOzenka.Dal.XmlParser
                 obj.CadastralNumberBlock = row.Cells[8].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
-                obj.Adress.Place = row.Cells[7].Value.ParseToString();
+                obj.Adress.Note = row.Cells[7].Value.ParseToString();
                 obj.Adress.Other = row.Cells[5].Value.ParseToString();
                 obj.Category = new xmlCodeName()
                 {
@@ -893,11 +1430,13 @@ namespace KadOzenka.Dal.XmlParser
             if (typeobject == enTypeObject.toBuilding)
             {
                 obj.TypeRealty = "Здание";
-                obj.Area = row.Cells[2].Value.ParseToString();
+                obj.Area = double.TryParse(row.Cells[2].Value.ToString(), out var valResult)
+	                ? valResult
+	                : (double?)null;
                 obj.CadastralNumberBlock = row.Cells[8].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
-                obj.Adress.Place = row.Cells[7].Value.ParseToString();
+                obj.Adress.Note = row.Cells[7].Value.ParseToString();
                 obj.Adress.Other = row.Cells[5].Value.ParseToString();
 
                 string zusnum = row.Cells[9].Value.ParseToString();
@@ -942,7 +1481,7 @@ namespace KadOzenka.Dal.XmlParser
                 obj.CadastralNumberBlock = row.Cells[7].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[5].Value.ParseToString();
-                obj.Adress.Place = row.Cells[6].Value.ParseToString();
+                obj.Adress.Note = row.Cells[6].Value.ParseToString();
                 obj.Adress.Other = row.Cells[4].Value.ParseToString();
 
                 string zusnum = row.Cells[8].Value.ParseToString();
@@ -982,7 +1521,7 @@ namespace KadOzenka.Dal.XmlParser
                 obj.CadastralNumberBlock = row.Cells[6].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[4].Value.ParseToString();
-                obj.Adress.Place = row.Cells[5].Value.ParseToString();
+                obj.Adress.Note = row.Cells[5].Value.ParseToString();
                 obj.Adress.Other = row.Cells[3].Value.ParseToString();
 
                 string zusnum = row.Cells[7].Value.ParseToString();
@@ -1006,18 +1545,20 @@ namespace KadOzenka.Dal.XmlParser
                     obj.KeyParameters.Add(tmp);
                 }
 
-                obj.DegreeReadiness = row.Cells[9].Value.ParseToString();
+                obj.DegreeReadiness = row.Cells[9].Value.ParseToLongNullable();
             }
 
             if (typeobject == enTypeObject.toFlat)
             {
                 obj.TypeRealty = "Помещение";
-                obj.Area = row.Cells[2].Value.ParseToString();
+                obj.Area = double.TryParse(row.Cells[2].Value.ToString(), out var valResult)
+	                ? valResult
+	                : (double?)null;
 
                 obj.CadastralNumberBlock = row.Cells[9].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
-                obj.Adress.Place = row.Cells[8].Value.ParseToString();
+                obj.Adress.Note = row.Cells[8].Value.ParseToString();
                 obj.Adress.Other = row.Cells[5].Value.ParseToString();
 
                 obj.AssignationFlatCode = new xmlCodeName()
@@ -1033,12 +1574,10 @@ namespace KadOzenka.Dal.XmlParser
                 obj.Years.Year_Built = row.Cells[10].Value.ParseToString();
                 obj.Years.Year_Used = row.Cells[11].Value.ParseToString();
 
-
-                xmlPosition tmp = new xmlPosition();
-                tmp.Position.Value = row.Cells[12].Value.ParseToString();
-                tmp.Position.Name = "Этаж";
-                obj.PositionsInObject.Add(tmp);
-
+                obj.Levels = new List<xmlLevel>
+				{
+					new xmlLevel {Number = row.Cells[12].Value.ParseToString(), Type = {Name = "Этаж"}}
+                };
 
                 string wcode = row.Cells[13].Value.ParseToString();
                 if (wcode != string.Empty)

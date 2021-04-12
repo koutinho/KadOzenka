@@ -8,7 +8,7 @@
 		/// <summary>
 		/// Площадь (в кв. м)
 		/// </summary>
-		public double Area { get; set; }
+		public double? Area { get; set; }
 		/// <summary>
 		/// Вид выявленного правонарушения
 		/// </summary>

@@ -22,11 +22,11 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Дата окончания проверки
 		/// </summary>
-		public DateTime InspectionEnd { get; set; }
+		public DateTime? InspectionEnd { get; set; }
 		/// <summary>
 		/// Наличие нарушения: правонарушение выявлено (1-true)/не выявлено (0-false)
 		/// </summary>
-		public bool AvailabilityViolations { get; set; }
+		public bool? AvailabilityViolations { get; set; }
 		/// <summary>
 		/// Выявленное правонарушение
 		/// </summary>

@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Дата создания
 		/// </summary>
-		public DateTime DateCreate { get; set; }
+		public DateTime? DateCreate { get; set; }
 		/// <summary>
 		/// Кадастровый номер
 		/// </summary>

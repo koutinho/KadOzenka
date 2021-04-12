@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Дата выдачи (подписания) документа
 		/// </summary>
-		public DateTime Date { get; set; }
+		public DateTime? Date { get; set; }
 		/// <summary>
 		/// Организация, выдавшая документ. Автор документа
 		/// </summary>

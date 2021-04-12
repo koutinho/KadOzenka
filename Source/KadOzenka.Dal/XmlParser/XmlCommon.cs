@@ -249,7 +249,7 @@ namespace KadOzenka.Dal.XmlParser
     }
     public class xmlNumberDate
     {
-        public string Number;
-        public DateTime Date;
-    }
+        public string Number { get; set; }
+        public DateTime? Date { get; set; }
+}
 }

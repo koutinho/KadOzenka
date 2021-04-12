@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.XmlParser
 		public List<xmlObjectFlat> Flats { get; set; }
 		public List<xmlObjectCarPlace> CarPlaces { get; set; }
 		public List<xmlObjectParcel> Parcels { get; set; }
-		public object myLock;
+		private static object _myLock;
 
 		public xmlObjectList()
 		{
@@ -20,12 +20,12 @@ namespace KadOzenka.Dal.XmlParser
 			Flats = new List<xmlObjectFlat>();
 			CarPlaces = new List<xmlObjectCarPlace>();
 			Parcels = new List<xmlObjectParcel>();
-			myLock = new object();
+			_myLock = new object();
 		}
 
 		public void Add(xmlObject obj)
 		{
-			lock (myLock)
+			lock (_myLock)
 			{
 				switch (obj.TypeObject)
 				{

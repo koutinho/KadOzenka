@@ -24,7 +24,7 @@
 		/// <summary>
 		/// Полностью входит в зону
 		/// </summary>
-		public bool FullPartly { get; set; }
+		public bool? FullPartly { get; set; }
 		/// <summary>
 		/// Реквизиты решения
 		/// </summary>

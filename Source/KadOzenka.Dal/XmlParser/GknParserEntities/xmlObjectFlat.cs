@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -9,9 +10,33 @@ namespace KadOzenka.Dal.XmlParser
 		/// </summary>
 		public string CadastralNumberFlat { get; set; }
 		/// <summary>
+		/// Кадастровый номер здания или сооружения, в котором расположено помещение
+		/// </summary>
+		public string CadastralNumberOKS { get; set; }
+		/// <summary>
+		/// Характеристики объекта недвижимости, в котором расположено помещение, машино-место
+		/// </summary>
+		public xmlParentOks ParentOks { get; set; }
+		/// <summary>
+		/// Наименование
+		/// </summary>
+		public string Name { get; set; }
+
+
+		/// <summary>
 		/// Площадь в квадратных метрах
 		/// </summary>
-		public string Area { get; set; }
+		public double? Area { get; set; }
+
+		/// <summary>
+		/// Расположение в пределах объекта, не имеющего этажи
+		/// </summary>
+		public xmlPos Position { get; set; }
+		/// <summary>
+		/// Расположение в пределах объекта, не имеющего этажи
+		/// </summary>
+		public List<xmlLevel> Levels { get; set; }
+
 		/// <summary>
 		/// Назначение помещения
 		/// </summary>
@@ -21,53 +46,64 @@ namespace KadOzenka.Dal.XmlParser
 		/// </summary>
 		public xmlCodeName AssignationFlatType { get; set; }
 		/// <summary>
-		/// Наименование
+		/// Вид жилого помещения специализированного жилищного фонда
 		/// </summary>
-		public string Name { get; set; }
+		public xmlCodeName AssignationSpecialType { get; set; }
 		/// <summary>
-		/// Местоположение в объекте недвижимости
+		/// Нежилое помещение - общее имущество в многоквартирном доме (True - да)
 		/// </summary>
-		public List<xmlPosition> PositionsInObject { get; set; }
+		public bool? AssignationTotalAssets { get; set; }
+		/// <summary>
+		/// Нежилое помещение - помещение вспомогательного использования (True - да)
+		/// </summary>
+		public bool? AssignationAuxiliaryFlat { get; set; }
 
 		/// <summary>
-		/// Кадастровый номер здания или сооружения, в котором расположено помещение
+		/// Вид (виды) разрешенного использования
 		/// </summary>
-		public string CadastralNumberOKS { get; set; }
+		public List<string> ObjectPermittedUses { get; set; }
 		/// <summary>
-		/// Количество этажей (в том числе подземных)
+		/// Сведения о части помещения
 		/// </summary>
-		public xmlFloors parentFloors { get; set; }
+		public List<xmlSubBuildingFlat> SubFlats { get; set; }
+
 		/// <summary>
-		/// Эксплуатационные характеристики
+		/// Кадастровый номер единого недвижимого комплекса, если объект недвижимости входит в состав единого недвижимого комплекса
 		/// </summary>
-		public xmlYear parentYears { get; set; }
+		public List<string> UnitedCadastralNumbers { get; set; }
 		/// <summary>
-		/// Назначение здания
+		/// Кадастровый номер, если объект недвижимости входит в состав предприятия как имущественного комплекса
 		/// </summary>
-		public xmlCodeName parentAssignationBuilding { get; set; }
+		public string FacilityCadastralNumber { get; set; }
 		/// <summary>
-		/// Назначение (сооружение, онс)
+		/// Назначение предприятия как имущественного комплекса, если объект недвижимости входит в состав предприятия как имущественного комплекса
 		/// </summary>
-		public string parentAssignationName { get; set; }
+		public string FacilityPurpose { get; set; }
 		/// <summary>
-		/// Материал наружных стен здания
+		/// Сведения о включении объекта недвижимости в единый государственный реестр объектов культурного наследия или об отнесении объекта недвижимости к выявленным объектам культурного наследия
 		/// </summary>
-		public List<xmlCodeName> parentWalls { get; set; }
+		public xmlCulturalHeritage CulturalHeritage { get; set; }
 
 		public xmlObjectFlat(xmlObject obj) : base(obj)
 		{
 			CadastralNumberFlat = obj.CadastralNumberFlat;
+			CadastralNumberOKS = obj.CadastralNumberOKS;
+			ParentOks = obj.ParentOks;
+			Name = obj.NameObject;
 			Area = obj.Area;
 			AssignationFlatCode = obj.AssignationFlatCode;
 			AssignationFlatType = obj.AssignationFlatType;
-			Name = obj.NameObject;
-			PositionsInObject = obj.PositionsInObject;
-			CadastralNumberOKS = obj.CadastralNumberOKS;
-			parentFloors = obj.Floors;
-			parentYears = obj.Years;
-			parentAssignationBuilding = obj.AssignationBuilding;
-			parentAssignationName = obj.AssignationName;
-			parentWalls = obj.Walls;
+			AssignationSpecialType = obj.AssignationSpecialType;
+			AssignationTotalAssets = obj.AssignationTotalAssets;
+			AssignationAuxiliaryFlat = obj.AssignationAuxiliaryFlat;
+			ObjectPermittedUses = obj.ObjectPermittedUses;
+			SubFlats = obj.SubBuildingFlats;
+			UnitedCadastralNumbers = obj.UnitedCadastralNumbers;
+			FacilityCadastralNumber = obj.FacilityCadastralNumber;
+			FacilityPurpose = obj.FacilityPurpose;
+			CulturalHeritage = obj.CulturalHeritage;
+			Position = obj.Position;
+			Levels = obj.Levels;
 		}
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -7,46 +9,41 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Площадь в квадратных метрах
 		/// </summary>
-		public string Area { get; set; }
-		/// <summary>
-		/// Местоположение в объекте недвижимости
-		/// </summary>
-		public List<xmlPosition> PositionsInObject { get; set; }
+		public double? Area { get; set; }
 		/// <summary>
 		/// Кадастровый номер здания или сооружения, в котором расположено помещение
 		/// </summary>
 		public string CadastralNumberOKS { get; set; }
 		/// <summary>
-		/// Количество этажей (в том числе подземных)
+		/// Характеристики объекта недвижимости, в котором расположено помещение, машино-место
 		/// </summary>
-		public xmlFloors parentFloors { get; set; }
+		public xmlParentOks ParentOks { get; set; }
 		/// <summary>
-		/// Эксплуатационные характеристики
+		/// Местоположение в объекте недвижимости
 		/// </summary>
-		public xmlYear parentYears { get; set; }
+		public xmlLevel PositionInObject { get; set; }
 		/// <summary>
-		/// Назначение здания
+		/// Кадастровый номер единого недвижимого комплекса, если объект недвижимости входит в состав единого недвижимого комплекса
 		/// </summary>
-		public xmlCodeName parentAssignationBuilding { get; set; }
+		public List<string> UnitedCadastralNumbers { get; set; }
 		/// <summary>
-		/// Назначение (сооружение, онс)
+		/// Кадастровый номер, если объект недвижимости входит в состав предприятия как имущественного комплекса
 		/// </summary>
-		public string parentAssignationName { get; set; }
+		public string FacilityCadastralNumber { get; set; }
 		/// <summary>
-		/// Материал наружных стен здания
+		/// Назначение предприятия как имущественного комплекса, если объект недвижимости входит в состав предприятия как имущественного комплекса
 		/// </summary>
-		public List<xmlCodeName> parentWalls { get; set; }
+		public string FacilityPurpose { get; set; }
 
 		public xmlObjectCarPlace(xmlObject obj) : base(obj)
 		{
 			Area = obj.Area;
-			PositionsInObject = obj.PositionsInObject;
 			CadastralNumberOKS = obj.CadastralNumberOKS;
-			parentFloors = obj.Floors;
-			parentYears = obj.Years;
-			parentAssignationBuilding = obj.AssignationBuilding;
-			parentAssignationName = obj.AssignationName;
-			parentWalls = obj.Walls;
+			ParentOks = obj.ParentOks;
+			PositionInObject = obj.Levels?.FirstOrDefault();
+			UnitedCadastralNumbers = obj.UnitedCadastralNumbers;
+			FacilityCadastralNumber = obj.FacilityCadastralNumber;
+			FacilityPurpose = obj.FacilityPurpose;
 		}
 	}
 }

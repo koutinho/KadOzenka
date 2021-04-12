@@ -187,26 +187,32 @@ namespace KadOzenka.Dal.DataImport
 		        {
 			        if (item is ImportObjectBuild build)
 			        {
+						build.Init();
 				        build.ImportObjects(GknItems.Buildings, cancellationToken);
 			        }
 			        else if (item is ImportObjectParcel parcel)
 			        {
+						parcel.Init();
 				        parcel.ImportObjects(GknItems.Parcels, cancellationToken);
 			        }
 			        else if (item is ImportObjectConstruction construction)
 			        {
+						construction.Init();
 				        construction.ImportObjects(GknItems.Constructions, cancellationToken);
 			        }
 			        else if (item is ImportObjectUncomplited uncomplited)
 			        {
+						uncomplited.Init();
 				        uncomplited.ImportObjects(GknItems.Uncompliteds, cancellationToken);
 			        }
 			        else if (item is ImportObjectFlat flat)
 			        {
+						flat.Init();
 				        flat.ImportObjects(GknItems.Flats, cancellationToken);
 			        }
 			        else if (item is ImportObjectCarPlace place)
 			        {
+						place.Init();
 				        place.ImportObjects(GknItems.CarPlaces, cancellationToken);
 			        }
 		        });

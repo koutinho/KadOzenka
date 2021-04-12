@@ -8,6 +8,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 	public class ImportedAttribute
 	{
 		public long AttributeId { get; }
+		protected virtual bool SkipNullValues { get; } = false;
 
 		public ImportedAttribute(long attributeId)
 		{
@@ -31,18 +32,40 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			switch (RegisterCache.GetAttributeData((int)AttributeId).Type)
 			{
 				case RegisterAttributeType.STRING:
+				{
 					attributeValue.StringValue = value.ParseToStringNullable();
+					if(SkipNullValues && string.IsNullOrEmpty(attributeValue.StringValue))
+						return;
+
 					break;
+				}
 				case RegisterAttributeType.INTEGER:
 				case RegisterAttributeType.DECIMAL:
+				{
 					attributeValue.NumValue = value.ParseToDecimalNullable();
+					if (SkipNullValues && !attributeValue.NumValue.HasValue)
+						return;
+
 					break;
+				}
 				case RegisterAttributeType.DATE:
+				{
 					attributeValue.DtValue = value.ParseToDateTimeNullable();
+					if (SkipNullValues && !attributeValue.DtValue.HasValue)
+						return;
+
 					break;
+				}
 				case RegisterAttributeType.BOOLEAN:
-					attributeValue.NumValue = (value.ParseToBoolean() ? 1 : 0);
+				{
+					var booleanValue = value.ParseToBooleanNullable();
+					if (SkipNullValues && !booleanValue.HasValue)
+						return;
+
+					attributeValue.NumValue = booleanValue.GetValueOrDefault() ? 1 : 0;
+
 					break;
+				}
 			}
 
 			GbuObjectService.SaveAttributeValueWithCheck(attributeValue);

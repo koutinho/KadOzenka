@@ -1,4 +1,6 @@
-﻿namespace KadOzenka.Dal.XmlParser
+﻿using KadOzenka.Dal.XmlParser.GknParserXmlElements;
+
+namespace KadOzenka.Dal.XmlParser
 {
 	/// <summary>
 	/// Адрес
@@ -6,13 +8,29 @@
 	public class xmlAdress
 	{
 		/// <summary>
+		/// Уникальный номер адресообразующего элемента в государственном адресном реестре
+		/// </summary>
+		public string FIAS { get; set; }
+		/// <summary>
+		/// ОКАТО
+		/// </summary>
+		public string OKATO { get; set; }
+		/// <summary>
 		/// КЛАДР
 		/// </summary>
 		public string KLADR { get; set; }
 		/// <summary>
+		/// OKTMO
+		/// </summary>
+		public string OKTMO { get; set; }
+		/// <summary>
 		/// Почтовый индекс
 		/// </summary>
 		public string PostalCode { get; set; }
+		/// <summary>
+		/// Российская Федерация
+		/// </summary>
+		public string RussianFederation { get; set; }
 		/// <summary>
 		/// Регион
 		/// </summary>
@@ -20,19 +38,19 @@
 		/// <summary>
 		/// Неформализованное описание
 		/// </summary>
-		public string Place { get; set; }
+		public string Note { get; set; }
 		/// <summary>
 		/// Иное
 		/// </summary>
 		public string Other { get; set; }
 		/// <summary>
+		/// Иное
+		/// </summary>
+		public string AddressOrLocation { get; set; }
+		/// <summary>
 		/// Район
 		/// </summary>
 		public xmlAdresLevel District { get; set; }
-		/// <summary>
-		/// Населенный пункт
-		/// </summary>
-		public xmlAdresLevel Locality { get; set; }
 		/// <summary>
 		/// Муниципальное образование
 		/// </summary>
@@ -41,6 +59,18 @@
 		/// Городской район
 		/// </summary>
 		public xmlAdresLevel UrbanDistrict { get; set; }
+		/// <summary>
+		/// Сельсовет
+		/// </summary>
+		public xmlAdresLevel SovietVillage { get; set; }
+		/// <summary>
+		/// Населенный пункт
+		/// </summary>
+		public xmlAdresLevel Locality { get; set; }
+		/// <summary>
+		/// Элемент планировочной структуры
+		/// </summary>
+		public xmlAdresLevel PlanningElement { get; set; }
 		/// <summary>
 		/// Улица
 		/// </summary>
@@ -62,6 +92,21 @@
 		/// </summary>
 		public xmlAdresLevel Apartment { get; set; }
 
+		/// <summary>
+		/// В границах
+		/// </summary>
+		public string InBounds { get; set; }
+
+		/// <summary>
+		/// Положение на ДКК
+		/// </summary>
+		public string Placed { get; set; }
+
+		/// <summary>
+		/// Уточнение местоположения
+		/// </summary>
+		public xmlElaborationLocation Elaboration { get; set; }
+
 		public static string GetTextAdress(xmlAdress adress)
 		{
 			string res = string.Empty;
@@ -82,7 +127,7 @@
 		}
 		public static string GetTextPlace(xmlAdress adress)
 		{
-			return (adress.Place==null)?string.Empty: adress.Place;
+			return (adress.Note==null)?string.Empty: adress.Note;
 		}
 	}
 }

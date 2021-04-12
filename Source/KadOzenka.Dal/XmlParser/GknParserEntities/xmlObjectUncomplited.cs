@@ -15,11 +15,19 @@ namespace KadOzenka.Dal.XmlParser
 		/// <summary>
 		/// Степень готовности в процентах
 		/// </summary>
-		public string DegreeReadiness { get; set; }
+		public long? DegreeReadiness { get; set; }
 		/// <summary>
 		/// Основные характеристики и их значения
 		/// </summary>
 		public List<xmlCodeNameValue> KeyParameters { get; set; }
+		/// <summary>
+		/// Кадастровый номер, если объект недвижимости входит в состав предприятия как имущественного комплекса
+		/// </summary>
+		public string FacilityCadastralNumber { get; set; }
+		/// <summary>
+		/// Назначение предприятия как имущественного комплекса, если объект недвижимости входит в состав предприятия как имущественного комплекса
+		/// </summary>
+		public string FacilityPurpose { get; set; }
 
 		public xmlObjectUncomplited(xmlObject obj) : base(obj)
 		{
@@ -27,6 +35,8 @@ namespace KadOzenka.Dal.XmlParser
 			AssignationName = obj.AssignationName;
 			DegreeReadiness = obj.DegreeReadiness;
 			KeyParameters = obj.KeyParameters;
+			FacilityCadastralNumber = obj.FacilityCadastralNumber;
+			FacilityPurpose = obj.FacilityPurpose;
 		}
 	}
 }
