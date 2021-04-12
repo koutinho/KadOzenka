@@ -170,11 +170,11 @@ WHERE {pkField} in (SELECT dt.{pkField} FROM {deletedTableName} dt WHERE dt.EVEN
 INSERT INTO {tableName} ({string.Join(", ", mainTableCols)})
 	SELECT {string.Join(", ", mainTableCols)}
 	FROM {deletedTableName} dt
-	WHERE dt.EVENT_ID={eventId};
-
-DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};
-";
+	WHERE dt.EVENT_ID={eventId};";
 					}
+
+					restoreDataSql += $@"
+DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};";
 
 					restoreDataSqls.Add(restoreDataSql);
 				}
@@ -297,7 +297,11 @@ DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};
 
 		private string FormSqlForMovingObjectsToRecycleBinForOneTable(RegisterObjects registerObjects, long eventId, RegisterData registerData, string tableName, List<Column> mainTableColumns)
 		{
-			var sql = string.Empty;
+			var sql = $@"
+INSERT INTO {GetDeletedTableName(tableName)} ({string.Join(", ", mainTableColumns.Select(x => x.ColumnName).ToList())}, EVENT_ID)
+					SELECT {string.Join(", ", mainTableColumns.Select(x => $"{x.ColumnName}").ToList())}, {eventId} 
+					FROM {tableName} 
+					{registerObjects.GetSqlSearchPredicate()};";
 			if (registerData.Id == OMRegister.GetRegisterId() || registerData.Id == OMAttribute.GetRegisterId())
 			{
 				sql += $@"
@@ -312,10 +316,6 @@ UPDATE {tableName} SET is_deleted=1, deleted_date=CURRENT_DATE {registerObjects.
 			else
 			{
 				sql += $@"
-INSERT INTO {GetDeletedTableName(tableName)} ({string.Join(", ", mainTableColumns.Select(x => x.ColumnName).ToList())}, EVENT_ID)
-					SELECT {string.Join(", ", mainTableColumns.Select(x => $"{x.ColumnName}").ToList())}, {eventId} 
-					FROM {tableName} 
-					{registerObjects.GetSqlSearchPredicate()};
 DELETE FROM {tableName} {registerObjects.GetSqlSearchPredicate()};";
 			}
 
