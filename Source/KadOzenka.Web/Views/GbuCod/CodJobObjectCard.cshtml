@@ -54,6 +54,15 @@ TODO удалить вместе со view
 
 <script id="GridToolbarTemplate" type="text/x-kendo-template">
     <div style="float: left">
+        <a class="k-button" id="addValueBtn" style="width:120px;">
+            Добавить
+        </a>
+         <a class="k-button k-state-disabled" id="updateValueBtn" style="width:120px;">
+            Редактировать
+        </a>
+        <a class="k-button k-state-disabled" id="deleteValueBtn" style="width:120px;">
+            Удалить
+        </a>
         <span>Показано </span><span id="filteredObjectsCount"></span><span> из </span><span id="allObjectsCount"></span>
     </div>
 </script>
@@ -133,7 +142,8 @@ TODO удалить вместе со view
                 }
             },
             change: function() {
-                console.log('change');
+                $('#updateValueBtn').removeClass('k-state-disabled');
+                $('#deleteValueBtn').removeClass('k-state-disabled');
             },
             dataBound: function() {
                 $("#filteredObjectsCount").text(this.dataSource.total());
@@ -145,6 +155,10 @@ TODO удалить вместе со view
             sortable: true,
             resizable: true
         });
+
+        $('#addValueBtn').on('click', addValue);
+        $('#updateValueBtn').on('click', updateValue);
+        $('#deleteValueBtn').on('click', deleteValue);
         $("#allObjectsCount").text(dictionaryItems.length);
     }
 
@@ -190,6 +204,23 @@ TODO удалить вместе со view
         });
         return additionalColumns;
     }
+
+
+
+    function addValue() {
+
+    }
+
+    function updateValue() {
+
+    }
+
+    function deleteValue() {
+
+    }
+
+
+
 
 
     function updateDictionary() {
