@@ -3,7 +3,7 @@
 @using (Html.BeginForm("EditDictionaryValue", "GbuCod", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
-    @Html.HiddenFor(m => m.JobId)
+    @Html.HiddenFor(m => m.DictionaryId)
     <div class="form-horizontal col-sm-12" style="margin-top: 1%;">
         @for (var i = 0; i < Model.RegisterAttributes.Count; i++)
         {

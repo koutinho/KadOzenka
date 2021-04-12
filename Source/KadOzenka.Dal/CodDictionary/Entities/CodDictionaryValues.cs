@@ -3,30 +3,30 @@
 namespace KadOzenka.Dal.CodDictionary.Entities
 {
     //TODO KOMO-7 переименовать классы наоборот
-    public class CodDictionaryValues
+    public class CodDictionaryValue
     {
         public long Id { get; set; }
-        public List<CodDictionaryValue> Values { get; set; }
+        public List<CodDictionaryValuePure> Values { get; set; }
         public string Code { get; set; }
 
-        public CodDictionaryValues(long id, List<CodDictionaryValue> values)
+        public CodDictionaryValue(long id, List<CodDictionaryValuePure> values)
         {
             Id = id;
             Values = values;
         }
     }
 
-    public class CodDictionaryValue
+    public class CodDictionaryValuePure
     {
         public long AttributeId { get; set; }
         public string Value { get; set; }
 
-        public CodDictionaryValue()
+        public CodDictionaryValuePure()
         {
 
         }
 
-        public CodDictionaryValue(long attributeId, string value)
+        public CodDictionaryValuePure(long attributeId, string value)
         {
             AttributeId = attributeId;
             Value = value;

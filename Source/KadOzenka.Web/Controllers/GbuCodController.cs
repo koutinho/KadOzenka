@@ -129,7 +129,7 @@ namespace KadOzenka.Web.Controllers
 
             if (model.Id == -1)
             {
-				CodDictionaryService.AddDictionaryValue(model.JobId, model.ToDto());
+				CodDictionaryService.AddDictionaryValue(model.DictionaryId, model.ToDto());
             }
 
             return Ok();

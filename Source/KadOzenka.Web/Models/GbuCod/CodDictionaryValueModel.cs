@@ -11,8 +11,7 @@ namespace KadOzenka.Web.Models.GbuCod
 	public class CodDictionaryValueModel: IValidatableObject
 	{
 		public long Id { get; set; }
-		//TODO rename to dictionaryId
-		public long JobId { get; set; }
+        public long DictionaryId { get; set; }
 
 		[Display(Name = "Значение")]
 		public string Value { get; set; }
@@ -20,8 +19,8 @@ namespace KadOzenka.Web.Models.GbuCod
 		[Display(Name = "Код")]
 		public string Code { get; set; }
 
+        public List<CodDictionaryValuePure> Values { get; set; }
         public List<AttributePure> RegisterAttributes { get; private set; }
-        public List<CodDictionaryValue> Values { get; set; }
 
 
 
@@ -38,7 +37,7 @@ namespace KadOzenka.Web.Models.GbuCod
 			return new CodDictionaryValueModel
             {
                 Id = -1,
-				JobId = dictionary.Id,
+				DictionaryId = dictionary.Id,
 				RegisterAttributes = registerAttributes
             };
 		}
@@ -61,9 +60,9 @@ namespace KadOzenka.Web.Models.GbuCod
             };
 		}
 
-        public CodDictionaryValues ToDto()
+        public CodDictionaryValue ToDto()
         {
-            return new CodDictionaryValues(Id, Values)
+            return new CodDictionaryValue(Id, Values)
             {
 				Code = Code
             };
