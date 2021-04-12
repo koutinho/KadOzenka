@@ -18,7 +18,17 @@ namespace KadOzenka.Web.Models.GbuCod
 		[Display(Name = "Код")]
 		public string Code { get; set; }
 
-        public static CodDictionaryValueModel FromEntity(OMCodDictionary entity)
+
+
+        public static CodDictionaryValueModel ToModel()
+        {
+            return new CodDictionaryValueModel
+            {
+                Id = -1
+            };
+		}
+
+		public static CodDictionaryValueModel FromEntity(OMCodDictionary entity)
 		{
 			if (entity == null)
 			{

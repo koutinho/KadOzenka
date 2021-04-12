@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Transactions;
 using Core.Register;
+using Core.Register.QuerySubsystem;
+using Core.Register.RegisterEntities;
+using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.CommonFunctions;
@@ -12,6 +15,7 @@ using KadOzenka.Dal.Registers;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
+using Platform.Configurator.DbConfigurator;
 
 namespace KadOzenka.Dal.CodDictionary
 {
@@ -33,6 +37,8 @@ namespace KadOzenka.Dal.CodDictionary
             RecycleBinService = recycleBinService;
         }
 
+
+        #region Словарь
 
         public OMCodJob GetDictionary(long id)
         {
@@ -111,6 +117,55 @@ namespace KadOzenka.Dal.CodDictionary
             return ValidateCodDictionaryForUpdating(codDictionary).Concat(ValidateCodDictionaryValues(codDictionary));
         }
 
+        #endregion
+
+
+        #region Значения словаря
+
+        public List<CodDictionaryValues> GetDictionaryValues(long registerId)
+        {
+            var attributes = GetDictionaryRegisterAttributes(registerId);
+
+            var query = new QSQuery
+            {
+                MainRegisterID = (int)registerId
+            };
+
+            attributes.ForEach(attribute =>
+            {
+                var attributeId = attribute.Id;
+                query.AddColumn(attributeId, attributeId.ToString());
+            });
+
+            var rows = new List<CodDictionaryValues>();
+            var table = query.ExecuteQuery();
+            for (var i = 0; i < table.Rows.Count; i++)
+            {
+                var row = table.Rows[i];
+                var id = row["id"].ParseToLong();
+                var rowValues = new List<CodDictionaryValue>();
+                attributes.ForEach(attribute =>
+                {
+                    var attributeId = attribute.Id;
+                    var value = row[attributeId.ToString()].ParseToStringNullable();
+
+                    rowValues.Add(new CodDictionaryValue(attributeId, value));
+                });
+
+                rows.Add(new CodDictionaryValues(id, rowValues));
+            }
+
+            return rows;
+        }
+
+        public static List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId)
+        {
+            return RegisterCache.RegisterAttributes
+                .Where(x => x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey).Select(x => x.Value).ToList();
+        }
+
+        #endregion
+
 
         #region Support Methods
 
@@ -173,13 +228,20 @@ namespace KadOzenka.Dal.CodDictionary
 
         private void CreateColumns(List<string> columns, long registerId)
         {
+            var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
+
             columns.ForEach(x =>
             {
-                var omAttribute = RegisterAttributeService.CreateRegisterAttribute(x, registerId, RegisterAttributeType.STRING, true);
-
-                var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
-                RegisterConfiguratorWrapper.CreateDbColumnForRegister(omAttribute, dbConfigurator);
+                CreateAttribute(x, registerId, dbConfigurator);
             });
+
+            CreateAttribute(CodDictionaryConsts.CodeColumnName, registerId, dbConfigurator);
+        }
+
+        private void CreateAttribute(string name, long registerId, DbConfiguratorBase dbConfigurator)
+        {
+            var codeAttribute = RegisterAttributeService.CreateRegisterAttribute(name, registerId, RegisterAttributeType.STRING, true);
+            RegisterConfiguratorWrapper.CreateDbColumnForRegister(codeAttribute, dbConfigurator);
         }
 
         #endregion

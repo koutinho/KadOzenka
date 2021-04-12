@@ -1,6 +1,5 @@
 ﻿@model KadOzenka.Web.Models.GbuCod.CodDictionaryUpdatingModel
 
-
 @using (Html.BeginForm("CodJobObjectCard", "GbuCod", FormMethod.Post))
 {
     <div class="form-horizontal" style="padding: 2%;">
@@ -28,36 +27,169 @@
     </div>
 }
 
+<div class="form-group" style="padding: 0% 0 2% 0">
+    <div id="grid">
+
+    </div>
+</div>
+
+@*
+TODO удалить вместе со view
 <div style="height: auto;">
     <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/GbuCodDictionary?Transition=1&21400200=" + @Model.Id)"
          data-param-CodJobId="@Model.Id" data-param-Pageable="true" data-param-Scrollable="true"
          data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid214"></div>
 </div>
-
+*@
 
 
 <style>
-    #sidePanel-214 {
-        min-height: 440px;
-    }
-
-    .contentPanel {
-        height: auto;
+    .k-grid-filter.k-state-active .k-icon.k-i-filter {
+        color: #32CD32;
     }
 </style>
 
 
 
+
+<script id="GridToolbarTemplate" type="text/x-kendo-template">
+    <div style="float: left">
+        <span>Показано </span><span id="filteredObjectsCount"></span><span> из </span><span id="allObjectsCount"></span>
+    </div>
+</script>
+
+
+
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
-    var valuePrefix = "value_";
+    var objectFieldPrefixForValue = "Coefficient_";
 
-    $(document).ready(function () {
+    $(document).ready(function() {
         $('#update').on('click', updateDictionary);
+        generateGrid();
     });
 
 
+    function generateGrid() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            url: '@Url.Action("GetDictionaryValues", "GbuCod", new {dictionaryId = Model.Id})',
+            success: function(result) {
+                createGrid(result);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 
+
+    function createGrid(dictionaryItems) {
+        var gridId = "#grid";
+        var registerAttributesSerialized = '@Json.Serialize(Model.RegisterAttributes)';
+        var registerAttributes = JSON.parse(registerAttributesSerialized);
+        mapResponse(dictionaryItems, registerAttributes);
+        var dataSource = new kendo.data.DataSource({
+            transport:{
+                read: function(options){
+                    options.success(dictionaryItems);
+                }
+            },
+            error: function (e) {
+                Common.ShowError(e.xhr.responseText);
+                kendo.ui.progress($('body'), false);
+            },
+            schema: {
+                model: {
+                    id: "Id",
+                    fields: generateSchemaFields(registerAttributes)
+                },
+                data: function (response) {
+                    kendo.ui.progress($('body'), false);
+                    return response;
+                }
+            },
+            pageSize: 15
+        });
+        var grid = $(gridId).data("kendoGrid");
+        if (grid) {
+            $(gridId).empty().kendoGrid();
+        }
+        $(gridId).kendoGrid({
+            toolbar: kendo.template($("#GridToolbarTemplate").html())({ gridId: gridId}),
+            filterable: {
+                extra: true,
+                operators: {
+                    string: {
+                        startswith: "Начинается с",
+                        eq: "Равно",
+                        neq: "Не равно",
+                        isnull: "Пустое",
+                        isnotnull: "Непустое"
+                    }
+                }
+            },
+            change: function() {
+                console.log('change');
+            },
+            dataBound: function() {
+                $("#filteredObjectsCount").text(this.dataSource.total());
+            },
+            columns: generateColumns(registerAttributes),
+            dataSource: dataSource,
+            selectable: "row",
+            pageable: true,
+            sortable: true,
+            resizable: true
+        });
+        $("#allObjectsCount").text(dictionaryItems.length);
+    }
+
+    function mapResponse(dictionaryItems, registerAttributes) {
+        //заменяем список коэффициентов на отдельные поля в объекте
+        //например, Coefficient_10004300: 15
+        $.each(dictionaryItems, function (index, item) {
+            $.each(registerAttributes, function (index, attribute) {
+                var attributeId = attribute.Id;
+                var values = item.Values;
+                var coefficient = values == undefined
+                    ? null
+                    : values.find(x => x.AttributeId === attributeId);
+                var coefficientFieldName = objectFieldPrefixForValue + attributeId;
+                item[coefficientFieldName] = coefficient == null ? null : coefficient.Value;
+            });
+        });
+    }
+
+    function generateSchemaFields(registerAttributes) {
+        var fields = {
+            Id: {editable: false, nullable: true}
+        }
+        $.each(registerAttributes, function (index, attribute) {
+            var attributeId = attribute.Id;
+            var coefficientFieldName = objectFieldPrefixForValue + attributeId;
+            fields[coefficientFieldName] = { type: "string", editable: false };
+        });
+        return fields;
+    }
+
+    function generateColumns(modelAttributes) {
+        var additionalColumns = [];
+        modelAttributes.forEach(function(attribute) {
+            var coefficientColumn = {
+                field: objectFieldPrefixForValue + attribute.Id,
+                headerTemplate:'<label style="font-weight: normal;"> ' + attribute.Name + ' </label>',
+                headerAttributes: { "style": "text-align: center;"},
+                sortable: false,
+                width: 200
+            };
+            additionalColumns.push(coefficientColumn);
+        });
+        return additionalColumns;
+    }
 
 
     function updateDictionary() {

@@ -1,6 +1,11 @@
 ﻿using System;
-using System.Transactions;
+using System.Collections.Generic;
+using System.Linq;
+using Core.Register;
+using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.Registers.Entities;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +24,7 @@ namespace KadOzenka.Web.Controllers
         }
 
 
-		#region CodJob
+		#region Словарь
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
@@ -88,11 +93,23 @@ namespace KadOzenka.Web.Controllers
             return Ok();
 		}
 
-		#endregion CodJob
+		#endregion
 
-		#region CodDictionary
 
-		[HttpGet]
+		#region Значения словаря
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
+        public JsonResult GetDictionaryValues(long dictionaryId)
+        {
+            var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
+
+            var dictionaryValues = CodDictionaryService.GetDictionaryValues(dictionary.RegisterId);
+
+            return Json(dictionaryValues);
+        }
+
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_ADD)]
 		public ActionResult CodDictionaryObjectCard(long id, long jobId)
 		{
