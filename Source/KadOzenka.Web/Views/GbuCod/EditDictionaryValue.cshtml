@@ -1,0 +1,94 @@
+﻿@model KadOzenka.Web.Models.GbuCod.CodDictionaryValueModel
+
+@using (Html.BeginForm("EditDictionaryValue", "GbuCod", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.JobId)
+    <div class="form-horizontal col-sm-12" style="margin-top: 1%;">
+        @for (var i = 0; i < Model.RegisterAttributes.Count; i++)
+        {
+            var attribute = Model.RegisterAttributes[i];
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel($"{attribute.Name}")
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextArea($"value_{attribute.Id}", "", 2, 0, new { @class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px", @editMode = "true" })
+                </div>
+            </div>
+        }
+        
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(m => m.Code)
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoTextBoxFor(m => m.Code, isReadonly: false)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+<script src="~/js/custom-validation.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#save').on('click', saveDictionaryValue);
+    });
+
+
+
+    
+    
+    function saveDictionaryValue() {
+        var form = $('form');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.Values = getValues();
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            //data: JSON.parse(JSON.stringify({ model: formObject, values: getValues()})),
+            success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                }
+                Common.ShowMessage("Сохранение выполнено");
+                setTimeout(closeWindow, 2000);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function getValues() {
+        var registerAttributesSerialized = '@Json.Serialize(Model.RegisterAttributes)';
+        var registerAttributes = JSON.parse(registerAttributesSerialized);
+        var values = [];
+        $.each(registerAttributes, function (index, attribute) {
+            var elementId = `#value_${attribute.Id}`;
+            var value = $(elementId).val();
+            values.push({ AttributeId: attribute.Id, Value: value });
+        });
+        return values;
+    }
+
+
+    function closeWindow() {
+        Common.UI.CloseWindow('editValueWindow', window.parent, true);
+    }
+</script>

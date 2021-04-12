@@ -110,59 +110,30 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_ADD)]
-		public ActionResult CodDictionaryObjectCard(long id, long jobId)
-		{
-			if (jobId == 0)
-			{
-				throw new Exception("В указанном запросе отсутствует ИД задания ЦОД");
-			}
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult AddDictionaryValue(long dictionaryId)
+        {
+            var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
 
-			var codJob = OMCodJob.Where(x => x.Id == jobId).SelectAll().ExecuteFirstOrDefault();
-			if (codJob == null)
-			{
-				throw new Exception($"Задание ЦОД с ИД {jobId} не найдено");
-			}
+            var model = CodDictionaryValueModel.ToModel(dictionary);
 
-			var codDictionary = OMCodDictionary
-				.Where(x => x.Id == id)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+            return View("EditDictionaryValue", model);
+        }
 
-			var model = CodDictionaryValueModel.FromEntity(codDictionary);
-			model.JobId = codJob.Id;
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult EditDictionaryValue(CodDictionaryValueModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
 
-			return View(model);
-		}
+            if (model.Id == -1)
+            {
+				CodDictionaryService.AddDictionaryValue(model.JobId, model.ToDto());
+            }
 
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_ADD)]
-		public ActionResult CodDictionaryObjectCard(CodDictionaryValueModel valueModel)
-		{
-			var codDictionary = OMCodDictionary.Where(x => x.Id == valueModel.Id).SelectAll().ExecuteFirstOrDefault();
-
-			if (valueModel.Id != -1 && codDictionary == null)
-			{
-				return NotFound();
-			}
-			if (codDictionary == null)
-			{
-				codDictionary = new OMCodDictionary();
-			}
-
-			CodDictionaryValueModel.ToEntity(valueModel, ref codDictionary);
-            long id;
-			try
-			{
-				id = codDictionary.Save();
-			}
-			catch (Exception e)
-			{
-			    return SendErrorMessage(e.Message);
-			}
-			valueModel.Id = id;
-			return Json(new { Success = "Сохранено успешно", data = valueModel });
-		}
+            return Ok();
+        }
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]

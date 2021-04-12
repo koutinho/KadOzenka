@@ -208,7 +208,11 @@ TODO удалить вместе со view
 
 
     function addValue() {
-
+        Common.UI.ShowWindow('Добавление значения',
+            '@Url.Action("AddDictionaryValue", "GbuCod", new { dictionaryId = Model.Id})',
+            'editValueWindow',
+            reloadGrid,
+            800, 400);
     }
 
     function updateValue() {
@@ -219,6 +223,10 @@ TODO удалить вместе со view
 
     }
 
+    function reloadGrid() {
+        //TODO KOMO-7 придумать, как обойтись без доп запроса
+        generateGrid();
+    }
 
 
 

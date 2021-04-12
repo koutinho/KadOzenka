@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
+using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.CodDictionary.Entities;
+using KadOzenka.Dal.Registers.Entities;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.GbuCod
 {
-	public class CodDictionaryValueModel
+	public class CodDictionaryValueModel: IValidatableObject
 	{
 		public long Id { get; set; }
+		//TODO rename to dictionaryId
 		public long JobId { get; set; }
 
 		[Display(Name = "Значение")]
@@ -18,13 +20,26 @@ namespace KadOzenka.Web.Models.GbuCod
 		[Display(Name = "Код")]
 		public string Code { get; set; }
 
+        public List<AttributePure> RegisterAttributes { get; private set; }
+        public List<CodDictionaryValue> Values { get; set; }
 
 
-        public static CodDictionaryValueModel ToModel()
+
+		public static CodDictionaryValueModel ToModel(OMCodJob dictionary)
         {
-            return new CodDictionaryValueModel
+            var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(dictionary.RegisterId)
+                .Where(x => x.Name != CodDictionaryConsts.CodeColumnName)
+                .Select(x => new AttributePure
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList();
+
+			return new CodDictionaryValueModel
             {
-                Id = -1
+                Id = -1,
+				JobId = dictionary.Id,
+				RegisterAttributes = registerAttributes
             };
 		}
 
@@ -46,11 +61,17 @@ namespace KadOzenka.Web.Models.GbuCod
             };
 		}
 
-		public static void ToEntity(CodDictionaryValueModel valueModel, ref OMCodDictionary codDictionary)
-		{
-			codDictionary.IdCodjob = valueModel.JobId;
-			codDictionary.Code = valueModel.Code;
-			codDictionary.Value = valueModel.Value;
+        public CodDictionaryValues ToDto()
+        {
+            return new CodDictionaryValues(Id, Values)
+            {
+				Code = Code
+            };
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return CodDictionaryService.ValidateDictionaryValue(ToDto());
         }
 	}
 }

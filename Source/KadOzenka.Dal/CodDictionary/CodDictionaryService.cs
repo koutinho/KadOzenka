@@ -49,7 +49,6 @@ namespace KadOzenka.Dal.CodDictionary
             return dictionary;
         }
 
-
         public long AddCodDictionary(CodDictionaryDto codDictionary)
         {
             ValidateCodDictionaryInternal(codDictionary, true);
@@ -122,6 +121,27 @@ namespace KadOzenka.Dal.CodDictionary
 
         #region Значения словаря
 
+        public void AddDictionaryValue(long dictionaryId, CodDictionaryValues value)
+        {
+            ValidateCodDictionaryValueInternal(value);
+
+            var dictionary = GetDictionary(dictionaryId);
+            var attributes = GetDictionaryRegisterAttributes(dictionary.RegisterId);
+            var codeAttributeInfo = attributes.First(x => x.Name == CodDictionaryConsts.CodeColumnName);
+            attributes.Remove(codeAttributeInfo);
+
+            var registerObject = new RegisterObject((int)dictionary.RegisterId);
+            attributes.ForEach(attribute =>
+            {
+                var currentValue = value.Values.FirstOrDefault(x => x.AttributeId == attribute.Id)?.Value;
+                registerObject.SetAttributeValue((int)attribute.Id, currentValue);
+            });
+
+            registerObject.SetAttributeValue((int)codeAttributeInfo.Id, value.Code);
+
+            RegisterStorage.Save(registerObject);
+        }
+
         public List<CodDictionaryValues> GetDictionaryValues(long registerId)
         {
             var attributes = GetDictionaryRegisterAttributes(registerId);
@@ -164,6 +184,18 @@ namespace KadOzenka.Dal.CodDictionary
                 .Where(x => x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey).Select(x => x.Value).ToList();
         }
 
+        public static IEnumerable<ValidationResult> ValidateDictionaryValue(CodDictionaryValues dictionaryValues)
+        {
+            if (string.IsNullOrWhiteSpace(dictionaryValues.Code))
+            {
+                yield return new ValidationResult("Не указан Код");
+            }
+            if (dictionaryValues.Values.All(x => string.IsNullOrWhiteSpace(x.Value)))
+            {
+                yield return new ValidationResult("Дожно быть заполнено хотя бы одно значение");
+            }
+        }
+
         #endregion
 
 
@@ -194,6 +226,11 @@ namespace KadOzenka.Dal.CodDictionary
                     yield return new ValidationResult($"Значение {i + 1} не может быть пустым");
                 }
             }
+
+            if (codDictionary.Values != null && codDictionary.Values.Any(x => x == CodDictionaryConsts.CodeColumnName))
+            {
+                yield return new ValidationResult($"Нельзя создать значение с зарезервированным именем '{CodDictionaryConsts.CodeColumnName}'");
+            }
         }
 
         private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary, bool isNewDictionary)
@@ -202,7 +239,19 @@ namespace KadOzenka.Dal.CodDictionary
                 ? ValidateCodDictionaryForAddition(codDictionary).ToList()
                 : ValidateCodDictionaryForUpdating(codDictionary).ToList();
 
-            if (errors.Count == 0) 
+            ConvertErrors(errors);
+        }
+
+        private void ValidateCodDictionaryValueInternal(CodDictionaryValues value)
+        {
+            var errors = ValidateDictionaryValue(value).ToList();
+
+            ConvertErrors(errors);
+        }
+
+        private static void ConvertErrors(List<ValidationResult> errors)
+        {
+            if (errors.Count == 0)
                 return;
 
             var message = string.Join(';', errors.Select(x => x.ErrorMessage));

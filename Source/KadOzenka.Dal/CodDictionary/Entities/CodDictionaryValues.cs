@@ -2,10 +2,12 @@
 
 namespace KadOzenka.Dal.CodDictionary.Entities
 {
+    //TODO KOMO-7 переименовать классы наоборот
     public class CodDictionaryValues
     {
         public long Id { get; set; }
         public List<CodDictionaryValue> Values { get; set; }
+        public string Code { get; set; }
 
         public CodDictionaryValues(long id, List<CodDictionaryValue> values)
         {
@@ -18,6 +20,11 @@ namespace KadOzenka.Dal.CodDictionary.Entities
     {
         public long AttributeId { get; set; }
         public string Value { get; set; }
+
+        public CodDictionaryValue()
+        {
+
+        }
 
         public CodDictionaryValue(long attributeId, string value)
         {
