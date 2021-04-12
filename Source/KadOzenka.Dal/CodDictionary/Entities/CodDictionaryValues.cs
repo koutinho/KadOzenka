@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace KadOzenka.Dal.CodDictionary.Entities
 {
@@ -13,6 +14,11 @@ namespace KadOzenka.Dal.CodDictionary.Entities
             Id = id;
             Code = code;
             Values = values;
+        }
+
+        public override string ToString()
+        {
+            return $"{Code}: {string.Join(',', Values.Select(x => x.Value))}";
         }
     }
 

@@ -1,0 +1,51 @@
+﻿@model KadOzenka.Web.Models.GbuCod.CodDictionaryValueModel
+
+<div class="form-horizontal col-sm-12">
+    <div class="form-group"></div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            @Html.CustomLabel($"Вы уверены что хотите удалить Значение справочника '{ViewBag.DictionaryValue}'?")
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-12">
+            <button class="k-button k-button-icontext" style="float: right" id="delete" type="button">
+                <span class="k-icon k-i-check"></span>Удалить
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#delete').on('click', deleteDictionaryValue);
+    });
+
+
+    function deleteDictionaryValue() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'DELETE',
+            url: '@Html.Raw(Url.Action("DoDeleteDictionaryValue", "GbuCod", new { @registerId = ViewBag.RegisterId, @dictionaryValueId = ViewBag.DictionaryValueId }))',
+            success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                }
+                Common.ShowMessage("Значение словаря удалено");
+                setTimeout(closeWindow, 2000);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+    function closeWindow() {
+        Common.UI.CloseWindow('editValueWindow', window.parent, true);
+    }
+</script>

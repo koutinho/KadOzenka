@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using Core.Register;
 using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Mvc;
@@ -120,10 +122,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult EditDictionaryValue(long dictionaryId, long dictionaryValueId)
         {
             var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
-            var value = CodDictionaryService.GetDictionaryValues(dictionary.RegisterId)
-                .FirstOrDefault(x => x.Id == dictionaryValueId);
-            if (value == null)
-                throw new Exception($"Не найдено значение словаря '{dictionary.NameJob}' с ИД {dictionaryValueId}");
+            var value = GetDictionaryValue(dictionary, dictionaryValueId);
 
             var model = CodDictionaryValueModel.ToModel(dictionary, value);
 
@@ -144,32 +143,38 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public IActionResult DeleteCodDictionary(long codDictionaryId)
-		{
-			var codDictionary = OMCodDictionary.Where(x => x.Id == codDictionaryId).SelectAll().ExecuteFirstOrDefault();
-			if (codDictionary == null)
-			{
-				throw new Exception($"Справочник ЦОД с ИД {codDictionaryId} не найден");
-			}
+		public IActionResult DeleteDictionaryValue(long dictionaryId, long dictionaryValueId)
+        {
+            var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
+            var dictionaryValue = GetDictionaryValue(dictionary, dictionaryValueId);
 
-			return View(CodDictionaryValueModel.FromEntity(codDictionary));
+            ViewBag.RegisterId = dictionary.RegisterId;
+            ViewBag.DictionaryValueId = dictionaryValueId;
+            ViewBag.DictionaryValue = dictionaryValue.ToString();
+
+            return View();
 		}
 
-		[HttpPost]
+		[HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public IActionResult DeleteCodDictionary(CodDictionaryValueModel valueModel)
-		{
-			var codDictionary = OMCodDictionary.Where(x => x.Id == valueModel.Id).SelectAll().ExecuteFirstOrDefault();
-			if (codDictionary == null)
-			{
-				throw new Exception($"Справочник ЦОД с ИД {valueModel.Id} не найден");
-			}
+		public IActionResult DoDeleteDictionaryValue(long registerId, long dictionaryValueId)
+        {
+            RegisterStorage.Destroy((int) registerId, (int) dictionaryValueId);
 
-			codDictionary.Destroy();
-
-			return EmptyResponse();
+            return Ok();
 		}
 
-		#endregion
+        //TODO KOMO-7
+        private CodDictionaryValue GetDictionaryValue(OMCodJob dictionary, long dictionaryValueId)
+        {
+            var value = CodDictionaryService.GetDictionaryValues(dictionary.RegisterId)
+                .FirstOrDefault(x => x.Id == dictionaryValueId);
+            if (value == null)
+                throw new Exception($"Не найдено значение словаря '{dictionary.NameJob}' с ИД {dictionaryValueId}");
+            
+            return value;
+        }
+
+        #endregion
     }
 }

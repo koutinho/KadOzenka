@@ -237,7 +237,13 @@ TODO удалить вместе со view
     }
 
     function deleteValue() {
-
+        var selectedRowData = getSelectedRowInFactorsGrid();
+        Common.UI.ShowWindow('Удаление значения',
+            '@Url.Action("DeleteDictionaryValue", "GbuCod")' + '?dictionaryId=' + '@Model.Id' +
+            '&dictionaryValueId=' + selectedRowData.Id,
+            'editValueWindow',
+            reloadGrid,
+            600, 100);
     }
 
     function getSelectedRowInFactorsGrid() {
