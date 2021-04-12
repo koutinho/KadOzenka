@@ -2,7 +2,6 @@
 
 namespace KadOzenka.Dal.CodDictionary.Entities
 {
-    //TODO KOMO-7 переименовать классы наоборот
     public class CodDictionaryValue
     {
         public long Id { get; set; }

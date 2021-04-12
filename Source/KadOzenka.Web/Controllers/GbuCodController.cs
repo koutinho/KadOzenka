@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Register;
-using Core.Register.QuerySubsystem;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.CodDictionary;
-using KadOzenka.Dal.Registers.Entities;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +22,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public ActionResult AddCodDictionary()
+		public ActionResult AddDictionary()
         {
             var model = new CodDictionaryAdditionModel {Id = -1};
 
@@ -50,7 +44,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-        public ActionResult CodJobObjectCard(long id)
+        public ActionResult DictionaryCard(long id)
         {
             var dictionary = CodDictionaryService.GetDictionary(id);
 
@@ -61,7 +55,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD)]
-		public ActionResult CodJobObjectCard(CodDictionaryUpdatingModel viewModel)
+		public ActionResult DictionaryCard(CodDictionaryUpdatingModel viewModel)
 		{
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
@@ -74,7 +68,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
-		public IActionResult DeleteCodJob(long dictionaryId)
+		public IActionResult DeleteDictionary(long dictionaryId)
         {
 			var codJob = CodDictionaryService.GetDictionary(dictionaryId);
 
@@ -86,7 +80,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_COD_JOB_DELETE)]
-		public IActionResult DeleteDictionary(long dictionaryId)
+		public IActionResult DoDeleteDictionary(long dictionaryId)
 		{
             CodDictionaryService.DeleteDictionary(dictionaryId);
 
@@ -163,6 +157,6 @@ namespace KadOzenka.Web.Controllers
 			return EmptyResponse();
 		}
 
-		#endregion CodDictionary
+		#endregion
     }
 }
