@@ -7,14 +7,15 @@
             await Html.RenderPartialAsync("/Views/GbuCod/Partials/_GeneralCodDictionaryInfo.cshtml", Model);
         }
         
-        @for (var i = 0; i < Model.Values.Count; i++)
+        @for (var i = 0; i < Model.RegisterAttributes.Count; i++)
         {
+            var attribute = Model.RegisterAttributes[i];
             <div class="form-group">
                 <div class="col-sm-2">
                     @Html.CustomLabel($"Значение {i + 1}")
                 </div>
                 <div class="col-sm-10">
-                    @Html.Kendo().TextBox().Name($"value_{i}").Value(Model.Values[i]).Enable(false)
+                    @Html.Kendo().TextBox().Name($"value_{attribute.Id}").Value(attribute.Name)
                 </div>
             </div>
         }
@@ -258,6 +259,7 @@
         kendo.ui.progress($('body'), true);
         var form = $('form');
         var formObject = Common.Functions.FormToObject(form);
+        formObject.RegisterAttributes = getValues();
         $.post(form.attr('action'), formObject).done(function (response) {
             if (response.Errors) {
                 var errors = getErrors(response.Errors);
@@ -270,6 +272,18 @@
         }).always(function () {
             kendo.ui.progress($('body'), false);
         });
+    }
+
+    function getValues() {
+        var registerAttributesSerialized = '@Json.Serialize(Model.RegisterAttributes)';
+        var registerAttributes = JSON.parse(registerAttributesSerialized);
+        var values = [];
+        $.each(registerAttributes, function (index, attribute) {
+            var elementId = `#value_${attribute.Id}`;
+            var name = $(elementId).val();
+            values.push({ Id: attribute.Id, Name: name });
+        });
+        return values;
     }
 
     //для совместимости с основной вьюшкой (см коммент там)

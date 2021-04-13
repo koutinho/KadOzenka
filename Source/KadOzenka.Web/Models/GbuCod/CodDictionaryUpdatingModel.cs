@@ -8,15 +8,9 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.GbuCod
 {
-    public class CodDictionaryUpdatingModel : CodJobViewModel, IValidatableObject
+    public class CodDictionaryUpdatingModel : CodJobViewModel
     {
-        public List<AttributePure> RegisterAttributes { get; private set; }
-
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            return CodDictionaryService.ValidateCodDictionaryForUpdating(ToDto());
-        }
+        public List<AttributePure> RegisterAttributes { get; set; }
 
         public static CodDictionaryUpdatingModel ToModel(OMCodJob entity)
         {
@@ -28,16 +22,22 @@ namespace KadOzenka.Web.Models.GbuCod
                     Id = x.Id,
                     Name = x.Name
                 }).ToList();
-            var values = registerAttributes.Select(x => x.Name).ToList();
 
             return new CodDictionaryUpdatingModel
             {
                 Id = entity.Id,
                 Name = entity.NameJob,
                 RegisterAttributes = registerAttributes,
-                ValuesCount = values.Count,
-                Values = values
+                ValuesCount = registerAttributes.Count
             };
         }
-	}
+
+        public override CodDictionaryDto ToDto()
+        {
+            var dto = base.ToDto();
+            dto.Values = RegisterAttributes;
+
+            return dto;
+        }
+    }
 }

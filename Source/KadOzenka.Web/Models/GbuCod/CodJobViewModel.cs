@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CodDictionary.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KadOzenka.Web.Models.GbuCod
 {
-	public class CodJobViewModel
+	public class CodJobViewModel : IValidatableObject
     {
         public long Id { get; set; }
         public bool IsReadOnly => Id != -1;
@@ -16,14 +17,12 @@ namespace KadOzenka.Web.Models.GbuCod
         [Display(Name = "Количество значений")]
         public int ValuesCount { get; set; }
         public List<SelectListItem> PossibleValuesCount { get; set; }
-        public List<string> Values { get; set; }
 
 
 
         public CodJobViewModel()
         {
-            Values = new List<string>();
-			PossibleValuesCount = new List<SelectListItem>();
+            PossibleValuesCount = new List<SelectListItem>();
 
             for (var i = CodDictionaryConsts.MinValuesCount; i <= CodDictionaryConsts.MaxValuesCount; i++)
             {
@@ -35,14 +34,18 @@ namespace KadOzenka.Web.Models.GbuCod
             }
         }
 
-        public CodDictionaryDto ToDto()
+        public virtual CodDictionaryDto ToDto()
         {
             return new CodDictionaryDto
             {
                 Id = Id,
-                Name = Name,
-                Values = Values
+                Name = Name
             };
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            return CodDictionaryService.ValidateCodDictionary(ToDto());
         }
     }
 }

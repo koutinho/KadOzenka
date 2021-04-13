@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.Registers.Entities;
 
 namespace KadOzenka.Dal.CodDictionary.Entities
 {
@@ -8,6 +9,6 @@ namespace KadOzenka.Dal.CodDictionary.Entities
 
         public string Name { get; set; }
 
-        public List<string> Values { get; set; }
+        public List<AttributePure> Values { get; set; }
     }
 }

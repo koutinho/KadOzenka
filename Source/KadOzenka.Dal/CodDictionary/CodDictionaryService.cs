@@ -50,16 +50,53 @@ namespace KadOzenka.Dal.CodDictionary
             return dictionary;
         }
 
+        public static IEnumerable<ValidationResult> ValidateCodDictionary(CodDictionaryDto codDictionary)
+        {
+            if (string.IsNullOrWhiteSpace(codDictionary.Name))
+            {
+                yield return new ValidationResult("Не указано Имя справочника");
+            }
+
+            if (codDictionary.Values == null)
+            {
+                yield return new ValidationResult("Не указаны Значения");
+            }
+
+            var valuesCount = codDictionary.Values?.Count ?? 0;
+            if (valuesCount > CodDictionaryConsts.MaxValuesCount)
+            {
+                yield return new ValidationResult($"Максимальное количество значений - {CodDictionaryConsts.MaxValuesCount}");
+            }
+
+            if (valuesCount < CodDictionaryConsts.MinValuesCount)
+            {
+                yield return new ValidationResult($"Минимальное количество значений - {CodDictionaryConsts.MinValuesCount}");
+            }
+
+            for (var i = 0; i < valuesCount; i++)
+            {
+                if (string.IsNullOrWhiteSpace(codDictionary.Values?.ElementAtOrDefault(i)?.Name))
+                {
+                    yield return new ValidationResult($"Значение {i + 1} не может быть пустым");
+                }
+            }
+
+            if (codDictionary.Values != null && codDictionary.Values.Any(x => x.Name == CodDictionaryConsts.CodeColumnName))
+            {
+                yield return new ValidationResult($"Нельзя создать значение с зарезервированным именем '{CodDictionaryConsts.CodeColumnName}'");
+            }
+        }
+
         public long AddCodDictionary(CodDictionaryDto codDictionary)
         {
-            ValidateCodDictionaryInternal(codDictionary, true);
+            ValidateCodDictionaryInternal(codDictionary);
 
             long codDictionaryId;
             using (var ts = new TransactionScope())
             {
                 var omRegister = CreateRegister(codDictionary.Name);
 
-                CreateColumns(codDictionary.Values, omRegister.RegisterId);
+                CreateColumns(codDictionary.Values.Select(x => x.Name).ToList(), omRegister.RegisterId);
 
                 codDictionaryId = new OMCodJob
                 {
@@ -79,12 +116,25 @@ namespace KadOzenka.Dal.CodDictionary
 
         public void UpdateCodDictionary(CodDictionaryDto codDictionary)
         {
-            ValidateCodDictionaryInternal(codDictionary, false);
+            ValidateCodDictionaryInternal(codDictionary);
 
-             var dictionary = GetDictionary(codDictionary.Id);
+            var dictionary = GetDictionary(codDictionary.Id);
+
+            var attributeIds = codDictionary.Values.Select(x => x.Id).ToList();
+            var attributes = OMAttribute.Where(x => attributeIds.Contains(x.Id)).Select(x => x.Name).Execute();
+            codDictionary.Values.ForEach(value =>
+            {
+                var attribute = attributes.FirstOrDefault(x => x.Id == value.Id);
+                if (attribute == null) 
+                    return;
+                attribute.Name = value.Name;
+                attribute.Save();
+            });
 
             dictionary.NameJob = codDictionary.Name;
             dictionary.Save();
+
+            RegisterCache.UpdateCache(0, null);
         }
 
         public void DeleteDictionary(long id)
@@ -104,27 +154,12 @@ namespace KadOzenka.Dal.CodDictionary
             RecycleBinService.MoveObjectToRecycleBin(dictionary.Id, OMCodJob.GetRegisterId(), eventId);
         }
 
-        public static IEnumerable<ValidationResult> ValidateCodDictionaryForUpdating(CodDictionaryDto codDictionary)
-        {
-            if (string.IsNullOrWhiteSpace(codDictionary.Name))
-            {
-                yield return new ValidationResult("Не указано Имя справочника");
-            }
-        }
-
-        public static IEnumerable<ValidationResult> ValidateCodDictionaryForAddition(CodDictionaryDto codDictionary)
-        {
-            return ValidateCodDictionaryForUpdating(codDictionary).Concat(ValidateCodDictionaryValues(codDictionary));
-        }
-
 
         #region Support Methods
-
-        private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary, bool isNewDictionary)
+        
+        private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary)
         {
-            var errors = isNewDictionary
-                ? ValidateCodDictionaryForAddition(codDictionary).ToList()
-                : ValidateCodDictionaryForUpdating(codDictionary).ToList();
+            var errors = ValidateCodDictionary(codDictionary).ToList();
 
             ConvertErrors(errors);
         }
@@ -306,38 +341,6 @@ namespace KadOzenka.Dal.CodDictionary
 
 
         #region Support Methods
-
-        private static IEnumerable<ValidationResult> ValidateCodDictionaryValues(CodDictionaryDto codDictionary)
-        {
-            if (codDictionary.Values == null)
-            {
-                yield return new ValidationResult("Не указаны Значения");
-            }
-
-            var valuesCount = codDictionary.Values?.Count ?? 0;
-            if (valuesCount > CodDictionaryConsts.MaxValuesCount)
-            {
-                yield return new ValidationResult($"Максимальное количество значений - {CodDictionaryConsts.MaxValuesCount}");
-            }
-
-            if (valuesCount < CodDictionaryConsts.MinValuesCount)
-            {
-                yield return new ValidationResult($"Минимальное количество значений - {CodDictionaryConsts.MinValuesCount}");
-            }
-
-            for (var i = 0; i < valuesCount; i++)
-            {
-                if (string.IsNullOrWhiteSpace(codDictionary.Values?.ElementAtOrDefault(i)))
-                {
-                    yield return new ValidationResult($"Значение {i + 1} не может быть пустым");
-                }
-            }
-
-            if (codDictionary.Values != null && codDictionary.Values.Any(x => x == CodDictionaryConsts.CodeColumnName))
-            {
-                yield return new ValidationResult($"Нельзя создать значение с зарезервированным именем '{CodDictionaryConsts.CodeColumnName}'");
-            }
-        }
 
         private void ValidateCodDictionaryValueInternal(CodDictionaryValue value)
         {
