@@ -151,6 +151,16 @@
             resizable: true
         });
 
+        $(gridId).data("kendoGrid").tbody.kendoTooltip({
+            filter: "td",
+            content: function (e) {
+                return e.target.text();
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
+
         $('#updateGridBtn').on('click', reloadGrid);
         $('#addValueBtn').on('click', addValue);
         $('#updateValueBtn').on('click', updateValue);
