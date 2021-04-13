@@ -424,7 +424,19 @@
 				.data('kendoPanelBar')
 				.expand('li[data-expand]');
 
-            initAttributesTree();
+            $.ajax({
+                type: 'GET',
+                url: '/CoreUi/GetAttributes',
+                data: { registerViewId: registerViewId },
+                success: function (data) {
+                    if (data) {
+                        $("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
+                    }
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                }
+            });
 
             $('#files').kendoUpload({
                 multiple: false,
@@ -586,24 +598,5 @@
 
 			return hasVisibleChildren;
 		}
-
-
-
-        function initAttributesTree() {
-            $.ajax({
-                type: 'GET',
-                url: '/CoreUi/GetAttributes',
-                data: { registerViewId: registerViewId },
-                success: function (data) {
-                    console.log('data', data);
-                    if (data) {
-                        $("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
-                    }
-                },
-                error: function (response) {
-                    Common.ShowError(response.responseText);
-                }
-            });
-        }
     </script>
 }
