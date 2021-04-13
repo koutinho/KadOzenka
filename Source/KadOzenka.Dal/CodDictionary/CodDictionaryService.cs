@@ -191,6 +191,7 @@ namespace KadOzenka.Dal.CodDictionary
         private void CreateColumns(List<string> columns, long registerId)
         {
             var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
+            dbConfigurator.DefaultColumnSizeForStringColumn = CodDictionaryConsts.DefaultColumnSizeForStringColumn;
 
             columns.ForEach(x =>
             {
