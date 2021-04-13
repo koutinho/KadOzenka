@@ -26,6 +26,7 @@ namespace KadOzenka.Dal.CodDictionary
         private IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
         public IRecycleBinService RecycleBinService { get; }
 
+
         public CodDictionaryService(IRegisterService registerService,
             IRegisterAttributeService registerAttributeService,
             IRegisterConfiguratorWrapper registerConfiguratorWrapper,
@@ -116,12 +117,70 @@ namespace KadOzenka.Dal.CodDictionary
             return ValidateCodDictionaryForUpdating(codDictionary).Concat(ValidateCodDictionaryValues(codDictionary));
         }
 
+
+        #region Support Methods
+
+        private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary, bool isNewDictionary)
+        {
+            var errors = isNewDictionary
+                ? ValidateCodDictionaryForAddition(codDictionary).ToList()
+                : ValidateCodDictionaryForUpdating(codDictionary).ToList();
+
+            ConvertErrors(errors);
+        }
+
+        private static void ConvertErrors(List<ValidationResult> errors)
+        {
+            if (errors.Count == 0)
+                return;
+
+            var message = string.Join(';', errors.Select(x => x.ErrorMessage));
+            throw new Exception(message);
+        }
+
+        private OMRegister CreateRegister(string description)
+        {
+            var tableNameTemplate = "gbu_cod_dictionary_";
+            var existedCodDictionariesCount = RegisterCache.Registers.Count(x =>
+                x.Value.QuantTable.StartsWith(tableNameTemplate, StringComparison.InvariantCultureIgnoreCase)) + 1;
+
+            var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
+            var tableName = $"{tableNameTemplate}{existedCodDictionariesCount}";
+
+            var omRegister = RegisterService.CreateRegister(registerName, description, tableName, null, (long)StorageType.Type4);
+
+            RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
+            RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
+
+            return omRegister;
+        }
+
+        private void CreateColumns(List<string> columns, long registerId)
+        {
+            var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
+
+            columns.ForEach(x =>
+            {
+                CreateAttribute(x, registerId, dbConfigurator);
+            });
+
+            CreateAttribute(CodDictionaryConsts.CodeColumnName, registerId, dbConfigurator);
+        }
+
+        private void CreateAttribute(string name, long registerId, DbConfiguratorBase dbConfigurator)
+        {
+            var codeAttribute = RegisterAttributeService.CreateRegisterAttribute(name, registerId, RegisterAttributeType.STRING, true);
+            RegisterConfiguratorWrapper.CreateDbColumnForRegister(codeAttribute, dbConfigurator);
+        }
+
+        #endregion
+
         #endregion
 
 
         #region Значения словаря
 
-        public void UpdateDictionaryValue(long dictionaryId, CodDictionaryValue value)
+        public void EditDictionaryValue(long dictionaryId, CodDictionaryValue value)
         {
             ValidateCodDictionaryValueInternal(value);
 
@@ -245,7 +304,7 @@ namespace KadOzenka.Dal.CodDictionary
 
         #endregion
 
-        //TODO 2 different
+
         #region Support Methods
 
         private static IEnumerable<ValidationResult> ValidateCodDictionaryValues(CodDictionaryDto codDictionary)
@@ -280,64 +339,11 @@ namespace KadOzenka.Dal.CodDictionary
             }
         }
 
-        private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary, bool isNewDictionary)
-        {
-            var errors = isNewDictionary
-                ? ValidateCodDictionaryForAddition(codDictionary).ToList()
-                : ValidateCodDictionaryForUpdating(codDictionary).ToList();
-
-            ConvertErrors(errors);
-        }
-
         private void ValidateCodDictionaryValueInternal(CodDictionaryValue value)
         {
             var errors = ValidateDictionaryValue(value).ToList();
 
             ConvertErrors(errors);
-        }
-
-        private static void ConvertErrors(List<ValidationResult> errors)
-        {
-            if (errors.Count == 0)
-                return;
-
-            var message = string.Join(';', errors.Select(x => x.ErrorMessage));
-            throw new Exception(message);
-        }
-
-        private OMRegister CreateRegister(string description)
-        {
-            var tableNameTemplate = "gbu_cod_dictionary_";
-            var existedCodDictionariesCount = RegisterCache.Registers.Count(x =>
-                x.Value.QuantTable.StartsWith(tableNameTemplate, StringComparison.InvariantCultureIgnoreCase)) + 1;
-
-            var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
-            var tableName = $"{tableNameTemplate}{existedCodDictionariesCount}";
-
-            var omRegister = RegisterService.CreateRegister(registerName, description, tableName, null, (long)StorageType.Type4);
-
-            RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
-            RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
-
-            return omRegister;
-        }
-
-        private void CreateColumns(List<string> columns, long registerId)
-        {
-            var dbConfigurator = RegisterConfiguratorWrapper.GetDbConfigurator();
-
-            columns.ForEach(x =>
-            {
-                CreateAttribute(x, registerId, dbConfigurator);
-            });
-
-            CreateAttribute(CodDictionaryConsts.CodeColumnName, registerId, dbConfigurator);
-        }
-
-        private void CreateAttribute(string name, long registerId, DbConfiguratorBase dbConfigurator)
-        {
-            var codeAttribute = RegisterAttributeService.CreateRegisterAttribute(name, registerId, RegisterAttributeType.STRING, true);
-            RegisterConfiguratorWrapper.CreateDbColumnForRegister(codeAttribute, dbConfigurator);
         }
 
         #endregion

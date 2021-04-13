@@ -136,7 +136,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            CodDictionaryService.UpdateDictionaryValue(model.DictionaryId, model.ToDto());
+            CodDictionaryService.EditDictionaryValue(model.DictionaryId, model.ToDto());
 
             return Ok();
         }
