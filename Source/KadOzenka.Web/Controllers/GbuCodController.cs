@@ -1,12 +1,8 @@
-﻿using System;
-using System.Linq;
-using Core.Register;
+﻿using Core.Register;
 using KadOzenka.Dal.CodDictionary;
-using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Mvc;
-using ObjectModel.KO;
 using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
