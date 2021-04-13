@@ -142,21 +142,77 @@ namespace KadOzenka.Dal.CodDictionary
             RegisterStorage.Save(registerObject);
         }
 
+        public CodDictionaryValue GetDictionaryValue(OMCodJob dictionary, long dictionaryValueId)
+        {
+            var value = GetDictionaryValue(dictionary.RegisterId, dictionaryValueId);
+            if (value == null)
+                throw new Exception($"Не найдено значение словаря '{dictionary.NameJob}' с ИД {dictionaryValueId}");
+
+            return value;
+        }
+
+        public CodDictionaryValue GetDictionaryValue(long registerId, long dictionaryValueId)
+        {
+            var attributes = GetDictionaryRegisterAttributes(registerId);
+            var primaryKeyAttributeId =
+                RegisterCache.RegisterAttributes.First(x => x.Value.RegisterId == registerId && x.Value.IsPrimaryKey).Key;
+            var registerPrimaryKeyColumn = new QSColumnSimple((int)primaryKeyAttributeId);
+
+            var query = new QSQuery
+            {
+                MainRegisterID = (int)registerId,
+                Condition = new QSConditionSimple
+                {
+                    ConditionType = QSConditionType.In,
+                    LeftOperand = registerPrimaryKeyColumn,
+                    RightOperand = new QSColumnConstant(dictionaryValueId)
+                }
+            };
+
+            return GetDictionaryValuesInternal(attributes, query).FirstOrDefault();
+        }
+
         public List<CodDictionaryValue> GetDictionaryValues(long registerId)
         {
             var attributes = GetDictionaryRegisterAttributes(registerId);
-            var codeAttribute = attributes.First(x => x.Name == CodDictionaryConsts.CodeColumnName);
-
+            
             var query = new QSQuery
             {
                 MainRegisterID = (int)registerId
             };
+
+            return GetDictionaryValuesInternal(attributes, query);
+        }
+
+        public static List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId)
+        {
+            return RegisterCache.RegisterAttributes
+                .Where(x => x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey).Select(x => x.Value).ToList();
+        }
+
+        public static IEnumerable<ValidationResult> ValidateDictionaryValue(CodDictionaryValue dictionaryValue)
+        {
+            if (string.IsNullOrWhiteSpace(dictionaryValue.Code))
+            {
+                yield return new ValidationResult("Не указан Код");
+            }
+            if (dictionaryValue.Values.All(x => string.IsNullOrWhiteSpace(x.Value)))
+            {
+                yield return new ValidationResult("Дожно быть заполнено хотя бы одно значение");
+            }
+        }
+
+        private List<CodDictionaryValue> GetDictionaryValuesInternal(List<RegisterAttribute> attributes, QSQuery query)
+        {
+            var codeAttribute = attributes.First(x => x.Name == CodDictionaryConsts.CodeColumnName);
 
             attributes.ForEach(attribute =>
             {
                 var attributeId = attribute.Id;
                 query.AddColumn(attributeId, attributeId.ToString());
             });
+
+            //var sql = query.GetSql();
 
             var rows = new List<CodDictionaryValue>();
             var table = query.ExecuteQuery();
@@ -187,27 +243,9 @@ namespace KadOzenka.Dal.CodDictionary
             return rows;
         }
 
-        public static List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId)
-        {
-            return RegisterCache.RegisterAttributes
-                .Where(x => x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey).Select(x => x.Value).ToList();
-        }
-
-        public static IEnumerable<ValidationResult> ValidateDictionaryValue(CodDictionaryValue dictionaryValue)
-        {
-            if (string.IsNullOrWhiteSpace(dictionaryValue.Code))
-            {
-                yield return new ValidationResult("Не указан Код");
-            }
-            if (dictionaryValue.Values.All(x => string.IsNullOrWhiteSpace(x.Value)))
-            {
-                yield return new ValidationResult("Дожно быть заполнено хотя бы одно значение");
-            }
-        }
-
         #endregion
 
-
+        //TODO 2 different
         #region Support Methods
 
         private static IEnumerable<ValidationResult> ValidateCodDictionaryValues(CodDictionaryDto codDictionary)

@@ -14,8 +14,12 @@ namespace KadOzenka.Dal.CodDictionary
 
         void DeleteDictionary(long id);
 
-        List<CodDictionaryValue> GetDictionaryValues(long registerId);
-
         void UpdateDictionaryValue(long dictionaryId, CodDictionaryValue value);
+
+        CodDictionaryValue GetDictionaryValue(OMCodJob dictionary, long dictionaryValueId);
+
+        CodDictionaryValue GetDictionaryValue(long registerId, long dictionaryValueId);
+
+        List<CodDictionaryValue> GetDictionaryValues(long registerId);
     }
 }

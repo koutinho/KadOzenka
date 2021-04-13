@@ -122,7 +122,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult EditDictionaryValue(long dictionaryId, long dictionaryValueId)
         {
             var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
-            var value = GetDictionaryValue(dictionary, dictionaryValueId);
+            var value = CodDictionaryService.GetDictionaryValue(dictionary, dictionaryValueId);
 
             var model = CodDictionaryValueModel.ToModel(dictionary, value);
 
@@ -146,7 +146,7 @@ namespace KadOzenka.Web.Controllers
 		public IActionResult DeleteDictionaryValue(long dictionaryId, long dictionaryValueId)
         {
             var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
-            var dictionaryValue = GetDictionaryValue(dictionary, dictionaryValueId);
+            var dictionaryValue = CodDictionaryService.GetDictionaryValue(dictionary, dictionaryValueId);
 
             ViewBag.RegisterId = dictionary.RegisterId;
             ViewBag.DictionaryValueId = dictionaryValueId;
@@ -163,17 +163,6 @@ namespace KadOzenka.Web.Controllers
 
             return Ok();
 		}
-
-        //TODO KOMO-7
-        private CodDictionaryValue GetDictionaryValue(OMCodJob dictionary, long dictionaryValueId)
-        {
-            var value = CodDictionaryService.GetDictionaryValues(dictionary.RegisterId)
-                .FirstOrDefault(x => x.Id == dictionaryValueId);
-            if (value == null)
-                throw new Exception($"Не найдено значение словаря '{dictionary.NameJob}' с ИД {dictionaryValueId}");
-            
-            return value;
-        }
 
         #endregion
     }
