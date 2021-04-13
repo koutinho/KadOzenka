@@ -121,18 +121,10 @@ namespace KadOzenka.Dal.CodDictionary
             var dictionary = GetDictionary(codDictionary.Id);
 
             var isCacheUpdatingNeeded = false;
-            var attributeIds = codDictionary.Values.Select(x => x.Id).ToList();
-            var attributes = OMAttribute.Where(x => attributeIds.Contains(x.Id)).Select(x => x.Name).Execute();
-            codDictionary.Values.ForEach(value =>
-            {
-                var attribute = attributes.FirstOrDefault(x => x.Id == value.Id);
-                if (attribute == null || attribute.Name == value.Name) 
-                    return;
 
-                isCacheUpdatingNeeded = true;
-                attribute.Name = value.Name;
-                attribute.Save();
-            });
+            UpdateRegister(codDictionary, dictionary, ref isCacheUpdatingNeeded);
+
+            UpdateAttributes(codDictionary, ref isCacheUpdatingNeeded);
 
             if (isCacheUpdatingNeeded)
             {
@@ -212,6 +204,39 @@ namespace KadOzenka.Dal.CodDictionary
         {
             var codeAttribute = RegisterAttributeService.CreateRegisterAttribute(name, registerId, RegisterAttributeType.STRING, true);
             RegisterConfiguratorWrapper.CreateDbColumnForRegister(codeAttribute, dbConfigurator);
+        }
+
+        private void UpdateRegister(CodDictionaryDto codDictionary, OMCodJob dictionaryFromDb,
+            ref bool isCacheUpdatingNeeded)
+        {
+            if (dictionaryFromDb.NameJob == codDictionary.Name)
+                return;
+
+            isCacheUpdatingNeeded = true;
+            var register = RegisterService.GetRegister(dictionaryFromDb.RegisterId);
+            if (register == null)
+                throw new Exception($"Не найден реестр с ИД '{dictionaryFromDb.RegisterId}'");
+
+            register.RegisterDescription = codDictionary.Name;
+            register.Save();
+        }
+
+        private void UpdateAttributes(CodDictionaryDto codDictionary, ref bool isCacheUpdatingNeeded)
+        {
+            var attributeIds = codDictionary.Values.Select(x => x.Id).ToList();
+            var attributes = OMAttribute.Where(x => attributeIds.Contains(x.Id)).Select(x => x.Name).Execute();
+            for (var i = 0; i < codDictionary.Values.Count; i++)
+            {
+                var value = codDictionary.Values[i];
+
+                var attribute = attributes.FirstOrDefault(x => x.Id == value.Id);
+                if (attribute == null || attribute.Name == value.Name)
+                    return;
+
+                isCacheUpdatingNeeded = true;
+                attribute.Name = value.Name;
+                attribute.Save();
+            }
         }
 
         #endregion
