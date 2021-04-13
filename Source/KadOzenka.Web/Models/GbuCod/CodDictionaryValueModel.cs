@@ -26,8 +26,7 @@ namespace KadOzenka.Web.Models.GbuCod
 
 		public static CodDictionaryValueModel ToModel(OMCodJob dictionary, CodDictionaryValue dictionaryValue = null)
         {
-            var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(dictionary.RegisterId)
-                .Where(x => x.Name != CodDictionaryConsts.CodeColumnName)
+            var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(dictionary.RegisterId, false)
                 .Select(x => new AttributePure
                 {
                     Id = x.Id,

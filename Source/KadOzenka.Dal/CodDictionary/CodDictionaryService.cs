@@ -309,10 +309,18 @@ namespace KadOzenka.Dal.CodDictionary
             return GetDictionaryValuesInternal(attributes, query);
         }
 
-        public static List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId)
+        public static List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true)
         {
             return RegisterCache.RegisterAttributes
-                .Where(x => x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey).Select(x => x.Value).ToList();
+                .Where(x =>
+                {
+                    var codeCondition = true;
+                    if (!withCodeAttribute)
+                    {
+                        codeCondition = x.Value.Name != CodDictionaryConsts.CodeColumnName;
+                    }
+                    return x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey && codeCondition;
+                }).Select(x => x.Value).ToList();
         }
 
         public static IEnumerable<ValidationResult> ValidateDictionaryValue(CodDictionaryValue dictionaryValue)
