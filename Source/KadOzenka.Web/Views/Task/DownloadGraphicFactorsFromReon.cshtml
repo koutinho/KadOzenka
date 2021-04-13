@@ -6,12 +6,27 @@
     <div id="toolbar" class="top-toolbar"></div>
     <div class="bottom-main-content">
         @Html.HiddenFor(x => x.TaskId)
-        <div class="form-horizontal" style="padding: 2% 5% 5% 5%;">
+        <div class="form-horizontal">
             <div id="factorsTreeList"></div>
         </div>
     </div>
 }
 
+<style>
+    #downloadFactorsForm {
+        height: calc(100% - 65px);
+    }
+    #factorsTreeList{
+        padding: 5px;
+        height: calc(100% - 10px);
+    }
+    .form-horizontal{
+        height: 100%;
+    }
+    .bottom-main-content{
+        height: 100%;
+    }
+</style>
 
 <script src="~/js/custom-validation.js"></script>
 <script>
