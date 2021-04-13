@@ -6,6 +6,11 @@
 @using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.GroupingObject;
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
+@if (ViewContext.HttpContext.Request.Query["useMasterPage"] == "true")
+{
+    <link rel="stylesheet" href="~/css/toolbars-top-menu.css"/>
+}
 <style>
     fieldset {
         border: 1px solid #c8c6cc;
@@ -46,6 +51,26 @@
 
 @using (Html.BeginForm("GroupingObject", "GbuObject", FormMethod.Post))
 {
+    <div class="top-toolbar k-toolbar k-widget k-toolbar-resizable">
+        <div class="col-sm-7">
+            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int) DataFormStorege.Normalisation,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObject)
+            }))
+        </div>
+
+        <div class="col-sm-1 col-sm-offset-1">
+            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+        </div>
+        <div class="col-sm-3">
+            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right">
+                <span>Перейти к процессу</span>
+            </a>
+        </div>
+    </div>
+    <div class="bottom-main-content">
     <div class="form-horizontal col-sm-12">
     @Html.RenderHelpButton()
     <div class="form-group">
@@ -85,18 +110,15 @@
             </div>
             <div class="col-sm-10">
                 @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
-                      .DataTextField("Text")
-                      .DataValueField("Value")
-                      .Filter("contains")
-                      .Enable(Model.IsTaskFilterUsed)
-                      .DataSource(source =>
-                      {
-                          source.Read(read =>
-                          {
-                              read.Action("GetTasksData", "GbuObject");
-                          })
-                              .ServerFiltering(false);
-                      }))
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .Enable(Model.IsTaskFilterUsed)
+                    .DataSource(source =>
+                    {
+                        source.Read(read => { read.Action("GetTasksData", "GbuObject"); })
+                            .ServerFiltering(false);
+                    }))
             </div>
         </div>
         <div class="form-group">
@@ -301,16 +323,11 @@
             }))
         </div>
 
-        <div class="col-sm-1 col-sm-offset-1">
-            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
-        </div>
-        <div class="col-sm-3">
-            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
-        </div>
     </div>
     </div>
 }
 
+<script src="~/js/toolbars.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
 
@@ -543,7 +560,7 @@
                 changeTaskFilterAvailability(this.checked);
             });
 
-        templateStorage.init(@((int)DataFormStorege.Normalisation), fillForm);
+        templateStorage.init(@((int) DataFormStorege.Normalisation), fillForm);
 
 
         $('#execute').on('click',

@@ -2,7 +2,7 @@
     position: fixed;
     top: 0;
     /*background-color: white;*/
-    z-index: 2;
+    z-index: 100;
     width: 100%;
     border-color: #e5e6eb;
     border-width: 1px 0;
@@ -13,13 +13,14 @@
     margin-top: 60px;
     display: flex;
     flex-flow: column;
+    padding-bottom: 5px;
 }
 
 .bottom-toolbar{
     position: fixed;
     bottom: 0;
     /*background-color: white;*/
-    z-index: 2;
+    z-index: 100;
     width: 100%;
     border-color: #e5e6eb;
     border-width: 1px 0;
