@@ -120,21 +120,27 @@ namespace KadOzenka.Dal.CodDictionary
 
             var dictionary = GetDictionary(codDictionary.Id);
 
+            var isCacheUpdatingNeeded = false;
             var attributeIds = codDictionary.Values.Select(x => x.Id).ToList();
             var attributes = OMAttribute.Where(x => attributeIds.Contains(x.Id)).Select(x => x.Name).Execute();
             codDictionary.Values.ForEach(value =>
             {
                 var attribute = attributes.FirstOrDefault(x => x.Id == value.Id);
-                if (attribute == null) 
+                if (attribute == null || attribute.Name == value.Name) 
                     return;
+
+                isCacheUpdatingNeeded = true;
                 attribute.Name = value.Name;
                 attribute.Save();
             });
 
+            if (isCacheUpdatingNeeded)
+            {
+                RegisterCache.UpdateCache(0, null);
+            }
+
             dictionary.NameJob = codDictionary.Name;
             dictionary.Save();
-
-            RegisterCache.UpdateCache(0, null);
         }
 
         public void DeleteDictionary(long id)
