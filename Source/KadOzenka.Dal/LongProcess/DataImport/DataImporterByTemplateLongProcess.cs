@@ -15,6 +15,7 @@ using KadOzenka.Dal.LongProcess.Common;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.DataImport
@@ -46,7 +47,16 @@ namespace KadOzenka.Dal.LongProcess.DataImport
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 			import.Save();
 
-			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
+    //        //TODO код для отладки
+    //        StartProcess(new OMProcessType(), new OMQueue
+    //        {
+    //            Status_Code = Status.Added,
+    //            UserId = SRDSession.GetCurrentUserId(),
+				//ObjectRegisterId = OMImportDataLog.GetRegisterId(),
+				//ObjectId = import.Id
+    //        }, new CancellationToken());
+
+            LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 
 			return import.Id;
 		}

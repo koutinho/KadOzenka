@@ -16,11 +16,13 @@ using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
 using System.IO;
 using Core.Register.Enums;
+using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.DataImport.DataImporterByTemplate;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
+using ObjectModel.KO;
 using ObjectModel.Market;
 
 namespace KadOzenka.Web.Controllers
@@ -30,11 +32,13 @@ namespace KadOzenka.Web.Controllers
 		private readonly int _dataCountForBackgroundLoading = 1000;
 
 	    public TaskService TaskService { get; set; }
+        private ICodDictionaryService CodDictionaryService { get; }
 
-	    public DataImportByTemplateController(TaskService taskService)
+		public DataImportByTemplateController(TaskService taskService, ICodDictionaryService codDictionaryService)
 	    {
 	        TaskService = taskService;
-	    }
+            CodDictionaryService = codDictionaryService;
+		}
 
         [HttpGet]
         [SRDFunction(Tag = "")]
@@ -100,12 +104,18 @@ namespace KadOzenka.Web.Controllers
 		}
 
         [SRDFunction(Tag = "")]
-		public static List<RegisterTemplateColumn> BuildAttributesTree()
+        public static List<RegisterTemplateColumn> BuildAttributesTree()
+        {
+            var availableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
+                .Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
+
+            return BuildAttributesTreeInternal(availableRegisters);
+        }
+
+        [SRDFunction(Tag = "")]
+		private static List<RegisterTemplateColumn> BuildAttributesTreeInternal(List<long> avaliableRegisters, bool withoutPrimaryKeys = false)
 		{
 			var attributesTree = new List<RegisterTemplateColumn>();
-
-			List<long> avaliableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
-			.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId).Cast<long>().ToList();
 
 			foreach (long registerId in avaliableRegisters)
 			{
@@ -122,7 +132,15 @@ namespace KadOzenka.Web.Controllers
 					attributesTree.Add(registerNode);
 
 					attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
-						.Where(x => x.RegisterId == registerData.Id).Select(attributeData => new RegisterTemplateColumn
+						.Where(x =>
+                        {
+                            var pkCondition = true;
+                            if (withoutPrimaryKeys)
+                            {
+                                pkCondition = x.IsPrimaryKey == false;
+							}
+                            return x.RegisterId == registerData.Id && pkCondition;
+                        }).Select(attributeData => new RegisterTemplateColumn
 						{
 							ItemId = registerData.Id + "_" + attributeData.Id,
 							ParentId = registerData.Id.ToString(CultureInfo.InvariantCulture),
@@ -252,15 +270,24 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = "")]
 		public IActionResult CodDictionaryImport(long codId)
         {
-			ViewBag.RegisterViewId = "GbuCodDictionary";
-            ViewBag.MainRegisterId = 214;
+            var dictionary = CodDictionaryService.GetDictionary(codId);
+
+            ViewBag.MainRegisterId = dictionary.RegisterId;
             ViewBag.DictionaryId = codId;
             ViewBag.DataCountForBackgroundLoading = _dataCountForBackgroundLoading;
 
 			return View();
         }
 
-        [HttpPost]
+        [SRDFunction(Tag = "")]
+        public List<RegisterTemplateColumn> BuildAttributesTreeForCod(long registerId)
+        {
+            var availableRegisters = new List<long> {registerId};
+
+            return BuildAttributesTreeInternal(availableRegisters, true);
+        }
+
+		[HttpPost]
         [SRDFunction(Tag = "")]
         public IActionResult ImportCodDictionaryDataFromExcel(ImportGbuCodDictionaryModel model)
         {
@@ -287,14 +314,6 @@ namespace KadOzenka.Web.Controllers
                 excelFile.Worksheets[0].Rows[curRow].Cells[cols].SetValue(model.DictionaryId);
             }
 
-            // Добавляем связь колонки и атрибута
-            columns.Add(new DataExportColumn
-            {
-                AttributrId = 21400200,
-                ColumnName = "Номер справочника",
-                IsKey = false
-            });
-
             var dataImporter =
 	            DataImporterByTemplateFactory.CreateDataImporterByTemplate(model.MainRegisterId);
             dataImporter.ValidateColumns(columns);
@@ -306,7 +325,7 @@ namespace KadOzenka.Web.Controllers
                     excelFile.Save(excelStream, SaveOptions.XlsxDefault);
                     excelStream.Seek(0, SeekOrigin.Begin);
 					importDataLogId = DataImporterByTemplateLongProcess.AddImportToQueue(model.MainRegisterId,
-                        model.RegisterViewId, model.File.FileName, excelStream, columns, null);
+						"GbuCodJob", model.File.FileName, excelStream, columns, null);
                 }
 
                 return new JsonResult(new

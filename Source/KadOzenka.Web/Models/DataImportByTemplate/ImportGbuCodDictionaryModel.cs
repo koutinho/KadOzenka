@@ -8,7 +8,6 @@ namespace KadOzenka.Web.Models.DataImportByTemplate
     {
         public bool IsBackgroundDownload { get; set; }
         public int MainRegisterId { get; set; }
-        public string RegisterViewId { get; set; }
         public IFormFile File { get; set; }
         public List<DataColumnDto> Columns { get; set; }
         public int DictionaryId { get; set; }

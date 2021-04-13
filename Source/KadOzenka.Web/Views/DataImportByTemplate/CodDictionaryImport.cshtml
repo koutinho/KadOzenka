@@ -210,12 +210,10 @@
 			data: [ ]
 		});
 
-		$(document).ready(function () {
-            var mainRegisterId = @((long)ViewBag.MainRegisterId);
-            const registerViewId = '@((string)ViewBag.RegisterViewId)';
-            const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
-            const dictionaryId = @((int)ViewBag.DictionaryId);
+        var mainRegisterId = @((long)ViewBag.MainRegisterId);
+        const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
 
+        $(document).ready(function () {
             $("#filter").on("input", function (event, enableAllTreeViewValues) {
 				var query = this.value.toLowerCase();
                 const treeView = $("#treeview").data("kendoTreeView");
@@ -300,8 +298,7 @@
                     var formData = new FormData();
 					formData.append("MainRegisterId", mainRegisterId);
                     formData.append("File", file.rawFile);
-                    formData.append("RegisterViewId", registerViewId);
-                    formData.append("DictionaryId", dictionaryId);
+                    formData.append("DictionaryId", @((int)ViewBag.DictionaryId));
                     formData.append("IsBackgroundDownload", isBackgroundDownload);
 
                     for (var i = 0; i !== columns.length; i++) {
@@ -426,8 +423,7 @@
 
             $.ajax({
                 type: 'GET',
-                url: '/CoreUi/GetAttributes',
-                data: { registerViewId: registerViewId },
+                url: '@Url.Action("BuildAttributesTreeForCod", "DataImportByTemplate", new {registerId = ViewBag.MainRegisterId})',
                 success: function (data) {
                     if (data) {
                         $("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
