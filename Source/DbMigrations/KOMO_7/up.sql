@@ -13,4 +13,6 @@ INSERT INTO common_registers_with_soft_deletion (id, register_id, main_table_nam
 VALUES ((select nextval('REG_OBJECT_SEQ')), 215, 'KO_COD_JOB');
 
 --TODO удалить старую таблицу со значениями словаря (KO_COD_DICTIONARY)
+delete from core_register_attribute where registerid=214;
+delete from core_register where registerid=214;
 DROP TABLE KO_COD_DICTIONARY;
