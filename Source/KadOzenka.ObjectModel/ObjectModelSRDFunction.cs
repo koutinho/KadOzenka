@@ -535,24 +535,27 @@ namespace ObjectModel.SRD
                 
               // Доступ к выгрузкам из раскладок (660)
               public const string CORE_REGISTER_EXPORT = "CORE.REGISTER.EXPORT";
-
+                
               // Настройка справочников (661)
               public const string ADMIN_REFERENCES = "ADMIN.REFERENCES";
-
+                
               // Настройка реестров (662)
               public const string ADMIN_REGISTERS = "ADMIN.REGISTERS";
-
+                
               // Переключение сервисного режима работы (663)
               public const string ADMIN_SERVICE_MODE = "ADMIN.SERVICE_MODE";
-
+                
               // Контроль работы системы (664)
               public const string ADMIN_SYSTEM_LOGS = "ADMIN.SYSTEM.LOGS";
-
+                
               // Календарь рабочих дней (665)
               public const string CORE_HOLIDAYS_VIEW = "CORE.HOLIDAYS.VIEW";
-
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
+                
+              // Смена дизайна (12345)
+              public const string CORE_WEB_INTERFACE_CHANGE = "CORE.WEB.INTERFACE.CHANGE";
                 
               // Доступ к расширенному редактору раскладок (1300126)
               public const string CORE_REGISTER_LAYOUTADVANCED = "CORE.REGISTER.LAYOUTADVANCED";
