@@ -638,7 +638,7 @@ namespace KadOzenka.Dal.Tasks
 	        registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMCostRosreestr.GetRegisterId(), OMCostRosreestr.Where(x => x.ParentUnit.TaskId == taskId).GetSql()));
 
 
-            registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMAttachment.GetRegisterId(), $@"select att_main.id from core_attachment att_main where att_main.id in (
+            registerObjectsList.Add(new RecycleBinService.RegisterObjects(ObjectModel.Core.Shared.OMAttachment.GetRegisterId(), $@"select att_main.id from core_attachment att_main where att_main.id in (
             select distinct at1.id 
             from core_attachment at1
                 left join core_attachment_object at_obj on at1.id=at_obj.attachment_id
@@ -652,19 +652,10 @@ namespace KadOzenka.Dal.Tasks
                                     and (at2.is_deleted=0 or at2.is_deleted is null)
                                     and (at_obj2.is_deleted=0 or at_obj2.is_deleted is null)))"));
 
-            registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMAttachmentObject.GetRegisterId(), $@"select att_obj_main.id from core_attachment_object att_obj_main where att_obj_main.attachment_id in (
-            select distinct at1.id 
-            from core_attachment at1
-                left join core_attachment_object at_obj on at1.id=at_obj.attachment_id
-            where at_obj.register_id=203 and at_obj.object_id={taskId} 
-                and (at1.is_deleted=0 or at1.is_deleted is null)
-                and (at_obj.is_deleted=0 or at_obj.is_deleted is null)
-                and not exists (select * 
-                                from core_attachment at2 
-                                    join core_attachment_object at_obj2 on at2.id=at_obj2.attachment_id
-                                where at1.id=at2.id and (at_obj2.register_id<>203 or at_obj2.object_id<>{taskId}) 
-                                    and (at2.is_deleted=0 or at2.is_deleted is null)
-                                    and (at_obj2.is_deleted=0 or at_obj2.is_deleted is null)))"));
+            registerObjectsList.Add(new RecycleBinService.RegisterObjects(OMAttachmentObject.GetRegisterId(), $@"
+select id from  core_attachment_object
+where register_id=203 and object_id={taskId} and (is_deleted=0 or is_deleted is null)
+"));
 
 
             var importDataLogIds = OMImportDataLog
