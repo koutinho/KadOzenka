@@ -14,8 +14,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics
 		protected IObjectsCharacteristicsService ObjectsCharacteristicsService => Provider.GetService<IObjectsCharacteristicsService>();
 		protected IObjectsCharacteristicsSourceService ObjectsCharacteristicsSourceService => Provider.GetService<IObjectsCharacteristicsSourceService>();
 		protected Mock<IObjectCharacteristicsRepository> ObjectCharacteristicsRepository { get; set; }
-		protected Mock<IRegisterService> RegisterService { get; set; }
-		protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
+        protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
 		protected Mock<ISRDSessionWrapper> SRDSessionWrapper { get; set; }
 		protected Mock<IRegisterConfiguratorWrapper> RegisterConfiguratorWrapper { get; set; }
 		protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }

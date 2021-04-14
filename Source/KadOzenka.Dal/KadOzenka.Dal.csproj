@@ -110,6 +110,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="CodDictionary\Resources\CodMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CodMessages.resx</DependentUpon>
+    </Compile>
     <Compile Update="FastReports\StatisticalData\MinMaxAverageUPKSByCadastralQuartersReport.cs" />
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs" />
     <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageReport.cs" />
@@ -137,6 +142,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="CodDictionary\Resources\CodMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CodMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Update="Modeling\Resources\Messages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>

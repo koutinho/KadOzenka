@@ -6,7 +6,7 @@ namespace KadOzenka.Dal.CodDictionary
 {
     public interface ICodDictionaryService
     {
-        long AddCodDictionary(CodDictionaryDto codDictionary);
+        long AddCodDictionary(CodDictionaryDto dictionaryDto);
 
         void UpdateCodDictionary(CodDictionaryDto codDictionary);
 

@@ -1,0 +1,70 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.CodDictionary.Entities;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.RecycleBin;
+using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using NUnit.Framework;
+using Platform.Configurator.DbConfigurator;
+
+namespace KadOzenka.Dal.Tests.Cod
+{
+    [TestFixture]
+    public class BaseCodTests : BaseTests
+    {
+        protected ICodDictionaryService CodDictionaryService => Provider.GetService<ICodDictionaryService>();
+        protected Mock<ICodDictionaryRepository> CodDictionaryRepository { get; set; }
+        protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
+        protected Mock<IRegisterConfiguratorWrapper> RegisterConfiguratorWrapper { get; set; }
+        protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
+        protected Mock<IRecycleBinService> RecycleBinService { get; set; }
+
+
+        [SetUp]
+        public void BaseTourSetUp()
+        {
+            RegisterService = new Mock<IRegisterService>();
+            RegisterAttributeService = new Mock<IRegisterAttributeService>();
+            RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
+            RecycleBinService = new Mock<IRecycleBinService>();
+            CodDictionaryRepository = new Mock<ICodDictionaryRepository>();
+        }
+
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            RegisterConfiguratorWrapper = new Mock<IRegisterConfiguratorWrapper>();
+            RegisterConfiguratorWrapper.Setup(x => x.GetDbConfigurator()).Returns(new DbConfiguratorPostgres(RandomGenerator.GetRandomString()));
+        }
+
+
+        protected override void AddServicesToContainer(ServiceCollection container)
+        {
+            container.AddTransient(typeof(ICodDictionaryService), typeof(CodDictionaryService));
+            container.AddTransient(typeof(ICodDictionaryRepository), sp => CodDictionaryRepository.Object);
+            container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
+            container.AddTransient(typeof(IRegisterConfiguratorWrapper), sp => RegisterConfiguratorWrapper.Object);
+            container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
+            container.AddTransient(typeof(IRecycleBinService), sp => RecycleBinService.Object);
+        }
+
+        protected CodDictionaryDto CreateDictionaryDto(string name = null, int numberOfValues = 1)
+        {
+            var values = new List<AttributePure>(numberOfValues);
+            for (var i = 0; i < numberOfValues; i++)
+            {
+                values.Add(new AttributePure(RandomGenerator.GenerateRandomInteger(), RandomGenerator.GetRandomString()));
+            }
+
+            return new CodDictionaryDto
+            {
+                Name = name ?? RandomGenerator.GetRandomString(),
+                Values = values
+            };
+        }
+    }
+}

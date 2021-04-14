@@ -9,13 +9,13 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CodDictionary.Entities;
+using KadOzenka.Dal.CodDictionary.Resources;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
-using Platform.Configurator.DbConfigurator;
 
 namespace KadOzenka.Dal.CodDictionary
 {
@@ -25,17 +25,23 @@ namespace KadOzenka.Dal.CodDictionary
         public IRegisterAttributeService RegisterAttributeService { get; }
         private IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
         public IRecycleBinService RecycleBinService { get; }
+        public IRegisterCacheWrapper RegisterCacheWrapper { get; }
+        public ICodDictionaryRepository CodDictionaryRepository { get; }
 
 
         public CodDictionaryService(IRegisterService registerService,
             IRegisterAttributeService registerAttributeService,
             IRegisterConfiguratorWrapper registerConfiguratorWrapper,
-            IRecycleBinService recycleBinService)
+            IRecycleBinService recycleBinService,
+            IRegisterCacheWrapper registerCacheWrapper,
+            ICodDictionaryRepository codDictionaryRepository)
         {
             RegisterService = registerService;
             RegisterAttributeService = registerAttributeService;
             RegisterConfiguratorWrapper = registerConfiguratorWrapper;
             RecycleBinService = recycleBinService;
+            RegisterCacheWrapper = registerCacheWrapper;
+            CodDictionaryRepository = codDictionaryRepository;
         }
 
 
@@ -54,62 +60,64 @@ namespace KadOzenka.Dal.CodDictionary
         {
             if (string.IsNullOrWhiteSpace(codDictionary.Name))
             {
-                yield return new ValidationResult("Не указано Имя справочника");
+                yield return new ValidationResult(CodMessages.EmptyDictionaryName);
             }
 
             if (codDictionary.Values == null)
             {
-                yield return new ValidationResult("Не указаны Значения");
+                yield return new ValidationResult(CodMessages.NoValuesMessage);
+                yield break;
             }
 
             var valuesCount = codDictionary.Values?.Count ?? 0;
             if (valuesCount > CodDictionaryConsts.MaxValuesCount)
             {
-                yield return new ValidationResult($"Максимальное количество значений - {CodDictionaryConsts.MaxValuesCount}");
+                yield return new ValidationResult($"{CodMessages.MaxValuesCountExceed} {CodDictionaryConsts.MaxValuesCount}");
             }
 
             if (valuesCount < CodDictionaryConsts.MinValuesCount)
             {
-                yield return new ValidationResult($"Минимальное количество значений - {CodDictionaryConsts.MinValuesCount}");
+                yield return new ValidationResult($"{CodMessages.MinValuesCountExceed} {CodDictionaryConsts.MinValuesCount}");
             }
 
             for (var i = 0; i < valuesCount; i++)
             {
                 if (string.IsNullOrWhiteSpace(codDictionary.Values?.ElementAtOrDefault(i)?.Name))
                 {
-                    yield return new ValidationResult($"Значение {i + 1} не может быть пустым");
+                    yield return new ValidationResult(string.Format(CodMessages.EmptyValueName, i + 1));
                 }
             }
 
             if (codDictionary.Values != null && codDictionary.Values.Any(x => x.Name == CodDictionaryConsts.CodeColumnName))
             {
-                yield return new ValidationResult($"Нельзя создать значение с зарезервированным именем '{CodDictionaryConsts.CodeColumnName}'");
+                yield return new ValidationResult($"{CodMessages.ForbiddenValueName} '{CodDictionaryConsts.CodeColumnName}'");
             }
         }
 
-        public long AddCodDictionary(CodDictionaryDto codDictionary)
+        public long AddCodDictionary(CodDictionaryDto dictionaryDto)
         {
-            ValidateCodDictionaryInternal(codDictionary);
+            ValidateCodDictionaryInternal(dictionaryDto);
 
             long codDictionaryId;
             using (var ts = new TransactionScope())
             {
-                var omRegister = CreateRegister(codDictionary.Name);
+                var omRegister = CreateRegister(dictionaryDto.Name);
 
-                CreateColumns(codDictionary.Values.Select(x => x.Name).ToList(), omRegister.RegisterId);
+                CreateColumns(dictionaryDto.Values.Select(x => x.Name).ToList(), omRegister.RegisterId);
 
-                codDictionaryId = new OMCodJob
+                var dictionary = new OMCodJob
                 {
-                    NameJob = codDictionary.Name,
+                    NameJob = dictionaryDto.Name,
                     RegisterId = omRegister.RegisterId
-                }.Save();
+                };
+                codDictionaryId = CodDictionaryRepository.Save(dictionary);
 
                 RecycleBinService.CreateDeletedTable(omRegister.RegisterId, omRegister.QuantTable);
 
                 ts.Complete();
             }
 
-            RegisterCache.UpdateCache(0, null);
+            RegisterCacheWrapper.UpdateCache();
 
             return codDictionaryId;
         }
@@ -174,7 +182,7 @@ namespace KadOzenka.Dal.CodDictionary
         private OMRegister CreateRegister(string description)
         {
             var tableNameTemplate = "gbu_cod_dictionary_";
-            var existedCodDictionariesCount = RegisterCache.Registers.Count(x =>
+            var existedCodDictionariesCount = RegisterCacheWrapper.GetRegistersCache().Count(x =>
                 x.Value.QuantTable.StartsWith(tableNameTemplate, StringComparison.InvariantCultureIgnoreCase)) + 1;
 
             var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
