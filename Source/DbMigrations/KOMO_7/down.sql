@@ -10,3 +10,39 @@ ALTER TABLE KO_COD_JOB ADD COLUMN RESULT_JOB varchar(255);
 
 --Отменяем мягкое удаления словаря
 delete from common_registers_with_soft_deletion where register_id = 215;
+
+--Возвращаем старую таблицу для хранения значений словаря
+CREATE TABLE public.ko_cod_dictionary (
+  id BIGINT NOT NULL,
+  id_codjob BIGINT NOT NULL,
+  value VARCHAR(4000),
+  code VARCHAR(255),
+  source VARCHAR(255),
+  expert VARCHAR(255),
+  CONSTRAINT reg_214_q_pk PRIMARY KEY(id)
+) 
+WITH (oids = false);
+
+COMMENT ON TABLE public.ko_cod_dictionary
+IS 'Справочник ЦОД';
+
+COMMENT ON COLUMN public.ko_cod_dictionary.id
+IS 'Идентификатор';
+
+COMMENT ON COLUMN public.ko_cod_dictionary.id_codjob
+IS 'Идентификатор задания ЦОД';
+
+COMMENT ON COLUMN public.ko_cod_dictionary.value
+IS 'Значение';
+
+COMMENT ON COLUMN public.ko_cod_dictionary.code
+IS 'Код';
+
+COMMENT ON COLUMN public.ko_cod_dictionary.source
+IS ' Источник';
+
+COMMENT ON COLUMN public.ko_cod_dictionary.expert
+IS 'ФИО эксперта';
+
+ALTER TABLE public.ko_cod_dictionary
+  OWNER TO cipjs_kad_ozenka;

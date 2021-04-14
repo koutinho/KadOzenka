@@ -12,5 +12,5 @@ alter table ko_cod_job drop column RESULT_JOB;
 INSERT INTO common_registers_with_soft_deletion (id, register_id, main_table_name)
 VALUES ((select nextval('REG_OBJECT_SEQ')), 215, 'KO_COD_JOB');
 
-
 --TODO удалить старую таблицу со значениями словаря (KO_COD_DICTIONARY)
+DROP TABLE KO_COD_DICTIONARY;
