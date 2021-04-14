@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			Assert.AreEqual(Messages.EmptyCharacteristicName, ex.Message);
 			RegisterAttributeService.Verify(
 				x => x.CreateRegisterAttribute(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<RegisterAttributeType>(),
-					It.IsAny<bool>(), It.IsAny<long>()), Times.Never);
+					It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<bool>()), Times.Never);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
 					It.IsAny<bool>()), Times.Never);
@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			ObjectsCharacteristicsService.AddCharacteristic(dto);
 
 			RegisterAttributeService.Verify(
-				x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId), Times.Once);
+				x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId, true), Times.Once);
 			RegisterConfiguratorWrapper.Verify(x => x.CreateDbColumnForRegister(It.IsAny<OMAttribute>(), It.IsAny<DbConfiguratorBase>()), Times.Once);
 		}
 
@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			ObjectsCharacteristicsService.AddCharacteristic(dto);
 
 			RegisterAttributeService.Verify(
-				x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId), Times.Once);
+				x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId, true), Times.Once);
 			RegisterConfiguratorWrapper.Verify(x => x.CreateDbTableForRegister(It.IsAny<long>()), Times.Once);
 		}
 
@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 		private void MockRegisterAttributeServiceCreateRegisterAttribute(CharacteristicDto dto)
 		{
 			RegisterAttributeService
-				.Setup(x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId))
+				.Setup(x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId, true))
 				.Returns(new OMAttribute() {Id = RandomGenerator.GenerateRandomInteger()});
 		}
 

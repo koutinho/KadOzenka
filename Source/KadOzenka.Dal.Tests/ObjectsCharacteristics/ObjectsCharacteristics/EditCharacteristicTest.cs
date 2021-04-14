@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			Assert.AreEqual(Messages.EmptyCharacteristicName, ex.Message);
 			RegisterAttributeService.Verify(
 				x => x.CreateRegisterAttribute(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<RegisterAttributeType>(),
-					It.IsAny<bool>(), It.IsAny<long>()), Times.Never);
+					It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<bool>()), Times.Never);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
 					It.IsAny<bool>()), Times.Never);
