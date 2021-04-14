@@ -195,15 +195,12 @@ namespace KadOzenka.Dal.CodDictionary
 
             columns.ForEach(x =>
             {
-                CreateAttribute(x, registerId, dbConfigurator);
+                var attribute = RegisterAttributeService.CreateRegisterAttribute(x, registerId, RegisterAttributeType.STRING, true);
+                RegisterConfiguratorWrapper.CreateDbColumnForRegister(attribute, dbConfigurator);
             });
 
-            CreateAttribute(CodDictionaryConsts.CodeColumnName, registerId, dbConfigurator);
-        }
-
-        private void CreateAttribute(string name, long registerId, DbConfiguratorBase dbConfigurator)
-        {
-            var codeAttribute = RegisterAttributeService.CreateRegisterAttribute(name, registerId, RegisterAttributeType.STRING, true);
+            var codeAttribute = RegisterAttributeService.CreateRegisterAttribute(CodDictionaryConsts.CodeColumnName,
+                registerId, RegisterAttributeType.STRING, true, isNullable: false);
             RegisterConfiguratorWrapper.CreateDbColumnForRegister(codeAttribute, dbConfigurator);
         }
 

@@ -33,7 +33,8 @@ namespace KadOzenka.Dal.Registers
 	        return query.OrderBy(x => x.Name).Execute();
         }
 
-        public OMAttribute CreateRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type, bool withValueField, long? referenceId = null)
+        public OMAttribute CreateRegisterAttribute(string attributeName, long registerId, RegisterAttributeType type,
+            bool withValueField, long? referenceId = null, bool isNullable = true)
         {
             OMAttribute omAttribute;
             using (var ts = new TransactionScope())
@@ -44,7 +45,7 @@ namespace KadOzenka.Dal.Registers
                     RegisterId = registerId,
                     Name = attributeName,
                     Type = type == RegisterAttributeType.REFERENCE ? (long)RegisterAttributeType.STRING : (long)type,
-                    IsNullable = true
+                    IsNullable = isNullable
                 };
                 var id = omAttribute.Save();
 
