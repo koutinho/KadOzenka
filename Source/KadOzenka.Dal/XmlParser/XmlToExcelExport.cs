@@ -161,7 +161,7 @@ namespace KadOzenka.Dal.XmlParser
 					posCadNum++;
 				}
 
-				AddEntry(sheet, item.CadastralCost?.Value.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
+				AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 8), 8, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateEntering?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 9),
@@ -176,24 +176,38 @@ namespace KadOzenka.Dal.XmlParser
 					ReadConfigValue(valOffset + 14), 14, curRow);
 				AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 15), 15, curRow);
+				AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
+					ReadConfigValue(valOffset + 16), 16, curRow);
 
 				AddEntry(sheet, item.Area?.ToString(), ReadConfigValue(valOffset + 16), 16, curRow);
 
+				AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 18), 18, curRow);
+				AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
 				AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 19), 19, curRow);
-				//AddEntry(sheet, item.Adress.Place, ReadConfigValue(valOffset + 20), 20, curRow);
+				AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 20), 20, curRow);
 				AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 21), 21, curRow);
+				AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
 
 				AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
 				AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
 				AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
 				AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
 				AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 28), 28, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 29), 29, curRow);
 				AddEntry(sheet, item.Adress.Apartment?.Value, ReadConfigValue(valOffset + 30), 30, curRow);
+				AddEntry(sheet, item.Adress.InBounds, ReadConfigValue(valOffset + 30), 30, curRow);
+				AddEntry(sheet, item.Adress.Placed, ReadConfigValue(valOffset + 30), 30, curRow);
+				AddEntry(sheet, item.Adress.Elaboration?.ReferenceMark, ReadConfigValue(valOffset + 30), 30, curRow);
+				AddEntry(sheet, item.Adress.Elaboration?.Distance, ReadConfigValue(valOffset + 30), 30, curRow);
+				AddEntry(sheet, item.Adress.Elaboration?.Direction, ReadConfigValue(valOffset + 30), 30, curRow);
 
 
 				AddEntry(sheet, item.Name.Code, ReadConfigValue(valOffset + 31), 31, curRow);
@@ -367,7 +381,7 @@ namespace KadOzenka.Dal.XmlParser
 					posCadNum++;
 				}
 
-				AddEntry(sheet, item.CadastralCost?.Value.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
+				AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 8), 8,
 					curRow);
@@ -386,19 +400,28 @@ namespace KadOzenka.Dal.XmlParser
 					14, curRow);
 				AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 15), 15, curRow);
+				AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
+					ReadConfigValue(valOffset + 16), 16, curRow);
 
 				AddEntry(sheet, item.Area?.ToString(), ReadConfigValue(valOffset + 16), 16, curRow);
 
+				AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 18), 18, curRow);
+				AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
 				AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 19), 19, curRow);
-				//AddEntry(sheet, item.Adress.Place, ReadConfigValue(valOffset + 20), 20, curRow);
+				AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 20), 20, curRow);
 				AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 21), 21, curRow);
+				AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
 
 				AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
 				AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
 				AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
 				AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
 				AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 28), 28, curRow);
@@ -454,7 +477,7 @@ namespace KadOzenka.Dal.XmlParser
 					posCadNum++;
 				}
 
-				AddEntry(sheet, item.CadastralCost?.Value.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
+				AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 8), 8, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateEntering?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 9),
@@ -469,23 +492,32 @@ namespace KadOzenka.Dal.XmlParser
 					ReadConfigValue(valOffset + 14), 14, curRow);
 				AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 15), 15, curRow);
+				AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
+					ReadConfigValue(valOffset + 16), 16, curRow);
 
-
+				AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 16), 16, curRow);
+				AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
 				AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 18), 18, curRow);
-				//AddEntry(sheet, item.Adress.Place, ReadConfigValue(valOffset + 19), 19, curRow);
+				AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 19), 19, curRow);
 				AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 20), 20, curRow);
+				AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
 
 				AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 21), 21, curRow);
 				AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
 				AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
 				AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
+				AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 28), 28, curRow);
 				AddEntry(sheet, item.Adress.Apartment?.Value, ReadConfigValue(valOffset + 29), 29, curRow);
+
 
 				AddEntry(sheet, item.AssignationName, ReadConfigValue(valOffset + 30), 30, curRow);
 
@@ -536,7 +568,7 @@ namespace KadOzenka.Dal.XmlParser
 					posCadNum++;
 				}
 
-				AddEntry(sheet, item.CadastralCost?.Value.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
+				AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 8), 8, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateEntering?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 9),
@@ -551,17 +583,26 @@ namespace KadOzenka.Dal.XmlParser
 					ReadConfigValue(valOffset + 14), 14, curRow);
 				AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 15), 15, curRow);
+				AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
+					ReadConfigValue(valOffset + 16), 16, curRow);
 
+				AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 16), 16, curRow);
+				AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
 				AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 18), 18, curRow);
-				//AddEntry(sheet, item.Adress.Place, ReadConfigValue(valOffset + 19), 19, curRow);
+				AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 19), 19, curRow);
 				AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 20), 20, curRow);
+				AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
 
 				AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 21), 21, curRow);
 				AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
 				AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
 				AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
+				AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
@@ -603,7 +644,7 @@ namespace KadOzenka.Dal.XmlParser
 				AddEntry(sheet, item.CadastralNumberBlock, ReadConfigValue(valOffset + 5), 5, curRow);
 				AddEntry(sheet, item.CadastralNumberFlat, ReadConfigValue(valOffset + 6), 6, curRow);
 
-				AddEntry(sheet, item.CadastralCost?.Value.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
+				AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 7), 7, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 8), 8, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateEntering?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 9),
@@ -618,19 +659,28 @@ namespace KadOzenka.Dal.XmlParser
 					ReadConfigValue(valOffset + 14), 14, curRow);
 				AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 15), 15, curRow);
+				AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
+					ReadConfigValue(valOffset + 16), 16, curRow);
 
 				AddEntry(sheet, item.Area?.ToString(), ReadConfigValue(valOffset + 16), 16, curRow);
 
+				AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 18), 18, curRow);
+				AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
 				AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 19), 19, curRow);
-				//AddEntry(sheet, item.Adress.Place, ReadConfigValue(valOffset + 20), 20, curRow);
+				AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 20), 20, curRow);
 				AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 21), 21, curRow);
+				AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
 
 				AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
 				AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
 				AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
 				AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
 				AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 28), 28, curRow);
@@ -714,7 +764,7 @@ namespace KadOzenka.Dal.XmlParser
 				AddEntry(sheet, item.DateCreate?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 4), 4, curRow);
 				AddEntry(sheet, item.CadastralNumberBlock, ReadConfigValue(valOffset + 5), 5, curRow);
 
-				AddEntry(sheet, item.CadastralCost?.Value.ToString(), ReadConfigValue(valOffset + 6), 6, curRow);
+				AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 6), 6, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 7), 7, curRow);
 				AddEntry(sheet, item.CadastralCost?.DateEntering?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 8),
@@ -729,19 +779,28 @@ namespace KadOzenka.Dal.XmlParser
 					ReadConfigValue(valOffset + 13), 13, curRow);
 				AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
 					ReadConfigValue(valOffset + 14), 14, curRow);
+				AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
+					ReadConfigValue(valOffset + 15), 15, curRow);
 
 				AddEntry(sheet, item.Area?.ToString(), ReadConfigValue(valOffset + 15), 15, curRow);
 
+				AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 16), 16, curRow);
+				AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
 				AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 17), 17, curRow);
+				AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
 				AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 18), 18, curRow);
-				//AddEntry(sheet, item.Adress.Place, ReadConfigValue(valOffset + 19), 19, curRow);
+				AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 19), 19, curRow);
 				AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 20), 20, curRow);
+				AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
 
 				AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 21), 21, curRow);
 				AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
 				AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
 				AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
+				AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
+				AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
 				AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
 				AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
