@@ -6,7 +6,7 @@ using ObjectModel.Directory;
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 1 Источник: Неопределено (GBU_MAIN_OBJECT)
+    /// 2 Источник: ЕГРН (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 1)]
     [Serializable]
@@ -50,7 +50,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 3 Источник: Департамент экономической политики и развития города Москвы (GBU_MAIN_OBJECT)
+    /// 3 Источник: База данных МОБТИ (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 3)]
     [Serializable]
@@ -62,7 +62,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 4 Источник: МосгорБТИ (GBU_MAIN_OBJECT)
+    /// 4 Источник: База данных предыдущего расчета (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 4)]
     [Serializable]
@@ -74,7 +74,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 5 Источник: Департамент городского имущества города Москвы (GBU_MAIN_OBJECT)
+    /// 5 Источник: Графический расчет / Сведения ОМС (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 5)]
     [Serializable]
@@ -86,7 +86,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 6 Источник: Департамент жилищно-коммунального хозяйства города Москвы (GBU_MAIN_OBJECT)
+    /// 6 Источник: Идентификатор для загрузки из Excel (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 6)]
     [Serializable]
@@ -98,7 +98,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 7 Источник: Департамент культурного наследия города Москвы (GBU_MAIN_OBJECT)
+    /// 7 Источник: Используется подсистемой моделирования (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 7)]
     [Serializable]
@@ -110,7 +110,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 8 Источник: Департамент спорта и туризма города Москвы (GBU_MAIN_OBJECT)
+    /// 8 Источник: Источник информации о СЗЗ ТБО (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 8)]
     [Serializable]
@@ -122,7 +122,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы (GBU_MAIN_OBJECT)
+    /// 9 Источник: Картографический расчет (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 9)]
     [Serializable]
@@ -134,7 +134,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 10 Источник: Росавтодор (GBU_MAIN_OBJECT)
+    /// 10 Источник: Минсельхоз (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 10)]
     [Serializable]
@@ -146,7 +146,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 11 Источник: Департамент капитального ремонта города Москвы (GBU_MAIN_OBJECT)
+    /// 11 Источник: Мособлстат (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 11)]
     [Serializable]
@@ -158,7 +158,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 12 Источник: Комитет по архитектуре и градостроительству города Москвы (GBU_MAIN_OBJECT)
+    /// 12 Источник: Определяется по результатам анализа изменений сведений ЕГРН (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 12)]
     [Serializable]
@@ -170,7 +170,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 13 Источник: Управление Росреестра по Москве (GBU_MAIN_OBJECT)
+    /// 13 Источник: Определяется по результатам расчета стоимости (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 13)]
     [Serializable]
@@ -182,7 +182,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 14 Источник: ГБУ (ЦОД) (GBU_MAIN_OBJECT)
+    /// 14 Источник: Пользовательский фактор (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 14)]
     [Serializable]
@@ -194,7 +194,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 15 Источник: ГКО 2014 (GBU_MAIN_OBJECT)
+    /// 15 Источник: Предоставлен ОМС (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 15)]
     [Serializable]
@@ -206,7 +206,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 16 Источник: ГКО 2016 (GBU_MAIN_OBJECT)
+    /// 16 Источник: Предыдущий расчет объекта (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 16)]
     [Serializable]
@@ -218,7 +218,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 17 Источник: Правительство города Москвы (GBU_MAIN_OBJECT)
+    /// 17 Источник: Проставляется из справочников кодировки (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 17)]
     [Serializable]
@@ -230,7 +230,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 18 Источник: Сведения о судебных разбирательствах (GBU_MAIN_OBJECT)
+    /// 18 Источник: Расчетное значение (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 18)]
     [Serializable]
@@ -242,7 +242,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 19 Источник: Комиссии по расмотрению споров (GBU_MAIN_OBJECT)
+    /// 19 Источник: РГИС (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 19)]
     [Serializable]
@@ -254,7 +254,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 20 Источник: Наименование объектов по предыдущим турам (GBU_MAIN_OBJECT)
+    /// 20 Источник: Рыночная информация (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 20)]
     [Serializable]
@@ -266,7 +266,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 21 Источник: Расчет ЦФ (ГБУ) (GBU_MAIN_OBJECT)
+    /// 21 Источник: Сведения о ЗУ (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 21)]
     [Serializable]
@@ -278,7 +278,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 22 Источник: Наименования адресов и гаражей (GBU_MAIN_OBJECT)
+    /// 22 Источник: Соответствие с классификатором МЭР N 540 (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 22)]
     [Serializable]
@@ -290,7 +290,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 23 Источник: ГКО 2018 (GBU_MAIN_OBJECT)
+    /// 23 Источник: Ссылка на предыдущее поступление объекта (GBU_MAIN_OBJECT)
     /// </summary>
     [RegisterInfo(RegisterID = 23)]
     [Serializable]
@@ -348,86 +348,6 @@ namespace ObjectModel.KO
             }
         }
 
-    }
-}
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 25 Источник 25 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 25)]
-    [Serializable]
-    public partial class OMSource25 : OMBaseClass<OMSource25>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 28 Источник 28 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 28)]
-    [Serializable]
-    public partial class OMSource28 : OMBaseClass<OMSource28>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 1717 ИД (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 1717)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 29 Источник 29 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 29)]
-    [Serializable]
-    public partial class OMSource29 : OMBaseClass<OMSource29>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 30 Источник 30 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 30)]
-    [Serializable]
-    public partial class OMSource30 : OMBaseClass<OMSource30>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 44 Источник 44 (GBU_MAIN_OBJECT)
-    /// </summary>
-    [RegisterInfo(RegisterID = 44)]
-    [Serializable]
-    public partial class OMSource44 : OMBaseClass<OMSource44>
-    {
     }
 }
 
@@ -26946,194 +26866,6 @@ namespace ObjectModel.Common
 
 namespace ObjectModel.Common
 {
-    //TODO delete
-    /// <summary>
-    /// 810 Таблица для созданных отчетов (COMMON_REPORT_FILES)
-    /// </summary>
-    [RegisterInfo(RegisterID = 810)]
-    [Serializable]
-    public partial class OMReportFiles : OMBaseClass<OMReportFiles>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 81000100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 81000100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long _userid;
-        /// <summary>
-        /// 81000200 ИД пользователя (user_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000200)]
-        public long UserId
-        {
-            get
-            {
-                CheckPropertyInited("UserId");
-                return _userid;
-            }
-            set
-            {
-                _userid = value;
-                NotifyPropertyChanged("UserId");
-            }
-        }
-
-
-        private DateTime _creationdate;
-        /// <summary>
-        /// 81000300 Дата создания (creation_date)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000300)]
-        public DateTime CreationDate
-        {
-            get
-            {
-                CheckPropertyInited("CreationDate");
-                return _creationdate;
-            }
-            set
-            {
-                _creationdate = value;
-                NotifyPropertyChanged("CreationDate");
-            }
-        }
-
-
-        private string _status;
-        /// <summary>
-        /// 81000500 Статус ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000500)]
-        public string Status
-        {
-            get
-            {
-                CheckPropertyInited("Status");
-                return _status;
-            }
-            set
-            {
-                _status = value;
-                NotifyPropertyChanged("Status");
-            }
-        }
-
-
-        private ObjectModel.Directory.Common.ExportStatus _status_Code;
-        /// <summary>
-        /// 81000500 Статус (справочный код) (status)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000500)]
-        public ObjectModel.Directory.Common.ExportStatus Status_Code
-        {
-            get
-            {
-                CheckPropertyInited("Status_Code");
-                return this._status_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_status))
-                    {
-                         _status = descr;
-                    }
-                }
-                else
-                {
-                     _status = descr;
-                }
-
-                this._status_Code = value;
-                NotifyPropertyChanged("Status");
-                NotifyPropertyChanged("Status_Code");
-            }
-        }
-
-
-        private string _filename;
-        /// <summary>
-        /// 81000600 Имя файла (file_name)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000600)]
-        public string FileName
-        {
-            get
-            {
-                CheckPropertyInited("FileName");
-                return _filename;
-            }
-            set
-            {
-                _filename = value;
-                NotifyPropertyChanged("FileName");
-            }
-        }
-
-
-        private DateTime? _finishdate;
-        /// <summary>
-        /// 81000700 Дата Завершения (finish_date)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000700)]
-        public DateTime? FinishDate
-        {
-            get
-            {
-                CheckPropertyInited("FinishDate");
-                return _finishdate;
-            }
-            set
-            {
-                _finishdate = value;
-                NotifyPropertyChanged("FinishDate");
-            }
-        }
-
-
-        private string _fileextension;
-        /// <summary>
-        /// 81000800 Расширение файла (file_extension)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81000800)]
-        public string FileExtension
-        {
-            get
-            {
-                CheckPropertyInited("FileExtension");
-                return _fileextension;
-            }
-            set
-            {
-                _fileextension = value;
-                NotifyPropertyChanged("FileExtension");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.Common
-{
     /// <summary>
     /// 812 Корзина с информацией об удаленных сушностях (COMMON_RECYCLE_BIN)
     /// </summary>
@@ -27477,158 +27209,6 @@ namespace ObjectModel.Common
             {
                 _filename = value;
                 NotifyPropertyChanged("FileName");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.Common
-{
-    /// <summary>
-    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс) (all_reports_in_system)
-    /// </summary>
-    [RegisterInfo(RegisterID = 1000811)]
-    [Serializable]
-    public partial class OMAllReportsInSystemView : OMBaseClass<OMAllReportsInSystemView>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 81100100 Идентификатор (id)
-        /// </summary>
-        [PrimaryKey(AttributeID = 81100100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long _userid;
-        /// <summary>
-        /// 81100200 ИД пользователя (user_id)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81100200)]
-        public long UserId
-        {
-            get
-            {
-                CheckPropertyInited("UserId");
-                return _userid;
-            }
-            set
-            {
-                _userid = value;
-                NotifyPropertyChanged("UserId");
-            }
-        }
-
-
-        private string _filename;
-        /// <summary>
-        /// 81100300 Имя файла (file_name)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81100300)]
-        public string FileName
-        {
-            get
-            {
-                CheckPropertyInited("FileName");
-                return _filename;
-            }
-            set
-            {
-                _filename = value;
-                NotifyPropertyChanged("FileName");
-            }
-        }
-
-
-        private DateTime _creationdate;
-        /// <summary>
-        /// 81100400 Дата создания (creation_date)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81100400)]
-        public DateTime CreationDate
-        {
-            get
-            {
-                CheckPropertyInited("CreationDate");
-                return _creationdate;
-            }
-            set
-            {
-                _creationdate = value;
-                NotifyPropertyChanged("CreationDate");
-            }
-        }
-
-
-        private DateTime? _finishdate;
-        /// <summary>
-        /// 81100500 Дата завершения (finish_date)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81100500)]
-        public DateTime? FinishDate
-        {
-            get
-            {
-                CheckPropertyInited("FinishDate");
-                return _finishdate;
-            }
-            set
-            {
-                _finishdate = value;
-                NotifyPropertyChanged("FinishDate");
-            }
-        }
-
-
-        private bool _isplatformreport;
-        /// <summary>
-        /// 81100600 Платформенный отчет (is_platform)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81100600)]
-        public bool IsPlatformReport
-        {
-            get
-            {
-                CheckPropertyInited("IsPlatformReport");
-                return _isplatformreport;
-            }
-            set
-            {
-                _isplatformreport = value;
-                NotifyPropertyChanged("IsPlatformReport");
-            }
-        }
-
-
-        private string _status;
-        /// <summary>
-        /// 81100700 Статус (status)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 81100700)]
-        public string Status
-        {
-            get
-            {
-                CheckPropertyInited("Status");
-                return _status;
-            }
-            set
-            {
-                _status = value;
-                NotifyPropertyChanged("Status");
             }
         }
 

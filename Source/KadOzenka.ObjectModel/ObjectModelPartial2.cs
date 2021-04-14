@@ -9,43 +9,7 @@ using System.Xml.Serialization;
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 1 Источник: Неопределено
-    /// </summary>
-    public partial class OMSource1
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 2 Источник: Росреестр
-    /// </summary>
-    public partial class OMSource2
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 3 Источник: Департамент экономической политики и развития города Москвы
+    /// 3 Источник: База данных МОБТИ
     /// </summary>
     public partial class OMSource3
     {
@@ -63,7 +27,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 4 Источник: МосгорБТИ
+    /// 4 Источник: База данных предыдущего расчета
     /// </summary>
     public partial class OMSource4
     {
@@ -81,7 +45,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 5 Источник: Департамент городского имущества города Москвы
+    /// 5 Источник: Графический расчет / Сведения ОМС
     /// </summary>
     public partial class OMSource5
     {
@@ -99,7 +63,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 6 Источник: Департамент жилищно-коммунального хозяйства города Москвы
+    /// 6 Источник: Идентификатор для загрузки из Excel
     /// </summary>
     public partial class OMSource6
     {
@@ -117,7 +81,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 7 Источник: Департамент культурного наследия города Москвы
+    /// 7 Источник: Используется подсистемой моделирования
     /// </summary>
     public partial class OMSource7
     {
@@ -135,7 +99,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 8 Источник: Департамент спорта и туризма города Москвы
+    /// 8 Источник: Источник информации о СЗЗ ТБО
     /// </summary>
     public partial class OMSource8
     {
@@ -153,7 +117,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 9 Источник: Департамент природопользования и охраны окружающей среды города Москвы
+    /// 9 Источник: Картографический расчет
     /// </summary>
     public partial class OMSource9
     {
@@ -171,7 +135,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 10 Источник: Росавтодор
+    /// 10 Источник: Минсельхоз
     /// </summary>
     public partial class OMSource10
     {
@@ -189,7 +153,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 11 Источник: Департамент капитального ремонта города Москвы
+    /// 11 Источник: Мособлстат
     /// </summary>
     public partial class OMSource11
     {
@@ -207,7 +171,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 12 Источник: Комитет по архитектуре и градостроительству города Москвы
+    /// 12 Источник: Определяется по результатам анализа изменений сведений ЕГРН
     /// </summary>
     public partial class OMSource12
     {
@@ -225,7 +189,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 13 Источник: Управление Росреестра по Москве
+    /// 13 Источник: Определяется по результатам расчета стоимости
     /// </summary>
     public partial class OMSource13
     {
@@ -243,7 +207,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 14 Источник: ГБУ (ЦОД)
+    /// 14 Источник: Пользовательский фактор
     /// </summary>
     public partial class OMSource14
     {
@@ -261,7 +225,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 15 Источник: ГКО 2014
+    /// 15 Источник: Предоставлен ОМС
     /// </summary>
     public partial class OMSource15
     {
@@ -279,7 +243,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 16 Источник: ГКО 2016
+    /// 16 Источник: Предыдущий расчет объекта
     /// </summary>
     public partial class OMSource16
     {
@@ -297,7 +261,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 17 Источник: Правительство города Москвы
+    /// 17 Источник: Проставляется из справочников кодировки
     /// </summary>
     public partial class OMSource17
     {
@@ -315,7 +279,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 18 Источник: Сведения о судебных разбирательствах
+    /// 18 Источник: Расчетное значение
     /// </summary>
     public partial class OMSource18
     {
@@ -333,7 +297,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 19 Источник: Комиссии по расмотрению споров
+    /// 19 Источник: РГИС
     /// </summary>
     public partial class OMSource19
     {
@@ -351,7 +315,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 20 Источник: Наименование объектов по предыдущим турам
+    /// 20 Источник: Рыночная информация
     /// </summary>
     public partial class OMSource20
     {
@@ -369,7 +333,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 21 Источник: Расчет ЦФ (ГБУ)
+    /// 21 Источник: Сведения о ЗУ
     /// </summary>
     public partial class OMSource21
     {
@@ -387,7 +351,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 22 Источник: Наименования адресов и гаражей
+    /// 22 Источник: Соответствие с классификатором МЭР N 540
     /// </summary>
     public partial class OMSource22
     {
@@ -405,7 +369,7 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
-    /// 23 Источник: ГКО 2018
+    /// 23 Источник: Ссылка на предыдущее поступление объекта
     /// </summary>
     public partial class OMSource23
     {
@@ -433,42 +397,6 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Core.Register.OMRegister ParentRegister { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 25 Источник 25
-    /// </summary>
-    public partial class OMSource25
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 28 Источник 28
-    /// </summary>
-    public partial class OMSource28
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
 
     }
 }
@@ -667,6 +595,13 @@ namespace ObjectModel.KO
         [XmlIgnore]
         public ObjectModel.KO.OMGroup ParentGroup { get; set; }
 
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
+
     }
 }
 
@@ -730,6 +665,24 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMGroup ParentGroup { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 214 Справочник ЦОД
+    /// </summary>
+    public partial class OMCodDictionary
+    {
+        /// <summary>
+        /// Ссылка на (200 Объекты недвижимости)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
 
     }
 }
@@ -917,6 +870,24 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMGroup ParentGroup { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 263 Настройки факторов
+    /// </summary>
+    public partial class OMFactorSettings
+    {
+        /// <summary>
+        /// Ссылка на (931 Список показателей реестра)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
 
     }
 }
@@ -1409,24 +1380,6 @@ namespace ObjectModel.Common
     /// 814 Таблица с отчетами для основных операций системы
     /// </summary>
     public partial class OMGbuOperationsReports
-    {
-        /// <summary>
-        /// Ссылка на (950 Пользователи системы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.SRD.OMUser ParentUser { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Common
-{
-    /// <summary>
-    /// 1000811 View со всеми отчетами в системе (платформенные + сгенерированные вручную через длительный процесс)
-    /// </summary>
-    public partial class OMAllReportsInSystemView
     {
         /// <summary>
         /// Ссылка на (950 Пользователи системы)
