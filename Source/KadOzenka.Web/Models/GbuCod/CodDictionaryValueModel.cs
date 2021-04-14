@@ -43,24 +43,6 @@ namespace KadOzenka.Web.Models.GbuCod
             };
 		}
 
-        public static CodDictionaryValueModel FromEntity(OMCodDictionary entity)
-		{
-			if (entity == null)
-			{
-				return new CodDictionaryValueModel
-				{
-					Id = -1
-				};
-			}
-
-			return new CodDictionaryValueModel
-			{
-				Id = entity.Id,
-				Code = entity.Code,
-				Value = entity.Value
-            };
-		}
-
         public CodDictionaryValue ToDto()
         {
             return new CodDictionaryValue(Id, Code, Values);
