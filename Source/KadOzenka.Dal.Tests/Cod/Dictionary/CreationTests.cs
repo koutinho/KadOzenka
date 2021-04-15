@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.CodDictionary.Entities;
+using KadOzenka.Dal.CodDictionary.Resources;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Core.Register;
@@ -61,6 +63,17 @@ namespace KadOzenka.Dal.Tests.Cod.Dictionary
             RegisterAttributeService.Verify(
                 x => x.CreateRegisterAttribute(CodDictionaryConsts.CodeColumnName, createdRegister.RegisterId,
                     RegisterAttributeType.STRING, true, null, false), Times.Once);
+        }
+
+        [Test]
+        public void CanNot_Add_Dictionary_Without_Name()
+        {
+            var dictionaryInput = CreateDictionaryDto();
+            dictionaryInput.Name = null;
+
+            var exception = Assert.Throws<Exception>(() => CodDictionaryService.AddCodDictionary(dictionaryInput));
+
+            StringAssert.Contains(CodMessages.EmptyDictionaryName, exception.Message);
         }
     }
 }
