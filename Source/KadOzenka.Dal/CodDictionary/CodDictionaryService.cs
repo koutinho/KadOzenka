@@ -240,7 +240,7 @@ namespace KadOzenka.Dal.CodDictionary
 
                 var attribute = attributes.FirstOrDefault(x => x.Id == value.Id);
                 if (attribute == null || attribute.Name == value.Name)
-                    return;
+                    continue;
 
                 isCacheUpdatingNeeded = true;
                 attribute.Name = value.Name;
