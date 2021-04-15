@@ -16,26 +16,25 @@ namespace GenerateDbScripts
     {
 
         static void Main(string[] args)
-        
-		{
+        {
             if (ConfigurationManager.AppSettings["DbExporterEnabled"].ParseToBoolean())
                 ExportDb();
 
             if (ConfigurationManager.AppSettings["CreateDbTableForRegister"].ParseToBoolean())
                 CreateDbTableForRegister();
 
-			//TODO падает в рантайме
-    //        if (ConfigurationManager.AppSettings["CreateDbFunctions"].ParseToBoolean())
-				//new GenerateFunctions(
-				//		ConfigurationManager.AppSettings["DbExporterConnectionString"],
-    //                    ConfigurationManager.AppSettings["DbExporterConnectionString"].Split("Username=")[1].Split(";")[0],
-				//		ConfigurationManager.AppSettings["GetFunctionsSQLReuqest"],
-				//		ConfigurationManager.AppSettings["FunctionsTemplate"],
-				//		ConfigurationManager.AppSettings["DbExporterBaseFolder"],
-				//		ConfigurationManager.AppSettings["FunctionsFileName"]
-				//	).Generate();
+            //TODO падает в рантайме
+            if (ConfigurationManager.AppSettings["CreateDbFunctions"].ParseToBoolean())
+                new GenerateFunctions(
+                        ConfigurationManager.AppSettings["DbExporterConnectionString"],
+                        ConfigurationManager.AppSettings["DbExporterConnectionString"].Split("Username=")[1].Split(";")[0],
+                        ConfigurationManager.AppSettings["GetFunctionsSQLReuqest"],
+                        ConfigurationManager.AppSettings["FunctionsTemplate"],
+                        ConfigurationManager.AppSettings["DbExporterBaseFolder"],
+                        ConfigurationManager.AppSettings["FunctionsFileName"]
+                    ).Generate();
 
-			if (ConfigurationManager.AppSettings["CreateDbTriggers"].ParseToBoolean())
+            if (ConfigurationManager.AppSettings["CreateDbTriggers"].ParseToBoolean())
 				new GenerateTriggers(
 						ConfigurationManager.AppSettings["DbExporterConnectionString"],
 						ConfigurationManager.AppSettings["GetTriggersSQLReuqest"],
