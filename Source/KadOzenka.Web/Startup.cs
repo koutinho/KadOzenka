@@ -142,6 +142,7 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterObjectWrapper), typeof(RegisterObjectWrapper));
             services.AddTransient(typeof(IRegisterRepository), typeof(RegisterRepository));
             services.AddTransient(typeof(IRegisterAttributeRepository), typeof(RegisterAttributeRepository));
+            services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>

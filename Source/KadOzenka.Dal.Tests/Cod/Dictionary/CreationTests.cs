@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.Tests.Cod.Dictionary
 
             CodDictionaryService.AddCodDictionary(dictionaryInput);
 
-            CodDictionaryRepository.Verify(x => x.Save(It.IsAny<OMCodJob>()), Times.Once);
+            CodDictionaryRepository.Verify(x => x.Save(createdDictionary), Times.Once);
             Assert.That(createdDictionary.NameJob, Is.EqualTo(dictionaryInput.Name));
             Assert.That(createdDictionary.RegisterId, Is.EqualTo(createdRegister.RegisterId));
         }

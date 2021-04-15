@@ -39,5 +39,16 @@ namespace KadOzenka.Dal.Tests.Cod.Dictionary
             Assert.That(dictionary.NameJob, Is.EqualTo(dictionaryInput.Name));
             Assert.That(register.RegisterDescription, Is.EqualTo(dictionaryInput.Name));
         }
+
+        [Test]
+        public void CanNot_Update_Dictionary()
+        {
+            var dictionaryInput = CreateDictionaryDto(numberOfValues: 2);
+            dictionaryInput.Name = null;
+            
+            var exception = Assert.Throws<Exception>(() => CodDictionaryService.UpdateCodDictionary(dictionaryInput));
+
+            Assert.That(exception.Message, Is.EqualTo(CodMessages.EmptyDictionaryName));
+        }
     }
 }

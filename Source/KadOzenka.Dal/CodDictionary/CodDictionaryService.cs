@@ -156,13 +156,14 @@ namespace KadOzenka.Dal.CodDictionary
         {
             var dictionary = GetDictionary(id);
 
-            var eventId = new OMRecycleBin
+            var recycleBin = new OMRecycleBin
             {
                 DeletedTime = DateTime.Now,
                 UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
                 ObjectRegisterId = OMCodJob.GetRegisterId(),
                 Description = $"Справочник ЦОД '{dictionary.NameJob}'"
-            }.Save();
+            };
+            var eventId = RecycleBinService.Save(recycleBin);
 
             RegisterService.RemoveRegister(dictionary.RegisterId, eventId);
 

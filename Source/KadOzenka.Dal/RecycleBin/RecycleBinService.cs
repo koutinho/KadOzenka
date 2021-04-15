@@ -25,10 +25,20 @@ namespace KadOzenka.Dal.RecycleBin
 {
 	public class RecycleBinService : IRecycleBinService
 	{
+		private IRecycleBinRepository RecycleBinRepository { get; set; }
+
 		private static readonly ILogger _log = Log.ForContext<RecycleBinService>();
 
 		private string GetDeletedTableName(string mainTableName) => $"{mainTableName}_DELETED";
 		private string GetTableName(string deletedTableName) => deletedTableName.Substring(0, deletedTableName.Length - "_DELETED".Length);
+
+
+        public RecycleBinService(IRecycleBinRepository recycleBinRepository = null)
+        {
+            RecycleBinRepository = recycleBinRepository ?? new RecycleBinRepository();
+
+        }
+
 
 		public bool ShouldUseLongProcessForRestoringObject(long registerId)
 		{
@@ -194,6 +204,11 @@ DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};";
 
 			DeleteData(recycleBins);
 		}
+
+        public int Save(OMRecycleBin recycleBin)
+        {
+            return RecycleBinRepository.Save(recycleBin);
+        }
 
 		#region Helpers
 

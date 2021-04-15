@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.RecycleBin.Dto;
+using ObjectModel.Common;
 
 namespace KadOzenka.Dal.RecycleBin
 {
@@ -16,5 +17,6 @@ namespace KadOzenka.Dal.RecycleBin
 
 		void RestoreObject(long eventId);
 		void FlushOldData(int keepDataForPastNDays);
-	}
+        int Save(OMRecycleBin recycleBin);
+    }
 }
