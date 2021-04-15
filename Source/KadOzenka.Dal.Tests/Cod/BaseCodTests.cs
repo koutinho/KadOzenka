@@ -20,6 +20,7 @@ namespace KadOzenka.Dal.Tests.Cod
         protected Mock<ICodDictionaryRepository> CodDictionaryRepository { get; set; }
         protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
         protected Mock<IRegisterConfiguratorWrapper> RegisterConfiguratorWrapper { get; set; }
+        protected Mock<IRegisterObjectWrapper> RegisterObjectWrapper { get; set; }
         protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
         protected Mock<IRecycleBinService> RecycleBinService { get; set; }
 
@@ -29,6 +30,7 @@ namespace KadOzenka.Dal.Tests.Cod
         {
             RegisterService = new Mock<IRegisterService>();
             RegisterAttributeService = new Mock<IRegisterAttributeService>();
+            RegisterObjectWrapper = new Mock<IRegisterObjectWrapper>();
             RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
             RecycleBinService = new Mock<IRecycleBinService>();
             CodDictionaryRepository = new Mock<ICodDictionaryRepository>();
@@ -48,6 +50,7 @@ namespace KadOzenka.Dal.Tests.Cod
             container.AddTransient(typeof(ICodDictionaryRepository), sp => CodDictionaryRepository.Object);
             container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
             container.AddTransient(typeof(IRegisterConfiguratorWrapper), sp => RegisterConfiguratorWrapper.Object);
+            container.AddTransient(typeof(IRegisterObjectWrapper), sp => RegisterObjectWrapper.Object);
             container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
             container.AddTransient(typeof(IRecycleBinService), sp => RecycleBinService.Object);
         }
@@ -65,6 +68,19 @@ namespace KadOzenka.Dal.Tests.Cod
                 Name = name ?? RandomGenerator.GetRandomString(),
                 Values = values
             };
+        }
+
+        protected CodDictionaryValue CreateDictionaryValue(string code = null, int numberOfValues = 1)
+        {
+            var resultCode = code ?? RandomGenerator.GetRandomString();
+            
+            var values = new List<CodDictionaryValuePure>(numberOfValues);
+            for (var i = 0; i < numberOfValues; i++)
+            {
+                values.Add(new CodDictionaryValuePure(RandomGenerator.GenerateRandomInteger(), RandomGenerator.GetRandomString()));
+            }
+
+            return new CodDictionaryValue(RandomGenerator.GenerateRandomInteger(), resultCode, values);
         }
     }
 }

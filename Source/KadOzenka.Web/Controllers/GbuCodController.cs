@@ -51,7 +51,7 @@ namespace KadOzenka.Web.Controllers
         {
             var dictionary = CodDictionaryService.GetDictionary(id);
 
-            var model = CodDictionaryUpdatingModel.ToModel(dictionary);
+            var model = CodDictionaryUpdatingModel.ToModel(dictionary, CodDictionaryService);
 
 			return View(model);
         }
@@ -112,7 +112,7 @@ namespace KadOzenka.Web.Controllers
         {
             var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
 
-            var model = CodDictionaryValueModel.ToModel(dictionary);
+            var model = CodDictionaryValueModel.ToModel(dictionary, CodDictionaryService);
 
             return View("EditDictionaryValue", model);
         }
@@ -124,7 +124,7 @@ namespace KadOzenka.Web.Controllers
             var dictionary = CodDictionaryService.GetDictionary(dictionaryId);
             var value = CodDictionaryService.GetDictionaryValue(dictionary, dictionaryValueId);
 
-            var model = CodDictionaryValueModel.ToModel(dictionary, value);
+            var model = CodDictionaryValueModel.ToModel(dictionary, CodDictionaryService, value);
 
             return View("EditDictionaryValue", model);
         }

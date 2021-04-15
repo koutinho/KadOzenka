@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Core.Register.RegisterEntities;
 using KadOzenka.Dal.CodDictionary.Entities;
 using ObjectModel.KO;
 
@@ -21,5 +22,7 @@ namespace KadOzenka.Dal.CodDictionary
         CodDictionaryValue GetDictionaryValue(long registerId, long dictionaryValueId);
 
         List<CodDictionaryValue> GetDictionaryValues(long registerId);
+
+        List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true);
     }
 }

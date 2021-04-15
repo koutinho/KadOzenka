@@ -139,6 +139,7 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterCacheWrapper), typeof(RegisterCacheWrapper));
             services.AddTransient(typeof(ICodDictionaryService), typeof(CodDictionaryService));
             services.AddTransient(typeof(ICodDictionaryRepository), typeof(CodDictionaryRepository));
+            services.AddTransient(typeof(IRegisterObjectWrapper), typeof(RegisterObjectWrapper));
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>

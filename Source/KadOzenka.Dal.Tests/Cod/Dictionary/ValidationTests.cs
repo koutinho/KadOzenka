@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.Tests.Cod.Dictionary
             var errors = CodDictionary.CodDictionaryService.ValidateCodDictionary(codDictionaryDto).ToList();
 
             Assert.That(errors.Count, Is.EqualTo(1));
-            Assert.That(errors.First().ErrorMessage, Is.EqualTo(CodMessages.NoValuesMessage));
+            Assert.That(errors.First().ErrorMessage, Is.EqualTo(CodMessages.NoDictionaryValues));
         }
 
         [Test]

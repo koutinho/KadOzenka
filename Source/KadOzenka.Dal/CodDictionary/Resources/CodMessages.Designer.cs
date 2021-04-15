@@ -61,6 +61,15 @@ namespace KadOzenka.Dal.CodDictionary.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Дожно быть заполнено хотя бы одно значение.
+        /// </summary>
+        public static string AtLeastOneDictionaryValueNeeded {
+            get {
+                return ResourceManager.GetString("AtLeastOneDictionaryValueNeeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не указано Имя справочника.
         /// </summary>
         public static string EmptyDictionaryName {
@@ -108,9 +117,18 @@ namespace KadOzenka.Dal.CodDictionary.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Не указаны Значения.
         /// </summary>
-        public static string NoValuesMessage {
+        public static string NoDictionaryValues {
             get {
-                return ResourceManager.GetString("NoValuesMessage", resourceCulture);
+                return ResourceManager.GetString("NoDictionaryValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не указан Код.
+        /// </summary>
+        public static string NoValueCode {
+            get {
+                return ResourceManager.GetString("NoValueCode", resourceCulture);
             }
         }
     }

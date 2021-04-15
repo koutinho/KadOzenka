@@ -12,9 +12,9 @@ namespace KadOzenka.Web.Models.GbuCod
     {
         public List<AttributePure> RegisterAttributes { get; set; }
 
-        public static CodDictionaryUpdatingModel ToModel(OMCodJob entity)
+        public static CodDictionaryUpdatingModel ToModel(OMCodJob entity, ICodDictionaryService service)
         {
-            var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(entity.RegisterId, false)
+            var registerAttributes = service.GetDictionaryRegisterAttributes(entity.RegisterId, false)
                 .Select(x => new AttributePure
                 {
                     Id = x.Id,

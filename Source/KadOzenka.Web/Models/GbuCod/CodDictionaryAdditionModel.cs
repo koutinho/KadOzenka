@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.Registers.Entities;
 

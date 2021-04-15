@@ -24,24 +24,25 @@ namespace KadOzenka.Web.Models.GbuCod
 
 
 
-		public static CodDictionaryValueModel ToModel(OMCodJob dictionary, CodDictionaryValue dictionaryValue = null)
+        public static CodDictionaryValueModel ToModel(OMCodJob dictionary, ICodDictionaryService service,
+            CodDictionaryValue dictionaryValue = null)
         {
-            var registerAttributes = CodDictionaryService.GetDictionaryRegisterAttributes(dictionary.RegisterId, false)
+            var registerAttributes = service.GetDictionaryRegisterAttributes(dictionary.RegisterId, false)
                 .Select(x => new AttributePure
                 {
                     Id = x.Id,
                     Name = x.Name
                 }).ToList();
 
-			return new CodDictionaryValueModel
+            return new CodDictionaryValueModel
             {
                 Id = dictionaryValue?.Id ?? -1,
-				DictionaryId = dictionary.Id,
+                DictionaryId = dictionary.Id,
                 Code = dictionaryValue?.Code,
-				RegisterAttributes = registerAttributes,
+                RegisterAttributes = registerAttributes,
                 Values = dictionaryValue?.Values ?? new List<CodDictionaryValuePure>()
             };
-		}
+        }
 
         public CodDictionaryValue ToDto()
         {

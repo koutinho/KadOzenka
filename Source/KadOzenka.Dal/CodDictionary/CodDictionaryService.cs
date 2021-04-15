@@ -25,6 +25,7 @@ namespace KadOzenka.Dal.CodDictionary
         public IRegisterAttributeService RegisterAttributeService { get; }
         private IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
         public IRecycleBinService RecycleBinService { get; }
+        public IRegisterObjectWrapper RegisterObjectWrapper { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         public ICodDictionaryRepository CodDictionaryRepository { get; }
 
@@ -33,6 +34,7 @@ namespace KadOzenka.Dal.CodDictionary
             IRegisterAttributeService registerAttributeService,
             IRegisterConfiguratorWrapper registerConfiguratorWrapper,
             IRecycleBinService recycleBinService,
+            IRegisterObjectWrapper registerObjectWrapper,
             IRegisterCacheWrapper registerCacheWrapper,
             ICodDictionaryRepository codDictionaryRepository)
         {
@@ -40,6 +42,7 @@ namespace KadOzenka.Dal.CodDictionary
             RegisterAttributeService = registerAttributeService;
             RegisterConfiguratorWrapper = registerConfiguratorWrapper;
             RecycleBinService = recycleBinService;
+            RegisterObjectWrapper = registerObjectWrapper;
             RegisterCacheWrapper = registerCacheWrapper;
             CodDictionaryRepository = codDictionaryRepository;
         }
@@ -49,7 +52,7 @@ namespace KadOzenka.Dal.CodDictionary
 
         public OMCodJob GetDictionary(long id)
         {
-            var dictionary = OMCodJob.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+            var dictionary = CodDictionaryRepository.GetById(id, null);
             if (dictionary == null)
                 throw new Exception($"Не найден словарь с ИД {id}");
 
@@ -65,7 +68,7 @@ namespace KadOzenka.Dal.CodDictionary
 
             if (codDictionary.Values == null)
             {
-                yield return new ValidationResult(CodMessages.NoValuesMessage);
+                yield return new ValidationResult(CodMessages.NoDictionaryValues);
                 yield break;
             }
 
@@ -265,12 +268,12 @@ namespace KadOzenka.Dal.CodDictionary
             attributes.ForEach(attribute =>
             {
                 var currentValue = value.Values.FirstOrDefault(x => x.AttributeId == attribute.Id)?.Value;
-                registerObject.SetAttributeValue((int)attribute.Id, currentValue);
+                RegisterObjectWrapper.SetAttributeValue(registerObject, (int)attribute.Id, currentValue);
             });
 
-            registerObject.SetAttributeValue((int)codeAttributeInfo.Id, value.Code);
+            RegisterObjectWrapper.SetAttributeValue(registerObject, (int) codeAttributeInfo.Id, value.Code);
 
-            RegisterStorage.Save(registerObject);
+            RegisterObjectWrapper.Save(registerObject);
         }
 
         public CodDictionaryValue GetDictionaryValue(OMCodJob dictionary, long dictionaryValueId)
@@ -315,9 +318,9 @@ namespace KadOzenka.Dal.CodDictionary
             return GetDictionaryValuesInternal(attributes, query);
         }
 
-        public static List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true)
+        public List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true)
         {
-            return RegisterCache.RegisterAttributes
+            return RegisterCacheWrapper.GetRegisterAttributesCache()
                 .Where(x =>
                 {
                     var codeCondition = true;
@@ -333,11 +336,11 @@ namespace KadOzenka.Dal.CodDictionary
         {
             if (string.IsNullOrWhiteSpace(dictionaryValue.Code))
             {
-                yield return new ValidationResult("Не указан Код");
+                yield return new ValidationResult(CodMessages.NoValueCode);
             }
             if (dictionaryValue.Values.All(x => string.IsNullOrWhiteSpace(x.Value)))
             {
-                yield return new ValidationResult("Дожно быть заполнено хотя бы одно значение");
+                yield return new ValidationResult(CodMessages.AtLeastOneDictionaryValueNeeded);
             }
         }
 
