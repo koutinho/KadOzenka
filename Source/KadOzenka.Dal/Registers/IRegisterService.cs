@@ -11,5 +11,6 @@ namespace KadOzenka.Dal.Registers
 
 		int CreateIdColumnForRegister(long registerId);
 		void RemoveRegister(long registerId, long eventId);
-	}
+        int SaveRegister(OMRegister register);
+    }
 }

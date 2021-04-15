@@ -23,6 +23,7 @@ namespace KadOzenka.Dal.CodDictionary
     {
         private IRegisterService RegisterService { get; }
         public IRegisterAttributeService RegisterAttributeService { get; }
+        public IRegisterAttributeRepository RegisterAttributeRepository { get; }
         private IRegisterConfiguratorWrapper RegisterConfiguratorWrapper { get; }
         public IRecycleBinService RecycleBinService { get; }
         public IRegisterObjectWrapper RegisterObjectWrapper { get; }
@@ -36,7 +37,8 @@ namespace KadOzenka.Dal.CodDictionary
             IRecycleBinService recycleBinService,
             IRegisterObjectWrapper registerObjectWrapper,
             IRegisterCacheWrapper registerCacheWrapper,
-            ICodDictionaryRepository codDictionaryRepository)
+            ICodDictionaryRepository codDictionaryRepository,
+            IRegisterAttributeRepository registerAttributeRepository)
         {
             RegisterService = registerService;
             RegisterAttributeService = registerAttributeService;
@@ -45,6 +47,7 @@ namespace KadOzenka.Dal.CodDictionary
             RegisterObjectWrapper = registerObjectWrapper;
             RegisterCacheWrapper = registerCacheWrapper;
             CodDictionaryRepository = codDictionaryRepository;
+            RegisterAttributeRepository = registerAttributeRepository;
         }
 
 
@@ -139,11 +142,14 @@ namespace KadOzenka.Dal.CodDictionary
 
             if (isCacheUpdatingNeeded)
             {
-                RegisterCache.UpdateCache(0, null);
+                RegisterCacheWrapper.UpdateCache();
             }
 
-            dictionary.NameJob = codDictionary.Name;
-            dictionary.Save();
+            if (dictionary.NameJob != codDictionary.Name)
+            {
+                dictionary.NameJob = codDictionary.Name;
+                CodDictionaryRepository.Save(dictionary);
+            }
         }
 
         public void DeleteDictionary(long id)
@@ -227,13 +233,13 @@ namespace KadOzenka.Dal.CodDictionary
                 throw new Exception($"Не найден реестр с ИД '{dictionaryFromDb.RegisterId}'");
 
             register.RegisterDescription = codDictionary.Name;
-            register.Save();
+            RegisterService.SaveRegister(register);
         }
 
         private void UpdateAttributes(CodDictionaryDto codDictionary, ref bool isCacheUpdatingNeeded)
         {
             var attributeIds = codDictionary.Values.Select(x => x.Id).ToList();
-            var attributes = OMAttribute.Where(x => attributeIds.Contains(x.Id)).Select(x => x.Name).Execute();
+            var attributes = RegisterAttributeRepository.GetEntitiesByCondition(x => attributeIds.Contains(x.Id), x => new {x.Name});
             for (var i = 0; i < codDictionary.Values.Count; i++)
             {
                 var value = codDictionary.Values[i];

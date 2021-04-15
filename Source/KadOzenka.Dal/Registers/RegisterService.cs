@@ -11,11 +11,15 @@ namespace KadOzenka.Dal.Registers
     public class RegisterService : IRegisterService
     {
 	    public IRecycleBinService RecycleBinService { get; }
+	    public IRegisterRepository RegisterRepository { get; }
 
-	    public RegisterService(IRecycleBinService recycleBinService)
+	    public RegisterService(IRecycleBinService recycleBinService,
+            IRegisterRepository registerRepository)
 	    {
 		    RecycleBinService = recycleBinService;
-	    }
+            RegisterRepository = registerRepository;
+        }
+
 
         public OMRegister GetRegister(long? registerId)
         {
@@ -43,9 +47,14 @@ namespace KadOzenka.Dal.Registers
                 omRegister.MainRegister = OMMainObject.GetRegisterId();
             }
 
-            omRegister.Save();
+            SaveRegister(omRegister);
 
             return omRegister;
+        }
+
+        public int SaveRegister(OMRegister register)
+        {
+            return RegisterRepository.Save(register);
         }
 
         public int CreateIdColumnForRegister(long registerId)

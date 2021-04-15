@@ -31,7 +31,7 @@ namespace KadOzenka.Dal.Tours
         public TourFactorService()
         {
 	        RecycleBinService = new RecycleBinService();
-            RegisterService = new RegisterService(RecycleBinService);
+            RegisterService = new RegisterService(RecycleBinService, new RegisterRepository());
             RegisterAttributeService = new RegisterAttributeService();
         }
 

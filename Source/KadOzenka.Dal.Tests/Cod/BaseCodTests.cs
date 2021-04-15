@@ -18,6 +18,7 @@ namespace KadOzenka.Dal.Tests.Cod
     {
         protected ICodDictionaryService CodDictionaryService => Provider.GetService<ICodDictionaryService>();
         protected Mock<ICodDictionaryRepository> CodDictionaryRepository { get; set; }
+        protected Mock<IRegisterAttributeRepository> RegisterAttributeRepository { get; set; }
         protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
         protected Mock<IRegisterConfiguratorWrapper> RegisterConfiguratorWrapper { get; set; }
         protected Mock<IRegisterObjectWrapper> RegisterObjectWrapper { get; set; }
@@ -34,6 +35,7 @@ namespace KadOzenka.Dal.Tests.Cod
             RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
             RecycleBinService = new Mock<IRecycleBinService>();
             CodDictionaryRepository = new Mock<ICodDictionaryRepository>();
+            RegisterAttributeRepository = new Mock<IRegisterAttributeRepository>();
         }
 
         [OneTimeSetUp]
@@ -53,6 +55,7 @@ namespace KadOzenka.Dal.Tests.Cod
             container.AddTransient(typeof(IRegisterObjectWrapper), sp => RegisterObjectWrapper.Object);
             container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
             container.AddTransient(typeof(IRecycleBinService), sp => RecycleBinService.Object);
+            container.AddTransient(typeof(IRegisterAttributeRepository), sp => RegisterAttributeRepository.Object);
         }
 
         protected CodDictionaryDto CreateDictionaryDto(string name = null, int numberOfValues = 1)
