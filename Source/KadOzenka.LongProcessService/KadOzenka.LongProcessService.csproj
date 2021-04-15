@@ -43,6 +43,8 @@
 		<None Include="Config\Param\*.Ppr.Ppr.xml" Condition="'$(Configuration)'=='Release'" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="Config\Param\*.Dev.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" CopyToOutputDirectory="PreserveNewest" />
 		<Content Remove="gknImportSettings.json" />
+		<!--Long process так как у него нет .Dev файла то отдельно кипируем Core.LongProcess-->
+		<None Include="Config\Param\Core.LongProcess.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" CopyToOutputDirectory="PreserveNewest" />
 
 		<None Include="Config\Param\ModelingProcessConfig.xml" Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='UAT'" CopyToOutputDirectory="PreserveNewest" />
 
