@@ -351,6 +351,11 @@ namespace KadOzenka.Dal.CodDictionary
             }
         }
 
+        #endregion
+
+
+        #region Support Methods
+
         private List<CodDictionaryValue> GetDictionaryValuesInternal(List<RegisterAttribute> attributes, QSQuery query)
         {
             var codeAttribute = attributes.First(x => x.Name == CodDictionaryConsts.CodeColumnName);
@@ -391,11 +396,6 @@ namespace KadOzenka.Dal.CodDictionary
 
             return rows;
         }
-
-        #endregion
-
-
-        #region Support Methods
 
         private void ValidateCodDictionaryValueInternal(CodDictionaryValue value)
         {
