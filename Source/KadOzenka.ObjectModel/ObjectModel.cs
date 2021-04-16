@@ -6924,6 +6924,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private DateTime _assessmentdate;
+        /// <summary>
+        /// 20102500 Дата оценки (assessment_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 20102500)]
+        public DateTime AssessmentDate
+        {
+            get
+            {
+                CheckPropertyInited("AssessmentDate");
+                return _assessmentdate;
+            }
+            set
+            {
+                _assessmentdate = value;
+                NotifyPropertyChanged("AssessmentDate");
+            }
+        }
+
     }
 }
 
