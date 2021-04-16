@@ -147,6 +147,10 @@
 		</None>-->
 	</ItemGroup>
 
+	<Target Name="CreateLogsFolder" AfterTargets="AfterPublish">
+		<MakeDir Directories="$(PublishDir)log" Condition="!Exists('$(PublishDir)log')" />
+	</Target>
+
 	<!--<Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="attrib -r &quot;$(ProjectDir)Config\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)ConfigCore\*.*&quot; /s&#xD;&#xA;attrib -r &quot;$(ProjectDir)wwwroot\*.*&quot; /s" />
   </Target>-->
