@@ -22,7 +22,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.707" />
+    <PackageReference Include="Platform.Web" Version="1.0.711" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -126,7 +126,7 @@
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
 
-		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Local.json" Condition="'$(Configuration)'=='Local'"/>
+		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Local.json" Condition="'$(Configuration)'=='Local'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Demo.json" Condition="'$(Configuration)'=='Demo'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.UAT.json" Condition="'$(Configuration)'=='UAT'" />

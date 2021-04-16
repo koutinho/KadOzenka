@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Platform" Version="1.0.385" />
+    <PackageReference Include="Platform" Version="1.0.387" />
   </ItemGroup>
 
   <ItemGroup>
