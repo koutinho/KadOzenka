@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Web.Models.GbuObject;
 using ObjectModel.Directory;
@@ -28,6 +29,8 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Документ")]
         public PartialDocumentViewModel Document { get; set; } = new PartialDocumentViewModel();
 
+        [Display(Name = "Тип файла")]
+        public DocumentType DocumentType { get; set; }
 
         public static TaskCreationModel ToModel(TaskDto task)
         {

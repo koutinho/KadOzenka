@@ -2,6 +2,7 @@
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
+@using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 @model KadOzenka.Web.Models.Task.TaskCreationModel
 
 <div id="toolbar"></div>
@@ -13,13 +14,29 @@
         <li id="MainData" data-expand>
             <span>Основные данные</span>
             <div>
-                <div class="form-horizontal col-sm-12" style="margin-top:10px;">
+                <div class="form-horizontal col-sm-12" style="margin-top: 10px;">
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.LabelFor(x => x.DocumentType)
+                        </div>
+                        <div class="col-sm-10">
+                            @(Html.Kendo().RadioButtonFor(x => x.DocumentType)
+                                .Label(DocumentType.Xml.GetEnumDescription())
+                                .Value((int)DocumentType.Xml)
+                                .Checked(true))
+                            @(Html.Kendo().RadioButtonFor(x => x.DocumentType)
+                                .Label(DocumentType.Excel.GetEnumDescription())
+                                .Value((int)DocumentType.Excel)
+                                .HtmlAttributes(new { style = "padding-left:1%;" }))
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <div class="col-sm-2">
                             @Html.CustomLabelFor(x => x.TourYear)
                         </div>
                         <div class="col-sm-10">
-                            <input id="Tour" name="Tour" editmode="true" />
+                            <input id="Tour" name="Tour" editmode="true"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,13 +69,17 @@
                 </div>
             </div>
         </li>
-        <li id="XmlFiles" data-expand>
+        <li id="XmlFiles" style="display: none;" data-expand>
             <span id="filesBlockLabel">XML-файлы</span>
             <div>
                 <form id="fileForm" class="form-horizontal col-sm-12">
                     <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
                 </form>
             </div>
+        </li>
+        <li id="excelFiles" style="display: none;" data-expand>
+            <span>Excel-файлы</span>
+            <div id="excelFilesMappingBlock"></div>
         </li>
         <li id="ImageFiles" data-expand>
             <span id="imagesBlockLabel">Файлы образов</span>
@@ -87,6 +108,8 @@
     $(document).ready(function () {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');
+        $('[name="@nameof(Model.DocumentType)"]').on('change', showBlockForFileDownloading);
+        showBlockForFileDownloading();
 
         var generalAllowedFilesExtensions = ['.xml', '.zip', '.rar'];
         var allowedFilesExtensionsForPetition = ['.xlsx', '.zip', '.rar'];
@@ -233,5 +256,17 @@
         var noteType = $('[name="NoteType"]').val();
         var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
         return noteType === petitionNoteType;
+    }
+
+
+    function showBlockForFileDownloading() {
+        var documentType = $('input[name="@nameof(Model.DocumentType)"]:checked').val();
+        if (documentType === '@((int)DocumentType.Xml)') {
+            $('#excelFiles').hide();
+            $('#XmlFiles').show();
+        } else {
+            $('#excelFiles').show();
+            $('#XmlFiles').hide();
+        }
     }
 </script>
