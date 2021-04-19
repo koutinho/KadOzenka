@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
+using ObjectModel.KO;
 using Serilog;
 using SerilogTimings.Extensions;
 using SerilogTimings;
@@ -88,7 +89,7 @@ namespace KadOzenka.Dal.DataImport
         /// </summary>
         public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
+            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
         /// <summary>
@@ -99,10 +100,12 @@ namespace KadOzenka.Dal.DataImport
         /// </summary>
         public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
+            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
-        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
+        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour,
+            OMTask task, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument,
+            CancellationToken cancellationToken)
         {
 	        xmlObjectList GknItems = null;
 	        using (Operation.Time("Импорт задания на оценку: парсинг xml"))
@@ -113,12 +116,12 @@ namespace KadOzenka.Dal.DataImport
 
 	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
 	        {
-		        ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken,
+                ImportDataGkn(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, cancellationToken,
 			        GknItems);
 	        }
         }
         
-        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
+        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
         {
 	        xmlObjectList GknItems = null;
 	        using (Operation.Time("Импорт задания на оценку: парсинг xml"))
@@ -129,12 +132,12 @@ namespace KadOzenka.Dal.DataImport
 
 	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
 	        {
-		        ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken,
+		        ImportDataGkn(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, cancellationToken,
 			        GknItems);
 	        }
         }
 
-        private void ImportDataGkn(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
+        private void ImportDataGkn(DateTime unitDate, long idTour, OMTask idTask, KoNoteType koNoteType, DateTime sDate,
 	        DateTime otDate, long idDocument, CancellationToken cancellationToken, xmlObjectList GknItems)
         {
 	        if (cancellationToken.IsCancellationRequested)

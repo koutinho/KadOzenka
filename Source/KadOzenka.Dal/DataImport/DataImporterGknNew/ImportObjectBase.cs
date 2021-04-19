@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 
 		protected DateTime UnitDate { get; }
         protected long IdTour { get; }
-        protected long IdTask { get; }
+        protected OMTask Task { get; }
         protected KoNoteType KoNoteType { get; }
         protected DateTime SDate { get; }
         protected DateTime OtDate { get; }
@@ -47,12 +47,12 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		private OMTour Tour { get; }
 		protected DataImporterGknConfig DataImporterGknConfig { get; }
 
-		protected ImportObjectBase(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
+		protected ImportObjectBase(DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate,
 	        DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
         {
 	        UnitDate = unitDate;
 	        IdTour = idTour;
-	        IdTask = idTask;
+	        Task = task;
 	        KoNoteType = koNoteType;
 	        SDate = sDate;
 	        OtDate = otDate;
@@ -178,7 +178,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        Log.Warning(CancelMessage);
 		        throw;
 	        }
-	        Log.ForContext("TaskId", IdTask).Debug(SuccessMessage);
+	        Log.ForContext("TaskId", Task.Id).Debug(SuccessMessage);
         }
 
         private void ImportPartition(List<T> objectsPartition, ParallelOptions options)
@@ -222,7 +222,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 			        gbuObjectIds = gbuObjectsByCadastralNumbers.Select(x => (long?) x.Id).Distinct().ToList();
 
 			        existedUnits = OMUnit
-				        .Where(x => gbuObjectIds.Contains(x.ObjectId) && x.TaskId == IdTask && x.TourId == IdTour)
+				        .Where(x => gbuObjectIds.Contains(x.ObjectId) && x.TaskId == Task.Id && x.TourId == IdTour)
 				        .Select(x => new {x.ObjectId, x.TaskId, x.TourId, x.CreationDate, x.PropertyType_Code, x.GroupId})
 				        .Execute();
 			        if (existedUnits.IsNotEmpty())
@@ -409,15 +409,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
             OMUnit existedUnit = null;
 	        if (!isNewGbuObject)
 		        existedUnit = existedUnits.FirstOrDefault(x =>
-			        x.ObjectId == gbuObjectId && x.TaskId == IdTask && x.TourId == IdTour);
+			        x.ObjectId == gbuObjectId && x.TaskId == Task.Id && x.TourId == IdTour);
 
-	        if (isNewGbuObject || existedUnit == null)
+            var unitAssessmentDate = Task.EstimationDate ?? DateTime.Now;
+            if (isNewGbuObject || existedUnit == null)
 	        {
 		        koUnit = new OMUnit
 		        {
 			        Id = -1,
 			        TourId = IdTour,
-			        TaskId = IdTask,
+			        TaskId = Task.Id,
 			        GroupId = -1,
 			        Status_Code = unitStatus,
 			        ObjectId = gbuObjectId,
@@ -431,19 +432,20 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 			        CadastralCostPre = 0,
 			        Upks = 0,
 			        UpksPre = 0,
-
-		        };
+					AssessmentDate = unitAssessmentDate
+				};
 
 		        SetAdditionalUnitProperties(koUnit, current);
-
-		        koUnit.Save();
             }
 	        else
 	        {
 		        koUnit = existedUnit;
-	        }
+                koUnit.AssessmentDate = unitAssessmentDate;
+            }
 
-	        OMCostRosreestr existedUnitCost = null;
+			koUnit.Save();
+
+			OMCostRosreestr existedUnitCost = null;
 	        if (existedUnit != null)
 		        existedUnitCost = existedUnitCosts.FirstOrDefault(x => x.IdObject == existedUnit.Id);
 
@@ -465,7 +467,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        };
 		        cost.Save();
 	        }
-
 
             return koUnit;
         }

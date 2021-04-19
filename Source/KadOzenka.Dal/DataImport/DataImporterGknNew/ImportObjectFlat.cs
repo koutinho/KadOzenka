@@ -18,8 +18,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public override string CancelMessage => "Импорт данных ГКН был отменен во время загрузки Помещений";
 		public override string SuccessMessage => "Импорт Помещений завершен";
 
-		public ImportObjectFlat(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
-			: base(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, increaseImportedObjectsCountAction, updateObjectsAttributesAction)
+		public ImportObjectFlat(DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
+			: base(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, increaseImportedObjectsCountAction, updateObjectsAttributesAction)
 		{
 		}
 
