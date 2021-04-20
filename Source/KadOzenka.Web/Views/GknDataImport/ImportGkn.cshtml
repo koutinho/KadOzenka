@@ -34,7 +34,7 @@
 
                     <div class="form-group">
                         <div class="col-sm-2">
-                            @Html.CustomLabelFor(x => x.TourYear)
+                            @Html.CustomLabelFor(x => x.TourId)
                         </div>
                         <div class="col-sm-10">
                             <input id="Tour" name="Tour" editmode="true"/>
@@ -73,7 +73,7 @@
         <li id="XmlFiles" style="display: none;" data-expand>
             <span id="filesBlockLabel">XML-файлы</span>
             <div>
-                <form id="fileForm" class="form-horizontal col-sm-12">
+                <form id="xmlFileForm" class="form-horizontal col-sm-12">
                     <input name="xmlFiles" id="xmlFiles" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
                 </form>
             </div>
@@ -179,12 +179,21 @@
                             return;
                         }
 
-                        var formData = new FormData($('#fileForm').get(0));
+                        var formData = new FormData();
+                        if (isImportViaExcel()) {
+                            formData = collectFormDataFromMappingBlock();
+                        } else {
+                            var xmlFilesFormData = new FormData($('#xmlFileForm').get(0));
+                            var images = xmlFilesFormData.getAll('xmlFiles');
+                            images.forEach(x => formData.append('@nameof(Model.XmlFiles)', x));
+                        }
+
                         var imageFormData = new FormData($('#imageForm').get(0));
                         var images = imageFormData.getAll('images');
                         images.forEach(x=>formData.append('images',x));
-                        formData.set('TourYear', $('[name="Tour"]').val());
+                        formData.set('@nameof(Model.TourId)', $('[name="Tour"]').val());
                         formData.set('NoteType', $('[name="NoteType"]').val());
+                        formData.set('@nameof(Model.DocumentType)', getSelectedDocumentType());
                         var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
                         if (estdate != null) {
                             formData.set('EstimationDate', estdate.toDateString());
@@ -201,6 +210,7 @@
                         kendo.ui.progress($('body'), true);
                         $.ajax({
                             type: 'POST',
+                            url: '@Url.Action("ImportGkn", "GknDataImport")',
                             data: formData,
                             processData: false,
                             contentType: false,
@@ -322,8 +332,11 @@
     }
 
     function isImportViaExcel() {
-        var documentType = $('input[name="@nameof(Model.DocumentType)"]:checked').val();
+        var documentType = getSelectedDocumentType();
         return documentType === '@((int) DocumentType.Excel)';
+    }
+    function getSelectedDocumentType() {
+        return $('input[name="@nameof(Model.DocumentType)"]:checked').val();;
     }
 
 
@@ -382,88 +395,22 @@
     }
 
 
-
-
-        //TODO delete
-    function initLoadButton() {
-        $("#loadButton").kendoButton({
-            enable: true,
-            click: function(e) {
-                kendo.ui.progress($('#importForm'), true);
-                $("#loadButton").data('kendoButton').enable(false);
-                var listView = $("#listView").data('kendoListView');
-                var data = listView.dataSource.data();
-                var columns = $.map(data,
-                    function(item) {
-                        return {
-                            ColumnName: item.ColumnName,
-                            AttributeId: item.AttributeId,
-                            IsKey: item.IsKey
-                        };
-                    });
-
-                var file = $('#files').data('kendoUpload').getFiles()[0];
-                var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
-                var documentObject = Common.Functions.FormToObject($('#partialDocument'));
-
-                if (!isForMarketObjects && documentObject.IsNewDocument == "False" && !documentObject.IdDocument) {
-                    kendo.ui.progress($('#importForm'), false);
-                    $("#loadButton").data('kendoButton').enable(true);
-                    Common.ShowError("Поле Документ обязательно для заполнения");
-                    return;
-                }
-
-                var formData = new FormData();
-                @*formData.append("MainRegisterId", @((long)ViewBag.MainRegisterId));*@
-                formData.append("File", file.rawFile);
-                formData.append("RegisterViewId", registerViewId);
-                formData.append("IsBackgroundDownload", isBackgroundDownload);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.ModelPrefix)", documentObject.ModelPrefix);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.IdDocument)", documentObject.IdDocument);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.NewDocumentRegNumber)", documentObject.NewDocumentRegNumber);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.NewDocumentName)", documentObject.NewDocumentName);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.NewDocumentDate)", documentObject.NewDocumentDate);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.NewDocumentApproveDate)", documentObject.NewDocumentApproveDate);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.NewDocumentChangeDate)", documentObject.NewDocumentChangeDate);
-                formData.append("@nameof(ImportGbuObjectModel.Document).@nameof(PartialDocumentViewModel.IsNewDocument)", documentObject.IsNewDocument);
-                for (var i = 0; i !== columns.length; i++) {
-                    formData.append("columns[" + i + "].ColumnName", columns[i].ColumnName);
-                    formData.append("columns[" + i + "].AttributeId", columns[i].AttributeId);
-                    formData.append("columns[" + i + "].IsKey", columns[i].IsKey);
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Action("ImportDataFromExcel", "DataImportByTemplate")',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(data) {
-                        if (data.Success) {
-                            Common.ShowMessage(data.Message);
-                        } else {
-                            Common.ShowError(data.Message);
-                        }
-                        if (data.ImportDataLogId) {
-                            var hrefForJournal = "/RegistersView/DataImporter?Transition=1&80100100=" + data.ImportDataLogId;
-                            var goToJournalBtn = $("#goToJournalBtn");
-                            goToJournalBtn.removeClass('k-state-disabled');
-                            goToJournalBtn.attr('href', hrefForJournal);
-                        }
-                        if (data.ResultFileName) {
-                            window.location = '@Url.Action("DownloadExcelResultFile", "DataImportByTemplate")' +
-                                "?resultFileName=" +
-                                data.ResultFileName;
-                        }
-                    },
-                    error: function(response) {
-                        Common.ShowError(response.responseText);
-                    },
-                    complete: function(data) {
-                        kendo.ui.progress($('#importForm'), false);
-                        $("#loadButton").data('kendoButton').enable(true);
-                    }
-                });
-            }
+    function collectFormDataFromMappingBlock() {
+        var formData = new FormData();
+        var file = $('#files').data('kendoUpload').getFiles()[0];
+        formData.append("@nameof(Model.ExcelFile)", file.rawFile);
+        var listView = $("#listView").data('kendoListView');
+        var data = listView.dataSource.data();
+        var columnsPropertyName = "@nameof(Model.ExcelColumnsMapping)";
+        for (var i = 0; i < data.length; i++) {
+            var currentElement = `${columnsPropertyName}[${i}]`;
+            formData.append(`${currentElement}.ColumnName`, data[i].ColumnName);
+            formData.append(`${currentElement}.AttributeId`, data[i].AttributeId);
+        }
+        data.forEach(x => {
+            
         });
+
+        return formData;
     }
 </script>

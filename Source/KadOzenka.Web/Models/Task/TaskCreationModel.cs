@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
-using KadOzenka.Dal.Tasks.Dto;
+using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Web.Models.GbuObject;
+using Microsoft.AspNetCore.Http;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -14,7 +16,7 @@ namespace KadOzenka.Web.Models.Task
         public int RegisterId => OMTask.GetRegisterId();
 
         [Display(Name = "Тур")]
-        public long? TourYear { get; set; }
+        public long? TourId { get; set; }
 
         [Display(Name = "Тип статьи")]
         [Required(ErrorMessage = "Поле Тип статьи обязательное")]
@@ -32,15 +34,15 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Тип файла")]
         public DocumentType DocumentType { get; set; }
 
-        public static TaskCreationModel ToModel(TaskDto task)
+        public List<IFormFile> XmlFiles { get; set; }
+        public IFormFile ExcelFile { get; set; }
+        public List<DataColumnDto> ExcelColumnsMapping { get; set; }
+
+
+        public TaskCreationModel()
         {
-            return new TaskCreationModel
-            {
-	            Id = task.Id,
-                TourYear = task.Tour?.Year,
-	            NoteType = task.NoteType,
-	            EstimationDate = task.EstimationDate
-            };
+            XmlFiles = new List<IFormFile>();
+            ExcelColumnsMapping = new List<DataColumnDto>();
         }
     }
 }

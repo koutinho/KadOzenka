@@ -49,7 +49,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
-		public ActionResult ImportGkn(List<IFormFile> files, TaskCreationModel dto, List<IFormFile> images)
+		public ActionResult ImportGkn(TaskCreationModel dto, List<IFormFile> images)
         {
             dto.Document.ProcessDocument();
 
@@ -58,7 +58,7 @@ namespace KadOzenka.Web.Controllers
 
             OMTask task = new OMTask
 			{
-				TourId = dto.TourYear,
+				TourId = dto.TourId,
 				DocumentId = dto.Document.IdDocument,
 				CreationDate = DateTime.Now,
 				EstimationDate = dto.EstimationDate,
@@ -74,7 +74,7 @@ namespace KadOzenka.Web.Controllers
 				attDto.AttachmentRegisterId = 203;
 				attDto.AttachmentObjectId = task.Id;
 				attSvc.AttachmentUpload(attDto,images.ToArray());
-				foreach (var file in files)
+				foreach (var file in dto.XmlFiles)
 				{
 					using (var stream = file.OpenReadStream())
 					{
@@ -89,7 +89,7 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			string Msg = "Задание на оценку успешно создано. ";
-			if (files.Any())
+			if (dto.XmlFiles.Any())
 			{
 				Msg += "Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение";
 			}
