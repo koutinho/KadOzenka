@@ -197,7 +197,7 @@ namespace KadOzenka.Dal.DataImport
 				}
 				else if (import.FileExtension == "xml")
 				{
-					importer = new NotPetitionImporter(DataImporterGknLongProcessProgressLogger);
+					importer = new NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger);
 				}
 				else
 				{

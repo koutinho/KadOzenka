@@ -11,12 +11,15 @@ using Serilog;
 
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 {
-	public class NotPetitionImporter : BaseImporter, IDataImporterGkn
+	/// <summary>
+	/// Класс для импорта .xml документа ЗнО любого типа кроме "Обращений"
+	/// </summary>
+	public class NotPetitionXmlImporter : BaseImporter, IDataImporterGkn
 	{
-		private static readonly ILogger Log = Serilog.Log.ForContext<NotPetitionImporter>();
+		private static readonly ILogger Log = Serilog.Log.ForContext<NotPetitionXmlImporter>();
 		private DataImporterGknLongProcessProgressLogger DataImporterGknLongProcessProgressLogger { get; }
 
-		public NotPetitionImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
+		public NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
 		{
 			DataImporterGknLongProcessProgressLogger = dataImporterGknLongProcessProgressLogger;
 		}
