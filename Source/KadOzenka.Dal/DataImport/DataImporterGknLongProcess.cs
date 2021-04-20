@@ -174,45 +174,31 @@ namespace KadOzenka.Dal.DataImport
                 ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
 				Log.Information("Начата обработка задачи с Id {TaskId}, типа '{type}', расширение файла {FileExtension}.",
 					omTask?.Id, omTask?.NoteType_Code.GetEnumDescription(), import.FileExtension);
+				if (omTask == null)
+					throw new Exception($"Не найдено задание на оценку с ИД '{import.ObjectId}'");
 
-				if (omTask != null && omTask.NoteType_Code == KoNoteType.Petition)
-                {
-                    if (import.FileExtension == "zip")
-                    {
-                        ImportGknFromZip(import, templateFileStream, ".xlsx");
-                    }
-                    else if (import.FileExtension == "rar")
-                    {
-                        ImportGknFromRar(import, templateFileStream, ".xlsx");
-                    }
-                    else if (import.FileExtension == "xlsx")
-                    {
-                        ImportGknPetitionXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.FileExtension}, поддерживаемые расширения: .zip, .rar, .xlsx.");
-                    }
-                }
-                else
-                {
-                    if (import.FileExtension == "zip")
-                    {
-                        ImportGknFromZip(import, templateFileStream, ".xml");
-                    }
-                    else if (import.FileExtension == "rar")
-                    {
-                        ImportGknFromRar(import, templateFileStream, ".xml");
-                    }
-                    else if (import.FileExtension == "xml")
-                    {
-                        ImportGknFromXml(templateFileStream, import.ObjectId, import, cancellationToken);
-                    }
-                    else
-                    {
-                        throw new NotSupportedException($"Неподдерживаемое расширение файла {import.FileExtension}");
-                    }
-                }
+				var resultFileExtension = omTask.NoteType_Code == KoNoteType.Petition ? ".xlsx" : ".xml";
+
+				if (import.FileExtension == "zip")
+				{
+					ImportGknFromZip(import, templateFileStream, resultFileExtension);
+				}
+				else if (import.FileExtension == "rar")
+				{
+					ImportGknFromRar(import, templateFileStream, resultFileExtension);
+				}
+				else if (import.FileExtension == "xlsx" && omTask.NoteType_Code == KoNoteType.Petition)
+				{
+					ImportGknPetitionXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
+				}
+				else if (import.FileExtension == "xml")
+				{
+					ImportGknFromXml(templateFileStream, import.ObjectId, import, cancellationToken);
+				}
+				else
+				{
+					throw new NotSupportedException($"Неподдерживаемое расширение файла {import.FileExtension}, поддерживаемые расширения: .zip, .rar, .xlsx, .xml");
+				}
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
