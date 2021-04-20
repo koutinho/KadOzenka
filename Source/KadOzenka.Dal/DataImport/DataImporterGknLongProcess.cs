@@ -191,17 +191,9 @@ namespace KadOzenka.Dal.DataImport
 				{
 					ImportGknFromRar(import, templateFileStream, resultFileExtension);
 				}
-				else if (import.FileExtension == "xlsx" && omTask.NoteType_Code == KoNoteType.Petition)
-				{
-					importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
-				}
-				else if (import.FileExtension == "xml")
-				{
-					importer = new NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger);
-				}
 				else
 				{
-					throw new NotSupportedException($"Неподдерживаемое расширение файла '{import.FileExtension}'. Для заданий типа '{KoNoteType.Petition.GetEnumDescription()}' поддерживаемые расширения: .zip, .rar, .xlsx. Для остальных типов - .zip, .rar, .html");
+					importer = GetImporter(import.FileExtension, omTask.NoteType_Code);
 				}
 
 				importer?.Import(templateFileStream, omTask, import, cancellationToken);
@@ -233,12 +225,37 @@ namespace KadOzenka.Dal.DataImport
 			Log.Information("Финиш фонового процесса: {Description}.", processType.Description);
 		}
 
+
 	    public bool Test()
 		{
 			return true;
 		}
 
 
+	    #region Support Methods
+
+	    private IDataImporterGkn GetImporter(string fileExtension, KoNoteType taskType)
+	    {
+		    IDataImporterGkn importer;
+		    if (fileExtension == "xlsx" && taskType == KoNoteType.Petition)
+		    {
+			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
+		    }
+		    else if (fileExtension == "xlsx" && taskType != KoNoteType.Petition)
+		    {
+			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
+		    }
+		    else if (fileExtension == "xml")
+		    {
+			    importer = new NotPetitionExcelImporter(DataImporterGknLongProcessProgressLogger);
+		    }
+		    else
+		    {
+			    throw new NotSupportedException($"Неподдерживаемое расширение файла '{fileExtension}'. Для заданий типа '{KoNoteType.Petition.GetEnumDescription()}' поддерживаемые расширения: .zip, .rar, .xlsx. Для остальных типов - .zip, .rar, .html");
+		    }
+
+			return importer;
+		}
 
 	    private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
         {
@@ -305,5 +322,7 @@ namespace KadOzenka.Dal.DataImport
                 ExpireDate = DateTime.Now.AddHours(2)
 			});
 		}
+
+        #endregion
 	}
 }
