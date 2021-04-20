@@ -312,14 +312,18 @@
 
 
     function setFileBlocksVisibility() {
-        var documentType = $('input[name="@nameof(Model.DocumentType)"]:checked').val();
-        if (documentType === '@((int) DocumentType.Xml)') {
-            $('#excelFiles').hide();
-            $('#XmlFiles').show();
-        } else {
+        if (isImportViaExcel()) {
             $('#excelFiles').show();
             $('#XmlFiles').hide();
+        } else {
+            $('#excelFiles').hide();
+            $('#XmlFiles').show();
         }
+    }
+
+    function isImportViaExcel() {
+        var documentType = $('input[name="@nameof(Model.DocumentType)"]:checked').val();
+        return documentType === '@((int) DocumentType.Excel)';
     }
 
 
