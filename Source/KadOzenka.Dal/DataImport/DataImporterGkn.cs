@@ -98,12 +98,12 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
+        public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
+            ImportGknPetitionFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
         }
 
-        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour,
+        private void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour,
             OMTask task, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument,
             CancellationToken cancellationToken)
         {

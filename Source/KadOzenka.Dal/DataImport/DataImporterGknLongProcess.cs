@@ -187,7 +187,7 @@ namespace KadOzenka.Dal.DataImport
                     }
                     else if (import.FileExtension == "xlsx")
                     {
-                        ImportGknFromXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
+                        ImportGknPetitionXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
                     }
                     else
                     {
@@ -275,7 +275,7 @@ namespace KadOzenka.Dal.DataImport
             Log.Information("Импорт из xml завершен");
 		}
 
-        private void ImportGknFromXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
+        private void ImportGknPetitionXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
         {
 	        Log.Information("Начат импорт из xlsx для задачи с Id {TaskId}", objectId);
 
@@ -287,7 +287,7 @@ namespace KadOzenka.Dal.DataImport
             try
             {
 	            DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
-	            dataImporterGkn.ImportDataGknFromExcel(excelFile, schemaPath, task, processCancellationToken);
+	            dataImporterGkn.ImportGknPetitionFromExcel(excelFile, schemaPath, task, processCancellationToken);
 				DataImporterGknLongProcessProgressLogger.StopLogProgress();
 
 				if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
