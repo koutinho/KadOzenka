@@ -35,6 +35,8 @@ namespace CIPJS
             var envConfigFile = $"appsettings.{ASPNETCORE_ENVIRONMENT}.json";
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
+                //todo вынести во внедренные ресурсы
+                .AddJsonFile(path: "gknImportSettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile(path: envConfigFile, optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();

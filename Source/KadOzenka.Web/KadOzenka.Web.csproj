@@ -123,6 +123,7 @@
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Ppr.Test.xml" Condition="'$(Configuration)'=='UAT'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Ppr.Ppr.xml" Condition="'$(Configuration)'=='Release'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Dev.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" />
+		<Content Remove="gknImportSettings.json" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
 
@@ -144,6 +145,9 @@
 		</None>
 		<None Include="Config\Param\Core.LongProcess.Prod.xml">
 			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
+		</None>
+		<None Include="gknImportSettings.json">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 
 		<!--<None Include="Config\Param\Core.FileStorages.xml" />
