@@ -73,7 +73,7 @@
             <span id="filesBlockLabel">XML-файлы</span>
             <div>
                 <form id="fileForm" class="form-horizontal col-sm-12">
-                    <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
+                    <input name="xmlFiles" id="xmlFiles" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
                 </form>
             </div>
         </li>
@@ -123,7 +123,7 @@
                     icon: 'save',
                     click: function () {
                         var message = [];
-                        var upload = $("#files").data("kendoUpload");
+                        var upload = $("#xmlFiles").data("kendoUpload");
                         var files = upload.getFiles();
                         $.each(files, (function (index, value) {
                             if (isPetition()) {
@@ -225,7 +225,7 @@
             }
         }).data('kendoUpload');
 
-        var files = $('#files').kendoUpload({
+        var files = $('#xmlFiles').kendoUpload({
             multiple: true,
             localization: {
                 select: 'Выбрать файлы'
