@@ -30,18 +30,16 @@ function initMatchBtn(isFirstElementInComparisonBlockReadonly) {
         iconClass: "my-custom-icon-class",
         enable: false,
         click: function (e) {
-            const treeView = $("#treeview").data('kendoTreeView');
-            const listBox = $("#columnsListBox").data('kendoListBox');
+            var treeView = $("#treeview").data('kendoTreeView');
+            var listBox = $("#columnsListBox").data('kendoListBox');
             if (treeView && listBox) {
                 var treeViewData = treeView.dataItem(treeView.select());
-
                 //if (!isForMarketObjects)
                 //{
                 //    if (treeViewData != null) {
                 //        mainRegisterId = treeViewData.parentId;
                 //    }
                 //}
-
                 var listBoxData = listBox.dataItem(listBox.select());
                 if (treeViewData && listBoxData) {
                     treeView.enable(treeView.select(), false);
@@ -58,7 +56,9 @@ function initMatchBtn(isFirstElementInComparisonBlockReadonly) {
                         AttributeId: treeViewData.id,
                         AttributeUid: treeViewData.uid
                     });
-                    $("#loadButton").data('kendoButton').enable(true);
+                    var loadBtn = $("#loadButton").data('kendoButton');
+                    if (loadBtn)
+                        loadBtn.enable(true);
                 }
             }
         }
@@ -79,10 +79,13 @@ function initComparisonBlock() {
             attrElement.set("enabled", true);
         },
         dataBound: function () {
+            var loadBtn = $("#loadButton").data('kendoButton');
+            if (!loadBtn)
+                return;
             if (dataSource.data().length === 0) {
-                $("#loadButton").data('kendoButton').enable(false);
+                loadBtn.enable(false);
             } else {
-                $("#loadButton").data('kendoButton').enable(true);
+                loadBtn.enable(true);
             }
         }
     }).data("kendoListView");
@@ -230,6 +233,7 @@ function selectAssist(treeData, searchText) {
     return select;
 }
 
+
 function getAttributesDataSource(data) {
     var source = [];
 
@@ -266,6 +270,7 @@ function getAttributesDataSource(data) {
     return source;
 }
 
+
 function checkboxChange(e) {
     const check = e.checked;
     const listView = $("#listView").data('kendoListView');
@@ -277,7 +282,9 @@ function resetData() {
     $("#matchButton").data('kendoButton').enable(false);
     $('#filter').val('').trigger('input', [true]);
     dataSource.data([]);
-    $("#loadButton").data('kendoButton').enable(false);
+    var loadBtn = $("#loadButton").data('kendoButton');
+    if (loadBtn)
+        loadBtn.enable(false);
 }
 
 function filter(dataSource, query) {

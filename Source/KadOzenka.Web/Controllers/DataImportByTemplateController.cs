@@ -15,6 +15,7 @@ using ObjectModel.Core.Shared;
 using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using Core.Register.Enums;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.DataImport.DataImporterByTemplate;
@@ -24,6 +25,8 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
 using ObjectModel.KO;
 using ObjectModel.Market;
+using ConfigurationManager = KadOzenka.Dal.ConfigurationManagers.ConfigurationManager;
+
 
 namespace KadOzenka.Web.Controllers
 {
@@ -113,7 +116,8 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = "")]
-		private static List<RegisterTemplateColumn> BuildAttributesTreeInternal(List<long> avaliableRegisters, bool withoutPrimaryKeys = false)
+		private static List<RegisterTemplateColumn> BuildAttributesTreeInternal(List<long> avaliableRegisters, 
+            List<long> availableAttributeIds = null, bool withoutPrimaryKeys = false)
 		{
 			var attributesTree = new List<RegisterTemplateColumn>();
 
@@ -139,7 +143,15 @@ namespace KadOzenka.Web.Controllers
                             {
                                 pkCondition = x.IsPrimaryKey == false;
 							}
-                            return x.RegisterId == registerData.Id && pkCondition;
+
+                            var attributeIdsCondition = true;
+                            if (availableAttributeIds != null)
+                            {
+                                attributeIdsCondition = availableAttributeIds.Contains(x.Id);
+                            }
+
+                            return x.RegisterId == registerData.Id && pkCondition && attributeIdsCondition;
+
                         }).Select(attributeData => new RegisterTemplateColumn
 						{
 							ItemId = registerData.Id + "_" + attributeData.Id,
@@ -284,7 +296,7 @@ namespace KadOzenka.Web.Controllers
         {
             var availableRegisters = new List<long> {registerId};
 
-            return BuildAttributesTreeInternal(availableRegisters, true);
+            return BuildAttributesTreeInternal(availableRegisters, withoutPrimaryKeys: true);
         }
 
 		[HttpPost]
@@ -345,6 +357,63 @@ namespace KadOzenka.Web.Controllers
             }
         }
 
+		#endregion
+
+
+		#region Импорт Excel для Задания на оценку
+
+        [HttpGet]
+		[SRDFunction(Tag = "")]
+        public List<RegisterTemplateColumn> BuildAttributesTreeForTaskDocument()
+        {
+            var availableAttributeIds = DownloadAttributesForExcel();
+            var availableRegisters = RegisterCache.RegisterAttributes.Where(x => availableAttributeIds.Contains(x.Key))
+                .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
+
+            var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
+
+            return attributesTree;
+        }
+
+
+        #region Support Methods
+
+        private List<long> DownloadAttributesForExcel()
+        {
+            var dataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig.GknDataAttributes;
+
+            var allAttributeIdsFromConfig = new List<long>();
+            var properties = dataImporterGknConfig.GetType().GetProperties();
+            foreach (var prop in properties)
+            {
+                var section = prop.GetValue(dataImporterGknConfig, null);
+                var idsFromSection = GetIdsFromSection(section);
+                allAttributeIdsFromConfig.AddRange(idsFromSection);
+            }
+
+            return allAttributeIdsFromConfig;
+        }
+
+        private List<long> GetIdsFromSection(object section)
+        {
+            var attributeIds = new List<long>();
+
+            var properties = section.GetType().GetProperties().Where(x => x.PropertyType != typeof(string)).ToList();
+            foreach (PropertyInfo prop in properties)
+            {
+                var value = prop.GetValue(section, null)?.ToString();
+                var id = long.TryParse(value, out var val) ? val : (long?)null;
+                if (id != null)
+                {
+                    attributeIds.Add(id.Value);
+                }
+            }
+
+            return attributeIds;
+        }
+
         #endregion
+
+		#endregion
 	}
 }
