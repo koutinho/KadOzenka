@@ -7,6 +7,7 @@ using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
@@ -56,7 +57,7 @@ namespace KadOzenka.Web.Controllers
             if (dto.Document.IdDocument.GetValueOrDefault() == 0)
                 throw new Exception("Не выбран документ");
 
-            OMTask task = new OMTask
+            var taskId = new OMTask
 			{
 				TourId = dto.TourId,
 				DocumentId = dto.Document.IdDocument,
@@ -64,23 +65,17 @@ namespace KadOzenka.Web.Controllers
 				EstimationDate = dto.EstimationDate,
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
 				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
-			};
-            task.Save();
+			}.Save();
 
 			try
 			{
 				var attSvc = new CoreAttachmentService();
 				var attDto = new AttachmentUploadDto();
 				attDto.AttachmentRegisterId = 203;
-				attDto.AttachmentObjectId = task.Id;
+				attDto.AttachmentObjectId = taskId;
 				attSvc.AttachmentUpload(attDto,images.ToArray());
-				foreach (var file in dto.XmlFiles)
-				{
-					using (var stream = file.OpenReadStream())
-					{
-						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), task.Id);
-					}
-				}
+
+				ProcessDocuments(dto, taskId);
 			}
 			catch (Exception e)
 			{
@@ -215,5 +210,29 @@ namespace KadOzenka.Web.Controllers
 				reload = true
 			});
 		}
+
+
+		#region Support Methods
+
+		private void ProcessDocuments(TaskCreationModel dto, long taskId)
+		{
+			if (dto.DocumentType == DocumentType.Xml)
+			{
+				foreach (var file in dto.XmlFiles)
+				{
+					using (var stream = file.OpenReadStream())
+					{
+						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream,
+							OMTask.GetRegisterId(), taskId);
+					}
+				}
+			}
+			else
+			{
+				
+			}
+		}
+
+		#endregion
 	}
 }
