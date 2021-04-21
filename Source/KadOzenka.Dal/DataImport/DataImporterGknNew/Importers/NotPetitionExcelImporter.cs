@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 	/// <summary>
 	/// Класс для импорта .xml документа ЗнО любого типа кроме "Обращений"
 	/// </summary>
-	public class NotPetitionExcelImporter : BaseImporter, IDataImporterGkn
+	public class NotPetitionExcelImporter //: BaseImporter, IDataImporterGkn
 	{
 		private static readonly ILogger Log = Serilog.Log.ForContext<NotPetitionExcelImporter>();
 		private DataImporterGknLongProcessProgressLogger DataImporterGknLongProcessProgressLogger { get; }

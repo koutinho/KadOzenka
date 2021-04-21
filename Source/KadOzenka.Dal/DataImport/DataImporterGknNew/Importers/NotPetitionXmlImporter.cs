@@ -1,11 +1,7 @@
-﻿using Core.Main.FileStorages;
-using ObjectModel.Common;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
 
@@ -14,42 +10,18 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 	/// <summary>
 	/// Класс для импорта .xml документа ЗнО любого типа кроме "Обращений"
 	/// </summary>
-	public class NotPetitionXmlImporter : BaseImporter, IDataImporterGkn
+	public class NotPetitionXmlImporter : BaseImporter
 	{
-		private static readonly ILogger Log = Serilog.Log.ForContext<NotPetitionXmlImporter>();
-		private DataImporterGknLongProcessProgressLogger DataImporterGknLongProcessProgressLogger { get; }
-
 		public NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
+			: base(dataImporterGknLongProcessProgressLogger, Log.ForContext<NotPetitionXmlImporter>())
 		{
-			DataImporterGknLongProcessProgressLogger = dataImporterGknLongProcessProgressLogger;
 		}
 
 
-		public void Import(FileStream fileStream, OMTask task, OMImportDataLog dataLog, CancellationToken processCancellationToken)
+		protected override void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, string pathSchema, OMTask task,
+			CancellationToken cancellationToken)
 		{
-			Log.Information("Начат импорт из xml для задачи с Id {TaskId}", task.Id);
-
-			var schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-			try
-			{
-				var dataImporterGkn = new DataImporterGkn();
-				DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
-				dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task, processCancellationToken);
-				DataImporterGknLongProcessProgressLogger.StopLogProgress();
-
-				if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
-				{
-					ExportTaskChanges(task);
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Information(ex, "Импорт из xml завершен с ошибкой");
-				DataImporterGknLongProcessProgressLogger.StopLogProgress();
-				throw;
-			}
-
-			Log.Information("Импорт из xml завершен");
+			dataImporterGkn.ImportDataGknFromXml(fileStream, pathSchema, task, cancellationToken);
 		}
 	}
 }

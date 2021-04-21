@@ -182,7 +182,7 @@ namespace KadOzenka.Dal.DataImport
 
 				var resultFileExtension = omTask.NoteType_Code == KoNoteType.Petition ? ".xlsx" : ".xml";
 
-				IDataImporterGkn importer = null;
+				BaseImporter importer = null;
 				if (import.FileExtension == "zip")
 				{
 					ImportGknFromZip(import, templateFileStream, resultFileExtension);
@@ -234,20 +234,16 @@ namespace KadOzenka.Dal.DataImport
 
 	    #region Support Methods
 
-	    private IDataImporterGkn GetImporter(string fileExtension, KoNoteType taskType)
+	    private BaseImporter GetImporter(string fileExtension, KoNoteType taskType)
 	    {
-		    IDataImporterGkn importer;
+		    BaseImporter importer;
 		    if (fileExtension == "xlsx" && taskType == KoNoteType.Petition)
-		    {
-			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
-		    }
-		    else if (fileExtension == "xlsx" && taskType != KoNoteType.Petition)
 		    {
 			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
 		    }
 		    else if (fileExtension == "xml")
 		    {
-			    importer = new NotPetitionExcelImporter(DataImporterGknLongProcessProgressLogger);
+			    importer = new NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger);
 		    }
 		    else
 		    {
