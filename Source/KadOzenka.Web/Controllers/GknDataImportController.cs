@@ -51,8 +51,11 @@ namespace KadOzenka.Web.Controllers
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
 		public ActionResult ImportGkn(TaskCreationModel dto, List<IFormFile> images)
-        {
-            dto.Document.ProcessDocument();
+		{
+			//внутри TaskCreationModel есть модель для документа, поэтому ModelState.IsValid использовать нельзя
+			dto.Validate();
+
+			dto.Document.ProcessDocument();
 
             if (dto.Document.IdDocument.GetValueOrDefault() == 0)
                 throw new Exception("Не выбран документ");

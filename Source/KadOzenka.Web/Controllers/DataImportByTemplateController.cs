@@ -312,13 +312,7 @@ namespace KadOzenka.Web.Controllers
                 .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
 
 	        var unitRegisterId = OMUnit.GetRegisterId();
-	        var unitRequiredAttributeIds = new List<long>
-	        {
-		        OMUnit.GetColumnAttributeId(x => x.PropertyType),
-		        OMUnit.GetColumnAttributeId(x => x.CadastralNumber),
-		        OMUnit.GetColumnAttributeId(x => x.Square),
-		        OMUnit.GetColumnAttributeId(x => x.AssessmentDate)
-	        };
+	        var unitRequiredAttributeIds = Dal.DataImport.DataImporterGknNew.Consts.RequiredAttributeIds;
 
 	        availableRegisters.Add(unitRegisterId);
 	        availableAttributeIds.AddRange(unitRequiredAttributeIds);

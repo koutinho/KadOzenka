@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using Core.Register;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Web.Models.GbuObject;
@@ -43,6 +45,30 @@ namespace KadOzenka.Web.Models.Task
         {
             XmlFiles = new List<IFormFile>();
             ExcelColumnsMapping = new List<DataColumnDto>();
+        }
+
+        public void Validate()
+        {
+	        if (DocumentType == DocumentType.Excel)
+	        {
+		        if (ExcelFile == null)
+			        throw new Exception("Не передан Excel-файл");
+
+                if (ExcelColumnsMapping.Count == 0)
+			        throw new Exception("Не указано соответствие колонок Excel-файла загружаемым атрибутам");
+
+		        var notSelectedRequiredAttributeIds = Dal.DataImport.DataImporterGknNew.Consts.RequiredAttributeIds
+			        .Except(ExcelColumnsMapping.Select(x => x.AttributeId)).ToList();
+		        if (notSelectedRequiredAttributeIds.Count != 0)
+		        {
+			        var attributeNames = RegisterCache.RegisterAttributes
+				        .Where(x => notSelectedRequiredAttributeIds.Contains(x.Key)).Select(x => x.Value.Name).ToList();
+			        var message = string.Join(',', attributeNames);
+
+			        throw new Exception($"Не указаны обязательные параметры: {message}");
+                }
+	        }
+	        
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace KadOzenka.Dal.DataImport.DataImporterGknNew
+﻿using System.Collections.Generic;
+using ObjectModel.KO;
+
+namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 {
 	public static class Consts
 	{
@@ -39,5 +42,13 @@
 		public static readonly int P2FsAttributeId = 661;
 		public static readonly int P3WallMaterialAttributeId = 662;
 		public static readonly int P4YearOfBuildAttributeId = 663;
+
+		public static readonly List<long> RequiredAttributeIds = new()
+		{
+			OMUnit.GetColumnAttributeId(x => x.PropertyType),
+			OMUnit.GetColumnAttributeId(x => x.CadastralNumber),
+			OMUnit.GetColumnAttributeId(x => x.Square),
+			OMUnit.GetColumnAttributeId(x => x.AssessmentDate)
+		};
 	}
 }
