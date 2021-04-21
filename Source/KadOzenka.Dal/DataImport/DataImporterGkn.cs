@@ -98,9 +98,7 @@ namespace KadOzenka.Dal.DataImport
 
 			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
 			{
-				ImportDataGkn(task.EstimationDate.Value, task.TourId.Value, task, task.NoteType_Code,
-					task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken,
-					GknItems);
+				ImportDataGkn(task.EstimationDate.Value, task, cancellationToken, GknItems);
 			}
 		}
 
@@ -121,14 +119,11 @@ namespace KadOzenka.Dal.DataImport
 
 			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
 			{
-				ImportDataGkn(task.CreationDate.Value, task.TourId.Value, task, task.NoteType_Code,
-					task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken,
-					GknItems);
+				ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
 			}
 		}
 
-        private void ImportDataGkn(DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate,
-	        DateTime otDate, long idDocument, CancellationToken cancellationToken, xmlObjectList GknItems)
+        private void ImportDataGkn(DateTime unitDate, OMTask task, CancellationToken cancellationToken, xmlObjectList GknItems)
         {
 	        if (cancellationToken.IsCancellationRequested)
 	        {
@@ -160,12 +155,12 @@ namespace KadOzenka.Dal.DataImport
 
 	        var objectsImporters = new List<object>
 	        {
-		        new ImportObjectBuild(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
-		        new ImportObjectParcel(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
-		        new ImportObjectConstruction(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
-		        new ImportObjectUncomplited(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
-		        new ImportObjectFlat(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
-		        new ImportObjectCarPlace(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
+		        new ImportObjectBuild(unitDate, task, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
+		        new ImportObjectParcel(unitDate, task, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
+		        new ImportObjectConstruction(unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
+		        new ImportObjectUncomplited(unitDate, task, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
+		        new ImportObjectFlat(unitDate, task, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
+		        new ImportObjectCarPlace(unitDate, task, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
 	        };
 
 	        ParallelOptions options = new ParallelOptions

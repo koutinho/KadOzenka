@@ -177,8 +177,7 @@ namespace KadOzenka.Dal.DataImport
                 ObjectModel.KO.OMTask omTask = ObjectModel.KO.OMTask.Where(x => x.Id == import.ObjectId).SelectAll().ExecuteFirstOrDefault();
 				Log.Information("Начата обработка задачи с Id {TaskId}, типа '{type}', расширение файла {FileExtension}.",
 					omTask?.Id, omTask?.NoteType_Code.GetEnumDescription(), import.FileExtension);
-				if (omTask == null)
-					throw new Exception($"Не найдено задание на оценку с ИД '{import.ObjectId}'");
+				ValidateTask(omTask);
 
 				var resultFileExtension = omTask.NoteType_Code == KoNoteType.Petition ? ".xlsx" : ".xml";
 
@@ -233,6 +232,29 @@ namespace KadOzenka.Dal.DataImport
 
 
 	    #region Support Methods
+
+	    private void ValidateTask(OMTask task)
+	    {
+		    if (task == null)
+			    throw new Exception("Не найдено задание на оценку");
+
+			var messages = new List<string>();
+		    if (task.NoteType_Code == KoNoteType.Petition)
+		    {
+			    if (task.CreationDate == null)
+				    messages.Add("Дата создания");
+		    }
+
+			if (task.TourId == null)
+				messages.Add("Тур");
+			if (task.EstimationDate == null)
+				messages.Add("Дата оценки");
+			if (task.DocumentId == null)
+				messages.Add("Входящий документ");
+
+			if (messages.Count != 0)
+				throw new Exception($"В задании на оценку не указаны: {string.Join(',', messages)}");
+	    }
 
 	    private BaseImporter GetImporter(string fileExtension, KoNoteType taskType)
 	    {

@@ -47,16 +47,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		private OMTour Tour { get; }
 		protected DataImporterGknConfig DataImporterGknConfig { get; }
 
-		protected ImportObjectBase(DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate,
-	        DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
+		protected ImportObjectBase(DateTime unitDate, OMTask task, 
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
         {
 	        UnitDate = unitDate;
-	        IdTour = idTour;
+	        IdTour = task.TourId.Value;
 	        Task = task;
-	        KoNoteType = koNoteType;
-	        SDate = sDate;
-	        OtDate = otDate;
-	        IdDocument = idDocument;
+	        KoNoteType = task.NoteType_Code;
+	        SDate = task.EstimationDate.Value;
+	        OtDate = task.EstimationDate.Value;
+	        IdDocument = task.DocumentId.Value;
 	        IncreaseImportedObjectsCountAction = increaseImportedObjectsCountAction;
 	        UpdateObjectsAttributesAction = updateObjectsAttributesAction;
 	        DataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig;
