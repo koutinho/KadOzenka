@@ -6,6 +6,7 @@ using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.Documents;
@@ -15,11 +16,9 @@ using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
-using ObjectModel.Core.Shared;
 using ObjectModel.Directory.Common;
 using ObjectModel.KO;
 using Platform.Web.Services;
-using RsmCloudService.Web.Controllers;
 using RsmCloudService.Web.Models.CoreAttachment;
 
 namespace KadOzenka.Web.Controllers
@@ -106,7 +105,7 @@ namespace KadOzenka.Web.Controllers
 				{
 					using (var stream = file.OpenReadStream())
 					{
-						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), taskId);
+						DataImporterGknLongProcess.AddImportToQueue(file.FileName, stream, taskId);
 					}
 				}
 			}
@@ -225,14 +224,22 @@ namespace KadOzenka.Web.Controllers
 				{
 					using (var stream = file.OpenReadStream())
 					{
-						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream,
-							OMTask.GetRegisterId(), taskId);
+						DataImporterGknLongProcess.AddImportToQueue(file.FileName, stream, taskId);
 					}
 				}
 			}
 			else
 			{
-				
+				using (var stream = dto.ExcelFile.OpenReadStream())
+				{
+					var attributes = dto.ExcelColumnsMapping.Select(x => new DataExportColumn
+					{
+						AttributrId = x.AttributeId, 
+						ColumnName = x.ColumnName
+					}).ToList();
+
+					DataImporterGknLongProcess.AddImportToQueue(dto.ExcelFile.FileName, stream, taskId, attributes);
+				}
 			}
 		}
 

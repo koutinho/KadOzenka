@@ -1629,6 +1629,7 @@ namespace KadOzenka.Dal.XmlParser
                 }
                 catch (Exception ex)
                 {
+	                Serilog.Log.Error(ex, "Ошибка при обработке excel-файла для Обращений");
                 }
             });
 

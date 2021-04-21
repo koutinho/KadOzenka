@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 
 
 		protected override void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, string pathSchema, OMTask task,
-			CancellationToken cancellationToken)
+			CancellationToken cancellationToken, object additionalParameters = null)
 		{
 			dataImporterGkn.ImportDataGknFromXml(fileStream, pathSchema, task, cancellationToken);
 		}

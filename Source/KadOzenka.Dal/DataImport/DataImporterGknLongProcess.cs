@@ -10,22 +10,17 @@ using System.Threading;
 using Core.Shared.Extensions;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;
-using GemBox.Spreadsheet;
 using Ionic.Zip;
-using KadOzenka.Dal.DataComparing;
-using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
-using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Common;
-using KadOzenka.Dal.Tasks;
+using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
@@ -46,8 +41,13 @@ namespace KadOzenka.Dal.DataImport
 			DataImporterGknLongProcessProgressLogger = new DataImporterGknLongProcessProgressLogger();
 		}
 
-		public static void AddImportToQueue(long mainRegisterId, string registerViewId, string templateFileName, Stream templateFile, long registerId, long objectId)
+		public static void AddImportToQueue(string templateFileName, Stream templateFile, long taskId,
+			List<DataExportColumn> columnsMapping = null)
 		{
+			var mainRegisterId = OMTask.GetRegisterId();
+			var registerViewId = "Tasks";
+			var serializedColumnsMapping = columnsMapping == null ? null : JsonConvert.SerializeObject(columnsMapping);
+
 			var import = new OMImportDataLog
 			{
 				UserId = SRDSession.GetCurrentUserId().Value,
@@ -55,8 +55,9 @@ namespace KadOzenka.Dal.DataImport
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added, // TODO: доработать платформу, чтоб формировался Enum
 				DataFileTitle = DataImporterCommon.GetDataFileTitle(templateFileName),
 				FileExtension = DataImporterCommon.GetFileExtension(templateFileName),
-				RegisterId = registerId,
-				ObjectId = objectId,
+				ColumnsMapping = serializedColumnsMapping,
+				RegisterId = mainRegisterId,
+				ObjectId = taskId,
 				MainRegisterId = mainRegisterId,
 				RegisterViewId = registerViewId
 			};
@@ -195,7 +196,7 @@ namespace KadOzenka.Dal.DataImport
 					importer = GetImporter(import.FileExtension, omTask.NoteType_Code);
 				}
 
-				importer?.Import(templateFileStream, omTask, import, cancellationToken);
+				importer?.Import(templateFileStream, omTask, import, cancellationToken, import.ColumnsMapping);
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
@@ -258,12 +259,17 @@ namespace KadOzenka.Dal.DataImport
 
 	    private BaseImporter GetImporter(string fileExtension, KoNoteType taskType)
 	    {
+		    var isPetition = taskType == KoNoteType.Petition;
 		    BaseImporter importer;
-		    if (fileExtension == "xlsx" && taskType == KoNoteType.Petition)
+		    if (fileExtension == "xlsx" && isPetition)
 		    {
 			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
 		    }
-		    else if (fileExtension == "xml")
+		    else if (fileExtension == "xlsx" && !isPetition)
+		    {
+			    importer = new NotPetitionExcelImporter(DataImporterGknLongProcessProgressLogger);
+		    }
+			else if (fileExtension == "xml")
 		    {
 			    importer = new NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger);
 		    }
@@ -302,7 +308,7 @@ namespace KadOzenka.Dal.DataImport
 
                     Log.Information("Файл {InsideFileName} поставлен в очередь на обработку.", file.FileName);
 
-					DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), import.ObjectId.Value);
+					DataImporterGknLongProcess.AddImportToQueue(file.FileName, stream, import.ObjectId.Value);
                 }
             }
         }
@@ -320,7 +326,7 @@ namespace KadOzenka.Dal.DataImport
 	            {
 		            Log.Information("Файл {InsideFileName} поставлен в очередь на обработку.", entry.Key);
 
-					DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", entry.Key, entry.OpenEntryStream(), OMTask.GetRegisterId(), import.ObjectId.Value);
+					AddImportToQueue(entry.Key, entry.OpenEntryStream(), import.ObjectId.Value);
 	            }
 	        }
 	    }

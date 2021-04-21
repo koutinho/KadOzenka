@@ -103,7 +103,7 @@ namespace KadOzenka.Dal.DataImport
 		}
 
         /// <summary>
-        /// Импорт данных ГКН из Excel
+        /// Импорт данных ГКН из Excel для Обращений
         /// excelFile - файл Excel
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.DataImport
         public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
         {
 			xmlObjectList GknItems = null;
-			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
+			using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 			{
 				xmlImportGkn.FillDictionary(pathSchema);
 				GknItems = xmlImportGkn.GetExcelObject(excelFile);

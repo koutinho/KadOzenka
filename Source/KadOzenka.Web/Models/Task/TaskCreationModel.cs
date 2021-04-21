@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Core.Register;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Web.Models.GbuObject;
 using Microsoft.AspNetCore.Http;
@@ -57,18 +58,8 @@ namespace KadOzenka.Web.Models.Task
                 if (ExcelColumnsMapping.Count == 0)
 			        throw new Exception("Не указано соответствие колонок Excel-файла загружаемым атрибутам");
 
-		        var notSelectedRequiredAttributeIds = Dal.DataImport.DataImporterGknNew.Consts.RequiredAttributeIds
-			        .Except(ExcelColumnsMapping.Select(x => x.AttributeId)).ToList();
-		        if (notSelectedRequiredAttributeIds.Count != 0)
-		        {
-			        var attributeNames = RegisterCache.RegisterAttributes
-				        .Where(x => notSelectedRequiredAttributeIds.Contains(x.Key)).Select(x => x.Value.Name).ToList();
-			        var message = string.Join(',', attributeNames);
-
-			        throw new Exception($"Не указаны обязательные параметры: {message}");
-                }
+                DataImporterGknValidator.ValidateExcelColumnsForNotPetition(ExcelColumnsMapping.Select(x => x.AttributeId));
 	        }
-	        
         }
     }
 }

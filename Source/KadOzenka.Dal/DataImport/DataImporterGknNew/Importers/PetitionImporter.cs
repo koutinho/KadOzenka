@@ -1,8 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
+using Newtonsoft.Json;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
@@ -16,7 +20,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 
 
 		protected override void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, string pathSchema, OMTask task,
-			CancellationToken cancellationToken)
+			CancellationToken cancellationToken, object columnsMappingObj = null)
 		{
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			dataImporterGkn.ImportGknPetitionFromExcel(excelFile, pathSchema, task, cancellationToken);

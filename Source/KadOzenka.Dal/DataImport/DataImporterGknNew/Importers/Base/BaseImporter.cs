@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using ObjectModel.KO;
@@ -9,13 +8,8 @@ using Core.Main.FileStorages;
 using ObjectModel.Common;
 using System;
 using System.IO;
-using System.Threading;
-using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
 using ObjectModel.Directory;
-using ObjectModel.KO;
-using Serilog;
 
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 {
@@ -33,10 +27,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 
 
 		protected abstract void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, string pathSchema,
-			OMTask task, CancellationToken cancellationToken);
+			OMTask task, CancellationToken cancellationToken, object additionalParameters = null);
 
 
-		public void Import(FileStream fileStream, OMTask task, OMImportDataLog dataLog, CancellationToken processCancellationToken)
+		public void Import(FileStream fileStream, OMTask task, OMImportDataLog dataLog,
+			CancellationToken processCancellationToken, object additionalParameters = null)
 		{
 			_logger.Information("Начат импорт для задачи с Id {TaskId}", task.Id);
 
@@ -46,7 +41,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 			try
 			{
 				DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
-				ImportGkn(dataImporterGkn, fileStream, schemaPath, task, processCancellationToken);
+				ImportGkn(dataImporterGkn, fileStream, schemaPath, task, processCancellationToken, additionalParameters);
 				DataImporterGknLongProcessProgressLogger.StopLogProgress();
 
 				if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
