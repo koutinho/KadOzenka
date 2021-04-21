@@ -1581,7 +1581,7 @@ namespace KadOzenka.Dal.XmlParser
 
                 obj.Levels = new List<xmlLevel>
 				{
-					new xmlLevel {Number = row.Cells[12].Value.ParseToString(), Type = {Name = "Этаж"}}
+					new() {Number = row.Cells[12].Value.ParseToString(), Type = new xmlCodeName {Name = "Этаж"}}
                 };
 
                 string wcode = row.Cells[13].Value.ParseToString();
