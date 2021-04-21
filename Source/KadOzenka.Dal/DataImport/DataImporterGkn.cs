@@ -87,10 +87,22 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
+        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
-        }
+			xmlObjectList GknItems = null;
+			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
+			{
+				xmlImportGkn.FillDictionary(pathSchema);
+				GknItems = xmlImportGkn.GetXmlObject(xmlFile);
+			}
+
+			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
+			{
+				ImportDataGkn(task.EstimationDate.Value, task.TourId.Value, task, task.NoteType_Code,
+					task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken,
+					GknItems);
+			}
+		}
 
         /// <summary>
         /// Импорт данных ГКН из Excel
@@ -98,46 +110,24 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
+        public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
         {
-            ImportGknPetitionFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
-        }
+			xmlObjectList GknItems = null;
+			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
+			{
+				xmlImportGkn.FillDictionary(pathSchema);
+				GknItems = xmlImportGkn.GetExcelObject(excelFile);
+			}
 
-        private void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour,
-            OMTask task, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument,
-            CancellationToken cancellationToken)
-        {
-	        xmlObjectList GknItems = null;
-	        using (Operation.Time("Импорт задания на оценку: парсинг xml"))
-	        {
-		        xmlImportGkn.FillDictionary(pathSchema);
-		        GknItems = xmlImportGkn.GetExcelObject(excelFile);
-	        }
+			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
+			{
+				ImportDataGkn(task.CreationDate.Value, task.TourId.Value, task, task.NoteType_Code,
+					task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken,
+					GknItems);
+			}
+		}
 
-	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
-	        {
-                ImportDataGkn(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, cancellationToken,
-			        GknItems);
-	        }
-        }
-        
-        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
-        {
-	        xmlObjectList GknItems = null;
-	        using (Operation.Time("Импорт задания на оценку: парсинг xml"))
-	        {
-		        xmlImportGkn.FillDictionary(pathSchema);
-		        GknItems = xmlImportGkn.GetXmlObject(xmlFile);
-	        }
-
-	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
-	        {
-		        ImportDataGkn(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, cancellationToken,
-			        GknItems);
-	        }
-        }
-
-        private void ImportDataGkn(DateTime unitDate, long idTour, OMTask idTask, KoNoteType koNoteType, DateTime sDate,
+        private void ImportDataGkn(DateTime unitDate, long idTour, OMTask task, KoNoteType koNoteType, DateTime sDate,
 	        DateTime otDate, long idDocument, CancellationToken cancellationToken, xmlObjectList GknItems)
         {
 	        if (cancellationToken.IsCancellationRequested)
@@ -159,7 +149,7 @@ namespace KadOzenka.Dal.DataImport
 	        CountImportFlats = 0;
 	        CountImportCarPlaces = 0;
 	        AreCountersInitialized = true;
-	        Log.ForContext("TaskId", idTask)
+	        Log.ForContext("TaskId", task.Id)
 		        .ForContext("CountXmlBuildings", CountXmlBuildings)
 		        .ForContext("CountXmlParcels", CountXmlParcels)
 		        .ForContext("CountXmlConstructions", CountXmlConstructions)
@@ -170,12 +160,12 @@ namespace KadOzenka.Dal.DataImport
 
 	        var objectsImporters = new List<object>
 	        {
-		        new ImportObjectBuild(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
-		        new ImportObjectParcel(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
-		        new ImportObjectConstruction(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
-		        new ImportObjectUncomplited(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
-		        new ImportObjectFlat(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
-		        new ImportObjectCarPlace(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
+		        new ImportObjectBuild(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
+		        new ImportObjectParcel(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
+		        new ImportObjectConstruction(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
+		        new ImportObjectUncomplited(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
+		        new ImportObjectFlat(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
+		        new ImportObjectCarPlace(unitDate, idTour, task, koNoteType, sDate, otDate, idDocument, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
 	        };
 
 	        ParallelOptions options = new ParallelOptions
