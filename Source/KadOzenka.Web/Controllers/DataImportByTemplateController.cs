@@ -370,9 +370,21 @@ namespace KadOzenka.Web.Controllers
             var availableRegisters = RegisterCache.RegisterAttributes.Where(x => availableAttributeIds.Contains(x.Key))
                 .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
 
-            var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
+	        var unitRegisterId = OMUnit.GetRegisterId();
+	        var unitRequiredAttributeIds = new List<long>
+	        {
+		        OMUnit.GetColumnAttributeId(x => x.PropertyType),
+		        OMUnit.GetColumnAttributeId(x => x.CadastralNumber),
+		        OMUnit.GetColumnAttributeId(x => x.Square),
+		        OMUnit.GetColumnAttributeId(x => x.AssessmentDate)
+	        };
 
-            return attributesTree;
+	        availableRegisters.Add(unitRegisterId);
+	        availableAttributeIds.AddRange(unitRequiredAttributeIds);
+
+	        var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
+
+	        return attributesTree;
         }
 
 
