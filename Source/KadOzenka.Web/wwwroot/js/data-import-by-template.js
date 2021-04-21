@@ -131,6 +131,7 @@ function initColumnsFromExcelBlock() {
 
 function initAttributesTree() {
     $("#treeview").kendoTreeView({
+        template: '<span #= item.isRequired ? \'style="color: red;"\' : "" # >#= item.text #</span>',
         loadOnDemand: false,
         autoScroll: true,
         select: function (e) {
@@ -173,7 +174,8 @@ function getAttributesDataSource(data) {
                                 id: item.AttributeId,
                                 parentId: item.ParentId,
                                 referenceId: item.ReferenceId,
-                                type: item.Type
+                                type: item.Type,
+                                isRequired: item.IsRequired
                             };
                         });
                 }
@@ -230,43 +232,6 @@ function selectAssist(treeData, searchText) {
         return select;
     }
     return select;
-}
-
-
-function getAttributesDataSource(data) {
-    var source = [];
-
-    if (data && data.length) {
-        var parantItems = data.filter(function (item) {
-            return (item.ParentId == null);
-        });
-
-        if (parantItems.length) {
-            for (var i = 0; i < parantItems.length; i++) {
-                var child = {};
-                child.text = parantItems[i].Description;
-
-                var childItems = data.filter(function (item) {
-                    return item.ParentId === parantItems[i].ItemId;
-                });
-
-                if (childItems) {
-                    child.items = $.map(childItems, function (item) {
-                        return {
-                            text: item.Description,
-                            id: item.AttributeId,
-                            parentId: item.ParentId,
-                            referenceId: item.ReferenceId,
-                            type: item.Type
-                        };
-                    });
-                }
-                source.push(child);
-            }
-        }
-    }
-
-    return source;
 }
 
 

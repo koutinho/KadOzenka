@@ -23,6 +23,7 @@ using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
+using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using ConfigurationManager = KadOzenka.Dal.ConfigurationManagers.ConfigurationManager;
@@ -306,7 +307,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = "")]
         public JsonResult BuildAttributesTreeForTaskDocument()
         {
-	        var availableAttributeIds = DownloadAttributesForExcel();
+	        var availableAttributeIds = GetAttributeIdsForTaskCreationFromConfig();
             var availableRegisters = RegisterCache.RegisterAttributes.Where(x => availableAttributeIds.Contains(x.Key))
                 .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
 
@@ -322,12 +323,8 @@ namespace KadOzenka.Web.Controllers
 	        availableRegisters.Add(unitRegisterId);
 	        availableAttributeIds.AddRange(unitRequiredAttributeIds);
 
-            //сдклано дополнтиельным маппингом, чтобы не сломать загрузку по спику для ОА и ОН
 	        var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
-	        var mappedAttributesTree = attributesTree.Select(x => new
-	        {
-
-	        });
+			attributesTree.Where(x => unitRequiredAttributeIds.Contains(x.AttributeId)).ForEach(x => x.IsRequired = true);
 
 	        return Json(attributesTree);
         }
@@ -335,7 +332,7 @@ namespace KadOzenka.Web.Controllers
 
         #region Support Methods
 
-        private List<long> DownloadAttributesForExcel()
+        private List<long> GetAttributeIdsForTaskCreationFromConfig()
         {
             var dataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig.GknDataAttributes;
 
@@ -376,21 +373,20 @@ namespace KadOzenka.Web.Controllers
 
         #region Support Methods
 
-        private List<AttributeInfoForMapping> BuildAttributesTreeInternal(List<long> avaliableRegisters,
+        private List<AttributeInfoForMapping> BuildAttributesTreeInternal(List<long> availableRegisters,
             List<long> availableAttributeIds = null, bool withoutPrimaryKeys = false)
         {
             var attributesTree = new List<AttributeInfoForMapping>();
 
-            foreach (long registerId in avaliableRegisters)
+            foreach (var registerId in availableRegisters)
             {
-	            RegisterData registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
+	            var registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
 
 	            var registerNode = new AttributeInfoForMapping
 	            {
 		            ItemId = registerData.Id.ToString(CultureInfo.InvariantCulture),
 		            Description = registerData.Description
 	            };
-
 	            attributesTree.Add(registerNode);
 
 	            attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
@@ -417,7 +413,7 @@ namespace KadOzenka.Web.Controllers
 			            Description = attributeData.Name,
 			            DocumentType = (int)attributeData.Type,
 			            AttributeId = attributeData.Id,
-			            ReferenceId = attributeData.ReferenceId.HasValue ? attributeData.ReferenceId.Value : 0,
+			            ReferenceId = attributeData.ReferenceId ?? 0
 		            }).OrderBy(x => x.Description));
             }
 
