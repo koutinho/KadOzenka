@@ -67,8 +67,11 @@ namespace KadOzenka.Web.Controllers
 		{			
 			var source = new List<object>();
 
-			List<RegistersCommon.RegisterTemplateColumn> attributesList = BuildAttributesTree();
-					   
+			var availableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
+				.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
+
+			var attributesList = BuildAttributesTreeInternal(availableRegisters);
+
 			if (attributesList.Any())
 			{
 				foreach (var attributeItem in attributesList)
@@ -104,72 +107,6 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(source);
-		}
-
-        [SRDFunction(Tag = "")]
-        public static List<RegisterTemplateColumn> BuildAttributesTree()
-        {
-            var availableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
-                .Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
-
-            return BuildAttributesTreeInternal(availableRegisters);
-        }
-
-        [SRDFunction(Tag = "")]
-		private static List<RegisterTemplateColumn> BuildAttributesTreeInternal(List<long> avaliableRegisters, 
-            List<long> availableAttributeIds = null, bool withoutPrimaryKeys = false)
-		{
-			var attributesTree = new List<RegisterTemplateColumn>();
-
-			foreach (long registerId in avaliableRegisters)
-			{
-				try
-				{
-					RegisterData registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
-
-					RegisterTemplateColumn registerNode = new RegisterTemplateColumn
-					{
-						ItemId = registerData.Id.ToString(CultureInfo.InvariantCulture),
-						Description = registerData.Description
-					};
-
-					attributesTree.Add(registerNode);
-
-					attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
-						.Where(x =>
-                        {
-                            var pkCondition = true;
-                            if (withoutPrimaryKeys)
-                            {
-                                pkCondition = x.IsPrimaryKey == false;
-							}
-
-                            var attributeIdsCondition = true;
-                            if (availableAttributeIds != null)
-                            {
-                                attributeIdsCondition = availableAttributeIds.Contains(x.Id);
-                            }
-
-                            return x.RegisterId == registerData.Id && pkCondition && attributeIdsCondition;
-
-                        }).Select(attributeData => new RegisterTemplateColumn
-						{
-							ItemId = registerData.Id + "_" + attributeData.Id,
-							ParentId = registerData.Id.ToString(CultureInfo.InvariantCulture),
-							Description = attributeData.Name,
-							DocumentType = (int)attributeData.Type,
-							AttributeId = attributeData.Id,
-							ReferenceId = attributeData.ReferenceId.HasValue ? attributeData.ReferenceId.Value : 0,
-						}).OrderBy(x => x.Description));
-				}
-				catch (Exception ex)
-				{
-					ErrorManager.LogError(ex);
-					continue;
-				}
-			}
-
-			return attributesTree;
 		}
 
 		[HttpPost]
@@ -367,9 +304,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
 		[SRDFunction(Tag = "")]
-        public List<RegisterTemplateColumn> BuildAttributesTreeForTaskDocument()
+        public JsonResult BuildAttributesTreeForTaskDocument()
         {
-            var availableAttributeIds = DownloadAttributesForExcel();
+	        var availableAttributeIds = DownloadAttributesForExcel();
             var availableRegisters = RegisterCache.RegisterAttributes.Where(x => availableAttributeIds.Contains(x.Key))
                 .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
 
@@ -385,9 +322,14 @@ namespace KadOzenka.Web.Controllers
 	        availableRegisters.Add(unitRegisterId);
 	        availableAttributeIds.AddRange(unitRequiredAttributeIds);
 
+            //сдклано дополнтиельным маппингом, чтобы не сломать загрузку по спику для ОА и ОН
 	        var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
+	        var mappedAttributesTree = attributesTree.Select(x => new
+	        {
 
-	        return attributesTree;
+	        });
+
+	        return Json(attributesTree);
         }
 
 
@@ -429,6 +371,59 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-		#endregion
-	}
+        #endregion
+
+
+        #region Support Methods
+
+        private List<AttributeInfoForMapping> BuildAttributesTreeInternal(List<long> avaliableRegisters,
+            List<long> availableAttributeIds = null, bool withoutPrimaryKeys = false)
+        {
+            var attributesTree = new List<AttributeInfoForMapping>();
+
+            foreach (long registerId in avaliableRegisters)
+            {
+	            RegisterData registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
+
+	            var registerNode = new AttributeInfoForMapping
+	            {
+		            ItemId = registerData.Id.ToString(CultureInfo.InvariantCulture),
+		            Description = registerData.Description
+	            };
+
+	            attributesTree.Add(registerNode);
+
+	            attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
+		            .Where(x =>
+		            {
+			            var pkCondition = true;
+			            if (withoutPrimaryKeys)
+			            {
+				            pkCondition = x.IsPrimaryKey == false;
+			            }
+
+			            var attributeIdsCondition = true;
+			            if (availableAttributeIds != null)
+			            {
+				            attributeIdsCondition = availableAttributeIds.Contains(x.Id);
+			            }
+
+			            return x.RegisterId == registerData.Id && pkCondition && attributeIdsCondition;
+
+		            }).Select(attributeData => new AttributeInfoForMapping
+		            {
+			            ItemId = registerData.Id + "_" + attributeData.Id,
+			            ParentId = registerData.Id.ToString(CultureInfo.InvariantCulture),
+			            Description = attributeData.Name,
+			            DocumentType = (int)attributeData.Type,
+			            AttributeId = attributeData.Id,
+			            ReferenceId = attributeData.ReferenceId.HasValue ? attributeData.ReferenceId.Value : 0,
+		            }).OrderBy(x => x.Description));
+            }
+
+            return attributesTree;
+        }
+
+        #endregion
+    }
 }

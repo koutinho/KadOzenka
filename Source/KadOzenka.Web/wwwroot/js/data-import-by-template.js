@@ -162,7 +162,6 @@ function getAttributesDataSource(data) {
             for (var i = 0; i < parantItems.length; i++) {
                 var child = {};
                 child.text = parantItems[i].Description;
-
                 var childItems = data.filter(function (item) {
                     return item.ParentId === parantItems[i].ItemId;
                 });
