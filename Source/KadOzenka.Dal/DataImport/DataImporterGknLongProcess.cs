@@ -20,6 +20,8 @@ using Ionic.Zip;
 using KadOzenka.Dal.DataComparing;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Common;
@@ -67,11 +69,12 @@ namespace KadOzenka.Dal.DataImport
 			////TODO код для отладки
 			//var cancelSource = new CancellationTokenSource();
 			//var cancelToken = cancelSource.Token;
-			//Task.Factory.StartNew(() =>
-			//{
-			//	Thread.Sleep(7000);
-			//	cancelSource.Cancel();
-			//});
+			//////TODO для тестирования отмены процеса
+			////Task.Factory.StartNew(() =>
+			////{
+			////	Thread.Sleep(7000);
+			////	cancelSource.Cancel();
+			////});
 			//new DataImporterGknLongProcess().StartProcess(new OMProcessType
 			//{
 			//	Description = "debug test"
@@ -179,6 +182,7 @@ namespace KadOzenka.Dal.DataImport
 
 				var resultFileExtension = omTask.NoteType_Code == KoNoteType.Petition ? ".xlsx" : ".xml";
 
+				IDataImporterGkn importer = null;
 				if (import.FileExtension == "zip")
 				{
 					ImportGknFromZip(import, templateFileStream, resultFileExtension);
@@ -187,18 +191,12 @@ namespace KadOzenka.Dal.DataImport
 				{
 					ImportGknFromRar(import, templateFileStream, resultFileExtension);
 				}
-				else if (import.FileExtension == "xlsx" && omTask.NoteType_Code == KoNoteType.Petition)
-				{
-					ImportGknPetitionXlsx(templateFileStream, import.ObjectId, import, cancellationToken);
-				}
-				else if (import.FileExtension == "xml")
-				{
-					ImportGknFromXml(templateFileStream, import.ObjectId, import, cancellationToken);
-				}
 				else
 				{
-					throw new NotSupportedException($"Неподдерживаемое расширение файла {import.FileExtension}, поддерживаемые расширения: .zip, .rar, .xlsx, .xml");
+					importer = GetImporter(import.FileExtension, omTask.NoteType_Code);
 				}
+
+				importer?.Import(templateFileStream, omTask, import, cancellationToken);
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
@@ -233,66 +231,33 @@ namespace KadOzenka.Dal.DataImport
 			return true;
 		}
 
-		private void ImportGknFromXml(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
-		{
-			Log.Information("Начат импорт из xml для задачи с Id {TaskId}", objectId);
 
-			ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
-			string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
+	    #region Support Methods
 
-            try
+	    private IDataImporterGkn GetImporter(string fileExtension, KoNoteType taskType)
+	    {
+		    IDataImporterGkn importer;
+		    if (fileExtension == "xlsx" && taskType == KoNoteType.Petition)
 		    {
-			    var dataImporterGkn = new DataImporterGkn();
-				DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
-			    dataImporterGkn.ImportDataGknFromXml(fileStream, schemaPath, task, processCancellationToken);
-		        DataImporterGknLongProcessProgressLogger.StopLogProgress();
-
-		        if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
-		        {
-			        ExportTaskChanges(task);
-		        }
+			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
 		    }
-		    catch (Exception ex)
+		    else if (fileExtension == "xlsx" && taskType != KoNoteType.Petition)
 		    {
-			    Log.Information(ex, "Импорт из xml завершен с ошибкой");
-			    DataImporterGknLongProcessProgressLogger.StopLogProgress();
-				throw;
+			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
+		    }
+		    else if (fileExtension == "xml")
+		    {
+			    importer = new NotPetitionExcelImporter(DataImporterGknLongProcessProgressLogger);
+		    }
+		    else
+		    {
+			    throw new NotSupportedException($"Неподдерживаемое расширение файла '{fileExtension}'. Для заданий типа '{KoNoteType.Petition.GetEnumDescription()}' поддерживаемые расширения: .zip, .rar, .xlsx. Для остальных типов - .zip, .rar, .html");
 		    }
 
-            Log.Information("Импорт из xml завершен");
+			return importer;
 		}
 
-        private void ImportGknPetitionXlsx(FileStream fileStream, long? objectId, OMImportDataLog dataLog, CancellationToken processCancellationToken)
-        {
-	        Log.Information("Начат импорт из xlsx для задачи с Id {TaskId}", objectId);
-
-	        ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
-            string schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-
-            var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-            var dataImporterGkn = new DataImporterGkn();
-            try
-            {
-	            DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
-	            dataImporterGkn.ImportGknPetitionFromExcel(excelFile, schemaPath, task, processCancellationToken);
-				DataImporterGknLongProcessProgressLogger.StopLogProgress();
-
-				if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)
-                {
-	                ExportTaskChanges(task);
-                }
-			}
-            catch (Exception ex)
-            {
-	            Log.Information(ex, "Импорт из xlsx завершен с ошибкой");
-	            DataImporterGknLongProcessProgressLogger.StopLogProgress();
-				throw;
-            }
-
-            Log.Information("Импорт из xlsx завершен");
-		}
-
-        private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
+	    private static void ImportGknFromZip(OMImportDataLog import, FileStream templateFileStream, string usedFileExtension)
         {
 	        Log.Information("Начат импорт из zip, новое расширение {UsedFileExtension}.", usedFileExtension);
 
@@ -358,12 +323,6 @@ namespace KadOzenka.Dal.DataImport
 			});
 		}
 
-        private static void ExportTaskChanges(OMTask task)
-	    {
-			Log.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
-			var path = TaskChangesDataComparingStorageManager.GetComparingDataRsmFileFullName(task);
-			var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long> { task.Id }, IsDataComparingUnload = true, FileName = path};
-			DEKOChange.ExportUnitChangeToExcel(null, unloadSettings, null);
-	    }
+        #endregion
 	}
 }
