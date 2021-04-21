@@ -279,12 +279,15 @@ namespace KadOzenka.Web.Controllers
 			return View();
         }
 
-        [SRDFunction(Tag = "")]
-        public List<RegisterTemplateColumn> BuildAttributesTreeForCod(long registerId)
+		[HttpGet]
+		[SRDFunction(Tag = "")]
+        public JsonResult BuildAttributesTreeForCod(long registerId)
         {
             var availableRegisters = new List<long> {registerId};
 
-            return BuildAttributesTreeInternal(availableRegisters, true);
+            var attributesTree = BuildAttributesTreeInternal(availableRegisters, true);
+
+			return new JsonResult(attributesTree);
         }
 
 		[HttpPost]
