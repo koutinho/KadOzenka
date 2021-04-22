@@ -22,6 +22,8 @@ namespace KadOzenka.Web.Models.GbuObject.ObjectAttributes
         public string BoolValue { get; set; }
         public string AttributeHistoryUrl { get; set; }
 
+        public bool NotEditable { get; set; }
+
         public AttributeDto(GbuObjectAttribute gbuObjectAttribute, long objectId)
         {
             Id = gbuObjectAttribute.AttributeId;
