@@ -348,6 +348,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private bool? _disableediting;
+        /// <summary>
+        /// 2400300 Запрет редактирования (DISABLE_EDITING)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 2400300)]
+        public bool? DisableEditing
+        {
+            get
+            {
+                CheckPropertyInited("DisableEditing");
+                return _disableediting;
+            }
+            set
+            {
+                _disableediting = value;
+                NotifyPropertyChanged("DisableEditing");
+            }
+        }
+
     }
 }
 
@@ -472,26 +492,6 @@ namespace ObjectModel.Gbu
     [Serializable]
     public partial class OMAttributeSettings : OMBaseClass<OMAttributeSettings>
     {
-
-        private bool? _disableediting;
-        /// <summary>
-        /// 2400300 Запрет редактирования (DISABLE_EDITING)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 2400300)]
-        public bool? DisableEditing
-        {
-            get
-            {
-                CheckPropertyInited("DisableEditing");
-                return _disableediting;
-            }
-            set
-            {
-                _disableediting = value;
-                NotifyPropertyChanged("DisableEditing");
-            }
-        }
-
 
         private long _attributeid;
         /// <summary>
