@@ -12,6 +12,7 @@
     <None Remove="Config\Param\Core.Numeration.xml" />
     <None Remove="Config\Param\FmReportTypes.xml" />
     <None Remove="Config\Param\SpdSettings.xml" />
+    <None Remove="GknImport\gknImportSettings.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +23,7 @@
     <EmbeddedResource Include="Config\Param\Core.Numeration.xml" />
     <EmbeddedResource Include="Config\Param\FmReportTypes.xml" />
     <EmbeddedResource Include="Config\Param\SpdSettings.xml" />
+    <EmbeddedResource Include="GknImport\gknImportSettings.json" />
   </ItemGroup>
 
 </Project>

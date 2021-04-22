@@ -38,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
     <ProjectReference Include="..\ImageProccessor\ImageProccessor.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
     <ProjectReference Include="..\KadOzenka.WebClients\KadOzenka.WebClients.csproj" />

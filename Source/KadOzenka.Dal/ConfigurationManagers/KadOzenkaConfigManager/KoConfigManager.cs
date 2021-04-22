@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models;
+﻿using System.Text.Json.Serialization;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models;
 using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 
 namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager
@@ -10,6 +11,9 @@ namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager
 		public DataComparingConfig DataComparingConfig { get; set; }
 
 		public ModelingProcessConfig ModelingProcessConfig { get; set; }
-		public DataImporterGknConfig DataImporterGknConfig { get; set; }
+
+		//Внедренные ресурсы 
+		[JsonIgnore]
+		public DataImporterGknConfig DataImporterGknConfig => EmbeddedResourceProvider.DataImporterGknConfig;
 	}
 }

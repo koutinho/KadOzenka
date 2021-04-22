@@ -40,7 +40,6 @@ namespace KadOzenka.LongProcessService
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile(path: envConfigFile, optional: true, reloadOnChange: true)
-                .AddJsonFile(path: "gknImportSettings.json", optional: true, reloadOnChange: true)
                 .Build();
 
             Log.Logger = new LoggerConfiguration()
