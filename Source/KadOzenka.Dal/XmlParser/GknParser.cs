@@ -1658,7 +1658,7 @@ namespace KadOzenka.Dal.XmlParser
 				        return;
 
                     var cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
-                    var square = row.Cells[squareMapping.ColumnIndex].Value.ParseToDecimalNullable();
+                    var square = row.Cells[squareMapping.ColumnIndex].Value.ParseToDouble();
                     var assessmentDate = row.Cells[assessmentDateMapping.ColumnIndex].Value.ParseToDateTimeNullable();
                     var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
 			        var typeEnum = GetObjectType(row.Index, typeFromFile);
@@ -1697,7 +1697,7 @@ namespace KadOzenka.Dal.XmlParser
 	        throw new Exception($"В строке {rowIndex} указан неизвестный тип объекта '{typeFromFile}'");
         }
 
-        private static xmlObject GetDataForExcelMapping(ExcelRow row, string cadastralNumber, decimal? square,
+        private static xmlObject GetDataForExcelMapping(ExcelRow row, string cadastralNumber, double? square,
 	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping)
         {
 	        ValidateExcelObjectRequiredFields(cadastralNumber, square, assessmentDate);
@@ -1708,7 +1708,7 @@ namespace KadOzenka.Dal.XmlParser
             return obj;
         }
 
-        private static void ValidateExcelObjectRequiredFields(string cadastralNumber, decimal? square,
+        private static void ValidateExcelObjectRequiredFields(string cadastralNumber, double? square,
 	        DateTime? assessmentDate)
         {
 	        var messages = new List<string>();
