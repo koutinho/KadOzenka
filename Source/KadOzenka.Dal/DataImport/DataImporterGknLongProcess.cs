@@ -67,25 +67,25 @@ namespace KadOzenka.Dal.DataImport
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 			import.Save();
 
-			//TODO код для отладки
-			var cancelSource = new CancellationTokenSource();
-			var cancelToken = cancelSource.Token;
-			////TODO для тестирования отмены процеса
-			//Task.Factory.StartNew(() =>
+			////TODO код для отладки
+			//var cancelSource = new CancellationTokenSource();
+			//var cancelToken = cancelSource.Token;
+			//////TODO для тестирования отмены процеса
+			////Task.Factory.StartNew(() =>
+			////{
+			////	Thread.Sleep(7000);
+			////	cancelSource.Cancel();
+			////});
+			//new DataImporterGknLongProcess().StartProcess(new OMProcessType
 			//{
-			//	Thread.Sleep(7000);
-			//	cancelSource.Cancel();
-			//});
-			new DataImporterGknLongProcess().StartProcess(new OMProcessType
-			{
-				Description = "debug test"
-			},
-				new OMQueue
-				{
-					Status_Code = Status.Added,
-					UserId = SRDSession.GetCurrentUserId(),
-					ObjectId = import.Id
-				}, cancelToken);
+			//	Description = "debug test"
+			//},
+			//	new OMQueue
+			//	{
+			//		Status_Code = Status.Added,
+			//		UserId = SRDSession.GetCurrentUserId(),
+			//		ObjectId = import.Id
+			//	}, cancelToken);
 
 			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 		}
