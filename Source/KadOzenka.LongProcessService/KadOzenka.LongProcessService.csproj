@@ -21,6 +21,7 @@
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="4.0.0" />
+    <ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
@@ -37,14 +38,14 @@
 		<None Update="Config\SqlQueries\**\*" CopyToOutputDirectory="PreserveNewest" />
 		<None Update="Config\ExcelTemplates\*" CopyToOutputDirectory="PreserveNewest" />
 
-		<None Include="Config\Param\Core.Diagnostics.xml; Config\Param\Core.DocNumeration.xml; Config\Param\Core.HealthCheck.xml; Config\Param\Core.Help.xml; Config\Param\Core.Numeration.xml; Config\Param\FmReportTypes.xml; Config\Param\SpdSettings.xml" CopyToOutputDirectory="PreserveNewest" />
+		<!--<None Include="Config\Param\Core.Diagnostics.xml; Config\Param\Core.DocNumeration.xml; Config\Param\Core.HealthCheck.xml; Config\Param\Core.Help.xml; Config\Param\Core.Numeration.xml; Config\Param\FmReportTypes.xml; Config\Param\SpdSettings.xml" CopyToOutputDirectory="PreserveNewest" />-->
 
-		<None Include="Config\Param\*.Ppr.Test.xml" Condition="'$(Configuration)'=='UAT'" CopyToOutputDirectory="PreserveNewest" />
+		<!--<None Include="Config\Param\*.Ppr.Test.xml" Condition="'$(Configuration)'=='UAT'" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="Config\Param\*.Ppr.Ppr.xml" Condition="'$(Configuration)'=='Release'" CopyToOutputDirectory="PreserveNewest" />
-		<None Include="Config\Param\*.Dev.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="Config\Param\*.Dev.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" CopyToOutputDirectory="PreserveNewest" />-->
 		<Content Remove="gknImportSettings.json" />
 		<!--Long process так как у него нет .Dev файла то отдельно кипируем Core.LongProcess-->
-		<None Include="Config\Param\Core.LongProcess.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" CopyToOutputDirectory="PreserveNewest" />
+		<!--<None Include="Config\Param\Core.LongProcess.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" CopyToOutputDirectory="PreserveNewest" />-->
 
 		<None Include="Config\Param\ModelingProcessConfig.xml" Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='UAT'" CopyToOutputDirectory="PreserveNewest" />
 
@@ -57,7 +58,7 @@
 	</ItemGroup>
 	<!-- Comfort presentation of configuration files -->
 	<ItemGroup>
-		<None Include="Config\Param\Core.LongProcess.xml" />
+		<!--<None Include="Config\Param\Core.LongProcess.xml" />
 		<None Include="Config\Param\Core.LongProcess.Prod.Web.xml">
 			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
 		</None>
@@ -67,7 +68,7 @@
 		<None Include="Config\Param\Core.LongProcess.Prod.xml">
 			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
 		</None>
-		<None Include="gknImportSettings.json" />
+		<None Include="gknImportSettings.json" />-->
 		<!--<None Include="Config\Param\Core.FileStorages.xml" />
 		<None Include="Config\Param\Core.FileStorages.Dev.xml">
 			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
