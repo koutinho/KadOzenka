@@ -174,7 +174,7 @@
                         if ($('[name="NoteType"]').val() == 0) {
                             message += 'Необходимо заполнить тип статьи<br>';
                         }
-                        if (isImportViaExcel && !getExcelFile()) {
+                        if (isImportViaExcel() && !getExcelFile()) {
                             message += 'Не выбран Excel-файл';
                         }
                         if (message.length != 0) {

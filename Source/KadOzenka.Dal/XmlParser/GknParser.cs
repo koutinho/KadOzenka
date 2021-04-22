@@ -6,11 +6,17 @@ using ObjectModel.Commission;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
+using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -105,7 +111,6 @@ namespace KadOzenka.Dal.XmlParser
                 }
             }
 
-
             using (XmlNodeList xnUnConstructions = xmlFile.GetElementsByTagName("Uncompleted"))
             {
                 foreach (XmlNode xnConstruction in xnUnConstructions)
@@ -113,7 +118,6 @@ namespace KadOzenka.Dal.XmlParser
                     objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnFlats = xmlFile.GetElementsByTagName("Flat"))
             {
@@ -130,7 +134,6 @@ namespace KadOzenka.Dal.XmlParser
                     objs.Add(GetData(xnFlat, enTypeObject.toCarPlace, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnParcels = xmlFile.GetElementsByTagName("Parcel"))
             {
@@ -1635,6 +1638,101 @@ namespace KadOzenka.Dal.XmlParser
             return objs;
         }
 
+        #region Excel Mapping
 
+        public static xmlObjectList GetExcelObject(ExcelFile excelFile, List<ColumnToAttributeMapping> columnsMapping)
+        {
+	        var objectTypeMapping = columnsMapping.First(x => x.AttributeId == OMUnit.GetColumnAttributeId(y => y.PropertyType_Code));
+            var cadastralNumberMapping = columnsMapping.First(x => x.AttributeId == OMUnit.GetColumnAttributeId(y => y.CadastralNumber));
+            var squareMapping = columnsMapping.First(x => x.AttributeId == OMUnit.GetColumnAttributeId(y => y.Square));
+            var assessmentDateMapping = columnsMapping.First(x => x.AttributeId == OMUnit.GetColumnAttributeId(y => y.AssessmentDate));
+
+	        var objects = new xmlObjectList();
+	        var mainWorkSheet = excelFile.Worksheets[0];
+	        var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+	        mainWorkSheet.Rows.ForEach(row =>
+	        {
+		        try
+		        {
+			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
+				        return;
+
+                    var cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
+                    var square = row.Cells[squareMapping.ColumnIndex].Value.ParseToDecimalNullable();
+                    var assessmentDate = row.Cells[assessmentDateMapping.ColumnIndex].Value.ParseToDateTimeNullable();
+                    var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
+			        var typeEnum = GetObjectType(row.Index, typeFromFile);
+
+			        var obj = GetDataForExcelMapping(row, cadastralNumber, square, assessmentDate, typeEnum, columnsMapping);
+			        objects.Add(obj);
+		        }
+		        catch (Exception ex)
+		        {
+                    //todo KOMO-20 - как записать ошибку в файл?
+                    Serilog.Log.Error(ex, "Ошибка при обработке excel-файла для Обращений");
+		        }
+	        });
+
+	        return objects;
+        }
+
+
+        #region Support Methods For Excel Mapping
+
+        private static enTypeObject GetObjectType(int rowIndex, string typeFromFile)
+        {
+	        rowIndex++;
+	        if (string.IsNullOrWhiteSpace(typeFromFile))
+		        throw new Exception($"В строке {rowIndex} не указан тип объекта");
+
+            //CarParkingSpace+
+            //todo KOMO-20 вынести рефлексию из цикла
+            var buildingDescription = PropertyTypes.Stead.GetEnumDescription();
+
+	        if (string.Equals(buildingDescription, typeFromFile, StringComparison.CurrentCultureIgnoreCase))
+	        {
+		        return enTypeObject.toBuilding;
+	        }
+
+	        throw new Exception($"В строке {rowIndex} указан неизвестный тип объекта '{typeFromFile}'");
+        }
+
+        private static xmlObject GetDataForExcelMapping(ExcelRow row, string cadastralNumber, decimal? square,
+	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping)
+        {
+	        ValidateExcelObjectRequiredFields(cadastralNumber, square, assessmentDate);
+
+            var obj = new xmlObject(objectType, cadastralNumber, null, assessmentDate.Value);
+            obj.Area = square;
+
+            return obj;
+        }
+
+        private static void ValidateExcelObjectRequiredFields(string cadastralNumber, decimal? square,
+	        DateTime? assessmentDate)
+        {
+	        var messages = new List<string>();
+
+	        if (string.IsNullOrWhiteSpace(cadastralNumber))
+		        messages.Add("Кадастровый номер");
+
+	        if (square == null)
+		        messages.Add("Площадь");
+
+	        if (assessmentDate == null)
+		        messages.Add("Дата оценки");
+
+	        if (messages.Count != 0)
+		        throw new Exception($"Пустые значения для обязательных полей: {string.Join(',', messages)}");
+        }
+
+        private static string GetStringValue(ExcelRow row, int columnIndex)
+        {
+	        return row.Cells[columnIndex].Value.ParseToStringNullable();
+        }
+
+        #endregion
+
+        #endregion
     }
 }

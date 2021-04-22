@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using ObjectModel.KO;
 using Serilog;
@@ -123,6 +124,28 @@ namespace KadOzenka.Dal.DataImport
 				ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
 			}
 		}
+
+        /// <summary>
+        /// Импорт данных ГКН из Excel для всех типов кроме Обращений
+        /// excelFile - файл Excel
+        /// pathSchema - путь к каталогу где хранится схема
+        /// task - ссылка на задание на оценку
+        /// </summary>
+        public void ImportGknFromExcel(ExcelFile excelFile, string pathSchema, OMTask task,
+	        List<ColumnToAttributeMapping> columnsMapping, CancellationToken cancellationToken)
+        {
+	        xmlObjectList gknItems;
+	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
+	        {
+		        xmlImportGkn.FillDictionary(pathSchema);
+		        gknItems = xmlImportGkn.GetExcelObject(excelFile, columnsMapping);
+	        }
+
+	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
+	        {
+		        ImportDataGkn(task.EstimationDate.Value, task, cancellationToken, gknItems);
+	        }
+        }
 
         private void ImportDataGkn(DateTime unitDate, OMTask task, CancellationToken cancellationToken, xmlObjectList GknItems)
         {
