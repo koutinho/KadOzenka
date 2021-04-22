@@ -69,24 +69,16 @@ namespace KadOzenka.Web.Controllers
 				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
 			}.Save();
 
-			try
-			{
-				var attSvc = new CoreAttachmentService();
-				var attDto = new AttachmentUploadDto();
-				attDto.AttachmentRegisterId = 203;
-				attDto.AttachmentObjectId = taskId;
-				attSvc.AttachmentUpload(attDto,images.ToArray());
+            var attSvc = new CoreAttachmentService();
+            var attDto = new AttachmentUploadDto();
+            attDto.AttachmentRegisterId = 203;
+            attDto.AttachmentObjectId = taskId;
+            attSvc.AttachmentUpload(attDto, images.ToArray());
 
-				ProcessDocuments(dto, taskId);
-			}
-			catch (Exception e)
-			{
-				ErrorManager.LogError(e);
-				return BadRequest();
-			}
+            ProcessDocuments(dto, taskId);
 
 			string Msg = "Задание на оценку успешно создано. ";
-			if (dto.XmlFiles.Any())
+			if (dto.XmlFiles.Any() || dto.ExcelFile != null)
 			{
 				Msg += "Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение";
 			}
