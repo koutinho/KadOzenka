@@ -14,30 +14,14 @@ namespace CIPJS
         static string ASPNETCORE_ENVIRONMENT = "Development";
         public static void Main(string[] args)
         {
-            
-    //        #if DEBUG
-    //            ASPNETCORE_ENVIRONMENT = "Development";
-    //        #elif QA
-    //            ASPNETCORE_ENVIRONMENT = "QA";
-    //        #elif DEMO
-    //            ASPNETCORE_ENVIRONMENT = "Demo";
-    //        #elif RELEASE
-    //            ASPNETCORE_ENVIRONMENT = "Production";
-    //         #elif LOCAL
-    //            ASPNETCORE_ENVIRONMENT = "Local";
-    //        #elif UAT
-				//ASPNETCORE_ENVIRONMENT = "UAT";
-    //        #endif
 
-            if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
+	        if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
             {
                 ASPNETCORE_ENVIRONMENT = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
             }
             var envConfigFile = $"appsettings.{ASPNETCORE_ENVIRONMENT}.json";
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile(path: "appsettings.json", optional: false, reloadOnChange: true)
-                //todo вынести во внедренные ресурсы
-                .AddJsonFile(path: "gknImportSettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile(path: envConfigFile, optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
@@ -66,7 +50,6 @@ namespace CIPJS
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .UseStartup<Startup>()
-                //.StartFeatureSubscribe(config)
                 .UseKoConfigManager(config)
                 .UseReonConfigManager(config)
                 .UseCoreConfigManager(config)
