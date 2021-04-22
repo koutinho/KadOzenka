@@ -22,7 +22,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.711" />
+    <PackageReference Include="Platform.Web" Version="1.0.714" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -98,6 +98,7 @@
     <Reference Include="Kendo.Mvc.resources">
       <HintPath>..\_Dll\Kendo.Mvc.resources.dll</HintPath>
     </Reference>
+		<ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
@@ -118,96 +119,24 @@
 		<None CopyToOutputDirectory="PreserveNewest" Update="ConfigCore\**\*.*" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.json" />
-		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\Core.Diagnostics.xml; Config\Param\Core.DocNumeration.xml; Config\Param\Core.HealthCheck.xml; Config\Param\Core.Help.xml; Config\Param\Core.Numeration.xml; Config\Param\FmReportTypes.xml; Config\Param\SpdSettings.xml" />
+		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\SpdSettings.xml" />
 
-		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Ppr.Test.xml" Condition="'$(Configuration)'=='UAT'" />
-		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Ppr.Ppr.xml" Condition="'$(Configuration)'=='Release'" />
-		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\*.Dev.xml" Condition="'$(Configuration)'!='Release' and '$(Configuration)'!='UAT'" />
 		<Content Remove="gknImportSettings.json" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
-
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Local.json" Condition="'$(Configuration)'=='Local'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Demo.json" Condition="'$(Configuration)'=='Demo'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.UAT.json" Condition="'$(Configuration)'=='UAT'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Production.json" Condition="'$(Configuration)'=='Release'" />
-	</ItemGroup>
-
-	<!-- Comfort presentation of configuration files -->
-	<ItemGroup>
-		<None Include="Config\Param\Core.LongProcess.xml" />
-		<None Include="Config\Param\Core.LongProcess.Prod.Web.xml">
-			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.LongProcess.Prod.DB.xml">
-			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.LongProcess.Prod.xml">
-			<DependentUpon>Config\Param\Core.LongProcess.xml</DependentUpon>
-		</None>
+	
 		<None Include="gknImportSettings.json">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-
-		<!--<None Include="Config\Param\Core.FileStorages.xml" />
-		<None Include="Config\Param\Core.FileStorages.Dev.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>-->
-		<!--<None Include="Config\Param\Core.FileStorages.Ppr.Ppr.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.FileStorages.Ppr.Test.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.FileStorages.Prod.xml">
-			<DependentUpon>Config\Param\Core.FileStorages.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Core.DataBase.Connections.xml" />
-		<None Include="Config\Param\Core.DataBase.Connections.Dev.xml">
-			<DependentUpon>Config\Param\Core.DataBase.Connections.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.DataBase.Connections.Prod.xml">
-			<DependentUpon>Config\Param\Core.DataBase.Connections.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Core.Srd.xml" />
-		<None Include="Config\Param\Core.Srd.Dev.xml">
-			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.Srd.Ppr.xml">
-			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.Srd.Prod.xml">
-			<DependentUpon>Config\Param\Core.Srd.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Core.SystemCommon.xml" />
-		<None Include="Config\Param\Core.SystemCommon.Dev.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.SystemCommon.Ppr.Ppr.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.SystemCommon.Ppr.Test.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Core.SystemCommon.Prod.xml">
-			<DependentUpon>Config\Param\Core.SystemCommon.xml</DependentUpon>
-		</None>
-
-		<None Include="Config\Param\Postgres.Backup.xml" />
-		<None Include="Config\Param\Postgres.Backup.Dev.xml">
-			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Postgres.Backup.Ppr.xml">
-			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
-		</None>
-		<None Include="Config\Param\Postgres.Backup.Prod.xml">
-			<DependentUpon>Config\Param\Postgres.Backup.xml</DependentUpon>
-		</None>-->
 	</ItemGroup>
+
+	<!-- Comfort presentation of configuration files -->
+	
 
   <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />

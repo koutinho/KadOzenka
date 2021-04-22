@@ -5,10 +5,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.WorkerCheckerDataBase;
+using KadOzenka.WebClients.ConfigurationManagers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 using Serilog;
 using Serilog.Events;
 
@@ -69,6 +71,8 @@ namespace KadOzenka.LongProcessService
                 .UseSerilog()
                 .StartWorkerChecker(config)
                 .UseKoConfigManager(config)
+                .UseReonConfigManager(config)
+                .UseCoreConfigManager(config)
                 .UseStartup<Startup>();
     }
 }
