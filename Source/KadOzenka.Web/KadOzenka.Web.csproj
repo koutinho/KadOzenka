@@ -98,10 +98,10 @@
     <Reference Include="Kendo.Mvc.resources">
       <HintPath>..\_Dll\Kendo.Mvc.resources.dll</HintPath>
     </Reference>
+		<ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
-		<ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
 	<!-- CopyToPublishDirectory configuration files -->
 	<ItemGroup>
 		<None Include="app.config; app.*.config" />
