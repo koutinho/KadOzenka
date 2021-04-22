@@ -50,6 +50,7 @@ function initMatchBtn(isFirstElementInComparisonBlockReadonly) {
                         IsKey: false,
                         IsReadOnly: isFirstElementInComparisonBlockReadonly,
                         ColumnName: listBoxData.Name,
+                        ColumnIndex: listBoxData.Id,
                         ColumnId: listBoxData.Id,
                         ColumnUid: listBoxData.uid,
                         AttributeDescription: treeViewData.text,

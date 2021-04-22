@@ -232,10 +232,10 @@ namespace KadOzenka.Web.Controllers
 			{
 				using (var stream = dto.ExcelFile.OpenReadStream())
 				{
-					var attributes = dto.ExcelColumnsMapping.Select(x => new DataExportColumn
+					var attributes = dto.ExcelColumnsMapping.Select(x => new ColumnToAttributeMapping
 					{
-						AttributrId = x.AttributeId, 
-						ColumnName = x.ColumnName
+						AttributeId= x.AttributeId, 
+						ColumnIndex = x.ColumnIndex
 					}).ToList();
 
 					DataImporterGknLongProcess.AddImportToQueue(dto.ExcelFile.FileName, stream, taskId, attributes);

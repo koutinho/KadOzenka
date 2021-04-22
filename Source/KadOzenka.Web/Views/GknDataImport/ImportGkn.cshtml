@@ -407,7 +407,7 @@
         var columnsPropertyName = "@nameof(Model.ExcelColumnsMapping)";
         for (var i = 0; i < data.length; i++) {
             var currentElement = `${columnsPropertyName}[${i}]`;
-            formData.append(`${currentElement}.ColumnName`, data[i].ColumnName);
+            formData.append(`${currentElement}.ColumnIndex`, data[i].ColumnIndex);
             formData.append(`${currentElement}.AttributeId`, data[i].AttributeId);
         }
         return formData;

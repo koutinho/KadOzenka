@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Core.Register;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.Validation;
-using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Web.Models.GbuObject;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.Directory;
@@ -13,6 +11,12 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
+	public class ColumnToAttributeMappingModel
+	{
+		public int ColumnIndex { get; set; }
+		public long AttributeId { get; set; }
+	}
+
     public class TaskCreationModel
     {
         public long Id { get; set; }
@@ -39,13 +43,13 @@ namespace KadOzenka.Web.Models.Task
 
         public List<IFormFile> XmlFiles { get; set; }
         public IFormFile ExcelFile { get; set; }
-        public List<DataColumnDto> ExcelColumnsMapping { get; set; }
+        public List<ColumnToAttributeMappingModel> ExcelColumnsMapping { get; set; }
 
 
         public TaskCreationModel()
         {
             XmlFiles = new List<IFormFile>();
-            ExcelColumnsMapping = new List<DataColumnDto>();
+            ExcelColumnsMapping = new List<ColumnToAttributeMappingModel>();
         }
 
         public void Validate()

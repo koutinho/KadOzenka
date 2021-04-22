@@ -16,6 +16,7 @@ using Core.Messages;
 using Core.Register;
 using Ionic.Zip;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
@@ -42,7 +43,7 @@ namespace KadOzenka.Dal.DataImport
 		}
 
 		public static void AddImportToQueue(string templateFileName, Stream templateFile, long taskId,
-			List<DataExportColumn> columnsMapping = null)
+			List<ColumnToAttributeMapping> columnsMapping = null)
 		{
 			var mainRegisterId = OMTask.GetRegisterId();
 			var registerViewId = "Tasks";

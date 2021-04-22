@@ -7,8 +7,7 @@ using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
 using ObjectModel.KO;
 using Serilog;
-using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.Validation;
 using Newtonsoft.Json;
 
@@ -32,8 +31,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 			if (string.IsNullOrWhiteSpace(columnsMappingStr))
 				throw new Exception("Не передано соответствие колонок Excel и заполняемых атрибутов");
 
-			var columnsMapping = JsonConvert.DeserializeObject<List<DataExportColumn>>(columnsMappingStr);
-			DataImporterGknValidator.ValidateExcelColumnsForNotPetition(columnsMapping.Select(x => x.AttributrId));
+			var columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(columnsMappingStr);
+			DataImporterGknValidator.ValidateExcelColumnsForNotPetition(columnsMapping.Select(x => x.AttributeId));
 
 			//var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			//dataImporterGkn.ImportGknPetitionFromExcel(excelFile, pathSchema, task, cancellationToken);
