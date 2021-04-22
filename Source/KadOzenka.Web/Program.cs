@@ -64,7 +64,7 @@ namespace CIPJS
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .UseStartup<Startup>()
-                .StartFeatureSubscribe(config)
+                //.StartFeatureSubscribe(config)
                 .UseKoConfigManager(config)
                 .UseReonConfigManager(config)
                 .UseCoreConfigManager(config)
