@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.Logger;
 using ObjectModel.KO;
@@ -14,7 +15,7 @@ using Newtonsoft.Json;
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 {
 	/// <summary>
-	/// Класс для импорта .xml документа ЗнО любого типа кроме "Обращений"
+	/// Класс для импорта Excel документа ЗнО любого типа кроме "Обращений"
 	/// </summary>
 	public class NotPetitionExcelImporter : BaseImporter
 	{
@@ -34,9 +35,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 			var columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(columnsMappingStr);
 			DataImporterGknValidator.ValidateExcelColumnsForNotPetition(columnsMapping.Select(x => x.AttributeId));
 
-			//var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-			//dataImporterGkn.ImportGknPetitionFromExcel(excelFile, pathSchema, task, cancellationToken);
-			throw new NotImplementedException();
+			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+			dataImporterGkn.ImportGknFromExcel(excelFile, pathSchema, task, columnsMapping, cancellationToken);
 		}
 	}
 }
