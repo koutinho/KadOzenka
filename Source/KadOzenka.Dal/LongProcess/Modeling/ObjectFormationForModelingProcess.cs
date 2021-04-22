@@ -385,7 +385,11 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		            ? OMUnit.Where(x =>
 				            buildingCadastralNumbers.Contains(x.CadastralNumber) &&
 				            x.PropertyType_Code == PropertyTypes.Building && x.TourId == Tour.Id)
-			            .Select(x => x.CadastralNumber)
+			            .Select(x => new
+			            {
+				            x.CadastralNumber,
+                            x.PropertyType_Code
+			            })
 			            .Execute()
 		            : new List<OMUnit>();
 	            
