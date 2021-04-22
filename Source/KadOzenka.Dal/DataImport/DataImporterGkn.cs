@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using ObjectModel.KO;
@@ -93,7 +94,7 @@ namespace KadOzenka.Dal.DataImport
 			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
 			{
 				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = xmlImportGkn.GetXmlObject(xmlFile);
+				GknItems = xmlImportGkn.GetXmlObject(xmlFile, task.GetAssessmentDateForUnit());
 			}
 
 			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
@@ -111,13 +112,13 @@ namespace KadOzenka.Dal.DataImport
         public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
         {
 			xmlObjectList GknItems = null;
-			using (Operation.Time("Импорт задания на оценку: парсинг excel"))
+			using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
 			{
 				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = xmlImportGkn.GetExcelObject(excelFile);
+				GknItems = xmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
 			}
 
-			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
+			using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
 			{
 				ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
 			}

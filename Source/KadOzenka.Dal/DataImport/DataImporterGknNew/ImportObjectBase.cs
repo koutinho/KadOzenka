@@ -411,7 +411,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        existedUnit = existedUnits.FirstOrDefault(x =>
 			        x.ObjectId == gbuObjectId && x.TaskId == Task.Id && x.TourId == IdTour);
 
-            var unitAssessmentDate = Task.EstimationDate ?? DateTime.Now;
             if (isNewGbuObject || existedUnit == null)
 	        {
 		        koUnit = new OMUnit
@@ -432,7 +431,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 			        CadastralCostPre = 0,
 			        Upks = 0,
 			        UpksPre = 0,
-					AssessmentDate = unitAssessmentDate
+					AssessmentDate = current.AssessmentDate
 				};
 
 		        SetAdditionalUnitProperties(koUnit, current);
@@ -440,7 +439,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 	        else
 	        {
 		        koUnit = existedUnit;
-                koUnit.AssessmentDate = unitAssessmentDate;
+                koUnit.AssessmentDate = current.AssessmentDate;
             }
 
 			koUnit.Save();

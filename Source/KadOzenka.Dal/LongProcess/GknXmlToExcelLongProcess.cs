@@ -35,6 +35,7 @@ namespace KadOzenka.Dal.LongProcess
             var config = convertParams.config;
             var userId = convertParams.UserId;
 
+            var task = OMTask.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             var attachments = OMImportDataLog.Where(x => x.RegisterId == OMTask.GetRegisterId() && x.ObjectId == id)
                 .SelectAll().Execute();
             var omImportDataLogs = attachments.Where(a => a.FileExtension == "xml").ToList();
@@ -50,7 +51,8 @@ namespace KadOzenka.Dal.LongProcess
                     Console.WriteLine($"Log name: {fileName}");
                     var fs = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, log.DateCreated,
                         fileName);
-                    doc = xmlImportGkn.GetXmlObject(fs);
+
+                    doc = xmlImportGkn.GetXmlObject(fs, task?.GetAssessmentDateForUnit() ?? DateTime.Now);
                 }
                 catch (Exception e)
                 {

@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.XmlParser
             if(dictForestEncumbrances == null)
 	            dictForestEncumbrances = new xsdDictionary(pathSchema + "\\dForestEncumbrances_v01.xsd", "dForestEncumbrances");
         }
-        public static xmlObjectList GetXmlObject(Stream file)
+        public static xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
         {
             xmlObjectList objs = new xmlObjectList();
             XmlDocument xmlFile = new XmlDocument();
@@ -93,16 +93,15 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnBuilding in xnBuildings)
                 {
-                    objs.Add(GetData(xnBuilding, enTypeObject.toBuilding));
+                    objs.Add(GetData(xnBuilding, enTypeObject.toBuilding, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnConstructions = xmlFile.GetElementsByTagName("Construction"))
             {
                 foreach (XmlNode xnConstruction in xnConstructions)
                 {
-                    objs.Add(GetData(xnConstruction, enTypeObject.toConstruction));
+                    objs.Add(GetData(xnConstruction, enTypeObject.toConstruction, assessmentDate));
                 }
             }
 
@@ -111,7 +110,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnUnConstructions)
                 {
-                    objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited));
+                    objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited, assessmentDate));
                 }
             }
 
@@ -120,7 +119,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnFlats)
                 {
-                    objs.Add(GetData(xnFlat, enTypeObject.toFlat));
+                    objs.Add(GetData(xnFlat, enTypeObject.toFlat, assessmentDate));
                 }
             }
 
@@ -128,7 +127,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnCarParkingSpaces)
                 {
-                    objs.Add(GetData(xnFlat, enTypeObject.toCarPlace));
+                    objs.Add(GetData(xnFlat, enTypeObject.toCarPlace, assessmentDate));
                 }
             }
 
@@ -137,7 +136,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnParcel in xnParcels)
                 {
-                    objs.Add(GetData(xnParcel, enTypeObject.toParcel));
+                    objs.Add(GetData(xnParcel, enTypeObject.toParcel, assessmentDate));
                 }
             }
 
@@ -186,11 +185,11 @@ namespace KadOzenka.Dal.XmlParser
             }
             return doc;
         }
-        public static xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject)
+        public static xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
         {
             string kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
             DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
-            xmlObject obj = new xmlObject(typeobject, kn, dc);
+            xmlObject obj = new xmlObject(typeobject, kn, dc, assessmentDate);
 
             #region Импорт
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
@@ -1402,10 +1401,10 @@ namespace KadOzenka.Dal.XmlParser
 	        return numbers;
         }
 
-        public static xmlObject GetData(ExcelRow row, enTypeObject typeobject)
+        public static xmlObject GetData(ExcelRow row, enTypeObject typeobject, DateTime assessmentDate)
         {
             string kn = row.Cells[0].Value.ParseToString();
-            xmlObject obj = new xmlObject(typeobject, kn, null);
+            var obj = new xmlObject(typeobject, kn, null, assessmentDate);
 
             if (typeobject==enTypeObject.toParcel)
             {
@@ -1600,7 +1599,7 @@ namespace KadOzenka.Dal.XmlParser
         }
 
 
-        public static xmlObjectList GetExcelObject(ExcelFile excelFile)
+        public static xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate)
         {
             xmlObjectList objs = new xmlObjectList();
 
@@ -1620,11 +1619,11 @@ namespace KadOzenka.Dal.XmlParser
 	                if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
                     {
                         string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
-                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toParcel));
-                        if (typeobject == "ЗДАНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toBuilding));
-                        if (typeobject == "СООРУЖЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toConstruction));
-                        if (typeobject == "ОНС") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toUncomplited));
-                        if (typeobject == "ПОМЕЩЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toFlat));
+                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toParcel, assessmentDate));
+                        if (typeobject == "ЗДАНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toBuilding, assessmentDate));
+                        if (typeobject == "СООРУЖЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toConstruction, assessmentDate));
+                        if (typeobject == "ОНС") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toUncomplited, assessmentDate));
+                        if (typeobject == "ПОМЕЩЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toFlat, assessmentDate));
                     }
                 }
                 catch (Exception ex)

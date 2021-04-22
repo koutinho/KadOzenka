@@ -32,6 +32,10 @@ namespace KadOzenka.Dal.XmlParser
 		/// Адрес (местоположение)
 		/// </summary>
 		public xmlAdress Adress { get; set; }
+		/// <summary>
+		/// Дата оценки
+		/// </summary>
+		public DateTime AssessmentDate { get; set; }
 
 		public xmlObjectParticular(xmlObject obj)
 		{
@@ -42,6 +46,7 @@ namespace KadOzenka.Dal.XmlParser
 			CadastralNumberBlock = obj.CadastralNumberBlock;
 			CadastralCost = obj.CadastralCost;
 			Adress = obj.Adress;
+			AssessmentDate = obj.AssessmentDate;
 		}
 
 		public override string ToString()
