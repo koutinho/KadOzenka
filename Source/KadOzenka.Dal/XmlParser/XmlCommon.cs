@@ -213,7 +213,10 @@ namespace KadOzenka.Dal.XmlParser
         public static string GetNames(List<xmlCodeName> items)
         {
             string res = string.Empty;
-            foreach(xmlCodeName item in items)
+			if (items == null)
+				return res;
+
+			foreach (xmlCodeName item in items)
             {
                 res += item.Name + "; ";
             }
