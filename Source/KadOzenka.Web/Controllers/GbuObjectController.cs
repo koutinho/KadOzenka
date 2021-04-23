@@ -160,8 +160,9 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult EditAttributeValue(EditAttributeDto model)
 		{
-			Dal.GbuObject.GbuObjectService.SaveAttributeValueWithCheck(model.GetGbuObjectAttribute());
-			return Ok();
+			if (!model.NotEditable)
+				Dal.GbuObject.GbuObjectService.SaveAttributeValueWithCheck(model.GetGbuObjectAttribute());
+			return JsonResponse("Значение атрибута сохранено");
 		}
 
 		#endregion

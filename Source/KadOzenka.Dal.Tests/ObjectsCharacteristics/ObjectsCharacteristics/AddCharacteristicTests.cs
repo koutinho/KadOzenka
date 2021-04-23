@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 					It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<bool>()), Times.Never);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
-					It.IsAny<bool>()), Times.Never);
+					It.IsAny<bool>(),It.IsAny<bool>()), Times.Never);
 		}
 
 		[Test]
@@ -105,7 +105,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
-					It.IsAny<bool>()), Times.Once);
+					It.IsAny<bool>(),It.IsAny<bool>()), Times.Once);
 		}
 
 		private void MockRegisterAttributeServiceCreateRegisterAttribute(CharacteristicDto dto)

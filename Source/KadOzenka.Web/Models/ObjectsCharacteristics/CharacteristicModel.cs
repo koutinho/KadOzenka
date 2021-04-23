@@ -35,6 +35,9 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         [Display(Name = "Использовать родительскую характеристику для машино-мест")]
         public bool UseParentAttributeForCarPlace { get; set; }
 
+        [Display(Name = "Запрет редактирования")]
+        public bool DisableAttributeEditing { get; set; }
+
 
         public static CharacteristicModel Map(OMAttribute attribute, OMAttributeSettings setting = null)
         {
@@ -50,6 +53,7 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
                 UseParentAttributeForLivingPlacement = setting != null && setting.UseParentAttributeForLivingPlacements.GetValueOrDefault(),
                 UseParentAttributeForNotLivingPlacement = setting != null && setting.UseParentAttributeForNotLivingPlacements.GetValueOrDefault(),
                 UseParentAttributeForCarPlace = setting != null && setting.UseParentAttributeForCarPlace.GetValueOrDefault(),
+                DisableAttributeEditing = setting != null && setting.DisableEditing.GetValueOrDefault(),
             };
         }
 
@@ -64,7 +68,8 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
                 ReferenceId = model.ReferenceId,
                 UseParentAttributeForLivingPlacement = model.UseParentAttributeForLivingPlacement,
                 UseParentAttributeForNotLivingPlacement = model.UseParentAttributeForNotLivingPlacement,
-                UseParentAttributeForCarPlace = model.UseParentAttributeForCarPlace
+                UseParentAttributeForCarPlace = model.UseParentAttributeForCarPlace,
+                DisableAttributeEditing = model.DisableAttributeEditing
             };
         }
 

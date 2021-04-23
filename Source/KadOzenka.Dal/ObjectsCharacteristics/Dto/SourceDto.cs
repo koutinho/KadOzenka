@@ -5,5 +5,7 @@
         public long RegisterId { get; set; }
 
         public string RegisterDescription { get; set; }
+
+        public bool? DisableAttributeEditing { get; set; }
     }
 }

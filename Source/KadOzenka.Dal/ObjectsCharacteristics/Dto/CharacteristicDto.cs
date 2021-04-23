@@ -12,6 +12,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics.Dto
         public bool UseParentAttributeForLivingPlacement { get; set; }
         public bool UseParentAttributeForNotLivingPlacement { get; set; }
         public bool UseParentAttributeForCarPlace { get; set; }
+        public bool DisableAttributeEditing { get; set; }
 
     }
 }

@@ -10,7 +10,7 @@
       </Parameters>
     </Button>
 
-    <Button Caption="Редактировать" NavigateURL="/ObjectsCharacteristics/EditCharacteristic" WindowHeight="280" WindowWidth="840" NeedRefresh="true">
+    <Button Caption="Редактировать" NavigateURL="/ObjectsCharacteristics/EditCharacteristic" WindowHeight="340" WindowWidth="840" NeedRefresh="true">
       <Parameters>
         <Parameter Key="attributeId" Value="[ObjectID]" />
       </Parameters>

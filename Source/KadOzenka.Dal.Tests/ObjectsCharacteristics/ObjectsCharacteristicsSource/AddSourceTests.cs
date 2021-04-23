@@ -41,7 +41,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSourc
 
 			RegisterService.Verify(x => x.CreateIdColumnForRegister(It.IsAny<long>()), Times.Once);
 			RegisterConfiguratorWrapper.Verify(x => x.CreateDbTableForRegister(It.IsAny<long>()), Times.Once);
-			ObjectCharacteristicsRepository.Verify(x => x.CreateObjectCharacteristics(It.IsAny<long>()), Times.Once);
+			ObjectCharacteristicsRepository.Verify(x => x.CreateObjectCharacteristics(It.IsAny<long>(), It.IsAny<bool>()), Times.Once);
 			RegisterService.Verify(x => x.CreateRegister(string.Format(Fields.RegisterName, numberOfExistingRegistersWithCharacteristics + 1),
 				string.Format(Fields.RegisterDescription, dto.RegisterDescription),
 				Fields.QuantTable,

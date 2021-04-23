@@ -28,8 +28,8 @@
         }
     </div>
     <div class="col-sm-2" style="padding:0; display: flex; justify-content: space-evenly;">
-        <span class="k-button k-button-icon attrEdit @(!Model.NotEditable ? "k-state-disabled" : "")"
-              data-Edit-url="" data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
+        <span class="k-button k-button-icon attrEdit @(Model.NotEditable ? "k-state-disabled" : "")"
+              data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
             <span id="@(Model.Id)attrEditImg" class="k-icon k-i-edit"></span>
         </span>
         <span class="k-button k-button-icon attrHistory" data-History-url="@(Model.AttributeHistoryUrl)" data-Register-id="@(ViewBag?.registerId)" data-Attribute-id="@(Model.Id)">
