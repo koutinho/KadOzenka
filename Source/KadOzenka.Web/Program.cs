@@ -4,29 +4,30 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Microsoft.Extensions.Configuration;
-using KadOzenka.Dal.WorkerCheckerDataBase;
 using KadOzenka.WebClients.ConfigurationManagers;
-using Platform.Web.Configurator.FeatureToggleConfigManager;
+using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace CIPJS
 {
     public class Program
     {
-        static string ASPNETCORE_ENVIRONMENT;
+        static string ASPNETCORE_ENVIRONMENT = "Development";
         public static void Main(string[] args)
         {
             
-            #if DEBUG
-                ASPNETCORE_ENVIRONMENT = "Development";
-            #elif QA
-                ASPNETCORE_ENVIRONMENT = "QA";
-            #elif DEMO
-                ASPNETCORE_ENVIRONMENT = "Demo";
-            #elif RELEASE
-                ASPNETCORE_ENVIRONMENT = "Production";
-             #elif RELEASETEST
-                ASPNETCORE_ENVIRONMENT = "ProductionTest";
-            #endif
+    //        #if DEBUG
+    //            ASPNETCORE_ENVIRONMENT = "Development";
+    //        #elif QA
+    //            ASPNETCORE_ENVIRONMENT = "QA";
+    //        #elif DEMO
+    //            ASPNETCORE_ENVIRONMENT = "Demo";
+    //        #elif RELEASE
+    //            ASPNETCORE_ENVIRONMENT = "Production";
+    //         #elif LOCAL
+    //            ASPNETCORE_ENVIRONMENT = "Local";
+    //        #elif UAT
+				//ASPNETCORE_ENVIRONMENT = "UAT";
+    //        #endif
 
             if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
             {
@@ -63,9 +64,10 @@ namespace CIPJS
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .UseStartup<Startup>()
-                .StartFeatureSubscribe(config)
+                //.StartFeatureSubscribe(config)
                 .UseKoConfigManager(config)
                 .UseReonConfigManager(config)
+                .UseCoreConfigManager(config)
                 .Build();
 
     }

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Config\Param\Core.Diagnostics.xml" />
+    <None Remove="Config\Param\Core.DocNumeration.xml" />
+    <None Remove="Config\Param\Core.HealthCheck.xml" />
+    <None Remove="Config\Param\Core.Help.xml" />
+    <None Remove="Config\Param\Core.Numeration.xml" />
+    <None Remove="Config\Param\FmReportTypes.xml" />
+    <None Remove="Config\Param\SpdSettings.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Config\Param\Core.Diagnostics.xml" />
+    <EmbeddedResource Include="Config\Param\Core.DocNumeration.xml" />
+    <EmbeddedResource Include="Config\Param\Core.HealthCheck.xml" />
+    <EmbeddedResource Include="Config\Param\Core.Help.xml" />
+    <EmbeddedResource Include="Config\Param\Core.Numeration.xml" />
+    <EmbeddedResource Include="Config\Param\FmReportTypes.xml" />
+    <EmbeddedResource Include="Config\Param\SpdSettings.xml" />
+  </ItemGroup>
+
+</Project>
