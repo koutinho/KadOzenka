@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
@@ -1640,7 +1641,8 @@ namespace KadOzenka.Dal.XmlParser
 
         #region Excel Mapping
 
-        public static xmlObjectList GetExcelObject(ExcelFile excelFile, List<ColumnToAttributeMapping> columnsMapping)
+        public static xmlObjectList GetExcelObject(ExcelFile excelFile, List<ColumnToAttributeMapping> columnsMapping,
+	        GknAllAttributes importedAttributeGkns)
         {
 	        var objectTypeMapping = columnsMapping.First(x => x.AttributeId == OMUnit.GetColumnAttributeId(y => y.PropertyType_Code));
             var cadastralNumberMapping = columnsMapping.First(x => x.AttributeId == OMUnit.GetColumnAttributeId(y => y.CadastralNumber));
@@ -1663,7 +1665,7 @@ namespace KadOzenka.Dal.XmlParser
                     var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
 			        var typeEnum = GetObjectType(row.Index, typeFromFile);
 
-			        var obj = GetDataForExcelMapping(row, cadastralNumber, square, assessmentDate, typeEnum, columnsMapping);
+			        var obj = GetDataForExcelMapping(row, cadastralNumber, square, assessmentDate, typeEnum, columnsMapping, importedAttributeGkns);
 			        objects.Add(obj);
 		        }
 		        catch (Exception ex)
@@ -1681,32 +1683,40 @@ namespace KadOzenka.Dal.XmlParser
 
         private static enTypeObject GetObjectType(int rowIndex, string typeFromFile)
         {
-	        rowIndex++;
 	        if (string.IsNullOrWhiteSpace(typeFromFile))
-		        throw new Exception($"В строке {rowIndex} не указан тип объекта");
+		        throw new Exception("Не указан тип объекта");
 
             //CarParkingSpace+
             //todo KOMO-20 вынести рефлексию из цикла
-            var buildingDescription = PropertyTypes.Stead.GetEnumDescription();
+            var steadDescription = PropertyTypes.Stead.GetEnumDescription();
 
-	        if (string.Equals(buildingDescription, typeFromFile, StringComparison.CurrentCultureIgnoreCase))
+	        if (string.Equals(steadDescription, typeFromFile, StringComparison.CurrentCultureIgnoreCase))
 	        {
-		        return enTypeObject.toBuilding;
+		        return enTypeObject.toParcel;
 	        }
 
-	        throw new Exception($"В строке {rowIndex} указан неизвестный тип объекта '{typeFromFile}'");
+	        throw new Exception($"Указан неизвестный тип объекта '{typeFromFile}'");
         }
 
         private static xmlObject GetDataForExcelMapping(ExcelRow row, string cadastralNumber, double? square,
-	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping)
+	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping,
+	        GknAllAttributes importedAttributeGkns)
         {
 	        ValidateExcelObjectRequiredFields(cadastralNumber, square, assessmentDate);
 
             var obj = new xmlObject(objectType, cadastralNumber, null, assessmentDate.Value);
             obj.Area = square;
 
+            columnsMapping.ForEach(map =>
+            {
+	            var attributeInfo = importedAttributeGkns.All.FirstOrDefault(x => x.AttributeId == map.AttributeId);
+	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
+	            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+            });
+
             return obj;
         }
+
 
         private static void ValidateExcelObjectRequiredFields(string cadastralNumber, double? square,
 	        DateTime? assessmentDate)

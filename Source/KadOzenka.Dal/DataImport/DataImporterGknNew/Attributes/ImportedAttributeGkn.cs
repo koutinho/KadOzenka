@@ -7,12 +7,19 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 	{
 		public Func<xmlObjectParticular, bool> CanSetValue { get; }
 		public Func<xmlObjectParticular, object> GetValue { get; }
+		public Action<xmlObject, object> SetValue { get; }
 		protected override bool SkipNullValues { get; } = true;
 
 		public ImportedAttributeGkn(long attributeId, Func<xmlObjectParticular, object> getValue) : base(attributeId)
 		{
 			GetValue = getValue;
 			CanSetValue = particular => true;
+		}
+
+		public ImportedAttributeGkn(long attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue) : this(attributeId, getValue)
+		{
+			SetValue = setValue;
 		}
 
 		public ImportedAttributeGkn(long attributeId, Func<xmlObjectParticular, object> getValue, Func<xmlObjectParticular, bool> canSetValue)

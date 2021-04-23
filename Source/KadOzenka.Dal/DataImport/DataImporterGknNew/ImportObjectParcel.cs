@@ -18,9 +18,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public override string CancelMessage => "Импорт данных ГКН был отменен во время загрузки Участков";
 		public override string SuccessMessage => "Импорт Участков завершен";
 
-		public ImportObjectParcel(DateTime unitDate, OMTask task,
+		public ImportObjectParcel(List<ImportedAttributeGkn> importedAttributeGkns, DateTime unitDate, OMTask task,
 			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction) 
-			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction)
+			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, importedAttributeGkns)
 		{
 		}
 

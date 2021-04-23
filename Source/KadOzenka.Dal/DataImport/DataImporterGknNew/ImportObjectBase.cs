@@ -30,7 +30,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         public abstract string SuccessMessage { get; }
 
 		protected Dictionary<KoChangeStatus, ImportedAttribute> AttributeChangeStatuses { get; set; }
-		protected List<ImportedAttributeGkn> GknDataAttributes { get; set; }
+		//TODO KOMO-20: readonly
+		protected List<ImportedAttributeGkn> GknDataAttributes;
 		protected List<ImportedAttribute> TaskFormingAttributes { get; set; }
 
 		protected DateTime UnitDate { get; }
@@ -48,7 +49,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		protected DataImporterGknConfig DataImporterGknConfig { get; }
 
 		protected ImportObjectBase(DateTime unitDate, OMTask task, 
-			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction, 
+			List<ImportedAttributeGkn> gknDataAttributes = null)
         {
 	        UnitDate = unitDate;
 	        IdTour = task.TourId.Value;
@@ -62,6 +64,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 	        DataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig;
 
 			Tour = OMTour.Where(x => x.Id == IdTour).Select(x => x.Year).ExecuteFirstOrDefault();
+
+			GknDataAttributes = gknDataAttributes;
 		}
 
 		public virtual void Init()

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
@@ -77,9 +78,14 @@ namespace KadOzenka.Dal.DataImport
 
         public bool AreCountersInitialized { get; private set; }
 
-        public DataImporterGkn()
+        protected GknAllAttributes AllGknAttributes { get; set; }
+
+
+		public DataImporterGkn()
         {
 	        _updatedObjectsAttributes = new Dictionary<long, List<long>>();
+
+	        AllGknAttributes = new GknAllAttributes();
         }
 
 
@@ -135,10 +141,11 @@ namespace KadOzenka.Dal.DataImport
 	        List<ColumnToAttributeMapping> columnsMapping, CancellationToken cancellationToken)
         {
 	        xmlObjectList gknItems;
-	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
+	        
+			using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 	        {
 		        xmlImportGkn.FillDictionary(pathSchema);
-		        gknItems = xmlImportGkn.GetExcelObject(excelFile, columnsMapping);
+		        gknItems = xmlImportGkn.GetExcelObject(excelFile, columnsMapping, AllGknAttributes);
 	        }
 
 	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
@@ -147,7 +154,7 @@ namespace KadOzenka.Dal.DataImport
 	        }
         }
 
-        private void ImportDataGkn(DateTime unitDate, OMTask task, CancellationToken cancellationToken, xmlObjectList GknItems)
+		private void ImportDataGkn(DateTime unitDate, OMTask task, CancellationToken cancellationToken, xmlObjectList GknItems)
         {
 	        if (cancellationToken.IsCancellationRequested)
 	        {
@@ -180,7 +187,7 @@ namespace KadOzenka.Dal.DataImport
 	        var objectsImporters = new List<object>
 	        {
 		        new ImportObjectBuild(unitDate, task, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
-		        new ImportObjectParcel(unitDate, task, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
+		        new ImportObjectParcel(AllGknAttributes.Parcel, unitDate, task, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
 		        new ImportObjectConstruction(unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
 		        new ImportObjectUncomplited(unitDate, task, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
 		        new ImportObjectFlat(unitDate, task, IncreaseImportedFlatsCount, UpdateObjectsAttributes),

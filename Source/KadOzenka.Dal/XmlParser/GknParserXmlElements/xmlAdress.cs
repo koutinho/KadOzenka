@@ -8,6 +8,10 @@ namespace KadOzenka.Dal.XmlParser
 	public class xmlAdress
 	{
 		/// <summary>
+		/// Адрес (без сборки через отдельные элементы) для парсинга Excel
+		/// </summary>
+		public string AddressStr { get; set; }
+		/// <summary>
 		/// Уникальный номер адресообразующего элемента в государственном адресном реестре
 		/// </summary>
 		public string FIAS { get; set; }
@@ -108,8 +112,29 @@ namespace KadOzenka.Dal.XmlParser
 		/// </summary>
 		public xmlElaborationLocation Elaboration { get; set; }
 
+		public xmlAdress()
+		{
+			District = new xmlAdresLevel();
+			City = new xmlAdresLevel();
+			UrbanDistrict = new xmlAdresLevel();
+			SovietVillage = new xmlAdresLevel();
+			Locality = new xmlAdresLevel();
+			PlanningElement = new xmlAdresLevel();
+			Street = new xmlAdresLevel();
+			Level1 = new xmlAdresLevel();
+			Level2 = new xmlAdresLevel();
+			Level3 = new xmlAdresLevel();
+			Apartment = new xmlAdresLevel();
+			Elaboration = new xmlElaborationLocation();
+		}
+
 		public static string GetTextAdress(xmlAdress adress)
 		{
+			if (adress == null)
+				return string.Empty;
+			if (!string.IsNullOrWhiteSpace(adress.AddressStr))
+				return adress.AddressStr;
+
 			string res = string.Empty;
 			if (adress.PostalCode != string.Empty && adress.PostalCode!=null) res += adress.PostalCode + ", ";
 			if (adress.Region != string.Empty && adress.Region != null) res += adress.Region + ", ";

@@ -228,6 +228,8 @@ namespace KadOzenka.Dal.XmlParser
 			CarParkingSpacesCadastralNumbers = new List<string>();
 			UnitedCadastralNumbers = new List<string>();
 			AssessmentDate = assessmentDate;
+			Adress = new xmlAdress();
+			CadastralCost = new xmlCost();
 		}
 		public override string ToString()
 		{
