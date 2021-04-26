@@ -335,29 +335,45 @@ namespace KadOzenka.Web.Controllers
             foreach (var prop in properties)
             {
                 var section = prop.GetValue(dataImporterGknConfig, null);
-                var idsFromSection = GetIdsFromSection(section);
-                allAttributeIdsFromConfig.AddRange(idsFromSection);
+                GetIdsFromSection(section, allAttributeIdsFromConfig);
             }
 
             return allAttributeIdsFromConfig;
         }
 
-        private List<long> GetIdsFromSection(object section)
-        {
-            var attributeIds = new List<long>();
+        private void GetIdsFromSection(object section, List<long> attributeIds)
+		{
+	        var properties = section.GetType().GetProperties().Where(x => x.PropertyType != typeof(string)).ToList();
+	        foreach (PropertyInfo prop in properties)
+	        {
+		        if (prop.PropertyType.IsArray)
+		        {
+			        Console.WriteLine($"class {prop.Name}");
+			        var array = prop.GetValue(section) as Array;
+			        if (array == null)
+				        continue;
 
-            var properties = section.GetType().GetProperties().Where(x => x.PropertyType != typeof(string)).ToList();
-            foreach (PropertyInfo prop in properties)
-            {
-                var value = prop.GetValue(section, null)?.ToString();
-                var id = long.TryParse(value, out var val) ? val : (long?)null;
-                if (id != null)
-                {
-                    attributeIds.Add(id.Value);
-                }
-            }
-
-            return attributeIds;
+			        for (var i = 0; i < array.Length; i++)
+			        {
+				        var arrayElement = array.GetValue(i);
+				        GetIdsFromSection(arrayElement, attributeIds);
+			        }
+		        }
+		        else if (prop.PropertyType.IsClass)
+		        {
+			        var sectionInSection = prop.GetValue(section, null);
+			        GetIdsFromSection(sectionInSection, attributeIds);
+		        }
+		        else
+		        {
+			        var value = prop.GetValue(section, null)?.ToString();
+			        var id = long.TryParse(value, out var val) ? val : (long?)null;
+			        if (id != null)
+			        {
+				        attributeIds.Add(id.Value);
+			        }
+		        }
+	        }
         }
 
         #endregion
