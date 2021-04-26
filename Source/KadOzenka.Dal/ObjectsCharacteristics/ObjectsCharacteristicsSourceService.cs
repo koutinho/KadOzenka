@@ -6,7 +6,6 @@ using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics.Resources;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Core.Register;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics
 {
@@ -32,8 +31,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             if (register == null)
                 throw new SourceDoesNotExistException(registerId);
 
-            var characteristicsRegister = OMObjectsCharacteristicsRegister.Where(x => x.RegisterId == registerId)
-                .SelectAll().ExecuteFirstOrDefault();
+            var characteristicsRegister =
+	            ObjectCharacteristicsRepository.GetEntityByCondition(x => x.RegisterId == registerId, null);
 
             return new SourceDto
             {

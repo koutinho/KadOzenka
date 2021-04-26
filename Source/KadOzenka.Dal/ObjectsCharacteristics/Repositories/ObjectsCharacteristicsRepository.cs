@@ -1,12 +1,26 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.ObjectsCharacteristics.Repositories
 {
-    public class ObjectsCharacteristicsRepository : IObjectCharacteristicsRepository
+    public class ObjectsCharacteristicsRepository : GenericRepository<OMObjectsCharacteristicsRegister>, IObjectCharacteristicsRepository
     {
+	    protected override QSQuery<OMObjectsCharacteristicsRegister> GetBaseQuery(Expression<Func<OMObjectsCharacteristicsRegister, bool>> whereExpression)
+	    {
+		    return OMObjectsCharacteristicsRegister.Where(whereExpression);
+	    }
+
+	    protected override Expression<Func<OMObjectsCharacteristicsRegister, bool>> GetWhereByIdExpression(long id)
+	    {
+		    return x => x.Id == id;
+	    }
+
         public void CreateOrUpdateCharacteristicSetting(long attributeId, bool useParentAttributeForLivingPlacement,
             bool useParentAttributeForNotLivingPlacement, bool useParentAttributeForCarPlace, bool disableAttributeEditing)
         {
