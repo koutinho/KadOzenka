@@ -21,5 +21,11 @@
 		/// Разрешенное использование (текстовое описание)
 		/// </summary>
 		public string PermittedUseText { get; set; }
+
+		public xmlUtilization()
+		{
+			Utilization = new xmlCodeName();
+			LandUse = new xmlCodeName();
+		}
 	}
 }

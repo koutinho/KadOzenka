@@ -13,5 +13,10 @@
 		public string ContractSupport { get; set; }
 
 		public xmlDocument DocHiredHouse { get; set; }
+
+		public xmlHiredHouse()
+		{
+			DocHiredHouse = new xmlDocument();
+		}
 	}
 }

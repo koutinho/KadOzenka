@@ -132,21 +132,31 @@ namespace KadOzenka.Dal.XmlParser
 		{
 			if (adress == null)
 				return string.Empty;
+			//для импорта через Excel берем адрес сразу из колонки
 			if (!string.IsNullOrWhiteSpace(adress.AddressStr))
 				return adress.AddressStr;
 
 			string res = string.Empty;
 			if (adress.PostalCode != string.Empty && adress.PostalCode!=null) res += adress.PostalCode + ", ";
 			if (adress.Region != string.Empty && adress.Region != null) res += adress.Region + ", ";
-			if (adress.District != null) res += adress.District.Type + " " + adress.District.Value + ", ";
-			if (adress.City != null) res += adress.City.Type + " " + adress.City.Value + ", ";
-			if (adress.UrbanDistrict != null) res += adress.UrbanDistrict.Type + " " + adress.UrbanDistrict.Value + ", ";
-			if (adress.Locality != null) res += adress.Locality.Type + " " + adress.Locality.Value + ", ";
-			if (adress.Street != null) res += adress.Street.Type + " " + adress.Street.Value + ", ";
-			if (adress.Level1 != null) res += adress.Level1.Type + " " + adress.Level1.Value + ", ";
-			if (adress.Level2 != null) res += adress.Level2.Type + " " + adress.Level2.Value + ", ";
-			if (adress.Level3 != null) res += adress.Level3.Type + " " + adress.Level3.Value + ", ";
-			if (adress.Apartment != null) res += adress.Apartment.Type + " " + adress.Apartment.Value + ", ";
+			if (!IsLevelElementEmpty(adress.District)) 
+				res += adress.District.Type + " " + adress.District.Value + ", ";
+			if (!IsLevelElementEmpty(adress.City))
+				res += adress.City.Type + " " + adress.City.Value + ", ";
+			if (!IsLevelElementEmpty(adress.UrbanDistrict))
+				res += adress.UrbanDistrict.Type + " " + adress.UrbanDistrict.Value + ", ";
+			if (!IsLevelElementEmpty(adress.Locality))
+				res += adress.Locality.Type + " " + adress.Locality.Value + ", ";
+			if (!IsLevelElementEmpty(adress.Street))
+				res += adress.Street.Type + " " + adress.Street.Value + ", ";
+			if (!IsLevelElementEmpty(adress.Level1))
+				res += adress.Level1.Type + " " + adress.Level1.Value + ", ";
+			if (!IsLevelElementEmpty(adress.Level2))
+				res += adress.Level2.Type + " " + adress.Level2.Value + ", ";
+			if (!IsLevelElementEmpty(adress.Level3))
+				res += adress.Level3.Type + " " + adress.Level3.Value + ", ";
+			if (!IsLevelElementEmpty(adress.Apartment))
+				res += adress.Apartment.Type + " " + adress.Apartment.Value + ", ";
 			if (adress.Other != string.Empty && adress.Other != null) res += adress.Other + ", ";
 			res = res.Trim().TrimEnd(',');
 			return res;
@@ -154,6 +164,11 @@ namespace KadOzenka.Dal.XmlParser
 		public static string GetTextPlace(xmlAdress adress)
 		{
 			return (adress.Note==null)?string.Empty: adress.Note;
+		}
+
+		private static bool IsLevelElementEmpty(xmlAdresLevel element)
+		{
+			return string.IsNullOrWhiteSpace(element.Type) && string.IsNullOrWhiteSpace(element.Value);
 		}
 	}
 }

@@ -19,6 +19,12 @@
 		/// </summary>
 		public xmlDocument Document { get; set; }
 
-		public xmlEncumbranceOks() { }
+
+		public xmlEncumbranceOks()
+		{
+			Type = new xmlCodeName();
+			Registration = new xmlNumberDate();
+			Document = new xmlDocument();
+		}
 	}
 }

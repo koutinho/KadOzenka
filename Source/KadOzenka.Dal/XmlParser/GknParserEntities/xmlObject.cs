@@ -230,6 +230,10 @@ namespace KadOzenka.Dal.XmlParser
 			AssessmentDate = assessmentDate;
 			Adress = new xmlAdress();
 			CadastralCost = new xmlCost();
+			NameParcel = new xmlCodeName();
+			Category = new xmlCodeName();
+			Utilization = new xmlUtilization();
+			HiredHouse = new xmlHiredHouse();
 		}
 		public override string ToString()
 		{

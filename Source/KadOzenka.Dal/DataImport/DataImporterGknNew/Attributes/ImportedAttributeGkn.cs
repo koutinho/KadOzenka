@@ -3,6 +3,7 @@ using KadOzenka.Dal.XmlParser;
 
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 {
+	//TODO KOMO-20 убрать ненужные конструкторы, в оставшихся сделать через this
 	public class ImportedAttributeGkn: ImportedAttribute
 	{
 		public Func<xmlObjectParticular, bool> CanSetValue { get; }
@@ -21,12 +22,19 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		{
 			SetValue = setValue;
 		}
+		public ImportedAttributeGkn(long attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue) 
+			: this(attributeId, getValue, setValue)
+		{
+			CanSetValue = canSetValue ??= x => true;
+		}
 
-		public ImportedAttributeGkn(long attributeId, Func<xmlObjectParticular, object> getValue, Func<xmlObjectParticular, bool> canSetValue)
+		public ImportedAttributeGkn(long attributeId, Func<xmlObjectParticular, object> getValue,
+			Func<xmlObjectParticular, bool> canSetValue)
 			: base(attributeId)
 		{
 			GetValue = getValue;
-			CanSetValue = canSetValue;
+			CanSetValue = canSetValue ??= x => true;
 		}
 
 		public void SaveAttributeValue(xmlObjectParticular current, long idObject, long idDocument, DateTime sDate, DateTime otDate,

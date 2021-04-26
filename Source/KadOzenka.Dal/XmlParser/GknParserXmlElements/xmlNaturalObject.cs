@@ -51,6 +51,9 @@ namespace KadOzenka.Dal.XmlParser.GknParserXmlElements
 		public xmlNaturalObject()
 		{
 			ForestEncumbrances = new List<xmlCodeName>();
+			Kind = new xmlCodeName();
+			ForestUse = new xmlCodeName();
+			ProtectiveForest = new xmlCodeName();
 		}
 	}
 }
