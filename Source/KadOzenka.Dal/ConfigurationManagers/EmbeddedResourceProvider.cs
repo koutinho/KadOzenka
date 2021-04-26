@@ -13,7 +13,11 @@ namespace KadOzenka.Dal.ConfigurationManagers
 			{
 				if (_dataImporterGknConfig != null) return _dataImporterGknConfig;
 				string config = Configuration.GetParamEmbeddedResource<string>("EmbeddedResource.GknImport.gknImportSettings.json");
-				return _dataImporterGknConfig = JsonConvert.DeserializeObject<DataImporterGknConfig>(config);
+				if (config != null)
+				{
+					return _dataImporterGknConfig = JsonConvert.DeserializeObject<DataImporterGknConfig>(config);
+				}
+				return _dataImporterGknConfig = new DataImporterGknConfig();
 
 			}
 		}
