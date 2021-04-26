@@ -1,7 +1,11 @@
-﻿using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
+﻿using System;
+using System.Linq.Expressions;
+using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
 using KadOzenka.Dal.ObjectsCharacteristics.Resources;
+using Moq;
 using NUnit.Framework;
 using ObjectModel.Core.Register;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSource
 {
@@ -15,6 +19,9 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSourc
 			var registerDescription = RandomGenerator.GetRandomString();
 			RegisterService.Setup(x => x.GetRegister(registerId))
 				.Returns(new OMRegister {RegisterId = registerId, RegisterDescription = registerDescription});
+			ObjectCharacteristicsRepository
+				.Setup(x => x.GetEntityByCondition(It.IsAny<Expression<Func<OMObjectsCharacteristicsRegister, bool>>>(),
+					null)).Returns(new OMObjectsCharacteristicsRegister());
 
 			var source = ObjectsCharacteristicsSourceService.GetSource(registerId);
 

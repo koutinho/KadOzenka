@@ -147,7 +147,25 @@ namespace KadOzenka.Web.Controllers
             return View("~/Views/GbuObject/AttributeHistory.cshtml", model);
         }
 
-        #endregion
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult EditAttributeValue(long objectId, long attrId)
+		{
+			RegisterCache.RegisterAttributes.TryGetValue(attrId, out var attr);
+			var model = new EditAttributeDto(attr, objectId);
+			return View("~/Views/GbuObject/EditAttributeValue.cshtml", model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
+		public ActionResult EditAttributeValue(EditAttributeDto model)
+		{
+			if (!model.NotEditable)
+				Dal.GbuObject.GbuObjectService.SaveAttributeValueWithCheck(model.GetGbuObjectAttribute());
+			return JsonResponse("Значение атрибута сохранено");
+		}
+
+		#endregion
 
         #region Нормализация
 

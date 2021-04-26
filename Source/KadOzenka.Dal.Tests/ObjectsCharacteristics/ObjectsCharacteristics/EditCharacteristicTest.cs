@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 					It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<bool>()), Times.Never);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
-					It.IsAny<bool>()), Times.Never);
+					It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
 		}
 
 		[Test]
@@ -54,10 +54,10 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
-					It.IsAny<bool>()), Times.Once);
+					It.IsAny<bool>(),It.IsAny<bool>()), Times.Once);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(dto.Id, dto.UseParentAttributeForLivingPlacement,
-					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace), Times.Once);
+					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace,It.IsAny<bool>()), Times.Once);
 		}
 
 		[Test]
@@ -74,10 +74,10 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
-					It.IsAny<bool>()), Times.Once);
+					It.IsAny<bool>(),It.IsAny<bool>()), Times.Once);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(dto.Id, dto.UseParentAttributeForLivingPlacement,
-					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace), Times.Once);
+					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace,dto.DisableAttributeEditing), Times.Once);
 		}
 
 		[Test]
@@ -94,10 +94,10 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
-					It.IsAny<bool>()), Times.Once);
+					It.IsAny<bool>(),It.IsAny<bool>()), Times.Once);
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(dto.Id, dto.UseParentAttributeForLivingPlacement,
-					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace), Times.Once);
+					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace, dto.DisableAttributeEditing), Times.Once);
 		}
 	}
 }

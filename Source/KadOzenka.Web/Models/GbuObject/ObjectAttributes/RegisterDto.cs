@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using KadOzenka.Dal.GbuObject;
+using ObjectModel.Gbu;
 
 namespace KadOzenka.Web.Models.GbuObject.ObjectAttributes
 {
@@ -16,9 +18,11 @@ namespace KadOzenka.Web.Models.GbuObject.ObjectAttributes
 		    ObjectId = objectId;
 			Name = name;
 		    RegisterAttributes = new List<AttributeDto>();
-            foreach (var attribute in attributes)
+		    var attr = attributes.Select(x => x.AttributeId).ToList();
+		    var settingsList = OMAttributeSettings.Where(x => attr.Contains(x.AttributeId)).SelectAll().Execute();
+		    foreach (var attribute in attributes)
 		    {
-		        RegisterAttributes.Add(new AttributeDto(attribute, objectId));
+		        RegisterAttributes.Add(new AttributeDto(attribute, objectId, settingsList.FirstOrDefault(x=>x.AttributeId == attribute.AttributeId)));
             }
 		}
 	}

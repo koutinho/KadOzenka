@@ -58,45 +58,46 @@
         </div>
     </div>
     @{ foreach (var m in Model.RegisterDtoList)
-        {
-            <div id="Section_@(m.Id)" data-menu-name="@(m.Name)" data-expand>
-                <span>@(m.Name)</span>
-                @Html.HiddenFor(r => r.RegisterDtoList[registerCounter].Id)
-                <div>
-                    <div class="form-horizontal col-sm-12">
-                        <div class="form-group"></div>
-                        @{
-                            var attrCounter = 0;
-                            foreach (var mRegisterAttribute in m.RegisterAttributes)
-                            {
+       {
+           <div id="Section_@(m.Id)" data-menu-name="@(m.Name)" data-expand>
+               <span>@(m.Name)</span>
+               @Html.HiddenFor(r => r.RegisterDtoList[registerCounter].Id)
+               <div>
+                   <div class="form-horizontal col-sm-12">
+                       <div class="form-group"></div>
+                       @{
+                           var attrCounter = 0;
+                           foreach (var mRegisterAttribute in m.RegisterAttributes)
+                           {
 
-                                if (attrCounter % 2 == 0)
-                                {
-                                    @Html.Raw("<div class='form-group'>")
-                                    @(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView",
-                                    mRegisterAttribute, new ViewDataDictionary(ViewData) { { "registerId", m.Id }, { "attrCounter", attrCounter } }))
-                                }
-                                else
-                                {
-                                    @(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView",
-                                    mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id }, { "attrCounter", attrCounter } }))
-                                    @Html.Raw("</div>")
-                                }
+                               if (attrCounter % 2 == 0)
+                               {
+                                   @Html.Raw("<div class='form-group'>")
+                                   @(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView",
+                                       mRegisterAttribute, new ViewDataDictionary(ViewData) { { "registerId", m.Id }, { "attrCounter", attrCounter } }))
+                               }
+                               else
+                               {
+                                   @(await Html.PartialAsync("GbuObjectCardPartials/ColumnFromCardPartialView",
+                                       mRegisterAttribute, new ViewDataDictionary(ViewData) {{ "registerId", m.Id }, { "attrCounter", attrCounter } }))
+                                   @Html.Raw("</div>")
+                               }
 
-                                if (attrCounter % 2 == 0 && attrCounter == m.RegisterAttributes.Count - 1)
-                                {
-                                    @Html.Raw("</div>")
-                                }
-                                attrCounter++;
-                            }
-                        }
-                    </div>
-                </div>
-            </div>
-            registerCounter++;
-        }
+                               if (attrCounter % 2 == 0 && attrCounter == m.RegisterAttributes.Count - 1)
+                               {
+                                   @Html.Raw("</div>")
+                               }
+                               attrCounter++;
+                           }
+                       }
+                   </div>
+               </div>
+           </div>
+           registerCounter++;
+       }
     }
 </div>
+<div id="attributeEditModal"></div>
 
 <style>
     #ls_panelbar > div {
@@ -156,8 +157,11 @@
         max-height: 400px !important;
         overflow: scroll !important;
     }
+    #attributeEditModal> .mainContent{
+        height: auto;
+    }
 </style>
-
+<script src="~/js/common-modals.js"></script>
 <script type="text/javascript">
         $(document).ready(function() {
             var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -168,10 +172,11 @@
             );
 
             initHistory();
+            initEdit();
         });
 
         function initHistory() {
-            $("span[class*='attrHistory'").each(function () {
+            $("span[class*='attrHistory']").each(function () {
                 var historyUrl = $(this).attr('data-History-url');
                 $(this).kendoTooltip({
                     autoHide: false,
@@ -195,7 +200,7 @@
         function onShow(e) {
             var registerId = $(e.sender.element).attr('data-Register-id');
             var attrId = $(e.sender.element).attr('data-Attribute-id');
-            $("span[class*='attrHistory'").each(function () {
+            $("span[class*='attrHistory']").each(function () {
                 var currentRegisterId = $(this).attr('data-Register-id');
                 var currentAttributeId = $(this).attr('data-Attribute-id');
                 if (currentRegisterId !== registerId || (currentRegisterId === registerId && currentAttributeId !== attrId)) {
@@ -212,5 +217,33 @@
                 $("#searchAttributes").attr("disabled", true);
             }
         }
+
+        function initEdit() {
+            $("span[class*='attrEdit']").each(function () {
+                $(this).bind('click', (e) => showAttributeEditModal(e));
+            });
+        }
+
+
+    function showAttributeEditModal(e) {
+        kendo.ui.progress($('body'), true);
+        var attrId = $(e.target).attr('data-Attribute-id')
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("EditAttributeValue", "GbuObject")',
+            data: { objectId: '@Model.Id', attrId },
+            success: function (response) {
+                $("#attributeEditModal").html(response);
+                var modal = $("#attributeEditModal");
+                ShowModal(modal, '700px', '150px', "Переопределение значения атрибута");
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
 </script>
 

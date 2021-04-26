@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
+using ObjectModel.Gbu;
 
 namespace KadOzenka.Web.Models.GbuObject.ObjectAttributes
 {
@@ -22,7 +23,9 @@ namespace KadOzenka.Web.Models.GbuObject.ObjectAttributes
         public string BoolValue { get; set; }
         public string AttributeHistoryUrl { get; set; }
 
-        public AttributeDto(GbuObjectAttribute gbuObjectAttribute, long objectId)
+        public bool NotEditable { get; set; }
+
+        public AttributeDto(GbuObjectAttribute gbuObjectAttribute, long objectId, OMAttributeSettings settings)
         {
             Id = gbuObjectAttribute.AttributeId;
             Name = gbuObjectAttribute.GetAttributeName();
@@ -35,6 +38,7 @@ namespace KadOzenka.Web.Models.GbuObject.ObjectAttributes
             NumValue = gbuObjectAttribute.NumValue;
             DateValue = gbuObjectAttribute.DtValue;
             BoolValue = gbuObjectAttribute?.NumValue == 1 ? "Да" : "Нет";
+            NotEditable = settings?.DisableEditing.GetValueOrDefault() ?? false;
             AttributeHistoryUrl =
                 $"/GbuObject/GetAttributeHistory?objectId={objectId}&registerId={gbuObjectAttribute.RegisterData.Id}&attrId={Id}"
                     .ResolveClientUrl();

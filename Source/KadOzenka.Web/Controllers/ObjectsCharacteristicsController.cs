@@ -84,7 +84,8 @@ namespace KadOzenka.Web.Controllers
             var model = new CharacteristicModel
             {
                 Id = -1,
-                RegisterId = registerId
+                RegisterId = registerId,
+                DisableAttributeEditing = ObjectsCharacteristicsService.GetObjectRegisterEditSettings(registerId)
             };
 
             return View("~/Views/ObjectsCharacteristics/EditCharacteristic.cshtml", model);

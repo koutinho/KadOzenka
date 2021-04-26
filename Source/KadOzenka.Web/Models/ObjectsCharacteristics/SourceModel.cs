@@ -11,13 +11,17 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
         [Display(Name = "Пользовательское наименование")]
         public string Name { get; set; }
 
+        [Display(Name = "Запрет редактирования")]
+        public bool? DisableAttributeEditing { get; set; }
+
 
         public static SourceModel Map(SourceDto dto)
         {
             return new SourceModel
             {
                 RegisterId = dto.RegisterId,
-                Name = dto.RegisterDescription
+                Name = dto.RegisterDescription,
+                DisableAttributeEditing = dto.DisableAttributeEditing
             };
         }
 
@@ -26,7 +30,8 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
             return new SourceDto
             {
                 RegisterId = model.RegisterId,
-                RegisterDescription = model.Name
+                RegisterDescription = model.Name,
+                DisableAttributeEditing = model.DisableAttributeEditing
             };
         }
     }

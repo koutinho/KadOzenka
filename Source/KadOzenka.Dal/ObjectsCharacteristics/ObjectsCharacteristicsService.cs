@@ -32,6 +32,11 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
 	        RegisterCacheWrapper = registerCacheWrapper;
         }
 
+        public bool GetObjectRegisterEditSettings(long registerId)
+        {
+	        return ObjectCharacteristicsRepository.GetObjectRegisterEditState(registerId);
+        }
+
         public OMAttributeSettings GetRegisterAttributeSettings(long attributeId)
         {
             return ObjectCharacteristicsRepository.GetRegisterAttributeSettings(attributeId);
@@ -66,13 +71,16 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
                 ObjectCharacteristicsRepository.CreateOrUpdateCharacteristicSetting(id,
 		            characteristicDto.UseParentAttributeForLivingPlacement,
 		            characteristicDto.UseParentAttributeForNotLivingPlacement,
-		            characteristicDto.UseParentAttributeForCarPlace);
+		            characteristicDto.UseParentAttributeForCarPlace,
+		            characteristicDto.DisableAttributeEditing);
 
                 ts.Complete();
             }
 
             return id;
         }
+
+
 
         public void EditCharacteristic(CharacteristicDto characteristicDto)
         {
@@ -82,7 +90,7 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
             ObjectCharacteristicsRepository.CreateOrUpdateCharacteristicSetting(characteristicDto.Id,
 	            characteristicDto.UseParentAttributeForLivingPlacement,
 	            characteristicDto.UseParentAttributeForNotLivingPlacement,
-	            characteristicDto.UseParentAttributeForCarPlace);
+	            characteristicDto.UseParentAttributeForCarPlace, characteristicDto.DisableAttributeEditing);
         }
 
         public void DeleteCharacteristic(long characteristicId)

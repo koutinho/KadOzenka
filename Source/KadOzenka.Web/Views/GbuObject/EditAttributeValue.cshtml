@@ -1,0 +1,68 @@
+@model KadOzenka.Web.Models.GbuObject.ObjectAttributes.EditAttributeDto
+@using (Html.BeginForm("EditAttributeValue", "GbuObject"))
+{
+    @Html.HiddenFor(x => x.AttributeId)
+    @Html.HiddenFor(x => x.ObjectId)
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabel("Дата установки значения", false)
+        </div>
+        <div class="col-sm-8">
+            @Html.KendoDatePickerFor(r => r.AttributeSetDate, false)
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-4">
+            @Html.CustomLabel(Model.Name, false)
+        </div>
+        <div class="col-sm-8">
+            @{
+                if (Model.IsString)
+                {
+                    @Html.KendoTextBoxFor(r => r.StringValue, false)
+                }
+                else if (Model.IsNumber)
+                {
+                    @Html.KendoTextBoxFor(r => r.NumValue, false)
+                }
+                else if (Model.IsDate)
+                {
+                    @Html.KendoDatePickerFor(r => r.DateValue, false)
+                }
+                else if (Model.IsBool)
+                {
+                    @Html.KendoTextBoxFor(r => r.BoolValue, false)
+                }
+            }
+        </div>
+        <button id="save" class="k-button">Сохранить</button>
+    </div>
+}
+<script>
+$("form").on("submit", function (e) {
+    e.preventDefault();
+    save();
+});
+
+function save() {
+    var form = $('form');
+    var formObject = Common.Functions.FormToObject(form);
+    kendo.ui.progress($('form'), true);
+
+    $.post(form.attr('action'), formObject).done(function(response) {
+        if (response.Success) {
+            Common.ShowMessage("Значение атрибута сохранено");
+        }
+        else {
+            Common.ShowError("Произошла ошибка при сохранении значения атрибута");
+        }
+    })
+    .fail(function(response, textStatus, errorThrown) {
+        Common.ShowError(response.responseText);
+    })
+    .always(function() {
+        kendo.ui.progress($('form'), false);
+    });
+}
+</script>

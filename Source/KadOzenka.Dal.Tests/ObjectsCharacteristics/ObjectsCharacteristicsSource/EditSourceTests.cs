@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSourc
 			ObjectsCharacteristicsSourceService.EditSource(dto);
 
 			Assert.AreEqual(register.RegisterDescription, dto.RegisterDescription);
-			ObjectCharacteristicsRepository.Verify(x => x.SaveRegister(register), Times.Once);
+			ObjectCharacteristicsRepository.Verify(x => x.SaveRegister(register, dto.DisableAttributeEditing), Times.Once);
 		}
 	}
 }
