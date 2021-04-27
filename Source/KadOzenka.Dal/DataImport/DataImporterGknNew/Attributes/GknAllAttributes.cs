@@ -15,6 +15,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 		private List<ImportedAttributeGkn> General { get; }
 		public List<ImportedAttributeGkn> Parcel { get; }
+		public List<ImportedAttributeGkn> Building { get; }
 		public List<ImportedAttributeGkn> All { get; }
 
 
@@ -24,13 +25,19 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			General = new List<ImportedAttributeGkn>();
 			Parcel = new List<ImportedAttributeGkn>();
+			Building = new List<ImportedAttributeGkn>();
 			All = new List<ImportedAttributeGkn>();
 
 			FillGeneralAttribute();
+			FillBuildingAttribute();
 			FillParcelAttribute();
 
-			Parcel.AddRange(General);
+			All.AddRange(General);
+			All.AddRange(Building);
 			All.AddRange(Parcel);
+
+			Building.AddRange(General);
+			Parcel.AddRange(General);
 		}
 
 
@@ -158,6 +165,15 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			#endregion
 		}
 
+		private void AddAttributeToGeneral(long? attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
+		{
+			AddGknAttribute(General, attributeId, getValue, setValue, canSetValue);
+		}
+
+		#region Parcel
+
+		//TODO KOMO-20 extract sub delegate
 		private void FillParcelAttribute()
 		{
 			var parcelSection = Config.GknDataAttributes.Parcel;
@@ -550,13 +566,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.CodeAttributeIdValue,
-							current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.CodeDocument?.Name,
-							(o, v) =>
-							{
-								var element = InitZoneAndTerritoriesObject(o, iCounter);
-								element.Document.CodeDocument.Name = v?.ToString();
-							},
-							current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
+						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.CodeDocument?.Name,
+						(o, v) =>
+						{
+							var element = InitZoneAndTerritoriesObject(o, iCounter);
+							element.Document.CodeDocument.Name = v?.ToString();
+						},
+						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.NameAttributeIdValue,
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.Name,
@@ -694,13 +710,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.CodeAttributeIdValue,
-							current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.CodeDocument?.Name,
-							(o, v) =>
-							{
-								var element = InitGovernmentLandSupervisionObject(o, iCounter);
-								element.DocRequisites.CodeDocument.Name = v?.ToString();
-							},
-							current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
+						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.CodeDocument?.Name,
+						(o, v) =>
+						{
+							var element = InitGovernmentLandSupervisionObject(o, iCounter);
+							element.DocRequisites.CodeDocument.Name = v?.ToString();
+						},
+						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.NameAttributeIdValue,
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.Name,
@@ -932,8 +948,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				(o, v) => o.LimitedCirculation = v?.ToString());
 		}
 
-
-
 		private xmlNaturalObject InitNaturalObject(xmlObject o, int iCounter)
 		{
 			var element = o.NaturalObjects.ElementAtOrDefault(iCounter);
@@ -996,17 +1010,307 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			return element;
 		}
 
-		private void AddAttributeToGeneral(long? attributeId, Func<xmlObjectParticular, object> getValue,
-			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
-		{
-			AddGknAttribute(General, attributeId, getValue, setValue);
-		}
-
 		private void AddAttributeToParcel(long? attributeId, Func<xmlObjectParticular, object> getValue,
 			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
 		{
-			AddGknAttribute(Parcel, attributeId, getValue, setValue);
+			AddGknAttribute(Parcel, attributeId, getValue, setValue, canSetValue);
 		}
+
+		#endregion
+
+
+		#region Building
+
+		private void FillBuildingAttribute()
+		{
+			var buildingSection = Config.GknDataAttributes.Building;
+
+			AddAttributeToBuilding(buildingSection.ParentCadastralNumbersAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectBuild)current).ParentCadastralNumbers),
+				(o, v) => o.ParentCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToBuilding(buildingSection.NameAttributeIdValue, 
+				current => ((xmlObjectBuild)current).Name,
+				(o, v) => o.NameObject = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.AssignationBuildingAttributeIdValue, 
+				current => ((xmlObjectBuild)current).AssignationBuilding?.Name,
+				(o, v) => o.AssignationBuilding.Name = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.WallMaterialAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectBuild)current).Walls),
+				(o, v) => o.Walls.Add(new xmlCodeName { Name = v?.ToString() }));
+
+			AddAttributeToBuilding(buildingSection.ExploitationCharYearBuiltAttributeIdValue, 
+				current => ((xmlObjectBuild)current).Years?.Year_Built,
+				(o, v) => o.Years.Year_Built = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.ExploitationCharYearUsedAttributeIdValue, 
+				current => ((xmlObjectBuild)current).Years?.Year_Used,
+				(o, v) => o.Years.Year_Used = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.FloorCountAttributeIdValue, 
+				current => ((xmlObjectBuild)current).Floors?.Floors,
+				(o, v) => o.Floors.Floors = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.FloorUndergroundCountAttributeIdValue, 
+				current => ((xmlObjectBuild)current).Floors?.Underground_Floors,
+				(o, v) => o.Floors.Underground_Floors = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.AreaAttributeIdValue, 
+				current => ((xmlObjectBuild)current).Area,
+				(o, v) => o.Area = v?.ParseToDouble());
+
+			AddAttributeToBuilding(buildingSection.ObjectPermittedUsesAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectBuild)current).ObjectPermittedUses),
+				(o, v) => o.ObjectPermittedUses.Add(v?.ToString()));
+
+			var subBuildingsLength = buildingSection.SubBuildings.Length;
+			if (subBuildingsLength > 0)
+			{
+				for (var i = 0; i < subBuildingsLength; i++)
+				{
+					var subBuilding = buildingSection.SubBuildings[i];
+					var iCounter = i;
+					var currentSubBuilding = new Func<object, xmlSubBuildingFlat>((x) =>
+						((xmlObjectBuild) x).SubBuildings.ElementAtOrDefault(iCounter));
+
+					AddAttributeToBuilding(subBuilding.AreaAttributeIdValue,
+						current => currentSubBuilding(current)?.Area,
+						(o, v) =>
+						{
+							var element = InitFlatSubBuilding(o, iCounter);
+							element.Area = v?.ParseToDouble();
+						},
+						current => ((xmlObjectBuild) current).SubBuildings.Count >= iCounter + 1);
+
+					for (var j = 0; j < subBuilding.Encumbrances.Length; j++)
+					{
+						var encumbrance = subBuilding.Encumbrances[j];
+						var jCounter = j;
+
+						var currentEncumbrance = new Func<object, xmlEncumbranceOks>(x => ((xmlObjectBuild) x)
+							.SubBuildings.ElementAtOrDefault(iCounter)
+							?.EncumbrancesOks.ElementAtOrDefault(jCounter));
+
+						AddAttributeToBuilding(encumbrance.NameAttributeIdValue,
+							current => currentEncumbrance(current)?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Name = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.TypeAttributeIdValue,
+							current => currentEncumbrance(current)?.Type?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Type.Name = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.RegistrationNumberAttributeIdValue,
+							current => currentEncumbrance(current)?.Registration?.Number,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Registration.Number = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.RegistrationDateAttributeIdValue,
+							current => currentEncumbrance(current)?.Registration?.Date,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Registration.Date = v.ParseToDateTimeNullable();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.CodeAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.CodeDocument?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.CodeDocument.Name = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.NameAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.Name = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.SeriesAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Series,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.Series = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.NumberAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Number,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.Number = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.DateAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Date,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.Date = v.ParseToDateTimeNullable();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.IssueOrganAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.IssueOrgan,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.IssueOrgan = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+
+						AddAttributeToBuilding(encumbrance.Document?.DescAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Desc,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								element.Document.Desc = v?.ParseToString();
+							},
+							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+					}
+
+					AddAttributeToBuilding(subBuilding.NumberRecordAttributeIdValue, 
+						current => currentSubBuilding(current)?.NumberRecord,
+						(o, v) =>
+						{
+							var element = InitFlatSubBuilding(o, iCounter);
+							element.NumberRecord = v?.ParseToString();
+						},
+						current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1);
+
+					AddAttributeToBuilding(subBuilding.DateCreatedAttributeIdValue, 
+						current => currentSubBuilding(current)?.DateCreated,
+						(o, v) =>
+						{
+							var element = InitFlatSubBuilding(o, iCounter);
+							element.DateCreated = v.ParseToDateTimeNullable();
+						},
+						current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1);
+				}
+			}
+
+			AddAttributeToBuilding(buildingSection.FlatsCadastralNumbersAttributeIdValue,
+				current => xmlCodeName.GetNames(((xmlObjectBuild) current).FlatsCadastralNumbers),
+				(o, v) => o.FlatsCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToBuilding(buildingSection.CarParkingSpacesCadastralNumbersAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectBuild)current).CarParkingSpacesCadastralNumbers),
+				(o, v) => o.CarParkingSpacesCadastralNumbers.Add(v?.ToString()));
+			
+			AddAttributeToBuilding(buildingSection.UnitedCadastralNumberAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectBuild)current).UnitedCadastralNumbers),
+				(o, v) => o.UnitedCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToBuilding(buildingSection.FacilityCadastralNumberAttributeIdValue, 
+				current => ((xmlObjectBuild)current).FacilityCadastralNumber,
+				(o, v) => o.FacilityCadastralNumber = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.FacilityPurposeAttributeIdValue, 
+				current => ((xmlObjectBuild)current).FacilityPurpose,
+				(o, v) => o.FacilityPurpose = v?.ToString());
+
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.EgroknRegNumAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.EgroknRegNum,
+				(o, v) => o.CulturalHeritage.EgroknRegNum = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.EgroknObjCulturalAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.EgroknObjCultural?.Name,
+				(o, v) => o.CulturalHeritage.EgroknObjCultural.Name = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.EgroknNameCulturalAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.EgroknNameCultural,
+				(o, v) => o.CulturalHeritage.EgroknNameCultural = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.RequirementsEnsureAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.RequirementsEnsure,
+				(o, v) => o.CulturalHeritage.RequirementsEnsure = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.CodeAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.CodeDocument?.Name,
+				(o, v) => o.CulturalHeritage.Document.CodeDocument.Name = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.NameAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Name,
+				(o, v) => o.CulturalHeritage.Document.Name = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.SeriesAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Series,
+				(o, v) => o.CulturalHeritage.Document.Series = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.NumberAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Number,
+				(o, v) => o.CulturalHeritage.Document.Number = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.DateAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Date,
+				(o, v) => o.CulturalHeritage.Document.Date = v.ParseToDateTimeNullable());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.IssueOrgan,
+				(o, v) => o.CulturalHeritage.Document.IssueOrgan = v?.ToString());
+			
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.DescAttributeIdValue, 
+				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Desc,
+				(o, v) => o.CulturalHeritage.Document.Desc = v?.ToString());
+		}
+
+		private xmlSubBuildingFlat InitFlatSubBuilding(xmlObject o, int iCounter)
+		{
+			var element = o.SubBuildingFlats.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlSubBuildingFlat();
+			o.SubBuildingFlats.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private xmlEncumbranceOks InitEncumbrancesObjectForOks(xmlObject o, int iCounter, int jCounter)
+		{
+			var flatSubBuilding = InitFlatSubBuilding(o, iCounter);
+			var encumbrances = flatSubBuilding.EncumbrancesOks;
+			var element = encumbrances.ElementAtOrDefault(jCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlEncumbranceOks();
+			encumbrances.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private void AddAttributeToBuilding(long? attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
+		{
+			AddGknAttribute(Building, attributeId, getValue, setValue, canSetValue);
+		}
+
+		#endregion
 
 		private void AddGknAttribute(List<ImportedAttributeGkn> attributes, long? attributeId, 
 			Func<xmlObjectParticular, object> getValue, Action<xmlObject, object> setValue, 

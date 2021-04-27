@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
@@ -22,9 +21,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         public override string CancelMessage => "Импорт данных ГКН был отменен во время загрузки Зданий";
         public override string SuccessMessage => "Импорт Зданий завершен";
 
-        public ImportObjectBuild(DateTime unitDate, OMTask task, 
+        public ImportObjectBuild(List<ImportedAttributeGkn> buildingAttributes, DateTime unitDate, OMTask task, 
 	        Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction) 
-	        : base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction)
+	        : base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, buildingAttributes)
         {
 	        InitFactorInheritanceSettings();
         }
@@ -122,99 +121,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 	        {
 		        SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P4YearOfBuildAttributeId), true, gbuObjectId);
             }
-        }
-
-        protected override void InitGknDataAttributes()
-        {
-	        base.InitGknDataAttributes();
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.ParentCadastralNumbersAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectBuild)current).ParentCadastralNumbers));
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.NameAttributeIdValue, current => ((xmlObjectBuild)current).Name);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.AssignationBuildingAttributeIdValue, current => ((xmlObjectBuild)current).AssignationBuilding?.Name);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.WallMaterialAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectBuild)current).Walls));
-
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.ExploitationCharYearBuiltAttributeIdValue, current => ((xmlObjectBuild)current).Years?.Year_Built);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.ExploitationCharYearUsedAttributeIdValue, current => ((xmlObjectBuild)current).Years?.Year_Used);
-
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.FloorCountAttributeIdValue, current => ((xmlObjectBuild)current).Floors?.Floors);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.FloorUndergroundCountAttributeIdValue, current => ((xmlObjectBuild)current).Floors?.Underground_Floors);
-
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.AreaAttributeIdValue, current => ((xmlObjectBuild)current).Area);
-
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.ObjectPermittedUsesAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectBuild)current).ObjectPermittedUses));
-            
-            if(DataImporterGknConfig.GknDataAttributes.Building.SubBuildings.Length > 0)
-            {
-	            for (var i = 0; i < DataImporterGknConfig.GknDataAttributes.Building.SubBuildings.Length; i++)
-	            {
-		            var subBuilding = DataImporterGknConfig.GknDataAttributes.Building.SubBuildings[i];
-		            var iCounter = i;
-		            TryAddGknDataAttribute(subBuilding.AreaAttributeIdValue, current => ((xmlObjectBuild)current).SubBuildings[iCounter].Area,
-	                    current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1);
-
-		            for (int j = 0; j < subBuilding.Encumbrances.Length; j++)
-		            {
-			            var encumbrance = subBuilding.Encumbrances[j];
-			            var jCounter = j;
-			            TryAddGknDataAttribute(encumbrance.NameAttributeIdValue,
-				            current => ((xmlObjectBuild) current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Name,
-				            current => ((xmlObjectBuild) current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.TypeAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Type?.Name,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.RegistrationNumberAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Registration?.Number,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.RegistrationDateAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Registration?.Date,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.CodeAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.CodeDocument?.Name,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.NameAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.Name,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.SeriesAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.Series,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.NumberAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.Number,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.DateAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.Date,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.IssueOrganAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.IssueOrgan,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-			            TryAddGknDataAttribute(encumbrance.Document?.DescAttributeIdValue,
-				            current => ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks[jCounter].Document?.Desc,
-				            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
-		            }
-
-		            TryAddGknDataAttribute(subBuilding.NumberRecordAttributeIdValue, current => ((xmlObjectBuild)current).SubBuildings[iCounter].NumberRecord,
-			            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1);
-		            TryAddGknDataAttribute(subBuilding.DateCreatedAttributeIdValue, current => ((xmlObjectBuild)current).SubBuildings[iCounter].DateCreated,
-			            current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1);
-                }
-            }
-
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.FlatsCadastralNumbersAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectBuild)current).FlatsCadastralNumbers));
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CarParkingSpacesCadastralNumbersAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectBuild)current).CarParkingSpacesCadastralNumbers));
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.UnitedCadastralNumberAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectBuild)current).UnitedCadastralNumbers));
-            
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.FacilityCadastralNumberAttributeIdValue, current => ((xmlObjectBuild)current).FacilityCadastralNumber);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.FacilityPurposeAttributeIdValue, current => ((xmlObjectBuild)current).FacilityPurpose);
-
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.EgroknRegNumAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.EgroknRegNum);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.EgroknObjCulturalAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.EgroknObjCultural?.Name);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.EgroknNameCulturalAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.EgroknNameCultural);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.RequirementsEnsureAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.RequirementsEnsure);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.CodeAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.CodeDocument?.Name);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.NameAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Name);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.SeriesAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Series);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.NumberAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Number);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.DateAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Date);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.IssueOrgan);
-            TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.Building.CulturalHeritage?.Document?.DescAttributeIdValue, current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Desc);
         }
 
         protected override void SetAdditionalUnitProperties(OMUnit koUnit, xmlObjectBuild current)

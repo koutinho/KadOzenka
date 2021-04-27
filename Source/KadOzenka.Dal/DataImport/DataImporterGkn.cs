@@ -186,7 +186,7 @@ namespace KadOzenka.Dal.DataImport
 
 	        var objectsImporters = new List<object>
 	        {
-		        new ImportObjectBuild(unitDate, task, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
+		        new ImportObjectBuild(AllGknAttributes.Building, unitDate, task, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
 		        new ImportObjectParcel(AllGknAttributes.Parcel, unitDate, task, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
 		        new ImportObjectConstruction(unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
 		        new ImportObjectUncomplited(unitDate, task, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),

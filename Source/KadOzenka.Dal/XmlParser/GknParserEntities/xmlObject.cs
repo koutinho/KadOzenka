@@ -234,6 +234,10 @@ namespace KadOzenka.Dal.XmlParser
 			Category = new xmlCodeName();
 			Utilization = new xmlUtilization();
 			HiredHouse = new xmlHiredHouse();
+			AssignationBuilding = new xmlCodeName();
+			Years = new xmlYear();
+			Floors = new xmlFloors();
+			CulturalHeritage = new xmlCulturalHeritage();
 		}
 		public override string ToString()
 		{

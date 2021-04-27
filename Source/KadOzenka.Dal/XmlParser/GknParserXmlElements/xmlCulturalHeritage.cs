@@ -25,5 +25,11 @@
 		/// Реквизиты соответствующего решения
 		/// </summary>
 		public xmlDocument Document { get; set; }
+
+		public xmlCulturalHeritage()
+		{
+			EgroknObjCultural = new xmlCodeName();
+			Document = new xmlDocument();
+		}
 	}
 }
