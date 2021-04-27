@@ -173,7 +173,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 		#region Parcel
 
-		//TODO KOMO-20 extract sub delegate
 		private void FillParcelAttribute()
 		{
 			var parcelSection = Config.GknDataAttributes.Parcel;
@@ -230,11 +229,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			{
 				for (var i = 0; i < naturalObjectsLength; i++)
 				{
-					var naturalObject = parcelSection.NaturalObjects[i];
 					var iCounter = i;
+					var naturalObject = parcelSection.NaturalObjects[i];
+					var currentNaturalObject = new Func<object, xmlNaturalObject>(x =>
+						((xmlObjectParcel) x).NaturalObjects.ElementAtOrDefault(iCounter));
 
 					AddAttributeToParcel(naturalObject.KindAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.Kind?.Name,
+						current => currentNaturalObject(current)?.Kind?.Name,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -243,7 +244,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.ForestryAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.Forestry,
+						current => currentNaturalObject(current)?.Forestry,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -252,7 +253,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.ForestUseAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.ForestUse?.Name,
+						current => currentNaturalObject(current)?.ForestUse?.Name,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -261,7 +262,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.QuarterNumbersAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.QuarterNumbers,
+						current => currentNaturalObject(current)?.QuarterNumbers,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -270,7 +271,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.TaxationSeparationsAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.TaxationSeparations,
+						current => currentNaturalObject(current)?.TaxationSeparations,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -279,7 +280,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.ProtectiveForestAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.ProtectiveForest?.Name,
+						current => currentNaturalObject(current)?.ProtectiveForest?.Name,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -287,7 +288,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						},
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
-					for (int j = 0; j < naturalObject.ForestEncumbrances.Length; j++)
+					for (var j = 0; j < naturalObject.ForestEncumbrances.Length; j++)
 					{
 						var forestEncumbrance = naturalObject.ForestEncumbrances[j];
 						var jCounter = j;
@@ -310,7 +311,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 					}
 
 					AddAttributeToParcel(naturalObject.WaterObjectAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.WaterObject,
+						current => currentNaturalObject(current)?.WaterObject,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -319,7 +320,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.NameOtherAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.NameOther,
+						current => currentNaturalObject(current)?.NameOther,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -328,7 +329,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).NaturalObjects.Count >= iCounter + 1);
 
 					AddAttributeToParcel(naturalObject.CharOtherAttributeIdValue, 
-						current => ((xmlObjectParcel)current).NaturalObjects.ElementAtOrDefault(iCounter)?.CharOther,
+						current => currentNaturalObject(current)?.CharOther,
 						(o, v) =>
 						{
 							var element = InitNaturalObject(o, iCounter);
@@ -343,10 +344,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			{
 				for (var i = 0; i < subParcelsLength; i++)
 				{
-					var subParcel = parcelSection.SubParcels[i];
 					var iCounter = i;
+					var subParcel = parcelSection.SubParcels[i];
+					var currentSubParcel = new Func<object, xmlSubParcel>(x =>
+						((xmlObjectParcel) x).SubParcels.ElementAtOrDefault(iCounter));
+					
 					AddAttributeToParcel(subParcel.AreaAttributeIdValue, 
-						current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Area,
+						current => currentSubParcel(current)?.Area,
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
@@ -355,7 +359,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
 					AddAttributeToParcel(subParcel.AreaInaccuracyAttributeIdValue, 
-						current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.AreaInaccuracy,
+						current => currentSubParcel(current)?.AreaInaccuracy,
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
@@ -363,12 +367,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						},
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
-					for (int j = 0; j < subParcel.Encumbrances.Length; j++)
+					for (var j = 0; j < subParcel.Encumbrances.Length; j++)
 					{
-						var encumbrance = subParcel.Encumbrances[j];
 						var jCounter = j;
+						var encumbrance = subParcel.Encumbrances[j];
+						var currentEncumbrance = new Func<object, xmlEncumbranceZu>(x =>
+							((xmlObjectParcel) x).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances
+							.ElementAtOrDefault(jCounter));
+
 						AddAttributeToParcel(encumbrance.NameAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Name,
+							current => currentEncumbrance(current)?.Name,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -377,7 +385,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.TypeAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Type?.Name,
+							current => currentEncumbrance(current)?.Type?.Name,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -386,7 +394,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.AccountNumberAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.AccountNumber,
+							current => currentEncumbrance(current)?.AccountNumber,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -395,7 +403,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.CadastralNumberRestrictionAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.CadastralNumberRestriction,
+							current => currentEncumbrance(current)?.CadastralNumberRestriction,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -404,7 +412,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.RegistrationNumberAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Registration?.Number,
+							current => currentEncumbrance(current).Registration?.Number,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -413,7 +421,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.RegistrationDateAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Registration?.Date,
+							current => currentEncumbrance(current)?.Registration?.Date,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -422,7 +430,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.CodeAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.CodeDocument?.Name,
+							current => currentEncumbrance(current)?.Document?.CodeDocument?.Name,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -431,7 +439,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.NameAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.Name,
+							current => currentEncumbrance(current).Document?.Name,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -440,7 +448,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.SeriesAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.Series,
+							current => currentEncumbrance(current)?.Document?.Series,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -449,7 +457,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.NumberAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.Number,
+							current => currentEncumbrance(current)?.Document?.Number,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -458,7 +466,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.DateAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.Date,
+							current => currentEncumbrance(current)?.Document?.Date,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -467,7 +475,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.IssueOrganAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.IssueOrgan,
+							current => currentEncumbrance(current)?.Document?.IssueOrgan,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -476,7 +484,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
 						AddAttributeToParcel(encumbrance.Document?.DescAttributeIdValue,
-							current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.Encumbrances.ElementAtOrDefault(jCounter)?.Document?.Desc,
+							current => currentEncumbrance(current)?.Document?.Desc,
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
@@ -486,7 +494,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 					}
 
 					AddAttributeToParcel(subParcel.NumberRecordAttributeIdValue, 
-						current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.NumberRecord,
+						current => currentSubParcel(current)?.NumberRecord,
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
@@ -495,7 +503,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
 					AddAttributeToParcel(subParcel.DateCreatedAttributeIdValue, 
-						current => ((xmlObjectParcel)current).SubParcels.ElementAtOrDefault(iCounter)?.DateCreated,
+						current => currentSubParcel(current)?.DateCreated,
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
@@ -518,10 +526,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			{
 				for (var i = 0; i < zonesAndTerritoriesLength; i++)
 				{
-					var zoneAndTerritory = parcelSection.ZonesAndTerritories[i];
 					var iCounter = i;
+					var zoneAndTerritory = parcelSection.ZonesAndTerritories[i];
+					var currentZoneAndTerritory = new Func<object, xmlZoneAndTerritory>(x =>
+						((xmlObjectParcel) x).ZonesAndTerritories.ElementAtOrDefault(iCounter));
+
 					AddAttributeToParcel(zoneAndTerritory.DescriptionAttributeIdValue, 
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Description,
+						current => currentZoneAndTerritory(current)?.Description,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -530,7 +541,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.CodeZoneDocAttributeIdValue, 
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.CodeZoneDoc,
+						current => currentZoneAndTerritory(current)?.CodeZoneDoc,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -539,7 +550,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.AccountNumberAttributeIdValue, 
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.AccountNumber,
+						current => currentZoneAndTerritory(current)?.AccountNumber,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -548,7 +559,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.ContentRestrictionsAttributeIdValue, 
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.ContentRestrictions,
+						current => currentZoneAndTerritory(current)?.ContentRestrictions,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -557,7 +568,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.FullPartlyAttributeIdValue, 
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.FullPartly,
+						current => currentZoneAndTerritory(current)?.FullPartly,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -566,7 +577,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.CodeAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.CodeDocument?.Name,
+						current => currentZoneAndTerritory(current)?.Document?.CodeDocument?.Name,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -575,7 +586,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.NameAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.Name,
+						current => currentZoneAndTerritory(current)?.Document?.Name,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -584,7 +595,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.SeriesAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.Series,
+						current => currentZoneAndTerritory(current)?.Document?.Series,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -593,7 +604,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.NumberAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.Number,
+						current => currentZoneAndTerritory(current)?.Document?.Number,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -602,7 +613,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.DateAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.Date,
+						current => currentZoneAndTerritory(current)?.Document?.Date,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -611,7 +622,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.IssueOrganAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.IssueOrgan,
+						current => currentZoneAndTerritory(current)?.Document?.IssueOrgan,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -620,7 +631,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
 					AddAttributeToParcel(zoneAndTerritory.Document?.DescAttributeIdValue,
-						current => ((xmlObjectParcel)current).ZonesAndTerritories.ElementAtOrDefault(iCounter)?.Document?.Desc,
+						current => currentZoneAndTerritory(current)?.Document?.Desc,
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
@@ -635,10 +646,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			{
 				for (var i = 0; i < governmentLandSupervisionLength; i++)
 				{
-					var supervisionEvent = parcelSection.GovernmentLandSupervision[i];
 					var iCounter = i;
+					var supervisionEvent = parcelSection.GovernmentLandSupervision[i];
+					var currentGovernment = new Func<object, xmlSupervisionEvent>(x =>
+						((xmlObjectParcel) x).GovernmentLandSupervision.ElementAtOrDefault(iCounter));
+
 					AddAttributeToParcel(supervisionEvent.AgencyAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.Agency,
+						current => currentGovernment(current)?.Agency,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -647,7 +661,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EventNameAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EventName?.Name,
+						current => currentGovernment(current)?.EventName?.Name,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -656,7 +670,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EventFormAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EventForm?.Name,
+						current => currentGovernment(current)?.EventForm?.Name,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -665,7 +679,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.InspectionEndAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.InspectionEnd,
+						current => currentGovernment(current)?.InspectionEnd,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -674,7 +688,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.AvailabilityViolationsAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.AvailabilityViolations,
+						current => currentGovernment(current)?.AvailabilityViolations,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -683,7 +697,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.IdentifiedViolationsTypeViolationsAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.IdentifiedViolations?.TypeViolations,
+						current => currentGovernment(current)?.IdentifiedViolations?.TypeViolations,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -692,7 +706,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.IdentifiedViolationsSignViolationsAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.IdentifiedViolations?.SignViolations,
+						current => currentGovernment(current)?.IdentifiedViolations?.SignViolations,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -701,7 +715,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.IdentifiedViolationsAreaAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.IdentifiedViolations?.Area,
+						current => currentGovernment(current)?.IdentifiedViolations?.Area,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -710,7 +724,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.CodeAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.CodeDocument?.Name,
+						current => currentGovernment(current)?.DocRequisites?.CodeDocument?.Name,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -719,7 +733,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.NameAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.Name,
+						current => currentGovernment(current)?.DocRequisites?.Name,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -728,7 +742,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.SeriesAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.Series,
+						current => currentGovernment(current)?.DocRequisites?.Series,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -737,7 +751,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.NumberAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.Number,
+						current => currentGovernment(current)?.DocRequisites?.Number,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -746,7 +760,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.DateAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.Date,
+						current => currentGovernment(current)?.DocRequisites?.Date,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -755,7 +769,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.IssueOrganAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.IssueOrgan,
+						current => currentGovernment(current)?.DocRequisites?.IssueOrgan,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -764,7 +778,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.DocRequisites?.DescAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.DocRequisites?.Desc,
+						current => currentGovernment(current)?.DocRequisites?.Desc,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -773,7 +787,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationMarkAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.Elimination?.EliminationMark,
+						current => currentGovernment(current)?.Elimination?.EliminationMark,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -782,7 +796,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationAgencyAttributeIdValue, 
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.Elimination?.EliminationAgency,
+						current => currentGovernment(current)?.Elimination?.EliminationAgency,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -791,7 +805,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.CodeAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.CodeDocument?.Name,
+						current => currentGovernment(current)?.EliminationDocRequisites?.CodeDocument?.Name,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -800,7 +814,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.NameAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.Name,
+						current => currentGovernment(current)?.EliminationDocRequisites?.Name,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -809,7 +823,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.SeriesAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.Series,
+						current => currentGovernment(current)?.EliminationDocRequisites?.Series,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -818,7 +832,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.NumberAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.Number,
+						current => currentGovernment(current)?.EliminationDocRequisites?.Number,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -827,7 +841,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.DateAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.Date,
+						current => currentGovernment(current)?.EliminationDocRequisites?.Date,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -836,7 +850,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.IssueOrganAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.IssueOrgan,
+						current => currentGovernment(current)?.EliminationDocRequisites?.IssueOrgan,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
@@ -845,7 +859,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
 					AddAttributeToParcel(supervisionEvent.EliminationDocRequisites?.DescAttributeIdValue,
-						current => ((xmlObjectParcel)current).GovernmentLandSupervision.ElementAtOrDefault(iCounter)?.EliminationDocRequisites?.Desc,
+						current => currentGovernment(current)?.EliminationDocRequisites?.Desc,
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
