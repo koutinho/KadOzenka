@@ -16,6 +16,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		private List<ImportedAttributeGkn> General { get; }
 		public List<ImportedAttributeGkn> Parcel { get; }
 		public List<ImportedAttributeGkn> Building { get; }
+		public List<ImportedAttributeGkn> Construction { get; }
 		public List<ImportedAttributeGkn> All { get; }
 
 
@@ -26,18 +27,22 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			General = new List<ImportedAttributeGkn>();
 			Parcel = new List<ImportedAttributeGkn>();
 			Building = new List<ImportedAttributeGkn>();
+			Construction = new List<ImportedAttributeGkn>();
 			All = new List<ImportedAttributeGkn>();
 
 			FillGeneralAttribute();
 			FillBuildingAttribute();
 			FillParcelAttribute();
+			FillConstructionAttribute();
 
 			All.AddRange(General);
 			All.AddRange(Building);
 			All.AddRange(Parcel);
+			All.AddRange(Construction);
 
 			Building.AddRange(General);
 			Parcel.AddRange(General);
+			Construction.AddRange(General);
 		}
 
 
@@ -1111,7 +1116,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Name,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Name = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1120,7 +1125,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Type?.Name,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Type.Name = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1129,7 +1134,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Registration?.Number,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Registration.Number = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1138,7 +1143,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Registration?.Date,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Registration.Date = v.ParseToDateTimeNullable();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1147,7 +1152,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.CodeDocument?.Name,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.CodeDocument.Name = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1156,7 +1161,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.Name,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.Name = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1165,7 +1170,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.Series,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.Series = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1174,7 +1179,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.Number,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.Number = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1183,7 +1188,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.Date,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.Date = v.ParseToDateTimeNullable();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1192,7 +1197,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.IssueOrgan,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.IssueOrgan = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1201,7 +1206,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							current => currentEncumbrance(current)?.Document?.Desc,
 							(o, v) =>
 							{
-								var element = InitEncumbrancesObjectForOks(o, iCounter, jCounter);
+								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
 								element.Document.Desc = v?.ParseToString();
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
@@ -1304,7 +1309,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			return element;
 		}
 
-		private xmlEncumbranceOks InitEncumbrancesObjectForOks(xmlObject o, int iCounter, int jCounter)
+		private xmlEncumbranceOks InitEncumbrancesObjectForBuilding(xmlObject o, int iCounter, int jCounter)
 		{
 			var flatSubBuilding = InitFlatSubBuilding(o, iCounter);
 			var encumbrances = flatSubBuilding.EncumbrancesOks;
@@ -1322,6 +1327,347 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
 		{
 			AddGknAttribute(Building, attributeId, getValue, setValue, canSetValue);
+		}
+
+		#endregion
+
+
+		#region Construction
+
+		private void FillConstructionAttribute()
+		{
+			var constructionSection = Config.GknDataAttributes.Construction;
+
+			AddAttributeToConstruction(constructionSection.ParentCadastralNumbersAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectConstruction)current).ParentCadastralNumbers),
+				(o, v) => o.ParentCadastralNumbers.Add(v?.ToString()));
+			
+			AddAttributeToConstruction(constructionSection.NameAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).Name,
+				(o, v) => o.NameObject = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.AssignationNameAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).AssignationName,
+				(o, v) => o.AssignationName = v?.ToString());
+
+			AddAttributeToConstruction(constructionSection.ExploitationCharYearBuiltAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).Years?.Year_Built,
+				(o, v) => o.Years.Year_Built = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.ExploitationCharYearUsedAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).Years?.Year_Used,
+				(o, v) => o.Years.Year_Used = v?.ToString());
+
+			AddAttributeToConstruction(constructionSection.FloorCountAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).Floors?.Floors,
+				(o, v) => o.Floors.Floors = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.FloorUndergroundCountAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).Floors?.Underground_Floors,
+				(o, v) => o.Floors.Underground_Floors = v?.ToString());
+
+			AddAttributeToConstruction(constructionSection.KeyParametersAttributeIdValue,
+				current => xmlCodeNameValue.GetNames(((xmlObjectConstruction) current).KeyParameters),
+				(o, v) => o.KeyParameters.Add(new xmlCodeNameValue {Name = v?.ToString()}));
+
+			var constructionKeyParametersLength = constructionSection.KeyParameters.Length;
+			if (constructionKeyParametersLength > 0)
+			{
+				for (var i = 0; i < constructionKeyParametersLength; i++)
+				{
+					var iCounter = i;
+					var keyParameter = constructionSection.KeyParameters[i];
+					var currentConstructionKeyParameter =
+						new Func<object, xmlCodeNameValue>(x => ((xmlObjectConstruction) x).KeyParameters.ElementAtOrDefault(iCounter));
+
+					AddAttributeToConstruction(keyParameter.KeyParameterAttributeIdValue,
+						current => currentConstructionKeyParameter(current)?.Name,
+						(o, v) =>
+						{
+							var element = InitConstructionKeyParameters(o, iCounter);
+							element.Name = v?.ToString();
+						},
+						current => ((xmlObjectConstruction)current).KeyParameters.Count >= iCounter + 1);
+
+					AddAttributeToConstruction(keyParameter.KeyParameterValueAttributeIdValue, 
+						current => currentConstructionKeyParameter(current)?.Value,
+						(o, v) =>
+						{
+							var element = InitConstructionKeyParameters(o, iCounter);
+							element.Value = v?.ToString();
+						},
+						current => ((xmlObjectConstruction)current).KeyParameters.Count >= iCounter + 1);
+				}
+			}
+
+			AddAttributeToConstruction(constructionSection.ObjectPermittedUsesAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectConstruction)current).ObjectPermittedUses),
+				(o, v) => o.ObjectPermittedUses.Add(v?.ToString()));
+
+			var subConstructionsLength = constructionSection.SubConstructions.Length;
+			if (subConstructionsLength > 0)
+			{
+				for (var i = 0; i < subConstructionsLength; i++)
+				{
+					var iCounter = i;
+					var subConstruction = constructionSection.SubConstructions[i];
+					var currentSubConstruction =
+						new Func<object, xmlSubConstruction>(x => ((xmlObjectConstruction) x).SubConstructions.ElementAtOrDefault(iCounter));
+
+					AddAttributeToConstruction(subConstruction.KeyParameter?.KeyParameterAttributeIdValue, 
+						current => currentSubConstruction(current)?.KeyParameter?.Name,
+						(o, v) =>
+						{
+							var element = InitSubConstruction(o, iCounter);
+							element.KeyParameter.Name = v?.ToString();
+						},
+						current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1);
+
+					AddAttributeToConstruction(subConstruction.KeyParameter?.KeyParameterValueAttributeIdValue, 
+						current => currentSubConstruction(current)?.KeyParameter?.Value,
+						(o, v) =>
+						{
+							var element = InitSubConstruction(o, iCounter);
+							element.KeyParameter.Value = v?.ToString();
+						},
+						current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1);
+
+					for (var j = 0; j < subConstruction.Encumbrances.Length; j++)
+					{
+						var jCounter = j;
+						var encumbrance = subConstruction.Encumbrances[j];
+						var currentEncumbrance = new Func<object, xmlEncumbranceOks>(x =>
+							((xmlObjectConstruction) x).SubConstructions.ElementAtOrDefault(iCounter)?.EncumbrancesOks
+							.ElementAtOrDefault(jCounter));
+
+
+						AddAttributeToConstruction(encumbrance.NameAttributeIdValue,
+							current => currentEncumbrance(current)?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Name = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.TypeAttributeIdValue,
+							current => currentEncumbrance(current)?.Type?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Type.Name = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.RegistrationNumberAttributeIdValue,
+							current => currentEncumbrance(current)?.Registration?.Number,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Registration.Number = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.RegistrationDateAttributeIdValue,
+							current => currentEncumbrance(current)?.Registration?.Date,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Registration.Date = v.ParseToDateTimeNullable();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.CodeAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.CodeDocument?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.CodeDocument.Name = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.NameAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.Name = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.SeriesAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Series,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.Series = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.NumberAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Number,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.Number = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.DateAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Date,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.Date = v.ParseToDateTimeNullable();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.IssueOrganAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.IssueOrgan,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.IssueOrgan = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToConstruction(encumbrance.Document?.DescAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Desc,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
+								element.Document.Desc = v?.ToString();
+							},
+							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+					}
+
+					AddAttributeToConstruction(subConstruction.NumberRecordAttributeIdValue, 
+						current => currentSubConstruction(current)?.NumberRecord,
+						(o, v) =>
+						{
+							var element = InitSubConstruction(o, iCounter);
+							element.NumberRecord = v?.ToString();
+						},
+						current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1);
+					
+					AddAttributeToConstruction(subConstruction.DateCreatedAttributeIdValue, 
+						current => currentSubConstruction(current).DateCreated,
+						(o, v) =>
+						{
+							var element = InitSubConstruction(o, iCounter);
+							element.DateCreated = v.ParseToDateTimeNullable();
+						},
+						current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1);
+				}
+			}
+
+			AddAttributeToConstruction(constructionSection.FlatsCadastralNumbersAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectConstruction)current).FlatsCadastralNumbers),
+				(o, v) => o.FlatsCadastralNumbers.Add(v?.ToString()));
+			
+			AddAttributeToConstruction(constructionSection.CarParkingSpacesCadastralNumbersAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectConstruction)current).CarParkingSpacesCadastralNumbers),
+				(o, v) => o.CarParkingSpacesCadastralNumbers.Add(v?.ToString()));
+			
+			AddAttributeToConstruction(constructionSection.UnitedCadastralNumberAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectConstruction)current).UnitedCadastralNumbers),
+				(o, v) => o.UnitedCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToConstruction(constructionSection.FacilityCadastralNumberAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).FacilityCadastralNumber,
+				(o, v) => o.FacilityCadastralNumber = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.FacilityPurposeAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).FacilityPurpose,
+				(o, v) => o.FacilityPurpose = v?.ToString());
+
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.EgroknRegNumAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.EgroknRegNum,
+				(o, v) => o.CulturalHeritage.EgroknRegNum = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.EgroknObjCulturalAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.EgroknObjCultural?.Name,
+				(o, v) => o.CulturalHeritage.EgroknObjCultural.Name = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.EgroknNameCulturalAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.EgroknNameCultural,
+				(o, v) => o.CulturalHeritage.EgroknNameCultural = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.RequirementsEnsureAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.RequirementsEnsure,
+				(o, v) => o.CulturalHeritage.RequirementsEnsure = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.CodeAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.CodeDocument?.Name,
+				(o, v) => o.CulturalHeritage.Document.CodeDocument.Name = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.NameAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Name,
+				(o, v) => o.CulturalHeritage.Document.Name = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.SeriesAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Series,
+				(o, v) => o.CulturalHeritage.Document.Series = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.NumberAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Number,
+				(o, v) => o.CulturalHeritage.Document.Number = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.DateAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Date,
+				(o, v) => o.CulturalHeritage.Document.Date = v.ParseToDateTimeNullable());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.IssueOrgan,
+				(o, v) => o.CulturalHeritage.Document.IssueOrgan = v?.ToString());
+			
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.DescAttributeIdValue, 
+				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Desc,
+				(o, v) => o.CulturalHeritage.Document.Desc = v?.ToString());
+		}
+
+		private xmlCodeNameValue InitConstructionKeyParameters(xmlObject o, int iCounter)
+		{
+			var element = o.KeyParameters.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlCodeNameValue();
+			o.KeyParameters.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private xmlSubConstruction InitSubConstruction(xmlObject o, int iCounter)
+		{
+			var element = o.SubConstructions.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlSubConstruction();
+			o.SubConstructions.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private xmlEncumbranceOks InitEncumbrancesObjectForConstruction(xmlObject o, int iCounter, int jCounter)
+		{
+			var subConstruction = InitSubConstruction(o, iCounter);
+			var encumbrances = subConstruction.EncumbrancesOks;
+			var element = encumbrances.ElementAtOrDefault(jCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlEncumbranceOks();
+			encumbrances.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private void AddAttributeToConstruction(long? attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
+		{
+			AddGknAttribute(Construction, attributeId, getValue, setValue, canSetValue);
 		}
 
 		#endregion

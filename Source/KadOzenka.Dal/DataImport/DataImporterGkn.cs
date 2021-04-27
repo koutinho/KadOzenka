@@ -188,7 +188,7 @@ namespace KadOzenka.Dal.DataImport
 	        {
 		        new ImportObjectBuild(AllGknAttributes.Building, unitDate, task, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
 		        new ImportObjectParcel(AllGknAttributes.Parcel, unitDate, task, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
-		        new ImportObjectConstruction(unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
+		        new ImportObjectConstruction(AllGknAttributes.Construction, unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
 		        new ImportObjectUncomplited(unitDate, task, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
 		        new ImportObjectFlat(unitDate, task, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
 		        new ImportObjectCarPlace(unitDate, task, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
