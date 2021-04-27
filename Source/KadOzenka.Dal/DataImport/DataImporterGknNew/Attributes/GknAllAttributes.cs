@@ -17,6 +17,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		public List<ImportedAttributeGkn> Building { get; }
 		public List<ImportedAttributeGkn> Construction { get; }
 		public List<ImportedAttributeGkn> Flat { get; }
+		public List<ImportedAttributeGkn> Uncompleted { get; }
 		public List<ImportedAttributeGkn> All { get; }
 
 
@@ -29,6 +30,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			Building = new List<ImportedAttributeGkn>();
 			Construction = new List<ImportedAttributeGkn>();
 			Flat = new List<ImportedAttributeGkn>();
+			Uncompleted = new List<ImportedAttributeGkn>();
 			All = new List<ImportedAttributeGkn>();
 
 			FillGeneralAttribute();
@@ -36,17 +38,20 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			FillParcelAttribute();
 			FillConstructionAttribute();
 			FillFlatAttribute();
+			FillUncompletedAttribute();
 
 			All.AddRange(General);
 			All.AddRange(Building);
 			All.AddRange(Parcel);
 			All.AddRange(Construction);
 			All.AddRange(Flat);
+			All.AddRange(Uncompleted);
 
 			Building.AddRange(General);
 			Parcel.AddRange(General);
 			Construction.AddRange(General);
 			Flat.AddRange(General);
+			Uncompleted.AddRange(General);
 		}
 
 
@@ -1388,7 +1393,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => currentConstructionKeyParameter(current)?.Name,
 						(o, v) =>
 						{
-							var element = InitConstructionKeyParameters(o, iCounter);
+							var element = InitKeyParameters(o, iCounter);
 							element.Name = v?.ToString();
 						},
 						current => ((xmlObjectConstruction)current).KeyParameters.Count >= iCounter + 1);
@@ -1397,7 +1402,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => currentConstructionKeyParameter(current)?.Value,
 						(o, v) =>
 						{
-							var element = InitConstructionKeyParameters(o, iCounter);
+							var element = InitKeyParameters(o, iCounter);
 							element.Value = v?.ToString();
 						},
 						current => ((xmlObjectConstruction)current).KeyParameters.Count >= iCounter + 1);
@@ -1628,18 +1633,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.DescAttributeIdValue, 
 				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Desc,
 				(o, v) => o.CulturalHeritage.Document.Desc = v?.ToString());
-		}
-
-		private xmlCodeNameValue InitConstructionKeyParameters(xmlObject o, int iCounter)
-		{
-			var element = o.KeyParameters.ElementAtOrDefault(iCounter);
-			if (element != null)
-				return element;
-
-			element = new xmlCodeNameValue();
-			o.KeyParameters.Insert(iCounter, element);
-
-			return element;
 		}
 
 		private xmlSubConstruction InitSubConstruction(xmlObject o, int iCounter)
@@ -2065,6 +2058,77 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		#endregion
 
 
+		#region Uncompleted
+
+		private void FillUncompletedAttribute()
+		{
+			var uncompletedSection = Config.GknDataAttributes.Uncompleted;
+
+			AddAttributeToUncompleted(uncompletedSection.ParentCadastralNumbersAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectUncomplited)current).ParentCadastralNumbers),
+				(o, v) => o.ParentCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToUncompleted(uncompletedSection.AssignationNameAttributeIdValue, 
+				current => ((xmlObjectUncomplited)current).AssignationName,
+				(o, v) => o.AssignationName= v?.ToString());
+
+			AddAttributeToUncompleted(uncompletedSection.KeyParametersAttributeIdValue,
+				current => xmlCodeNameValue.GetNames(((xmlObjectUncomplited) current).KeyParameters),
+				(o, v) => o.KeyParameters.Add(new xmlCodeNameValue {Name = v?.ToString()}));
+
+			var keyParametersLength = uncompletedSection.KeyParameters.Length;
+			if (keyParametersLength > 0)
+			{
+				for (var i = 0; i < keyParametersLength; i++)
+				{
+					var iCounter = i;
+					var keyParameter = uncompletedSection.KeyParameters[i];
+					var currentKeyParameter = new Func<object, xmlCodeNameValue>(x =>
+						((xmlObjectUncomplited) x).KeyParameters.ElementAtOrDefault(iCounter));
+					
+					AddAttributeToUncompleted(keyParameter.KeyParameterAttributeIdValue, 
+						current => currentKeyParameter(current)?.Name,
+						(o, v) =>
+						{
+							var element = InitKeyParameters(o, iCounter);
+							element.Name = v?.ToString();
+						},
+						current => ((xmlObjectUncomplited)current).KeyParameters.Count >= iCounter + 1);
+
+					AddAttributeToUncompleted(keyParameter.KeyParameterValueAttributeIdValue, 
+						current => currentKeyParameter(current)?.Value,
+						(o, v) =>
+						{
+							var element = InitKeyParameters(o, iCounter);
+							element.Value = v?.ToString();
+						},
+						current => ((xmlObjectUncomplited)current).KeyParameters.Count >= iCounter + 1);
+				}
+			}
+
+			AddAttributeToUncompleted(uncompletedSection.DegreeReadinessAttributeIdValue, 
+				current => ((xmlObjectUncomplited)current).DegreeReadiness,
+				(o, v) => o.DegreeReadiness = v?.ParseToLongNullable());
+
+			AddAttributeToUncompleted(uncompletedSection.FacilityCadastralNumberAttributeIdValue, 
+				current => ((xmlObjectUncomplited)current).FacilityCadastralNumber,
+				(o, v) => o.FacilityCadastralNumber = v?.ToString());
+			
+			AddAttributeToUncompleted(uncompletedSection.FacilityPurposeAttributeIdValue, 
+				current => ((xmlObjectUncomplited)current).FacilityPurpose,
+				(o, v) => o.FacilityPurpose = v?.ToString());
+		}
+
+		private void AddAttributeToUncompleted(long? attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
+		{
+			AddGknAttribute(Uncompleted, attributeId, getValue, setValue, canSetValue);
+		}
+
+
+		#endregion
+
+
 		private void AddGknAttribute(List<ImportedAttributeGkn> attributes, long? attributeId, 
 			Func<xmlObjectParticular, object> getValue, Action<xmlObject, object> setValue, 
 			Func<xmlObjectParticular, bool> canSetValue = null)
@@ -2073,6 +2137,18 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				return;
 
 			attributes.Add(new ImportedAttributeGkn(attributeId.Value, getValue, setValue, canSetValue));
+		}
+
+		private xmlCodeNameValue InitKeyParameters(xmlObject o, int iCounter)
+		{
+			var element = o.KeyParameters.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlCodeNameValue();
+			o.KeyParameters.Insert(iCounter, element);
+
+			return element;
 		}
 
 		#endregion
