@@ -238,6 +238,11 @@ namespace KadOzenka.Dal.XmlParser
 			Years = new xmlYear();
 			Floors = new xmlFloors();
 			CulturalHeritage = new xmlCulturalHeritage();
+			ParentOks = new xmlParentOks();
+			AssignationFlatCode = new xmlCodeName();
+			AssignationFlatType = new xmlCodeName();
+			AssignationSpecialType = new xmlCodeName();
+			Position = new xmlPos();
 		}
 		public override string ToString()
 		{

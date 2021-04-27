@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
-using KadOzenka.Dal.Extentions;
 using KadOzenka.Dal.XmlParser;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 
@@ -17,6 +16,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		public List<ImportedAttributeGkn> Parcel { get; }
 		public List<ImportedAttributeGkn> Building { get; }
 		public List<ImportedAttributeGkn> Construction { get; }
+		public List<ImportedAttributeGkn> Flat { get; }
 		public List<ImportedAttributeGkn> All { get; }
 
 
@@ -28,21 +28,25 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			Parcel = new List<ImportedAttributeGkn>();
 			Building = new List<ImportedAttributeGkn>();
 			Construction = new List<ImportedAttributeGkn>();
+			Flat = new List<ImportedAttributeGkn>();
 			All = new List<ImportedAttributeGkn>();
 
 			FillGeneralAttribute();
 			FillBuildingAttribute();
 			FillParcelAttribute();
 			FillConstructionAttribute();
+			FillFlatAttribute();
 
 			All.AddRange(General);
 			All.AddRange(Building);
 			All.AddRange(Parcel);
 			All.AddRange(Construction);
+			All.AddRange(Flat);
 
 			Building.AddRange(General);
 			Parcel.AddRange(General);
 			Construction.AddRange(General);
+			Flat.AddRange(General);
 		}
 
 
@@ -1671,6 +1675,395 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		}
 
 		#endregion
+
+
+		#region Flat
+
+		private void FillFlatAttribute()
+		{
+			var flatSection = Config.GknDataAttributes.Flat;
+
+			AddAttributeToFlat(flatSection.CadastralNumberFlatAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CadastralNumberFlat,
+					(o, v) => o.CadastralNumberFlat = v?.ToString());
+
+			AddAttributeToFlat(flatSection.CadastralNumberOksAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CadastralNumberOKS,
+				(o, v) => o.CadastralNumberOKS = v?.ToString());
+
+			AddAttributeToFlat(flatSection.ParentOks?.CadastralNumberOksAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.CadastralNumberOKS,
+				(o, v) => o.ParentOks.CadastralNumberOKS = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.ObjectTypeAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.ObjectType?.Name,
+				(o, v) => o.ParentOks.ObjectType.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.AssignationBuildingAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.AssignationBuilding?.Name,
+				(o, v) => o.ParentOks.AssignationBuilding.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.AssignationNameAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.AssignationName,
+				(o, v) => o.ParentOks.AssignationName = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.WallMaterialAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectFlat)current).ParentOks?.Walls),
+				(o, v) => o.ParentOks.Walls.Add(new xmlCodeName {Name = v?.ToString()}));
+			
+			AddAttributeToFlat(flatSection.ParentOks?.ExploitationCharYearBuiltAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.Years?.Year_Built,
+				(o, v) => o.ParentOks.Years.Year_Built = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.ExploitationCharYearUsedAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.Years?.Year_Used,
+				(o, v) => o.ParentOks.Years.Year_Used = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.FloorCountAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.Floors?.Floors,
+				(o, v) => o.ParentOks.Floors.Floors = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.ParentOks?.FloorUndergroundCountAttributeIdValue, 
+				current => ((xmlObjectFlat)current).ParentOks?.Floors?.Underground_Floors,
+				(o, v) => o.ParentOks.Floors.Underground_Floors = v?.ToString());
+
+			AddAttributeToFlat(flatSection.NameAttributeIdValue, 
+				current => ((xmlObjectFlat)current).Name,
+				(o, v) => o.NameObject = v?.ToString());
+
+			AddAttributeToFlat(flatSection.AssignationAssignationCodeAttributeIdValue, 
+				current => ((xmlObjectFlat)current).AssignationFlatCode?.Name,
+				(o, v) => o.AssignationFlatCode.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.AssignationAssignationTypeAttributeIdValue, 
+				current => ((xmlObjectFlat)current).AssignationFlatType?.Name,
+				(o, v) => o.AssignationFlatType.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.AssignationSpecialTypeAttributeIdValue, 
+				current => ((xmlObjectFlat)current).AssignationSpecialType?.Name,
+				(o, v) => o.AssignationSpecialType.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.AssignationTotalAssetsAttributeIdValue, 
+				current => ((xmlObjectFlat)current).AssignationTotalAssets,
+				(o, v) => o.AssignationTotalAssets = v.ParseToBooleanNullable());
+			
+			AddAttributeToFlat(flatSection.AssignationAuxiliaryFlatAttributeIdValue, 
+				current => ((xmlObjectFlat)current).AssignationAuxiliaryFlat,
+				(o, v) => o.AssignationAuxiliaryFlat = v.ParseToBooleanNullable());
+
+			AddAttributeToFlat(flatSection.AreaAttributeIdValue, 
+				current => ((xmlObjectFlat)current).Area,
+				(o, v) => o.Area = v?.ParseToDouble());
+
+			AddAttributeToFlat(flatSection.PositionNumberOnPlanAttributeIdValue, 
+				current => ((xmlObjectFlat)current).Position?.NumberOnPlan,
+				(o, v) => o.Position.NumberOnPlan = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.PositionDescriptionAttributeIdValue, 
+				current => ((xmlObjectFlat)current).Position?.Description,
+				(o, v) => o.Position.Description = v?.ToString());
+
+			var levelsLength = flatSection.Levels.Length;
+ 			if (levelsLength > 0)
+			{
+				for (var i = 0; i < levelsLength; i++)
+				{
+					var iCounter = i;
+					var level = flatSection.Levels[i];
+					var currentFlatLevel =
+						new Func<object, xmlLevel>(x => ((xmlObjectFlat) x).Levels.ElementAtOrDefault(iCounter));
+
+					AddAttributeToFlat(level.NumberAttributeIdValue, 
+						current => currentFlatLevel(current)?.Number,
+						(o, v) =>
+						{
+							var element = InitFlatLevel(o, iCounter);
+							element.Number = v?.ToString();
+						},
+						current => ((xmlObjectFlat)current).Levels.Count >= iCounter + 1);
+
+					AddAttributeToFlat(level.TypeAttributeIdValue,
+						current => xmlCodeName.GetNames(new List<xmlCodeName> {currentFlatLevel(current)?.Type}),
+						(o, v) =>
+						{
+							var element = InitFlatLevel(o, iCounter);
+							element.Type.Name = v?.ToString();
+						},
+						current => ((xmlObjectFlat) current).Levels.Count >= iCounter + 1);
+
+					AddAttributeToFlat(level.PositionNumberOnPlanAttributeIdValue, 
+						current => currentFlatLevel(current)?.Position?.NumberOnPlan,
+						(o, v) =>
+						{
+							var element = InitFlatLevel(o, iCounter);
+							element.Position.NumberOnPlan = v?.ToString();
+						},
+						current => ((xmlObjectFlat)current).Levels.Count >= iCounter + 1);
+
+					AddAttributeToFlat(level.PositionDescriptionAttributeIdValue, 
+						current => currentFlatLevel(current)?.Position?.Description,
+						(o, v) =>
+						{
+							var element = InitFlatLevel(o, iCounter);
+							element.Position.Description = v?.ToString();
+						},
+						current => ((xmlObjectFlat)current).Levels.Count >= iCounter + 1);
+				}
+			}
+
+			AddAttributeToFlat(flatSection.ObjectPermittedUsesAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectFlat)current).ObjectPermittedUses),
+				(o, v) => o.ObjectPermittedUses.Add(v?.ToString()));
+
+			var subFlatsLength = flatSection.SubFlats.Length;
+			if (subFlatsLength > 0)
+			{
+				for (var i = 0; i < subFlatsLength; i++)
+				{
+					var iCounter = i;
+					var subFlat = flatSection.SubFlats[i];
+					var currentSubFlat = new Func<object, xmlSubBuildingFlat>(x =>
+						((xmlObjectFlat) x).SubFlats.ElementAtOrDefault(iCounter));
+
+					AddAttributeToFlat(subFlat.AreaAttributeIdValue, 
+						current => currentSubFlat(current)?.Area,
+						(o, v) =>
+						{
+							var element = InitSubFlat(o, iCounter);
+							element.Area = v?.ParseToDouble();
+						},
+						current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1);
+
+					for (var j = 0; j < subFlat.Encumbrances.Length; j++)
+					{
+						var jCounter = j;
+						var encumbrance = subFlat.Encumbrances[j];
+						var currentEncumbrance = new Func<object, xmlEncumbranceOks>(x =>
+							((xmlObjectFlat) x).SubFlats.ElementAtOrDefault(iCounter)?.EncumbrancesOks
+							.ElementAtOrDefault(jCounter));
+						
+						AddAttributeToFlat(encumbrance.NameAttributeIdValue,
+							current => currentEncumbrance(current)?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Name = v?.ToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.TypeAttributeIdValue,
+							current => currentEncumbrance(current)?.Type?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Type.Name = v?.ToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.RegistrationNumberAttributeIdValue,
+							current => currentEncumbrance(current)?.Registration?.Number,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Registration.Number = v?.ToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.RegistrationDateAttributeIdValue,
+							current => currentEncumbrance(current)?.Registration?.Date,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Registration.Date = v?.ParseToDateTimeNullable();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.CodeAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.CodeDocument?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.CodeDocument.Name = v?.ParseToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.NameAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Name,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.Name = v?.ParseToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.SeriesAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Series,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.Series = v?.ParseToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.NumberAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Number,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.Number = v?.ParseToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.DateAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Date,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.Date = v?.ParseToDateTimeNullable();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.IssueOrganAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.IssueOrgan,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.IssueOrgan = v?.ToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+						
+						AddAttributeToFlat(encumbrance.Document?.DescAttributeIdValue,
+							current => currentEncumbrance(current)?.Document?.Desc,
+							(o, v) =>
+							{
+								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
+								element.Document.Desc= v?.ToString();
+							},
+							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
+					}
+
+					AddAttributeToFlat(subFlat.NumberRecordAttributeIdValue, 
+						current => currentSubFlat(current)?.NumberRecord,
+						(o, v) =>
+						{
+							var element = InitSubFlat(o, iCounter);
+							element.NumberRecord = v?.ParseToString();
+						},
+						current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1);
+					AddAttributeToFlat(subFlat.DateCreatedAttributeIdValue, 
+						current => currentSubFlat(current)?.DateCreated,
+						(o, v) =>
+						{
+							var element = InitSubFlat(o, iCounter);
+							element.DateCreated = v?.ParseToDateTimeNullable();
+						},
+						current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1);
+				}
+			}
+
+			AddAttributeToFlat(flatSection.UnitedCadastralNumberAttributeIdValue,
+				current => xmlCodeName.GetNames(((xmlObjectFlat) current).UnitedCadastralNumbers),
+				(o, v) => o.UnitedCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToFlat(flatSection.FacilityCadastralNumberAttributeIdValue, 
+				current => ((xmlObjectFlat)current).FacilityCadastralNumber,
+				(o, v) => o.FacilityCadastralNumber = v?.ToString());
+
+			AddAttributeToFlat(flatSection.FacilityPurposeAttributeIdValue, 
+				current => ((xmlObjectFlat)current).FacilityPurpose,
+				(o, v) => o.FacilityPurpose = v?.ToString());
+
+			AddAttributeToFlat(flatSection.CulturalHeritage?.EgroknRegNumAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.EgroknRegNum,
+				(o, v) => o.CulturalHeritage.EgroknRegNum = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.EgroknObjCulturalAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.EgroknObjCultural?.Name,
+				(o, v) => o.CulturalHeritage.EgroknObjCultural.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.EgroknNameCulturalAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.EgroknNameCultural,
+				(o, v) => o.CulturalHeritage.EgroknNameCultural = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.RequirementsEnsureAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.RequirementsEnsure,
+				(o, v) => o.CulturalHeritage.RequirementsEnsure = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.CodeAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.CodeDocument?.Name,
+				(o, v) => o.CulturalHeritage.Document.CodeDocument.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.NameAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Name,
+				(o, v) => o.CulturalHeritage.Document.Name = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.SeriesAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Series,
+				(o, v) => o.CulturalHeritage.Document.Series = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.NumberAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Number,
+				(o, v) => o.CulturalHeritage.Document.Number = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.DateAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Date,
+				(o, v) => o.CulturalHeritage.Document.Date = v?.ParseToDateTimeNullable());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.IssueOrgan,
+				(o, v) => o.CulturalHeritage.Document.IssueOrgan = v?.ToString());
+			
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.DescAttributeIdValue, 
+				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Desc,
+				(o, v) => o.CulturalHeritage.Document.Desc = v?.ToString());
+		}
+
+		private xmlLevel InitFlatLevel(xmlObject o, int iCounter)
+		{
+			var element = o.Levels.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlLevel();
+			o.Levels.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private xmlSubBuildingFlat InitSubFlat(xmlObject o, int iCounter)
+		{
+			var element = o.SubBuildingFlats.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlSubBuildingFlat();
+			o.SubBuildingFlats.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private xmlEncumbranceOks InitEncumbrancesObjectForFlat(xmlObject o, int iCounter, int jCounter)
+		{
+			var subFlat = InitSubFlat(o, iCounter);
+			var encumbrances = subFlat.EncumbrancesOks;
+			var element = encumbrances.ElementAtOrDefault(jCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlEncumbranceOks();
+			encumbrances.Insert(iCounter, element);
+
+			return element;
+		}
+
+		private void AddAttributeToFlat(long? attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
+		{
+			AddGknAttribute(Flat, attributeId, getValue, setValue, canSetValue);
+		}
+
+		#endregion
+
 
 		private void AddGknAttribute(List<ImportedAttributeGkn> attributes, long? attributeId, 
 			Func<xmlObjectParticular, object> getValue, Action<xmlObject, object> setValue, 
