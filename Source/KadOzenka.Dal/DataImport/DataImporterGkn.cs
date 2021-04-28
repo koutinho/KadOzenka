@@ -191,7 +191,7 @@ namespace KadOzenka.Dal.DataImport
 		        new ImportObjectConstruction(AllGknAttributes.Construction, unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
 		        new ImportObjectUncomplited(AllGknAttributes.Uncompleted, unitDate, task, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
 		        new ImportObjectFlat(AllGknAttributes.Flat, unitDate, task, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
-		        new ImportObjectCarPlace(unitDate, task, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
+		        new ImportObjectCarPlace(AllGknAttributes.CarPlace, unitDate, task, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
 	        };
 
 	        ParallelOptions options = new ParallelOptions

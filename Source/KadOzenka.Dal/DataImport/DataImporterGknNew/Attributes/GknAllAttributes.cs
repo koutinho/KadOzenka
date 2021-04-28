@@ -13,8 +13,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		private DataImporterGknConfig Config { get; }
 
 		private List<ImportedAttributeGkn> General { get; }
-		public List<ImportedAttributeGkn> Parcel { get; }
 		public List<ImportedAttributeGkn> Building { get; }
+		public List<ImportedAttributeGkn> CarPlace { get; }
+		public List<ImportedAttributeGkn> Parcel { get; }
 		public List<ImportedAttributeGkn> Construction { get; }
 		public List<ImportedAttributeGkn> Flat { get; }
 		public List<ImportedAttributeGkn> Uncompleted { get; }
@@ -31,6 +32,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			Construction = new List<ImportedAttributeGkn>();
 			Flat = new List<ImportedAttributeGkn>();
 			Uncompleted = new List<ImportedAttributeGkn>();
+			CarPlace = new List<ImportedAttributeGkn>();
 			All = new List<ImportedAttributeGkn>();
 
 			FillGeneralAttribute();
@@ -39,6 +41,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			FillConstructionAttribute();
 			FillFlatAttribute();
 			FillUncompletedAttribute();
+			FillCarPlaceAttribute();
 
 			All.AddRange(General);
 			All.AddRange(Building);
@@ -46,17 +49,17 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			All.AddRange(Construction);
 			All.AddRange(Flat);
 			All.AddRange(Uncompleted);
+			All.AddRange(CarPlace);
 
 			Building.AddRange(General);
 			Parcel.AddRange(General);
 			Construction.AddRange(General);
 			Flat.AddRange(General);
 			Uncompleted.AddRange(General);
+			CarPlace.AddRange(General);
 		}
 
 
-
-		#region Support Methods
 
 		private void FillGeneralAttribute()
 		{
@@ -1770,7 +1773,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => currentFlatLevel(current)?.Number,
 						(o, v) =>
 						{
-							var element = InitFlatLevel(o, iCounter);
+							var element = InitLevel(o, iCounter);
 							element.Number = v?.ToString();
 						},
 						current => ((xmlObjectFlat)current).Levels.Count >= iCounter + 1);
@@ -1779,7 +1782,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => xmlCodeName.GetNames(new List<xmlCodeName> {currentFlatLevel(current)?.Type}),
 						(o, v) =>
 						{
-							var element = InitFlatLevel(o, iCounter);
+							var element = InitLevel(o, iCounter);
 							element.Type.Name = v?.ToString();
 						},
 						current => ((xmlObjectFlat) current).Levels.Count >= iCounter + 1);
@@ -1788,7 +1791,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => currentFlatLevel(current)?.Position?.NumberOnPlan,
 						(o, v) =>
 						{
-							var element = InitFlatLevel(o, iCounter);
+							var element = InitLevel(o, iCounter);
 							element.Position.NumberOnPlan = v?.ToString();
 						},
 						current => ((xmlObjectFlat)current).Levels.Count >= iCounter + 1);
@@ -1797,7 +1800,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						current => currentFlatLevel(current)?.Position?.Description,
 						(o, v) =>
 						{
-							var element = InitFlatLevel(o, iCounter);
+							var element = InitLevel(o, iCounter);
 							element.Position.Description = v?.ToString();
 						},
 						current => ((xmlObjectFlat)current).Levels.Count >= iCounter + 1);
@@ -2011,18 +2014,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				(o, v) => o.CulturalHeritage.Document.Desc = v?.ToString());
 		}
 
-		private xmlLevel InitFlatLevel(xmlObject o, int iCounter)
-		{
-			var element = o.Levels.ElementAtOrDefault(iCounter);
-			if (element != null)
-				return element;
-
-			element = new xmlLevel();
-			o.Levels.Insert(iCounter, element);
-
-			return element;
-		}
-
 		private xmlSubBuildingFlat InitSubFlat(xmlObject o, int iCounter)
 		{
 			var element = o.SubBuildingFlats.ElementAtOrDefault(iCounter);
@@ -2128,6 +2119,111 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 		#endregion
 
+		#region CarPlace
+
+		private void FillCarPlaceAttribute()
+		{
+			var carPlaceSection = Config.GknDataAttributes.CarPlace;
+
+			AddAttributeToCarPlace(carPlaceSection.CadastralNumberOksAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).CadastralNumberOKS,
+				(o, v) => o.CadastralNumberOKS = v?.ToString());
+
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.CadastralNumberOksAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.CadastralNumberOKS,
+				(o, v) => o.ParentOks.CadastralNumberOKS = v?.ToString());
+
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.ObjectTypeAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.ObjectType?.Name,
+				(o, v) => o.ParentOks.ObjectType.Name = v?.ToString());
+
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.AssignationBuildingAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.AssignationBuilding?.Name,
+				(o, v) => o.ParentOks.AssignationBuilding.Name = v?.ToString());
+			
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.AssignationNameAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.AssignationName,
+				(o, v) => o.ParentOks.AssignationName = v?.ToString());
+			
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.WallMaterialAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).ParentOks?.Walls),
+				(o, v) => o.ParentOks.Walls.Add(new xmlCodeName {Name = v?.ToString()}));
+			
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.ExploitationCharYearBuiltAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.Years?.Year_Built,
+				(o, v) => o.ParentOks.Years.Year_Built = v?.ToString());
+			
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.ExploitationCharYearUsedAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.Years?.Year_Used,
+				(o, v) => o.ParentOks.Years.Year_Used = v?.ToString());
+			
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.FloorCountAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.Floors?.Floors,
+				(o, v) => o.ParentOks.Floors.Floors = v?.ToString());
+
+			AddAttributeToCarPlace(carPlaceSection.ParentOks?.FloorUndergroundCountAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).ParentOks?.Floors?.Underground_Floors,
+				(o, v) => o.ParentOks.Floors.Underground_Floors = v?.ToString());
+
+			AddAttributeToCarPlace(carPlaceSection.AreaAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).Area,
+				(o, v) => o.Area = v?.ParseToDouble());
+
+			AddAttributeToCarPlace(carPlaceSection.PositionInObject?.NumberAttributeIdValue,
+				current => ((xmlObjectCarPlace)current).PositionInObject?.Number,
+				(o, v) =>
+				{
+					var element = InitLevel(o, 0);
+					element.Number = v?.ToString();
+				});
+
+			AddAttributeToCarPlace(carPlaceSection.PositionInObject?.TypeAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).PositionInObject?.Type?.Name,
+				(o, v) =>
+				{
+					var element = InitLevel(o, 0);
+					element.Type.Name = v?.ToString();
+				});
+			
+			AddAttributeToCarPlace(carPlaceSection.PositionInObject?.PositionNumberOnPlanAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).PositionInObject?.Position?.NumberOnPlan,
+				(o, v) =>
+				{
+					var element = InitLevel(o, 0);
+					element.Position.NumberOnPlan = v?.ToString();
+				});
+			
+			AddAttributeToCarPlace(carPlaceSection.PositionInObject?.PositionDescriptionAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).PositionInObject?.Position?.Description,
+				(o, v) =>
+				{
+					var element = InitLevel(o, 0);
+					element.Position.Description = v?.ToString();
+				});
+
+			AddAttributeToCarPlace(carPlaceSection.UnitedCadastralNumberAttributeIdValue, 
+				current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).UnitedCadastralNumbers),
+				(o, v) => o.UnitedCadastralNumbers.Add(v?.ToString()));
+
+			AddAttributeToCarPlace(carPlaceSection.FacilityCadastralNumberAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).FacilityCadastralNumber,
+				(o, v) => o.FacilityCadastralNumber = v?.ToString());
+
+			AddAttributeToCarPlace(carPlaceSection.FacilityPurposeAttributeIdValue, 
+				current => ((xmlObjectCarPlace)current).FacilityPurpose,
+				(o, v) => o.FacilityPurpose = v?.ToString());
+		}
+
+		private void AddAttributeToCarPlace(long? attributeId, Func<xmlObjectParticular, object> getValue,
+			Action<xmlObject, object> setValue, Func<xmlObjectParticular, bool> canSetValue = null)
+		{
+			AddGknAttribute(CarPlace, attributeId, getValue, setValue, canSetValue);
+		}
+
+		#endregion
+
+
+		#region Support Methods
 
 		private void AddGknAttribute(List<ImportedAttributeGkn> attributes, long? attributeId, 
 			Func<xmlObjectParticular, object> getValue, Action<xmlObject, object> setValue, 
@@ -2151,6 +2247,18 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			return element;
 		}
 
+		private xmlLevel InitLevel(xmlObject o, int iCounter)
+		{
+			var element = o.Levels.ElementAtOrDefault(iCounter);
+			if (element != null)
+				return element;
+
+			element = new xmlLevel();
+			o.Levels.Insert(iCounter, element);
+
+			return element;
+		}
+		
 		#endregion
 	}
 }
