@@ -6,7 +6,7 @@ namespace KadOzenka.Dal.Registers.GbuRegistersServices
 {
 	public class RosreestrRegisterService : GbuRegisterService, IRosreestrRegisterService
 	{
-	    protected override string RegisterName => "Источник: Росреестр";
+	    protected override string RegisterName => "Источник: ЕГРН";
 
 	    public long RosreestrRegisterId => RegisterId;
 
