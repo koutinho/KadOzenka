@@ -1,19 +1,13 @@
-﻿using Core.ErrorManagment;
-using Core.Main.FileStorages;
-using Core.Shared.Extensions;
+﻿using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using ObjectModel.Commission;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
@@ -21,7 +15,6 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Directory;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -50,10 +43,12 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictForestEncumbrances = null;
 
         private readonly object _locker;
+        private readonly GbuReportService _gbuReportService;
 
-        public xmlImportGkn()
+        public xmlImportGkn(GbuReportService gbuReportService)
         {
 	        _locker = new object();
+	        _gbuReportService = gbuReportService;
         }
 
         public static void FillDictionary(string pathSchema)
@@ -101,7 +96,8 @@ namespace KadOzenka.Dal.XmlParser
             if(dictForestEncumbrances == null)
 	            dictForestEncumbrances = new xsdDictionary(pathSchema + "\\dForestEncumbrances_v01.xsd", "dForestEncumbrances");
         }
-        public static xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
+
+        public xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
         {
             xmlObjectList objs = new xmlObjectList();
             XmlDocument xmlFile = new XmlDocument();
@@ -200,13 +196,16 @@ namespace KadOzenka.Dal.XmlParser
             }
             return doc;
         }
-        public static xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
+
+        public xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
         {
             string kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
             DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
             xmlObject obj = new xmlObject(typeobject, kn, dc, assessmentDate);
 
-            #region Импорт
+            try
+            {
+	            #region Импорт
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
             {
                 switch (xnChild.Name)
@@ -1303,7 +1302,16 @@ namespace KadOzenka.Dal.XmlParser
                         break;
                 }
             }
-            #endregion
+                #endregion
+	        }
+            catch (Exception ex)
+            {
+	            Serilog.Log.Error(ex, $"Ошибка при обработке объекта '{kn}' из xml-файла");
+
+	            var reportRow = _gbuReportService.GetCurrentRow();
+	            _gbuReportService.AddValue(kn, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	            _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+            }
 
             return obj;
         }
@@ -1613,8 +1621,7 @@ namespace KadOzenka.Dal.XmlParser
         }
 
 
-        public xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate,
-	        GbuReportService gbuReportService)
+        public xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate)
         {
             xmlObjectList objs = new xmlObjectList();
 
@@ -1656,7 +1663,7 @@ namespace KadOzenka.Dal.XmlParser
                 {
 	                lock (_locker)
 	                {
-		                LogErrorInExcel(row.Index, cadastralNumber, ex, gbuReportService);
+		                LogErrorInExcel(row.Index, cadastralNumber, ex);
                     }
                 }
             });
@@ -1667,7 +1674,7 @@ namespace KadOzenka.Dal.XmlParser
         #region Excel Mapping
 
         public xmlObjectList GetExcelObject(ExcelFile excelFile, List<ColumnToAttributeMapping> columnsMapping,
-	        GknAllAttributes importedAttributes, GbuReportService reportService)
+	        GknAllAttributes importedAttributes)
         {
 			var objectTypeMapping = columnsMapping.First(x => x.AttributeId == RequiredFieldsForExcelMapping.ObjectTypeAttributeId);
 			var cadastralNumberMapping = columnsMapping.First(x => x.AttributeId == RequiredFieldsForExcelMapping.CadastralNumberAttributeId);
@@ -1698,7 +1705,7 @@ namespace KadOzenka.Dal.XmlParser
 		        }
 		        catch (Exception ex)
 		        {
-			        LogErrorInExcel(row.Index, cadastralNumber, ex, reportService);
+			        LogErrorInExcel(row.Index, cadastralNumber, ex);
 		        }
 	        });
 
@@ -1834,15 +1841,15 @@ namespace KadOzenka.Dal.XmlParser
 
         #endregion
 
-        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex, GbuReportService reportService)
+        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex)
         {
 	        var realRowIndex = rowIndex + 1;
-	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла");
+	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла. Объект '{cadastralNumber}'.");
 
-	        var reportRow = reportService.GetCurrentRow();
-	        reportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
-	        reportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
-	        reportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
+	        var reportRow = _gbuReportService.GetCurrentRow();
+	        _gbuReportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	        _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+	        _gbuReportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
         }
     }
 }

@@ -76,11 +76,13 @@ namespace KadOzenka.Dal.DataImport
         public bool AreCountersInitialized { get; private set; }
 
         private GknAllAttributes AllGknAttributes { get; set; }
+        private xmlImportGkn XmlImportGkn { get; }
         private GbuReportService GbuReportService { get; }
 
 		public DataImporterGkn(GbuReportService gbuReportService)
 		{
 			GbuReportService = gbuReportService;
+			XmlImportGkn = new xmlImportGkn(GbuReportService);
 
 	        _updatedObjectsAttributes = new Dictionary<long, List<long>>();
 	        _locked = new object();
@@ -100,7 +102,7 @@ namespace KadOzenka.Dal.DataImport
 			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
 			{
 				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = xmlImportGkn.GetXmlObject(xmlFile, task.GetAssessmentDateForUnit());
+				GknItems = XmlImportGkn.GetXmlObject(xmlFile, task.GetAssessmentDateForUnit());
 			}
 
 			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
@@ -121,7 +123,7 @@ namespace KadOzenka.Dal.DataImport
 			using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
 			{
 				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = new xmlImportGkn().GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit(), GbuReportService);
+				GknItems = XmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
 			}
 
 			using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
@@ -143,7 +145,7 @@ namespace KadOzenka.Dal.DataImport
 	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 	        {
 		        xmlImportGkn.FillDictionary(pathSchema);
-		        gknItems = new xmlImportGkn().GetExcelObject(excelFile, columnsMapping, AllGknAttributes, GbuReportService);
+		        gknItems = XmlImportGkn.GetExcelObject(excelFile, columnsMapping, AllGknAttributes);
 	        }
 
 	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
