@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -18,8 +19,10 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public override string SuccessMessage => "Импорт Участков завершен";
 
 		public ImportObjectParcel(List<ImportedAttributeGkn> parcelAttributes, DateTime unitDate, OMTask task,
-			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction) 
-			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, parcelAttributes)
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction,
+			GbuReportService gbuReportService, object locked)
+			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, parcelAttributes,
+				gbuReportService, locked)
 		{
 		}
 

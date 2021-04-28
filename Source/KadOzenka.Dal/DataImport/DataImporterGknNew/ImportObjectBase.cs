@@ -9,8 +9,10 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
+using Microsoft.CodeAnalysis;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
@@ -43,11 +45,12 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         private Action<long, long> UpdateObjectsAttributesAction { get; }
 
 		private OMTour Tour { get; }
-
+        private GbuReportService GbuReportService { get; }
+        private readonly object _locker;
 
 		protected ImportObjectBase(DateTime unitDate, OMTask task, 
 			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction, 
-			List<ImportedAttributeGkn> gknDataAttributes)
+			List<ImportedAttributeGkn> gknDataAttributes, GbuReportService gbuReportService, object locked)
         {
 	        UnitDate = unitDate;
 	        IdTour = task.TourId.Value;
@@ -59,7 +62,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 	        IncreaseImportedObjectsCountAction = increaseImportedObjectsCountAction;
 	        UpdateObjectsAttributesAction = updateObjectsAttributesAction;
 	        GknDataAttributes = gknDataAttributes;
+	        GbuReportService = gbuReportService;
 
+	        _locker = locked;
 			Tour = OMTour.Where(x => x.Id == IdTour).Select(x => x.Year).ExecuteFirstOrDefault();
         }
 
@@ -180,8 +185,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        }
 		        catch (Exception ex)
 		        {
-			        var errorId = ErrorManager.LogError(ex);
-			        Log.ForContext("ErrorId", errorId).Error(ex, ErrorMessage);
+			        Log.Error(ex, ErrorMessage);
+			        lock(_locker)
+			        {
+						var reportRow = GbuReportService.GetCurrentRow();
+						GbuReportService.AddValue(item.CadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+						GbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+			        }
 		        }
 	        });
         }

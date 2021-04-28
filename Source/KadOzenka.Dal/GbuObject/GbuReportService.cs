@@ -9,7 +9,6 @@ using KadOzenka.Dal.DataExport;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using System.Text;
-using DocumentFormat.OpenXml.Presentation;
 using Ionic.Zip;
 using KadOzenka.Dal.GbuObject.Dto;
 using SerilogTimings.Extensions;
@@ -20,6 +19,7 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		public string DefaultExtension => "xlsx";
 		public string FileStorageKey => "GbuOperationsReportsPath";
+		public bool IsReportEmpty { get; private set; } = true;
 		public static readonly int MaxRowsCountInSheet = 1000000;
 
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
@@ -149,6 +149,8 @@ namespace KadOzenka.Dal.GbuObject
 
 				if (cellStyle != null)
 					cell.Style = cellStyle;
+				
+				IsReportEmpty = false;
 
 				if (new Random().Next(0, 10000) > 9950)
 					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row.Index, column, value);
@@ -166,11 +168,13 @@ namespace KadOzenka.Dal.GbuObject
 			{
 				row.File.Worksheets[0].Rows[row.Index].Cells[i].SetValue(values[i]);
 			}
+			IsReportEmpty = false;
 		}
 
 		public void AddRow(Row row, List<object> values)
 		{
 			DataExportCommon.AddRow(row.File.Worksheets[0], row.Index, values.ToArray());
+			IsReportEmpty = false;
 		}
 
 		public long SaveReport()

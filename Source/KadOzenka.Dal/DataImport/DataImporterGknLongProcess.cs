@@ -172,7 +172,8 @@ namespace KadOzenka.Dal.DataImport
             import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 			import.DateStarted = DateTime.Now;
 			import.Save();
-					   
+
+			string urlToDownloadReportWithErrors = null;
 			var templateFileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 			try
 			{
@@ -197,7 +198,8 @@ namespace KadOzenka.Dal.DataImport
 					importer = GetImporter(import.FileExtension, omTask.NoteType_Code);
 				}
 
-				importer?.Import(templateFileStream, omTask, import, cancellationToken, import.ColumnsMapping);
+				urlToDownloadReportWithErrors = importer?.Import(templateFileStream, omTask, import, cancellationToken,
+					import.ColumnsMapping);
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;
 				import.DateFinished = DateTime.Now;
@@ -220,8 +222,7 @@ namespace KadOzenka.Dal.DataImport
 			task.Status_Code = ObjectModel.Directory.KoTaskStatus.Ready;
 			task.Save();
 
-				// Отправка уведомления о завершении загрузки
-			SendResultNotification(import, cancellationToken.IsCancellationRequested);
+			SendResultNotification(import, urlToDownloadReportWithErrors, cancellationToken.IsCancellationRequested);
 
 			Log.Information("Финиш фонового процесса: {Description}.", processType.Description);
 		}
@@ -332,8 +333,12 @@ namespace KadOzenka.Dal.DataImport
 	        }
 	    }
 
-        internal static void SendResultNotification(OMImportDataLog import, bool processWasStopped)
+        private void SendResultNotification(OMImportDataLog import, string urlToDownloadReportWithErrors, bool processWasStopped)
         {
+	        var reportWithErrorsMessage = string.IsNullOrWhiteSpace(urlToDownloadReportWithErrors) 
+		        ? null 
+		        : $@"<a href=""{urlToDownloadReportWithErrors}"">Скачать отчет с ошибками</a>";
+
 	        new MessageService().SendMessages(dto: new MessageDto
 			{
 				Addressers = new MessageAddressersDto{UserIds = new [] { import.UserId } },
@@ -341,7 +346,8 @@ namespace KadOzenka.Dal.DataImport
 				Message = $@"Загрузка файла ""{import.DataFileName}"" была {(processWasStopped ? "остановлена" : "завершена")}.
 Статус загрузки: {import.Status_Code.GetEnumDescription()}
 <a href=""/Task/TaskCard?TaskId={import.ObjectId}"">Перейти к заданию на оценку</a>
-<a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>",
+<a href=""/RegistersView/DataImporter?Transition=1&80100100={import.Id}"">Перейти в журнал загрузки</a>
+{reportWithErrorsMessage}",
 				IsUrgent = true,
 				IsEmail = true,
                 ExpireDate = DateTime.Now.AddHours(2)

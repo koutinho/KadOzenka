@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
 using ObjectModel.Directory.KO;
@@ -21,9 +22,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         public override string CancelMessage => "Импорт данных ГКН был отменен во время загрузки Зданий";
         public override string SuccessMessage => "Импорт Зданий завершен";
 
-        public ImportObjectBuild(List<ImportedAttributeGkn> buildingAttributes, DateTime unitDate, OMTask task, 
-	        Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction) 
-	        : base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, buildingAttributes)
+        public ImportObjectBuild(List<ImportedAttributeGkn> buildingAttributes, DateTime unitDate, OMTask task,
+	        Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction,
+	        GbuReportService gbuReportService, object locked)
+	        : base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction,
+		        buildingAttributes, gbuReportService, locked)
         {
 	        InitFactorInheritanceSettings();
         }

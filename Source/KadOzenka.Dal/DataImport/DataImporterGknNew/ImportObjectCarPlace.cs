@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -19,8 +20,10 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 
 
 		public ImportObjectCarPlace(List<ImportedAttributeGkn> carPlaceAttribute, DateTime unitDate, OMTask task,
-			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
-			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, carPlaceAttribute)
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction,
+			GbuReportService gbuReportService, object locked)
+			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, carPlaceAttribute,
+				gbuReportService, locked)
 		{
 		}
 

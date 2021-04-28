@@ -8,6 +8,7 @@ using Core.Main.FileStorages;
 using ObjectModel.Common;
 using System;
 using System.IO;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
 using ObjectModel.Directory;
 
@@ -17,12 +18,18 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 	{
 		private readonly ILogger _logger;
 		private DataImporterGknLongProcessProgressLogger DataImporterGknLongProcessProgressLogger { get; }
+		private GbuReportService GbuReportService { get; set; }
+		public const int CadastralNumberColumnIndex = 0;
+		public const int ErrorMessageColumnIndex = 1;
+		public const int CommentColumnIndex = 2;
 
 
 		protected BaseImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger, ILogger logger)
 		{
 			DataImporterGknLongProcessProgressLogger = dataImporterGknLongProcessProgressLogger;
 			_logger = logger;
+
+			InitReport();
 		}
 
 
@@ -30,14 +37,14 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 			OMTask task, CancellationToken cancellationToken, object additionalParameters = null);
 
 
-		public void Import(FileStream fileStream, OMTask task, OMImportDataLog dataLog,
+		public string Import(FileStream fileStream, OMTask task, OMImportDataLog dataLog,
 			CancellationToken processCancellationToken, object additionalParameters = null)
 		{
 			_logger.Information("Начат импорт для задачи с Id {TaskId}", task.Id);
 
 			var schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
 
-			var dataImporterGkn = new DataImporterGkn();
+			var dataImporterGkn = new DataImporterGkn(GbuReportService);
 			try
 			{
 				DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
@@ -57,14 +64,54 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 			}
 
 			_logger.Information("Импорт завершен");
+
+			if (GbuReportService.IsReportEmpty) 
+				return string.Empty;
+
+			var reportId = GbuReportService.SaveReport();
+			return GbuReportService.GetUrlToDownloadFile(reportId);
 		}
 
-		protected void ExportTaskChanges(OMTask task)
+
+		#region Support Methods
+
+		private void ExportTaskChanges(OMTask task)
 		{
 			_logger.Information("Формирование протокола изменений по результатам загрузки для единицы оценки {TaskId}", task.Id);
 			var path = TaskChangesDataComparingStorageManager.GetComparingDataRsmFileFullName(task);
 			var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long> { task.Id }, IsDataComparingUnload = true, FileName = path };
 			DEKOChange.ExportUnitChangeToExcel(null, unloadSettings, null);
 		}
+
+		private void InitReport()
+		{
+			var headers = new List<GbuReportService.Column>
+			{
+				new()
+				{
+					Header = "Кадастровый номер",
+					Index = CadastralNumberColumnIndex,
+					Width = 4
+				},
+				new()
+				{
+					Header = "Ошибка",
+					Index = ErrorMessageColumnIndex,
+					Width = 8
+				},
+				new()
+				{
+					Header = "Комментарий к локализации",
+					Index = CommentColumnIndex,
+					Width = 8
+				}
+			};
+
+			GbuReportService = new GbuReportService("Ошибки в ходе загрузки");
+			GbuReportService.AddHeaders(headers);
+			GbuReportService.SetIndividualWidth(headers);
+		}
+
+		#endregion
 	}
 }

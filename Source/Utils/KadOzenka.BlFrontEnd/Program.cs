@@ -186,7 +186,7 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("203", "Импорт данных KO (БД) Объекты и факторы 2016 Здания", MSExporter.DoLoadBd2016Unit_Building);
 			consoleHelper.AddCommand("204", "Импорт данных KO (БД) Объекты и факторы 2016 Помещения", MSExporter.DoLoadBd2016Unit_Flat);
 			consoleHelper.AddCommand("205", "Импорт данных KO (БД) Объекты и факторы 2016 Участки", MSExporter.DoLoadBd2016Unit_Parcel);
-			consoleHelper.AddCommand("206", "Импорт данных KO (XML) 2016", MSExporter.DoLoadXml2016);
+			//consoleHelper.AddCommand("206", "Импорт данных KO (XML) 2016", MSExporter.DoLoadXml2016);
 			//consoleHelper.AddCommand("207", "Импорт данных KO (БД) Объекты и факторы 2016 Помещения (отсутствующие)", MSExporter.DoLoadBd2016Unit_FlatSkip);
 
 			consoleHelper.AddCommand("210", "Импорт данных KO (БД) Модель 2018", MSExporter.DoLoadBd2018Model);
@@ -195,7 +195,7 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("213", "Импорт данных KO (БД) Объекты и факторы 2018 Здания", MSExporter.DoLoadBd2018Unit_Building);
 			consoleHelper.AddCommand("214", "Импорт данных KO (БД) Объекты и факторы 2018 Помещения", MSExporter.DoLoadBd2018Unit_Flat);
 			consoleHelper.AddCommand("215", "Импорт данных KO (БД) Объекты и факторы 2018 Участки", MSExporter.DoLoadBd2018Unit_Parcel);
-			consoleHelper.AddCommand("216", "Импорт данных KO (XML) 2018", MSExporter.DoLoadXml2018);
+			//consoleHelper.AddCommand("216", "Импорт данных KO (XML) 2018", MSExporter.DoLoadXml2018);
 
 			//consoleHelper.AddCommand("217", "Импорт данных KO (БД) Модель 2018 (метки, модель)", MSExporter.DoLoadBd2018ModelAdd);
 

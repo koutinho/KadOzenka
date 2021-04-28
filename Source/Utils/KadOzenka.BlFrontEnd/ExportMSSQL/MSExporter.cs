@@ -741,14 +741,14 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
             LoadUnitTaskOKS_2018(task.Id, tour.Id, PropertyTypes.Pllacement);
         }
-        public static void DoLoadXml2016()
-        {
-            ImportXml2016(2016, 2);
-        }
-        public static void DoLoadXml2018()
-        {
-            ImportXml2018(2018, 1);
-        }
+        //public static void DoLoadXml2016()
+        //{
+        //    ImportXml2016(2016, 2);
+        //}
+        //public static void DoLoadXml2018()
+        //{
+        //    ImportXml2018(2018, 1);
+        //}
 
         #region БД 2016 Model
         public static void LoadGroupOKS_2016(long id_tour)
@@ -2440,48 +2440,48 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }
-        public static void ImportXml2016(long idTour, long idTask)
-        {
-            ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == idTask).SelectAll().ExecuteFirstOrDefault();
-            if (task != null)
-            {
-                {
-                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2016"], "*.xml", SearchOption.AllDirectories);
+        //public static void ImportXml2016(long idTour, long idTask)
+        //{
+        //    ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == idTask).SelectAll().ExecuteFirstOrDefault();
+        //    if (task != null)
+        //    {
+        //        {
+        //            string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2016"], "*.xml", SearchOption.AllDirectories);
 
-                    int countAll = files.Length;
-                    int count = 0;
-                    var token = new CancellationTokenSource().Token;
-                    foreach (string file in files)
-                    {
-                        count++;
-                        FileStream fileStream = new FileStream(file, FileMode.Open);
-                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task, token);
-                        Console.WriteLine(count.ToString() + " из " + countAll.ToString());
-                    }
-                }
-            }
-        }
-        public static void ImportXml2018(long idTour, long idTask)
-        {
-            ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == idTask).SelectAll().ExecuteFirstOrDefault();
-            if (task != null)
-            {
-                {
-                    string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2018"], "*.xml", SearchOption.AllDirectories);
+        //            int countAll = files.Length;
+        //            int count = 0;
+        //            var token = new CancellationTokenSource().Token;
+        //            foreach (string file in files)
+        //            {
+        //                count++;
+        //                FileStream fileStream = new FileStream(file, FileMode.Open);
+        //                new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2016"], task, token);
+        //                Console.WriteLine(count.ToString() + " из " + countAll.ToString());
+        //            }
+        //        }
+        //    }
+        //}
+        //public static void ImportXml2018(long idTour, long idTask)
+        //{
+        //    ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == idTask).SelectAll().ExecuteFirstOrDefault();
+        //    if (task != null)
+        //    {
+        //        {
+        //            string[] files = Directory.GetFiles(ConfigurationManager.AppSettings["XML_Path_2018"], "*.xml", SearchOption.AllDirectories);
 
-                    int countAll = files.Length;
-                    int count = 0;
-                    var token = new CancellationTokenSource().Token;
-                    foreach (string file in files)
-                    {
-                        count++;
-                        FileStream fileStream = new FileStream(file, FileMode.Open);
-                        new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task, token);
-                        Console.WriteLine(count.ToString() + " из " + countAll.ToString());
-                    }
-                }
-            }
-        }
+        //            int countAll = files.Length;
+        //            int count = 0;
+        //            var token = new CancellationTokenSource().Token;
+        //            foreach (string file in files)
+        //            {
+        //                count++;
+        //                FileStream fileStream = new FileStream(file, FileMode.Open);
+        //                new Dal.DataImport.DataImporterGkn().ImportDataGknFromXml(fileStream, ConfigurationManager.AppSettings["Schema_Path_2018"], task, token);
+        //                Console.WriteLine(count.ToString() + " из " + countAll.ToString());
+        //            }
+        //        }
+        //    }
+        //}
 
 
 

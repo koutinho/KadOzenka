@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -17,8 +18,10 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public override string SuccessMessage => "Импорт Объектов незавершенного строительства завершен";
 
 		public ImportObjectUncomplited(List<ImportedAttributeGkn> uncompletedAttributes, DateTime unitDate, OMTask task,
-			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
-			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, uncompletedAttributes)
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction,
+			GbuReportService gbuReportService, object locked)
+			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction,
+				uncompletedAttributes, gbuReportService, locked)
 		{
 		}
 

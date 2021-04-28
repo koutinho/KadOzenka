@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using ObjectModel.KO;
 using Serilog;
@@ -19,8 +20,7 @@ namespace KadOzenka.Dal.DataImport
     {
 	    private static readonly ILogger Log = Serilog.Log.ForContext<DataImporterGkn>();
 
-        //Объект-блокиратор для многопоточки
-        private static object locked = new object();
+        private readonly object _locked;
         private Dictionary<long, List<long>> _updatedObjectsAttributes;
 
         /// <summary>
@@ -75,14 +75,16 @@ namespace KadOzenka.Dal.DataImport
 
         public bool AreCountersInitialized { get; private set; }
 
-        protected GknAllAttributes AllGknAttributes { get; set; }
+        private GknAllAttributes AllGknAttributes { get; set; }
+        private GbuReportService GbuReportService { get; }
 
+		public DataImporterGkn(GbuReportService gbuReportService)
+		{
+			GbuReportService = gbuReportService;
 
-		public DataImporterGkn()
-        {
 	        _updatedObjectsAttributes = new Dictionary<long, List<long>>();
-
-	        AllGknAttributes = new GknAllAttributes();
+	        _locked = new object();
+			AllGknAttributes = new GknAllAttributes();
         }
 
 
@@ -141,7 +143,7 @@ namespace KadOzenka.Dal.DataImport
 	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 	        {
 		        xmlImportGkn.FillDictionary(pathSchema);
-		        gknItems = xmlImportGkn.GetExcelObject(excelFile, columnsMapping, AllGknAttributes);
+		        gknItems = new xmlImportGkn().GetExcelObject(excelFile, columnsMapping, AllGknAttributes, GbuReportService);
 	        }
 
 	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
@@ -182,12 +184,18 @@ namespace KadOzenka.Dal.DataImport
 
 	        var objectsImporters = new List<object>
 	        {
-		        new ImportObjectBuild(AllGknAttributes.Building, unitDate, task, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
-		        new ImportObjectParcel(AllGknAttributes.Parcel, unitDate, task, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
-		        new ImportObjectConstruction(AllGknAttributes.Construction, unitDate, task, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
-		        new ImportObjectUncomplited(AllGknAttributes.Uncompleted, unitDate, task, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
-		        new ImportObjectFlat(AllGknAttributes.Flat, unitDate, task, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
-		        new ImportObjectCarPlace(AllGknAttributes.CarPlace, unitDate, task, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
+		        new ImportObjectBuild(AllGknAttributes.Building, unitDate, task, IncreaseImportedBuildingsCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectParcel(AllGknAttributes.Parcel, unitDate, task, IncreaseImportedParcelsCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectConstruction(AllGknAttributes.Construction, unitDate, task,
+			        IncreaseImportedConstructionsCount, UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectUncomplited(AllGknAttributes.Uncompleted, unitDate, task,
+			        IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectFlat(AllGknAttributes.Flat, unitDate, task, IncreaseImportedFlatsCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectCarPlace(AllGknAttributes.CarPlace, unitDate, task, IncreaseImportedCarPlacesCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked)
 	        };
 
 	        ParallelOptions options = new ParallelOptions
@@ -258,7 +266,7 @@ namespace KadOzenka.Dal.DataImport
 
         private void UpdateObjectsAttributes(long idObject, long attributeId)
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
 		        if (!_updatedObjectsAttributes.ContainsKey(idObject))
 		        {
@@ -270,7 +278,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedBuildingsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
 		        CountImportBuildings++;
             }
@@ -278,7 +286,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedParcelsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportParcels++;
 	        }
@@ -286,7 +294,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedConstructionsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportConstructions++;
 	        }
@@ -294,7 +302,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedUncomplitedsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportUncompliteds++;
 	        }
@@ -302,7 +310,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedFlatsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
 		        CountImportFlats++;
 	        }
@@ -310,7 +318,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedCarPlacesCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportCarPlaces++;
 	        }
