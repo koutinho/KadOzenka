@@ -42,13 +42,29 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public static readonly int P2FsAttributeId = 661;
 		public static readonly int P3WallMaterialAttributeId = 662;
 		public static readonly int P4YearOfBuildAttributeId = 663;
+	}
 
-		public static readonly List<long> RequiredAttributeIds = new()
+	public static class RequiredFieldsForExcelMapping
+	{
+		public static readonly long ObjectTypeAttributeId = 26;
+		public static readonly long CadastralNumberAttributeId = 1416;
+		public static readonly long SquareAttributeId;
+		public static readonly long AssessmentDateAttributeId;
+
+		public static readonly List<long> RequiredAttributeIds;
+
+		static RequiredFieldsForExcelMapping()
 		{
-			OMUnit.GetColumnAttributeId(x => x.PropertyType),
-			OMUnit.GetColumnAttributeId(x => x.CadastralNumber),
-			OMUnit.GetColumnAttributeId(x => x.Square),
-			OMUnit.GetColumnAttributeId(x => x.AssessmentDate)
-		};
+			SquareAttributeId = OMUnit.GetColumnAttributeId(x => x.Square);
+			AssessmentDateAttributeId = OMUnit.GetColumnAttributeId(x => x.AssessmentDate);
+
+			RequiredAttributeIds = new List<long>
+			{
+				ObjectTypeAttributeId,
+				CadastralNumberAttributeId,
+				SquareAttributeId,
+				AssessmentDateAttributeId
+			};
+		}
 	}
 }

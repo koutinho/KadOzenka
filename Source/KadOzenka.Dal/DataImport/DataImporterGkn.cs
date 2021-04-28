@@ -1,13 +1,10 @@
 ﻿using GemBox.Spreadsheet;
 using KadOzenka.Dal.XmlParser;
-using ObjectModel.Directory;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
@@ -141,8 +138,7 @@ namespace KadOzenka.Dal.DataImport
 	        List<ColumnToAttributeMapping> columnsMapping, CancellationToken cancellationToken)
         {
 	        xmlObjectList gknItems;
-	        
-			using (Operation.Time("Импорт задания на оценку: парсинг excel"))
+	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 	        {
 		        xmlImportGkn.FillDictionary(pathSchema);
 		        gknItems = xmlImportGkn.GetExcelObject(excelFile, columnsMapping, AllGknAttributes);

@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 {
 	public class GknAllAttributes
 	{
-		private DataImporterGknConfig Config { get; }
+		private readonly DataImporterGknConfig Config;
 
 		private List<ImportedAttributeGkn> General { get; }
 		public List<ImportedAttributeGkn> Building { get; }
@@ -19,7 +19,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		public List<ImportedAttributeGkn> Construction { get; }
 		public List<ImportedAttributeGkn> Flat { get; }
 		public List<ImportedAttributeGkn> Uncompleted { get; }
-		public List<ImportedAttributeGkn> All { get; }
 
 
 		public GknAllAttributes()
@@ -33,7 +32,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			Flat = new List<ImportedAttributeGkn>();
 			Uncompleted = new List<ImportedAttributeGkn>();
 			CarPlace = new List<ImportedAttributeGkn>();
-			All = new List<ImportedAttributeGkn>();
 
 			FillGeneralAttribute();
 			FillBuildingAttribute();
@@ -42,14 +40,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			FillFlatAttribute();
 			FillUncompletedAttribute();
 			FillCarPlaceAttribute();
-
-			All.AddRange(General);
-			All.AddRange(Building);
-			All.AddRange(Parcel);
-			All.AddRange(Construction);
-			All.AddRange(Flat);
-			All.AddRange(Uncompleted);
-			All.AddRange(CarPlace);
 
 			Building.AddRange(General);
 			Parcel.AddRange(General);
@@ -60,6 +50,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		}
 
 
+
+		#region General
 
 		private void FillGeneralAttribute()
 		{
@@ -187,6 +179,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		{
 			AddGknAttribute(General, attributeId, getValue, setValue, canSetValue);
 		}
+
+		#endregion
+
 
 		#region Parcel
 
@@ -2118,6 +2113,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 
 		#endregion
+
 
 		#region CarPlace
 

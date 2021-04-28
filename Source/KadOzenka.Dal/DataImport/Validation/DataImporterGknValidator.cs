@@ -9,7 +9,7 @@ namespace KadOzenka.Dal.DataImport.Validation
 	{
 		public static void ValidateExcelColumnsForNotPetition(IEnumerable<long> attributeIds)
 		{
-			var notSelectedRequiredAttributeIds = DataImporterGknNew.Consts.RequiredAttributeIds.Except(attributeIds).ToList();
+			var notSelectedRequiredAttributeIds = DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds.Except(attributeIds).ToList();
 			if (notSelectedRequiredAttributeIds.Count != 0)
 			{
 				var attributeNames = RegisterCache.RegisterAttributes
