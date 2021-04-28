@@ -49,11 +49,11 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictForestCategoryProtective = null;
         static xsdDictionary dictForestEncumbrances = null;
 
-        private readonly object locked;
+        private readonly object _locker;
 
         public xmlImportGkn()
         {
-	        locked = new object();
+	        _locker = new object();
         }
 
         public static void FillDictionary(string pathSchema)
@@ -1416,10 +1416,9 @@ namespace KadOzenka.Dal.XmlParser
 	        return numbers;
         }
 
-        public static xmlObject GetData(ExcelRow row, enTypeObject typeobject, DateTime assessmentDate)
+        public static xmlObject GetData(ExcelRow row, string kn, enTypeObject typeobject, DateTime assessmentDate)
         {
-            string kn = row.Cells[0].Value.ParseToString();
-            var obj = new xmlObject(typeobject, kn, null, assessmentDate);
+	        var obj = new xmlObject(typeobject, kn, null, assessmentDate);
 
             if (typeobject==enTypeObject.toParcel)
             {
@@ -1614,7 +1613,8 @@ namespace KadOzenka.Dal.XmlParser
         }
 
 
-        public static xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate)
+        public xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate,
+	        GbuReportService gbuReportService)
         {
             xmlObjectList objs = new xmlObjectList();
 
@@ -1629,21 +1629,35 @@ namespace KadOzenka.Dal.XmlParser
             var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
+	            string cadastralNumber = null;
                 try
                 {
 	                if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
                     {
+	                    cadastralNumber = row.Cells[0].Value.ParseToString();
                         string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
-                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toParcel, assessmentDate));
-                        if (typeobject == "ЗДАНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toBuilding, assessmentDate));
-                        if (typeobject == "СООРУЖЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toConstruction, assessmentDate));
-                        if (typeobject == "ОНС") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toUncomplited, assessmentDate));
-                        if (typeobject == "ПОМЕЩЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toFlat, assessmentDate));
+                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toParcel, assessmentDate));
+                        else if (typeobject == "ЗДАНИЕ") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toBuilding, assessmentDate));
+                        else if (typeobject == "СООРУЖЕНИЕ")
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toConstruction, assessmentDate));
+                        else if (typeobject == "ОНС") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toUncomplited, assessmentDate));
+                        else if (typeobject == "ПОМЕЩЕНИЕ") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toFlat, assessmentDate));
+                        else
+                        {
+	                        throw new Exception($"Неизвестный тип объекта '{typeobject}'");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-	                Serilog.Log.Error(ex, "Ошибка при обработке excel-файла для Обращений");
+	                lock (_locker)
+	                {
+		                LogErrorInExcel(row.Index, cadastralNumber, ex, gbuReportService);
+                    }
                 }
             });
 
@@ -1684,19 +1698,12 @@ namespace KadOzenka.Dal.XmlParser
 		        }
 		        catch (Exception ex)
 		        {
-			        var realRowIndex = row.Index + 1;
-			        Serilog.Log.Error(ex, $"Ошибка при обработке строки {realRowIndex} excel-файла");
-
-			        var reportRow = reportService.GetCurrentRow();
-			        reportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
-			        reportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
-			        reportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
-                }
+			        LogErrorInExcel(row.Index, cadastralNumber, ex, reportService);
+		        }
 	        });
 
 	        return objects;
         }
-
 
         #region Support Methods
 
@@ -1826,5 +1833,16 @@ namespace KadOzenka.Dal.XmlParser
         #endregion
 
         #endregion
+
+        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex, GbuReportService reportService)
+        {
+	        var realRowIndex = rowIndex + 1;
+	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла");
+
+	        var reportRow = reportService.GetCurrentRow();
+	        reportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	        reportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+	        reportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
+        }
     }
 }

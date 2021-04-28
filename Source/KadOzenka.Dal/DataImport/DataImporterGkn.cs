@@ -121,7 +121,7 @@ namespace KadOzenka.Dal.DataImport
 			using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
 			{
 				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = xmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
+				GknItems = new xmlImportGkn().GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit(), GbuReportService);
 			}
 
 			using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
