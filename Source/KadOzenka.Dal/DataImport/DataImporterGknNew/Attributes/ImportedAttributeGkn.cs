@@ -23,10 +23,24 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 		public void SaveAttributeValue(xmlObjectParticular current, long idObject, long idDocument, DateTime sDate, DateTime otDate,
 			long idUser)
 		{
-			if (CanSetValue(current))
+			object val = null;
+			try
 			{
-				var val = GetValue(current);
-				base.SetAttributeValue(val, idObject, idDocument, sDate, otDate, idUser);
+				if (CanSetValue(current))
+				{
+					val = GetValue(current);
+					SetAttributeValue(val, idObject, idDocument, sDate, otDate, idUser);
+				}
+			}
+			catch (Exception e)
+			{
+				Serilog.Log.ForContext<ImportedAttributeGkn>()
+					.ForContext("ObjectId", idObject)
+					.ForContext("AttributeId", AttributeId)
+					.ForContext("Value", val, destructureObjects: true)
+					.Error(e, "Ошибка во время сохранения гбу-атрибута для объекта {CadastralNumber}", current.CadastralNumber);
+				
+				throw;
 			}
 		}
 	}

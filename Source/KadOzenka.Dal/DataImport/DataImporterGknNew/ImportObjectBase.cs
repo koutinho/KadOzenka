@@ -185,7 +185,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        }
 		        catch (Exception ex)
 		        {
-			        Log.Error(ex, ErrorMessage);
+					Log.ForContext("Object", item, destructureObjects: true)
+						.Error(ex, ErrorMessage + ". Полная информация об объекте {CadastralNumber}", item.CadastralNumber);
+
 			        lock(_locker)
 			        {
 						var reportRow = GbuReportService.GetCurrentRow();
