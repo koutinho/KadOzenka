@@ -10,7 +10,7 @@ namespace ObjectModel.Market
     /// </summary>
     [RegisterInfo(RegisterID = 100)]
     [Serializable]
-    public partial class OMCoreObject : OMBaseClass<OMCoreObject>
+    internal partial class OMCoreObject : OMBaseClass<OMCoreObject>
     {
 
         private long _id;
@@ -1707,7 +1707,7 @@ namespace ObjectModel.Market
     /// </summary>
     [RegisterInfo(RegisterID = 101)]
     [Serializable]
-    public partial class OMYandexAddress : OMBaseClass<OMYandexAddress>
+    internal partial class OMYandexAddress : OMBaseClass<OMYandexAddress>
     {
 
         private long _id;
@@ -2179,7 +2179,7 @@ namespace ObjectModel.Market
     /// </summary>
     [RegisterInfo(RegisterID = 105)]
     [Serializable]
-    public partial class OMPriceHistory : OMBaseClass<OMPriceHistory>
+    internal partial class OMPriceHistory : OMBaseClass<OMPriceHistory>
     {
 
         private long _id;
@@ -2291,7 +2291,7 @@ namespace ObjectModel.Market
     /// </summary>
     [RegisterInfo(RegisterID = 113)]
     [Serializable]
-    public partial class OMPriceAfterCorrectionByRoomsHistory : OMBaseClass<OMPriceAfterCorrectionByRoomsHistory>
+    internal partial class OMPriceAfterCorrectionByRoomsHistory : OMBaseClass<OMPriceAfterCorrectionByRoomsHistory>
     {
 
         private long _id;

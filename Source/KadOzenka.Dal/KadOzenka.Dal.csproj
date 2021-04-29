@@ -42,6 +42,7 @@
     <ProjectReference Include="..\ImageProccessor\ImageProccessor.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
     <ProjectReference Include="..\KadOzenka.WebClients\KadOzenka.WebClients.csproj" />
+    <ProjectReference Include="..\MarketPlaceBusiness\MarketPlaceBusiness.csproj" />
     <ProjectReference Include="..\Utils\EP.SdkCore\EP.Sdk.Core.csproj" />
   </ItemGroup>
 

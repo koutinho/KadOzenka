@@ -9,7 +9,7 @@ namespace ObjectModel.Market
     /// <summary>
     /// 100 Аналоги
     /// </summary>
-    public partial class OMCoreObject
+    internal partial class OMCoreObject
     {
 
 
@@ -57,7 +57,7 @@ namespace ObjectModel.Market
     /// <summary>
     /// 101 Адреса в яндек-формате
     /// </summary>
-    public partial class OMYandexAddress
+    internal partial class OMYandexAddress
     {
 
         public OMYandexAddress()
@@ -81,7 +81,7 @@ namespace ObjectModel.Market
     /// <summary>
     /// 105 Таблица, содержащая ретроспективу цен по объектам
     /// </summary>
-    public partial class OMPriceHistory
+    internal partial class OMPriceHistory
     {
 
         public OMPriceHistory()
@@ -105,7 +105,7 @@ namespace ObjectModel.Market
     /// <summary>
     /// 113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность
     /// </summary>
-    public partial class OMPriceAfterCorrectionByRoomsHistory
+    internal partial class OMPriceAfterCorrectionByRoomsHistory
     {
 
         public OMPriceAfterCorrectionByRoomsHistory()
