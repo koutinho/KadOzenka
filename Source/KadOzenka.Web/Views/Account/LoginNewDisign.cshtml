@@ -76,8 +76,7 @@
 
 	#loginPage .logo-title-block {
 		padding: 10px;
-		margin-top: 79px;
-		text-align: center;
+        text-align: center;
 	}
 
 	#loginPage .logo .footer-block {
@@ -102,19 +101,18 @@
 		width: 409px;
 		height: 66px;
 		font-weight: 300;
-		font-size: 28px;
+		font-size: 30px;
 		line-height: 33px;
 		text-align: center;
 		color: #D6D6D6;
 	}
 
-	#loginPage .logo-title-block #imgLogin {
-		position: absolute;
-		width: 62px;
-		height: 85px;
-		left: 218px;
-		top: -43px;
-	}
+    #loginPage .logo-title-block .sub-info {
+        font-size: 20px;
+        line-height: 33px;
+        text-align: center;
+        color: white;
+    }
 
 	#loginPage label {
 		color: #333;
@@ -139,11 +137,19 @@
 	<input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 	<div class="logo-background">
 		<div class="logo">
-			<div class="logo-title-block">
-				<div>&nbsp</div>
-				<span class="logo-title">Подсистема кадастровой оценки</span>
-				<img src="~/images/region_arms.png" id="imgLogin">
-			</div>
+            <div class="logo-title-block">
+                <div class="form-horizontal col-sm-12" style="padding: 2%">
+                    <div class="form-group">
+                            <div class="col-sm-2">
+                                <img src="~/images/region_arms.png" id="imgLogin">
+                            </div>
+                            <div class="col-sm-10 sub-info">
+                                <span>Государственное бюджетное учреждение Московской области «Центр кадастровой оценки»</span>
+                            </div>
+                        </div>
+                    </div>
+                <span class="logo-title">Подсистема кадастровой оценки</span>
+            </div>
 
 			<div id="MainPanel">
 				<div class="form-horizontal col-sm-12" style="margin-top: 37px; margin-bottom: 37px;">
