@@ -9,6 +9,7 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
@@ -35,11 +36,13 @@ namespace KadOzenka.Dal.LongProcess
             var config = convertParams.config;
             var userId = convertParams.UserId;
 
+            var task = OMTask.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
             var attachments = OMImportDataLog.Where(x => x.RegisterId == OMTask.GetRegisterId() && x.ObjectId == id)
                 .SelectAll().Execute();
             var omImportDataLogs = attachments.Where(a => a.FileExtension == "xml").ToList();
             xmlImportGkn.FillDictionary(FileStorageManager.GetPathForStorage("SchemaPath"));
 
+            var reportService = new GbuReportService("Ошибки импорта");
             var allObjects = new xmlObjectList();
             foreach (var log in omImportDataLogs)
             {
@@ -50,7 +53,9 @@ namespace KadOzenka.Dal.LongProcess
                     Console.WriteLine($"Log name: {fileName}");
                     var fs = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, log.DateCreated,
                         fileName);
-                    doc = xmlImportGkn.GetXmlObject(fs);
+
+                    var importer = new xmlImportGkn(reportService);
+                    doc = importer.GetXmlObject(fs, task?.GetAssessmentDateForUnit() ?? DateTime.Now);
                 }
                 catch (Exception e)
                 {
@@ -94,13 +99,22 @@ namespace KadOzenka.Dal.LongProcess
             var dt = DateTime.Today;
             FileStorageManager.Save(memoryStream, fsName, dt, $"{id}_ExcelConversion.zip");
 
+            string reportWithErrorsMessage = null;
+            if (!reportService.IsReportEmpty)
+            {
+	            var reportId = reportService.SaveReport();
+	            var urlToDownloadReportWithErrors = reportService.GetUrlToDownloadFile(reportId);
+	            reportWithErrorsMessage = $@"<a href=""{urlToDownloadReportWithErrors}"">Скачать отчет с ошибками</a>";
+            }
+
             if (userId != null)
                 new MessageService().SendMessages(new MessageDto
                 {
                     Addressers = new MessageAddressersDto {UserIds = new long[] {userId.Value}},
                     Subject = $"Конвертация xml в xlsx по задаче с идентификатором {id}",
                     Message =
-                        $@"Процесс конвертации завершен. <a href=""/GknXmlToExcel/DownloadResult?dt={dt}&id={id}"">Скачать результаты</a>",
+                        $@"Процесс конвертации завершен. <a href=""/GknXmlToExcel/DownloadResult?dt={dt}&id={id}"">Скачать результаты</a>
+						{reportWithErrorsMessage}",
                     IsUrgent = true,
                     IsEmail = false,
                     ExpireDate = DateTime.Now.AddHours(2)

@@ -1,13 +1,15 @@
 ﻿using GemBox.Spreadsheet;
 using KadOzenka.Dal.XmlParser;
-using ObjectModel.Directory;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
+using ObjectModel.KO;
 using Serilog;
 using SerilogTimings.Extensions;
 using SerilogTimings;
@@ -18,8 +20,7 @@ namespace KadOzenka.Dal.DataImport
     {
 	    private static readonly ILogger Log = Serilog.Log.ForContext<DataImporterGkn>();
 
-        //Объект-блокиратор для многопоточки
-        private static object locked = new object();
+        private readonly object _locked;
         private Dictionary<long, List<long>> _updatedObjectsAttributes;
 
         /// <summary>
@@ -74,9 +75,18 @@ namespace KadOzenka.Dal.DataImport
 
         public bool AreCountersInitialized { get; private set; }
 
-        public DataImporterGkn()
-        {
+        private GknAllAttributes AllGknAttributes { get; set; }
+        private xmlImportGkn XmlImportGkn { get; }
+        private GbuReportService GbuReportService { get; }
+
+		public DataImporterGkn(GbuReportService gbuReportService)
+		{
+			GbuReportService = gbuReportService;
+			XmlImportGkn = new xmlImportGkn(GbuReportService);
+
 	        _updatedObjectsAttributes = new Dictionary<long, List<long>>();
+	        _locked = new object();
+			AllGknAttributes = new GknAllAttributes();
         }
 
 
@@ -86,56 +96,65 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
+        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromXml(xmlFile, pathSchema, task.EstimationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
-        }
+			xmlObjectList GknItems = null;
+			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
+			{
+				xmlImportGkn.FillDictionary(pathSchema);
+				GknItems = XmlImportGkn.GetXmlObject(xmlFile, task.GetAssessmentDateForUnit());
+			}
+
+			using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
+			{
+				ImportDataGkn(task.EstimationDate.Value, task, cancellationToken, GknItems);
+			}
+		}
 
         /// <summary>
-        /// Импорт данных ГКН из Excel
+        /// Импорт данных ГКН из Excel для Обращений
         /// excelFile - файл Excel
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, ObjectModel.KO.OMTask task, CancellationToken cancellationToken)
+        public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
         {
-            ImportDataGknFromExcel(excelFile, pathSchema, task.CreationDate.Value, task.TourId.Value, task.Id, task.NoteType_Code, task.EstimationDate.Value, task.EstimationDate.Value, task.DocumentId.Value, cancellationToken);
-        }
+			xmlObjectList GknItems = null;
+			using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
+			{
+				xmlImportGkn.FillDictionary(pathSchema);
+				GknItems = XmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
+			}
 
-        private void ImportDataGknFromExcel(ExcelFile excelFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
+			using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
+			{
+				ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
+			}
+		}
+
+        /// <summary>
+        /// Импорт данных ГКН из Excel для всех типов кроме Обращений
+        /// excelFile - файл Excel
+        /// pathSchema - путь к каталогу где хранится схема
+        /// task - ссылка на задание на оценку
+        /// </summary>
+        public void ImportGknFromExcel(ExcelFile excelFile, string pathSchema, OMTask task,
+	        List<ColumnToAttributeMapping> columnsMapping, CancellationToken cancellationToken)
         {
-	        xmlObjectList GknItems = null;
-	        using (Operation.Time("Импорт задания на оценку: парсинг xml"))
+	        xmlObjectList gknItems;
+	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 	        {
 		        xmlImportGkn.FillDictionary(pathSchema);
-		        GknItems = xmlImportGkn.GetExcelObject(excelFile);
+		        gknItems = XmlImportGkn.GetExcelObject(excelFile, columnsMapping, AllGknAttributes);
 	        }
 
 	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
 	        {
-		        ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken,
-			        GknItems);
-	        }
-        }
-        
-        private void ImportDataGknFromXml(Stream xmlFile, string pathSchema, DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, CancellationToken cancellationToken)
-        {
-	        xmlObjectList GknItems = null;
-	        using (Operation.Time("Импорт задания на оценку: парсинг xml"))
-	        {
-		        xmlImportGkn.FillDictionary(pathSchema);
-		        GknItems = xmlImportGkn.GetXmlObject(xmlFile);
-	        }
-
-	        using (Operation.Time("Импорт задания на оценку: импорт распарсенных объектов"))
-	        {
-		        ImportDataGkn(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, cancellationToken,
-			        GknItems);
+		        ImportDataGkn(task.EstimationDate.Value, task, cancellationToken, gknItems);
 	        }
         }
 
-        private void ImportDataGkn(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
-	        DateTime otDate, long idDocument, CancellationToken cancellationToken, xmlObjectList GknItems)
+		private void ImportDataGkn(DateTime unitDate, OMTask task, CancellationToken cancellationToken, xmlObjectList GknItems)
         {
 	        if (cancellationToken.IsCancellationRequested)
 	        {
@@ -156,7 +175,7 @@ namespace KadOzenka.Dal.DataImport
 	        CountImportFlats = 0;
 	        CountImportCarPlaces = 0;
 	        AreCountersInitialized = true;
-	        Log.ForContext("TaskId", idTask)
+	        Log.ForContext("TaskId", task.Id)
 		        .ForContext("CountXmlBuildings", CountXmlBuildings)
 		        .ForContext("CountXmlParcels", CountXmlParcels)
 		        .ForContext("CountXmlConstructions", CountXmlConstructions)
@@ -167,12 +186,18 @@ namespace KadOzenka.Dal.DataImport
 
 	        var objectsImporters = new List<object>
 	        {
-		        new ImportObjectBuild(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedBuildingsCount, UpdateObjectsAttributes),
-		        new ImportObjectParcel(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedParcelsCount, UpdateObjectsAttributes),
-		        new ImportObjectConstruction(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedConstructionsCount, UpdateObjectsAttributes),
-		        new ImportObjectUncomplited(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes),
-		        new ImportObjectFlat(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedFlatsCount, UpdateObjectsAttributes),
-		        new ImportObjectCarPlace(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, IncreaseImportedCarPlacesCount, UpdateObjectsAttributes)
+		        new ImportObjectBuild(AllGknAttributes.Building, unitDate, task, IncreaseImportedBuildingsCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectParcel(AllGknAttributes.Parcel, unitDate, task, IncreaseImportedParcelsCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectConstruction(AllGknAttributes.Construction, unitDate, task,
+			        IncreaseImportedConstructionsCount, UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectUncomplited(AllGknAttributes.Uncompleted, unitDate, task,
+			        IncreaseImportedUncomplitedsCount, UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectFlat(AllGknAttributes.Flat, unitDate, task, IncreaseImportedFlatsCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked),
+		        new ImportObjectCarPlace(AllGknAttributes.CarPlace, unitDate, task, IncreaseImportedCarPlacesCount,
+			        UpdateObjectsAttributes, GbuReportService, _locked)
 	        };
 
 	        ParallelOptions options = new ParallelOptions
@@ -243,7 +268,7 @@ namespace KadOzenka.Dal.DataImport
 
         private void UpdateObjectsAttributes(long idObject, long attributeId)
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
 		        if (!_updatedObjectsAttributes.ContainsKey(idObject))
 		        {
@@ -255,7 +280,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedBuildingsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
 		        CountImportBuildings++;
             }
@@ -263,7 +288,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedParcelsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportParcels++;
 	        }
@@ -271,7 +296,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedConstructionsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportConstructions++;
 	        }
@@ -279,7 +304,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedUncomplitedsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportUncompliteds++;
 	        }
@@ -287,7 +312,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedFlatsCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
 		        CountImportFlats++;
 	        }
@@ -295,7 +320,7 @@ namespace KadOzenka.Dal.DataImport
 
         public void IncreaseImportedCarPlacesCount()
         {
-	        lock (locked)
+	        lock (_locked)
 	        {
                 CountImportCarPlaces++;
 	        }

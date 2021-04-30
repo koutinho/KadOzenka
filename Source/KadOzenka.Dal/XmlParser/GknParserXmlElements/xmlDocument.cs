@@ -35,5 +35,10 @@ namespace KadOzenka.Dal.XmlParser
 		/// Особые отметки
 		/// </summary>
 		public string Desc { get; set; }
+
+		public xmlDocument()
+		{
+			CodeDocument = new xmlCodeName();
+		}
 	}
 }

@@ -2,6 +2,8 @@
 @using KadOzenka.Web.Models.GbuObject
 @using KadOzenka.Web.Models.Task
 @using ObjectModel.Directory
+@using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
+@using KadOzenka.Web.Models.DataImportByTemplate
 @model KadOzenka.Web.Models.Task.TaskCreationModel
 
 <div id="toolbar"></div>
@@ -13,13 +15,29 @@
         <li id="MainData" data-expand>
             <span>Основные данные</span>
             <div>
-                <div class="form-horizontal col-sm-12" style="margin-top:10px;">
+                <div class="form-horizontal col-sm-12" style="margin-top: 10px;">
                     <div class="form-group">
                         <div class="col-sm-2">
-                            @Html.CustomLabelFor(x => x.TourYear)
+                            @Html.LabelFor(x => x.DocumentType)
                         </div>
                         <div class="col-sm-10">
-                            <input id="Tour" name="Tour" editmode="true" />
+                            @(Html.Kendo().RadioButtonFor(x => x.DocumentType)
+                                .Label(DocumentType.Xml.GetEnumDescription())
+                                .Value((int)DocumentType.Xml)
+                                .Checked(true))
+                            @(Html.Kendo().RadioButtonFor(x => x.DocumentType)
+                                .Label(DocumentType.Excel.GetEnumDescription())
+                                .Value((int)DocumentType.Excel)
+                                .HtmlAttributes(new { style = "padding-left:1%;" }))
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.TourId)
+                        </div>
+                        <div class="col-sm-10">
+                            <input id="Tour" name="Tour" editmode="true"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,12 +70,20 @@
                 </div>
             </div>
         </li>
-        <li id="XmlFiles" data-expand>
+        <li id="XmlFiles" style="display: none;" data-expand>
             <span id="filesBlockLabel">XML-файлы</span>
             <div>
-                <form id="fileForm" class="form-horizontal col-sm-12">
-                    <input name="files" id="files" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
+                <form id="xmlFileForm" class="form-horizontal col-sm-12">
+                    <input name="xmlFiles" id="xmlFiles" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
                 </form>
+            </div>
+        </li>
+        <li id="excelFiles" style="display: none;" data-expand>
+            <span>Excel-файлы</span>
+            <div id="excelFilesMappingBlock" style="padding: 2%;">
+                <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
+                    @(await Html.PartialAsync("~/Views/DataImportByTemplate/Partials/DataImportMain.cshtml"))
+                </ul>
             </div>
         </li>
         <li id="ImageFiles" data-expand>
@@ -73,9 +99,14 @@
 
 
 @section styles {
+    <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+    <link rel="stylesheet" href="~/css/data-import-by-template.css" />
     <style>
         #ls_panelbar {
             width: 95%;
+        }
+        #filter {
+            width: 100%;
         }
     </style>
 }
@@ -83,10 +114,35 @@
 
 
 <script src="~/js/custom-validation.js"></script>
+<script src="~/js/jquery.fancybox.min.js"></script>
+<script src="~/js/data-import-by-template.js"></script>
+<script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeDescription#</span>
+					<span #=IsReadOnly ? 'style="display: none"' : '' #>
+                        <a class="k-button k-delete-button deleteButton" href="\\#">
+                            <span class="k-icon k-i-close"></span>
+                        </a>
+                </span>
+			</span>
+		</div>
+</script>
+
+
 <script>
-    $(document).ready(function () {
+    var dataSource = new kendo.data.DataSource({
+        data: [ ]
+    });
+
+
+    $(document).ready(function() {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');
+        $('[name="@nameof(Model.DocumentType)"]').on('change', setFileBlocksVisibility);
+        setFileBlocksVisibility();
 
         var generalAllowedFilesExtensions = ['.xml', '.zip', '.rar'];
         var allowedFilesExtensionsForPetition = ['.xlsx', '.zip', '.rar'];
@@ -100,7 +156,7 @@
                     icon: 'save',
                     click: function () {
                         var message = [];
-                        var upload = $("#files").data("kendoUpload");
+                        var upload = $("#xmlFiles").data("kendoUpload");
                         var files = upload.getFiles();
                         $.each(files, (function (index, value) {
                             if (isPetition()) {
@@ -118,17 +174,29 @@
                         if ($('[name="NoteType"]').val() == 0) {
                             message += 'Необходимо заполнить тип статьи<br>';
                         }
+                        if (isImportViaExcel() && !getExcelFile()) {
+                            message += 'Не выбран Excel-файл';
+                        }
                         if (message.length != 0) {
                             Common.ShowError(message);
                             return;
                         }
 
-                        var formData = new FormData($('#fileForm').get(0));
+                        var formData = new FormData();
+                        if (isImportViaExcel()) {
+                            formData = collectFormDataFromMappingBlock();
+                        } else {
+                            var xmlFilesFormData = new FormData($('#xmlFileForm').get(0));
+                            var images = xmlFilesFormData.getAll('xmlFiles');
+                            images.forEach(x => formData.append('@nameof(Model.XmlFiles)', x));
+                        }
+
                         var imageFormData = new FormData($('#imageForm').get(0));
                         var images = imageFormData.getAll('images');
                         images.forEach(x=>formData.append('images',x));
-                        formData.set('TourYear', $('[name="Tour"]').val());
+                        formData.set('@nameof(Model.TourId)', $('[name="Tour"]').val());
                         formData.set('NoteType', $('[name="NoteType"]').val());
+                        formData.set('@nameof(Model.DocumentType)', getSelectedDocumentType());
                         var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
                         if (estdate != null) {
                             formData.set('EstimationDate', estdate.toDateString());
@@ -145,6 +213,7 @@
                         kendo.ui.progress($('body'), true);
                         $.ajax({
                             type: 'POST',
+                            url: '@Url.Action("ImportGkn", "GknDataImport")',
                             data: formData,
                             processData: false,
                             contentType: false,
@@ -202,7 +271,7 @@
             }
         }).data('kendoUpload');
 
-        var files = $('#files').kendoUpload({
+        var files = $('#xmlFiles').kendoUpload({
             multiple: true,
             localization: {
                 select: 'Выбрать файлы'
@@ -218,7 +287,26 @@
 
         $('[name="NoteType"]').data('kendoDropDownList').bind('dataBound', updateFilesBlock);
         $('[name="NoteType"]').data('kendoDropDownList').bind('change', updateFilesBlock);
+
+
+
+        //Блок для маппинга Excel файла
+        $('#upload_panelbar')
+            .kendoPanelBar()
+            .data('kendoPanelBar')
+            .expand('li[data-expand]');
+        initFilter();
+        initMatchBtn(false);
+        $("#downloadBlock").hide();
+        $("#goToJournalBtn").hide();
+
+        initComparisonBlock();
+        initColumnsFromExcelBlock();
+        initAttributesTree();
+        downloadAttributes();
+        initFilesBlockInMapping();
     });
+
 
 
     function updateFilesBlock() {
@@ -233,5 +321,103 @@
         var noteType = $('[name="NoteType"]').val();
         var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
         return noteType === petitionNoteType;
+    }
+
+
+    function setFileBlocksVisibility() {
+        if (isImportViaExcel()) {
+            $('#excelFiles').show();
+            $('#XmlFiles').hide();
+        } else {
+            $('#excelFiles').hide();
+            $('#XmlFiles').show();
+        }
+    }
+
+    function isImportViaExcel() {
+        var documentType = getSelectedDocumentType();
+        return documentType === '@((int) DocumentType.Excel)';
+    }
+    function getSelectedDocumentType() {
+        return $('input[name="@nameof(Model.DocumentType)"]:checked').val();;
+    }
+
+
+    function downloadAttributes() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("BuildAttributesTreeForTaskDocument", "DataImportByTemplate")',
+            success: function(data) {
+                if (data) {
+                    $("#treeview").data('kendoTreeView').setDataSource(getAttributesDataSource(data));
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            }
+        });
+    }
+
+
+    function initFilesBlockInMapping() {
+        $('#files').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить Файл',
+                clearSelectedFiles: 'Очистить'
+            },
+            async: {
+                autoUpload: true,
+                saveUrl: '@Url.Action("ParseFileColumns", "DataImportByTemplate")'
+            },
+            validation: {
+                allowedExtensions: ['.xls', '.xlsx']
+            },
+            success: function(e) {
+                if (e.operation === "upload") {
+                    var columnNames = e.response.ColumnsNames;
+                    var excelColumnsListBox = $("#columnsListBox").data("kendoListBox");
+                    excelColumnsListBox.setDataSource(columnNames);
+                    resetData();
+                }
+            },
+            error: function(e) {
+                $("#columnsListBox").data("kendoListBox").setDataSource([]);
+                resetData();
+                if (e.XMLHttpRequest.responseText) {
+                    Common.ShowError(e.XMLHttpRequest.responseText);
+                } else {
+                    Common.ShowError("Не удалось загрузить выбранный файл");
+                }
+            },
+            clear: function(e) {
+                $("#columnsListBox").data("kendoListBox").setDataSource([]);
+                resetData();
+            }
+        }).data('kendoUpload');
+    }
+
+
+    function collectFormDataFromMappingBlock() {
+        var formData = new FormData();
+        var file = getExcelFile();
+        formData.append("@nameof(Model.ExcelFile)", file);
+        var listView = $("#listView").data('kendoListView');
+        var data = listView.dataSource.data();
+        var columnsPropertyName = "@nameof(Model.ExcelColumnsMapping)";
+        for (var i = 0; i < data.length; i++) {
+            var currentElement = `${columnsPropertyName}[${i}]`;
+            formData.append(`${currentElement}.ColumnIndex`, data[i].ColumnIndex);
+            formData.append(`${currentElement}.AttributeId`, data[i].AttributeId);
+        }
+        return formData;
+    }
+
+    function getExcelFile() {
+        var file = $('#files').data('kendoUpload').getFiles()[0];
+        if (file) {
+            return file.rawFile;
+        }
+        return null;
     }
 </script>

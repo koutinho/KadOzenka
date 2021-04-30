@@ -1,16 +1,20 @@
-﻿using Core.ErrorManagment;
-using Core.Main.FileStorages;
-using Core.Shared.Extensions;
+﻿using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using ObjectModel.Commission;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
+using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -37,6 +41,15 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictForestUse = null;
         static xsdDictionary dictForestCategoryProtective = null;
         static xsdDictionary dictForestEncumbrances = null;
+
+        private readonly object _locker;
+        private readonly GbuReportService _gbuReportService;
+
+        public xmlImportGkn(GbuReportService gbuReportService)
+        {
+	        _locker = new object();
+	        _gbuReportService = gbuReportService;
+        }
 
         public static void FillDictionary(string pathSchema)
         {
@@ -83,7 +96,8 @@ namespace KadOzenka.Dal.XmlParser
             if(dictForestEncumbrances == null)
 	            dictForestEncumbrances = new xsdDictionary(pathSchema + "\\dForestEncumbrances_v01.xsd", "dForestEncumbrances");
         }
-        public static xmlObjectList GetXmlObject(Stream file)
+
+        public xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
         {
             xmlObjectList objs = new xmlObjectList();
             XmlDocument xmlFile = new XmlDocument();
@@ -93,34 +107,31 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnBuilding in xnBuildings)
                 {
-                    objs.Add(GetData(xnBuilding, enTypeObject.toBuilding));
+                    objs.Add(GetData(xnBuilding, enTypeObject.toBuilding, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnConstructions = xmlFile.GetElementsByTagName("Construction"))
             {
                 foreach (XmlNode xnConstruction in xnConstructions)
                 {
-                    objs.Add(GetData(xnConstruction, enTypeObject.toConstruction));
+                    objs.Add(GetData(xnConstruction, enTypeObject.toConstruction, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnUnConstructions = xmlFile.GetElementsByTagName("Uncompleted"))
             {
                 foreach (XmlNode xnConstruction in xnUnConstructions)
                 {
-                    objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited));
+                    objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnFlats = xmlFile.GetElementsByTagName("Flat"))
             {
                 foreach (XmlNode xnFlat in xnFlats)
                 {
-                    objs.Add(GetData(xnFlat, enTypeObject.toFlat));
+                    objs.Add(GetData(xnFlat, enTypeObject.toFlat, assessmentDate));
                 }
             }
 
@@ -128,16 +139,15 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnCarParkingSpaces)
                 {
-                    objs.Add(GetData(xnFlat, enTypeObject.toCarPlace));
+                    objs.Add(GetData(xnFlat, enTypeObject.toCarPlace, assessmentDate));
                 }
             }
-
 
             using (XmlNodeList xnParcels = xmlFile.GetElementsByTagName("Parcel"))
             {
                 foreach (XmlNode xnParcel in xnParcels)
                 {
-                    objs.Add(GetData(xnParcel, enTypeObject.toParcel));
+                    objs.Add(GetData(xnParcel, enTypeObject.toParcel, assessmentDate));
                 }
             }
 
@@ -186,13 +196,16 @@ namespace KadOzenka.Dal.XmlParser
             }
             return doc;
         }
-        public static xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject)
+
+        public xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
         {
             string kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
             DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
-            xmlObject obj = new xmlObject(typeobject, kn, dc);
+            xmlObject obj = new xmlObject(typeobject, kn, dc, assessmentDate);
 
-            #region Импорт
+            try
+            {
+	            #region Импорт
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
             {
                 switch (xnChild.Name)
@@ -1289,7 +1302,16 @@ namespace KadOzenka.Dal.XmlParser
                         break;
                 }
             }
-            #endregion
+                #endregion
+	        }
+            catch (Exception ex)
+            {
+	            Serilog.Log.Error(ex, $"Ошибка при обработке объекта '{kn}' из xml-файла");
+
+	            var reportRow = _gbuReportService.GetCurrentRow();
+	            _gbuReportService.AddValue(kn, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	            _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+            }
 
             return obj;
         }
@@ -1402,10 +1424,9 @@ namespace KadOzenka.Dal.XmlParser
 	        return numbers;
         }
 
-        public static xmlObject GetData(ExcelRow row, enTypeObject typeobject)
+        public static xmlObject GetData(ExcelRow row, string kn, enTypeObject typeobject, DateTime assessmentDate)
         {
-            string kn = row.Cells[0].Value.ParseToString();
-            xmlObject obj = new xmlObject(typeobject, kn, null);
+	        var obj = new xmlObject(typeobject, kn, null, assessmentDate);
 
             if (typeobject==enTypeObject.toParcel)
             {
@@ -1600,7 +1621,7 @@ namespace KadOzenka.Dal.XmlParser
         }
 
 
-        public static xmlObjectList GetExcelObject(ExcelFile excelFile)
+        public xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate)
         {
             xmlObjectList objs = new xmlObjectList();
 
@@ -1615,26 +1636,220 @@ namespace KadOzenka.Dal.XmlParser
             var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
             Parallel.ForEach(mainWorkSheet.Rows, options, row =>
             {
+	            string cadastralNumber = null;
                 try
                 {
 	                if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
                     {
+	                    cadastralNumber = row.Cells[0].Value.ParseToString();
                         string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
-                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toParcel));
-                        if (typeobject == "ЗДАНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toBuilding));
-                        if (typeobject == "СООРУЖЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toConstruction));
-                        if (typeobject == "ОНС") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toUncomplited));
-                        if (typeobject == "ПОМЕЩЕНИЕ") objs.Add(GetData(mainWorkSheet.Rows[row.Index], enTypeObject.toFlat));
+                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toParcel, assessmentDate));
+                        else if (typeobject == "ЗДАНИЕ") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toBuilding, assessmentDate));
+                        else if (typeobject == "СООРУЖЕНИЕ")
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toConstruction, assessmentDate));
+                        else if (typeobject == "ОНС") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toUncomplited, assessmentDate));
+                        else if (typeobject == "ПОМЕЩЕНИЕ") 
+	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toFlat, assessmentDate));
+                        else
+                        {
+	                        throw new Exception($"Неизвестный тип объекта '{typeobject}'");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
+	                lock (_locker)
+	                {
+		                LogErrorInExcel(row.Index, cadastralNumber, ex);
+                    }
                 }
             });
 
             return objs;
         }
 
+        #region Excel Mapping
 
+        public xmlObjectList GetExcelObject(ExcelFile excelFile, List<ColumnToAttributeMapping> columnsMapping,
+	        GknAllAttributes importedAttributes)
+        {
+			var objectTypeMapping = columnsMapping.First(x => x.AttributeId == RequiredFieldsForExcelMapping.ObjectTypeAttributeId);
+			var cadastralNumberMapping = columnsMapping.First(x => x.AttributeId == RequiredFieldsForExcelMapping.CadastralNumberAttributeId);
+			var squareMapping = columnsMapping.First(x => x.AttributeId == RequiredFieldsForExcelMapping.SquareAttributeId);
+			var assessmentDateMapping = columnsMapping.First(x => x.AttributeId == RequiredFieldsForExcelMapping.AssessmentDateAttributeId);
+
+			var objects = new xmlObjectList();
+	        var mainWorkSheet = excelFile.Worksheets[0];
+	        var objectTypeDescriptions = new ObjectTypeEnumDescriptions();
+            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+	        mainWorkSheet.Rows.ForEach(row =>
+	        {
+		        string cadastralNumber = null;
+		        try
+		        {
+			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
+				        return;
+
+			        cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
+			        var square = row.Cells[squareMapping.ColumnIndex].Value?.ParseToDouble();
+                    var assessmentDate = row.Cells[assessmentDateMapping.ColumnIndex].Value.ParseToDateTimeNullable();
+                    var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
+                    var typeEnum = GetObjectType(objectTypeDescriptions, typeFromFile);
+
+                    var obj = MapExcelRowToObject(row, cadastralNumber, square, assessmentDate, typeEnum,
+	                    columnsMapping, importedAttributes);
+			        objects.Add(obj);
+		        }
+		        catch (Exception ex)
+		        {
+			        LogErrorInExcel(row.Index, cadastralNumber, ex);
+		        }
+	        });
+
+	        return objects;
+        }
+
+        #region Support Methods
+
+        private enTypeObject GetObjectType(ObjectTypeEnumDescriptions descriptions, string typeFromFile)
+        {
+	        if (string.IsNullOrWhiteSpace(typeFromFile))
+		        throw new Exception("Не указан тип объекта");
+
+	        if (string.Equals(descriptions.Stead, typeFromFile, StringComparison.InvariantCultureIgnoreCase))
+	        {
+		        return enTypeObject.toParcel;
+	        }
+	        if (string.Equals(descriptions.Building, typeFromFile, StringComparison.InvariantCultureIgnoreCase))
+	        {
+		        return enTypeObject.toBuilding;
+	        }
+	        if (string.Equals(descriptions.Construction, typeFromFile, StringComparison.InvariantCultureIgnoreCase))
+	        {
+		        return enTypeObject.toConstruction;
+	        }
+	        if (string.Equals(descriptions.Placement, typeFromFile, StringComparison.InvariantCultureIgnoreCase))
+	        {
+		        return enTypeObject.toFlat;
+	        }
+	        if (string.Equals(descriptions.UncompletedBuilding, typeFromFile, StringComparison.InvariantCultureIgnoreCase))
+	        {
+		        return enTypeObject.toUncomplited;
+	        }
+	        if (string.Equals(descriptions.Parking, typeFromFile, StringComparison.InvariantCultureIgnoreCase))
+	        {
+		        return enTypeObject.toCarPlace;
+	        }
+
+            throw new Exception($"Указан неизвестный тип объекта '{typeFromFile}'");
+        }
+
+        private xmlObject MapExcelRowToObject(ExcelRow row, string cadastralNumber, double? square,
+	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping,
+	        GknAllAttributes importedAttributes)
+        {
+	        ValidateExcelObjectRequiredColumns(cadastralNumber, square, assessmentDate);
+
+            var obj = new xmlObject(objectType, cadastralNumber, null, assessmentDate.Value);
+            obj.Area = square;
+
+            List<ImportedAttributeGkn> attributes;
+            switch (objectType)
+            {
+	            case enTypeObject.toBuilding:
+		            attributes = importedAttributes.Building;
+		            break;
+	            case enTypeObject.toConstruction:
+		            attributes = importedAttributes.Construction;
+		            break;
+	            case enTypeObject.toFlat:
+		            attributes = importedAttributes.Flat;
+		            break;
+	            case enTypeObject.toCarPlace:
+		            attributes = importedAttributes.CarPlace;
+		            break;
+	            case enTypeObject.toUncomplited:
+		            attributes = importedAttributes.Uncompleted;
+		            break;
+	            case enTypeObject.toParcel:
+		            attributes = importedAttributes.Parcel;
+		            break;
+	            default:
+		            throw new ArgumentOutOfRangeException($"Неизвестный тип объекта '{objectType}'");
+            }
+
+            columnsMapping.ForEach(map =>
+            {
+	            var attributeInfo = attributes.FirstOrDefault(x => x.AttributeId == map.AttributeId);
+	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
+	            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+            });
+
+            return obj;
+        }
+
+        private void ValidateExcelObjectRequiredColumns(string cadastralNumber, double? square,
+	        DateTime? assessmentDate)
+        {
+	        var messages = new List<string>();
+
+	        if (string.IsNullOrWhiteSpace(cadastralNumber))
+		        messages.Add("Кадастровый номер");
+
+	        if (square == null)
+		        messages.Add("Площадь");
+
+	        if (assessmentDate == null)
+		        messages.Add("Дата оценки");
+
+	        if (messages.Count != 0)
+		        throw new Exception($"Пустые значения для обязательных полей: {string.Join(',', messages)}");
+        }
+
+        private string GetStringValue(ExcelRow row, int columnIndex)
+        {
+	        return row.Cells[columnIndex].Value.ParseToStringNullable();
+        }
+
+        /// <summary>
+        /// Класс с описаниями типов объекта (вынесен отдельно, чтобы не использовать рефлексию в цикле)
+        /// </summary>
+        private class ObjectTypeEnumDescriptions
+        {
+	        public readonly string Stead;
+	        public readonly string Building;
+	        public readonly string Construction;
+	        public readonly string Placement;
+	        public readonly string UncompletedBuilding;
+	        public readonly string Parking;
+
+	        public ObjectTypeEnumDescriptions()
+	        {
+		        Stead = PropertyTypes.Stead.GetEnumDescription();
+		        Building = PropertyTypes.Building.GetEnumDescription();
+		        Construction = PropertyTypes.Construction.GetEnumDescription();
+		        Placement = PropertyTypes.Pllacement.GetEnumDescription();
+		        UncompletedBuilding = PropertyTypes.UncompletedBuilding.GetEnumDescription();
+		        Parking = PropertyTypes.Parking.GetEnumDescription();
+	        }
+        }
+
+        #endregion
+
+        #endregion
+
+        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex)
+        {
+	        var realRowIndex = rowIndex + 1;
+	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла. Объект '{cadastralNumber}'.");
+
+	        var reportRow = _gbuReportService.GetCurrentRow();
+	        _gbuReportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	        _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+	        _gbuReportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
+        }
     }
 }

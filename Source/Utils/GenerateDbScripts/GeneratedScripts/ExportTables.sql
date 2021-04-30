@@ -58912,6 +58912,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('KO_UNIT', 'assessment_date')) then
+        execute 'alter table KO_UNIT add "assessment_date" TIMESTAMP NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_201_q_pk')) then
     execute 'alter table KO_UNIT add constraint reg_201_q_pk primary key (id)';
   end if;

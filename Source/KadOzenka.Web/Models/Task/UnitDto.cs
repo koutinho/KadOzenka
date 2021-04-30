@@ -40,8 +40,10 @@ namespace KadOzenka.Web.Models.Task
 		public decimal? Square { get; set; }
 		[DisplayName("Статус задания")]
 		public KoUnitStatus? Status { get; set; }	
-		[DisplayName("Дата оценки")]
+		[DisplayName("Дата создания")]
 		public DateTime? UnitCreationDate { get; set; }
+		[DisplayName("Дата оценки")]
+		public DateTime? AssessmentDate { get; set; }
 
 		[DisplayName("Наименование группы")]
 		public string GroupName { get; set; }
@@ -96,6 +98,7 @@ namespace KadOzenka.Web.Models.Task
 				dto.Square = unit.Square;
 				dto.Status = unit.Status_Code;
 				dto.UnitCreationDate = unit.CreationDate;
+				dto.AssessmentDate = unit.AssessmentDate;
 
 				dto.UpksPre = unit.UpksPre;
 				dto.CadastralCostPre = unit.CadastralCostPre;

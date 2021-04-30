@@ -15,6 +15,7 @@ using ObjectModel.Core.Shared;
 using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using Core.Register.Enums;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.DataImport.DataImporterByTemplate;
@@ -22,8 +23,11 @@ using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
+using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.KO;
 using ObjectModel.Market;
+using ConfigurationManager = KadOzenka.Dal.ConfigurationManagers.ConfigurationManager;
+
 
 namespace KadOzenka.Web.Controllers
 {
@@ -64,8 +68,11 @@ namespace KadOzenka.Web.Controllers
 		{			
 			var source = new List<object>();
 
-			List<RegistersCommon.RegisterTemplateColumn> attributesList = BuildAttributesTree();
-					   
+			var availableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
+				.Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
+
+			var attributesList = BuildAttributesTreeInternal(availableRegisters);
+
 			if (attributesList.Any())
 			{
 				foreach (var attributeItem in attributesList)
@@ -101,63 +108,6 @@ namespace KadOzenka.Web.Controllers
 			}
 
 			return Json(source);
-		}
-
-        [SRDFunction(Tag = "")]
-        public static List<RegisterTemplateColumn> BuildAttributesTree()
-        {
-            var availableRegisters = ObjectModel.KO.OMObjectsCharacteristicsRegister.Where(x => true)
-                .Select(x => x.RegisterId).Execute().Select(x => x.RegisterId.GetValueOrDefault()).ToList();
-
-            return BuildAttributesTreeInternal(availableRegisters);
-        }
-
-        [SRDFunction(Tag = "")]
-		private static List<RegisterTemplateColumn> BuildAttributesTreeInternal(List<long> avaliableRegisters, bool withoutPrimaryKeys = false)
-		{
-			var attributesTree = new List<RegisterTemplateColumn>();
-
-			foreach (long registerId in avaliableRegisters)
-			{
-				try
-				{
-					RegisterData registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
-
-					RegisterTemplateColumn registerNode = new RegisterTemplateColumn
-					{
-						ItemId = registerData.Id.ToString(CultureInfo.InvariantCulture),
-						Description = registerData.Description
-					};
-
-					attributesTree.Add(registerNode);
-
-					attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
-						.Where(x =>
-                        {
-                            var pkCondition = true;
-                            if (withoutPrimaryKeys)
-                            {
-                                pkCondition = x.IsPrimaryKey == false;
-							}
-                            return x.RegisterId == registerData.Id && pkCondition;
-                        }).Select(attributeData => new RegisterTemplateColumn
-						{
-							ItemId = registerData.Id + "_" + attributeData.Id,
-							ParentId = registerData.Id.ToString(CultureInfo.InvariantCulture),
-							Description = attributeData.Name,
-							DocumentType = (int)attributeData.Type,
-							AttributeId = attributeData.Id,
-							ReferenceId = attributeData.ReferenceId.HasValue ? attributeData.ReferenceId.Value : 0,
-						}).OrderBy(x => x.Description));
-				}
-				catch (Exception ex)
-				{
-					ErrorManager.LogError(ex);
-					continue;
-				}
-			}
-
-			return attributesTree;
 		}
 
 		[HttpPost]
@@ -285,7 +235,7 @@ namespace KadOzenka.Web.Controllers
         {
             var availableRegisters = new List<long> {registerId};
 
-            var attributesTree = BuildAttributesTreeInternal(availableRegisters, true);
+            var attributesTree = BuildAttributesTreeInternal(availableRegisters, withoutPrimaryKeys: true);
 
 			return new JsonResult(attributesTree);
         }
@@ -348,6 +298,138 @@ namespace KadOzenka.Web.Controllers
             }
         }
 
+		#endregion
+
+
+		#region Импорт Excel для Задания на оценку
+
+        [HttpGet]
+		[SRDFunction(Tag = "")]
+        public JsonResult BuildAttributesTreeForTaskDocument()
+        {
+	        var availableAttributeIds = GetAttributeIdsForTaskCreationFromConfig();
+            var availableRegisters = RegisterCache.RegisterAttributes.Where(x => availableAttributeIds.Contains(x.Key))
+                .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
+
+	        var unitRegisterId = OMUnit.GetRegisterId();
+	        var unitRequiredAttributeIds = Dal.DataImport.DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds;
+
+	        availableRegisters.Add(unitRegisterId);
+	        availableAttributeIds.AddRange(unitRequiredAttributeIds);
+
+	        var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
+			attributesTree.Where(x => unitRequiredAttributeIds.Contains(x.AttributeId)).ForEach(x => x.IsRequired = true);
+			var sortedAttributes = attributesTree.OrderByDescending(x => x.IsRequired).ThenBy(x => x.Description).ToList();
+
+			return Json(sortedAttributes);
+        }
+
+
+        #region Support Methods
+
+        private List<long> GetAttributeIdsForTaskCreationFromConfig()
+        {
+            var dataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig.GknDataAttributes;
+
+            var allAttributeIdsFromConfig = new List<long>();
+            var properties = dataImporterGknConfig.GetType().GetProperties();
+            foreach (var prop in properties)
+            {
+                var section = prop.GetValue(dataImporterGknConfig, null);
+                GetIdsFromSection(section, allAttributeIdsFromConfig);
+            }
+
+            return allAttributeIdsFromConfig;
+        }
+
+        private void GetIdsFromSection(object section, List<long> attributeIds)
+		{
+	        var properties = section.GetType().GetProperties().Where(x => x.PropertyType != typeof(string)).ToList();
+	        foreach (PropertyInfo prop in properties)
+	        {
+		        if (prop.PropertyType.IsArray)
+		        {
+			        var array = prop.GetValue(section) as Array;
+			        if (array == null)
+				        continue;
+
+			        for (var i = 0; i < array.Length; i++)
+			        {
+				        var arrayElement = array.GetValue(i);
+				        GetIdsFromSection(arrayElement, attributeIds);
+			        }
+		        }
+		        else if (prop.PropertyType.IsClass)
+		        {
+			        var sectionInSection = prop.GetValue(section, null);
+			        GetIdsFromSection(sectionInSection, attributeIds);
+		        }
+		        else
+		        {
+			        var value = prop.GetValue(section, null)?.ToString();
+			        var id = long.TryParse(value, out var val) ? val : (long?)null;
+			        if (id != null)
+			        {
+				        attributeIds.Add(id.Value);
+			        }
+		        }
+	        }
+        }
+
         #endregion
-	}
+
+        #endregion
+
+
+        #region Support Methods
+
+        private List<AttributeInfoForMapping> BuildAttributesTreeInternal(List<long> availableRegisters,
+            List<long> availableAttributeIds = null, bool withoutPrimaryKeys = false)
+        {
+            var attributesTree = new List<AttributeInfoForMapping>();
+
+            foreach (var registerId in availableRegisters)
+            {
+	            var registerData = RegisterCache.GetRegisterData(registerId.ParseToInt());
+
+	            var registerNode = new AttributeInfoForMapping
+	            {
+		            ItemId = registerData.Id.ToString(CultureInfo.InvariantCulture),
+		            Description = registerData.Description
+	            };
+	            attributesTree.Add(registerNode);
+
+	            attributesTree.AddRange(RegisterCache.RegisterAttributes.Values
+		            .Where(x =>
+		            {
+			            var pkCondition = true;
+			            if (withoutPrimaryKeys)
+			            {
+				            pkCondition = x.IsPrimaryKey == false;
+			            }
+
+			            var attributeIdsCondition = true;
+			            if (availableAttributeIds != null)
+			            {
+				            attributeIdsCondition = availableAttributeIds.Contains(x.Id);
+			            }
+
+			            return x.RegisterId == registerData.Id && pkCondition && attributeIdsCondition;
+
+		            }).Select(attributeData => new AttributeInfoForMapping
+		            {
+			            ItemId = registerData.Id + "_" + attributeData.Id,
+			            ParentId = registerData.Id.ToString(CultureInfo.InvariantCulture),
+			            Description = attributeData.Name,
+			            DocumentType = (int)attributeData.Type,
+			            AttributeId = attributeData.Id,
+			            ReferenceId = attributeData.ReferenceId ?? 0
+		            }).OrderBy(x => x.Description));
+            }
+
+            return attributesTree;
+        }
+
+        #endregion
+    }
 }

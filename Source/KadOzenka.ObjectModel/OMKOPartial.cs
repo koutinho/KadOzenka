@@ -3390,3 +3390,16 @@ namespace ObjectModel.Modeling
 		}
 	}
 }
+
+
+
+namespace ObjectModel.KO
+{
+	public partial class OMTask
+	{
+		public DateTime GetAssessmentDateForUnit()
+		{
+            return EstimationDate ?? DateTime.Now;
+        }
+	}
+}

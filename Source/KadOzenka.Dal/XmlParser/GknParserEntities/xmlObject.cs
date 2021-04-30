@@ -202,8 +202,12 @@ namespace KadOzenka.Dal.XmlParser
 		/// Характеристики объекта недвижимости, в котором расположено помещение, машино-место
 		/// </summary>
 		public xmlParentOks ParentOks { get; set; }
+		/// <summary>
+		/// Дата оценки
+		/// </summary>
+		public DateTime AssessmentDate { get; set; }
 
-		public xmlObject(enTypeObject typeObject, string cadastralNumber, DateTime? dateCreate)
+		public xmlObject(enTypeObject typeObject, string cadastralNumber, DateTime? dateCreate, DateTime assessmentDate)
 		{
 			TypeObject = typeObject;
 			DateCreate = dateCreate;
@@ -223,6 +227,22 @@ namespace KadOzenka.Dal.XmlParser
 			FlatsCadastralNumbers = new List<string>();
 			CarParkingSpacesCadastralNumbers = new List<string>();
 			UnitedCadastralNumbers = new List<string>();
+			AssessmentDate = assessmentDate;
+			Adress = new xmlAdress();
+			CadastralCost = new xmlCost();
+			NameParcel = new xmlCodeName();
+			Category = new xmlCodeName();
+			Utilization = new xmlUtilization();
+			HiredHouse = new xmlHiredHouse();
+			AssignationBuilding = new xmlCodeName();
+			Years = new xmlYear();
+			Floors = new xmlFloors();
+			CulturalHeritage = new xmlCulturalHeritage();
+			ParentOks = new xmlParentOks();
+			AssignationFlatCode = new xmlCodeName();
+			AssignationFlatType = new xmlCodeName();
+			AssignationSpecialType = new xmlCodeName();
+			Position = new xmlPos();
 		}
 		public override string ToString()
 		{

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -19,8 +19,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public override string SuccessMessage => "Импорт Машино-мест завершен";
 
 
-		public ImportObjectCarPlace(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate, DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
-			: base(unitDate, idTour, idTask, koNoteType, sDate, otDate, idDocument, increaseImportedObjectsCountAction, updateObjectsAttributesAction)
+		public ImportObjectCarPlace(List<ImportedAttributeGkn> carPlaceAttribute, DateTime unitDate, OMTask task,
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction,
+			GbuReportService gbuReportService, object locked)
+			: base(unitDate, task, increaseImportedObjectsCountAction, updateObjectsAttributesAction, carPlaceAttribute,
+				gbuReportService, locked)
 		{
 		}
 
@@ -81,35 +84,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 				SaveDataAttribute(TaskFormingAttributes.First(x => x.AttributeId == Consts.P4YearOfBuildAttributeId), true, gbuObjectId);
 			}
         }
-
-		protected override void InitGknDataAttributes()
-		{
-			base.InitGknDataAttributes();
-
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.CadastralNumberOksAttributeIdValue, current => ((xmlObjectCarPlace)current).CadastralNumberOKS);
-
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.CadastralNumberOksAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.CadastralNumberOKS);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.ObjectTypeAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.ObjectType?.Name);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.AssignationBuildingAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.AssignationBuilding?.Name);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.AssignationNameAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.AssignationName);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.WallMaterialAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).ParentOks?.Walls));
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.ExploitationCharYearBuiltAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.Years?.Year_Built);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.ExploitationCharYearUsedAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.Years?.Year_Used);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.FloorCountAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.Floors?.Floors);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.ParentOks?.FloorUndergroundCountAttributeIdValue, current => ((xmlObjectCarPlace)current).ParentOks?.Floors?.Underground_Floors);
-
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.AreaAttributeIdValue, current => ((xmlObjectCarPlace)current).Area);
-
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.PositionInObject?.NumberAttributeIdValue, current => ((xmlObjectCarPlace)current).PositionInObject?.Number);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.PositionInObject?.TypeAttributeIdValue, current => ((xmlObjectCarPlace)current).PositionInObject?.Type?.Name);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.PositionInObject?.PositionNumberOnPlanAttributeIdValue, current => ((xmlObjectCarPlace)current).PositionInObject?.Position?.NumberOnPlan);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.PositionInObject?.PositionDescriptionAttributeIdValue, current => ((xmlObjectCarPlace)current).PositionInObject?.Position?.Description);
-
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.UnitedCadastralNumberAttributeIdValue, current => xmlCodeName.GetNames(((xmlObjectCarPlace)current).UnitedCadastralNumbers));
-
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.FacilityCadastralNumberAttributeIdValue, current => ((xmlObjectCarPlace)current).FacilityCadastralNumber);
-			TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.CarPlace.FacilityPurposeAttributeIdValue, current => ((xmlObjectCarPlace)current).FacilityPurpose);
-		}
 
 		protected override void SetAdditionalUnitProperties(OMUnit koUnit, xmlObjectCarPlace current)
 		{

@@ -210,8 +210,7 @@ namespace KadOzenka.Dal.LongProcess
             var data = GetFileData(url);
             var stream = new MemoryStream(data);
 
-            DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", fileInfo.FileName,
-                stream, OMTask.GetRegisterId(), taskId);
+            DataImporterGknLongProcess.AddImportToQueue(fileInfo.FileName, stream, taskId);
         }
 
         private static byte[] GetFileData(string url)

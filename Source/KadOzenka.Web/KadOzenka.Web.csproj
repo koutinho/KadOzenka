@@ -98,7 +98,6 @@
     <Reference Include="Kendo.Mvc.resources">
       <HintPath>..\_Dll\Kendo.Mvc.resources.dll</HintPath>
     </Reference>
-		<ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
 
@@ -121,7 +120,6 @@
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.json" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\SpdSettings.xml" />
 
-
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Local.json" Condition="'$(Configuration)'=='Local'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" />
@@ -131,6 +129,7 @@
 	</ItemGroup>
 
 	<!-- Comfort presentation of configuration files -->
+	
 
   <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />

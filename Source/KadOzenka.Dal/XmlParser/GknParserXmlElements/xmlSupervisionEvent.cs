@@ -43,5 +43,16 @@ namespace KadOzenka.Dal.XmlParser
 		/// Реквизиты документа, содержащего сведения об устранении правонарушения
 		/// </summary>
 		public xmlDocument EliminationDocRequisites { get; set; }
+
+
+		public xmlSupervisionEvent()
+		{
+			EventName = new xmlCodeName();
+			EventForm = new xmlCodeName();
+			IdentifiedViolations = new xmlIdentifiedViolations();
+			DocRequisites = new xmlDocument();
+			Elimination = new xmlElimination();
+			EliminationDocRequisites = new xmlDocument();
+		}
 	}
 }

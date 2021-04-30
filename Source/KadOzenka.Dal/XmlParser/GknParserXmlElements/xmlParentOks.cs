@@ -35,7 +35,11 @@ namespace KadOzenka.Dal.XmlParser.GknParserXmlElements
 		
 		public xmlParentOks()
 		{
+			ObjectType = new xmlCodeName();
+			AssignationBuilding = new xmlCodeName();
 			Walls = new List<xmlCodeName>();
+			Years = new xmlYear();
+			Floors = new xmlFloors();
 		}
 	}
 }

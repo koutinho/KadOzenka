@@ -8,11 +8,11 @@ using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
-using KadOzenka.Dal.ConfigurationManagers;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
+using Microsoft.CodeAnalysis;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
@@ -29,13 +29,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         public abstract string CancelMessage { get; }
         public abstract string SuccessMessage { get; }
 
+        protected readonly List<ImportedAttributeGkn> GknDataAttributes;
 		protected Dictionary<KoChangeStatus, ImportedAttribute> AttributeChangeStatuses { get; set; }
-		protected List<ImportedAttributeGkn> GknDataAttributes { get; set; }
 		protected List<ImportedAttribute> TaskFormingAttributes { get; set; }
 
 		protected DateTime UnitDate { get; }
         protected long IdTour { get; }
-        protected long IdTask { get; }
+        protected OMTask Task { get; }
         protected KoNoteType KoNoteType { get; }
         protected DateTime SDate { get; }
         protected DateTime OtDate { get; }
@@ -45,29 +45,32 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
         private Action<long, long> UpdateObjectsAttributesAction { get; }
 
 		private OMTour Tour { get; }
-		protected DataImporterGknConfig DataImporterGknConfig { get; }
+        private GbuReportService GbuReportService { get; }
+        private readonly object _locker;
 
-		protected ImportObjectBase(DateTime unitDate, long idTour, long idTask, KoNoteType koNoteType, DateTime sDate,
-	        DateTime otDate, long idDocument, Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction)
+		protected ImportObjectBase(DateTime unitDate, OMTask task, 
+			Action increaseImportedObjectsCountAction, Action<long, long> updateObjectsAttributesAction, 
+			List<ImportedAttributeGkn> gknDataAttributes, GbuReportService gbuReportService, object locked)
         {
 	        UnitDate = unitDate;
-	        IdTour = idTour;
-	        IdTask = idTask;
-	        KoNoteType = koNoteType;
-	        SDate = sDate;
-	        OtDate = otDate;
-	        IdDocument = idDocument;
+	        IdTour = task.TourId.Value;
+	        Task = task;
+	        KoNoteType = task.NoteType_Code;
+	        SDate = task.EstimationDate.Value;
+	        OtDate = task.EstimationDate.Value;
+	        IdDocument = task.DocumentId.Value;
 	        IncreaseImportedObjectsCountAction = increaseImportedObjectsCountAction;
 	        UpdateObjectsAttributesAction = updateObjectsAttributesAction;
-	        DataImporterGknConfig = ConfigurationManager.KoConfig.DataImporterGknConfig;
+	        GknDataAttributes = gknDataAttributes;
+	        GbuReportService = gbuReportService;
 
+	        _locker = locked;
 			Tour = OMTour.Where(x => x.Id == IdTour).Select(x => x.Year).ExecuteFirstOrDefault();
-		}
+        }
 
 		public virtual void Init()
 		{
 			InitAttributeChangeStatusList();
-			InitGknDataAttributes();
 			InitTaskFormingAttributes();
 		}
 
@@ -80,67 +83,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        {KoChangeStatus.CadastralBlock, new ImportedAttribute(Consts.CadastralQuarterAttributeId)},
 	        };
         }
-
-        protected virtual void InitGknDataAttributes()
-        {
-	        GknDataAttributes = new List<ImportedAttributeGkn>();
-
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.ObjectTypeAttributeIdValue, current => current.TypeRealty);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralNumberAttributeIdValue, current => current.CadastralNumber);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.DateCreatedAttributeIdValue, current => current.DateCreate);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralBlockAttributeIdValue, current => current.CadastralNumberBlock);
-
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostValueAttributeIdValue, current => current.CadastralCost?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDateValuationAttributeIdValue, current => current.CadastralCost?.DateValuation);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDateEnteringAttributeIdValue, current => current.CadastralCost?.DateEntering);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDateApprovalAttributeIdValue, current => current.CadastralCost?.DateApproval);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDocNumberAttributeIdValue, current => current.CadastralCost?.DocNumber);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDocDateAttributeIdValue, current => current.CadastralCost?.DocDate);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostApplicationDateAttributeIdValue, current => current.CadastralCost?.ApplicationDate);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostRevisalStatementDateAttributeIdValue, current => current.CadastralCost?.RevisalStatementDate);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostApplicationLastDateAttributeIdValue, current => current.CadastralCost?.ApplicationLastDate);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.CadastralCostDocNameAttributeIdValue, current => current.CadastralCost?.DocName);
-
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationAddressInOneStringAttributeIdValue, current => xmlAdress.GetTextAdress(current.Adress));
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationFiasAttributeIdValue, current => current.Adress?.FIAS);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationOkatoAttributeIdValue, current => current.Adress?.OKATO);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationKladrAttributeIdValue, current => current.Adress?.KLADR);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationOktmoAttributeIdValue, current => current.Adress?.OKTMO);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationPostalCodeAttributeIdValue, current => current.Adress?.PostalCode);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationRussianFederationAttributeIdValue, current => current.Adress?.RussianFederation);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationRegionAttributeIdValue, current => current.Adress?.Region);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationDistrictAttributeIdValue, current => current.Adress?.District?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationCityAttributeIdValue, current => current.Adress?.City?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationUrbanDistrictAttributeIdValue, current => current.Adress?.UrbanDistrict?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationSovietVillageAttributeIdValue, current => current.Adress?.SovietVillage?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLocalityAttributeIdValue, current => current.Adress?.Locality?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationPlanningElementAttributeIdValue, current => current.Adress?.PlanningElement?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationStreetAttributeIdValue, current => current.Adress?.Street?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLevel1AttributeIdValue, current => current.Adress?.Level1?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLevel2AttributeIdValue, current => current.Adress?.Level2?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationLevel3AttributeIdValue, current => current.Adress?.Level3?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationApartmentAttributeIdValue, current => current.Adress?.Apartment?.Value);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationOtherAttributeIdValue, current => current.Adress?.Other);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationNoteAttributeIdValue, current => current.Adress?.Note);
-	        TryAddGknDataAttribute(DataImporterGknConfig.GknDataAttributes.General.LocationAddressOrLocationAttributeIdValue, current => current.Adress?.AddressOrLocation);
-        }
-
-        protected void TryAddGknDataAttribute(long? attributeId, Func<xmlObjectParticular, object> getValue)
-        {
-	        if (!attributeId.HasValue)
-		        return;
-
-	        GknDataAttributes.Add(new ImportedAttributeGkn(attributeId.Value, getValue));
-        }
-
-        protected void TryAddGknDataAttribute(long? attributeId, Func<xmlObjectParticular, object> getValue, Func<xmlObjectParticular, bool> canSetValue)
-        {
-	        if (!attributeId.HasValue)
-		        return;
-
-	        GknDataAttributes.Add(new ImportedAttributeGkn(attributeId.Value, getValue, canSetValue));
-        }
-
 
 		protected virtual void InitTaskFormingAttributes()
         {
@@ -178,7 +120,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        Log.Warning(CancelMessage);
 		        throw;
 	        }
-	        Log.ForContext("TaskId", IdTask).Debug(SuccessMessage);
+	        Log.ForContext("TaskId", Task.Id).Debug(SuccessMessage);
         }
 
         private void ImportPartition(List<T> objectsPartition, ParallelOptions options)
@@ -222,7 +164,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 			        gbuObjectIds = gbuObjectsByCadastralNumbers.Select(x => (long?) x.Id).Distinct().ToList();
 
 			        existedUnits = OMUnit
-				        .Where(x => gbuObjectIds.Contains(x.ObjectId) && x.TaskId == IdTask && x.TourId == IdTour)
+				        .Where(x => gbuObjectIds.Contains(x.ObjectId) && x.TaskId == Task.Id && x.TourId == IdTour)
 				        .Select(x => new {x.ObjectId, x.TaskId, x.TourId, x.CreationDate, x.PropertyType_Code, x.GroupId})
 				        .Execute();
 			        if (existedUnits.IsNotEmpty())
@@ -243,8 +185,15 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        }
 		        catch (Exception ex)
 		        {
-			        var errorId = ErrorManager.LogError(ex);
-			        Log.ForContext("ErrorId", errorId).Error(ex, ErrorMessage);
+					Log.ForContext("Object", item, destructureObjects: true)
+						.Error(ex, ErrorMessage + ". Полная информация об объекте {CadastralNumber}", item.CadastralNumber);
+
+			        lock(_locker)
+			        {
+						var reportRow = GbuReportService.GetCurrentRow();
+						GbuReportService.AddValue(item.CadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+						GbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
+			        }
 		        }
 	        });
         }
@@ -360,7 +309,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        }
 	        }
 
-	        //Сохранение данных ГКН
 	        SaveGknData(current, gbuObject.Id);
 	        //Задание на оценку
 	        OMUnit koUnit = SaveUnit(current, gbuObject.Id, koUnitStatus, koStatusRepeatCalc,
@@ -409,15 +357,15 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
             OMUnit existedUnit = null;
 	        if (!isNewGbuObject)
 		        existedUnit = existedUnits.FirstOrDefault(x =>
-			        x.ObjectId == gbuObjectId && x.TaskId == IdTask && x.TourId == IdTour);
+			        x.ObjectId == gbuObjectId && x.TaskId == Task.Id && x.TourId == IdTour);
 
-	        if (isNewGbuObject || existedUnit == null)
+            if (isNewGbuObject || existedUnit == null)
 	        {
 		        koUnit = new OMUnit
 		        {
 			        Id = -1,
 			        TourId = IdTour,
-			        TaskId = IdTask,
+			        TaskId = Task.Id,
 			        GroupId = -1,
 			        Status_Code = unitStatus,
 			        ObjectId = gbuObjectId,
@@ -431,19 +379,20 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 			        CadastralCostPre = 0,
 			        Upks = 0,
 			        UpksPre = 0,
-
-		        };
+					AssessmentDate = current.AssessmentDate,
+					Square = current.Area?.ParseToDecimal()
+				};
 
 		        SetAdditionalUnitProperties(koUnit, current);
 
 		        koUnit.Save();
-            }
+			}
 	        else
 	        {
 		        koUnit = existedUnit;
 	        }
 
-	        OMCostRosreestr existedUnitCost = null;
+            OMCostRosreestr existedUnitCost = null;
 	        if (existedUnit != null)
 		        existedUnitCost = existedUnitCosts.FirstOrDefault(x => x.IdObject == existedUnit.Id);
 
@@ -465,7 +414,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		        };
 		        cost.Save();
 	        }
-
 
             return koUnit;
         }

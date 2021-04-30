@@ -6,7 +6,9 @@ using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
@@ -14,11 +16,9 @@ using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
-using ObjectModel.Core.Shared;
 using ObjectModel.Directory.Common;
 using ObjectModel.KO;
 using Platform.Web.Services;
-using RsmCloudService.Web.Controllers;
 using RsmCloudService.Web.Models.CoreAttachment;
 
 namespace KadOzenka.Web.Controllers
@@ -49,47 +49,36 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
-		public ActionResult ImportGkn(List<IFormFile> files, TaskCreationModel dto, List<IFormFile> images)
-        {
-            dto.Document.ProcessDocument();
+		public ActionResult ImportGkn(TaskCreationModel dto, List<IFormFile> images)
+		{
+			//внутри TaskCreationModel есть модель для документа, поэтому ModelState.IsValid использовать нельзя
+			dto.Validate();
+
+			dto.Document.ProcessDocument();
 
             if (dto.Document.IdDocument.GetValueOrDefault() == 0)
                 throw new Exception("Не выбран документ");
 
-            OMTask task = new OMTask
+            var taskId = new OMTask
 			{
-				TourId = dto.TourYear,
+				TourId = dto.TourId,
 				DocumentId = dto.Document.IdDocument,
 				CreationDate = DateTime.Now,
 				EstimationDate = dto.EstimationDate,
 				NoteType_Code = dto.NoteType ?? ObjectModel.Directory.KoNoteType.None,
 				Status_Code = ObjectModel.Directory.KoTaskStatus.InWork
-			};
-            task.Save();
+			}.Save();
 
-			try
-			{
-				var attSvc = new CoreAttachmentService();
-				var attDto = new AttachmentUploadDto();
-				attDto.AttachmentRegisterId = 203;
-				attDto.AttachmentObjectId = task.Id;
-				attSvc.AttachmentUpload(attDto,images.ToArray());
-				foreach (var file in files)
-				{
-					using (var stream = file.OpenReadStream())
-					{
-						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), task.Id);
-					}
-				}
-			}
-			catch (Exception e)
-			{
-				ErrorManager.LogError(e);
-				return BadRequest();
-			}
+            var attSvc = new CoreAttachmentService();
+            var attDto = new AttachmentUploadDto();
+            attDto.AttachmentRegisterId = 203;
+            attDto.AttachmentObjectId = taskId;
+            attSvc.AttachmentUpload(attDto, images.ToArray());
+
+            ProcessDocuments(dto, taskId);
 
 			string Msg = "Задание на оценку успешно создано. ";
-			if (files.Any())
+			if (dto.XmlFiles.Any() || dto.ExcelFile != null)
 			{
 				Msg += "Загрузка добавлена в очередь, по результатам загрузки будет отправлено сообщение";
 			}
@@ -108,7 +97,7 @@ namespace KadOzenka.Web.Controllers
 				{
 					using (var stream = file.OpenReadStream())
 					{
-						DataImporterGknLongProcess.AddImportToQueue(OMTask.GetRegisterId(), "Tasks", file.FileName, stream, OMTask.GetRegisterId(), taskId);
+						DataImporterGknLongProcess.AddImportToQueue(file.FileName, stream, taskId);
 					}
 				}
 			}
@@ -215,5 +204,37 @@ namespace KadOzenka.Web.Controllers
 				reload = true
 			});
 		}
+
+
+		#region Support Methods
+
+		private void ProcessDocuments(TaskCreationModel dto, long taskId)
+		{
+			if (dto.DocumentType == DocumentType.Xml)
+			{
+				foreach (var file in dto.XmlFiles)
+				{
+					using (var stream = file.OpenReadStream())
+					{
+						DataImporterGknLongProcess.AddImportToQueue(file.FileName, stream, taskId);
+					}
+				}
+			}
+			else
+			{
+				using (var stream = dto.ExcelFile.OpenReadStream())
+				{
+					var attributes = dto.ExcelColumnsMapping.Select(x => new ColumnToAttributeMapping
+					{
+						AttributeId= x.AttributeId, 
+						ColumnIndex = x.ColumnIndex
+					}).ToList();
+
+					DataImporterGknLongProcess.AddImportToQueue(dto.ExcelFile.FileName, stream, taskId, attributes);
+				}
+			}
+		}
+
+		#endregion
 	}
 }

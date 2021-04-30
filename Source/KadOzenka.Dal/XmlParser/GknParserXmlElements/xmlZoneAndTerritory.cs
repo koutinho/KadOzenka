@@ -29,5 +29,10 @@
 		/// Реквизиты решения
 		/// </summary>
 		public xmlDocument Document { get; set; }
+
+		public xmlZoneAndTerritory()
+		{
+			Document = new xmlDocument();
+		}
 	}
 }

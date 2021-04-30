@@ -13,6 +13,7 @@ namespace KadOzenka.Dal.XmlParser.GknParserXmlElements
 		public xmlSubConstruction()
 		{
 			EncumbrancesOks = new List<xmlEncumbranceOks>();
+			KeyParameter = new xmlCodeNameValue();
 		}
 	}
 }

@@ -14,5 +14,11 @@
 		/// Тип этажа
 		/// </summary>
 		public xmlCodeName Type { get; set; }
+
+		public xmlLevel()
+		{
+			Position = new xmlPos();
+			Type = new xmlCodeName();
+		}
 	}
 }
