@@ -1313,12 +1313,9 @@ input#addressInput:focus {
 
 
 #loginPage .logo-title-block #imgLogin {
-	width: 75px !important;
-	height: 88px !important;
-	left: 66px !important;
+	width: 100px !important;
+    left: 66px !important;
 	top: 8px !important;
-	-webkit-filter: brightness(0.8);
-	filter: brightness(0.8);
 }
 
 .static-nav > nav > .k-toolbar > a {

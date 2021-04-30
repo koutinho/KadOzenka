@@ -49,7 +49,7 @@
 
 	#loginPage .logo {
 		width: 482px;
-		height: 433px;
+		height: 450px;
 		top: 50%;
 		left: 50%;
 		margin-left: -270px;
@@ -62,17 +62,15 @@
 	}
 
 	#loginPage .logo-background {
-		background-image: url(../images/region_logo.png);
-		background-size: 100% 100%;
+		background-image: url(../images/region_logo_3.jpg);
+		background-size: cover;
 		position: fixed;
 		width: 100%;
 		height: 100%;
 		left: 0;
 		top: 0;
 		z-index: 10;
-		-webkit-filter: brightness(1.5) saturate(70%);
-		filter: brightness(1.5) saturate(70%);
-	}
+    }
 
 	#loginPage .logo-title-block {
 		padding: 10px;
@@ -110,8 +108,10 @@
     #loginPage .logo-title-block .sub-info {
         font-size: 20px;
         line-height: 33px;
-        text-align: center;
+        text-align: left;
         color: white;
+        padding-left: 10%;
+        padding-top: 5%;
     }
 
 	#loginPage label {
@@ -129,7 +129,7 @@
 	}
 
     input::placeholder {
-        color: rgba(11, 23, 33, 1);
+        color: #D6D6D6;
     }
 </style>
 <form action="@Url.Action("Login")" method="post" id="loginPage">
@@ -138,7 +138,7 @@
 	<div class="logo-background">
 		<div class="logo">
             <div class="logo-title-block">
-                <div class="form-horizontal col-sm-12" style="padding: 2%">
+                <div class="form-horizontal col-sm-12">
                     <div class="form-group">
                             <div class="col-sm-2">
                                 <img src="~/images/region_arms.png" id="imgLogin">
@@ -170,15 +170,15 @@
 					<div class="form-group">
 						<div class="col-sm-2"></div>
 						<div class="col-sm-8">
-							@Html.ValidationMessage("UserName", "", new {style = "width:100%;color:#891B1B;"})<br/>
-							@Html.ValidationMessage("Password", "", new {style = "width:100%;color:#891B1B;"})
+							@Html.ValidationMessage("UserName", "", new {style = "width:100%;color:#c50c0c;"})<br/>
+							@Html.ValidationMessage("Password", "", new {style = "width:100%;color:#c50c0c;"})
 						</div>
 						<div class="col-sm-2"></div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-2"></div>
 						<div class="col-sm-4" style="text-align: left">
-							<a href="javascript:void(0)" style="color: rgb(11, 23, 33);">Забыли пароль?</a>
+							<a href="javascript:void(0)" style="color: black;">Забыли пароль?</a>
 						</div>
 						<div class="col-sm-4" style="text-align: right">
 							<input type="submit" value="Войти" class="k-button" tabindex="-1" style="width: 100%; background: rgba(11, 23, 33, 0.6); border: none; color: white; border-radius: 6px;">
