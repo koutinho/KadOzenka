@@ -65,3 +65,5 @@
 /Source/Database/GeneratedScripts/*.*
 /Source/EmbeddedResource/bin
 /Source/EmbeddedResource/obj
+bin
+obj
