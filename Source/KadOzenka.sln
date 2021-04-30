@@ -73,7 +73,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DbMigrations", "DbMigration
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmbeddedResource", "EmbeddedResource\EmbeddedResource.csproj", "{E22784E2-65B4-4552-BF3D-3AC78FEAEDEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketPlaceBusiness", "MarketPlaceBusiness\MarketPlaceBusiness.csproj", "{31CC8333-E4D3-4E43-B3FD-516E50F3511B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketPlaceBusiness", "MarketPlaceBusiness\MarketPlaceBusiness.csproj", "{31CC8333-E4D3-4E43-B3FD-516E50F3511B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MarketPlace", "MarketPlace", "{FB8DB891-8531-4AF9-B6F3-C8177868F211}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -613,6 +615,7 @@ Global
 		{172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
 		{FFE74E77-D969-46AD-AC64-304FD0DB2700} = {172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3}
 		{CD863872-0067-452E-8B42-B0DE2F6BDD8A} = {D1FD0EFD-2121-4101-A8CB-4EC8CAA5C014}
+		{31CC8333-E4D3-4E43-B3FD-516E50F3511B} = {FB8DB891-8531-4AF9-B6F3-C8177868F211}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E93C1F16-1455-4B76-9D13-3EBB5AF127BD}
