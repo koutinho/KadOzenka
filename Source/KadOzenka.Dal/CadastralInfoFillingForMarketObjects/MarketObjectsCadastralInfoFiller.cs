@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
 
@@ -17,21 +19,17 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
         public static long RosreestrCadastralQuarterAttributeId => 601;
 
         public GbuObjectService GbuObjectService { get; set; }
+        private IMarketObjectForCadastralInfoFiller MarketObjectService { get; set; }
 
         public MarketObjectsCadastralInfoFiller()
         {
             GbuObjectService = new GbuObjectService();
+            MarketObjectService = new MarketObjectService();
         }
 
         public void PerformFillingCadastralQuarterProc()
         {
-            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
-	            .Select(x => new 
-	            {
-                    x.CadastralNumber,
-                    x.CadastralQuartal
-                })
-	            .Execute();
+            var marketObjectsWithCadastralNumber = MarketObjectService.GetObjectsWithCadastralNumber();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровыми номерами");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0;
@@ -87,19 +85,7 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
             var quartalDictionary = OMQuartalDictionary.Where(x => true)
                 .SelectAll()
                 .Execute().ToDictionary(x => x.CadastralQuartal);
-            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
-	            .Select(x => new
-	            {
-                    x.CadastralNumber,
-                    x.CadastralQuartal,
-                    x.District,
-					x.District_Code,
-                    x.Neighborhood,
-                    x.Neighborhood_Code,
-                    x.Zone,
-                    x.ZoneRegion
-                })
-	            .Execute();
+            var marketObjectsWithCadastralNumber = MarketObjectService.GetObjectsWithCadastralQuartal();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровым кварталом");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0, correctCount = 0, errorCount = 0;

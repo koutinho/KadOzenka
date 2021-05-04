@@ -8,7 +8,7 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class MarketObjectService : IMarketObjectService, IMissingDataFromGbuService
+	public class MarketObjectService : IMarketObjectService, IMissingDataFromGbuService, IMarketObjectForCadastralInfoFiller
 	{
 		//"закладываемся" на то, что будем возвращать не OMCoreObject, а OMCoreObjectDto,
 		//поэтому делаем отдельный метод в сервисе с вызовом репозитория
@@ -28,7 +28,7 @@ namespace MarketPlaceBusiness
 		}
 
 
-		#region Для процедуры Получения доп. данных из ГБУ части
+		#region Для процедуры получения доп. данных из ГБУ части
 
 		public List<OMCoreObject> GetInitialObjects()
 		{
@@ -59,6 +59,38 @@ namespace MarketPlaceBusiness
 			};
 
 			return GetObjectsByCondition(whereExpression, selectExpression);
+		}
+
+		#endregion
+
+		#region Для привязки к аналогам кадастровых кварталов
+
+		public List<OMCoreObject> GetObjectsWithCadastralNumber()
+		{
+			return OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+				.Select(x => new
+				{
+					x.CadastralNumber,
+					x.CadastralQuartal
+				})
+				.Execute();
+		}
+
+		public List<OMCoreObject> GetObjectsWithCadastralQuartal()
+		{
+			return OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
+				.Select(x => new
+				{
+					x.CadastralNumber,
+					x.CadastralQuartal,
+					x.District,
+					x.District_Code,
+					x.Neighborhood,
+					x.Neighborhood_Code,
+					x.Zone,
+					x.ZoneRegion
+				})
+				.Execute();
 		}
 
 		#endregion
