@@ -6,5 +6,6 @@ namespace MarketPlaceBusiness
 	public interface IMarketObjectsForCorrectionsService
 	{
 		List<OMCoreObject> GetObjectsForCorrectionByDate();
+		List<OMCoreObject> GetObjectsForCorrectionByRoom();
 	}
 }

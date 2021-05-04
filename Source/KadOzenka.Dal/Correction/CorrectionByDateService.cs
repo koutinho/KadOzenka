@@ -12,7 +12,7 @@ namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByDateService
     {
-        public IMarketObjectsForCorrectionsService MarketObjectsService { get; protected set; }
+        public IMarketObjectsForCorrectionsService MarketObjectsService { get; }
         public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
 
 

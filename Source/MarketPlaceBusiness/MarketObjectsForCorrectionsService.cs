@@ -14,5 +14,10 @@ namespace MarketPlaceBusiness
 					x.PropertyMarketSegment != null)
 				.SelectAll().Execute();
 		}
+
+		public List<OMCoreObject> GetObjectsForCorrectionByRoom()
+		{ 
+			return OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
+		}
     }
 }

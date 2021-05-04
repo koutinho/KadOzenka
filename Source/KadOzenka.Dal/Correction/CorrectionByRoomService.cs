@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
+using MarketPlaceBusiness;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
@@ -15,11 +16,16 @@ namespace KadOzenka.Dal.Correction
         public static readonly int PrecisionForPrice = 2;
         public static readonly int PrecisionForCoefficients = 4;
 
+        public IMarketObjectsForCorrectionsService MarketObjectsService { get; }
         public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+       
+
         public CorrectionByRoomService()
         {
             CorrectionSettingsService = new CorrectionSettingsService();
+            MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
+
 
         public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() {MarketSegment.MZHS};
 
@@ -161,7 +167,7 @@ namespace KadOzenka.Dal.Correction
         {
             var coefficients = GetAverageCoefficients().Where(x => x.Date == date);
 
-            var objects = OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
+            var objects = MarketObjectsService.GetObjectsForCorrectionByRoom();
             var objectsIds = objects.Select(x => x.Id);
             var priceChangingHistory = OMPriceAfterCorrectionByRoomsHistory.Where(x => objectsIds.Contains(x.InitialId)).SelectAll().Execute();
 
