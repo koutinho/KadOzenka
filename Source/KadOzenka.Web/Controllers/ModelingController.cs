@@ -500,11 +500,11 @@ namespace KadOzenka.Web.Controllers
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var marketObjectAttributes = RegisterAttributeService
-                .GetActiveRegisterAttributes(MarketObjectService.RegisterId)
+                .GetActiveRegisterAttributes(MarketPlaceBusiness.Common.Consts.RegisterId)
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var tourAttributesTree = MapAttributes(tourAttributes.FirstOrDefault()?.RegisterId, tourAttributes);
-            var marketObjectsAttributesTree = MapAttributes(MarketObjectService.RegisterId, marketObjectAttributes);
+            var marketObjectsAttributesTree = MapAttributes(MarketPlaceBusiness.Common.Consts.RegisterId, marketObjectAttributes);
 
             var fullTree = new List<DropDownTreeItemModel>
             {
@@ -1146,8 +1146,8 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetMarketObjectAttributes()
         {
 	        var marketObjectAttributes = OMAttribute.Where(x =>
-			        x.RegisterId == MarketObjectService.RegisterId &&
-			        x.Id != MarketObjectService.PriceAttributeId &&
+			        x.RegisterId == MarketPlaceBusiness.Common.Consts.RegisterId &&
+			        x.Id != MarketPlaceBusiness.Common.Consts.PriceAttributeId &&
 			        x.Type == (int) RegisterAttributeType.DECIMAL)
 		        .Select(x => x.Id)
 		        .Select(x => x.Name)
