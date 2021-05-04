@@ -14,5 +14,7 @@ namespace MarketPlaceBusiness.Interfaces
 		List<OMCoreObject> GetObjectsForCorrectionByBargain(QSQuery<OMCoreObject> marketObjectsQuery);
 		List<GeneralInfoForCorrectionByStage> GetObjectsForCorrectionByStage(bool isForStage, List<MarketSegment> segments);
 		List<OMCoreObject> GetBasementObjectsForCorrectionByStage(List<MarketSegment> segments);
+		List<OMCoreObject> GetFirstFloorsForCorrectionByFirstFloor(List<MarketSegment> segments, MarketSegment? segment = null);
+		List<FloorStatsForCorrectionByFirstFloor> GetFloorStatsForCorrectionByFirstFloor(bool includeCorrectionByRooms, bool firstFloor = false);
 	}
 }

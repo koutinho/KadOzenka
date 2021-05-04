@@ -10,7 +10,7 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
-    public class CorrectionForFirstFloorService
+    public class CorrectionForFirstFloorService : CorrectionBaseService
     {
         private const int PricePrecision = 2;
 
@@ -21,13 +21,13 @@ namespace KadOzenka.Dal.Correction
 
         public static List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
         public CorrectionByRoomService CorrectionByRoomService { get; protected set; }
-        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+
 
         public CorrectionForFirstFloorService()
         {
-            CorrectionSettingsService = new CorrectionSettingsService();
-            CorrectionByRoomService = new CorrectionByRoomService();
+	        CorrectionByRoomService = new CorrectionByRoomService();
         }
+
 
         //TODO добавь логирование прогресса в LongProcess, когда закончишь задачу
         public void MakeCorrections(DateTime date, MarketSegment? segment = null)
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.Correction
                 && !CheckStatsExistence(dateMonth))
                 GatherData();
 
-            var firstFloors = GetFirstFloors(segment);
+            var firstFloors = MarketObjectsService.GetFirstFloorsForCorrectionByFirstFloor(CalculatedMarketSegments, segment);
             var rates = GetRatesByDate(dateMonth);
 
             var correctionHistory =
@@ -222,10 +222,10 @@ namespace KadOzenka.Dal.Correction
                 .ToList();
         }
 
-        private static void GatherData()
+        private void GatherData()
         {
-            var firstFloorsStats = GetFloorStats(true);
-            var upperFloorsStats = GetFloorStats();
+            var firstFloorsStats = MarketObjectsService.GetFloorStatsForCorrectionByFirstFloor(IncludeCorrectionByRooms, true);
+            var upperFloorsStats = MarketObjectsService.GetFloorStatsForCorrectionByFirstFloor(IncludeCorrectionByRooms);
             var date = DateToMonth(DateTime.Now);
             var combinedStats =
                 from f in firstFloorsStats
@@ -315,65 +315,6 @@ namespace KadOzenka.Dal.Correction
             coreObject.Save();
         }
 
-        private static List<OMCoreObject> GetFirstFloors(MarketSegment? segment = null)
-        {
-            var query =
-                OMCoreObject
-                    .Where(o =>
-                        o.FloorNumber == 1
-                        && o.Price > 1
-                        && o.DealType_Code == DealType.SaleSuggestion);
-
-            query = segment != null
-                ? query.And(o => o.PropertyMarketSegment_Code == segment.GetValueOrDefault())
-                : query.And(o => CalculatedMarketSegments.Contains(o.PropertyMarketSegment_Code));
-
-            var firstFloors =
-                query
-                    .SelectAll()
-                    .Execute();
-            return firstFloors;
-        }
-
-        private static List<FloorStats> GetFloorStats(bool firstFloor = false)
-        {
-            var query = OMCoreObject
-                .Where(o =>
-                    o.DealType_Code == DealType.SaleSuggestion
-                    && o.PropertyMarketSegment_Code != MarketSegment.NoSegment
-                    && o.PropertyMarketSegment_Code != MarketSegment.None
-                    && o.Price > 1 // Отсекаем пустые цены и цены в 1 (частое явление)
-                    && o.CadastralNumber != null
-                    && o.CadastralNumber != "");
-            var result =
-                (firstFloor ? query.And(o => o.FloorNumber == 1) : query.And(o => o.FloorNumber > 1))
-                .GroupBy(o => new
-                {
-                    o.CadastralNumber,
-                    o.PropertyMarketSegment_Code
-                })
-                .ExecuteSelect(obj => new
-                {
-                    obj.CadastralNumber,
-                    Segment = obj.PropertyMarketSegment_Code,
-                    UnitCost = obj.Sum(ff =>
-#pragma warning disable 162
-                        // ReSharper disable once UnreachableCode
-                        (IncludeCorrectionByRooms ? ff.PriceAfterCorrectionByRooms : null)
-#pragma warning restore 162
-                        ?? ff.Price) / obj.Sum(ff => ff.Area)
-                })
-                // ExecuteSelect не позволяет сразу привести к нужному типу
-                .Select(obj => new FloorStats
-                {
-                    CadastralNumber = obj.CadastralNumber,
-                    Segment = obj.Segment,
-                    UnitCost = obj.UnitCost
-                })
-                .ToList();
-            return result;
-        }
-
         private static List<OMCoreObject> RewindHistory(List<OMCoreObject> objects, List<OMPriceHistory> history)
         {
             var firstEntries =
@@ -409,13 +350,6 @@ namespace KadOzenka.Dal.Correction
             public decimal MinFirstToUpperRate;
             public MarketSegment Segment;
             public DateTime StatsDate;
-        }
-
-        private class FloorStats
-        {
-            public string CadastralNumber;
-            public MarketSegment Segment;
-            public decimal UnitCost;
         }
 
         #endregion
