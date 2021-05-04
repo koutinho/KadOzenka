@@ -21,6 +21,8 @@ using KadOzenka.Web.Models.ExpressScore;
 using KadOzenka.Web.Models.MarketObject;
 using KadOzenka.Web.SignalR;
 using Kendo.Mvc.UI;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Primitives;
@@ -47,18 +49,22 @@ namespace KadOzenka.Web.Controllers
 		private ScoreCommonService ScoreCommonService { get; set; }
 		private ViewRenderService _viewRenderService;
 		private TourFactorService TourFactorService { get; set; }
+		private IMarketObjectsForExpressScoreService MarketObjectsService { get; }
 
 		public IRegisterAttributeService RegisterAttributeService { get; set; }
 
 		public ExpressScoreController(ExpressScoreService service, ViewRenderService viewRenderService,
-			ScoreCommonService scoreCommonService, TourFactorService tourFactorService, IRegisterAttributeService registerAttributeService, EsHubService esHubService)
+			ScoreCommonService scoreCommonService, TourFactorService tourFactorService,
+			IRegisterAttributeService registerAttributeService, EsHubService esHubService,
+			IMarketObjectsForExpressScoreService marketObjectsService)
 		{
 			_service = service;
 			_viewRenderService = viewRenderService;
 			_esHubService = esHubService;
-            ScoreCommonService = scoreCommonService;
-            TourFactorService = tourFactorService;
-            RegisterAttributeService = registerAttributeService;
+			ScoreCommonService = scoreCommonService;
+			TourFactorService = tourFactorService;
+			RegisterAttributeService = registerAttributeService;
+			MarketObjectsService = marketObjectsService;
 		}
 
 		#endregion
@@ -216,7 +222,7 @@ namespace KadOzenka.Web.Controllers
 			var inputParam = new InputCalculateDto
 			{
 				Address = viewModel.Address,
-				Analogs = _service.GetAnalogsByIds(viewModel.SelectedPoints),
+				Analogs = MarketObjectsService.GetAnalogsByIds(viewModel.SelectedPoints),
 				DealType = viewModel.DealType,
 				Kn = viewModel.Kn,
 				Square = viewModel.Square.GetValueOrDefault(),
@@ -283,7 +289,7 @@ namespace KadOzenka.Web.Controllers
 			{
 				Address = obj.Address,
 				Kn = obj.KadastralNumber,
-				Analogs = _service.GetAnalogsByIds(analogIds),
+				Analogs = MarketObjectsService.GetAnalogsByIds(analogIds),
 				DealType = obj.DealType_Code == DealType.RentDeal ? DealTypeShort.Rent : DealTypeShort.Sale,
 				ScenarioType = obj.ScenarioType_Code,
 				Segment = obj.SegmentType_Code,

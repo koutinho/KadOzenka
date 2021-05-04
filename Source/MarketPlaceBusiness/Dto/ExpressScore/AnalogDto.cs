@@ -1,7 +1,7 @@
 ﻿using System;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.ExpressScore.Dto
+namespace MarketPlaceBusiness.Dto.ExpressScore
 {
 	public class AnalogDto
 	{
@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// Этаж помещения
 		/// </summary>
 		public long Floor { get; set; }
-        /// <summary>
+		/// <summary>
 		/// Год постройки
 		/// </summary>
 		public long YearBuild { get; set; }
@@ -42,14 +42,14 @@ namespace KadOzenka.Dal.ExpressScore.Dto
 		/// </summary>
 		public DealType DealType { get; set; }
 
-        /// <summary>
-        /// НДС
-        /// </summary>
-        public VatType? Vat { get; set; }
+		/// <summary>
+		/// НДС
+		/// </summary>
+		public VatType? Vat { get; set; }
 
-        /// <summary>
-        /// Операционные расходы включены
-        /// </summary>
-        public bool? IsOperatingCostsIncluded { get; set; }
+		/// <summary>
+		/// Операционные расходы включены
+		/// </summary>
+		public bool? IsOperatingCostsIncluded { get; set; }
 	}
 }

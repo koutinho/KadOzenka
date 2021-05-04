@@ -5,6 +5,7 @@ using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
 using ObjectModel.Directory;
 using System;
+using MarketPlaceBusiness;
 using Microsoft.Rest.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -17,7 +18,7 @@ namespace KadOzenka.BlFrontEnd.ExpressScore
 		{
 			ScoreCommonService scoreCommonService = new ScoreCommonService();
 			RegisterAttributeService registerAttributeService = new RegisterAttributeService();
-			var esService = new ExpressScoreService(scoreCommonService, registerAttributeService);
+			var esService = new ExpressScoreService(scoreCommonService, registerAttributeService, new MarketObjectsForExpressScoreService());
 
 			List<AnalogResultDto> analogResult = new List<AnalogResultDto>
 			{

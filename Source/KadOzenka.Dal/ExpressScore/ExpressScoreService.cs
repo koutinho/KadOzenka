@@ -13,6 +13,10 @@ using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.ScoreCommon.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Dto.ExpressScore;
+using MarketPlaceBusiness.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ObjectModel.Directory;
@@ -38,6 +42,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 		public ScoreCommonService ScoreCommonService { get; set; }
 		public IRegisterAttributeService RegisterAttributeService { get; set; }
+		private IMarketObjectsForExpressScoreService MarketObjectsService { get; }
         private string DecimalFormatForCoefficientsFromConstructor => "0.########";
 
         private const string ToStringFormatCoeffPrecision = "0.##########";
@@ -55,11 +60,16 @@ namespace KadOzenka.Dal.ExpressScore
 		private List<NumberReference> _dateNumb;
 
 		private ExpressScoreReportService ReportService { get; }
-		public ExpressScoreService(ScoreCommonService scoreCommonService, IRegisterAttributeService registerAttributeService)
+
+
+		public ExpressScoreService(ScoreCommonService scoreCommonService,
+			IRegisterAttributeService registerAttributeService,
+			IMarketObjectsForExpressScoreService marketObjectsService)
 		{
 			ReportService = new ExpressScoreReportService();
 			ScoreCommonService = scoreCommonService;
-            RegisterAttributeService = registerAttributeService;
+			RegisterAttributeService = registerAttributeService;
+			MarketObjectsService = marketObjectsService;
 		}
 
 		public OMSettingsParams GetSetting(MarketSegment segmentType)
@@ -153,42 +163,42 @@ namespace KadOzenka.Dal.ExpressScore
 			var condition = new QSConditionSimple
 			{
 				ConditionType = QSConditionType.NotEqual,
-				LeftOperand = OMCoreObject.GetColumn(x => x.ProcessType_Code),
+				LeftOperand = Consts.ProcessTypeCodeColumn,
 				RightOperand = new QSColumnConstant(ProcessStep.Excluded)
 			}.And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.Equal,
-				LeftOperand = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code),
+				LeftOperand = Consts.MarketSegmentCodeColumn,
 				RightOperand = new QSColumnConstant(marketSegment)
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.IsNotNull,
-				LeftOperand = OMCoreObject.GetColumn(x => x.Area)
+				LeftOperand = Consts.AreaColumn
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.In,
-				LeftOperand = OMCoreObject.GetColumn(x => x.DealType_Code),
+				LeftOperand = Consts.DealTypeCodeColumn,
 				RightOperand = new QSColumnConstant(dealType)
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.Less,
-				LeftOperand = OMCoreObject.GetColumn(x => x.Lng),
+				LeftOperand = Consts.LngColumn,
 				RightOperand = new QSColumnConstant(lng + (decimal)0.015791)
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.Less,
 				LeftOperand = new QSColumnConstant(lng - (decimal)0.015791),
-				RightOperand = OMCoreObject.GetColumn(x => x.Lng)
+				RightOperand = Consts.LngColumn
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.Less,
-				LeftOperand = OMCoreObject.GetColumn(x => x.Lat),
+				LeftOperand = Consts.LatColumn,
 				RightOperand = new QSColumnConstant(lat + (decimal)0.009057)
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.Less,
 				LeftOperand = new QSColumnConstant(lat - (decimal)0.009057),
-				RightOperand = OMCoreObject.GetColumn(x => x.Lat)
+				RightOperand = Consts.LatColumn
 			});
 
 			var searchAnalogAttributes = searchAttributes.Where(x => IsAnalogAttribute(x.IdAttribute)).ToList();
@@ -218,26 +228,26 @@ namespace KadOzenka.Dal.ExpressScore
 			}).Or(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.LessOrEqual,
-				LeftOperand = OMCoreObject.GetColumn(x => x.ParserTime),
+				LeftOperand = Consts.ParserTimeColumn,
 				RightOperand = new QSColumnConstant(actualDate)
 			}.And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.GreaterOrEqual,
-				LeftOperand = OMCoreObject.GetColumn(x => x.ParserTime),
+				LeftOperand = Consts.ParserTimeColumn,
 				RightOperand = new QSColumnConstant(minSearchDate)
 			}).And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.IsNull,
-				LeftOperand = OMCoreObject.GetColumn(x => x.LastDateUpdate),
+				LeftOperand = Consts.LastDateUpdateColumn,
 			})).Or(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.LessOrEqual,
-				LeftOperand = OMCoreObject.GetColumn(x => x.LastDateUpdate),
+				LeftOperand = Consts.LastDateUpdateColumn,
 				RightOperand = new QSColumnConstant(actualDate)
 			}.And(new QSConditionSimple
 			{
 				ConditionType = QSConditionType.GreaterOrEqual,
-				LeftOperand = OMCoreObject.GetColumn(x => x.LastDateUpdate),
+				LeftOperand = Consts.LastDateUpdateColumn,
 				RightOperand = new QSColumnConstant(minSearchDate)
 			}));
 
@@ -250,7 +260,7 @@ namespace KadOzenka.Dal.ExpressScore
 				new QSJoin
 				{
 					JoinCondition = new QSConditionSimple(OMPriceHistory.GetColumn(x => x.InitialId), QSConditionType.Equal,
-						OMCoreObject.GetColumn(x => x.Id)),
+						Consts.PrimaryKeyColumn),
 					RegisterId = OMPriceHistory.GetRegisterId(),
 					JoinType = QSJoinType.Left
 				}
@@ -356,41 +366,6 @@ namespace KadOzenka.Dal.ExpressScore
 			return new List<CoordinatesDto>();
 		}
 		#endregion
-
-
-
-		public List<AnalogDto> GetAnalogsByIds(List<int> ids)
-		{
-			return OMCoreObject.Where(x => ids.Contains((int)x.Id))
-				.Select(x => new
-				{
-					x.Id,
-					x.CadastralNumber,
-					x.Price,
-					x.Area,
-					x.ParserTime,
-					x.LastDateUpdate,
-                    x.FloorNumber,
-					x.BuildingYear,
-					x.Address,
-					x.DealType_Code,
-                    x.Vat_Code,
-                    x.IsOperatingCostsIncluded
-				}).Execute().Select(x => new AnalogDto
-				{
-					Id = x.Id,
-					Kn = x.CadastralNumber,
-					Price = x.Price.GetValueOrDefault(),
-					Square = x.Area.GetValueOrDefault(),
-					Date = x.LastDateUpdate ?? x.ParserTime ?? DateTime.MinValue,
-                    Floor = x.FloorNumber.GetValueOrDefault(),
-					YearBuild = x.BuildingYear.GetValueOrDefault(),
-					Address = x.Address,
-					DealType = x.DealType_Code,
-                    Vat = x.Vat_Code,
-                    IsOperatingCostsIncluded = x.IsOperatingCostsIncluded.GetValueOrDefault()
-                }).ToList();
-		}
 
 		public string CalculateExpressScore(InputCalculateDto inputParam, out ResultCalculateDto resultCalculate)
 		{
@@ -754,8 +729,7 @@ namespace KadOzenka.Dal.ExpressScore
 
 				bool isBreak = false;
 				int amountSuccessComplexFactors = 1;
-				var idAnalog = OMCoreObject.Where(x => x.CadastralNumber == calculateSquareCost.Kn).ExecuteFirstOrDefault()?.Id;
-
+				var idAnalog = MarketObjectsService.GetAnalogId(calculateSquareCost.Kn);
 
                 int countRow = costFactorsDataForReport.Count + GetCountReportRowComplexFactors(exCostFactors.ComplexCostFactors);
 
@@ -781,7 +755,7 @@ namespace KadOzenka.Dal.ExpressScore
 						if (IsAnalogAttribute(complex.AttributeId.GetValueOrDefault()))
 						{
 							analogFactor = GetEstimateParametersById((int)analog.Id,
-								complex.AttributeId.GetValueOrDefault(), OMCoreObject.GetRegisterId());
+								complex.AttributeId.GetValueOrDefault(), Consts.RegisterId);
 						}
 						else
 						{
@@ -1068,10 +1042,10 @@ namespace KadOzenka.Dal.ExpressScore
             var targetLabel = string.Empty;
             if (targetMarketObjectId != null)
             {
-                targetMarketObjectVat = OMCoreObject.Where(x => x.Id == targetMarketObjectId).Select(x => x.Vat_Code)
-                    .ExecuteFirstOrDefault()?.Vat_Code;
+	            targetMarketObjectVat =
+		            MarketObjectsService.GetById(targetMarketObjectId.Value, x => x.Vat_Code)?.Vat_Code;
 
-                targetLabel = GetVatLabel(targetMarketObjectVat);
+	            targetLabel = GetVatLabel(targetMarketObjectVat);
             }
             costTargetObjectDataForReport.Add(targetMarketObjectVat?.GetEnumDescription());
             costTargetObjectDataForReport.Add(targetLabel);
@@ -1106,8 +1080,8 @@ namespace KadOzenka.Dal.ExpressScore
 			bool? targetMarketObjectIsOperatingCostsIncluded = null;
 			if (targetMarketObjectId != null)
 			{
-				targetMarketObjectIsOperatingCostsIncluded = OMCoreObject.Where(x => x.Id == targetMarketObjectId).Select(x => x.IsOperatingCostsIncluded)
-					.ExecuteFirstOrDefault()?.IsOperatingCostsIncluded;
+				targetMarketObjectIsOperatingCostsIncluded = MarketObjectsService.GetById(targetMarketObjectId.Value, x => x.IsOperatingCostsIncluded)
+					?.IsOperatingCostsIncluded;
 			}
 			costTargetObjectDataForReport.Add(targetMarketObjectIsOperatingCostsIncluded.GetValueOrDefault() ? "Включены" : "Не включены");
 			costTargetObjectDataForReport.Add(string.Empty);
@@ -1154,7 +1128,7 @@ namespace KadOzenka.Dal.ExpressScore
 				_log.Error("ЭО. Ошибка проверки атрибута на принодлежность к аналогам idAttribute = {idAttribute}", idAttribute);
 				throw new Exception("Ид атрибута равен 0");
 	        }
-			bool res = RegisterCache.GetAttributeData(idAttribute)?.RegisterId == OMCoreObject.GetRegisterId();
+			bool res = RegisterCache.GetAttributeData(idAttribute)?.RegisterId == Consts.RegisterId;
 			return res;
         }
 
@@ -1242,25 +1216,25 @@ namespace KadOzenka.Dal.ExpressScore
 		        qsConGroup.Add(new QSConditionSimple
 		        {
 			        ConditionType = QSConditionType.NotEqual,
-			        LeftOperand = OMCoreObject.GetColumn(x => x.ProcessType_Code),
+			        LeftOperand = Consts.ProcessTypeCodeColumn,
 			        RightOperand = new QSColumnConstant(ProcessStep.Excluded)
 				});
 
 				qsConGroup.Add(kn != null ? new QSConditionSimple
 				{
 					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.CadastralNumber),
+					LeftOperand = Consts.CadastralNumberColumn,
 					RightOperand = new QSColumnConstant(kn)
 				} : new QSConditionSimple
 				{
 					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMCoreObject.GetColumn(x => x.Id),
+					LeftOperand = Consts.PrimaryKeyColumn,
 					RightOperand = new QSColumnConstant(id)
 				});
 
 				QSQuery coreObject = new QSQuery
 		        {
-			        MainRegisterID = OMCoreObject.GetRegisterId(),
+			        MainRegisterID = Consts.RegisterId,
 			        Condition = qsConGroup
 				};
 
@@ -1317,13 +1291,13 @@ namespace KadOzenka.Dal.ExpressScore
 		public DataToGrid GetDataToGrid(MarketSegment marketSegment, List<AnalogResultDto> analogResults)
 		{
 			var res  = new DataToGrid();
-			res.Headers.Add(new Header{DataField = OMCoreObject.GetColumnAttributeId(x => x.CadastralNumber).ToString(),
+			res.Headers.Add(new Header{DataField = Consts.CadastralNumberAttributeId.ToString(),
 				Text = "Кадастровый номер", Width = 200});
-			res.Headers.Add(new Header{DataField = OMCoreObject.GetColumnAttributeId(x => x.Address).ToString(),
+			res.Headers.Add(new Header{DataField = Consts.AddressAttributeId.ToString(),
 				Text = "Адрес", Width = 300});
 			res.Headers.Add(new Header
 			{
-				DataField = OMCoreObject.GetColumnAttributeId(x => x.Price).ToString(),
+				DataField = Consts.PriceAttributeId.ToString(),
 				Text = "Цена"
 			});
 			res.Headers.Add(new Header {DataField = "specificCost", Text = "Удельная стоимость за кв.м"});
@@ -1342,9 +1316,9 @@ namespace KadOzenka.Dal.ExpressScore
 				foreach (var analogResult in analogResults)
 				{
 					List<AttributePure> analogCostFactors = new List<AttributePure>();
-					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.CadastralNumber), Value = analogResult.Kn });
-					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.Address), Value = analogResult.Address });
-					analogCostFactors.Add(new AttributePure { Id = (int)OMCoreObject.GetColumnAttributeId(x => x.Price), Value = analogResult.Price.ToString() });
+					analogCostFactors.Add(new AttributePure { Id = (int)Consts.CadastralNumberAttributeId, Value = analogResult.Kn });
+					analogCostFactors.Add(new AttributePure { Id = (int)Consts.AddressAttributeId, Value = analogResult.Address });
+					analogCostFactors.Add(new AttributePure { Id = (int)Consts.PriceAttributeId, Value = analogResult.Price.ToString() });
 					analogCostFactors.AddRange(GetAnalogCostFactors(costFactors, id: (int)analogResult.Id));
 
 					List<Cell> row = new List<Cell>
@@ -1850,7 +1824,7 @@ namespace KadOzenka.Dal.ExpressScore
 						if (idAnalog != null)
 						{
 							targetObjectFactor = GetEstimateParametersById((int)idAnalog,
-								(int)attributeId, OMCoreObject.GetRegisterId());
+								(int)attributeId, Consts.RegisterId);
 						}
 					}
 					else

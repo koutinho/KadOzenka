@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.Enum;
+using MarketPlaceBusiness.Dto.ExpressScore;
 using ObjectModel.Directory;
 using ObjectModel.Directory.ES;
 

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Core.Register;
 using KadOzenka.Dal.Enum;
+using MarketPlaceBusiness.Dto.ExpressScore;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.ExpressScore.Dto

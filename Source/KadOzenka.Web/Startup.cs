@@ -51,6 +51,8 @@ using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Platform.Web.SignalR.BackgroundProcessWidget;
@@ -143,6 +145,8 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterRepository), typeof(RegisterRepository));
             services.AddTransient(typeof(IRegisterAttributeRepository), typeof(RegisterAttributeRepository));
             services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
+            services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
+
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>
