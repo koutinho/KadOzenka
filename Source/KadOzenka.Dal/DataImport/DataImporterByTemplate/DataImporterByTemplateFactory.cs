@@ -1,4 +1,6 @@
-﻿using ObjectModel.Gbu;
+﻿using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
+using ObjectModel.Gbu;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
@@ -10,7 +12,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 			if (mainRegisterId == OMMainObject.GetRegisterId())
 				return new DataImporterByTemplateGbu();
 
-			if (mainRegisterId == OMCoreObject.GetRegisterId())
+			if (mainRegisterId == Consts.RegisterId)
 				return new DataImporterByTemplateMarket();
 
 			return new DataImporterByTemplate(mainRegisterId);

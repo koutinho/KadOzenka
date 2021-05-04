@@ -5,7 +5,7 @@ namespace MarketPlaceBusiness.Common
 {
 	public static class Consts
 	{
-		public static readonly long RegisterId = OMCoreObject.GetRegisterId();
+		public static readonly int RegisterId = OMCoreObject.GetRegisterId();
 
 		//TODO KOMO-33: если будет много колонок, подумать над отдельным методом
 		public static readonly QSColumn PrimaryKeyColumn = OMCoreObject.GetColumn(x => x.Id);

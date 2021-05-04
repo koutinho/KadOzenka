@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 {
 	public class DataImporterByTemplateMarket : DataImporterByTemplate
 	{
-		public DataImporterByTemplateMarket() : base(OMCoreObject.GetRegisterId())
+		public DataImporterByTemplateMarket() : base(MarketPlaceBusiness.Common.Consts.RegisterId)
 		{
 		}
 
