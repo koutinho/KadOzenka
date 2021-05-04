@@ -20,7 +20,7 @@ namespace MarketPlaceBusiness
 			MarketObjectsRepository = marketObjectsRepository ?? new MarketObjectsRepository();
 		}
 
-
+		//TODO подумать - как вынести атрибуты в константы
 		public List<OMCoreObject> GetObjectsByCondition(Expression<Func<OMCoreObject, bool>> whereExpression,
 			Expression<Func<OMCoreObject, object>> selectExpression)
 		{

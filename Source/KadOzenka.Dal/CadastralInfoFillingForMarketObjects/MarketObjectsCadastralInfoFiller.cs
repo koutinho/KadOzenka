@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
-using KadOzenka.Dal.XmlParser;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
 {
+    /// <summary>
+    /// Привязка к объектам аналогам кадастровых кварталов
+    /// </summary>
     public class MarketObjectsCadastralInfoFiller
     {
         public static long RosreestrRegisterId => 2;
@@ -25,10 +26,12 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
         public void PerformFillingCadastralQuarterProc()
         {
             var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.CadastralQuartal)
-                .Execute();
+	            .Select(x => new 
+	            {
+                    x.CadastralNumber,
+                    x.CadastralQuartal
+                })
+	            .Execute();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровыми номерами");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0;
@@ -85,16 +88,18 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
                 .SelectAll()
                 .Execute().ToDictionary(x => x.CadastralQuartal);
             var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.CadastralQuartal)
-                .Select(x => x.District)
-                .Select(x => x.District_Code)
-                .Select(x => x.Neighborhood)
-                .Select(x => x.Neighborhood_Code)
-                .Select(x => x.Zone)
-                .Select(x => x.ZoneRegion)
-                .Execute();
+	            .Select(x => new
+	            {
+                    x.CadastralNumber,
+                    x.CadastralQuartal,
+                    x.District,
+					x.District_Code,
+                    x.Neighborhood,
+                    x.Neighborhood_Code,
+                    x.Zone,
+                    x.ZoneRegion
+                })
+	            .Execute();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровым кварталом");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0, correctCount = 0, errorCount = 0;
