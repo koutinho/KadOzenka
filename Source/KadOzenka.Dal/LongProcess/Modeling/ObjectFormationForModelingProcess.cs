@@ -120,9 +120,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var numberOfDeletedModelObjects = ModelObjectsService.DestroyModelMarketObjects(Model);
             AddLog(Queue, $"Удалено {numberOfDeletedModelObjects} ранее найденных объектов модели.", logger: Logger);
 
-            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == MarketObjectsForModelingService.RegisterId).ToList();
+            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == MarketObjectService.RegisterId).ToList();
             AddLog(Queue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: Logger);
-            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != MarketObjectsForModelingService.RegisterId).ToList();
+            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != MarketObjectService.RegisterId).ToList();
             AddLog(Queue, $"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.", logger: Logger);
 
             var dictionaries = GetDictionaries(modelAttributes);

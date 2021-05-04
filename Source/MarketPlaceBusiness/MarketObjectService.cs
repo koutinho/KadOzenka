@@ -3,7 +3,7 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class BaseService
+	public class MarketObjectService
 	{
 		public static readonly long RegisterId = OMCoreObject.GetRegisterId();
 		//TODO KOMO-33: если будет много колонок, подумать над отдельным методом

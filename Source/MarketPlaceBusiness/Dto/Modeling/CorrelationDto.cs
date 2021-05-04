@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MarketPlaceBusiness.OutputEntities.Modeling
+namespace MarketPlaceBusiness.Dto.Modeling
 {
 	public class CorrelationDto
 	{

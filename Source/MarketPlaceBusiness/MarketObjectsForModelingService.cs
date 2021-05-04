@@ -2,8 +2,7 @@
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using MarketPlaceBusiness.OutputEntities;
-using MarketPlaceBusiness.OutputEntities.Modeling;
+using MarketPlaceBusiness.Dto.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Market;
@@ -11,7 +10,7 @@ using ObjectModel.Market;
 namespace MarketPlaceBusiness
 {
     //TODO возможно, объединить с основным
-	public class MarketObjectsForModelingService : BaseService
+	public class MarketObjectsForModelingService : MarketObjectService
 	{
 		private string ColumnNameFroPrice => "PriceForService";
 

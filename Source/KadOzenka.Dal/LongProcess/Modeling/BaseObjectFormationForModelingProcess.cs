@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			if (modelAttributes == null || modelAttributes.Count == 0 || objectIds == null || objectIds.Count == 0)
 				return new Dictionary<long, List<CoefficientForObject>>();
 
-			return GetCoefficients(MarketObjectsForModelingService.RegisterId, MarketObjectsForModelingService.PrimaryKeyColumn, objectIds, dictionaries, modelAttributes);
+			return GetCoefficients(MarketObjectService.RegisterId, MarketObjectService.PrimaryKeyColumn, objectIds, dictionaries, modelAttributes);
 		}
 
 		protected Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,
