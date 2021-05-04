@@ -1,26 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
-using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using MarketPlaceBusiness;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 {
+	/// <summary>
+	/// Получение дополнительных данных из ГБУ части (используется в KadOzenka.BlFrontEnd)
+	/// По КН находит ОН, из него забирает Год постройки и Материал стен и присваивает их Аналогу
+	/// </summary>
 	public class AddingMissingDataFromGbuPartProc
 	{
 		private GbuObjectService GbuObjectService { get; }
 		private RosreestrRegisterService RosreestrRegisterService { get; }
+		public IMarketObjectService MarketObjectService { get; set; }
 
 		public AddingMissingDataFromGbuPartProc()
 		{
 			GbuObjectService = new GbuObjectService();
 			RosreestrRegisterService = new RosreestrRegisterService();
+			MarketObjectService = new MarketObjectService();
 		}
 
 		public void PerformProc(bool fillInitialObjects = true)
@@ -76,29 +83,33 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 
 		private List<OMCoreObject> GetInitialObjects()
 		{
-			return OMCoreObject
-				.Where(x => x.LastDateUpdate == null && (x.BuildingYear == null || x.WallMaterial == null))
-				.Select(x => new
-				{
-					x.BuildingYear,
-					x.WallMaterial,
-					x.CadastralNumber,
-				})
-				.Execute();
+			Expression<Func<OMCoreObject, bool>> whereExpression = x =>
+				x.LastDateUpdate == null && (x.BuildingYear == null || x.WallMaterial == null);
+			
+			Expression<Func<OMCoreObject, object>> selectExpression = x => new
+			{
+				x.BuildingYear,
+				x.WallMaterial,
+				x.CadastralNumber
+			};
+
+			return MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression);
 		}
 
 		private List<OMCoreObject> GetExistingObjects()
 		{
-			return OMCoreObject
-				.Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
-							&& (x.BuildingYear == null || x.WallMaterial == null))
-				.Select(x => new
-				{
-					x.BuildingYear,
-					x.WallMaterial,
-					x.CadastralNumber,
-				})
-				.Execute();
+			Expression<Func<OMCoreObject, bool>> whereExpression = x =>
+				(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
+				(x.BuildingYear == null || x.WallMaterial == null);
+
+			Expression<Func<OMCoreObject, object>> selectExpression = x => new
+			{
+				x.BuildingYear,
+				x.WallMaterial,
+				x.CadastralNumber,
+			};
+
+			return MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression);
 		}
 
 		private bool FillBuildingYearData(OMCoreObject omCoreObject, GbuObjectAttribute attributeValue)

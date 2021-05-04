@@ -12,9 +12,7 @@ namespace MarketPlaceBusiness
     //TODO возможно, объединить с основным
 	public class MarketObjectsForModelingService : MarketObjectService
 	{
-		private string ColumnNameFroPrice => "PriceForService";
-
-        //TODO KOMO-33 убрать long segment, сделать через enum
+		//TODO KOMO-33 убрать long segment, сделать через enum
         public List<MarketObjectPureOutSide> GetObjectsForFormation(bool isOks, long segment)
         {
 	        //TODO ждем выполнения CIPJSKO-307
@@ -59,6 +57,7 @@ namespace MarketPlaceBusiness
 
         public CorrelationDto GetObjectsForCorrelation(List<long> objectIds, List<OMAttribute> attributes)
         {
+            var columnNameFroPrice = "PriceForService";
 	        var query = new QSQuery
 	        {
 		        MainRegisterID = OMCoreObject.GetRegisterId(),
@@ -69,7 +68,7 @@ namespace MarketPlaceBusiness
 			        RightOperand = new QSColumnConstant(objectIds)
 		        }
 	        };
-	        query.AddColumn(OMCoreObject.GetColumn(x => x.Price, ColumnNameFroPrice));
+	        query.AddColumn(OMCoreObject.GetColumn(x => x.Price, columnNameFroPrice));
 	        attributes.ForEach(attribute =>
 	        {
 		        query.AddColumn(attribute.Id, attribute.Id.ToString());
@@ -91,7 +90,7 @@ namespace MarketPlaceBusiness
 
 		        if (coefficients.All(x => x != null))
 		        {
-			        var priceForService = row[ColumnNameFroPrice].ParseToDecimalNullable();
+			        var priceForService = row[columnNameFroPrice].ParseToDecimalNullable();
                     coefficients.Add(priceForService.GetValueOrDefault());
 			        request.Coefficients.Add(coefficients);
 		        }
