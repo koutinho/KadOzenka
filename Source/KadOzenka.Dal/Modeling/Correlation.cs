@@ -9,6 +9,7 @@ using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
+using MarketPlaceBusiness;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
@@ -25,11 +26,13 @@ namespace KadOzenka.Dal.Modeling
         private List<OMAttribute> Attributes { get; set; }
         private string ResultMessage { get; set; }
         protected override string SubjectForMessageInNotification => "Процесс корреляции";
+        protected MarketObjectsForModelingService MarketObjectsForModelingService { get;}
 
         public Correlation(string inputParametersXml, OMQueue processQueue)
             : base(processQueue, Log.ForContext<Correlation>())
         {
             InputParameters = inputParametersXml.DeserializeFromXml<CorrelationInputParameters>();
+            MarketObjectsForModelingService = new MarketObjectsForModelingService();
         }
 
 
@@ -48,46 +51,15 @@ namespace KadOzenka.Dal.Modeling
 
         protected override object GetRequestForService()
         {
-            var query = new QSQuery
-            {
-                MainRegisterID = OMCoreObject.GetRegisterId(),
-                Condition = new QSConditionSimple
-                {
-                    ConditionType = QSConditionType.In,
-                    LeftOperand = OMCoreObject.GetColumn(x => x.Id),
-                    RightOperand = new QSColumnConstant(ObjectIds)
-                }
-            };
-            query.AddColumn(OMCoreObject.GetColumn(x => x.Price, ColumnNameFroPrice));
-            Attributes.ForEach(attribute =>
-            {
-                query.AddColumn(attribute.Id, attribute.Id.ToString());
-            });
+	        var correlationDto = MarketObjectsForModelingService.GetObjectsForCorrelation(ObjectIds, Attributes);
+	        if (correlationDto.Coefficients.Count == 0)
+		        throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех атрибутов не пустые)");
 
-            var request = new CorrelationRequest();
-            request.AttributeNames.AddRange(Attributes.Select(x => x.Name));
-            request.AttributeNames.Add("Цена");
-            var table = query.ExecuteQuery();
-            for (var i = 0; i < table.Rows.Count; i++)
-            {
-                var row = table.Rows[i];
-                var priceForService = row[ColumnNameFroPrice].ParseToDecimalNullable();
-                var coefficients = new List<decimal?>();
-                Attributes.ForEach(attribute =>
-                {
-                    var val = row[attribute.Id.ToString()].ParseToDecimalNullable();
-                    coefficients.Add(val);
-                });
-
-                if (coefficients.All(x => x != null))
-                {
-                    coefficients.Add(priceForService.GetValueOrDefault());
-                    request.Coefficients.Add(coefficients);
-                }
-            }
-
-            if (request.Coefficients.Count == 0)
-                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех атрибутов не пустые)");
+            var request = new CorrelationRequest
+	        {
+                AttributeNames = correlationDto.AttributeNames,
+                Coefficients = correlationDto.Coefficients
+	        };
 
             return request;
         }

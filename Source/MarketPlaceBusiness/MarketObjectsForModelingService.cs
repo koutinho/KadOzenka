@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
 using MarketPlaceBusiness.OutputEntities;
+using MarketPlaceBusiness.OutputEntities.Modeling;
+using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -10,8 +13,10 @@ namespace MarketPlaceBusiness
     //TODO возможно, объединить с основным
 	public class MarketObjectsForModelingService : BaseService
 	{
-		//TODO KOMO-33 убрать long segment, сделать через enum
-        public List<MarketObjectPureOutSide> GetMarketObjects(bool isOks, long segment)
+		private string ColumnNameFroPrice => "PriceForService";
+
+        //TODO KOMO-33 убрать long segment, сделать через enum
+        public List<MarketObjectPureOutSide> GetObjectsForFormation(bool isOks, long segment)
         {
 	        //TODO ждем выполнения CIPJSKO-307
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
@@ -51,6 +56,49 @@ namespace MarketPlaceBusiness
                     CadastralNumber = x.Key.CadastralNumber,
                     PricePerMeter = x.Key.PricePerMeter.GetValueOrDefault()
                 }).ToList();
+        }
+
+        public CorrelationDto GetObjectsForCorrelation(List<long> objectIds, List<OMAttribute> attributes)
+        {
+	        var query = new QSQuery
+	        {
+		        MainRegisterID = OMCoreObject.GetRegisterId(),
+		        Condition = new QSConditionSimple
+		        {
+			        ConditionType = QSConditionType.In,
+			        LeftOperand = OMCoreObject.GetColumn(x => x.Id),
+			        RightOperand = new QSColumnConstant(objectIds)
+		        }
+	        };
+	        query.AddColumn(OMCoreObject.GetColumn(x => x.Price, ColumnNameFroPrice));
+	        attributes.ForEach(attribute =>
+	        {
+		        query.AddColumn(attribute.Id, attribute.Id.ToString());
+	        });
+
+	        var request = new CorrelationDto();
+	        request.AttributeNames.AddRange(attributes.Select(x => x.Name));
+	        request.AttributeNames.Add("Цена");
+	        var table = query.ExecuteQuery();
+	        for (var i = 0; i < table.Rows.Count; i++)
+	        {
+		        var row = table.Rows[i];
+		        var coefficients = new List<decimal?>();
+		        attributes.ForEach(attribute =>
+		        {
+			        var val = row[attribute.Id.ToString()].ParseToDecimalNullable();
+			        coefficients.Add(val);
+		        });
+
+		        if (coefficients.All(x => x != null))
+		        {
+			        var priceForService = row[ColumnNameFroPrice].ParseToDecimalNullable();
+                    coefficients.Add(priceForService.GetValueOrDefault());
+			        request.Coefficients.Add(coefficients);
+		        }
+	        }
+
+	        return request;
         }
 
         //private Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)

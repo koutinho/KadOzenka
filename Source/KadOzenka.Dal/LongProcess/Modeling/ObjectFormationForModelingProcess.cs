@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         {
 	        var segment = GetGroupToMarketSegmentRelation();
             var marketObjects = MarketObjectsForModelingService
-                .GetMarketObjects(Model.IsOksObjectType.GetValueOrDefault(), (long) segment.MarketSegment_Code).Select(
+                .GetObjectsForFormation(Model.IsOksObjectType.GetValueOrDefault(), (long) segment.MarketSegment_Code).Select(
 		            x => new MarketObjectPure
 		            {
 			            Id = x.Id,
