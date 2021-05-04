@@ -392,10 +392,15 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("5551", "Корректировка на этажность",
 				() => 
 				{
-					var q = ObjectModel.Core.LongProcess.OMQueue.Where(x => x.Id == 42661016).SelectAll().ExecuteFirstOrDefault();
-					new Dal.LongProcess.CorrectionByStageForMarketObjectsLongProcess().StartProcess(null,
-					 q,
-					 new System.Threading.CancellationToken());
+					new CorrectionByStageForMarketObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+					{
+						Status_Code = Status.Added,
+						UserId = SRDSession.GetCurrentUserId(),
+						Parameters = new CorrectionByRoomRequest
+						{
+							Date = DateTime.Now
+						}.SerializeToXml()
+					}, new CancellationToken());
 				});
 
 

@@ -1,4 +1,5 @@
 ﻿using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Dal.Correction
 {

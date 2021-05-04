@@ -1,5 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using Core.Register.QuerySubsystem;
+using MarketPlaceBusiness.Dto.Corrections;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -28,7 +33,7 @@ namespace MarketPlaceBusiness
 				            (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed));
 		}
 
-		public List<OMCoreObject> GetMarketObjectsForCorrectionByBargain(QSQuery<OMCoreObject> marketObjectsQuery)
+		public List<OMCoreObject> GetObjectsForCorrectionByBargain(QSQuery<OMCoreObject> marketObjectsQuery)
 		{
 			var objects = marketObjectsQuery
 				.Select(x => x.Id)
@@ -52,5 +57,41 @@ namespace MarketPlaceBusiness
 
 			return objects;
 		}
-    }
+
+		public List<GeneralInfoForCorrectionByStage> GetObjectsForCorrectionByStage(bool isForStage, List<MarketSegment> segments)
+		{
+			Expression<Func<OMCoreObject, bool>> whereExpression;
+			if (isForStage)
+			{
+				whereExpression = x =>
+					x.DealType_Code == DealType.SaleSuggestion
+					&& x.CadastralNumber != null
+					&& x.FloorNumber >= 0
+					&& segments.Contains(x.PropertyMarketSegment_Code);
+			}
+			else
+			{
+				whereExpression = x =>
+					x.DealType_Code == DealType.SaleSuggestion
+					&& x.CadastralNumber != null
+					&& x.FloorNumber < 0
+					&& segments.Contains(x.PropertyMarketSegment_Code);
+			}
+
+			return OMCoreObject.Where(whereExpression)
+				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
+				//платформа не дает привести к типу сразу
+				.ExecuteSelect(x => new
+				{
+					CadastralNumber = x.CadastralNumber,
+					Segment = x.PropertyMarketSegment_Code,
+					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
+				}).Select(x => new GeneralInfoForCorrectionByStage
+				{
+					CadastralNumber = x.CadastralNumber,
+					Segment = x.Segment,
+					Price = x.Price
+				}).ToList();
+		}
+	}
 }
