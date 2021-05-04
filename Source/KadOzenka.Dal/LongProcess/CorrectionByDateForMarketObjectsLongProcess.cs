@@ -71,8 +71,8 @@ namespace KadOzenka.Dal.LongProcess
 
                         if (isBuildingContainSalesInTwoPeriods)
                         {
-                            var averagePriceForObjectsFromCurrentPeriod = service.GetAveragePricePerMeter(objectFromCurrentPeriod);
-                            var averagePriceForObjectsFromPreviousPeriod = service.GetAveragePricePerMeter(objectFromPreviousPeriod);
+                            var averagePriceForObjectsFromCurrentPeriod = objectFromCurrentPeriod.Average(x => x.PricePerMeter.GetValueOrDefault());
+                            var averagePriceForObjectsFromPreviousPeriod = objectFromPreviousPeriod.Average(x => x.PricePerMeter.GetValueOrDefault());
 
                             var coefficient = averagePriceForObjectsFromPreviousPeriod == 0
                                 ? 0

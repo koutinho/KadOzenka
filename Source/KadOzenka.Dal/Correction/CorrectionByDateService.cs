@@ -54,11 +54,6 @@ namespace KadOzenka.Dal.Correction
             return isDataUpdated;
         }
 
-        public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects)
-        {
-            return objects.Average(x => x.PricePerMeter.GetValueOrDefault());
-        }
-
         public List<OMIndexesForDateCorrection> GetCoefficients()
         {
             return OMIndexesForDateCorrection.Where(x => true).SelectAll().Execute().ToList();
