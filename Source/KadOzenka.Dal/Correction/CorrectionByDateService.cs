@@ -10,20 +10,9 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
-    public class CorrectionByDateService
+    public class CorrectionByDateService : CorrectionBaseService
     {
-        public IMarketObjectsForCorrectionsService MarketObjectsService { get; }
-        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
-
-
-        public CorrectionByDateService()
-        {
-            CorrectionSettingsService = new CorrectionSettingsService();
-            MarketObjectsService = new MarketObjectsForCorrectionsService();
-        }
-
-
-        public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
+	    public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
             return GetAverageCoefficientsBySegments().Where(x => x.MarketSegment == (MarketSegment)marketSegmentCode).ToList();
         }

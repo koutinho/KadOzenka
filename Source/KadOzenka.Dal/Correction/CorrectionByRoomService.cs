@@ -11,21 +11,10 @@ using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
-    public class CorrectionByRoomService
+    public class CorrectionByRoomService : CorrectionBaseService
     {
         public static readonly int PrecisionForPrice = 2;
         public static readonly int PrecisionForCoefficients = 4;
-
-        public IMarketObjectsForCorrectionsService MarketObjectsService { get; }
-        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
-       
-
-        public CorrectionByRoomService()
-        {
-            CorrectionSettingsService = new CorrectionSettingsService();
-            MarketObjectsService = new MarketObjectsForCorrectionsService();
-        }
-
 
         public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() {MarketSegment.MZHS};
 
