@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
 using System.Collections.Generic;
-
 using ObjectModel.Market;
 using KadOzenka.Dal.Logger;
-
 using Newtonsoft.Json;
-using Core.Register;
 using ObjectModel.Directory;
 using Core.Shared.Extensions;
-using Core.Shared.Misc;
-using Microsoft.EntityFrameworkCore.Internal;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Dal.DuplicateCleaner
 {
-
-    public class Duplicates
+	public class Duplicates
     {
-
-        private static double currentProgress = 0;
+	    private static double currentProgress = 0;
         private static bool inProgress = false;
         private double areaDelta = 0.01;
         private double priceDelta = 0.05;
@@ -55,25 +49,21 @@ namespace KadOzenka.Dal.DuplicateCleaner
             set => inProgress = value;
         }
 
-        public Duplicates() { }
+        public IMarketObjectService MarketObjectService { get; set; }
 
-        public Duplicates(double areaDelta, double priceDelta, int selectedMarket)
+        public Duplicates()
+        {
+	        MarketObjectService = new MarketObjectService();
+        }
+
+        public Duplicates(double areaDelta, double priceDelta, int selectedMarket) : this()
         {
             AreaDelta = areaDelta;
             PriceDelta = priceDelta;
             SelectedMarket = selectedMarket;
         }
 
-        readonly List<OMCoreObject> AllObjects =
-            OMCoreObject
-                .Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.CadastralNumberStep ||
-                            x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess ||
-                            x.ExclusionStatus_Code == ObjectModel.Directory.ExclusionStatus.Duplicate)
-                .Select(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code, x.Market_Code, x.Market, x.ExclusionStatus_Code, x.Price, x.Area, x.ParserTime, x.DealType })
-                .Execute()
-                .ToList();
-
-        public void Detect(bool logData = true) => PerformProc(AllObjects, logData);
+        public void Detect(bool logData = true) => PerformProc(logData);
 
         private OMDuplicatesHistory FormHistory(DateTime dateTime, string marketSegment, decimal areaDelta, decimal priceDelta, int commonCount, int inProgressCount, int duplicateObjects)
         {
@@ -88,11 +78,13 @@ namespace KadOzenka.Dal.DuplicateCleaner
             return result;
         }
 
-	    private void PerformProc(List<OMCoreObject> inputObjects, bool logData = true)
+	    private void PerformProc(bool logData = true)
 		{
-			var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code }).Select(grp => grp.ToList()).ToList();
+			var inputObjects = MarketObjectService.GetObjectsForDuplicatesChecking();
+
+            var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code }).Select(grp => grp.ToList()).ToList();
 			var result = new List<List<OMCoreObject>>();
-			objs.ForEach(x => result.AddRange(SplitListByPersent<OMCoreObject>(x.OrderBy(y => y.Area).ToList())));
+			objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList())));
 			int ICur = 0, ICor = 0, IErr = 0, ICtr = result.Count, IDup = 0;
 			result.ForEach(x =>
 			{
@@ -117,15 +109,15 @@ namespace KadOzenka.Dal.DuplicateCleaner
 			});
             currentProgress = 0;
             inProgress = false;
-            FormHistory(DateTime.Now, "Все сегменты", Convert.ToDecimal(AreaDelta), Convert.ToDecimal(PriceDelta), AllObjects.Count, ICor, IDup).Save();
+            FormHistory(DateTime.Now, "Все сегменты", Convert.ToDecimal(AreaDelta), Convert.ToDecimal(PriceDelta), inputObjects.Count, ICor, IDup).Save();
             new WebSocket.SocketPool().BroadCastMessage(GetCurrentProgress());
             ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
 		}
 
-        private List<List<OMCoreObject>> SplitListByPersent<T>(List<OMCoreObject> list)
+        private List<List<OMCoreObject>> SplitListByPersent(List<OMCoreObject> list)
 		{
-            List<List<OMCoreObject>> buffer = new List<List<OMCoreObject>>(), result = new List<List<OMCoreObject>>();
-            OMCoreObject FEL = list.ElementAt(0);
+            List<List<OMCoreObject>> buffer = new(), result = new();
+            var FEL = list.ElementAt(0);
             int counter = 0;
             buffer.Add(new List<OMCoreObject>());
             list.ForEach(x =>

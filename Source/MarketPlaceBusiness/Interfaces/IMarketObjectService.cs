@@ -9,5 +9,7 @@ namespace MarketPlaceBusiness.Interfaces
 	{
 		List<OMCoreObject> GetObjectsByCondition(Expression<Func<OMCoreObject, bool>> whereExpression,
 			Expression<Func<OMCoreObject, object>> selectExpression);
+
+		List<OMCoreObject> GetObjectsForDuplicatesChecking();
 	}
 }
