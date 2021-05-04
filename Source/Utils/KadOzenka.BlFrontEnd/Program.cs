@@ -6,7 +6,6 @@ using KadOzenka.Dal.KadNumberChecker;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
-using KadOzenka.Dal.RestAppParser;
 using KadOzenka.BlFrontEnd.ExportKO;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
@@ -106,12 +105,6 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
 			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
 
-            /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
-            consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => {
-				string[] logins = ConfigurationManager.AppSettings["restAppLogins"].Split(','),
-						 tokens = ConfigurationManager.AppSettings["restAppTokens"].Split(',');
-				for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
-			});
             consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexParser().FormMarketObjects(); });
 
             consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
