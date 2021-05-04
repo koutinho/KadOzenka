@@ -113,16 +113,7 @@ namespace KadOzenka.Dal.Correction
 				.ToDictionary(g => g.Key, g => g.Average(x => x.StageCoefficient));
 
 			//все подвальные помещения
-			var basements = OMCoreObject
-				.Where(x => x.DealType_Code == DealType.SaleSuggestion
-					&& x.CadastralNumber != null
-					&& x.FloorNumber < 0
-				    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
-				.Select(x => x.CadastralNumber)
-				.Select(x => x.PropertyMarketSegment_Code)
-				.Select(x => x.Price)
-				.Select(x => x.PriceAfterCorrectionByRooms)
-				.Execute();
+			var basements = MarketObjectsService.GetBasementObjectsForCorrectionByStage(CalculatedMarketSegments);
 
 			//из них отобраны те, по которым делался расчет
 			var resObjs = basements.Join(ratioPriceNotExcluded,

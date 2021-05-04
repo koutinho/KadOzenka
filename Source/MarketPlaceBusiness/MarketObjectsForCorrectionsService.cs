@@ -60,25 +60,9 @@ namespace MarketPlaceBusiness
 
 		public List<GeneralInfoForCorrectionByStage> GetObjectsForCorrectionByStage(bool isForStage, List<MarketSegment> segments)
 		{
-			Expression<Func<OMCoreObject, bool>> whereExpression;
-			if (isForStage)
-			{
-				whereExpression = x =>
-					x.DealType_Code == DealType.SaleSuggestion
-					&& x.CadastralNumber != null
-					&& x.FloorNumber >= 0
-					&& segments.Contains(x.PropertyMarketSegment_Code);
-			}
-			else
-			{
-				whereExpression = x =>
-					x.DealType_Code == DealType.SaleSuggestion
-					&& x.CadastralNumber != null
-					&& x.FloorNumber < 0
-					&& segments.Contains(x.PropertyMarketSegment_Code);
-			}
+			var baseQuery = GetBaseQueryForCorrectionByStage(isForStage, segments);
 
-			return OMCoreObject.Where(whereExpression)
+			return baseQuery
 				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
 				//платформа не дает привести к типу сразу
 				.ExecuteSelect(x => new
@@ -93,5 +77,49 @@ namespace MarketPlaceBusiness
 					Price = x.Price
 				}).ToList();
 		}
+
+		public List<OMCoreObject> GetBasementObjectsForCorrectionByStage(List<MarketSegment> segments)
+		{
+			var baseQuery = GetBaseQueryForCorrectionByStage(false, segments);
+
+			return baseQuery
+				.Select(x => new
+				{
+					x.CadastralNumber,
+					x.PropertyMarketSegment_Code,
+					x.Price,
+					x.PriceAfterCorrectionByRooms
+				})
+				.Execute();
+		}
+
+
+		#region Support Methods
+
+		public QSQuery<OMCoreObject> GetBaseQueryForCorrectionByStage(bool isForStage, List<MarketSegment> segments)
+		{
+			var dealType = DealType.SaleSuggestion;
+			Expression<Func<OMCoreObject, bool>> whereExpression;
+			if (isForStage)
+			{
+				whereExpression = x =>
+					x.DealType_Code == dealType
+					&& x.CadastralNumber != null
+					&& x.FloorNumber >= 0
+					&& segments.Contains(x.PropertyMarketSegment_Code);
+			}
+			else
+			{
+				whereExpression = x =>
+					x.DealType_Code == dealType
+					&& x.CadastralNumber != null
+					&& x.FloorNumber < 0
+					&& segments.Contains(x.PropertyMarketSegment_Code);
+			}
+
+			return OMCoreObject.Where(whereExpression);
+		}
+
+		#endregion
 	}
 }

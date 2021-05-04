@@ -13,5 +13,6 @@ namespace MarketPlaceBusiness.Interfaces
 		QSQuery<OMCoreObject> GetBaseQueryForCorrectionByBargain();
 		List<OMCoreObject> GetObjectsForCorrectionByBargain(QSQuery<OMCoreObject> marketObjectsQuery);
 		List<GeneralInfoForCorrectionByStage> GetObjectsForCorrectionByStage(bool isForStage, List<MarketSegment> segments);
+		List<OMCoreObject> GetBasementObjectsForCorrectionByStage(List<MarketSegment> segments);
 	}
 }
