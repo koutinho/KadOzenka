@@ -3,6 +3,7 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using MarketPlaceBusiness.Dto.Modeling;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Market;
@@ -10,7 +11,7 @@ using ObjectModel.Market;
 namespace MarketPlaceBusiness
 {
     //TODO возможно, объединить с основным
-	public class MarketObjectsForModelingService : MarketObjectService
+	public class MarketObjectsForModelingService : IMarketObjectsForModelingService
 	{
 		//TODO KOMO-33 убрать long segment, сделать через enum
         public List<MarketObjectPureOutSide> GetObjectsForFormation(bool isOks, long segment)

@@ -7,6 +7,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
@@ -21,7 +22,7 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 	{
 		private GbuObjectService GbuObjectService { get; }
 		private RosreestrRegisterService RosreestrRegisterService { get; }
-		public IMarketObjectService MarketObjectService { get; set; }
+		public IMissingDataFromGbuService MarketObjectService { get; set; }
 
 		public AddingMissingDataFromGbuPartProc()
 		{
@@ -35,7 +36,10 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 			ConsoleLog.WriteFotter("Получение дополнительных данных из ГБУ части для объектов аналогов");
 			var buildYearAttributeId = RosreestrRegisterService.GetBuildYearAttribute().Id;
 			var wallMaterialAttributeId = RosreestrRegisterService.GetWallMaterialAttribute().Id;
-			var coreObjects = fillInitialObjects ? GetInitialObjects() : GetExistingObjects();
+			
+			var coreObjects = fillInitialObjects
+				? MarketObjectService.GetInitialObjects()
+				: MarketObjectService.GetExistingObjects();
 			Console.WriteLine($"Выбрано объектов: {coreObjects.Count}");
 
 			int totalCount = coreObjects.Count, currentCount = 0, correctCount = 0, updateCount = 0, errorCount = 0;
@@ -79,37 +83,6 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 			}
 
 			ConsoleLog.WriteFotter("Получение дополнительных данных из ГБУ части для объектов аналогов завершено");
-		}
-
-		private List<OMCoreObject> GetInitialObjects()
-		{
-			Expression<Func<OMCoreObject, bool>> whereExpression = x =>
-				x.LastDateUpdate == null && (x.BuildingYear == null || x.WallMaterial == null);
-			
-			Expression<Func<OMCoreObject, object>> selectExpression = x => new
-			{
-				x.BuildingYear,
-				x.WallMaterial,
-				x.CadastralNumber
-			};
-
-			return MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression);
-		}
-
-		private List<OMCoreObject> GetExistingObjects()
-		{
-			Expression<Func<OMCoreObject, bool>> whereExpression = x =>
-				(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
-				(x.BuildingYear == null || x.WallMaterial == null);
-
-			Expression<Func<OMCoreObject, object>> selectExpression = x => new
-			{
-				x.BuildingYear,
-				x.WallMaterial,
-				x.CadastralNumber
-			};
-
-			return MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression);
 		}
 
 		private bool FillBuildingYearData(OMCoreObject omCoreObject, GbuObjectAttribute attributeValue)

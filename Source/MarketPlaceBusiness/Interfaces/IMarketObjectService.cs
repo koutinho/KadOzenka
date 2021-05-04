@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness
+namespace MarketPlaceBusiness.Interfaces
 {
 	public interface IMarketObjectService
 	{

@@ -11,6 +11,7 @@ using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
@@ -31,7 +32,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMQueue Queue { get; set; }
         private List<OMModelToMarketObjects> ModelObjects { get; set; }
         private ILongProcessService LongProcessService { get; }
-        protected MarketObjectsForModelingService MarketObjectsForModelingService { get; set; }
+        protected IMarketObjectsForModelingService MarketObjectsForModelingService { get; set; }
         private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
         private object _locker { get; set; }

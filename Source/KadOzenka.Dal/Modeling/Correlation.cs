@@ -10,6 +10,7 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Modeling.Entities;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
@@ -26,7 +27,7 @@ namespace KadOzenka.Dal.Modeling
         private List<OMAttribute> Attributes { get; set; }
         private string ResultMessage { get; set; }
         protected override string SubjectForMessageInNotification => "Процесс корреляции";
-        protected MarketObjectsForModelingService MarketObjectsForModelingService { get;}
+        protected IMarketObjectsForModelingService MarketObjectsForModelingService { get;}
 
         public Correlation(string inputParametersXml, OMQueue processQueue)
             : base(processQueue, Log.ForContext<Correlation>())

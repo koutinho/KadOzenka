@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Linq.Expressions;
 using KadOzenka.Dal.Logger;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Dal.AddressChecker
 {
