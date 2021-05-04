@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.Correction
             ValidateRequest(request);
 
             var query = PrepareMarketObjectsQuery(request);
-            var objects = GetMarketObjects(query);
+            var objects = MarketObjectsService.GetMarketObjectsForCorrectionByBargain(query);
             var suggestionObjectsWithPriceCoefficients = GetSuggestionObjectsWithPriceCoefficients(request.CoverageAreaType, objects);
 
             return suggestionObjectsWithPriceCoefficients.Select(x => new CorrectionByBargainDto
@@ -57,32 +57,6 @@ namespace KadOzenka.Dal.Correction
                     throw new ArgumentException($"Переданv неизвестный кадастровый квартал: {request.CadastralQuarter}");
                 }
             }
-        }
-
-        protected override List<OMCoreObject> GetMarketObjects(QSQuery<OMCoreObject> marketObjectsQuery)
-        {
-            var objects = marketObjectsQuery
-                .Select(x => x.Id)
-                .Select(x => x.ProcessType_Code)
-                .Select(x => x.DealType_Code)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Address)
-                .Select(x => x.BuildingCadastralNumber)
-                .Select(x => x.PropertyMarketSegment_Code)
-                .Select(x => x.District_Code)
-                .Select(x => x.Neighborhood_Code)
-                .Select(x => x.Zone)
-                .Select(x => x.CadastralQuartal)
-                .Select(x => x.Price)
-                .Select(x => x.Area)
-                .Select(x => x.PricePerMeter)
-                .Select(x => x.PriceAfterCorrectionByBargain)
-                .Select(x => x.LastDateUpdate)
-                .Select(x => x.ParserTime)
-                .SelectAll()
-                .Execute();
-
-            return objects;
         }
 
         protected override QSQuery<OMCoreObject> PrepareMarketObjectsQuery(CorrectionByBargainExportRequest request)

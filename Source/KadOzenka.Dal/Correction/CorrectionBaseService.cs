@@ -13,5 +13,5 @@ namespace KadOzenka.Dal.Correction
 			CorrectionSettingsService = new CorrectionSettingsService();
 			MarketObjectsService = new MarketObjectsForCorrectionsService();
 		}
-    }
+	}
 }
