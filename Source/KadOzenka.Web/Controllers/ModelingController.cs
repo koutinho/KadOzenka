@@ -43,6 +43,7 @@ using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Helpers;
+using MarketPlaceBusiness;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
@@ -499,11 +500,11 @@ namespace KadOzenka.Web.Controllers
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var marketObjectAttributes = RegisterAttributeService
-                .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
+                .GetActiveRegisterAttributes(MarketObjectsForModelingService.RegisterId)
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var tourAttributesTree = MapAttributes(tourAttributes.FirstOrDefault()?.RegisterId, tourAttributes);
-            var marketObjectsAttributesTree = MapAttributes(OMCoreObject.GetRegisterId(), marketObjectAttributes);
+            var marketObjectsAttributesTree = MapAttributes(MarketObjectsForModelingService.RegisterId, marketObjectAttributes);
 
             var fullTree = new List<DropDownTreeItemModel>
             {
@@ -1144,22 +1145,19 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRELATION)]
         public JsonResult GetMarketObjectAttributes()
         {
-            var attribute = typeof(OMCoreObject).GetProperty(nameof(OMCoreObject.Price))
-                ?.GetCustomAttribute(typeof(RegisterAttributeAttribute));
-
-            var priceAttributeId = (attribute as RegisterAttributeAttribute)?.AttributeID;
-
-            var marketObjectAttributes = OMAttribute.Where(x =>
-                    x.RegisterId == OMCoreObject.GetRegisterId() && x.Id != priceAttributeId && x.Type == 2)
-                .Select(x => x.Id)
-                .Select(x => x.Name)
-                .OrderBy(x => x.Name)
-                .Execute()
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Name
-                });
+	        var marketObjectAttributes = OMAttribute.Where(x =>
+			        x.RegisterId == MarketObjectsForModelingService.RegisterId &&
+			        x.Id != MarketObjectsForModelingService.PriceAttributeId &&
+			        x.Type == (int) RegisterAttributeType.DECIMAL)
+		        .Select(x => x.Id)
+		        .Select(x => x.Name)
+		        .OrderBy(x => x.Name)
+		        .Execute()
+		        .Select(x => new
+		        {
+			        x.Id,
+			        x.Name
+		        });
 
             return new JsonResult(marketObjectAttributes);
         }
