@@ -1,4 +1,4 @@
-﻿namespace MarketPlaceBusiness.OutputEntities
+﻿namespace MarketPlaceBusiness.OutputEntities.Modeling
 {
 	public class MarketObjectPureOutSide
 	{
