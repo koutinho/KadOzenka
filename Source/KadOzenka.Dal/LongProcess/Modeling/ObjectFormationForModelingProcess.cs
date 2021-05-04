@@ -31,6 +31,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMQueue Queue { get; set; }
         private List<OMModelToMarketObjects> ModelObjects { get; set; }
         private ILongProcessService LongProcessService { get; }
+        protected MarketObjectsForModelingService MarketObjectsForModelingService { get; set; }
         private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
         private object _locker { get; set; }
@@ -40,6 +41,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        _locker = new object();
             ModelObjects = new List<OMModelToMarketObjects>();
 	        LongProcessService = new LongProcessService();
+	        MarketObjectsForModelingService = new MarketObjectsForModelingService();
         }
 
 
@@ -104,11 +106,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         private int PrepareData(List<ModelAttributePure> modelAttributes)
         {
-            //todo KOMO-29 inject
-            var service = new ModelingServiceOutSide();
-            var segment = GetGroupToMarketSegmentRelation();
-            var marketObjects = service
-	            .GetMarketObjects(Model.IsOksObjectType.GetValueOrDefault(), (long) segment.MarketSegment_Code).Select(
+	        var segment = GetGroupToMarketSegmentRelation();
+            var marketObjects = MarketObjectsForModelingService
+                .GetMarketObjects(Model.IsOksObjectType.GetValueOrDefault(), (long) segment.MarketSegment_Code).Select(
 		            x => new MarketObjectPure
 		            {
 			            Id = x.Id,
@@ -120,9 +120,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var numberOfDeletedModelObjects = ModelObjectsService.DestroyModelMarketObjects(Model);
             AddLog(Queue, $"Удалено {numberOfDeletedModelObjects} ранее найденных объектов модели.", logger: Logger);
 
-            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == ModelingServiceOutSide.RegisterId).ToList();
+            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == MarketObjectsForModelingService.RegisterId).ToList();
             AddLog(Queue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: Logger);
-            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != ModelingServiceOutSide.RegisterId).ToList();
+            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != MarketObjectsForModelingService.RegisterId).ToList();
             AddLog(Queue, $"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.", logger: Logger);
 
             var dictionaries = GetDictionaries(modelAttributes);

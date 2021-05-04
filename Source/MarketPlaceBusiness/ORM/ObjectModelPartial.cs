@@ -1,125 +1,125 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Core.ObjectModel.CustomAttribute;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using Core.ObjectModel.CustomAttribute;
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 100 Аналоги
-    /// </summary>
-    internal partial class OMCoreObject
-    {
+//namespace ObjectModel.Market
+//{
+//    /// <summary>
+//    /// 100 Аналоги
+//    /// </summary>
+//    internal partial class OMCoreObject
+//    {
 
 
-        /// <summary>
-        /// Ссылка на (101 Адреса в яндек-формате)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMYandexAddress> YandexAddress { get; set; }
+//        /// <summary>
+//        /// Ссылка на (101 Адреса в яндек-формате)
+//        /// </summary>
+//        [Reference]
+//        public List<ObjectModel.Market.OMYandexAddress> YandexAddress { get; set; }
 
-        /// <summary>
-        /// Ссылка на (105 Таблица, содержащая ретроспективу цен по объектам)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMPriceHistory> PriceHistory { get; set; }
+//        /// <summary>
+//        /// Ссылка на (105 Таблица, содержащая ретроспективу цен по объектам)
+//        /// </summary>
+//        [Reference]
+//        public List<ObjectModel.Market.OMPriceHistory> PriceHistory { get; set; }
 
-        /// <summary>
-        /// Ссылка на (113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMPriceAfterCorrectionByRoomsHistory> PriceAfterCorrectionByRoomsHistory { get; set; }
-        public OMCoreObject()
-        {
+//        /// <summary>
+//        /// Ссылка на (113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность)
+//        /// </summary>
+//        [Reference]
+//        public List<ObjectModel.Market.OMPriceAfterCorrectionByRoomsHistory> PriceAfterCorrectionByRoomsHistory { get; set; }
+//        public OMCoreObject()
+//        {
 
-            Id = -1;
+//            Id = -1;
 
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
+//            CollectPropertyChanged = true;
+//            PropertyChangedList = new HashSet<String>();
 
-            YandexAddress = new List<ObjectModel.Market.OMYandexAddress>();
+//            YandexAddress = new List<ObjectModel.Market.OMYandexAddress>();
 
-            PriceHistory = new List<ObjectModel.Market.OMPriceHistory>();
+//            PriceHistory = new List<ObjectModel.Market.OMPriceHistory>();
 
-            PriceAfterCorrectionByRoomsHistory = new List<ObjectModel.Market.OMPriceAfterCorrectionByRoomsHistory>();
+//            PriceAfterCorrectionByRoomsHistory = new List<ObjectModel.Market.OMPriceAfterCorrectionByRoomsHistory>();
 
-        }
-        public OMCoreObject(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
+//        }
+//        public OMCoreObject(bool trackPropertyChanging) : this()
+//        {
+//            CollectPropertyChanged = trackPropertyChanging;
+//        }
+//    }
+//}
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 101 Адреса в яндек-формате
-    /// </summary>
-    internal partial class OMYandexAddress
-    {
+//namespace ObjectModel.Market
+//{
+//    /// <summary>
+//    /// 101 Адреса в яндек-формате
+//    /// </summary>
+//    internal partial class OMYandexAddress
+//    {
 
-        public OMYandexAddress()
-        {
+//        public OMYandexAddress()
+//        {
 
-            Id = -1;
+//            Id = -1;
 
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
+//            CollectPropertyChanged = true;
+//            PropertyChangedList = new HashSet<String>();
 
-        }
-        public OMYandexAddress(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
+//        }
+//        public OMYandexAddress(bool trackPropertyChanging) : this()
+//        {
+//            CollectPropertyChanged = trackPropertyChanging;
+//        }
+//    }
+//}
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 105 Таблица, содержащая ретроспективу цен по объектам
-    /// </summary>
-    internal partial class OMPriceHistory
-    {
+//namespace ObjectModel.Market
+//{
+//    /// <summary>
+//    /// 105 Таблица, содержащая ретроспективу цен по объектам
+//    /// </summary>
+//    internal partial class OMPriceHistory
+//    {
 
-        public OMPriceHistory()
-        {
+//        public OMPriceHistory()
+//        {
 
-            Id = -1;
+//            Id = -1;
 
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
+//            CollectPropertyChanged = true;
+//            PropertyChangedList = new HashSet<String>();
 
-        }
-        public OMPriceHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
+//        }
+//        public OMPriceHistory(bool trackPropertyChanging) : this()
+//        {
+//            CollectPropertyChanged = trackPropertyChanging;
+//        }
+//    }
+//}
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность
-    /// </summary>
-    internal partial class OMPriceAfterCorrectionByRoomsHistory
-    {
+//namespace ObjectModel.Market
+//{
+//    /// <summary>
+//    /// 113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность
+//    /// </summary>
+//    internal partial class OMPriceAfterCorrectionByRoomsHistory
+//    {
 
-        public OMPriceAfterCorrectionByRoomsHistory()
-        {
+//        public OMPriceAfterCorrectionByRoomsHistory()
+//        {
 
-            Id = -1;
+//            Id = -1;
 
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
+//            CollectPropertyChanged = true;
+//            PropertyChangedList = new HashSet<String>();
 
-        }
-        public OMPriceAfterCorrectionByRoomsHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
+//        }
+//        public OMPriceAfterCorrectionByRoomsHistory(bool trackPropertyChanging) : this()
+//        {
+//            CollectPropertyChanged = trackPropertyChanging;
+//        }
+//    }
+//}

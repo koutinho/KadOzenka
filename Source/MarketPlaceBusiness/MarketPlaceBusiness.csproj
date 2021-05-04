@@ -16,4 +16,8 @@
     <Folder Include="ORM\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
+  </ItemGroup>
+
 </Project>

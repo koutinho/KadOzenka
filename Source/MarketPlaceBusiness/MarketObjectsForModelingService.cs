@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Core.Register.QuerySubsystem;
 using MarketPlaceBusiness.OutputEntities;
 using ObjectModel.Directory;
@@ -9,14 +7,10 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class ModelingServiceOutSide
+    //TODO возможно, объединить с основным
+	public class MarketObjectsForModelingService : BaseService
 	{
-        public static readonly long RegisterId = OMCoreObject.GetRegisterId();
-
-
-        //public энамы и классы приводят к путанице в проектах, к которым подключена библиотека. нужно делать internal?
-        //MarketSegment проблема в "разных" enum, нужны врапперы. если объектов много, то такие врапперы съедят память
-
+		//TODO KOMO-33 убрать long segment, сделать через enum
         public List<MarketObjectPureOutSide> GetMarketObjects(bool isOks, long segment)
         {
 	        //TODO ждем выполнения CIPJSKO-307
