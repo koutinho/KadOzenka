@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.Correction
 
         public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects, int numberOfRooms)
         {
-            return objects.Where(x => x.RoomsCount == numberOfRooms).Select(x => x.PricePerMeter.GetValueOrDefault()).Average();
+            return objects.Where(x => x.RoomsCount == numberOfRooms).Average(x => x.PricePerMeter.GetValueOrDefault());
         }
 
         public List<OMCoefficientsForCorrectionByRooms> GetCoefficients(DateTime date)
