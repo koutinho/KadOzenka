@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
+using MarketPlaceBusiness;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
@@ -11,11 +12,16 @@ namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByDateService
     {
+        public IMarketObjectsForCorrectionsService MarketObjectsService { get; protected set; }
         public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+
+
         public CorrectionByDateService()
         {
             CorrectionSettingsService = new CorrectionSettingsService();
+            MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
+
 
         public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
@@ -105,7 +111,7 @@ namespace KadOzenka.Dal.Correction
         {
             var coefficients = GetAverageCoefficientsBySegments();
 
-            var objects = GetMarketObjectsForUpdate();
+            var objects = MarketObjectsService.GetObjectsForCorrectionByDate();
             var objectsIds = objects.Select(x => x.Id);
             var priceChangingHistory = OMPriceAfterCorrectionByDateHistory.Where(x => objectsIds.Contains(x.InitialId)).SelectAll().Execute();
 
@@ -131,15 +137,6 @@ namespace KadOzenka.Dal.Correction
                     ts.Complete();
                 }
             });
-        }
-
-        public List<OMCoreObject> GetMarketObjectsForUpdate()
-        {
-            return OMCoreObject
-                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal && 
-                            (x.ParserTime != null || x.LastDateUpdate != null) && 
-                            x.PropertyMarketSegment != null)
-                .SelectAll().Execute();
         }
 
 
