@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 			{
 				x.BuildingYear,
 				x.WallMaterial,
-				x.CadastralNumber,
+				x.CadastralNumber
 			};
 
 			return MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression);

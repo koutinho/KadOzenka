@@ -1,34 +1,47 @@
 ﻿using System;
-using System.Text;
 using System.Linq;
 using ObjectModel.Market;
 using System.Configuration;
-using System.Collections.Generic;
-
+using System.Linq.Expressions;
 using KadOzenka.Dal.Logger;
-using KadOzenka.Dal.WebRequest;
-using KadOzenka.Dal.JSONParser;
+using MarketPlaceBusiness;
 
 namespace KadOzenka.Dal.AddressChecker
 {
-
+    /// <summary>
+    /// Присвоение адресов необработанным объектам сторонних маркетов
+    /// </summary>
     public class Addresses
     {
+	    private IMarketObjectService MarketObjectService { get; }
 
-        List<OMCoreObject> AllObjects =
-            OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed)
-                        .Select(x => new { x.Market_Code, x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code })
-                        .Execute()
-                        .Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"]))
-                        .ToList();
+	    public Addresses()
+        {
+	        MarketObjectService = new MarketObjectService();
+        }
 
         public void Detect()
         {
-            int YCur = 0, YCor = 0, YErr = 0, ICtr = AllObjects.Count;
+	        Expression<Func<OMCoreObject, bool>> whereExpression = x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed;
+	        Expression<Func<OMCoreObject, object>> selectExpression = x => new
+	        {
+		        x.Market_Code,
+		        x.ProcessType_Code,
+		        x.Address,
+		        x.Lng,
+		        x.Lat,
+		        x.ExclusionStatus_Code
+            };
+
+	        var allObjects = MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression)
+		        .Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"]))
+		        .ToList();
+
+            int YCur = 0, YCor = 0, YErr = 0, ICtr = allObjects.Count;
             int PCur = 0, PCor = 0, PErr = 0;
 
             /*Процедура получения формализованного адреса из яндекса*/
-            AllObjects.ForEach(x =>
+            allObjects.ForEach(x =>
             {
                 try
                 {
@@ -49,7 +62,7 @@ namespace KadOzenka.Dal.AddressChecker
             });
             ConsoleLog.WriteFotter("Получение адресов при помощи Yandex API завершено");
             /*Процедура записи данных в Postgres*/
-            AllObjects.ForEach(x =>
+            allObjects.ForEach(x =>
             {
                 try
                 {
@@ -62,7 +75,5 @@ namespace KadOzenka.Dal.AddressChecker
             });
             ConsoleLog.WriteFotter("Запись полученных адресов в Postgres завершена");
         }
-
     }
-
 }
