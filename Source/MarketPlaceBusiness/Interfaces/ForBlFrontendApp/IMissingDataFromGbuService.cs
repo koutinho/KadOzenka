@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness.Interfaces
+namespace MarketPlaceBusiness.Interfaces.ForBlFrontendApp
 {
 	public interface IMissingDataFromGbuService
 	{

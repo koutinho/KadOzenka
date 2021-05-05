@@ -4,6 +4,7 @@ using ObjectModel.Market;
 using KadOzenka.Dal.Logger;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
 
 namespace KadOzenka.Dal.KadNumberChecker
 {
@@ -12,7 +13,7 @@ namespace KadOzenka.Dal.KadNumberChecker
     /// </summary>
     public class KadNumbers
     {
-        private IMarketObjectService MarketObjectService { get; set; }
+        private IMarketObjectsServiceForBlFrontendApp MarketObjectService { get; set; }
 
         readonly List<OMYandexAddress> YandexObjects =
             OMYandexAddress.Where(x => true)

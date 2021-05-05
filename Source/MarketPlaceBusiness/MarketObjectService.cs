@@ -4,13 +4,15 @@ using System.Linq;
 using System.Linq.Expressions;
 using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
 	public class MarketObjectService : MarketObjectBaseService,
-		IMarketObjectService, IMissingDataFromGbuService, IMarketObjectForCadastralInfoFiller
+		IMarketObjectService, IMissingDataFromGbuService, IMarketObjectForCadastralInfoFiller,
+		IMarketObjectsServiceForBlFrontendApp
 	{
 		//TODO inject via IoC
 		public MarketObjectService(IMarketObjectsRepository marketObjectsRepository = null)

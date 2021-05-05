@@ -11,6 +11,5 @@ namespace MarketPlaceBusiness.Interfaces
 			Expression<Func<OMCoreObject, object>> selectExpression);
 
 		List<OMCoreObject> GetObjectsForDuplicatesChecking();
-		List<OMCoreObject> GetNotRosreestrObjectsWithAddressProceed();
 	}
 }

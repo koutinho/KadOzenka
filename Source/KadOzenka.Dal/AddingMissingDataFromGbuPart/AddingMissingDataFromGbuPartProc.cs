@@ -8,6 +8,7 @@ using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.Market;

@@ -5,6 +5,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
 
