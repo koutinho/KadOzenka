@@ -4,6 +4,8 @@ using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
@@ -14,8 +16,15 @@ namespace KadOzenka.Dal.Correction
     {
         public static readonly int PrecisionForPrice = 2;
         public static readonly int PrecisionForCoefficients = 4;
-
+        private IMarketObjectsForCorrectionByRoom MarketObjectsService { get; }
         public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() {MarketSegment.MZHS};
+
+
+        public CorrectionByRoomService()
+        {
+	        MarketObjectsService = new MarketObjectsForCorrectionsService();
+        }
+
 
         public List<CorrectionByRoomCoefficientsDto> GetAverageCoefficients(long marketSegmentCode)
         {

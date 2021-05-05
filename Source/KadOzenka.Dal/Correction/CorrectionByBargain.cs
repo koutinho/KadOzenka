@@ -8,17 +8,23 @@ using DealType = ObjectModel.Directory.DealType;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Requests;
 using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 
 namespace KadOzenka.Dal.Correction
 {
     public abstract class CorrectionByBargain<T> : CorrectionBaseService where T : CorrectionByBargainRequest
     {
+	    protected IMarketObjectsForCorrectionByBargain MarketObjectsService { get; }
         protected CorrectionSettings CorrectionSettings { get; set; }
+
 
         protected CorrectionByBargain(CorrectionSettings correctionSettings)
         {
             CorrectionSettings = correctionSettings;
+            MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
+
 
         protected virtual void ValidateRequest(T request)
         {

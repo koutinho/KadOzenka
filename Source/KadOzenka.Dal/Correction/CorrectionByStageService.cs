@@ -3,12 +3,11 @@ using ObjectModel.Directory;
 using System.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
-using System.Transactions;
 using Core.Register.LongProcessManagment;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.MarketObjects;
 
@@ -18,10 +17,12 @@ namespace KadOzenka.Dal.Correction
 	{
 		readonly OMQueue processQueue;
 		public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
+		public IMarketObjectsForCorrectionByStage MarketObjectsService { get; }
 
-        public CorrectionByStageService(OMQueue queue)
+		public CorrectionByStageService(OMQueue queue)
 		{
 			processQueue = queue;
+			MarketObjectsService = new MarketObjectsForCorrectionsService();
 		}
 
 		public CorrectionByStageService()

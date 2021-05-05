@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
@@ -12,7 +13,16 @@ namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByDateService : CorrectionBaseService
     {
-	    public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
+	    public IMarketObjectsForCorrectionByDate MarketObjectsService { get; }
+
+
+	    public CorrectionByDateService()
+	    {
+		    MarketObjectsService = new MarketObjectsForCorrectionsService();
+        }
+
+
+        public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
             return GetAverageCoefficientsBySegments().Where(x => x.MarketSegment == (MarketSegment)marketSegmentCode).ToList();
         }

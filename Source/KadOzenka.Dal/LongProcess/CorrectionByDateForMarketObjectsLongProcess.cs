@@ -5,14 +5,14 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using Consts = MarketPlaceBusiness.Common.Consts;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class CorrectionByDateForMarketObjectsLongProcess : LongProcess
     {
-        private IMarketObjectsForCorrectionsService MarketObjectsService { get; }
+        private IMarketObjectsForCorrectionByDate MarketObjectsService { get; }
         public const string LongProcessName = nameof(CorrectionByDateForMarketObjectsLongProcess);
 
 

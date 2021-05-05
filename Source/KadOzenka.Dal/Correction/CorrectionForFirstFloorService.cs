@@ -4,6 +4,8 @@ using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
@@ -21,11 +23,13 @@ namespace KadOzenka.Dal.Correction
 
         public static List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
         public CorrectionByRoomService CorrectionByRoomService { get; protected set; }
+        public IMarketObjectsForCorrectionByFirstFloor MarketObjectsService { get; }
 
 
         public CorrectionForFirstFloorService()
         {
 	        CorrectionByRoomService = new CorrectionByRoomService();
+	        MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
 
 

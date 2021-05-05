@@ -7,14 +7,14 @@ using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using Core.Shared.Extensions;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using Consts = MarketPlaceBusiness.Common.Consts;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class CorrectionByRoomForMarketObjectsLongProcess : LongProcess
     {
-        private IMarketObjectsForCorrectionsService MarketObjectsService { get; }
+        private IMarketObjectsForCorrectionByRoom MarketObjectsService { get; }
         public const string LongProcessName = nameof(CorrectionByRoomForMarketObjectsLongProcess);
 
 

@@ -6,14 +6,20 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Correction.Requests;
 using KadOzenka.Dal.Correction.Dto;
 using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 
 namespace KadOzenka.Dal.Correction
 {
     public class CorrectionByBargainExport : CorrectionByBargain<CorrectionByBargainExportRequest>
     {
+	    public IMarketObjectsForCorrectionByBargain MarketObjectsService { get; }
+
         public CorrectionByBargainExport(CorrectionSettings correctionSettings) : base(correctionSettings)
         {
+	        MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
+
 
         public List<CorrectionByBargainDto> GetBargainCorrectionData(CorrectionByBargainExportRequest request)
         {
