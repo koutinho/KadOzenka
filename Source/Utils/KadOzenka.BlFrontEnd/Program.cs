@@ -53,7 +53,6 @@ using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Repositories;
-using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Common;
@@ -104,8 +103,6 @@ namespace KadOzenka.BlFrontEnd
 			/*Загрузка информации по сделкам росреестра из excel*/
 			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
 			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
-
-            consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexParser().FormMarketObjects(); });
 
             consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
