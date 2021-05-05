@@ -37,10 +37,10 @@ namespace KadOzenka.Dal.Correction
 			date = new DateTime(date.Year, date.Month, 1);
 
 			//средняя цена подвальных помещений
-			var objsBasement = MarketObjectsService.GetObjectsForCorrectionByStage(false, CalculatedMarketSegments);
+			var objsBasement = MarketObjectsService.GetObjects(false, CalculatedMarketSegments);
 
 			//средняя цена надземных помещений
-			var objsStage = MarketObjectsService.GetObjectsForCorrectionByStage(true, CalculatedMarketSegments);
+			var objsStage = MarketObjectsService.GetObjects(true, CalculatedMarketSegments);
 
 			objsBasement = objsBasement.Where(x => x.Price > 0).ToList();
 			objsStage = objsStage.Where(x => x.Price > 0).ToList();
@@ -114,7 +114,7 @@ namespace KadOzenka.Dal.Correction
 				.ToDictionary(g => g.Key, g => g.Average(x => x.StageCoefficient));
 
 			//все подвальные помещения
-			var basements = MarketObjectsService.GetBasementObjectsForCorrectionByStage(CalculatedMarketSegments);
+			var basements = MarketObjectsService.GetBasementObjects(CalculatedMarketSegments);
 
 			//из них отобраны те, по которым делался расчет
 			var resObjs = basements.Join(ratioPriceNotExcluded,

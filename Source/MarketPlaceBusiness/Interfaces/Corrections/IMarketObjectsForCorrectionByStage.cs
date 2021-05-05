@@ -7,7 +7,8 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 {
 	public interface IMarketObjectsForCorrectionByStage
 	{
-		List<GeneralInfoForCorrectionByStage> GetObjectsForCorrectionByStage(bool isForStage, List<MarketSegment> segments);
-		List<OMCoreObject> GetBasementObjectsForCorrectionByStage(List<MarketSegment> segments);
+		List<GeneralInfoForCorrectionByStage> GetObjects(bool isForStage, List<MarketSegment> segments);
+		
+		List<OMCoreObject> GetBasementObjects(List<MarketSegment> segments);
 	}
 }

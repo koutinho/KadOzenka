@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.LongProcess
             var coefficients = service.GetCoefficients();
             var excludedBuildings = coefficients.Where(x => x.IsExcluded.GetValueOrDefault()).Select(x => x.BuildingCadastralNumber).ToList();
 
-            var objectsGroupedBySegment = MarketObjectsService.GetObjectsGroupedBySegmentForCorrectionByDate(startDate, endDate);
+            var objectsGroupedBySegment = MarketObjectsService.GetObjectsGroupedBySegment(startDate, endDate);
 
             WorkerCommon.SetProgress(processQueue, 30);
 

@@ -8,8 +8,8 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 {
 	public interface IMarketObjectsForCorrectionByDate
 	{
-		List<OMCoreObject> GetObjectsForCorrectionByDate();
+		List<OMCoreObject> GetObjects();
 
-		List<IGrouping<MarketSegment, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByDate(DateTime startDate, DateTime endDate);
+		List<IGrouping<MarketSegment, OMCoreObject>> GetObjectsGroupedBySegment(DateTime startDate, DateTime endDate);
 	}
 }

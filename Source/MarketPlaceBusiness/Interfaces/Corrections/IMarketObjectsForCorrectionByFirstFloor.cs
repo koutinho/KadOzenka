@@ -7,8 +7,8 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 {
 	public interface IMarketObjectsForCorrectionByFirstFloor 
 	{
-		List<OMCoreObject> GetFirstFloorsForCorrectionByFirstFloor(List<MarketSegment> segments, MarketSegment? segment = null);
+		List<OMCoreObject> GetFirstFloors(List<MarketSegment> segments, MarketSegment? segment = null);
 		
-		List<FloorStatsForCorrectionByFirstFloor> GetFloorStatsForCorrectionByFirstFloor(bool includeCorrectionByRooms, bool firstFloor = false);
+		List<FloorStatsForCorrectionByFirstFloor> GetFloorStats(bool includeCorrectionByRooms, bool firstFloor = false);
 	}
 }

@@ -10,13 +10,13 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class MarketObjectsForCorrectionsService : IMarketObjectsForCorrectionByFirstFloor,
-		IMarketObjectsForCorrectionByDate, IMarketObjectsForCorrectionByRoom, IMarketObjectsForCorrectionByBargain,
-		IMarketObjectsForCorrectionByStage
+	public class MarketObjectsForCorrectionsService : IMarketObjectsForCorrectionByDate,
+		IMarketObjectsForCorrectionByRoom, IMarketObjectsForCorrectionByBargain, IMarketObjectsForCorrectionByStage,
+		IMarketObjectsForCorrectionByFirstFloor
 	{
 		#region Дата
 
-		public List<OMCoreObject> GetObjectsForCorrectionByDate()
+		List<OMCoreObject> IMarketObjectsForCorrectionByDate.GetObjects()
 		{
 			return OMCoreObject
 				.Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal &&
@@ -25,7 +25,7 @@ namespace MarketPlaceBusiness
 				.SelectAll().Execute();
 		}
 
-		public List<IGrouping<MarketSegment, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByDate(
+		List<IGrouping<MarketSegment, OMCoreObject>> IMarketObjectsForCorrectionByDate.GetObjectsGroupedBySegment(
 			DateTime startDate, DateTime endDate)
 		{
 			return OMCoreObject.Where(x =>
@@ -45,12 +45,12 @@ namespace MarketPlaceBusiness
 
 		#region Комнатность
 
-		public List<OMCoreObject> GetObjectsForCorrectionByRoom()
+		List<OMCoreObject> IMarketObjectsForCorrectionByRoom.GetObjects()
 		{
 			return OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
 		}
 
-		public List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByRoom(List<MarketSegment> calculatedMarketSegments,
+		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> IMarketObjectsForCorrectionByRoom.GetObjectsGroupedBySegment(List<MarketSegment> calculatedMarketSegments,
 				long?[] numberOfRooms)
 		{
 			return OMCoreObject.Where(x =>
@@ -73,14 +73,14 @@ namespace MarketPlaceBusiness
 
 		#region Торг
 
-		public QSQuery<OMCoreObject> GetBaseQueryForCorrectionByBargain()
+		QSQuery<OMCoreObject> IMarketObjectsForCorrectionByBargain.GetBaseQuery()
 		{
 			return OMCoreObject
 				.Where(x => (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
 				            (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed));
 		}
 
-		public List<OMCoreObject> GetObjectsForCorrectionByBargain(QSQuery<OMCoreObject> marketObjectsQuery)
+		List<OMCoreObject> IMarketObjectsForCorrectionByBargain.GetObjects(QSQuery<OMCoreObject> marketObjectsQuery)
 		{
 			var objects = marketObjectsQuery
 				.Select(x => x.Id)
@@ -110,7 +110,7 @@ namespace MarketPlaceBusiness
 
 		#region Подваль/Цоколь
 
-		public List<GeneralInfoForCorrectionByStage> GetObjectsForCorrectionByStage(bool isForStage,
+		List<GeneralInfoForCorrectionByStage> IMarketObjectsForCorrectionByStage.GetObjects(bool isForStage,
 			List<MarketSegment> segments)
 		{
 			var baseQuery = GetBaseQueryForCorrectionByStage(isForStage, segments);
@@ -131,7 +131,7 @@ namespace MarketPlaceBusiness
 				}).ToList();
 		}
 
-		public List<OMCoreObject> GetBasementObjectsForCorrectionByStage(List<MarketSegment> segments)
+		List<OMCoreObject> IMarketObjectsForCorrectionByStage.GetBasementObjects(List<MarketSegment> segments)
 		{
 			var baseQuery = GetBaseQueryForCorrectionByStage(false, segments);
 
@@ -146,12 +146,36 @@ namespace MarketPlaceBusiness
 				.Execute();
 		}
 
+		private QSQuery<OMCoreObject> GetBaseQueryForCorrectionByStage(bool isForStage, List<MarketSegment> segments)
+		{
+			var dealType = DealType.SaleSuggestion;
+			Expression<Func<OMCoreObject, bool>> whereExpression;
+			if (isForStage)
+			{
+				whereExpression = x =>
+					x.DealType_Code == dealType
+					&& x.CadastralNumber != null
+					&& x.FloorNumber >= 0
+					&& segments.Contains(x.PropertyMarketSegment_Code);
+			}
+			else
+			{
+				whereExpression = x =>
+					x.DealType_Code == dealType
+					&& x.CadastralNumber != null
+					&& x.FloorNumber < 0
+					&& segments.Contains(x.PropertyMarketSegment_Code);
+			}
+
+			return OMCoreObject.Where(whereExpression);
+		}
+
 		#endregion
 
 
 		#region Первый этаж
 
-		public List<OMCoreObject> GetFirstFloorsForCorrectionByFirstFloor(List<MarketSegment> segments,
+		List<OMCoreObject> IMarketObjectsForCorrectionByFirstFloor.GetFirstFloors(List<MarketSegment> segments,
 			MarketSegment? segment = null)
 		{
 			var query = OMCoreObject.Where(x =>
@@ -164,7 +188,7 @@ namespace MarketPlaceBusiness
 			return query.SelectAll().Execute();
 		}
 
-		public List<FloorStatsForCorrectionByFirstFloor> GetFloorStatsForCorrectionByFirstFloor(
+		List<FloorStatsForCorrectionByFirstFloor> IMarketObjectsForCorrectionByFirstFloor.GetFloorStats(
 			bool includeCorrectionByRooms, bool firstFloor = false)
 		{
 			var query = OMCoreObject
@@ -203,35 +227,6 @@ namespace MarketPlaceBusiness
 				.ToList();
 
 			return result;
-		}
-
-		#endregion
-
-
-		#region Support Methods
-
-		public QSQuery<OMCoreObject> GetBaseQueryForCorrectionByStage(bool isForStage, List<MarketSegment> segments)
-		{
-			var dealType = DealType.SaleSuggestion;
-			Expression<Func<OMCoreObject, bool>> whereExpression;
-			if (isForStage)
-			{
-				whereExpression = x =>
-					x.DealType_Code == dealType
-					&& x.CadastralNumber != null
-					&& x.FloorNumber >= 0
-					&& segments.Contains(x.PropertyMarketSegment_Code);
-			}
-			else
-			{
-				whereExpression = x =>
-					x.DealType_Code == dealType
-					&& x.CadastralNumber != null
-					&& x.FloorNumber < 0
-					&& segments.Contains(x.PropertyMarketSegment_Code);
-			}
-
-			return OMCoreObject.Where(whereExpression);
 		}
 
 		#endregion

@@ -6,8 +6,8 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 {
 	public interface IMarketObjectsForCorrectionByBargain
 	{
-		QSQuery<OMCoreObject> GetBaseQueryForCorrectionByBargain();
+		QSQuery<OMCoreObject> GetBaseQuery();
 
-		List<OMCoreObject> GetObjectsForCorrectionByBargain(QSQuery<OMCoreObject> marketObjectsQuery);
+		List<OMCoreObject> GetObjects(QSQuery<OMCoreObject> marketObjectsQuery);
 	}
 }

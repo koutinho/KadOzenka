@@ -105,7 +105,7 @@ namespace KadOzenka.Dal.Correction
         {
             var coefficients = GetAverageCoefficientsBySegments();
 
-            var objects = MarketObjectsService.GetObjectsForCorrectionByDate();
+            var objects = MarketObjectsService.GetObjects();
             var objectsIds = objects.Select(x => x.Id);
             var priceChangingHistory = OMPriceAfterCorrectionByDateHistory.Where(x => objectsIds.Contains(x.InitialId)).SelectAll().Execute();
 

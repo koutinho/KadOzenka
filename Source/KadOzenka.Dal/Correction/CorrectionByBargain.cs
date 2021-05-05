@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.Correction
 
         protected virtual QSQuery<OMCoreObject> PrepareMarketObjectsQuery(T request)
         {
-            var query = MarketObjectsService.GetBaseQueryForCorrectionByBargain();
+            var query = MarketObjectsService.GetBaseQuery();
 
             if (request.MarketSegments.Count < System.Enum.GetNames(typeof(MarketSegment)).Length)
             {

@@ -8,8 +8,8 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 {
 	public interface IMarketObjectsForCorrectionByRoom
 	{
-		List<OMCoreObject> GetObjectsForCorrectionByRoom();
+		List<OMCoreObject> GetObjects();
 
-		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByRoom(List<MarketSegment> calculatedMarketSegments, long?[] numberOfRooms);
+		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegment(List<MarketSegment> calculatedMarketSegments, long?[] numberOfRooms);
 	}
 }

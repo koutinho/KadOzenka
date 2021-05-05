@@ -49,7 +49,7 @@ namespace KadOzenka.Dal.Correction
                 && !CheckStatsExistence(dateMonth))
                 GatherData();
 
-            var firstFloors = MarketObjectsService.GetFirstFloorsForCorrectionByFirstFloor(CalculatedMarketSegments, segment);
+            var firstFloors = MarketObjectsService.GetFirstFloors(CalculatedMarketSegments, segment);
             var rates = GetRatesByDate(dateMonth);
 
             var correctionHistory =
@@ -228,8 +228,8 @@ namespace KadOzenka.Dal.Correction
 
         private void GatherData()
         {
-            var firstFloorsStats = MarketObjectsService.GetFloorStatsForCorrectionByFirstFloor(IncludeCorrectionByRooms, true);
-            var upperFloorsStats = MarketObjectsService.GetFloorStatsForCorrectionByFirstFloor(IncludeCorrectionByRooms);
+            var firstFloorsStats = MarketObjectsService.GetFloorStats(IncludeCorrectionByRooms, true);
+            var upperFloorsStats = MarketObjectsService.GetFloorStats(IncludeCorrectionByRooms);
             var date = DateToMonth(DateTime.Now);
             var combinedStats =
                 from f in firstFloorsStats
