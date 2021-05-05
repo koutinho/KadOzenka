@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 using Serilog;
@@ -29,6 +31,7 @@ namespace KadOzenka.Dal.OutliersChecking
 		private readonly OutliersCheckingSettingsService _outliersCheckingSettingsService;
 		private readonly OutliersCheckingReport _outliersCheckingReport;
 		private Dictionary<string, OutliersCheckingSettingDto> _outliersCheckingSettings;
+		private IMarketObjectsForOutliersCheckingService MarketObjectsService { get; set; }
 		protected object Locked;
 
 		public int TotalObjectsCount { get; private set; }
@@ -40,6 +43,7 @@ namespace KadOzenka.Dal.OutliersChecking
 		{
 			_outliersCheckingSettingsService = new OutliersCheckingSettingsService();
 			_outliersCheckingReport = new OutliersCheckingReport();
+			MarketObjectsService = new MarketObjectsForOutliersCheckingService();
 		}
 
 		public long PerformOutliersChecking(MarketSegment? segment, List<ObjectPropertyTypeDivision> propertyTypes)
@@ -53,7 +57,7 @@ namespace KadOzenka.Dal.OutliersChecking
 				.ToDictionary(x => x.LocationName, x => x);
 
 			Log.Debug("Получение объектов по сегментам");
-			var objectsBySegments = GetObjectsBySegments(segment);
+			var objectsBySegments = MarketObjectsService.GetObjectsBySegments(PropertyTypes, segment);
 			SetTotalObjectsCount(objectsBySegments);
 
 			var segmentsForHandling = segment.HasValue 
@@ -197,45 +201,6 @@ namespace KadOzenka.Dal.OutliersChecking
 			}
 
 			TotalObjectsCount = maxObjectsCount;
-		}
-
-		private Dictionary<MarketSegment, List<OMCoreObject>> GetObjectsBySegments(MarketSegment? segment)
-		{
-			var query = OMCoreObject.Where(x =>
-				(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed)
-				&& x.PropertyMarketSegment != null
-				&& x.PricePerMeter != null
-				&& x.Zone != null
-				&& x.District != null
-				&& x.Neighborhood != null
-				&& PropertyTypes.Contains(x.PropertyTypesCIPJS_Code));
-
-			if (segment.HasValue)
-				query.And(x => x.PropertyMarketSegment_Code == segment.Value);
-
-			return query
-				.Select(x => new
-				{
-					x.Id,
-					x.CadastralNumber,
-					x.Zone,
-					x.District,
-					x.District_Code,
-					x.DealType,
-					x.DealType_Code,
-					x.Neighborhood,
-					x.Neighborhood_Code,
-					x.PricePerMeter,
-					x.PropertyMarketSegment,
-					x.PropertyMarketSegment_Code,
-					x.ProcessType_Code,
-					x.ExclusionStatus_Code,
-					x.PropertyTypesCIPJS,
-					x.PropertyTypesCIPJS_Code
-				})
-				.Execute()
-				.GroupBy(x => x.PropertyMarketSegment_Code)
-				.ToDictionary(x => x.Key, x => x.ToList());
 		}
 
 		private void ProcessObjectsByLocation(ObjectsByLocationSliceDto objectsByLocation)
