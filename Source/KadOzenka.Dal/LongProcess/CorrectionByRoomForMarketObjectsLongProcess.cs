@@ -5,19 +5,28 @@ using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess.InputParameters;
-using ObjectModel.Market;
 using Core.Shared.Extensions;
-using ObjectModel.Directory;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
+using Consts = MarketPlaceBusiness.Common.Consts;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class CorrectionByRoomForMarketObjectsLongProcess : LongProcess
     {
+        private IMarketObjectsForCorrectionsService MarketObjectsService { get; }
         public const string LongProcessName = nameof(CorrectionByRoomForMarketObjectsLongProcess);
+
+
+        public CorrectionByRoomForMarketObjectsLongProcess()
+        {
+	        MarketObjectsService = new MarketObjectsForCorrectionsService();
+        }
+
 
         public static void AddProcessToQueue(CorrectionByRoomRequest request)
         {
-            LongProcessManager.AddTaskToQueue(LongProcessName, registerId: OMCoreObject.GetRegisterId(), parameters: request.SerializeToXml());
+            LongProcessManager.AddTaskToQueue(LongProcessName, Consts.RegisterId, parameters: request.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -32,14 +41,9 @@ namespace KadOzenka.Dal.LongProcess
 
             var coefficients = correctionByRoomService.GetCoefficients(date);
             var excludedBuildings = coefficients.Where(x => x.IsExcluded.GetValueOrDefault()).Select(x => x.BuildingCadastralNumber).ToList();
-
-            var objectsGroupedBySegment = OMCoreObject.Where(x =>
-                    correctionByRoomService.CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code) && x.BuildingCadastralNumber != null &&
-                    x.RoomsCount != null && numberOfRooms.Contains(x.RoomsCount) &&
-                    x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
-                .SelectAll(false)
-                .Execute()
-                .GroupBy(x => new { x.PropertyMarketSegment_Code }).ToList();
+            var objectsGroupedBySegment =
+	            MarketObjectsService.GetObjectsGroupedBySegmentForCorrectionByRoom(
+		            correctionByRoomService.CalculatedMarketSegments, numberOfRooms);
 
             WorkerCommon.SetProgress(processQueue, 30);
 
@@ -69,7 +73,7 @@ namespace KadOzenka.Dal.LongProcess
                                 CorrectionByRoomService.PrecisionForCoefficients);
 
                         correctionByRoomService.SaveCoefficients(coefficients, date, groupByBuilding.Key,
-                            groupBySegment.Key.PropertyMarketSegment_Code, oneRoomCoefficient, threeRoomsCoefficient);
+                            groupBySegment.Key.Segment, oneRoomCoefficient, threeRoomsCoefficient);
                     }
                 });
             });

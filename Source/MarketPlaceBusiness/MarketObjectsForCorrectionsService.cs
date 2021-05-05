@@ -10,8 +10,11 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
+	//TODO разнести корректировки по интерфейсам
 	public class MarketObjectsForCorrectionsService : IMarketObjectsForCorrectionsService
 	{
+		#region Дата
+
 		public List<OMCoreObject> GetObjectsForCorrectionByDate()
 		{
 			return OMCoreObject
@@ -21,10 +24,49 @@ namespace MarketPlaceBusiness
 				.SelectAll().Execute();
 		}
 
+		public List<IGrouping<MarketSegment, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByDate(DateTime startDate, DateTime endDate)
+		{ 
+			return OMCoreObject.Where(x =>
+					(x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
+					x.BuildingCadastralNumber != null && x.BuildingCadastralNumber != "" &&
+					x.PropertyMarketSegment != null &&
+					((x.ParserTime != null && x.ParserTime >= startDate && x.ParserTime <= endDate) ||
+					 (x.LastDateUpdate != null && x.LastDateUpdate >= startDate && x.LastDateUpdate <= endDate)))
+				.SelectAll(false)
+				.Execute()
+				.GroupBy(x => x.PropertyMarketSegment_Code)
+				.ToList();
+		}
+
+		#endregion
+
+
+		#region Комнатность
+
 		public List<OMCoreObject> GetObjectsForCorrectionByRoom()
 		{ 
 			return OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
 		}
+
+		public List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByRoom(List<MarketSegment> calculatedMarketSegments, long?[] numberOfRooms)
+		{
+			return OMCoreObject.Where(x =>
+					calculatedMarketSegments.Contains(x.PropertyMarketSegment_Code) &&
+					x.BuildingCadastralNumber != null &&
+					x.RoomsCount != null && numberOfRooms.Contains(x.RoomsCount) &&
+					x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
+				.SelectAll(false)
+				.Execute()
+				.GroupBy(x => new
+					ObjectsGroupedBySegmentForCorrectionByRoom
+					{
+						Segment = x.PropertyMarketSegment_Code
+					}).ToList();
+		}
+		
+
+		#endregion
+
 
 		#region Торг
 
@@ -102,6 +144,7 @@ namespace MarketPlaceBusiness
 
 		#endregion
 
+
 		#region Первый этаж
 
 		public List<OMCoreObject> GetFirstFloorsForCorrectionByFirstFloor(List<MarketSegment> segments, MarketSegment? segment = null)
@@ -157,6 +200,7 @@ namespace MarketPlaceBusiness
 		}
 
 		#endregion
+
 
 		#region Support Methods
 

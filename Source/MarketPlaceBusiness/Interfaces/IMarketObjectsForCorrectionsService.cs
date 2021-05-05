@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Register.QuerySubsystem;
 using MarketPlaceBusiness.Dto.Corrections;
 using ObjectModel.Directory;
@@ -16,5 +18,7 @@ namespace MarketPlaceBusiness.Interfaces
 		List<OMCoreObject> GetBasementObjectsForCorrectionByStage(List<MarketSegment> segments);
 		List<OMCoreObject> GetFirstFloorsForCorrectionByFirstFloor(List<MarketSegment> segments, MarketSegment? segment = null);
 		List<FloorStatsForCorrectionByFirstFloor> GetFloorStatsForCorrectionByFirstFloor(bool includeCorrectionByRooms, bool firstFloor = false);
+		List<IGrouping<MarketSegment, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByDate(DateTime startDate, DateTime endDate);
+		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegmentForCorrectionByRoom(List<MarketSegment> calculatedMarketSegments, long?[] numberOfRooms);
 	}
 }

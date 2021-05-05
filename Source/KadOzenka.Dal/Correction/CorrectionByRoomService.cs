@@ -4,7 +4,6 @@ using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
-using MarketPlaceBusiness;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;

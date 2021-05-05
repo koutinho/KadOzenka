@@ -6,6 +6,7 @@ using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using ObjectModel.Market;
 using Core.Shared.Extensions;
+using Consts = MarketPlaceBusiness.Common.Consts;
 
 
 namespace KadOzenka.Dal.LongProcess
@@ -16,7 +17,7 @@ namespace KadOzenka.Dal.LongProcess
 
         public static void AddProcessToQueue(CorrectionByRoomRequest request)
         {
-            LongProcessManager.AddTaskToQueue(LongProcessName, registerId: OMCoreObject.GetRegisterId(), parameters: request.SerializeToXml());
+            LongProcessManager.AddTaskToQueue(LongProcessName, Consts.RegisterId, parameters: request.SerializeToXml());
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

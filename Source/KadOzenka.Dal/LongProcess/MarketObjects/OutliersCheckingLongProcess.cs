@@ -6,6 +6,8 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Market;
@@ -33,7 +35,7 @@ namespace KadOzenka.Dal.LongProcess.MarketObjects
 				history.MarketSegment_Code = settings.Segment.Value;
 			history.Save();
 
-			return LongProcessManager.AddTaskToQueue(LongProcessName, OMCoreObject.GetRegisterId(), history.Id, settings.SerializeToXml());
+			return LongProcessManager.AddTaskToQueue(LongProcessName, Consts.RegisterId, history.Id, settings.SerializeToXml());
 		}
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)

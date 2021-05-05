@@ -4,18 +4,27 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using KadOzenka.Dal.Correction;
-using ObjectModel.Directory;
-using ObjectModel.Market;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
+using Consts = MarketPlaceBusiness.Common.Consts;
 
 namespace KadOzenka.Dal.LongProcess
 {
     public class CorrectionByDateForMarketObjectsLongProcess : LongProcess
     {
+        private IMarketObjectsForCorrectionsService MarketObjectsService { get; }
         public const string LongProcessName = nameof(CorrectionByDateForMarketObjectsLongProcess);
+
+
+        public CorrectionByDateForMarketObjectsLongProcess()
+        {
+	        MarketObjectsService = new MarketObjectsForCorrectionsService();
+        }
+
 
         public static void AddProcessToQueue()
         {
-            LongProcessManager.AddTaskToQueue(LongProcessName, registerId: OMCoreObject.GetRegisterId());
+            LongProcessManager.AddTaskToQueue(LongProcessName, Consts.RegisterId);
         }
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -30,16 +39,7 @@ namespace KadOzenka.Dal.LongProcess
             var coefficients = service.GetCoefficients();
             var excludedBuildings = coefficients.Where(x => x.IsExcluded.GetValueOrDefault()).Select(x => x.BuildingCadastralNumber).ToList();
 
-            var objectsGroupedBySegment = OMCoreObject.Where(x =>
-                    (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
-                    x.BuildingCadastralNumber != null && x.BuildingCadastralNumber != "" &&
-                    x.PropertyMarketSegment != null &&
-                    ((x.ParserTime != null && x.ParserTime >= startDate && x.ParserTime <= endDate) || 
-                    (x.LastDateUpdate != null && x.LastDateUpdate >= startDate && x.LastDateUpdate <= endDate)))
-                .SelectAll(false)
-                .Execute()
-                .GroupBy(x => x.PropertyMarketSegment_Code)
-                .ToList();
+            var objectsGroupedBySegment = MarketObjectsService.GetObjectsGroupedBySegmentForCorrectionByDate(startDate, endDate);
 
             WorkerCommon.SetProgress(processQueue, 30);
 
