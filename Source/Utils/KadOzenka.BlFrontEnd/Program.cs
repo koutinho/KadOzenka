@@ -101,7 +101,7 @@ namespace KadOzenka.BlFrontEnd
 
 			/*Загрузка информации по сделкам росреестра из excel*/
 			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
-			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
+			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { new ObjectReplicationExcelProcess().SetRRFDBCoordinatesByYandex(); });
 
             consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
@@ -135,8 +135,8 @@ namespace KadOzenka.BlFrontEnd
 						ConfigurationManager.AppSettings["InitialAddressFile"],
 						ConfigurationManager.AppSettings["DefaultExceleValue"]);
 				});
-			consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
-			consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+			consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { new ObjectReplicationExcelProcess().FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+			consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { new ObjectReplicationExcelProcess().SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
 
 			consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 
