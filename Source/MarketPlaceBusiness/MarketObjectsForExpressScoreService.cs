@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Register.QuerySubsystem;
+using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Dto.ExpressScore;
 using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Market;
@@ -47,5 +49,98 @@ namespace MarketPlaceBusiness
 		{
 			return OMCoreObject.Where(x => x.CadastralNumber == cadastralNumber).ExecuteFirstOrDefault()?.Id;
 		}
+
+		public List<OMCoreObject> GetObjectsInfoForCard(List<long?> resultObjectIds)
+		{
+			return OMCoreObject
+				.Where(x => resultObjectIds.Contains(x.Id))
+				.Select(x => new
+				{
+					x.Id, x.Images, x.Price, x.PricePerMeter, x.Area, x.Address, x.CadastralNumber,
+					x.PropertyMarketSegment, x.DealType, x.Market_Code, x.PropertyTypesCIPJS_Code
+				})
+				.Execute();
+		}
+
+		public List<OMCoreObject> GetNearestObjects(DateTime actualDate, QSCondition conditionAnalog)
+		{
+			var actualDateCondition = GetActualDateCondition(actualDate);
+
+			return OMCoreObject.Where(conditionAnalog.And(actualDateCondition))
+				.SetJoins(JoinPriceHistory())
+				.Select(x => new
+				{
+					x.Id, 
+					x.Lat, 
+					x.Lng, 
+					x.CadastralNumber
+				}).Execute().ToList();
+
+		}
+
+		#region Support Methods
+
+		private List<QSJoin> JoinPriceHistory()
+		{
+			return new List<QSJoin>()
+			{
+				new QSJoin
+				{
+					JoinCondition = new QSConditionSimple(OMPriceHistory.GetColumn(x => x.InitialId), QSConditionType.Equal,
+						Consts.PrimaryKeyColumn),
+					RegisterId = OMPriceHistory.GetRegisterId(),
+					JoinType = QSJoinType.Left
+				}
+			};
+		}
+
+		private QSCondition GetActualDateCondition(DateTime actualDate)
+		{
+
+			actualDate = actualDate + new TimeSpan(23, 59, 59);
+
+			DateTime minSearchDate = new DateTime(actualDate.Year - 1, actualDate.Month, actualDate.Day);
+
+
+			var actualDateCondition = new QSConditionSimple
+			{
+				ConditionType = QSConditionType.LessOrEqual,
+				LeftOperand = OMPriceHistory.GetColumn(x => x.ChangingDate),
+				RightOperand = new QSColumnConstant(actualDate)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.GreaterOrEqual,
+				LeftOperand = OMPriceHistory.GetColumn(x => x.ChangingDate),
+				RightOperand = new QSColumnConstant(minSearchDate)
+			}).Or(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.LessOrEqual,
+				LeftOperand = Consts.ParserTimeColumn,
+				RightOperand = new QSColumnConstant(actualDate)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.GreaterOrEqual,
+				LeftOperand = Consts.ParserTimeColumn,
+				RightOperand = new QSColumnConstant(minSearchDate)
+			}).And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.IsNull,
+				LeftOperand = Consts.LastDateUpdateColumn,
+			})).Or(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.LessOrEqual,
+				LeftOperand = Consts.LastDateUpdateColumn,
+				RightOperand = new QSColumnConstant(actualDate)
+			}.And(new QSConditionSimple
+			{
+				ConditionType = QSConditionType.GreaterOrEqual,
+				LeftOperand = Consts.LastDateUpdateColumn,
+				RightOperand = new QSColumnConstant(minSearchDate)
+			}));
+
+			return actualDateCondition;
+		}
+
+		#endregion
 	}
 }

@@ -184,13 +184,8 @@ namespace KadOzenka.Web.Controllers
 
             var conditionAnalog = 
 				_service.GetSearchConditionForAnalogs(param.DeserializeSearchParameters,param.Segment.GetValueOrDefault(), param.DealType, param.SelectedLng, param.SelectedLat );
-			var actualDateCondition = _service.GetActualDateCondition(param.ActualDate.Value);
 
-			QSQuery<OMCoreObject> qSQuery = OMCoreObject.Where(conditionAnalog.And(actualDateCondition))
-				.SetJoins(_service.JoinPriceHistory())
-				.Select(x => new { x.Id, x.Lat, x.Lng, x.CadastralNumber });
-
-			var analogs = qSQuery.Execute().ToList();
+            var analogs = MarketObjectsService.GetNearestObjects(param.ActualDate.Value, conditionAnalog);
 
 			List<CoordinatesDto> objects = _service.CheckAnalogsByKoFactors(analogs, setting, param.DeserializeSearchParameters);
 			if (objects.Count == 0) return SendErrorMessage("Объекты аналоги не найдены");
@@ -550,11 +545,7 @@ namespace KadOzenka.Web.Controllers
 		private void BuildObjectCards(List<CoordinatesDto> coordinates)
 		{
 			var resultObjectIds = coordinates.Select(x => x.Id).ToList();
-			var resultObjects = 
-				OMCoreObject
-				.Where(x => resultObjectIds.Contains(x.Id))
-				.Select(x => new { x.Id, x.Images, x.Price, x.PricePerMeter, x.Area, x.Address, x.CadastralNumber, x.PropertyMarketSegment, x.DealType, x.Market_Code, x.PropertyTypesCIPJS_Code })
-				.Execute();
+			var resultObjects = MarketObjectsService.GetObjectsInfoForCard(resultObjectIds);
 
 			coordinates.ForEach(x =>
 			{
