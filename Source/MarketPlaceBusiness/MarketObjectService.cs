@@ -102,5 +102,21 @@ namespace MarketPlaceBusiness
 		}
 
 		#endregion
+
+
+		#region Для Присвоения КН объектам сторонних маркетов
+
+		public List<OMCoreObject> GetNotRosreestrObjectsWithAddressProceed()
+		{
+			return OMCoreObject.Where(x => x.Market_Code != MarketTypes.Rosreestr && x.ProcessType_Code == ProcessStep.AddressStep)
+				.Select(x => new
+				{
+					x.Address, x.CadastralNumber, x.Lng, x.Lat, x.ExclusionStatus_Code, x.ProcessType_Code
+				})
+				.Execute()
+				.ToList();
+		}
+
+		#endregion
 	}
 }
