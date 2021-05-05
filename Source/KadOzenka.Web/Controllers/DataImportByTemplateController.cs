@@ -18,6 +18,7 @@ using System.IO;
 using System.Reflection;
 using Core.Register.Enums;
 using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.DataImport.DataImporterByTemplate;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.Tasks;
@@ -27,6 +28,7 @@ using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.KO;
 using ObjectModel.Market;
 using ConfigurationManager = KadOzenka.Dal.ConfigurationManagers.ConfigurationManager;
+using Consts = MarketPlaceBusiness.Common.Consts;
 
 
 namespace KadOzenka.Web.Controllers
@@ -152,7 +154,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = "")]
 		public IActionResult ImportDataFromExcel(ImportGbuObjectModel model)
 		{
-			if (model.MainRegisterId != OMCoreObject.GetRegisterId() && !model.Document.IsNewDocument && model.Document.IdDocument == null)
+			if (model.MainRegisterId != Consts.RegisterId && !model.Document.IsNewDocument && model.Document.IdDocument == null)
 			{
 				throw new Exception("Поле Документ обязательно для заполнения");
 			}

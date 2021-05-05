@@ -426,7 +426,7 @@ namespace KadOzenka.Web.Controllers
 			};
 
 			var marketObjectAttributes = RegisterAttributeService
-				.GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
+				.GetActiveRegisterAttributes(MarketPlaceBusiness.Common.Consts.RegisterId)
 				.Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
 			var tourFactorsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == attributes.FirstOrDefault()?.RegisterId);
@@ -442,7 +442,7 @@ namespace KadOzenka.Web.Controllers
 				}).ToList()
 			};
 
-			var marketObjectsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == OMCoreObject.GetRegisterId());
+			var marketObjectsRegister = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == MarketPlaceBusiness.Common.Consts.RegisterId);
 			var marketObjectsRegisterAttributes = new DropDownTreeItemModel
 			{
 				Value = Guid.NewGuid().ToString(),
