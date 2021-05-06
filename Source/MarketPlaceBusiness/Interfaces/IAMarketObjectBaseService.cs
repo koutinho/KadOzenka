@@ -6,7 +6,7 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness.Interfaces
 {
-	public interface IMarketObjectBaseService
+	public interface IAMarketObjectBaseService
 	{
 		OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
 

@@ -50,5 +50,21 @@ namespace MarketPlaceBusiness
 				.Take(1000)
 				.ToList();
 		}
+
+		public decimal? GetPricePerSquareMeter(OMCoreObject entity)
+		{
+			decimal? result;
+			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue &&
+			    entity.AreaLand.HasValue && entity.AreaLand != 0)
+				result = entity.Price / (entity.AreaLand * 100);
+
+			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+				result = entity.Price / entity.Area;
+
+			else 
+				result = null;
+
+			return result;
+		}
 	}
 }

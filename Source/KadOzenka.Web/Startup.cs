@@ -145,7 +145,7 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterRepository), typeof(RegisterRepository));
             services.AddTransient(typeof(IRegisterAttributeRepository), typeof(RegisterAttributeRepository));
             services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
-            services.AddTransient(typeof(IMarketObjectBaseService), typeof(MarketObjectService));
+            services.AddTransient(typeof(IMarketObjectService), typeof(MarketObjectService));
             services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
             services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 

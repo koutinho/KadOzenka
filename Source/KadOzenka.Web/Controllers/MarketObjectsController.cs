@@ -44,9 +44,9 @@ namespace KadOzenka.Web.Controllers
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
         public OutliersCheckingSettingsService OutliersCheckingSettingsService { get; set; }
-        public IMarketObjectBaseService MarketObjectsService { get; set; }
+        public IMarketObjectService MarketObjectsService { get; set; }
 
-        public MarketObjectsController(IMarketObjectBaseService marketObjectsService)
+        public MarketObjectsController(IMarketObjectService marketObjectsService)
         {
             CorrectionByDateService = new CorrectionByDateService();
             CorrectionByRoomService = new CorrectionByRoomService();
@@ -68,7 +68,7 @@ namespace KadOzenka.Web.Controllers
                 if(screenList.IsNotEmpty()) ViewBag.ScreenShots = screenList;
 	            analogItem.PriceHistory = ObjectModel.Market.OMPriceHistory.Where(x => x.InitialId == id).SelectAll().Execute();
             }
-            return View(CoreObjectDto.OMMap(analogItem));
+            return View(CoreObjectDto.OMMap(analogItem, MarketObjectsService));
 		}
 
         [HttpGet]

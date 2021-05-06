@@ -21,12 +21,12 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly CoreUiService _service;
 		private readonly RegistersService _registersService;
-		private IMarketObjectBaseService MarketObjectService { get; }
+		private IMarketObjectService MarketObjectService { get; }
 		public string MarketObjectsRegisterViewId => "MarketObjects";
 
 
 		public PrefilterController(CoreUiService service, RegistersService registersService,
-			IMarketObjectBaseService marketObjectService)
+			IMarketObjectService marketObjectService)
 		{
 			_service = service;
 			_registersService = registersService;

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Core.Shared.Extensions;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -72,7 +74,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Renovation { get; set; }
 		public string BuildingLine { get; set; }
 
-		public static CoreObjectDto OMMap(OMCoreObject entity)
+		public static CoreObjectDto OMMap(OMCoreObject entity, IMarketObjectService marketObjectService)
 		{
             var dto = new CoreObjectDto
             {
@@ -113,7 +115,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 PricePerSquareMeter =
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
-						? GetPricePerSquareMeter(entity) : (decimal?) null,
+						? marketObjectService.GetPricePerSquareMeter(entity) : (decimal?) null,
                 EntranceType = entity.EntranceType,
                 QualityClassCode = entity.QualityClass_Code,
                 Renovation = entity.Renovation,
@@ -173,7 +175,7 @@ namespace KadOzenka.Web.Models.MarketObject
 					break;
 			}
 
-			var pricePerMeter = GetPricePerSquareMeter(entity);
+			var pricePerMeter = new MarketObjectService().GetPricePerSquareMeter(entity);
 			return new CoreObjectDto
 			{
 				Id = entity.Id,
@@ -195,15 +197,6 @@ namespace KadOzenka.Web.Models.MarketObject
 				Market = entity.Market_Code.GetEnumDescription(),
 				MarketLogoUrl = marketLogoUrl
 			};
-		}
-
-		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)
-		{
-			decimal? result;
-			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue && entity.AreaLand.HasValue && entity.AreaLand != 0) result = entity.Price / (entity.AreaLand * 100);
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0) result = entity.Price / entity.Area;
-			else result = (decimal?) null;
-			return result;
 		}
 	}
 }

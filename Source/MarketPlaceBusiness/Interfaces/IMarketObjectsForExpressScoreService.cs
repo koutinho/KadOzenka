@@ -6,7 +6,7 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness.Interfaces
 {
-	public interface IMarketObjectsForExpressScoreService : IMarketObjectBaseService
+	public interface IMarketObjectsForExpressScoreService : IAMarketObjectBaseService
 	{
 		List<AnalogDto> GetAnalogsByIds(List<int> ids);
 		long? GetAnalogId(string cadastralNumber);

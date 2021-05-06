@@ -8,7 +8,7 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public abstract class AMarketObjectBaseService : IMarketObjectBaseService
+	public abstract class AMarketObjectBaseService : IAMarketObjectBaseService
 	{
 		//"закладываемся" на то, что будем возвращать не OMCoreObject, а OMCoreObjectDto,
 		//поэтому делаем отдельный метод в сервисе с вызовом репозитория
