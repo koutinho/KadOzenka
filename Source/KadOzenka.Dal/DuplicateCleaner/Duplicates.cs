@@ -11,6 +11,9 @@ using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Dal.DuplicateCleaner
 {
+    /// <summary>
+    /// Процедура проверки данных на дублирование
+    /// </summary>
 	public class Duplicates
     {
 	    private static double currentProgress = 0;

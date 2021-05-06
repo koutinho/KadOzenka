@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using ObjectModel.Market;
 using KadOzenka.Dal.Logger;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces;
-using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
+using MarketPlaceBusiness.Interfaces.Utils;
 
 namespace KadOzenka.Dal.KadNumberChecker
 {
@@ -13,7 +12,7 @@ namespace KadOzenka.Dal.KadNumberChecker
     /// </summary>
     public class KadNumbers
     {
-        private IMarketObjectsServiceForBlFrontendApp MarketObjectService { get; set; }
+        private IMarketObjectsServiceForUtils MarketObjectService { get; }
 
         readonly List<OMYandexAddress> YandexObjects =
             OMYandexAddress.Where(x => true)
@@ -23,7 +22,7 @@ namespace KadOzenka.Dal.KadNumberChecker
 
         public KadNumbers()
         {
-	        MarketObjectService = new MarketObjectService();
+	        MarketObjectService = new MarketObjectForUtilsService();
         }
 
 

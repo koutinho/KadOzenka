@@ -3,7 +3,7 @@ using ObjectModel.Market;
 using System.Configuration;
 using KadOzenka.Dal.Logger;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
+using MarketPlaceBusiness.Interfaces.Utils;
 
 namespace KadOzenka.Dal.AddressChecker
 {
@@ -12,11 +12,11 @@ namespace KadOzenka.Dal.AddressChecker
     /// </summary>
     public class Addresses
     {
-	    private IMarketObjectsServiceForBlFrontendApp MarketObjectService { get; }
+	    private IMarketObjectsServiceForUtils MarketObjectService { get; }
 
 	    public Addresses()
         {
-	        MarketObjectService = new MarketObjectService();
+	        MarketObjectService = new MarketObjectForUtilsService();
         }
 
         public void Detect()

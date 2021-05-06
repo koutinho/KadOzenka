@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces;
-using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
+using MarketPlaceBusiness.Interfaces.Utils;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
@@ -29,7 +27,7 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 		{
 			GbuObjectService = new GbuObjectService();
 			RosreestrRegisterService = new RosreestrRegisterService();
-			MarketObjectService = new MarketObjectService();
+			MarketObjectService = new MarketObjectForUtilsService();
 		}
 
 		public void PerformProc(bool fillInitialObjects = true)
