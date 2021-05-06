@@ -9,7 +9,7 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class MarketObjectsForExpressScoreService : MarketObjectBaseService, IMarketObjectsForExpressScoreService
+	public class MarketObjectsForExpressScoreService : AMarketObjectBaseService, IMarketObjectsForExpressScoreService
 	{
 		public List<AnalogDto> GetAnalogsByIds(List<int> ids)
 		{

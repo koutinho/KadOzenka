@@ -8,13 +8,14 @@ namespace MarketPlaceBusiness
 {
 	public interface IMarketObjectBaseService
 	{
-		OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression);
+		OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
+		List<OMCoreObject> GetByIds(List<long?> ids, Expression<Func<OMCoreObject, object>> selectExpression = null);
 
 		List<OMCoreObject> GetObjectsByCondition(Expression<Func<OMCoreObject, bool>> whereExpression,
 			Expression<Func<OMCoreObject, object>> selectExpression);
 	}
 
-	public abstract class MarketObjectBaseService : IMarketObjectBaseService
+	public abstract class AMarketObjectBaseService : IMarketObjectBaseService
 	{
 		//"закладываемся" на то, что будем возвращать не OMCoreObject, а OMCoreObjectDto,
 		//поэтому делаем отдельный метод в сервисе с вызовом репозитория
@@ -22,15 +23,21 @@ namespace MarketPlaceBusiness
 
 		
 		//TODO inject via IoC
-		protected MarketObjectBaseService(IMarketObjectsRepository marketObjectsRepository = null)
+		protected AMarketObjectBaseService(IMarketObjectsRepository marketObjectsRepository = null)
 		{
 			MarketObjectsRepository = marketObjectsRepository ?? new MarketObjectsRepository();
 		}
 
 
-		public OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression)
+		public OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null)
 		{
 			return MarketObjectsRepository.GetById(id, selectExpression);
+		}
+
+		public List<OMCoreObject> GetByIds(List<long?> ids, Expression<Func<OMCoreObject, object>> selectExpression = null)
+		{
+			Expression<Func<OMCoreObject, bool>> whereExpression = x => ids.Contains(x.Id);
+			return MarketObjectsRepository.GetEntitiesByCondition(whereExpression, selectExpression);
 		}
 
 		public List<OMCoreObject> GetObjectsByCondition(Expression<Func<OMCoreObject, bool>> whereExpression,

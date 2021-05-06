@@ -10,7 +10,10 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class MarketObjectService : MarketObjectBaseService,
+	/// <summary>
+	/// Сервис с методами, для которых нет смысла создавать отдельные сервисы
+	/// </summary>
+	public class MarketObjectService : AMarketObjectBaseService,
 		IMarketObjectService, IMissingDataFromGbuService, IMarketObjectForCadastralInfoFiller,
 		IMarketObjectsServiceForBlFrontendApp
 	{
