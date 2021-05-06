@@ -123,5 +123,28 @@ namespace MarketPlaceBusiness
 		}
 
 		#endregion
+
+
+		#region Присвоение адресов необработанным объектам сторонних маркетов
+
+		public List<OMCoreObject> GetObjectsToSetAddress(int objectsCount)
+		{
+			Expression<Func<OMCoreObject, bool>> whereExpression = x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed;
+			Expression<Func<OMCoreObject, object>> selectExpression = x => new
+			{
+				x.Market_Code,
+				x.ProcessType_Code,
+				x.Address,
+				x.Lng,
+				x.Lat,
+				x.ExclusionStatus_Code
+			};
+
+			return GetObjectsByCondition(whereExpression, selectExpression)
+				.Take(objectsCount)
+				.ToList();
+		}
+
+		#endregion
 	}
 }

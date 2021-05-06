@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using ObjectModel.Market;
 using System.Configuration;
-using System.Linq.Expressions;
 using KadOzenka.Dal.Logger;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.ForBlFrontendApp;
 
 namespace KadOzenka.Dal.AddressChecker
 {
@@ -14,7 +12,7 @@ namespace KadOzenka.Dal.AddressChecker
     /// </summary>
     public class Addresses
     {
-	    private IMarketObjectService MarketObjectService { get; }
+	    private IMarketObjectsServiceForBlFrontendApp MarketObjectService { get; }
 
 	    public Addresses()
         {
@@ -23,20 +21,8 @@ namespace KadOzenka.Dal.AddressChecker
 
         public void Detect()
         {
-	        Expression<Func<OMCoreObject, bool>> whereExpression = x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.DoNotProcessed;
-	        Expression<Func<OMCoreObject, object>> selectExpression = x => new
-	        {
-		        x.Market_Code,
-		        x.ProcessType_Code,
-		        x.Address,
-		        x.Lng,
-		        x.Lat,
-		        x.ExclusionStatus_Code
-            };
-
-	        var allObjects = MarketObjectService.GetObjectsByCondition(whereExpression, selectExpression)
-		        .Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"]))
-		        .ToList();
+	        var objectsCount = Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"]);
+	        var allObjects = MarketObjectService.GetObjectsToSetAddress(objectsCount);
 
             int YCur = 0, YCor = 0, YErr = 0, ICtr = allObjects.Count;
             int PCur = 0, PCor = 0, PErr = 0;
