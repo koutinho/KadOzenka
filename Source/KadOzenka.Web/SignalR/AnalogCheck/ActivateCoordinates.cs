@@ -1,19 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using KadOzenka.Web.Models.MarketObject;
 using System.Globalization;
 using ObjectModel.Market;
-using Core.Shared.Misc;
 
 namespace KadOzenka.Web.SignalR.AnalogCheck
 {
-
-    enum ButtonState
+	enum ButtonState
     {
         Avaliable, 
         Loading, 
@@ -86,6 +81,10 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             await BroadcastCurrentWidgetState();
         }
 
+        /// <summary>
+        /// Присвоение координат
+        /// </summary>
+        /// <returns></returns>
         public async Task InitializeCoordinatesCheck()
         {
             await LoadButton();
@@ -102,7 +101,5 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             _current_progress = currentProgress;
             await Clients.All.SendAsync("SetCurrentProgress", currentProgress.ToString("0.##", new CultureInfo("en-US")));
         }
-
     }
-
 }

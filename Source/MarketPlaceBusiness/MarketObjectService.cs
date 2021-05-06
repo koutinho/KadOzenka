@@ -7,9 +7,6 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	/// <summary>
-	/// Сервис с методами, для которых нет смысла создавать отдельные сервисы
-	/// </summary>
 	public class MarketObjectService : AMarketObjectBaseService, IMarketObjectService
 	{
 		//TODO inject via IoC
@@ -17,9 +14,6 @@ namespace MarketPlaceBusiness
 			: base(marketObjectsRepository)
 		{
 		}
-
-
-		#region Для удаления дубликатов
 
 		public List<OMCoreObject> GetObjectsForDuplicatesChecking()
 		{
@@ -32,6 +26,29 @@ namespace MarketPlaceBusiness
 				.ToList();
 		}
 
-		#endregion
+		public List<OMCoreObject> GetObjectsToAssignDistrictsRegionsAndZones()
+		{
+			return OMCoreObject.Where(x =>
+					x.ZoneRegion == null && (x.ProcessType_Code == ProcessStep.InProcess ||
+					                         x.ProcessType_Code == ProcessStep.Dealed))
+				.Select(x => new
+				{
+					x.District_Code, x.Neighborhood_Code, x.Neighborhood, x.ZoneRegion, x.Market_Code, x.Market,
+					x.CadastralQuartal, x.Zone
+				})
+				.Execute()
+				.ToList();
+		}
+
+		public List<OMCoreObject> GetObjectsToAssignCoordinates()
+		{
+			return OMCoreObject
+				.Where(x => x.Lng == null && x.Lat == null)
+				.Select(x => new {x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code})
+				.Execute()
+				.ToList()
+				.Take(1000)
+				.ToList();
+		}
 	}
 }
