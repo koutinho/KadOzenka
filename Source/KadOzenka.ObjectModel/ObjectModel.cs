@@ -8,42 +8,10 @@ namespace ObjectModel.Gbu
     /// <summary>
     /// 2 Источник: ЕГРН (GBU_MAIN_OBJECT)
     /// </summary>
-    [RegisterInfo(RegisterID = 1)]
-    [Serializable]
-    public partial class OMSource1 : OMBaseClass<OMSource1>
-    {
-    }
-}
-
-namespace ObjectModel.Gbu
-{
-    /// <summary>
-    /// 2 Источник: Росреестр (GBU_MAIN_OBJECT)
-    /// </summary>
     [RegisterInfo(RegisterID = 2)]
     [Serializable]
     public partial class OMSource2 : OMBaseClass<OMSource2>
     {
-
-        private long _id;
-        /// <summary>
-        /// 200100 ИД (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 200100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
     }
 }
 
