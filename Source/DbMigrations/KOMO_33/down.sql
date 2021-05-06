@@ -1,0 +1,2 @@
+﻿INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (10008300, 'Показатель тест', 100, 1, null, 303, null, null, null, 0, null, null, null, 1, null, null, null, null, 2, '2020-03-24 13:00:51.000000', 0);
