@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.MapModeling
 		public List<Tuple<string, decimal, int>> GroupList(List<string> allData, List<IGrouping<string, OMCoreObject>> groupedData)
 		{
 			List<Tuple<string, decimal, int>> result = new List<Tuple<string, decimal, int>>();
-			groupedData.ForEach(x => { result.Add(new Tuple<string, decimal, int>(x.Key, Math.Round((decimal)x.Average(y => y.PricePerMeter), 2), x.Count())); });
+			groupedData.ForEach(x => { result.Add(new Tuple<string, decimal, int>(x.Key, Math.Round(x.Average(y => y.PricePerMeter) ?? 0, 2), x.Count())); });
 			allData.ForEach(x => { if (result.Where(y => y.Item1 == x).Count() == 0) result.Add(new Tuple<string, decimal, int>(x, 0, 0)); });
 			Console.WriteLine($"{string.Join("\n", result.Select(x => $"{x.Item1}\t{x.Item2}\t{x.Item3}"))}\n");
 			return result;

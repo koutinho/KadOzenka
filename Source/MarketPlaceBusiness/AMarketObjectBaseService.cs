@@ -10,12 +10,14 @@ namespace MarketPlaceBusiness
 	public interface IMarketObjectBaseService
 	{
 		OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
-		List<OMCoreObject> GetByIds(List<long?> ids, Expression<Func<OMCoreObject, object>> selectExpression = null);
+		List<OMCoreObject> GetByIds(List<long> ids, Expression<Func<OMCoreObject, object>> selectExpression = null);
 
 		List<OMCoreObject> GetObjectsByCondition(Expression<Func<OMCoreObject, bool>> whereExpression,
 			Expression<Func<OMCoreObject, object>> selectExpression);
 
-		RegisterAttribute GetAttributeData(Expression<Func<OMCoreObject, object>> property);
+		//RegisterAttribute GetAttributeData(Expression<Func<OMCoreObject, object>> property);
+
+		RegisterAttribute GetAttributeData<TResult>(Expression<Func<OMCoreObject, TResult>> property);
 	}
 
 	public abstract class AMarketObjectBaseService : IMarketObjectBaseService
@@ -31,7 +33,7 @@ namespace MarketPlaceBusiness
 			MarketObjectsRepository = marketObjectsRepository ?? new MarketObjectsRepository();
 		}
 
-		public RegisterAttribute GetAttributeData(Expression<Func<OMCoreObject, object>> property)
+		public RegisterAttribute GetAttributeData<TResult>(Expression<Func<OMCoreObject, TResult>> property)
 		{
 			return OMCoreObject.GetAttributeData(property);
 		}
@@ -41,7 +43,7 @@ namespace MarketPlaceBusiness
 			return MarketObjectsRepository.GetById(id, selectExpression);
 		}
 
-		public List<OMCoreObject> GetByIds(List<long?> ids, Expression<Func<OMCoreObject, object>> selectExpression = null)
+		public List<OMCoreObject> GetByIds(List<long> ids, Expression<Func<OMCoreObject, object>> selectExpression = null)
 		{
 			Expression<Func<OMCoreObject, bool>> whereExpression = x => ids.Contains(x.Id);
 			return MarketObjectsRepository.GetEntitiesByCondition(whereExpression, selectExpression);

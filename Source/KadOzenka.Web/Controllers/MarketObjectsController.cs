@@ -93,8 +93,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_UNLOAD_SCREENSHOTS)]
         public FileResult UnloadScreenshots(long objectId)
 		{
-			List<long?> ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? RegistersVariables.CurrentList?.Cast<long?>()?.ToList() : new List<long?> { objectId };
-			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId)).SelectAll().Execute().ToList();
+			var ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? RegistersVariables.CurrentList?.Cast<long>()?.ToList() : new List<long> { objectId };
+			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId.GetValueOrDefault())).SelectAll().Execute().ToList();
 			var analogItems = MarketObjectsService.GetByIds(ids, x => x.CadastralNumber);
 			using (MemoryStream zipStream = new MemoryStream())
 			{
