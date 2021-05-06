@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Core.Register.RegisterEntities;
 using MarketPlaceBusiness.Common;
 using ObjectModel.Market;
 
@@ -13,6 +14,8 @@ namespace MarketPlaceBusiness
 
 		List<OMCoreObject> GetObjectsByCondition(Expression<Func<OMCoreObject, bool>> whereExpression,
 			Expression<Func<OMCoreObject, object>> selectExpression);
+
+		RegisterAttribute GetAttributeData(Expression<Func<OMCoreObject, object>> property);
 	}
 
 	public abstract class AMarketObjectBaseService : IMarketObjectBaseService
@@ -28,6 +31,10 @@ namespace MarketPlaceBusiness
 			MarketObjectsRepository = marketObjectsRepository ?? new MarketObjectsRepository();
 		}
 
+		public RegisterAttribute GetAttributeData(Expression<Func<OMCoreObject, object>> property)
+		{
+			return OMCoreObject.GetAttributeData(property);
+		}
 
 		public OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null)
 		{
