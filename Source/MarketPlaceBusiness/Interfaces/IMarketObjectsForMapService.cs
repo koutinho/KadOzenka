@@ -8,6 +8,6 @@ namespace MarketPlaceBusiness.Interfaces
 {
 	public interface IMarketObjectsForMapService : IMarketObjectBaseService
 	{
-		
+		QSQuery<OMCoreObject> GetBaseQuery();
 	}
 }

@@ -57,11 +57,7 @@ namespace KadOzenka.Web.Controllers
             string districts, string marketSource, string actualDate)
         {
             DateTime acD;
-            var query = OMCoreObject
-                .Where(x =>
-                    (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
-                    x.Lng != null && x.Lat != null &&
-                    (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+            var query = MarketObjectService.GetBaseQuery();
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
             if (!districts.IsEmpty()) query.And(x => x.District == districts);
@@ -86,11 +82,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        DateTime acD;
             string[] colorsArray = colors.Split(",");
-            var query = OMCoreObject
-                .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
-                             x.Lng != null &&
-                             x.Lat != null &&
-                             (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+            var query = MarketObjectService.GetBaseQuery();
 
             List<OMReferenceItem> allDistricts = OMReferenceItem.Where(x => x.ReferenceId == MarketObjectService.GetAttributeData(y => y.District).ReferenceId).Select(x => x.Value).Execute().ToList();
             List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == MarketObjectService.GetAttributeData(y => y.Neighborhood).ReferenceId).Select(x => x.Value).Execute().ToList();
@@ -101,7 +93,7 @@ namespace KadOzenka.Web.Controllers
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            List<OMCoreObject> DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
+            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
 
             List<IGrouping<string, OMCoreObject>> districtList = DistrictsData.GroupBy(x => x.District).ToList();
             List<IGrouping<string, OMCoreObject>> regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
