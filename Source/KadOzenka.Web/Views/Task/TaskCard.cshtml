@@ -287,21 +287,9 @@
                         kendo.ui.progress($('body'), false);
                     });
                 });
-
-            updateFilesBlock();
         });
 
-        function updateFilesBlock() {
-            var noteType = $('[name="NoteType"]').val();
-            var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
-            if (noteType === petitionNoteType) {
-                $("#filesBlockLabel").text("XLSX-файлы");
-                $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xlsx', '.zip', '.rar'];
-            } else {
-                $("#filesBlockLabel").text("XML-файлы");
-                $("#files").data('kendoUpload').options.validation.allowedExtensions = ['.xml', '.zip', '.rar'];
-            }
-        }
+
 
         function dataBound(e) {
             var grid = this;

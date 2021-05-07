@@ -9669,13 +9669,6 @@ namespace ObjectModel.Directory
         [ShortTitle("Ежедневка")]
         Day = 1,
 		/// <summary>
-		/// Обращение (2)
-		/// </summary>
-		[Description("Обращение")]
-        [EnumCode("2")]
-        [ShortTitle("Обращение")]
-        Petition = 2,
-		/// <summary>
 		/// Годовые (3)
 		/// </summary>
 		[Description("Годовые")]

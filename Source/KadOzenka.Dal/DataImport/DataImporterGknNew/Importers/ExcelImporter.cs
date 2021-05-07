@@ -17,10 +17,10 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 	/// <summary>
 	/// Класс для импорта Excel документа ЗнО любого типа кроме "Обращений"
 	/// </summary>
-	public class NotPetitionExcelImporter : BaseImporter
+	public class ExcelImporter : BaseImporter
 	{
-		public NotPetitionExcelImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
-		: base(dataImporterGknLongProcessProgressLogger, Log.ForContext<NotPetitionExcelImporter>())
+		public ExcelImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
+		: base(dataImporterGknLongProcessProgressLogger, Log.ForContext<ExcelImporter>())
 		{
 		}
 

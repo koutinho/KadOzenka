@@ -111,26 +111,26 @@ namespace KadOzenka.Dal.DataImport
 			}
 		}
 
-        /// <summary>
-        /// Импорт данных ГКН из Excel для Обращений
-        /// excelFile - файл Excel
-        /// pathSchema - путь к каталогу где хранится схема
-        /// task - ссылка на задание на оценку
-        /// </summary>
-        public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
-        {
-			xmlObjectList GknItems = null;
-			using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
-			{
-				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = XmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
-			}
+  //      /// <summary>
+  //      /// Импорт данных ГКН из Excel для Обращений
+  //      /// excelFile - файл Excel
+  //      /// pathSchema - путь к каталогу где хранится схема
+  //      /// task - ссылка на задание на оценку
+  //      /// </summary>
+  //      public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
+  //      {
+		//	xmlObjectList GknItems = null;
+		//	using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
+		//	{
+		//		xmlImportGkn.FillDictionary(pathSchema);
+		//		GknItems = XmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
+		//	}
 
-			using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
-			{
-				ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
-			}
-		}
+		//	using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
+		//	{
+		//		ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
+		//	}
+		//}
 
         /// <summary>
         /// Импорт данных ГКН из Excel для всех типов кроме Обращений

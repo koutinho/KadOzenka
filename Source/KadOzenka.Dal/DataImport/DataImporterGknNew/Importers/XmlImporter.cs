@@ -10,10 +10,10 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 	/// <summary>
 	/// Класс для импорта .xml документа ЗнО любого типа кроме "Обращений"
 	/// </summary>
-	public class NotPetitionXmlImporter : BaseImporter
+	public class XmlImporter : BaseImporter
 	{
-		public NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
-			: base(dataImporterGknLongProcessProgressLogger, Log.ForContext<NotPetitionXmlImporter>())
+		public XmlImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger)
+			: base(dataImporterGknLongProcessProgressLogger, Log.ForContext<XmlImporter>())
 		{
 		}
 
