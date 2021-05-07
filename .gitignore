@@ -19,6 +19,8 @@
 /Source/.vs
 /Source/KadOzenka.ObjectModel/bin
 /Source/KadOzenka.ObjectModel/obj
+/Source/KadOzenka.ObjectModelEnum/bin
+/Source/KadOzenka.ObjectModelEnum/obj
 /Source/KadOzenka.LongProcessService/obj
 /Source/KadOzenka.LongProcessService/bin
 /Source/KadOzenka.LongProcessService/ConfigCore
