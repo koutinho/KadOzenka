@@ -66,10 +66,11 @@
         <OutputPath>.\bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <EnvironmentName>Development</EnvironmentName>
-        <ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
-        <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
       </PropertyGroup>
-    </When>
+      <ItemGroup>
+		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json; appsettings.QA.json; appsettings.Demo.json" />
+	  </ItemGroup>
+	</When>
     <When Condition=" '$(Configuration)'=='QA' ">
       <PropertyGroup>
         <DebugSymbols>true</DebugSymbols>
