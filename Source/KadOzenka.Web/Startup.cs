@@ -92,6 +92,7 @@ namespace CIPJS
             services.AddTransient<DashboardService>();
             
             services.AddTransient<GbuObjectService>();
+            services.AddTransient<CodDictionaryService>();
             services.AddTransient<TaskService>();
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
@@ -126,6 +127,7 @@ namespace CIPJS
             services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));
             services.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
             services.AddTransient(typeof(IGbuObjectService), typeof(GbuObjectService));
+            services.AddTransient(typeof(ICodDictionaryService), typeof(CodDictionaryService));
             services.AddTransient(typeof(IGbuReportService), typeof(GbuReportService));
             services.AddTransient(typeof(ILongProcessService), typeof(LongProcessService));
             services.AddTransient(typeof(IRecycleBinService), typeof(RecycleBinService));
