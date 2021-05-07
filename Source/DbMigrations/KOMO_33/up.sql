@@ -7,3 +7,6 @@ delete from core_register_relation where id=103;
 --удаляем связь между ЕО и справочником кадастровых кварталов (не использовалась в коде, мешала разделению проектов)
 delete from core_register_relation where id=218;
 
+--Удаляем таблицы, связанные с экспресс-оценкой
+delete from core_register_attribute where registerid in (608, 609, 610, 611);
+delete from core_register where registerid in (608, 609, 610, 611);

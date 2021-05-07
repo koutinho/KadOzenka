@@ -25,7 +25,6 @@ using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
-using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
@@ -98,9 +97,9 @@ namespace CIPJS
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
 	        services.AddSingleton<GbuCurrentLongProcessesListenerService>();
-	        services.AddTransient<ScoreCommonService>();
-			services.AddTransient<ExpressScoreService>();
-	        services.AddTransient<ExpressScoreReferenceService>();
+	        //services.AddTransient<ScoreCommonService>();
+			//services.AddTransient<ExpressScoreService>();
+			//services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
 	        services.AddTransient<ModelingService>();
 	        services.AddTransient<MapBuildingService>();
@@ -147,7 +146,7 @@ namespace CIPJS
             services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
             services.AddTransient(typeof(IMarketObjectService), typeof(MarketObjectService));
             services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
-            services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
+            //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();

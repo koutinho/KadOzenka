@@ -1216,24 +1216,6 @@ namespace ObjectModel.Declarations
 }
 
 
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 610 Экспресс оценка. Значения справочников
-    /// </summary>
-    public partial class OMEsReferenceItem
-    {
-        /// <summary>
-        /// Ссылка на (609 Экспресс оценка. Справочники)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.ES.OMEsReference ParentEsReference { get; set; }
-
-    }
-}
-
-
 namespace ObjectModel.Common
 {
     /// <summary>
