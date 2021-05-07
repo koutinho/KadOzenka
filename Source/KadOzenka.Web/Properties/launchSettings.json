@@ -15,7 +15,7 @@
     "IIS Express": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:4050",
+      "launchUrl": "http://localhost:5049",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -24,11 +24,11 @@
     "MiomoKadOzenka.Web.Development": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50350/",
+      "launchUrl": "http://localhost:5050/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:50350/"
+      "applicationUrl": "http://localhost:5050/"
     },
     "MiomoKadOzenka.Web.QA": {
       "commandName": "Project",
@@ -69,11 +69,11 @@
     "MiomoKadOzenka.Web.Local": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:50355/",
+      "launchUrl": "http://localhost:5049/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Local"
       },
-      "applicationUrl": "http://localhost:50355/"
+      "applicationUrl": "http://localhost:5049/"
     }
   }
 }
