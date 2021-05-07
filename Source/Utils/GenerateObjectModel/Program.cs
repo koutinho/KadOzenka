@@ -22,26 +22,30 @@ namespace GenerateObjectModel
 
 
 			Console.WriteLine("\n\nНачата генерация ORM");
-			string objectModel = ObjectModelBuilder.BuildObjectModel(mode.RegisterFilter);
+
+			var objectModel = ObjectModelBuilder.BuildObjectModel(mode.RegisterFilter);
 			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}.cs", objectModel);
 			Console.WriteLine("Закончена работа с ObjectModel.");
 
-			string objectModelEnum = ObjectModelBuilder.BuildObjectModelEnum(referenceFilter);
+			var objectModelEnum = ObjectModelBuilder.BuildObjectModelEnum(referenceFilter);
 			File.WriteAllText(pathForEnumFile + "ObjectModelEnum.cs", objectModelEnum);
 			Console.WriteLine("Закончена работа с ObjectModelEnum.");
 
-			string objectModelPartial = ObjectModelBuilder.BuildObjectModelPartial(mode.RegisterFilter);
+			var objectModelPartial = ObjectModelBuilder.BuildObjectModelPartial(mode.RegisterFilter);
 			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}Partial.cs", objectModelPartial);
 			Console.WriteLine("Закончена работа с ObjectModelPartial.");
 
-			string objectModelPartial2 = ObjectModelBuilder.BuildObjectModelPartial2(mode.RegisterFilter);
+			var objectModelPartial2 = ObjectModelBuilder.BuildObjectModelPartial2(mode.RegisterFilter);
 			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}Partial2.cs", objectModelPartial2);
 			Console.WriteLine("Закончена работа с ObjectModelPartial2.");
 
-			string objectModelSRDFunction = ObjectModelBuilder.BuildObjectModelSRDFunction();
-			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}SRDFunction.cs", objectModelSRDFunction);
-			Console.WriteLine("Закончена работа с ObjectModelSRDFunction.");
-
+			//TODO KOMO-33 добавить в платформу фильтры для генерации СРД
+			if (mode.Type == Consts.GeneralModeName)
+			{
+				var objectModelSRDFunction = ObjectModelBuilder.BuildObjectModelSRDFunction();
+				File.WriteAllText(mode.Path + $"{mode.FileNameStarting}SRDFunction.cs", objectModelSRDFunction);
+				Console.WriteLine("Закончена работа с ObjectModelSRDFunction.");
+			}
 
 			Console.WriteLine("Завершено. Нажмите любую клавишу для завершения.");
 			Console.ReadLine();
