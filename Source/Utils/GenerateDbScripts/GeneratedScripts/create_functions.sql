@@ -14301,8 +14301,8 @@ begin
     values (register_code, concat('Gbu.Source',register_code), concat('Источник: ',register_description),
             concat('GBU_SOURCE',register_code,'_A'), null, 'GBU_MAIN_OBJECT', null, 5, 'REG_OBJECT_SEQ', 0, 0, null, null,
             null, 0, partitioning_type, 200);
-    insert into core_register_attribute (id,name,registerid,type,is_deleted,change_date,hidden,primary_key)
-    values (register_code*100000+100, 'Идентификатор', register_code, 1, 0, now(),0,1);
+    insert into core_register_attribute (id,name,registerid,type,value_field,is_deleted,change_date,hidden,primary_key)
+    values (register_code*100000+100, 'Идентификатор', register_code, 1, 'ID', 0, now(),0,1);
 end
 $function$;/*create_source_register_attribute 2993*/CREATE OR REPLACE FUNCTION public.create_source_register_attribute(attribute_id integer, description text, register_id integer, type integer)
  RETURNS void
