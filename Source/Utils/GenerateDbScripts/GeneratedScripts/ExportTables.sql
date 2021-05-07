@@ -2418,6 +2418,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_LIST', 'last_use_date')) then
+        execute 'alter table CORE_LIST add "last_use_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_920_quant_pk')) then
     execute 'alter table CORE_LIST add constraint reg_920_quant_pk primary key (id)';
   end if;
@@ -10377,6 +10386,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'use_parent_attribute_for_car_place')) then
         execute 'alter table GBU_ATTRIBUTE_SETTINGS add "use_parent_attribute_for_car_place" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'disable_editing')) then
+        execute 'alter table GBU_ATTRIBUTE_SETTINGS add "disable_editing" SMALLINT';
     end if;
 end $$;
 
@@ -33584,7 +33602,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source2_a_1466', 'value')) then
-        execute 'alter table gbu_source2_a_1466 add "value" VARCHAR(5000)';
+        execute 'alter table gbu_source2_a_1466 add "value" VARCHAR(25000)';
     end if;
 end $$;
 
@@ -57875,6 +57893,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ko_objects_characteristics_register', 'disable_editing')) then
+        execute 'alter table ko_objects_characteristics_register add "disable_editing" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_600_q_pk')) then
     execute 'alter table ko_objects_characteristics_register add constraint reg_600_q_pk primary key (id)';
   end if;
@@ -57902,6 +57929,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_OBJECTS_CHARACTERISTICS_REGISTER', 'register_id')) then
         execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add "register_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_OBJECTS_CHARACTERISTICS_REGISTER', 'disable_editing')) then
+        execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add "disable_editing" SMALLINT';
     end if;
 end $$;
 

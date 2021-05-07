@@ -68,4 +68,5 @@
 /Source/EmbeddedResource/bin
 /Source/EmbeddedResource/obj
 /Source/MarketPlaceBusiness/bin
-/Source/MarketPlaceBusiness/obj
+/Source/MarketPlaceBusiness/objbin
+obj
