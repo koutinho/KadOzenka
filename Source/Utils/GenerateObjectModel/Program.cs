@@ -17,29 +17,29 @@ namespace GenerateObjectModel
 			var mode = GetModeInfo();
 			Console.WriteLine($"Подробности конфигурации '{mode}'");
 
-			var filter = mode.RegisterFilter;
-			var filterReference = mode.ReferenceFilter;
-			var path = mode.Path;
+			var pathForEnumFile = ConfigurationManager.AppSettings["EnumFilePath"].ParseToStringNullable();
+			var referenceFilter = ConfigurationManager.AppSettings["ReferenceFilter"].ParseToStringNullable();
 
-			Console.WriteLine("\n\nНачата генерация ОРМ");
-			string objectModel = ObjectModelBuilder.BuildObjectModel(filter);
-			File.WriteAllText(path + "ObjectModel.cs", objectModel);
+
+			Console.WriteLine("\n\nНачата генерация ORM");
+			string objectModel = ObjectModelBuilder.BuildObjectModel(mode.RegisterFilter);
+			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}.cs", objectModel);
 			Console.WriteLine("Закончена работа с ObjectModel.");
 
-			string objectModelEnum = ObjectModelBuilder.BuildObjectModelEnum(filterReference);
-			File.WriteAllText(path + "ObjectModelEnum.cs", objectModelEnum);
+			string objectModelEnum = ObjectModelBuilder.BuildObjectModelEnum(referenceFilter);
+			File.WriteAllText(pathForEnumFile + "ObjectModelEnum.cs", objectModelEnum);
 			Console.WriteLine("Закончена работа с ObjectModelEnum.");
 
-			string objectModelPartial = ObjectModelBuilder.BuildObjectModelPartial(filter);
-			File.WriteAllText(path + "ObjectModelPartial.cs", objectModelPartial);
+			string objectModelPartial = ObjectModelBuilder.BuildObjectModelPartial(mode.RegisterFilter);
+			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}Partial.cs", objectModelPartial);
 			Console.WriteLine("Закончена работа с ObjectModelPartial.");
 
-			string objectModelPartial2 = ObjectModelBuilder.BuildObjectModelPartial2(filter);
-			File.WriteAllText(path + "ObjectModelPartial2.cs", objectModelPartial2);
+			string objectModelPartial2 = ObjectModelBuilder.BuildObjectModelPartial2(mode.RegisterFilter);
+			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}Partial2.cs", objectModelPartial2);
 			Console.WriteLine("Закончена работа с ObjectModelPartial2.");
 
 			string objectModelSRDFunction = ObjectModelBuilder.BuildObjectModelSRDFunction();
-			File.WriteAllText(path + "ObjectModelSRDFunction.cs", objectModelSRDFunction);
+			File.WriteAllText(mode.Path + $"{mode.FileNameStarting}SRDFunction.cs", objectModelSRDFunction);
 			Console.WriteLine("Закончена работа с ObjectModelSRDFunction.");
 
 
@@ -61,6 +61,8 @@ namespace GenerateObjectModel
 			var mode = config.ModesCollection.Cast<ModeElement>().FirstOrDefault(item => item.Type == modeStr);
 			if (mode == null)
 				throw new Exception($"Не найден параметр запуска '{modeStr}'");
+
+			mode.RegisterFilter = string.Format(mode.RegisterFilter, Consts.RegisterIdsForAnalogs);
 
 			return mode;
 		}

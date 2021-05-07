@@ -16,4 +16,8 @@
     <PackageReference Include="Platform" Version="1.0.390" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
+  </ItemGroup>
+
 </Project>
