@@ -84,11 +84,6 @@ namespace KadOzenka.Dal.Correction
             return isDataUpdated;
         }
 
-        public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects, int numberOfRooms)
-        {
-            return objects.Where(x => x.RoomsCount == numberOfRooms).Average(x => x.PricePerMeter.GetValueOrDefault());
-        }
-
         public List<OMCoefficientsForCorrectionByRooms> GetCoefficients(DateTime date)
         {
             return OMCoefficientsForCorrectionByRooms.Where(x => x.ChangingDate == date).SelectAll().Execute().ToList();

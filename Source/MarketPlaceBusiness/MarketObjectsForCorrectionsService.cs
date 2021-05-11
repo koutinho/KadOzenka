@@ -90,6 +90,10 @@ namespace MarketPlaceBusiness
 			return haveOneRoomApartment && haveTwoRoomsApartment && haveThreeRoomsApartment;
 		}
 
+		public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects, int numberOfRooms)
+		{
+			return objects.Where(x => x.RoomsCount == numberOfRooms).Average(x => x.PricePerMeter.GetValueOrDefault());
+		}
 
 		#endregion
 

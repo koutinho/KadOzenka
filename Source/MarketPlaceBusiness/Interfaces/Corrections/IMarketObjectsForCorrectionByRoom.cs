@@ -13,5 +13,7 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegment(List<MarketSegment> calculatedMarketSegments, long?[] numberOfRooms);
 
 		bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding);
+
+		decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects, int numberOfRooms);
 	}
 }

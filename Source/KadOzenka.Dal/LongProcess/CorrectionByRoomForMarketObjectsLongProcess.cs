@@ -59,9 +59,9 @@ namespace KadOzenka.Dal.LongProcess
 
                     if (MarketObjectsService.IsBuildingContainAllRoomsTypes(objectsInBuilding))
                     {
-                        var oneRoomAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 1);
-                        var twoRoomsAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 2);
-                        var threeRoomsAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 3);
+                        var oneRoomAveragePricePerMeter = MarketObjectsService.GetAveragePricePerMeter(objectsInBuilding, 1);
+                        var twoRoomsAveragePricePerMeter = MarketObjectsService.GetAveragePricePerMeter(objectsInBuilding, 2);
+                        var threeRoomsAveragePricePerMeter = MarketObjectsService.GetAveragePricePerMeter(objectsInBuilding, 3);
 
                         var oneRoomCoefficient = oneRoomAveragePricePerMeter == 0
                             ? 0
