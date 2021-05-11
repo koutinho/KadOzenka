@@ -35,6 +35,7 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.CommonFunctions.ExistFolderChecker;
 using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
@@ -75,6 +76,7 @@ namespace CIPJS
                 LongProcessManagementService service = new LongProcessManagementService();
                 service.Start();
             }
+            ExistFolderCheckerService.Run();
         }
 
         public IConfiguration Configuration { get; }
