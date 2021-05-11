@@ -95,10 +95,10 @@ namespace KadOzenka.Web.Controllers
 
             var DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
 
-            List<IGrouping<string, OMCoreObject>> districtList = DistrictsData.GroupBy(x => x.District).ToList();
-            List<IGrouping<string, OMCoreObject>> regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
-            List<IGrouping<string, OMCoreObject>> zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
-            List<IGrouping<string, OMCoreObject>> quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
+            var districtList = DistrictsData.GroupBy(x => x.District).ToList();
+            var regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
+            var zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
+            var quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
                 new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allDistricts, districtList), colorsArray);
