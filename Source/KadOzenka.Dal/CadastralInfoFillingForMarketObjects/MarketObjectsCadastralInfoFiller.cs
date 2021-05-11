@@ -60,14 +60,14 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
                         }
                         else
                         {
-                            FillQuarterByCadastralNumber(marketObject);
+                            MarketObjectService.FillQuarterByCadastralNumber(marketObject);
                             fromCadastralNumber++;
                         }
                     }
                 }
                 else
                 {
-                    FillQuarterByCadastralNumber(marketObject);
+                    MarketObjectService.FillQuarterByCadastralNumber(marketObject);
                     fromCadastralNumber++;
                 }
 
@@ -119,12 +119,6 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
             }
 
             Console.WriteLine($"Обработка завершена");
-        }
-
-        private void FillQuarterByCadastralNumber(OMCoreObject marketObject)
-        {
-            var ellipsisLastIndex = marketObject.CadastralNumber.LastIndexOf(":");
-            marketObject.CadastralQuartal = marketObject.CadastralNumber.Substring(0, ellipsisLastIndex);
         }
     }
 }

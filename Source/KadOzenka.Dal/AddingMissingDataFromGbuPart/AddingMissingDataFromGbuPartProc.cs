@@ -59,10 +59,11 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 							},
 							DateTime.Now.GetEndOfTheDay());
 
-						var buildingYearWasUpdated = FillBuildingYearData(omCoreObject,
-							attributesValues.FirstOrDefault(x => x.AttributeId == buildYearAttributeId));
-						var wallMaterialWasUpdated = FillWallMaterialData(omCoreObject,
-							attributesValues.FirstOrDefault(x => x.AttributeId == wallMaterialAttributeId));
+						var buildingYearAttribute = attributesValues.FirstOrDefault(x => x.AttributeId == buildYearAttributeId);
+						var buildingYearWasUpdated = MarketObjectService.FillBuildingYearData(omCoreObject, buildingYearAttribute?.GetValueInString());
+						
+						var wallMaterialAttribute = attributesValues.FirstOrDefault(x => x.AttributeId == wallMaterialAttributeId);
+						var wallMaterialWasUpdated = MarketObjectService.FillWallMaterialData(omCoreObject, wallMaterialAttribute?.GetValueInString());
 
 						if (buildingYearWasUpdated || wallMaterialWasUpdated)
 						{
@@ -82,36 +83,6 @@ namespace KadOzenka.Dal.AddingMissingDataFromGbuPart
 			}
 
 			ConsoleLog.WriteFotter("Получение дополнительных данных из ГБУ части для объектов аналогов завершено");
-		}
-
-		private bool FillBuildingYearData(OMCoreObject omCoreObject, GbuObjectAttribute attributeValue)
-		{
-			if (!omCoreObject.BuildingYear.HasValue)
-			{
-				if (long.TryParse(attributeValue?.GetValueInString(), out var year))
-				{
-					omCoreObject.BuildingYear = year;
-					return true;
-				}
-			}
-
-			return false;
-		}
-
-		private bool FillWallMaterialData(OMCoreObject omCoreObject, GbuObjectAttribute attributeValue)
-		{
-			if (string.IsNullOrEmpty(omCoreObject.WallMaterial))
-			{
-				var attrValue = attributeValue?.GetValueInString()?.Replace(";", ",");
-				var enumValue = EnumExtensions.GetEnumByDescription<WallMaterial>(attrValue);
-				if (enumValue != 0)
-				{
-					omCoreObject.WallMaterial_Code = (WallMaterial)enumValue;
-					return true;
-				}
-			}
-
-			return false;
 		}
 	}
 }

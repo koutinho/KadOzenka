@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Core.Shared.Extensions;
 using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces.Utils;
 using ObjectModel.Directory;
@@ -54,6 +55,36 @@ namespace MarketPlaceBusiness
 			return GetObjectsByCondition(whereExpression, selectExpression);
 		}
 
+		public bool FillBuildingYearData(OMCoreObject omCoreObject, string yearStr)
+		{
+			if (!omCoreObject.BuildingYear.HasValue)
+			{
+				if (long.TryParse(yearStr, out var year))
+				{
+					omCoreObject.BuildingYear = year;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public bool FillWallMaterialData(OMCoreObject omCoreObject, string wallMaterial)
+		{
+			if (string.IsNullOrEmpty(omCoreObject.WallMaterial))
+			{
+				var attrValue = wallMaterial?.Replace(";", ",");
+				var enumValue = EnumExtensions.GetEnumByDescription<WallMaterial>(attrValue);
+				if (enumValue != 0)
+				{
+					omCoreObject.WallMaterial_Code = (WallMaterial)enumValue;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		#endregion
 
 
@@ -85,6 +116,12 @@ namespace MarketPlaceBusiness
 					x.ZoneRegion
 				})
 				.Execute();
+		}
+
+		public void FillQuarterByCadastralNumber(OMCoreObject marketObject)
+		{
+			var ellipsisLastIndex = marketObject.CadastralNumber.LastIndexOf(":");
+			marketObject.CadastralQuartal = marketObject.CadastralNumber.Substring(0, ellipsisLastIndex);
 		}
 
 		#endregion

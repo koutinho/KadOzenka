@@ -8,5 +8,7 @@ namespace MarketPlaceBusiness.Interfaces.Utils
 		List<OMCoreObject> GetObjectsWithCadastralNumber();
 
 		List<OMCoreObject> GetObjectsWithCadastralQuartal();
+
+		void FillQuarterByCadastralNumber(OMCoreObject marketObject);
 	}
 }
