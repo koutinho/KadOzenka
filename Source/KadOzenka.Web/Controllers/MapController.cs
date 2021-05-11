@@ -45,7 +45,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        if (objectId.HasValue)
             {
-                var marketObject = MarketObjectService.GetById(objectId.Value);
+                var marketObject = MarketObjectService.GetMappedObjectById(objectId.Value);
                 return View(MapObjectDto.OMMap(marketObject));
             }
             return View(new MapObjectDto());
@@ -374,7 +374,7 @@ namespace KadOzenka.Web.Controllers
 
         private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
 	    {
-		    var marketObject = MarketObjectService.GetById(objectId);
+		    var marketObject = MarketObjectService.GetMappedObjectById(objectId);
             if (marketObject == null)throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
             query.And(x => x.DealType_Code == marketObject.DealType_Code && x.PropertyMarketSegment_Code == marketObject.PropertyMarketSegment_Code);
 	    }

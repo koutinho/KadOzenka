@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Core.Register.RegisterEntities;
+using MarketPlaceBusiness.Dto;
 using ObjectModel.Market;
 
 namespace MarketPlaceBusiness.Interfaces
@@ -9,6 +10,8 @@ namespace MarketPlaceBusiness.Interfaces
 	public interface IAMarketObjectBaseService
 	{
 		OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
+
+		MarketObjectDto GetMappedObjectById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
 
 		List<OMCoreObject> GetByIds(List<long> ids, Expression<Func<OMCoreObject, object>> selectExpression = null);
 

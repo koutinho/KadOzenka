@@ -59,15 +59,16 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public IActionResult ObjectCard(long id)
-		{
-			var analogItem = MarketObjectsService.GetById(id);
+        {
+	        List<OMPriceHistory> priceHistory = null;
+            var analogItem = MarketObjectsService.GetMappedObjectById(id);
             if (analogItem != null)
             {
                 var screenList = OMScreenshots.Where(x => x.InitialId == id).SelectAll().Execute().Select(x => (x.Id, x.CreationDate)).ToList();
                 if(screenList.IsNotEmpty()) ViewBag.ScreenShots = screenList;
-	            analogItem.PriceHistory = ObjectModel.Market.OMPriceHistory.Where(x => x.InitialId == id).SelectAll().Execute();
+                priceHistory = ObjectModel.Market.OMPriceHistory.Where(x => x.InitialId == id).SelectAll().Execute();
             }
-            return View(CoreObjectDto.OMMap(analogItem, MarketObjectsService));
+            return View(CoreObjectDto.OMMap(analogItem, priceHistory));
 		}
 
         [HttpGet]

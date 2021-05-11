@@ -51,6 +51,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
@@ -145,6 +146,7 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterRepository), typeof(RegisterRepository));
             services.AddTransient(typeof(IRegisterAttributeRepository), typeof(RegisterAttributeRepository));
             services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
+            services.AddTransient(typeof(IMarketObjectsRepository), typeof(MarketObjectsRepository));
             services.AddTransient(typeof(IMarketObjectService), typeof(MarketObjectService));
             services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
@@ -178,6 +180,7 @@ namespace CIPJS
                 services.AddSingleton(provider => new MapperConfiguration(cfg =>
                 {
 	                cfg.AddProfile(new MappingProfile());
+	                cfg.AddProfile(new MarketPlaceBusiness.Dto.AutoMapper.MappingProfile());
                 }).CreateMapper());
 
                 services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });

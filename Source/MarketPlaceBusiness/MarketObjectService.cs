@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoMapper;
 using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
@@ -11,8 +12,8 @@ namespace MarketPlaceBusiness
 	public class MarketObjectService : AMarketObjectBaseService, IMarketObjectService
 	{
 		//TODO inject via IoC
-		public MarketObjectService(IMarketObjectsRepository marketObjectsRepository = null)
-			: base(marketObjectsRepository)
+		public MarketObjectService(IMarketObjectsRepository marketObjectsRepository = null, IMapper mapper = null)
+			: base(marketObjectsRepository, mapper)
 		{
 		}
 
@@ -78,22 +79,6 @@ namespace MarketPlaceBusiness
 				.ToList()
 				.Take(1000)
 				.ToList();
-		}
-
-		public decimal? GetPricePerSquareMeter(OMCoreObject entity)
-		{
-			decimal? result;
-			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue &&
-			    entity.AreaLand.HasValue && entity.AreaLand != 0)
-				result = entity.Price / (entity.AreaLand * 100);
-
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
-				result = entity.Price / entity.Area;
-
-			else 
-				result = null;
-
-			return result;
 		}
 	}
 }

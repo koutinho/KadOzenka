@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using AutoMapper;
 using Core.Register.RegisterEntities;
 using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Dto.AutoMapper;
 using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Market;
 
@@ -13,11 +16,14 @@ namespace MarketPlaceBusiness
 		//"закладываемся" на то, что будем возвращать не OMCoreObject, а OMCoreObjectDto,
 		//поэтому делаем отдельный метод в сервисе с вызовом репозитория
 		protected IMarketObjectsRepository MarketObjectsRepository { get; }
+		protected IMapper Mapper{ get; }
 
 		
 		//TODO inject via IoC
-		protected AMarketObjectBaseService(IMarketObjectsRepository marketObjectsRepository = null)
+		protected AMarketObjectBaseService(IMarketObjectsRepository marketObjectsRepository = null, IMapper mapper = null)
 		{
+			Mapper = mapper ?? MapperSingleton.Get();
+
 			MarketObjectsRepository = marketObjectsRepository ?? new MarketObjectsRepository();
 		}
 
@@ -29,6 +35,14 @@ namespace MarketPlaceBusiness
 		public OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null)
 		{
 			return MarketObjectsRepository.GetById(id, selectExpression);
+		}
+
+		public MarketObjectDto GetMappedObjectById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null)
+		{
+			var omCoreObject = GetById(id, selectExpression);
+			var marketObjectDto = Mapper.Map<OMCoreObject, MarketObjectDto>(omCoreObject);
+
+			return marketObjectDto;
 		}
 
 		public List<OMCoreObject> GetByIds(List<long> ids, Expression<Func<OMCoreObject, object>> selectExpression = null)

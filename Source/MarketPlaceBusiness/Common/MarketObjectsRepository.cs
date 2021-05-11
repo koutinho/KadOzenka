@@ -19,7 +19,7 @@ namespace MarketPlaceBusiness.Common
 			var baseQuery = GetBaseQuery(whereExpression);
 
 			baseQuery = selectExpression == null
-				? baseQuery.SelectAll()
+				? baseQuery.SelectAll(false)
 				: baseQuery.Select(selectExpression);
 
 			return baseQuery.ExecuteFirstOrDefault();

@@ -11,6 +11,5 @@ namespace MarketPlaceBusiness.Interfaces
 
 		List<OMCoreObject> GetObjectsToAssignDistrictsRegionsAndZones();
 		List<OMCoreObject> GetObjectsToAssignCoordinates();
-		decimal? GetPricePerSquareMeter(OMCoreObject entity);
 	}
 }
