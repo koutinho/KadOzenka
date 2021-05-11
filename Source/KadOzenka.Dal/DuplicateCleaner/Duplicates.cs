@@ -87,7 +87,9 @@ namespace KadOzenka.Dal.DuplicateCleaner
 
             var objs = inputObjects.GroupBy(x => new { x.CadastralNumber, x.DealType_Code, x.PropertyTypesCIPJS_Code, x.PropertyMarketSegment_Code }).Select(grp => grp.ToList()).ToList();
 			var result = new List<List<OMCoreObject>>();
-			objs.ForEach(x => result.AddRange(SplitListByPersent(x.OrderBy(y => y.Area).ToList())));
+			objs.ForEach(x =>
+				result.AddRange(MarketObjectService.SplitListByPersentForDuplicates(x.OrderBy(y => y.Area).ToList(), areaDelta,
+					priceDelta, selectedMarket)));
 			int ICur = 0, ICor = 0, IErr = 0, ICtr = result.Count, IDup = 0;
 			result.ForEach(x =>
 			{
@@ -117,31 +119,7 @@ namespace KadOzenka.Dal.DuplicateCleaner
             ConsoleLog.WriteFotter("Проверка данных на дублинование завершена");
 		}
 
-        private List<List<OMCoreObject>> SplitListByPersent(List<OMCoreObject> list)
-		{
-            List<List<OMCoreObject>> buffer = new(), result = new();
-            var FEL = list.ElementAt(0);
-            int counter = 0;
-            buffer.Add(new List<OMCoreObject>());
-            list.ForEach(x =>
-            {
-                if (FEL.Area.GetValueOrDefault() >= x.Area.GetValueOrDefault() * Convert.ToDecimal(1 - AreaDelta) &&
-                    FEL.Price.GetValueOrDefault() >= x.Price.GetValueOrDefault() * Convert.ToDecimal(1 - PriceDelta) &&
-                    FEL.Price.GetValueOrDefault() <= x.Price.GetValueOrDefault() * Convert.ToDecimal(1 + PriceDelta))
-                    buffer.ElementAt(counter).Add(x);
-                else
-                {
-                    FEL = x;
-                    counter++;
-                    buffer.Add(new List<OMCoreObject>());
-                    buffer.ElementAt(counter).Add(FEL);
-                }
-            });
-            buffer.ForEach(x => result.Add(x.OrderBy(y => y.Market_Code != (MarketTypes)SelectedMarket).ThenByDescending(y => y.ParserTime.GetValueOrDefault()).ToList()));
-            return result;
-        }
-
-        public static string GetCurrentProgress()
+	    public static string GetCurrentProgress()
         {
             OMDuplicatesHistory history = OMDuplicatesHistory.Where(x => x.AreaDelta != null && x.PriceDelta != null).SelectAll().OrderByDescending(x => x.CheckDate).ExecuteFirstOrDefault();
             return JsonConvert.SerializeObject(new
