@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.LongProcess
                 {
                     var objectsInBuilding = groupByBuilding.ToList();
 
-                    if (correctionByRoomService.IsBuildingContainAllRoomsTypes(objectsInBuilding))
+                    if (MarketObjectsService.IsBuildingContainAllRoomsTypes(objectsInBuilding))
                     {
                         var oneRoomAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 1);
                         var twoRoomsAveragePricePerMeter = correctionByRoomService.GetAveragePricePerMeter(objectsInBuilding, 2);

@@ -11,5 +11,7 @@ namespace MarketPlaceBusiness.Interfaces.Corrections
 		List<OMCoreObject> GetObjects();
 
 		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> GetObjectsGroupedBySegment(List<MarketSegment> calculatedMarketSegments, long?[] numberOfRooms);
+
+		bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding);
 	}
 }

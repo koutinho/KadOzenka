@@ -67,6 +67,29 @@ namespace MarketPlaceBusiness
 					}).ToList();
 		}
 
+		public bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding)
+		{
+			bool haveOneRoomApartment = false, haveTwoRoomsApartment = false, haveThreeRoomsApartment = false;
+
+			objectsInBuilding.ForEach(obj =>
+			{
+				switch (obj.RoomsCount)
+				{
+					case 1:
+						haveOneRoomApartment = true;
+						break;
+					case 2:
+						haveTwoRoomsApartment = true;
+						break;
+					case 3:
+						haveThreeRoomsApartment = true;
+						break;
+				}
+			});
+
+			return haveOneRoomApartment && haveTwoRoomsApartment && haveThreeRoomsApartment;
+		}
+
 
 		#endregion
 
