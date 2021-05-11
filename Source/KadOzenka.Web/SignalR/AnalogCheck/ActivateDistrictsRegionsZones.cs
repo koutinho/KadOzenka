@@ -76,6 +76,10 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             await BroadcastCurrentWidgetState();
         }
 
+        /// <summary>
+        /// Присвоить округа, районы, зоны
+        /// </summary>
+        /// <returns></returns>
         public async Task InitializeDistrictsRegionsZonesCheck()
         {
             await LoadButton();

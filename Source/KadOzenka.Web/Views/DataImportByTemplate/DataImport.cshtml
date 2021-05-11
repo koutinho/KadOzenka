@@ -61,7 +61,7 @@
             var mainRegisterId = @((long)ViewBag.MainRegisterId);
             const registerViewId = '@((string)ViewBag.RegisterViewId)';
             const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
-            const isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+            const isForMarketObjects = '@((long)ViewBag.MainRegisterId == MarketPlaceBusiness.Common.Consts.RegisterId)' == 'True';
             const isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
 
             initFilter();

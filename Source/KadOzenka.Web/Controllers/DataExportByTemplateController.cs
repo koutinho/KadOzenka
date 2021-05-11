@@ -11,6 +11,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Web.Attributes;
+using MarketPlaceBusiness.Common;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -136,7 +137,7 @@ namespace KadOzenka.Web.Controllers
 
         private DataExporterByTemplate GetExporter(int mainRegisterId)
         {
-            if (mainRegisterId == OMCoreObject.GetRegisterId())
+            if (mainRegisterId == Consts.RegisterId)
                 return new DataExporterByTemplate();
 
             if (mainRegisterId == OMMainObject.GetRegisterId())

@@ -10,8 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
-using ObjectModel.Market;
 using Core.Shared.Extensions;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -20,14 +21,17 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly CoreUiService _service;
 		private readonly RegistersService _registersService;
-
+		private IMarketObjectService MarketObjectService { get; }
 		public string MarketObjectsRegisterViewId => "MarketObjects";
 
-		public PrefilterController(CoreUiService service, RegistersService registersService)
+
+		public PrefilterController(CoreUiService service, RegistersService registersService,
+			IMarketObjectService marketObjectService)
 		{
 			_service = service;
-            _registersService = registersService;
-        }
+			_registersService = registersService;
+			MarketObjectService = marketObjectService;
+		}
 
 		[HttpGet]
 		public IActionResult Prefilter()
@@ -38,7 +42,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult MarketSegmentList()
 		{
-			var marketSegmentReferenceId = OMCoreObject
+			var marketSegmentReferenceId = MarketObjectService
 				.GetAttributeData(x => x.PropertyMarketSegment)
 				.ReferenceId;
 			var marketSegmentList = OMReferenceItem
@@ -54,7 +58,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult DealTypeList()
 		{
-			var dealTypeReferenceId = OMCoreObject
+			var dealTypeReferenceId = MarketObjectService
 				.GetAttributeData(x => x.DealType)
 				.ReferenceId;
 			var dealTypeList = OMReferenceItem
@@ -70,7 +74,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult PropertyTypeList()
 		{
-			var propertyTypeId = OMCoreObject
+			var propertyTypeId = MarketObjectService
 				.GetAttributeData(x => x.PropertyTypesCIPJS)
 				.ReferenceId;
 			var propertyTypeList = OMReferenceItem
@@ -104,8 +108,7 @@ namespace KadOzenka.Web.Controllers
 
                 if (model.PropertyTypeItemIds?.Length > 0)
                 {
-                    var propertyType = OMCoreObject
-                        .GetAttributeData(x => x.PropertyTypesCIPJS);
+                    var propertyType = MarketObjectService.GetAttributeData(x => x.PropertyTypesCIPJS);
                     var filterModel = new FilterModel
                     {
                         TypeControl = "value",
@@ -121,8 +124,7 @@ namespace KadOzenka.Web.Controllers
 
 				if (model.MarketSegmentItemIds?.Length > 0)
 				{
-					var marketSegment = OMCoreObject
-						.GetAttributeData(x => x.PropertyMarketSegment);
+					var marketSegment = MarketObjectService.GetAttributeData(x => x.PropertyMarketSegment);
 					var filterModel = new FilterModel
 					{
 						TypeControl = "value",
@@ -137,8 +139,7 @@ namespace KadOzenka.Web.Controllers
 				}
 				if (model.DealTypeItemIds?.Length > 0)
 				{
-					var dealType = OMCoreObject
-						.GetAttributeData(x => x.DealType);
+					var dealType = MarketObjectService.GetAttributeData(x => x.DealType);
 					var filterModel = new FilterModel
 					{
 						TypeControl = "value",
@@ -158,8 +159,7 @@ namespace KadOzenka.Web.Controllers
 						throw new Exception("Задан некорректный диапазон цен");
 					}
 
-					var priceType = OMCoreObject
-						.GetAttributeData(x => x.Price);
+					var priceType = MarketObjectService.GetAttributeData(x => x.Price);
 					var filterModel = new FilterModel
 					{
 						TypeControl = "range",
@@ -173,8 +173,7 @@ namespace KadOzenka.Web.Controllers
 				}
 				if (!string.IsNullOrEmpty(model.Metro))
 				{
-					var metroType = OMCoreObject
-						.GetAttributeData(x => x.Metro);
+					var metroType = MarketObjectService.GetAttributeData(x => x.Metro);
 
 					var filterModel = new FilterModel
 					{

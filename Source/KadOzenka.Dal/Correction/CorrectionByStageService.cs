@@ -3,28 +3,27 @@ using ObjectModel.Directory;
 using System.Linq;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
-using System.Transactions;
 using Core.Register.LongProcessManagment;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.MarketObjects;
 
 namespace KadOzenka.Dal.Correction
 {
-	public class CorrectionByStageService
+	public class CorrectionByStageService : CorrectionBaseService
 	{
 		readonly OMQueue processQueue;
-	    public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
-        public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
+		public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
+		public IMarketObjectsForCorrectionByStage MarketObjectsService { get; }
 
-        public CorrectionByStageService(OMQueue queue)
+		public CorrectionByStageService(OMQueue queue)
 		{
 			processQueue = queue;
-		    CorrectionSettingsService = new CorrectionSettingsService();
-        }
+			MarketObjectsService = new MarketObjectsForCorrectionsService();
+		}
 
 		public CorrectionByStageService()
 		{
@@ -38,30 +37,10 @@ namespace KadOzenka.Dal.Correction
 			date = new DateTime(date.Year, date.Month, 1);
 
 			//средняя цена подвальных помещений
-			var objsBasement = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
-				&& x.CadastralNumber != null
-				&& x.FloorNumber < 0
-			    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
-				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
-				.ExecuteSelect(x => new
-				{
-					x.CadastralNumber,
-					Segment = x.PropertyMarketSegment_Code,
-					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
-				});
+			var objsBasement = MarketObjectsService.GetObjects(false, CalculatedMarketSegments);
 
 			//средняя цена надземных помещений
-			var objsStage = OMCoreObject.Where(x => x.DealType_Code == DealType.SaleSuggestion
-				&& x.CadastralNumber != null
-				&& x.FloorNumber >= 0
-			    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
-				.GroupBy(x => new { x.CadastralNumber, x.PropertyMarketSegment_Code })
-				.ExecuteSelect(x => new
-				{
-					x.CadastralNumber,
-					Segment = x.PropertyMarketSegment_Code,
-					Price = x.Avg(y => y.PriceAfterCorrectionByRooms ?? y.Price).Round(4)
-				});
+			var objsStage = MarketObjectsService.GetObjects(true, CalculatedMarketSegments);
 
 			objsBasement = objsBasement.Where(x => x.Price > 0).ToList();
 			objsStage = objsStage.Where(x => x.Price > 0).ToList();
@@ -135,16 +114,7 @@ namespace KadOzenka.Dal.Correction
 				.ToDictionary(g => g.Key, g => g.Average(x => x.StageCoefficient));
 
 			//все подвальные помещения
-			var basements = OMCoreObject
-				.Where(x => x.DealType_Code == DealType.SaleSuggestion
-					&& x.CadastralNumber != null
-					&& x.FloorNumber < 0
-				    && CalculatedMarketSegments.Contains(x.PropertyMarketSegment_Code))
-				.Select(x => x.CadastralNumber)
-				.Select(x => x.PropertyMarketSegment_Code)
-				.Select(x => x.Price)
-				.Select(x => x.PriceAfterCorrectionByRooms)
-				.Execute();
+			var basements = MarketObjectsService.GetBasementObjects(CalculatedMarketSegments);
 
 			//из них отобраны те, по которым делался расчет
 			var resObjs = basements.Join(ratioPriceNotExcluded,

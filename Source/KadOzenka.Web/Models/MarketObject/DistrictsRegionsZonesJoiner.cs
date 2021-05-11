@@ -4,30 +4,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Web.Models.MarketObject
 {
-
+    /// <summary>
+    /// Присвоить округа, районы, зоны
+    /// </summary>
     public class DistrictsRegionsZonesJoiner
     {
         private Func<decimal, System.Threading.Tasks.Task> _progress_delegate;
         private Func<System.Threading.Tasks.Task> _button_state_delegate;
         private Action<DateTime?, long?, long?, long?> _checking_history_delegate;
+        private IMarketObjectService MarketObjectService { get; }
 
         public DistrictsRegionsZonesJoiner(Func<decimal, System.Threading.Tasks.Task> progressDelegate, Func<System.Threading.Tasks.Task> buttonStateDelegate, Action<DateTime?, long?, long?, long?> checkingHistoryDelegate)
         {
             _progress_delegate = progressDelegate;
             _button_state_delegate = buttonStateDelegate;
             _checking_history_delegate = checkingHistoryDelegate;
+            MarketObjectService = new MarketObjectService();
         }
 
         public void ManageData()
         {
-            List<OMCoreObject> AllObjects =
-            OMCoreObject.Where(x => x.ZoneRegion == null && (x.ProcessType_Code == ObjectModel.Directory.ProcessStep.InProcess || x.ProcessType_Code == ObjectModel.Directory.ProcessStep.Dealed))
-                        .Select(x => new { x.District_Code, x.Neighborhood_Code, x.Neighborhood, x.ZoneRegion, x.Market_Code, x.Market, x.CadastralQuartal, x.Zone })
-                        .Execute()
-                        .ToList();
+            var AllObjects = MarketObjectService.GetObjectsToAssignDistrictsRegionsAndZones();
             List<OMQuartalDictionary> QuartalDictionary = OMQuartalDictionary.Where(x => true).SelectAll().Execute().ToList();
             int allCount = AllObjects.Count, current = 0, correct = 0, error = 0;
             _button_state_delegate.Invoke();

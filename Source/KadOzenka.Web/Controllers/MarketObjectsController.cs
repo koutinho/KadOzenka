@@ -15,7 +15,6 @@ using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.ExpressScore.Dto;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.MarketObjects;
@@ -23,6 +22,8 @@ using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking;
 using KadOzenka.Dal.OutliersChecking.Dto;
 using KadOzenka.Web.Attributes;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json.Linq;
@@ -42,8 +43,9 @@ namespace KadOzenka.Web.Controllers
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
         public OutliersCheckingSettingsService OutliersCheckingSettingsService { get; set; }
+        public IMarketObjectService MarketObjectsService { get; set; }
 
-        public MarketObjectsController()
+        public MarketObjectsController(IMarketObjectService marketObjectsService)
         {
             CorrectionByDateService = new CorrectionByDateService();
             CorrectionByRoomService = new CorrectionByRoomService();
@@ -51,20 +53,21 @@ namespace KadOzenka.Web.Controllers
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
             OutliersCheckingSettingsService = new OutliersCheckingSettingsService();
+            MarketObjectsService = marketObjectsService;
         }
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
         public IActionResult ObjectCard(long id)
 		{
-			var analogItem = OMCoreObject.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			var analogItem = MarketObjectsService.GetById(id);
             if (analogItem != null)
             {
                 var screenList = OMScreenshots.Where(x => x.InitialId == id).SelectAll().Execute().Select(x => (x.Id, x.CreationDate)).ToList();
                 if(screenList.IsNotEmpty()) ViewBag.ScreenShots = screenList;
 	            analogItem.PriceHistory = ObjectModel.Market.OMPriceHistory.Where(x => x.InitialId == id).SelectAll().Execute();
             }
-            return View(CoreObjectDto.OMMap(analogItem));
+            return View(CoreObjectDto.OMMap(analogItem, MarketObjectsService));
 		}
 
         [HttpGet]
@@ -90,9 +93,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_UNLOAD_SCREENSHOTS)]
         public FileResult UnloadScreenshots(long objectId)
 		{
-			List<long?> ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? RegistersVariables.CurrentList?.Cast<long?>()?.ToList() : new List<long?> { objectId };
-			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId)).SelectAll().Execute().ToList();
-			List<OMCoreObject> analogItems = OMCoreObject.Where(x => ids.Contains(x.Id)).Select(x => x.CadastralNumber).Execute().ToList();
+			var ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? RegistersVariables.CurrentList?.Cast<long>()?.ToList() : new List<long> { objectId };
+			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId.GetValueOrDefault())).SelectAll().Execute().ToList();
+			var analogItems = MarketObjectsService.GetByIds(ids, x => x.CadastralNumber);
 			using (MemoryStream zipStream = new MemoryStream())
 			{
 				using (ZipArchive zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
@@ -100,7 +103,7 @@ namespace KadOzenka.Web.Controllers
 					int n = 1;
 					foreach (OMScreenshots screenshot in screenList)
 					{
-						OMCoreObject analogItem = analogItems.Where(x => x.Id == screenshot.InitialId).FirstOrDefault();
+						var analogItem = analogItems.Where(x => x.Id == screenshot.InitialId).FirstOrDefault();
 						if (analogItem == null) continue;
 						FileStream fileStream = FileStorageManager.GetFileStream("MarketObjectScreenShot", screenshot.CreationDate.Value, screenshot.Id.ToString());
 						string folderName = !analogItem.CadastralNumber.IsNullOrEmpty() ? analogItem.CadastralNumber : analogItem.Id.ToString();

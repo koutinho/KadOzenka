@@ -10,6 +10,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.OutliersChecking.Dto;
+using MarketPlaceBusiness.Common;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
@@ -58,7 +59,7 @@ namespace KadOzenka.Dal.OutliersChecking
 		public long ImportOutliersCheckingSettingsFromExcel(Stream stream, OutliersCheckingSettingImportFromExcelDto settingsDto)
 		{
 			_log.Information("Старт импорта значений коэффициентов для процедуры проверки на вылеты. Настройки: {Settings}", JsonConvert.SerializeObject(settingsDto));
-			var import = DataImporterCommon.CreateDataFileImport(stream, settingsDto.FileName, OMCoreObject.GetRegisterId(), "MarketObjects");
+			var import = DataImporterCommon.CreateDataFileImport(stream, settingsDto.FileName, Consts.RegisterId, "MarketObjects");
 			try
 			{
 				if (settingsDto.DeleteOldValues)

@@ -1,34 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Logger;
-using KadOzenka.Dal.XmlParser;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Interfaces.Utils;
 using ObjectModel.Gbu;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
 {
+    /// <summary>
+    /// Привязка к объектам аналогам кадастровых кварталов
+    /// </summary>
     public class MarketObjectsCadastralInfoFiller
     {
         public static long RosreestrRegisterId => 2;
         public static long RosreestrCadastralQuarterAttributeId => 601;
 
         public GbuObjectService GbuObjectService { get; set; }
+        private IMarketObjectForCadastralInfoFiller MarketObjectService { get; set; }
 
         public MarketObjectsCadastralInfoFiller()
         {
             GbuObjectService = new GbuObjectService();
+            MarketObjectService = new MarketObjectForUtilsService();
         }
 
         public void PerformFillingCadastralQuarterProc()
         {
-            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.CadastralQuartal)
-                .Execute();
+            var marketObjectsWithCadastralNumber = MarketObjectService.GetObjectsWithCadastralNumber();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровыми номерами");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0;
@@ -58,14 +60,14 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
                         }
                         else
                         {
-                            FillQuarterByCadastralNumber(marketObject);
+                            MarketObjectService.FillQuarterByCadastralNumber(marketObject);
                             fromCadastralNumber++;
                         }
                     }
                 }
                 else
                 {
-                    FillQuarterByCadastralNumber(marketObject);
+                    MarketObjectService.FillQuarterByCadastralNumber(marketObject);
                     fromCadastralNumber++;
                 }
 
@@ -84,17 +86,7 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
             var quartalDictionary = OMQuartalDictionary.Where(x => true)
                 .SelectAll()
                 .Execute().ToDictionary(x => x.CadastralQuartal);
-            var marketObjectsWithCadastralNumber = OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
-                .Select(x => x.Id)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.CadastralQuartal)
-                .Select(x => x.District)
-                .Select(x => x.District_Code)
-                .Select(x => x.Neighborhood)
-                .Select(x => x.Neighborhood_Code)
-                .Select(x => x.Zone)
-                .Select(x => x.ZoneRegion)
-                .Execute();
+            var marketObjectsWithCadastralNumber = MarketObjectService.GetObjectsWithCadastralQuartal();
             Console.WriteLine($"Найдено {marketObjectsWithCadastralNumber.Count} объектов-аналогов с заполненными кадастровым кварталом");
 
             int totalCount = marketObjectsWithCadastralNumber.Count, currentCount = 0, correctCount = 0, errorCount = 0;
@@ -127,12 +119,6 @@ namespace KadOzenka.Dal.CadastralInfoFillingForMarketObjects
             }
 
             Console.WriteLine($"Обработка завершена");
-        }
-
-        private void FillQuarterByCadastralNumber(OMCoreObject marketObject)
-        {
-            var ellipsisLastIndex = marketObject.CadastralNumber.LastIndexOf(":");
-            marketObject.CadastralQuartal = marketObject.CadastralNumber.Substring(0, ellipsisLastIndex);
         }
     }
 }

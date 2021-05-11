@@ -9,6 +9,8 @@ using Core.Shared.Extensions;
 using ExCSS.Model.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
@@ -57,7 +59,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			if (modelAttributes == null || modelAttributes.Count == 0 || objectIds == null || objectIds.Count == 0)
 				return new Dictionary<long, List<CoefficientForObject>>();
 
-			return GetCoefficients(OMCoreObject.GetRegisterId(), OMCoreObject.GetColumn(x => x.Id), objectIds, dictionaries, modelAttributes);
+			return GetCoefficients(Consts.RegisterId, Consts.PrimaryKeyColumn, objectIds, dictionaries, modelAttributes);
 		}
 
 		protected Dictionary<long, List<CoefficientForObject>> GetCoefficientsFromTourFactors(List<long> unitIds, List<OMModelingDictionary> dictionaries,

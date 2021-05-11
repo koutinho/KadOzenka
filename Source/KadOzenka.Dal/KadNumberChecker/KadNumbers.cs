@@ -1,29 +1,36 @@
-﻿using System;
-using System.Text;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-
 using ObjectModel.Market;
 using KadOzenka.Dal.Logger;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Utils;
 
 namespace KadOzenka.Dal.KadNumberChecker
 {
+    /// <summary>
+    /// Присвоение кадастровых номеров объектам сторонних маркетов
+    /// </summary>
     public class KadNumbers
     {
-        readonly List<OMCoreObject> AllObjects =
-            OMCoreObject.Where(x => x.Market_Code != ObjectModel.Directory.MarketTypes.Rosreestr && x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep)
-                        .Select(x => new { x.Address, x.CadastralNumber, x.Lng, x.Lat, x.ExclusionStatus_Code, x.ProcessType_Code })
-                        .Execute()
-                        .ToList();
+        private IMarketObjectsServiceForUtils MarketObjectService { get; }
+
         readonly List<OMYandexAddress> YandexObjects =
             OMYandexAddress.Where(x => true)
                            .Select(x => new { x.FormalizedAddress, x.CadastralNumber, x.Lng, x.Lat, x.InitialId })
                            .Execute();
 
+
+        public KadNumbers()
+        {
+	        MarketObjectService = new MarketObjectForUtilsService();
+        }
+
+
         public void Detect()
         {
-            int KCtr = AllObjects.Count, KCur = 0, KKad = 0, KErr = 0;
-            AllObjects.ForEach(x =>
+	        var allObjects = MarketObjectService.GetNotRosreestrObjectsWithAddressProceed();
+	        int KCtr = allObjects.Count, KCur = 0, KKad = 0, KErr = 0;
+            allObjects.ForEach(x =>
             {
                 OMYandexAddress address = YandexObjects.FirstOrDefault(y => y.FormalizedAddress.Equals(x.Address));
                 if (address != null)

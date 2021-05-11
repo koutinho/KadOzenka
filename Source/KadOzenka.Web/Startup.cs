@@ -25,7 +25,6 @@ using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
 using KadOzenka.Dal.DuplicateCleaner;
-using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
@@ -51,6 +50,8 @@ using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Platform.Web.SignalR.BackgroundProcessWidget;
@@ -96,9 +97,9 @@ namespace CIPJS
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
 	        services.AddSingleton<GbuCurrentLongProcessesListenerService>();
-	        services.AddTransient<ScoreCommonService>();
-			services.AddTransient<ExpressScoreService>();
-	        services.AddTransient<ExpressScoreReferenceService>();
+	        //services.AddTransient<ScoreCommonService>();
+			//services.AddTransient<ExpressScoreService>();
+			//services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
 	        services.AddTransient<ModelingService>();
 	        services.AddTransient<MapBuildingService>();
@@ -143,6 +144,10 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterRepository), typeof(RegisterRepository));
             services.AddTransient(typeof(IRegisterAttributeRepository), typeof(RegisterAttributeRepository));
             services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
+            services.AddTransient(typeof(IMarketObjectService), typeof(MarketObjectService));
+            services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
+            //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
+
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>

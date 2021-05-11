@@ -8,6 +8,7 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
+using MarketPlaceBusiness.Common;
 using ObjectModel.Common;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Common;
@@ -170,7 +171,7 @@ namespace KadOzenka.Dal.OutliersChecking
 					Status = (int)ImportStatus.Added,
 					FileResultTitle = "Отчет по итогам проверки на вылеты",
 					FileExtension = "xlsx",
-					MainRegisterId = OMCoreObject.GetRegisterId(),
+					MainRegisterId = Consts.RegisterId,
 					RegisterViewId = "MarketObjects"
 				};
 				export.Save();

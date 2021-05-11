@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.Correction
             ValidateRequest(request);
 
             var query = PrepareMarketObjectsQuery(request);
-            var objects = GetMarketObjects(query);
+            var objects = MarketObjectsService.GetObjects(query);
             var suggestionObjectsWithPriceCoefficients = GetSuggestionObjectsWithPriceCoefficients(request.CoverageAreaType, objects);
 
             foreach (var objectWithCoefficient in suggestionObjectsWithPriceCoefficients)

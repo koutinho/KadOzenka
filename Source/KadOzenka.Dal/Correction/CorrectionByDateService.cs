@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using KadOzenka.Dal.Correction.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
-    public class CorrectionByDateService
+    public class CorrectionByDateService : CorrectionBaseService
     {
-        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
-        public CorrectionByDateService()
-        {
-            CorrectionSettingsService = new CorrectionSettingsService();
+	    public IMarketObjectsForCorrectionByDate MarketObjectsService { get; }
+
+
+	    public CorrectionByDateService()
+	    {
+		    MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
+
 
         public List<CorrectionByDateDto> GetAverageCoefficientsBySegments(long marketSegmentCode)
         {
@@ -59,11 +64,6 @@ namespace KadOzenka.Dal.Correction
             return isDataUpdated;
         }
 
-        public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects)
-        {
-            return objects.Average(x => x.PricePerMeter.GetValueOrDefault());
-        }
-
         public List<OMIndexesForDateCorrection> GetCoefficients()
         {
             return OMIndexesForDateCorrection.Where(x => true).SelectAll().Execute().ToList();
@@ -105,7 +105,7 @@ namespace KadOzenka.Dal.Correction
         {
             var coefficients = GetAverageCoefficientsBySegments();
 
-            var objects = GetMarketObjectsForUpdate();
+            var objects = MarketObjectsService.GetObjects();
             var objectsIds = objects.Select(x => x.Id);
             var priceChangingHistory = OMPriceAfterCorrectionByDateHistory.Where(x => objectsIds.Contains(x.InitialId)).SelectAll().Execute();
 
@@ -131,15 +131,6 @@ namespace KadOzenka.Dal.Correction
                     ts.Complete();
                 }
             });
-        }
-
-        public List<OMCoreObject> GetMarketObjectsForUpdate()
-        {
-            return OMCoreObject
-                .Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal && 
-                            (x.ParserTime != null || x.LastDateUpdate != null) && 
-                            x.PropertyMarketSegment != null)
-                .SelectAll().Execute();
         }
 
 

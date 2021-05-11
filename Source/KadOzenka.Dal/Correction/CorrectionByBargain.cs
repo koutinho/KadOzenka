@@ -8,17 +8,23 @@ using DealType = ObjectModel.Directory.DealType;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Requests;
 using KadOzenka.Dal.Correction.Dto.CorrectionSettings;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 
 namespace KadOzenka.Dal.Correction
 {
-    public abstract class CorrectionByBargain<T> where T : CorrectionByBargainRequest
+    public abstract class CorrectionByBargain<T> : CorrectionBaseService where T : CorrectionByBargainRequest
     {
+	    protected IMarketObjectsForCorrectionByBargain MarketObjectsService { get; }
         protected CorrectionSettings CorrectionSettings { get; set; }
+
 
         protected CorrectionByBargain(CorrectionSettings correctionSettings)
         {
             CorrectionSettings = correctionSettings;
+            MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
+
 
         protected virtual void ValidateRequest(T request)
         {
@@ -38,9 +44,7 @@ namespace KadOzenka.Dal.Correction
 
         protected virtual QSQuery<OMCoreObject> PrepareMarketObjectsQuery(T request)
         {
-            var query = OMCoreObject
-                .Where(x => (x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
-                            (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed));
+            var query = MarketObjectsService.GetBaseQuery();
 
             if (request.MarketSegments.Count < System.Enum.GetNames(typeof(MarketSegment)).Length)
             {
@@ -49,32 +53,6 @@ namespace KadOzenka.Dal.Correction
             }
 
             return query;
-        }
-
-        protected virtual List<OMCoreObject> GetMarketObjects(QSQuery<OMCoreObject> marketObjectsQuery)
-        {
-            var objects = marketObjectsQuery
-                .Select(x => x.Id)
-                .Select(x => x.ProcessType_Code)
-                .Select(x => x.DealType_Code)
-                .Select(x => x.CadastralNumber)
-                .Select(x => x.Address)
-                .Select(x => x.BuildingCadastralNumber)
-                .Select(x => x.PropertyMarketSegment_Code)
-                .Select(x => x.District_Code)
-                .Select(x => x.Neighborhood_Code)
-                .Select(x => x.Zone)
-                .Select(x => x.CadastralQuartal)
-                .Select(x => x.Price)
-                .Select(x => x.Area)
-                .Select(x => x.PricePerMeter)
-                .Select(x => x.PriceAfterCorrectionByBargain)
-                .Select(x => x.LastDateUpdate)
-                .Select(x => x.ParserTime)
-                .SelectAll()
-                .Execute();
-
-            return objects;
         }
 
         protected List<KeyValuePair<OMCoreObject, decimal?>> GetSuggestionObjectsWithPriceCoefficients(CoefficientCoverageAreaType сoverageAreaType,

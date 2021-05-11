@@ -4,24 +4,27 @@ using System.Linq;
 using System.Transactions;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Correction.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces.Corrections;
 using ObjectModel.Directory;
 using ObjectModel.Directory.MarketObjects;
 using ObjectModel.Market;
 
 namespace KadOzenka.Dal.Correction
 {
-    public class CorrectionByRoomService
+    public class CorrectionByRoomService : CorrectionBaseService
     {
         public static readonly int PrecisionForPrice = 2;
         public static readonly int PrecisionForCoefficients = 4;
+        private IMarketObjectsForCorrectionByRoom MarketObjectsService { get; }
+        public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() {MarketSegment.MZHS};
 
-        public CorrectionSettingsService CorrectionSettingsService { get; protected set; }
+
         public CorrectionByRoomService()
         {
-            CorrectionSettingsService = new CorrectionSettingsService();
+	        MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
 
-        public List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() {MarketSegment.MZHS};
 
         public List<CorrectionByRoomCoefficientsDto> GetAverageCoefficients(long marketSegmentCode)
         {
@@ -81,34 +84,6 @@ namespace KadOzenka.Dal.Correction
             return isDataUpdated;
         }
 
-        public bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding)
-        {
-            bool haveOneRoomApartment = false, haveTwoRoomsApartment = false, haveThreeRoomsApartment = false;
-
-            objectsInBuilding.ForEach(obj =>
-            {
-                switch (obj.RoomsCount)
-                {
-                    case 1:
-                        haveOneRoomApartment = true;
-                        break;
-                    case 2:
-                        haveTwoRoomsApartment = true;
-                        break;
-                    case 3:
-                        haveThreeRoomsApartment = true;
-                        break;
-                }
-            });
-
-            return haveOneRoomApartment && haveTwoRoomsApartment && haveThreeRoomsApartment;
-        }
-
-        public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects, int numberOfRooms)
-        {
-            return objects.Where(x => x.RoomsCount == numberOfRooms).Select(x => x.PricePerMeter.GetValueOrDefault()).Average();
-        }
-
         public List<OMCoefficientsForCorrectionByRooms> GetCoefficients(DateTime date)
         {
             return OMCoefficientsForCorrectionByRooms.Where(x => x.ChangingDate == date).SelectAll().Execute().ToList();
@@ -161,7 +136,7 @@ namespace KadOzenka.Dal.Correction
         {
             var coefficients = GetAverageCoefficients().Where(x => x.Date == date);
 
-            var objects = OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
+            var objects = MarketObjectsService.GetObjects();
             var objectsIds = objects.Select(x => x.Id);
             var priceChangingHistory = OMPriceAfterCorrectionByRoomsHistory.Where(x => objectsIds.Contains(x.InitialId)).SelectAll().Execute();
 

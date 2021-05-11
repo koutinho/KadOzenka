@@ -2,6 +2,7 @@
 using System.Linq;
 using Core.Register;
 using Core.Register.RegisterEntities;
+using Core.UI.Registers.Models.Registers;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 
@@ -20,9 +21,13 @@ namespace KadOzenka.Dal.Registers.GbuRegistersServices
 					return _registerId.Value;
 
 				var omMainObjectRegisterId = OMMainObject.GetRegisterId();
-				_registerId = OMRegister
+				var register = OMRegister
 					.Where(x => x.MainRegister == omMainObjectRegisterId &&
-					            x.RegisterDescription == RegisterName).ExecuteFirstOrDefault().RegisterId;
+					            x.RegisterDescription == RegisterName).ExecuteFirstOrDefault();
+				if (register == null)
+					throw new Exception($"Не найден реестр с именем '{RegisterName}' и основным реестром 'Объекты недвижимости'");
+
+				_registerId = register.RegisterId;
 
 				return _registerId.Value;
 			}
