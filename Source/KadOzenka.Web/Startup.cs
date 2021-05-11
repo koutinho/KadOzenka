@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json.Serialization;
@@ -21,6 +20,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.Configuration;
 using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
@@ -58,6 +58,7 @@ using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
 using SerilogTimings;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace CIPJS
 {
@@ -173,8 +174,12 @@ namespace CIPJS
                 });
 
                 //init AutoMapping
-                Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
-                services.AddAutoMapper();
+                //Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
+                services.AddSingleton(provider => new MapperConfiguration(cfg =>
+                {
+	                cfg.AddProfile(new MappingProfile());
+                }).CreateMapper());
+
                 services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
 
                 services.AddMemoryCache();
