@@ -134,3 +134,9 @@ IS 'Ид атрибута кадастрового номера';
 
 ALTER TABLE public.es_settings_params
   OWNER TO cipjs_kad_ozenka;
+
+
+
+ --Добавляем дашборд экспресс-оценки на стартовую страницу
+INSERT INTO dashboards_panel (id, dashboard_id, title, column_index, order_in_column, panel_type_id, settings) 
+VALUES (1000041, 1000007, 'Карточка значений показателей', 0, 7, 6, '<PanelIndexCardDto><BackgroundColor>#940889</BackgroundColor><TextColor>#ffffff</TextColor><IconClass>fas fa-users</IconClass><FontSizeTitle>18px</FontSizeTitle><FontSize>16px</FontSize><LinkUrl>{LinkParam}</LinkUrl><SourceType>Method</SourceType><LoadType>Sync</LoadType><DisplayBlockAll>No</DisplayBlockAll><SQL></SQL><Type>KadOzenka.Dal.Gadgets.GadgetService, KadOzenka.Dal</Type><Method>ExpressEvaluation</Method><WindowWidthStyle>100%</WindowWidthStyle><CacheSeconds></CacheSeconds><TitleUrl>/Dashboard?Subsystem=Es</TitleUrl><TitleIsUrl>Yes</TitleIsUrl><ContentIsUrl>Yes</ContentIsUrl><Id>1000041</Id><Title>Экспресс оценка</Title><WindowWidth></WindowWidth><WindowHeight></WindowHeight><SrdFunctionTag>EXPRESSSCORE</SrdFunctionTag></PanelIndexCardDto>');
