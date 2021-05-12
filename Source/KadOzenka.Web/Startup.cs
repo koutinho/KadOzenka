@@ -60,6 +60,7 @@ using Platform.Web.SignalR.Messages;
 using Serilog.Context;
 using SerilogTimings;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using MappingProfile = Platform.Web.MappingProfile;
 
 namespace CIPJS
 {
@@ -181,6 +182,7 @@ namespace CIPJS
                 {
 	                cfg.AddProfile(new MappingProfile());
 	                cfg.AddProfile(new MarketPlaceBusiness.Dto.AutoMapper.MappingProfile());
+	                cfg.AddProfile(new KadOzenka.Web.Helpers.MappingProfile());
                 }).CreateMapper());
 
                 services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });

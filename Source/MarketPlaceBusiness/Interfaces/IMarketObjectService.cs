@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MarketPlaceBusiness.Dto;
 using ObjectModel.Market;
 
 namespace MarketPlaceBusiness.Interfaces

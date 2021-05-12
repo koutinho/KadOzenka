@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Dto;
 using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
@@ -16,6 +17,8 @@ namespace MarketPlaceBusiness
 			: base(marketObjectsRepository, mapper)
 		{
 		}
+
+		#region Проверк на дублирование
 
 		public List<OMCoreObject> GetObjectsForDuplicatesChecking()
 		{
@@ -55,6 +58,8 @@ namespace MarketPlaceBusiness
 
 			return result;
 		}
+
+		#endregion
 
 		public List<OMCoreObject> GetObjectsToAssignDistrictsRegionsAndZones()
 		{

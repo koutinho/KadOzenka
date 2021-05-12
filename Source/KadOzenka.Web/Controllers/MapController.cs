@@ -15,8 +15,10 @@ using KadOzenka.Web.Models.MarketObject;
 using ObjectModel.Core.Shared;
 using KadOzenka.Dal.MapModeling;
 using System.Globalization;
+using AutoMapper;
 using KadOzenka.Web.Attributes;
 using MarketPlaceBusiness;
+using MarketPlaceBusiness.Dto;
 using MarketPlaceBusiness.Interfaces;
 using ObjectModel.SRD;
 
@@ -28,15 +30,17 @@ namespace KadOzenka.Web.Controllers
         private readonly RegistersService _registersService;
 
         private IMarketObjectsForMapService MarketObjectService { get; }
+        private IMapper Mapper { get; }
         public string MarketObjectsRegisterViewId => "MarketObjects";
 
 
         public MapController(CoreUiService coreUiService, RegistersService registersService,
-	        IMarketObjectsForMapService marketObjectService)
+	        IMarketObjectsForMapService marketObjectService, IMapper mapper)
         {
 	        _coreUiService = coreUiService;
 	        _registersService = registersService;
 	        MarketObjectService = marketObjectService;
+	        Mapper = mapper;
         }
 
 
@@ -327,29 +331,29 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult ChangeObject(MarketSaveObjectDto dto)
         {
-            var obj = MarketObjectService.GetById(dto.Id.GetValueOrDefault());
-            MarketSaveObjectDto.ToEntity(dto, ref obj);
-            obj.Save();
+	        var marketObjectDto = Mapper.Map<MarketSaveObjectDto, MarketObjectDto>(dto);
+
+	        MarketObjectService.UpdateInfoFromCard(marketObjectDto);
 
             object result = new
             {
-	            segment = FormSegment(obj.PropertyMarketSegment),
-	            propertyType = obj.PropertyTypesCIPJS,
-	            propertyTypeCode = obj.PropertyTypesCIPJS_Code,
-	            marketSegment = obj.PropertyMarketSegment,
-	            marketSegmentCode = obj.PropertyMarketSegment_Code,
-	            status = obj.ProcessType,
-	            statusCode = obj.ProcessType_Code,
-	            id = obj.Id,
-	            lng = obj.Lng,
-	            lat = obj.Lat,
-	            entranceType = obj.EntranceType,
-	            qualityClassCode = obj.QualityClass_Code,
-	            qualityClass = obj.QualityClass,
-	            renovation = obj.Renovation,
-	            buildingLine = obj.BuildingLine,
-	            floorNumber = obj.FloorNumber,
-	            floorCount = obj.FloorsCount
+	            segment = FormSegment(marketObjectDto.PropertyMarketSegment),
+	            propertyType = marketObjectDto.PropertyTypesCIPJS,
+	            propertyTypeCode = marketObjectDto.PropertyTypesCIPJS_Code,
+	            marketSegment = marketObjectDto.PropertyMarketSegment,
+	            marketSegmentCode = marketObjectDto.PropertyMarketSegment_Code,
+	            status = marketObjectDto.ProcessType,
+	            statusCode = marketObjectDto.ProcessType_Code,
+	            id = marketObjectDto.Id,
+	            lng = marketObjectDto.Lng,
+	            lat = marketObjectDto.Lat,
+	            entranceType = marketObjectDto.EntranceType,
+	            qualityClassCode = marketObjectDto.QualityClass_Code,
+	            qualityClass = marketObjectDto.QualityClass,
+	            renovation = marketObjectDto.Renovation,
+	            buildingLine = marketObjectDto.BuildingLine,
+	            floorNumber = marketObjectDto.FloorNumber,
+	            floorCount = marketObjectDto.FloorsCount
             };
 
             return Json(result);
