@@ -118,7 +118,7 @@ namespace CIPJS
 	        services.AddTransient<DocumentService>();
 	        services.AddTransient<ModelFactorsService>();
             services.AddSingleton<KoUnloadResultsListenerService>();
-            services.AddSingleton<OutliersCheckingListenerService>();
+            //services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
@@ -239,7 +239,7 @@ namespace CIPJS
             {
                 routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
                 routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
-                routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
+                //routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
                 routes.MapHub<EsHub>("/esCheckProgress");
                 routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");

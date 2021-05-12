@@ -17,8 +17,6 @@ using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
-using KadOzenka.Dal.LongProcess.MarketObjects;
-using KadOzenka.Dal.LongProcess.MarketObjects.Settings;
 using KadOzenka.Dal.OutliersChecking;
 using KadOzenka.Dal.OutliersChecking.Dto;
 using KadOzenka.Web.Attributes;
@@ -40,7 +38,6 @@ namespace KadOzenka.Web.Controllers
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
-        public OutliersCheckingSettingsService OutliersCheckingSettingsService { get; set; }
         public IMarketObjectService MarketObjectsService { get; set; }
 
         public MarketObjectsController(IMarketObjectService marketObjectsService)
@@ -48,7 +45,6 @@ namespace KadOzenka.Web.Controllers
 	        CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
-            OutliersCheckingSettingsService = new OutliersCheckingSettingsService();
             MarketObjectsService = marketObjectsService;
         }
 
@@ -339,119 +335,119 @@ namespace KadOzenka.Web.Controllers
 
         #region Outliers Checking
 
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public ActionResult GetMarketSegmentList()
-        {
-	        var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
-	        var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public ActionResult GetMarketSegmentList()
+        //{
+	       // var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
+	       // var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
 
-	        return Content(JsonConvert.SerializeObject(segments), "application/json");
-        }
+	       // return Content(JsonConvert.SerializeObject(segments), "application/json");
+        //}
 
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public ActionResult GetMarketPropertyTypeDivisionsList()
-        {
-	        var propertyTypes = Helpers.EnumExtensions.GetSelectList(typeof(ObjectPropertyTypeDivision));
-	        return Content(JsonConvert.SerializeObject(propertyTypes), "application/json");
-        }
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public ActionResult GetMarketPropertyTypeDivisionsList()
+        //{
+	       // var propertyTypes = Helpers.EnumExtensions.GetSelectList(typeof(ObjectPropertyTypeDivision));
+	       // return Content(JsonConvert.SerializeObject(propertyTypes), "application/json");
+        //}
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public ActionResult OutliersSettings(bool isPartialView = false)
-        {
-	        ViewBag.isPartialView = isPartialView;
-            return View("~/Views/MarketObjects/OutliersCheckingSettings.cshtml");
-        }
+        //[HttpGet]
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public ActionResult OutliersSettings(bool isPartialView = false)
+        //{
+	       // ViewBag.isPartialView = isPartialView;
+        //    return View("~/Views/MarketObjects/OutliersCheckingSettings.cshtml");
+        //}
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public JsonResult GetOutliersSettingsCoefficients()
-        {
-	        var settingsDto = OutliersCheckingSettingsService.GetOutliersCheckingSettings();
-	        var models = OutliersSettingsModel.FromDto(settingsDto);
+        //[HttpGet]
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public JsonResult GetOutliersSettingsCoefficients()
+        //{
+	       // var settingsDto = OutliersCheckingSettingsService.GetOutliersCheckingSettings();
+	       // var models = OutliersSettingsModel.FromDto(settingsDto);
 
-            return Json(models);
-        }
+        //    return Json(models);
+        //}
 
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
-        {
-	        var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
-	        OutliersCheckingSettingsService.UpdateOutliersCheckingSettings(model.ToDto());
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public JsonResult UpdateOutliersSettingsCoefficients(string modelJson)
+        //{
+	       // var model = JsonConvert.DeserializeObject<OutliersSettingsModel> (modelJson);
+	       // OutliersCheckingSettingsService.UpdateOutliersCheckingSettings(model.ToDto());
 
-	        return Json(new[] { model });
-        }
+	       // return Json(new[] { model });
+        //}
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public IActionResult OutliersCheckingSettingsImport()
-        {
-	        return View(new OutliersSettingsImportModel());
-        }
+        //[HttpGet]
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public IActionResult OutliersCheckingSettingsImport()
+        //{
+	       // return View(new OutliersSettingsImportModel());
+        //}
 
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public IActionResult OutliersCheckingSettingsImport(IFormFile file, OutliersSettingsImportModel viewModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return GenerateMessageNonValidModel();
-            }
+        //[HttpPost]
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public IActionResult OutliersCheckingSettingsImport(IFormFile file, OutliersSettingsImportModel viewModel)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return GenerateMessageNonValidModel();
+        //    }
 
-            object returnedData;
-            try
-            {
-	            using (var stream = file.OpenReadStream())
-	            {
-		            var settingDto = viewModel.ToDto(file);
-		            var importId = OutliersCheckingSettingsService.ImportOutliersCheckingSettingsFromExcel(stream, settingDto);
-		            returnedData = new
-		            {
-			            importId
-		            };
-	            }
-            }
-            catch (Exception ex)
-            {
-	            ErrorManager.LogError(ex);
-	            return BadRequest();
-            }
+        //    object returnedData;
+        //    try
+        //    {
+	       //     using (var stream = file.OpenReadStream())
+	       //     {
+		      //      var settingDto = viewModel.ToDto(file);
+		      //      var importId = OutliersCheckingSettingsService.ImportOutliersCheckingSettingsFromExcel(stream, settingDto);
+		      //      returnedData = new
+		      //      {
+			     //       importId
+		      //      };
+	       //     }
+        //    }
+        //    catch (Exception ex)
+        //    {
+	       //     ErrorManager.LogError(ex);
+	       //     return BadRequest();
+        //    }
 
-            return Content(JsonConvert.SerializeObject(returnedData), "application/json");
-        }
+        //    return Content(JsonConvert.SerializeObject(returnedData), "application/json");
+        //}
 
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET)]
-        public ActionResult PerformOutliersChecking(OutliersCheckingPerformModel model)
-        {
-	        if (!ModelState.IsValid)
-	        {
-		        return GenerateMessageNonValidModel();
-	        }
-            ////For testing
-            //var settings = model.ToSettings();
-            //var history = new OMOutliersCheckingHistory
-            //{
-            //    DateCreated = DateTime.Now,
-            //    Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
-            //    PropertyTypesMapping = !settings.AllPropertyTypes
-	           //     ? JsonConvert.SerializeObject(settings.PropertyTypes)
-	           //     : null,
-            //};
-            //if (settings.Segment.HasValue)
-            //    history.MarketSegment_Code = settings.Segment.Value;
-            //history.Save();
-            //new OutliersCheckingLongProcess().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //    Status_Code = Status.Added,
-            //    UserId = SRDSession.GetCurrentUserId(),
-            //    Parameters = settings.SerializeToXml(),
-            //    ObjectId = history.Id
-            //}, new CancellationToken());
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET)]
+        //public ActionResult PerformOutliersChecking(OutliersCheckingPerformModel model)
+        //{
+	       // if (!ModelState.IsValid)
+	       // {
+		      //  return GenerateMessageNonValidModel();
+	       // }
+        //    ////For testing
+        //    //var settings = model.ToSettings();
+        //    //var history = new OMOutliersCheckingHistory
+        //    //{
+        //    //    DateCreated = DateTime.Now,
+        //    //    Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
+        //    //    PropertyTypesMapping = !settings.AllPropertyTypes
+	       //    //     ? JsonConvert.SerializeObject(settings.PropertyTypes)
+	       //    //     : null,
+        //    //};
+        //    //if (settings.Segment.HasValue)
+        //    //    history.MarketSegment_Code = settings.Segment.Value;
+        //    //history.Save();
+        //    //new OutliersCheckingLongProcess().StartProcess(new OMProcessType(), new OMQueue
+        //    //{
+        //    //    Status_Code = Status.Added,
+        //    //    UserId = SRDSession.GetCurrentUserId(),
+        //    //    Parameters = settings.SerializeToXml(),
+        //    //    ObjectId = history.Id
+        //    //}, new CancellationToken());
 
-            OutliersCheckingLongProcess.AddProcessToQueue(model.ToSettings());
+        //    OutliersCheckingLongProcess.AddProcessToQueue(model.ToSettings());
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         #endregion Outliers Checking
     }
