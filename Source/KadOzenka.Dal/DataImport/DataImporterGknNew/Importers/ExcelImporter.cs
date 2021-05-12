@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 				throw new Exception("Не передано соответствие колонок Excel и заполняемых атрибутов");
 
 			var columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(columnsMappingStr);
-			DataImporterGknValidator.ValidateExcelColumnsForNotPetition(columnsMapping.Select(x => x.AttributeId));
+			DataImporterGknValidator.ValidateExcelColumnsForNotPetition(columnsMapping.Select(x => x.AttributeId).ToList());
 
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			dataImporterGkn.ImportGknFromExcel(excelFile, pathSchema, task, columnsMapping, cancellationToken);

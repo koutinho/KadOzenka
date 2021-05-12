@@ -56,13 +56,13 @@ namespace KadOzenka.Web.Models.Task
         {
 	        if (DocumentType == DocumentType.Excel)
 	        {
-		        if (ExcelFile == null)
-			        throw new Exception("Не передан Excel-файл");
+		        if (ExcelFile == null && ExcelColumnsMapping.Count != 0)
+			        throw new Exception("Сделано сопоставление полей, но не передан Excel-файл");
 
-                if (ExcelColumnsMapping.Count == 0)
+                if (ExcelFile != null && ExcelColumnsMapping.Count == 0)
 			        throw new Exception("Не указано соответствие колонок Excel-файла загружаемым атрибутам");
 
-                DataImporterGknValidator.ValidateExcelColumnsForNotPetition(ExcelColumnsMapping.Select(x => x.AttributeId));
+                DataImporterGknValidator.ValidateExcelColumnsForNotPetition(ExcelColumnsMapping.Select(x => x.AttributeId).ToList());
 	        }
         }
     }

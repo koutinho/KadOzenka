@@ -143,8 +143,7 @@
         $('[name="@nameof(Model.DocumentType)"]').on('change', setFileBlocksVisibility);
         setFileBlocksVisibility();
 
-        var generalAllowedFilesExtensions = ['.xml', '.zip', '.rar'];
-        var allowedFilesExtensionsForPetition = ['.xlsx', '.zip', '.rar'];
+        var generalAllowedFilesExtensions = ['.xml', '.xlsx', '.zip', '.rar'];
 
         var toolbar = $("#toolbar").kendoToolBar({
             items: [
@@ -167,9 +166,6 @@
                         }
                         if ($('[name="NoteType"]').val() == 0) {
                             message += 'Необходимо заполнить тип статьи<br>';
-                        }
-                        if (isImportViaExcel() && !getExcelFile()) {
-                            message += 'Не выбран Excel-файл';
                         }
                         if (message.length != 0) {
                             Common.ShowError(message);
@@ -381,12 +377,12 @@
         var file = getExcelFile();
         formData.append("@nameof(Model.ExcelFile)", file);
         var listView = $("#listView").data('kendoListView');
-        var data = listView.dataSource.data();
+        var columnsMapping = listView.dataSource.data();
         var columnsPropertyName = "@nameof(Model.ExcelColumnsMapping)";
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < columnsMapping.length; i++) {
             var currentElement = `${columnsPropertyName}[${i}]`;
-            formData.append(`${currentElement}.ColumnIndex`, data[i].ColumnIndex);
-            formData.append(`${currentElement}.AttributeId`, data[i].AttributeId);
+            formData.append(`${currentElement}.ColumnIndex`, columnsMapping[i].ColumnIndex);
+            formData.append(`${currentElement}.AttributeId`, columnsMapping[i].AttributeId);
         }
         return formData;
     }
