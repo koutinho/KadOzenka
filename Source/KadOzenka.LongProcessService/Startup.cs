@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using KadOzenka.Dal.CommonFunctions.ExistFolderChecker;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Platform.LongProcessManagment;
 using Serilog;
@@ -13,6 +14,7 @@ namespace KadOzenka.LongProcessService
             Log.Information("Configure called");
             app.UseMiddleware<SerilogMiddleware>();
             app.UseSerilogRequestLogging();
+            ExistFolderCheckerService.Run();
             LongProcessManagementServiceWeb.LongProcessServiceInit(app, env);
         }
     }

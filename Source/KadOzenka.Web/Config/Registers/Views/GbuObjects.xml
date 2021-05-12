@@ -72,13 +72,6 @@
 
     <RowMenuButtons>
         <Button Caption="Объект недвижимости" CommandName="OpenCard" Icon="far fa-file-alt" OpenInNewWindow="true"/>
-        <Button Caption="Образы" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
-            <Parameters>
-                <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
-                <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
-                <Parameter Key="NotSetTitle" Value="true" />
-            </Parameters>
-        </Button>
     </RowMenuButtons>
 
   <ObjectCardButtons>
@@ -88,13 +81,5 @@
         <Parameter Key="ObjectId" Value="[ObjectID]" />
       </Parameters>
     </Button>
-
-      <Button Caption="Образы" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
-          <Parameters>
-              <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
-              <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
-              <Parameter Key="NotSetTitle" Value="true" />
-          </Parameters>
-      </Button>
   </ObjectCardButtons>
 </RegisterView>
