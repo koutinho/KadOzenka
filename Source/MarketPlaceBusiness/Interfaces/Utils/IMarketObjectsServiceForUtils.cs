@@ -11,6 +11,6 @@ namespace MarketPlaceBusiness.Interfaces.Utils
 	{
 		//List<OMCoreObject> GetNotRosreestrObjectsWithAddressProceed();
 
-		List<OMCoreObject> GetObjectsToSetAddress(int objectsCount);
+		//List<OMCoreObject> GetObjectsToSetAddress(int objectsCount);
 	}
 }

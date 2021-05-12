@@ -1,6 +1,5 @@
 ﻿using Platform.Shared;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.AddressChecker;
 using KadOzenka.Dal.DuplicateCleaner;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
@@ -101,7 +100,7 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
 			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { new ObjectReplicationExcelProcess().SetRRFDBCoordinatesByYandex(); });
 
-            consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
+            //consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             //consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
 
             consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
