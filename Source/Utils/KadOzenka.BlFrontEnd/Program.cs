@@ -1,6 +1,5 @@
 ﻿using Platform.Shared;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DuplicateCleaner;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
@@ -106,7 +105,7 @@ namespace KadOzenka.BlFrontEnd
 			//	new AddingMissingDataFromGbuPartProc().PerformProc(false);
 			//});
 
-            consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
+            //consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1109", "Сгенерировать перечисления (источник данных)", () => { new InsertGenerator().GenerateInsertData("INSERT INTO core_reference_item (itemid, referenceid, code, value, name) VALUES ({0}, {1}, {2}, '{3}', '{4}');", 1514, 5, 101); });
