@@ -314,13 +314,13 @@ namespace KadOzenka.Web.Controllers
                 .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
 
 	        var unitRegisterId = OMUnit.GetRegisterId();
-	        var unitRequiredAttributeIds = Dal.DataImport.DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds;
+	        var requiredAttributeIds = Dal.DataImport.DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds;
 
 	        availableRegisters.Add(unitRegisterId);
-	        availableAttributeIds.AddRange(unitRequiredAttributeIds);
+	        availableAttributeIds.AddRange(requiredAttributeIds);
 
 	        var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
-			attributesTree.Where(x => unitRequiredAttributeIds.Contains(x.AttributeId)).ForEach(x => x.IsRequired = true);
+			attributesTree.Where(x => requiredAttributeIds.Contains(x.AttributeId)).ForEach(x => x.IsRequired = true);
 			var sortedAttributes = attributesTree.OrderByDescending(x => x.IsRequired).ThenBy(x => x.Description).ToList();
 
 			return Json(sortedAttributes);
