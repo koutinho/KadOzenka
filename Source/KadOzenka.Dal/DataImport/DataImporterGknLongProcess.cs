@@ -88,7 +88,7 @@ namespace KadOzenka.Dal.DataImport
 			//		ObjectId = import.Id
 			//	}, cancelToken);
 
-			//LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
+			LongProcessManager.AddTaskToQueue(LongProcessName, OMImportDataLog.GetRegisterId(), import.Id);
 		}
 
 	    public static void RestartImport(long? importId)
