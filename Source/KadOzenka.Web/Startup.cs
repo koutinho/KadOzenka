@@ -24,7 +24,6 @@ using AutoMapper.Configuration;
 using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
-using KadOzenka.Dal.DuplicateCleaner;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
@@ -267,13 +266,13 @@ namespace CIPJS
                     {
                         switch (context.Request.Path)
                         {
-                            case "/DuplicateProgress":
-                                System.Net.WebSockets.WebSocket
-                                    socket = await context.WebSockets.AcceptWebSocketAsync();
-                                await new SocketPool().SendMessage(socket, Duplicates.GetCurrentProgress());
-                                await new SocketPool().SendMessage(socket, Duplicates.GetListOfMarkets());
-                                await new SocketPool().AddSocket(socket);
-                                break;
+                            //case "/DuplicateProgress":
+                            //    System.Net.WebSockets.WebSocket
+                            //        socket = await context.WebSockets.AcceptWebSocketAsync();
+                            //    await new SocketPool().SendMessage(socket, Duplicates.GetCurrentProgress());
+                            //    await new SocketPool().SendMessage(socket, Duplicates.GetListOfMarkets());
+                            //    await new SocketPool().AddSocket(socket);
+                            //    break;
                         }
                     }
                     else await next();

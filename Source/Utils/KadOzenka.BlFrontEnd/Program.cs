@@ -1,7 +1,5 @@
 ﻿using Platform.Shared;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.AddressChecker;
-using KadOzenka.Dal.DuplicateCleaner;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
 using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
@@ -17,7 +15,6 @@ using KadOzenka.Dal.XmlParser;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
-using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.ExcelParser;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
@@ -33,7 +30,6 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Main.FileStorages;
-using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -101,15 +97,15 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
 			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { new ObjectReplicationExcelProcess().SetRRFDBCoordinatesByYandex(); });
 
-            consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
+            //consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             //consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
 
-            consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
-			{
-				new AddingMissingDataFromGbuPartProc().PerformProc(false);
-			});
+   //         consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
+			//{
+			//	new AddingMissingDataFromGbuPartProc().PerformProc(false);
+			//});
 
-            consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
+            //consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
             /*Вспомогательные функции*/
             consoleHelper.AddCommand("1109", "Сгенерировать перечисления (источник данных)", () => { new InsertGenerator().GenerateInsertData("INSERT INTO core_reference_item (itemid, referenceid, code, value, name) VALUES ({0}, {1}, {2}, '{3}', '{4}');", 1514, 5, 101); });
@@ -238,16 +234,17 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
 
-            consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
-            {
-                var filler = new MarketObjectsCadastralInfoFiller();
-                filler.PerformFillingCadastralQuarterProc();
-            });
-		    consoleHelper.AddCommand("161-2", "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
-		    {
-		        var filler = new MarketObjectsCadastralInfoFiller();
-		        filler.PerformFillingCadastralInfoByQuarterProc();
-		    });
+            //consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
+            //{
+	           // var filler = new MarketObjectsCadastralInfoFiller();
+	           // filler.PerformFillingCadastralQuarterProc();
+            //});
+            //consoleHelper.AddCommand("161-2",
+	           // "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
+	           // {
+		          //  var filler = new MarketObjectsCadastralInfoFiller();
+		          //  filler.PerformFillingCadastralInfoByQuarterProc();
+	           // });
 
 			consoleHelper.AddCommand("900", "Test Configuration.GetFileStream", () =>
 			{
