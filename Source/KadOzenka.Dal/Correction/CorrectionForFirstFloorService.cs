@@ -22,13 +22,11 @@ namespace KadOzenka.Dal.Correction
         private const bool IncludeCorrectionByRooms = true;
 
         public static List<MarketSegment> CalculatedMarketSegments => new List<MarketSegment>() { MarketSegment.Office, MarketSegment.Trading, MarketSegment.MZHS };
-        public CorrectionByRoomService CorrectionByRoomService { get; protected set; }
         public IMarketObjectsForCorrectionByFirstFloor MarketObjectsService { get; }
 
 
         public CorrectionForFirstFloorService()
         {
-	        CorrectionByRoomService = new CorrectionByRoomService();
 	        MarketObjectsService = new MarketObjectsForCorrectionsService();
         }
 
@@ -75,7 +73,7 @@ namespace KadOzenka.Dal.Correction
             List<RoomRates> roomRatesList;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (IncludeCorrectionByRooms)
-                roomRatesList = CorrectionByRoomService.GetAverageCoefficients(dateMonth)
+                roomRatesList = GetAverageCoefficients(dateMonth)
                     .Select(x => new RoomRates
                     {
                         Segment = x.MarketSegment,
@@ -340,6 +338,58 @@ namespace KadOzenka.Dal.Correction
         private static DateTime DateToMonth(DateTime date)
         {
             return new DateTime(date.Year, date.Month, 1);
+        }
+
+        public List<CorrectionByRoomCoefficientsDto> GetAverageCoefficients(DateTime date)
+        {
+	        return GetAverageCoefficients().Where(x => x.Date == date).ToList();
+        }
+
+        private List<CorrectionByRoomCoefficientsDto> GetAverageCoefficients()
+        {
+	        var precisionForPrice = 2;
+	        var precisionForCoefficients = 4;
+
+	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
+
+	        var result = OMCoefficientsForCorrectionByRooms.Where(x =>
+			        CalculatedMarketSegments.Contains(x.MarketSegment_Code) && x.IsExcluded == false ||
+			        x.IsExcluded == null)
+		        .OrderByDescending(x => x.ChangingDate)
+		        .SelectAll().Execute()
+		        .GroupBy(x => new {x.MarketSegment_Code, x.ChangingDate}).Select(
+			        group =>
+			        {
+				        var filterValues = @group.ToList().Where(x =>
+					        (!settings.LowerLimitForCoefficient.HasValue ||
+					         x.OneRoomCoefficient >= settings.LowerLimitForCoefficient.Value)
+					        && (!settings.UpperLimitForCoefficient.HasValue ||
+					            x.OneRoomCoefficient <= settings.UpperLimitForCoefficient.Value)).ToList();
+				        var oneRoomCoefficient = filterValues.Count > 0
+					        ? Math.Round(filterValues.Average(x => x.OneRoomCoefficient), precisionForCoefficients)
+					        : (decimal?) null;
+
+				        filterValues = @group.ToList().Where(x =>
+					        (!settings.LowerLimitForTheSecondCoefficient.HasValue || x.ThreeRoomsCoefficient >=
+						        settings.LowerLimitForTheSecondCoefficient.Value)
+					        && (!settings.UpperLimitForTheSecondCoefficient.HasValue || x.ThreeRoomsCoefficient <=
+						        settings.UpperLimitForTheSecondCoefficient.Value)).ToList();
+				        var threeRoomsCoefficient = filterValues.Count > 0
+					        ? Math.Round(filterValues.Average(x => x.ThreeRoomsCoefficient), precisionForCoefficients)
+					        : (decimal?) null;
+				        var dto = new CorrectionByRoomCoefficientsDto
+				        {
+					        Date = @group.Key.ChangingDate,
+					        MarketSegment = @group.Key.MarketSegment_Code,
+					        OneRoomCoefficient = oneRoomCoefficient,
+					        ThreeRoomsCoefficient = threeRoomsCoefficient
+				        };
+
+				        return oneRoomCoefficient.HasValue || threeRoomsCoefficient.HasValue ? dto : null;
+			        }
+		        ).Where(x => x != null).ToList();
+
+	        return result;
         }
 
         #endregion

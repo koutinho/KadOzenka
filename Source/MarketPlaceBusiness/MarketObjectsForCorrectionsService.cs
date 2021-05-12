@@ -10,66 +10,9 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class MarketObjectsForCorrectionsService : 
-		IMarketObjectsForCorrectionByRoom, IMarketObjectsForCorrectionByStage,
+	public class MarketObjectsForCorrectionsService : IMarketObjectsForCorrectionByStage,
 		IMarketObjectsForCorrectionByFirstFloor
 	{
-
-		#region Комнатность
-
-		List<OMCoreObject> IMarketObjectsForCorrectionByRoom.GetObjects()
-		{
-			return OMCoreObject.Where(x => x.RoomsCount == 1 || x.RoomsCount == 3).SelectAll().Execute();
-		}
-
-		List<IGrouping<ObjectsGroupedBySegmentForCorrectionByRoom, OMCoreObject>> IMarketObjectsForCorrectionByRoom.GetObjectsGroupedBySegment(List<MarketSegment> calculatedMarketSegments,
-				long?[] numberOfRooms)
-		{
-			return OMCoreObject.Where(x =>
-					calculatedMarketSegments.Contains(x.PropertyMarketSegment_Code) &&
-					x.BuildingCadastralNumber != null &&
-					x.RoomsCount != null && numberOfRooms.Contains(x.RoomsCount) &&
-					x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal)
-				.SelectAll(false)
-				.Execute()
-				.GroupBy(x => new
-					ObjectsGroupedBySegmentForCorrectionByRoom
-					{
-						Segment = x.PropertyMarketSegment_Code
-					}).ToList();
-		}
-
-		public bool IsBuildingContainAllRoomsTypes(List<OMCoreObject> objectsInBuilding)
-		{
-			bool haveOneRoomApartment = false, haveTwoRoomsApartment = false, haveThreeRoomsApartment = false;
-
-			objectsInBuilding.ForEach(obj =>
-			{
-				switch (obj.RoomsCount)
-				{
-					case 1:
-						haveOneRoomApartment = true;
-						break;
-					case 2:
-						haveTwoRoomsApartment = true;
-						break;
-					case 3:
-						haveThreeRoomsApartment = true;
-						break;
-				}
-			});
-
-			return haveOneRoomApartment && haveTwoRoomsApartment && haveThreeRoomsApartment;
-		}
-
-		public decimal GetAveragePricePerMeter(IEnumerable<OMCoreObject> objects, int numberOfRooms)
-		{
-			return objects.Where(x => x.RoomsCount == numberOfRooms).Average(x => x.PricePerMeter.GetValueOrDefault());
-		}
-
-		#endregion
-
-
 		#region Подваль/Цоколь
 
 		List<GeneralInfoForCorrectionByStage> IMarketObjectsForCorrectionByStage.GetObjects(bool isForStage,

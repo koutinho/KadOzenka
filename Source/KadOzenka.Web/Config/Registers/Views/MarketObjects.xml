@@ -40,8 +40,6 @@
     
     <Button Caption="Корреляция (моделирование)" NavigateURL="~/Modeling/Correlation" WindowHeight="700" WindowWidth="600" Icon="fas fa-chart-line" SRDFunctionTag="MARKET.CORRELATION" />
 
-    <Button Caption="Корректировка на комнатность" NavigateURL="~/MarketObjects/CorrectionByRoomGeneralCoefficients" OpenInRadWindow="true" WindowHeight="550" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />
-
     <Button Caption="Корректировка на цоколь/подвал" NavigateURL="~/MarketObjects/CorrectionByStageGeneralHistory" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />
 
     <Button Caption="Корректировка на первый этаж" NavigateURL="~/MarketObjects/CorrectionForFirstFloorGeneral" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />

@@ -37,7 +37,6 @@ namespace KadOzenka.Web.Controllers
 {
     public class MarketObjectsController : KoBaseController
 	{
-		public CorrectionByRoomService CorrectionByRoomService { get; set; }
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
@@ -46,8 +45,7 @@ namespace KadOzenka.Web.Controllers
 
         public MarketObjectsController(IMarketObjectService marketObjectsService)
         {
-	        CorrectionByRoomService = new CorrectionByRoomService();
-			CorrectionByStageService = new CorrectionByStageService();
+	        CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
             OutliersCheckingSettingsService = new OutliersCheckingSettingsService();
@@ -137,103 +135,6 @@ namespace KadOzenka.Web.Controllers
             return View("~/Views/AnalogCheck/ActivateCoordinates.cshtml");
         }
 
-
-        #region Correction By Rooms
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByRoomGeneralCoefficients()
-        {
-            var filters = CorrectionByRoomService.CalculatedMarketSegments.Select(x => (long) x).ToArray();
-            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
-
-            ViewBag.Segments = segments;
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionByRoomGeneralCoefficients(long marketSegmentCode)
-        {
-            var history = CorrectionByRoomService.GetAverageCoefficients(marketSegmentCode);
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
-            var models = history.Select(x => CorrectionByRoomModel.Map(x,
-                CorrectionByRoomService.IsOneRoomCoefIncludedInCalculationLimit,
-                CorrectionByRoomService.IsThreeRoomsCoefIncludedInCalculationLimit)).ToList();
-
-            return Json(models);
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
-        {
-            var marketSegment = (MarketSegment)marketSegmentCode;
-
-            ViewBag.Date = date;
-            ViewBag.MarketSegmentCode = marketSegmentCode;
-            ViewBag.MarketSegment = marketSegment.GetEnumDescription();
-
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
-            if (settings.LowerLimitForCoefficient.HasValue)
-            {
-                ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
-            }
-            if (settings.UpperLimitForCoefficient.HasValue)
-            {
-                ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
-            }
-            if (settings.LowerLimitForTheSecondCoefficient.HasValue)
-            {
-                ViewBag.LowerLimitForTheSecondCoefficient = settings.LowerLimitForTheSecondCoefficient;
-            }
-            if (settings.UpperLimitForTheSecondCoefficient.HasValue)
-            {
-                ViewBag.UpperLimitForTheSecondCoefficient = settings.UpperLimitForTheSecondCoefficient;
-            }
-
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionByRoomDetailedCoefficients(long marketSegmentCode, DateTime date)
-        {
-            var historyRecords = CorrectionByRoomService.GetDetailedCoefficients(marketSegmentCode, date);
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByRoom);
-            var models = historyRecords.Select(x => CorrectionByRoomModel.Map(x,
-                CorrectionByRoomService.IsOneRoomCoefIncludedInCalculationLimit,
-                CorrectionByRoomService.IsThreeRoomsCoefIncludedInCalculationLimit)).ToList();
-
-            return Json(models);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public JsonResult ChangeBuildingsStatusInCalculation(string models, DateTime date)
-        {
-            var historyJson = JObject.Parse(models).SelectToken("models").ToString();
-
-            var allRecords = JsonConvert.DeserializeObject<List<CorrectionByRoomModel>>(historyJson);
-            var changedRecords = allRecords.Where(x => x.IsDirty).Select(CorrectionByRoomModel.UnMap).ToList();
-
-            var isDataUpdated = CorrectionByRoomService.ChangeBuildingsStatusInCalculation(changedRecords);
-
-            string message;
-            if (isDataUpdated)
-            {
-                CorrectionByRoomForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
-                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на комнатность добавлена в очередь";
-            }
-            else
-            {
-                message = "Не найдено данных для изменения";
-            }
-
-            return Json(new {Message = message });
-        }
-
-        #endregion
 
         #region Correction By Stage
 
