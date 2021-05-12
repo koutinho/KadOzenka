@@ -10,38 +10,10 @@ using ObjectModel.Market;
 
 namespace MarketPlaceBusiness
 {
-	public class MarketObjectsForCorrectionsService : IMarketObjectsForCorrectionByDate,
+	public class MarketObjectsForCorrectionsService : 
 		IMarketObjectsForCorrectionByRoom, IMarketObjectsForCorrectionByStage,
 		IMarketObjectsForCorrectionByFirstFloor
 	{
-		#region Дата
-
-		List<OMCoreObject> IMarketObjectsForCorrectionByDate.GetObjects()
-		{
-			return OMCoreObject
-				.Where(x => x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal &&
-					(x.ParserTime != null || x.LastDateUpdate != null) &&
-					x.PropertyMarketSegment != null)
-				.SelectAll().Execute();
-		}
-
-		List<IGrouping<MarketSegment, OMCoreObject>> IMarketObjectsForCorrectionByDate.GetObjectsGroupedBySegment(
-			DateTime startDate, DateTime endDate)
-		{
-			return OMCoreObject.Where(x =>
-					(x.DealType_Code == DealType.SaleSuggestion || x.DealType_Code == DealType.SaleDeal) &&
-					x.BuildingCadastralNumber != null && x.BuildingCadastralNumber != "" &&
-					x.PropertyMarketSegment != null &&
-					((x.ParserTime != null && x.ParserTime >= startDate && x.ParserTime <= endDate) ||
-					 (x.LastDateUpdate != null && x.LastDateUpdate >= startDate && x.LastDateUpdate <= endDate)))
-				.SelectAll(false)
-				.Execute()
-				.GroupBy(x => x.PropertyMarketSegment_Code)
-				.ToList();
-		}
-
-		#endregion
-
 
 		#region Комнатность
 

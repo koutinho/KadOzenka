@@ -37,8 +37,7 @@ namespace KadOzenka.Web.Controllers
 {
     public class MarketObjectsController : KoBaseController
 	{
-        public CorrectionByDateService CorrectionByDateService { get; set; }
-        public CorrectionByRoomService CorrectionByRoomService { get; set; }
+		public CorrectionByRoomService CorrectionByRoomService { get; set; }
 		public CorrectionByStageService CorrectionByStageService { get; set; }
         public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
         public CorrectionSettingsService CorrectionSettingsService { get; set; }
@@ -47,8 +46,7 @@ namespace KadOzenka.Web.Controllers
 
         public MarketObjectsController(IMarketObjectService marketObjectsService)
         {
-            CorrectionByDateService = new CorrectionByDateService();
-            CorrectionByRoomService = new CorrectionByRoomService();
+	        CorrectionByRoomService = new CorrectionByRoomService();
 			CorrectionByStageService = new CorrectionByStageService();
             CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
             CorrectionSettingsService = new CorrectionSettingsService();
@@ -138,86 +136,6 @@ namespace KadOzenka.Web.Controllers
         {
             return View("~/Views/AnalogCheck/ActivateCoordinates.cshtml");
         }
-
-        #region Correction By Date
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByDateGeneralCoefficients()
-        {
-            var exceptions = new List<long> { (long)MarketSegment.None, (long)MarketSegment.NoSegment };
-
-            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), exceptions: exceptions);
-
-            ViewBag.Segments = segments;
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionByDateGeneralCoefficients(long marketSegmentCode)
-        {
-            var history = CorrectionByDateService.GetAverageCoefficientsBySegments(marketSegmentCode);
-            return Json(history.Select(x => CorrectionByDateModel.Map(x, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList());
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
-        {
-            var marketSegment = (MarketSegment)marketSegmentCode;
-
-            ViewBag.Date = date;
-            ViewBag.MarketSegmentCode = marketSegmentCode;
-            ViewBag.MarketSegment = marketSegment.GetEnumDescription();
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
-            if (settings.LowerLimitForCoefficient.HasValue)
-            {
-                ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
-            }
-            if (settings.UpperLimitForCoefficient.HasValue)
-            {
-                ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
-            }
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionByDateDetailedCoefficients(long marketSegmentCode, DateTime date)
-        {
-            var historyRecords = CorrectionByDateService.GetDetailedCoefficients(marketSegmentCode, date);
-            var models = historyRecords.Select(x => CorrectionByDateModel.Map(x, CorrectionByDateService.IsCoefIncludedInCalculationLimit)).ToList();
-
-            return Json(models);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public JsonResult ChangeBuildingsStatusInCalculationForCorrectionByDate(string models, DateTime date)
-        {
-            var historyJson = JObject.Parse(models).SelectToken("models").ToString();
-
-            var allRecords = JsonConvert.DeserializeObject<List<CorrectionByDateModel>>(historyJson);
-            var changedRecords = allRecords.Where(x => x.IsDirty).Select(CorrectionByDateModel.UnMap).ToList();
-
-            var isDataUpdated = CorrectionByDateService.ChangeBuildingsStatusInCalculation(changedRecords);
-
-            string message;
-            if (isDataUpdated)
-            {
-                CorrectionByDateForMarketObjectsLongProcess.AddProcessToQueue();
-                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
-            }
-            else
-            {
-                message = "Не найдено данных для изменения";
-            }
-
-            return Json(new { Message = message });
-        }
-
-        #endregion
 
 
         #region Correction By Rooms
