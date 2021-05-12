@@ -233,6 +233,7 @@ namespace KadOzenka.Dal.XmlParser
 			NameParcel = new xmlCodeName();
 			Category = new xmlCodeName();
 			Utilization = new xmlUtilization();
+			SurveyingProjectDecisionRequisites = new xmlDocument();
 			HiredHouse = new xmlHiredHouse();
 			AssignationBuilding = new xmlCodeName();
 			Years = new xmlYear();
