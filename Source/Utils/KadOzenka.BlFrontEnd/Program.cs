@@ -31,7 +31,6 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Main.FileStorages;
-using KadOzenka.Dal.AddingMissingDataFromGbuPart;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -102,10 +101,10 @@ namespace KadOzenka.BlFrontEnd
             //consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             //consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
 
-            consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
-			{
-				new AddingMissingDataFromGbuPartProc().PerformProc(false);
-			});
+   //         consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
+			//{
+			//	new AddingMissingDataFromGbuPartProc().PerformProc(false);
+			//});
 
             consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
