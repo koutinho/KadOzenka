@@ -219,37 +219,6 @@ namespace KadOzenka.Web.Controllers
 
         #endregion
 
-        #region Correction By Bargain
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByBargain()
-        {
-            var segments = System.Enum.GetValues(typeof(MarketSegment)).Cast<MarketSegment>();
-            ViewData["Segments"] = segments.Select(x => new SelectListItem(x.GetEnumDescription(),
-                    x.GetEnumCode())).ToList();
-
-            return View(new CorrectionByBargainModel());
-        }
-
-	    [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByBargain(CorrectionByBargainModel model)
-	    {
-	        if (!ModelState.IsValid)
-	        {
-	            return GenerateMessageNonValidModel();
-	        }
-
-	        var request = model.ToCorrectionByBargainRequest();
-	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByBargain);
-            var correctionByBargainProc = new CorrectionByBargainProc(settings);
-	        correctionByBargainProc.PerformBargainCorrectionProc(request);
-
-            return Json(new { Success = "Процедура Корректировки на торг успешно выполнена" });
-        }
-
-        #endregion Correction By Bargain
 
         #region Correction By Rooms
 
