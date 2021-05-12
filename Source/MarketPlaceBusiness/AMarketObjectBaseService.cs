@@ -32,7 +32,7 @@ namespace MarketPlaceBusiness
 			return OMCoreObject.GetAttributeData(property);
 		}
 
-		public OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null)
+		protected OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null)
 		{
 			return MarketObjectsRepository.GetById(id, selectExpression);
 		}

@@ -9,7 +9,8 @@ namespace MarketPlaceBusiness.Interfaces
 {
 	public interface IAMarketObjectBaseService
 	{
-		OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
+		//TODO убран временно, т.к. лучше пользоваться поиском по ИД с маппером
+		//OMCoreObject GetById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
 
 		MarketObjectDto GetMappedObjectById(long id, Expression<Func<OMCoreObject, object>> selectExpression = null);
 
