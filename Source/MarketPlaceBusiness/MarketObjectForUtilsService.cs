@@ -90,39 +90,39 @@ namespace MarketPlaceBusiness
 
 		#region Для привязки к аналогам кадастровых кварталов
 
-		public List<OMCoreObject> GetObjectsWithCadastralNumber()
-		{
-			return OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
-				.Select(x => new
-				{
-					x.CadastralNumber,
-					x.CadastralQuartal
-				})
-				.Execute();
-		}
+		//public List<OMCoreObject> GetObjectsWithCadastralNumber()
+		//{
+		//	return OMCoreObject.Where(x => x.CadastralNumber != null && x.CadastralNumber != string.Empty)
+		//		.Select(x => new
+		//		{
+		//			x.CadastralNumber,
+		//			x.CadastralQuartal
+		//		})
+		//		.Execute();
+		//}
 
-		public List<OMCoreObject> GetObjectsWithCadastralQuartal()
-		{
-			return OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
-				.Select(x => new
-				{
-					x.CadastralNumber,
-					x.CadastralQuartal,
-					x.District,
-					x.District_Code,
-					x.Neighborhood,
-					x.Neighborhood_Code,
-					x.Zone,
-					x.ZoneRegion
-				})
-				.Execute();
-		}
+		//public List<OMCoreObject> GetObjectsWithCadastralQuartal()
+		//{
+		//	return OMCoreObject.Where(x => x.CadastralQuartal != null && x.CadastralQuartal != string.Empty)
+		//		.Select(x => new
+		//		{
+		//			x.CadastralNumber,
+		//			x.CadastralQuartal,
+		//			x.District,
+		//			x.District_Code,
+		//			x.Neighborhood,
+		//			x.Neighborhood_Code,
+		//			x.Zone,
+		//			x.ZoneRegion
+		//		})
+		//		.Execute();
+		//}
 
-		public void FillQuarterByCadastralNumber(OMCoreObject marketObject)
-		{
-			var ellipsisLastIndex = marketObject.CadastralNumber.LastIndexOf(":");
-			marketObject.CadastralQuartal = marketObject.CadastralNumber.Substring(0, ellipsisLastIndex);
-		}
+		//public void FillQuarterByCadastralNumber(OMCoreObject marketObject)
+		//{
+		//	var ellipsisLastIndex = marketObject.CadastralNumber.LastIndexOf(":");
+		//	marketObject.CadastralQuartal = marketObject.CadastralNumber.Substring(0, ellipsisLastIndex);
+		//}
 
 		#endregion
 

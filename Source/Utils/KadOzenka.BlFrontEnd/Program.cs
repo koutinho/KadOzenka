@@ -16,7 +16,6 @@ using KadOzenka.Dal.XmlParser;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
-using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
 using KadOzenka.Dal.ExcelParser;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
@@ -237,16 +236,17 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
 
-            consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
-            {
-                var filler = new MarketObjectsCadastralInfoFiller();
-                filler.PerformFillingCadastralQuarterProc();
-            });
-		    consoleHelper.AddCommand("161-2", "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
-		    {
-		        var filler = new MarketObjectsCadastralInfoFiller();
-		        filler.PerformFillingCadastralInfoByQuarterProc();
-		    });
+            //consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
+            //{
+	           // var filler = new MarketObjectsCadastralInfoFiller();
+	           // filler.PerformFillingCadastralQuarterProc();
+            //});
+            //consoleHelper.AddCommand("161-2",
+	           // "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
+	           // {
+		          //  var filler = new MarketObjectsCadastralInfoFiller();
+		          //  filler.PerformFillingCadastralInfoByQuarterProc();
+	           // });
 
 			consoleHelper.AddCommand("900", "Test Configuration.GetFileStream", () =>
 			{

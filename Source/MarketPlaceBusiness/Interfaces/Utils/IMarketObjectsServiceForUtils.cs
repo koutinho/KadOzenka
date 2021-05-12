@@ -7,7 +7,7 @@ namespace MarketPlaceBusiness.Interfaces.Utils
 	/// Интерфейс для методов, которые используются только в BlFrontend
 	/// и когда нет смысла выделять один метод в интерфейс
 	/// </summary>
-	public interface IMarketObjectsServiceForUtils : IMissingDataFromGbuService, IMarketObjectForCadastralInfoFiller
+	public interface IMarketObjectsServiceForUtils : IMissingDataFromGbuService//, IMarketObjectForCadastralInfoFiller
 	{
 		//List<OMCoreObject> GetNotRosreestrObjectsWithAddressProceed();
 
