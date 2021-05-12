@@ -112,7 +112,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient<DocumentService>();
 			container.AddTransient<ModelFactorsService>();
 			container.AddSingleton<KoUnloadResultsListenerService>();
-			container.AddSingleton<OutliersCheckingListenerService>();
+			//container.AddSingleton<OutliersCheckingListenerService>();
 			container.AddSingleton<DictionaryService>();
 			container.AddSingleton<EsHubService>();
 			container.AddSingleton<SignalRMessageService>();

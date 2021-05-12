@@ -9,7 +9,7 @@ namespace MarketPlaceBusiness.Interfaces.Utils
 	/// </summary>
 	public interface IMarketObjectsServiceForUtils : IMissingDataFromGbuService, IMarketObjectForCadastralInfoFiller
 	{
-		List<OMCoreObject> GetNotRosreestrObjectsWithAddressProceed();
+		//List<OMCoreObject> GetNotRosreestrObjectsWithAddressProceed();
 
 		List<OMCoreObject> GetObjectsToSetAddress(int objectsCount);
 	}
