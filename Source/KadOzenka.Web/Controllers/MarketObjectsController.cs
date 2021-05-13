@@ -16,8 +16,6 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
-using KadOzenka.Dal.OutliersChecking;
-using KadOzenka.Dal.OutliersChecking.Dto;
 using KadOzenka.Web.Attributes;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;

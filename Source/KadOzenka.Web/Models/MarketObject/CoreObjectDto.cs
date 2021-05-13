@@ -43,9 +43,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
 		public string CadastralQuartal { get; set; }
-		public string District { get; set; }
 		public string BuildingCadastralNumber { get; set; }
-		public long? BuildingYear { get; set; }
 		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
 		public decimal? AreaKitchen { get; set; }
@@ -55,7 +53,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
-		public string Url { get; set; }
 		public string Status { get; set; }
 		public ProcessStep StatusCode { get; set; }
 		public decimal? Latitude { get; set; }
@@ -92,9 +89,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
 				CadastralQuartal = entity.CadastralQuartal,
-				District = entity.District,
 				BuildingCadastralNumber = entity.BuildingCadastralNumber,
-				BuildingYear = entity.BuildingYear,
 				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
 				AreaKitchen = entity.AreaKitchen,
@@ -102,7 +97,6 @@ namespace KadOzenka.Web.Models.MarketObject
 				Zone = entity.Zone,
 				Group = entity.Group,
 				Subgroup = entity.Subgroup,
-				Url = entity.Url,
 				Status = entity.ProcessType,
 				StatusCode = entity.ProcessType_Code,
 				Latitude = entity.Lat,

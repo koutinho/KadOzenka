@@ -7,11 +7,6 @@ namespace MarketPlaceBusiness.Dto
     {
 	    public long Id { get; set; }
 
-        /// <summary>
-        /// 10002100 URL-адрес объявления (URL)
-        /// </summary>
-        public string Url { get; set; }
-
 		/// <summary>
 		/// 10002300 Источник информации (MARKET)
 		/// </summary>
@@ -62,11 +57,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10003200 Наименование метро (METRO)
 		/// </summary>
 		public string Metro { get; set; }
-
-		/// <summary>
-		/// 10003300 URL-адреса изображений (IMAGES)
-		/// </summary>
-		public string Images { get; set; }
 
 		/// <summary>
 		/// 10003400 Текст объявления (DESCRIPTION)
@@ -145,16 +135,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10005101 Настраиваемая зона (CUSTOM_ZONE)
 		/// </summary>
 		public string CustomZone { get; set; }
-
-		/// <summary>
-		/// 10005200 Административный округ (DISTRICT)
-		/// </summary>
-		public string District { get; set; }
-
-		/// <summary>
-		/// 10005200 Административный округ (справочный код) (DISTRICT_CODE)
-		/// </summary>
-		public Hunteds District_Code { get; set; }
 
 		/// <summary>
 		/// 10005300 Район (NEIGHBORHOOD)
@@ -284,12 +264,6 @@ namespace MarketPlaceBusiness.Dto
 
 
 		/// <summary>
-		/// 10007500 ID города (CITY_ID)
-		/// </summary>
-		public long? CityId { get; set; }
-
-
-		/// <summary>
 		/// 10007600 Дата последнего обновления цены (LAST_DATE_UPDATE)
 		/// </summary>
 		public DateTime? LastDateUpdate { get; set; }
@@ -305,12 +279,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007700 Вид объекта недвижимости (справочный код) (PROPERTY_TYPETS_CIPJS_CODE)
 		/// </summary>
 		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
-
-
-		/// <summary>
-		/// 10007800 Вид передаваемых прав (PROPERTY_LAW_TYPE)
-		/// </summary>
-		public string PropertyLawType { get; set; }
 
 
 		/// <summary>
@@ -353,12 +321,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008900 Цена после корректировки на цоколь/подвал (PRICE_AFTER_CORRECTION_BY_STAGE)
 		/// </summary>
 		public decimal? PriceAfterCorrectionByStage { get; set; }
-
-
-		/// <summary>
-		/// 10009002 Вид права (OWNERSHIP_TYPE)
-		/// </summary>
-		public string OwnershipType { get; set; }
 
 
 		/// <summary>

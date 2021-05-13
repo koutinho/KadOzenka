@@ -68,7 +68,7 @@ namespace MarketPlaceBusiness
 					                         x.ProcessType_Code == ProcessStep.Dealed))
 				.Select(x => new
 				{
-					x.District_Code, x.Neighborhood_Code, x.Neighborhood, x.ZoneRegion, x.Market_Code, x.Market,
+					x.Neighborhood_Code, x.Neighborhood, x.ZoneRegion, x.Market_Code, x.Market,
 					x.CadastralQuartal, x.Zone
 				})
 				.Execute()

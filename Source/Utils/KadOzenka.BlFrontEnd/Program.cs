@@ -2,14 +2,12 @@
 using GemBox.Spreadsheet;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
-using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
 using KadOzenka.BlFrontEnd.ExportKO;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
 using KadOzenka.BlFrontEnd.SudTests;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using KadOzenka.Dal.XmlParser;
 using System;
@@ -94,8 +92,8 @@ namespace KadOzenka.BlFrontEnd
 			});
 
 			/*Загрузка информации по сделкам росреестра из excel*/
-			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
-			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { new ObjectReplicationExcelProcess().SetRRFDBCoordinatesByYandex(); });
+			//consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
+			//consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { new ObjectReplicationExcelProcess().SetRRFDBCoordinatesByYandex(); });
 
             //consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
             //consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
@@ -117,20 +115,20 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
 			consoleHelper.AddCommand("1902", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
 
-			consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
+			//consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
 
 			consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
 			consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
 
-			consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам",
-				() =>
-				{
-					ObjectReplicationExcelProcess.SetCadastralNumber(
-						ConfigurationManager.AppSettings["InitialAddressFile"],
-						ConfigurationManager.AppSettings["DefaultExceleValue"]);
-				});
-			consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { new ObjectReplicationExcelProcess().FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
-			consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { new ObjectReplicationExcelProcess().SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+			//consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам",
+			//	() =>
+			//	{
+			//		ObjectReplicationExcelProcess.SetCadastralNumber(
+			//			ConfigurationManager.AppSettings["InitialAddressFile"],
+			//			ConfigurationManager.AppSettings["DefaultExceleValue"]);
+			//	});
+			//consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { new ObjectReplicationExcelProcess().FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+			//consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { new ObjectReplicationExcelProcess().SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
 
 			consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 

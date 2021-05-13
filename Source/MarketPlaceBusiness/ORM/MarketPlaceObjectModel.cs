@@ -33,26 +33,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _url;
-        /// <summary>
-        /// 10002100 URL-адрес объявления (URL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002100)]
-        public string Url
-        {
-            get
-            {
-                CheckPropertyInited("Url");
-                return _url;
-            }
-            set
-            {
-                _url = value;
-                NotifyPropertyChanged("Url");
-            }
-        }
-
-
         private string _market;
         /// <summary>
         /// 10002300 Источник информации (MARKET)
@@ -264,26 +244,6 @@ namespace ObjectModel.Market
             {
                 _metro = value;
                 NotifyPropertyChanged("Metro");
-            }
-        }
-
-
-        private string _images;
-        /// <summary>
-        /// 10003300 URL-адреса изображений (IMAGES)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003300)]
-        public string Images
-        {
-            get
-            {
-                CheckPropertyInited("Images");
-                return _images;
-            }
-            set
-            {
-                _images = value;
-                NotifyPropertyChanged("Images");
             }
         }
 
@@ -543,26 +503,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _buildingyear;
-        /// <summary>
-        /// 10004700 Год постройки (BUILDING_YEAR)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004700)]
-        public long? BuildingYear
-        {
-            get
-            {
-                CheckPropertyInited("BuildingYear");
-                return _buildingyear;
-            }
-            set
-            {
-                _buildingyear = value;
-                NotifyPropertyChanged("BuildingYear");
-            }
-        }
-
-
         private string _zoneregion;
         /// <summary>
         /// 10005100 Зона_Округ (ZONE_REGION)
@@ -599,61 +539,6 @@ namespace ObjectModel.Market
             {
                 _customzone = value;
                 NotifyPropertyChanged("CustomZone");
-            }
-        }
-
-
-        private string _district;
-        /// <summary>
-        /// 10005200 Административный округ (DISTRICT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005200)]
-        public string District
-        {
-            get
-            {
-                CheckPropertyInited("District");
-                return _district;
-            }
-            set
-            {
-                _district = value;
-                NotifyPropertyChanged("District");
-            }
-        }
-
-
-        private Hunteds _district_Code;
-        /// <summary>
-        /// 10005200 Административный округ (справочный код) (DISTRICT_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005200)]
-        public Hunteds District_Code
-        {
-            get
-            {
-                CheckPropertyInited("District_Code");
-                return this._district_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_district))
-                    {
-                         _district = descr;
-                    }
-                }
-                else
-                {
-                     _district = descr;
-                }
-
-                this._district_Code = value;
-                NotifyPropertyChanged("District");
-                NotifyPropertyChanged("District_Code");
             }
         }
 
@@ -1208,26 +1093,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _cityid;
-        /// <summary>
-        /// 10007500 ID города (CITY_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007500)]
-        public long? CityId
-        {
-            get
-            {
-                CheckPropertyInited("CityId");
-                return _cityid;
-            }
-            set
-            {
-                _cityid = value;
-                NotifyPropertyChanged("CityId");
-            }
-        }
-
-
         private DateTime? _lastdateupdate;
         /// <summary>
         /// 10007600 Дата последнего обновления цены (LAST_DATE_UPDATE)
@@ -1299,26 +1164,6 @@ namespace ObjectModel.Market
                 this._propertytypescipjs_Code = value;
                 NotifyPropertyChanged("PropertyTypesCIPJS");
                 NotifyPropertyChanged("PropertyTypesCIPJS_Code");
-            }
-        }
-
-
-        private string _propertylawtype;
-        /// <summary>
-        /// 10007800 Вид передаваемых прав (PROPERTY_LAW_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007800)]
-        public string PropertyLawType
-        {
-            get
-            {
-                CheckPropertyInited("PropertyLawType");
-                return _propertylawtype;
-            }
-            set
-            {
-                _propertylawtype = value;
-                NotifyPropertyChanged("PropertyLawType");
             }
         }
 
@@ -1459,26 +1304,6 @@ namespace ObjectModel.Market
             {
                 _priceaftercorrectionbystage = value;
                 NotifyPropertyChanged("PriceAfterCorrectionByStage");
-            }
-        }
-
-
-        private string _ownershiptype;
-        /// <summary>
-        /// 10009002 Вид права (OWNERSHIP_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009002)]
-        public string OwnershipType
-        {
-            get
-            {
-                CheckPropertyInited("OwnershipType");
-                return _ownershiptype;
-            }
-            set
-            {
-                _ownershiptype = value;
-                NotifyPropertyChanged("OwnershipType");
             }
         }
 
