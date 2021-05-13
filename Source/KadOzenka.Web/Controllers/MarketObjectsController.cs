@@ -13,7 +13,6 @@ using Core.Main.FileStorages;
 using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
-using KadOzenka.Dal.Correction;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
@@ -35,17 +34,11 @@ namespace KadOzenka.Web.Controllers
 {
     public class MarketObjectsController : KoBaseController
 	{
-		public CorrectionByStageService CorrectionByStageService { get; set; }
-        public CorrectionForFirstFloorService CorrectionForFirstFloorService { get; set; }
-        public CorrectionSettingsService CorrectionSettingsService { get; set; }
-        public IMarketObjectService MarketObjectsService { get; set; }
+		public IMarketObjectService MarketObjectsService { get; set; }
 
         public MarketObjectsController(IMarketObjectService marketObjectsService)
         {
-	        CorrectionByStageService = new CorrectionByStageService();
-            CorrectionForFirstFloorService = new CorrectionForFirstFloorService();
-            CorrectionSettingsService = new CorrectionSettingsService();
-            MarketObjectsService = marketObjectsService;
+	        MarketObjectsService = marketObjectsService;
         }
 
         [HttpGet]
@@ -131,207 +124,6 @@ namespace KadOzenka.Web.Controllers
             return View("~/Views/AnalogCheck/ActivateCoordinates.cshtml");
         }
 
-
-        #region Correction By Stage
-
-		[HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByStageGeneralHistory()
-		{
-		    var filters = CorrectionByStageService.CalculatedMarketSegments.Select(x => (long)x).ToArray();
-		    var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
-			ViewBag.Segments = segments;
-
-			return View();
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionByStageGeneralHistory(long marketSegmentCode)
-		{
-            var history = CorrectionByStageService.GetGeneralHistory(marketSegmentCode);
-
-            return Json(history);
-		}
-
-		[HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public ActionResult CorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
-		{
-			var marketSegment = (MarketSegment)marketSegmentCode;
-
-			ViewBag.Date = date;
-			ViewBag.MarketSegmentCode = marketSegmentCode;
-			ViewBag.MarketSegment = marketSegment.GetEnumDescription();
-		    var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
-		    if (settings.LowerLimitForCoefficient.HasValue)
-		    {
-		        ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
-		    }
-		    if (settings.UpperLimitForCoefficient.HasValue)
-		    {
-		        ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
-		    }
-
-            return View();
-		}
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionByStageDetailedHistory(long marketSegmentCode, DateTime date)
-		{
-			var historyRecords = CorrectionByStageService.GetDetailedHistory(marketSegmentCode, date);
-		    var models = historyRecords.Select(x => CorrectionByStageModel.Map(x, CorrectionByStageService.IsCoefIncludedInCalculationLimit)).ToList();
-
-            return Json(models);
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public JsonResult ChangeBuildingsStatusInCalculationByStage(string models, DateTime date)
-		{
-			var historyJson = JObject.Parse(models).SelectToken("models").ToString();
-
-			var history = JsonConvert.DeserializeObject<List<CorrectionByStageModel>>(historyJson);
-			var records = history.Select(CorrectionByStageModel.UnMap).ToList();
-
-			var isDataUpdated = CorrectionByStageService.ChangeBuildingsStatusInCalculation(records);
-
-			string message;
-			if (isDataUpdated)
-			{
-				CorrectionByStageForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionByRoomRequest { Date = date });
-				message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на дату добавлена в очередь";
-			}
-			else
-			{
-				message = "Не найдено данных для изменения";
-			}
-
-			return Json(new { Message = message });
-		}
-
-        #endregion
-
-        #region Correction For First Floor
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public IActionResult CorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
-        {
-            var marketSegment = (MarketSegment)marketSegmentCode;
-
-            ViewBag.Date = date;
-            ViewBag.MarketSegmentCode = marketSegmentCode;
-            ViewBag.MarketSegment = marketSegment.GetEnumDescription();
-            var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByStage);
-            if (settings.LowerLimitForCoefficient.HasValue)
-            {
-                ViewBag.LowerLimitForCoefficient = settings.LowerLimitForCoefficient;
-            }
-            if (settings.UpperLimitForCoefficient.HasValue)
-            {
-                ViewBag.UpperLimitForCoefficient = settings.UpperLimitForCoefficient;
-            }
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionForFirstFloorDetailed(long marketSegmentCode, DateTime date)
-        {
-            var details = CorrectionForFirstFloorService.GetDetailsForSegmentAtDate(marketSegmentCode, date);
-            var models = details.Select(x => CorrectionForFirstFloorModel.Map(x, CorrectionForFirstFloorService.IsCoefIncludedInCalculationLimit)).ToList();
-
-            return Json(models);
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public IActionResult CorrectionForFirstFloorGeneral()
-        {
-            var filters = CorrectionForFirstFloorService.CalculatedMarketSegments.Select(x => (long)x).ToArray();
-            var segments = Helpers.EnumExtensions.GetSelectList(typeof(MarketSegment), filterValues: filters);
-            ViewBag.Segments = segments;
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION)]
-        public JsonResult GetCorrectionForFirstFloorGeneral(long marketSegmentCode)
-        {
-            var stats = CorrectionForFirstFloorService.GetRatesBySegment(marketSegmentCode);
-
-            return Json(stats);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public JsonResult ChangeFirstFloorStatusInCalculation(string models, DateTime date, MarketSegment code)
-        {
-            var historyJson = JObject.Parse(models).SelectToken("models").ToString();
-
-            var allRecords = JsonConvert.DeserializeObject<List<CorrectionForFirstFloorModel>>(historyJson);
-            var changedRecords = allRecords.Where(x => x.IsDirty).Select(CorrectionForFirstFloorModel.UnMap).ToList();
-
-            var isDataUpdated = CorrectionForFirstFloorService.ChangeBuildingsStatusInCalculation(changedRecords);
-
-            string message;
-            if (isDataUpdated)
-            {
-                CorrectionForFirstFloorForMarketObjectsLongProcess.AddProcessToQueue(new CorrectionForFirstFloorRequest { Date = date, Segment = code });
-                message = "Данные успешно обновлены, процедура перерасчета цены с учетом корректировки на первый этаж добавлена в очередь";
-            }
-            else
-            {
-                message = "Не найдено данных для изменения";
-            }
-
-            return Json(new { Message = message });
-        }
-        #endregion
-
-        #region Correction Settings
-
-	    [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public IActionResult CorrectionSettings()
-	    {
-	        var settings = CorrectionSettingsService.GetCorrectionSettings(CorrectionTypes.CorrectionByDate);
-	        var model = new CorrectionSettingsModel(settings, CorrectionTypes.CorrectionByDate);
-
-            return View(model);
-	    }
-
-	    [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public IActionResult GetCorrectionSettingsInfo(CorrectionTypes correctionType)
-	    {
-	        var settings = CorrectionSettingsService.GetCorrectionSettings(correctionType);
-	        return Content(JsonConvert.SerializeObject(new CorrectionSettingsModel(settings, correctionType)), "application/json");
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRECTION_EDIT)]
-        public IActionResult CorrectionSettings(CorrectionSettingsModel model)
-	    {
-	        if (!ModelState.IsValid)
-	        {
-	            return GenerateMessageNonValidModel();
-	        }
-
-	        try
-	        {
-	            CorrectionSettingsService.SaveCorrectionSettings(model.ToModel(), model.CorrectionType.GetValueOrDefault());
-	        }
-	        catch (Exception e)
-	        {
-	            return SendErrorMessage(e.Message);
-	        }
-
-	        return Json(new
-	        {
-	            success = true
-	        });
-        }
-
-        #endregion Correction Settings
 
         #region Outliers Checking
 

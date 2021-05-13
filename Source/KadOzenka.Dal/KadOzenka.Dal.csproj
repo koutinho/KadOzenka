@@ -59,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Correction\Dto\" />
     <Folder Include="DataImport\DataImportKoFactory\ImportKoFactoryCommon\" />
     <Folder Include="DataImport\DataImportKoFactory\Interface\" />
     <Folder Include="Documents\Dto\" />

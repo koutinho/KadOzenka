@@ -371,20 +371,6 @@ namespace KadOzenka.BlFrontEnd
 			//	() => new DataImporterCommon().StartProcess(null, 
 			//		new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
 			//		new System.Threading.CancellationToken()));
-						
-			consoleHelper.AddCommand("5551", "Корректировка на этажность",
-				() => 
-				{
-					new CorrectionByStageForMarketObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
-					{
-						Status_Code = Status.Added,
-						UserId = SRDSession.GetCurrentUserId(),
-						Parameters = new CorrectionByRoomRequest
-						{
-							Date = DateTime.Now
-						}.SerializeToXml()
-					}, new CancellationToken());
-				});
 
 			consoleHelper.AddCommand("557", "Фоновая выгрузка отчетов/раскладок по кастомному пути (процесс из платформы)", () =>
             {
