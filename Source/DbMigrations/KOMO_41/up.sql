@@ -5,8 +5,8 @@ delete from dashboards_panel where id=1000051;
 delete from dashboards_panel where id=1000008;
 
 --Удаляем таблицы для корректировок
-delete from core_register where registerid in (108, 111, 112, 113, 114, 115, 116, 117);
 delete from core_register_attribute where registerid in (108, 111, 112, 113, 114, 115, 116, 117);
+delete from core_register where registerid in (108, 111, 112, 113, 114, 115, 116, 117);
 drop table MARKET_INDEXES_FOR_DATE_CORRECTION;
 drop table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION;
 drop table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY;
