@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 			}
 			catch (Exception ex)
 			{
-				_logger.Information(ex, "Импорт завершен с ошибкой");
+				_logger.Error(ex, "Импорт завершен с ошибкой");
 				DataImporterGknLongProcessProgressLogger.StopLogProgress();
 				throw;
 			}
