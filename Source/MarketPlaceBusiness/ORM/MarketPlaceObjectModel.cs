@@ -503,26 +503,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _buildingyear;
-        /// <summary>
-        /// 10004700 Год постройки (BUILDING_YEAR)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004700)]
-        public long? BuildingYear
-        {
-            get
-            {
-                CheckPropertyInited("BuildingYear");
-                return _buildingyear;
-            }
-            set
-            {
-                _buildingyear = value;
-                NotifyPropertyChanged("BuildingYear");
-            }
-        }
-
-
         private string _zoneregion;
         /// <summary>
         /// 10005100 Зона_Округ (ZONE_REGION)
@@ -1188,26 +1168,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _propertylawtype;
-        /// <summary>
-        /// 10007800 Вид передаваемых прав (PROPERTY_LAW_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007800)]
-        public string PropertyLawType
-        {
-            get
-            {
-                CheckPropertyInited("PropertyLawType");
-                return _propertylawtype;
-            }
-            set
-            {
-                _propertylawtype = value;
-                NotifyPropertyChanged("PropertyLawType");
-            }
-        }
-
-
         private string _propertypartsize;
         /// <summary>
         /// 10007900 Размер доли (PROPERTY_PART_SIZE)
@@ -1344,26 +1304,6 @@ namespace ObjectModel.Market
             {
                 _priceaftercorrectionbystage = value;
                 NotifyPropertyChanged("PriceAfterCorrectionByStage");
-            }
-        }
-
-
-        private string _ownershiptype;
-        /// <summary>
-        /// 10009002 Вид права (OWNERSHIP_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009002)]
-        public string OwnershipType
-        {
-            get
-            {
-                CheckPropertyInited("OwnershipType");
-                return _ownershiptype;
-            }
-            set
-            {
-                _ownershiptype = value;
-                NotifyPropertyChanged("OwnershipType");
             }
         }
 

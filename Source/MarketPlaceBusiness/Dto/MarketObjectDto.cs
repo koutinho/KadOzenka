@@ -282,12 +282,6 @@ namespace MarketPlaceBusiness.Dto
 
 
 		/// <summary>
-		/// 10007800 Вид передаваемых прав (PROPERTY_LAW_TYPE)
-		/// </summary>
-		public string PropertyLawType { get; set; }
-
-
-		/// <summary>
 		/// 10007900 Размер доли (PROPERTY_PART_SIZE)
 		/// </summary>
 		public string PropertyPartSize { get; set; }
@@ -327,12 +321,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008900 Цена после корректировки на цоколь/подвал (PRICE_AFTER_CORRECTION_BY_STAGE)
 		/// </summary>
 		public decimal? PriceAfterCorrectionByStage { get; set; }
-
-
-		/// <summary>
-		/// 10009002 Вид права (OWNERSHIP_TYPE)
-		/// </summary>
-		public string OwnershipType { get; set; }
 
 
 		/// <summary>
