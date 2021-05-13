@@ -44,13 +44,11 @@ namespace KadOzenka.Dal.GbuObject
 
     public class PriorityItem
     {
-        private ICodDictionaryService _dictionaryService;
         private readonly ILogger _log;
 
-        public PriorityItem(ILogger log, ICodDictionaryService dictionaryService)
+        public PriorityItem(ILogger log)
         {
             _log = log;
-            _dictionaryService = dictionaryService;
         }
 
         #region Методы
@@ -128,7 +126,7 @@ namespace KadOzenka.Dal.GbuObject
                 return item.Value;
             }
             GbuReportService.Row currentRow;
-            lock (PriorityGrouping.locked)
+            lock (PriorityGrouping.Locked)
             {
                 currentRow = reportService.GetCurrentRow();
                 PriorityGrouping.CurrentCount++;
@@ -142,24 +140,25 @@ namespace KadOzenka.Dal.GbuObject
             {
 
                 //по начальному порядку находим значение ГБУ-атрибутов всех уровней
-                var valueItems = new List<(long, ValueItem)>();
+                var valueItems = new List<ValueItem>();
                 allAttributeIds.ForEach(x =>
                 {
                     ////TODO для тестирования
                     //var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(c => c.Id == x)?.Name;
-                    valueItems.Add(new(x, GetValueFactor(objectAttributes, x)));
+                    valueItems.Add(GetValueFactor(objectAttributes, x));
                 });
+
                 var record = new DictRecord
                 {
-                    Value1 = CleanUp(ExtractValue(valueItems[0].Item2)),
-                    Value2 = CleanUp(ExtractValue(valueItems[1].Item2)),
-                    Value3 = CleanUp(ExtractValue(valueItems[2].Item2)),
-                    Value4 = CleanUp(ExtractValue(valueItems[3].Item2)),
-                    Value5 = CleanUp(ExtractValue(valueItems[4].Item2)),
-                    Value6 = CleanUp(ExtractValue(valueItems[5].Item2)),
-                    Value7 = CleanUp(ExtractValue(valueItems[6].Item2)),
-                    Value8 = CleanUp(ExtractValue(valueItems[7].Item2)),
-                    Value9 = CleanUp(ExtractValue(valueItems[8].Item2)),
+                    Value1 = CleanUp(ExtractValue(valueItems[0])),
+                    Value2 = CleanUp(ExtractValue(valueItems[1])),
+                    Value3 = CleanUp(ExtractValue(valueItems[2])),
+                    Value4 = CleanUp(ExtractValue(valueItems[3])),
+                    Value5 = CleanUp(ExtractValue(valueItems[4])),
+                    Value6 = CleanUp(ExtractValue(valueItems[5])),
+                    Value7 = CleanUp(ExtractValue(valueItems[6])),
+                    Value8 = CleanUp(ExtractValue(valueItems[7])),
+                    Value9 = CleanUp(ExtractValue(valueItems[8])),
                 };
 
                 //string resGroup = GetGroupCode(out string source);
@@ -184,16 +183,18 @@ namespace KadOzenka.Dal.GbuObject
                                 $"Ошибка при сохрании значения '{resGroup}' в Характеристику", e);
                         }
 
-                        lock (PriorityGrouping.locked)
+                        lock (PriorityGrouping.Locked)
                         {
                             reportService.AddValue(
                                 GbuObjectService.GetAttributeNameById(setting.IdAttributeResult
                                     .GetValueOrDefault()),
                                 PriorityGrouping.ResultColumn, currentRow);
                             reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
+                            AddValueItemsToReport(reportService, valueItems, currentRow,
+                                PriorityGrouping.ValueColumnOffset);
                         }
 
-                        lock (PriorityGrouping.locked)
+                        lock (PriorityGrouping.Locked)
                         {
                             reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
                         }
@@ -201,7 +202,7 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 else
                 {
-                    lock (PriorityGrouping.locked)
+                    lock (PriorityGrouping.Locked)
                     {
                         reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
                     }
@@ -227,10 +228,20 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
+        private void AddValueItemsToReport(IGbuReportService reportService, List<ValueItem> list, GbuReportService.Row currRow, int columnOffset)
+        {
+            foreach (var item in list)
+            {
+                if (!(item.Value == "" && item.AttributeName == ""))
+                    reportService.AddValue(item.Value, columnOffset, currRow);
+                columnOffset++;
+            }
+        }
+
         private void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex,
             GbuReportService.Row currentRow)
         {
-            lock (PriorityGrouping.locked)
+            lock (PriorityGrouping.Locked)
             {
                 //var errorId = ErrorManager.LogError(ex);
                 var fullMessage = $"{message}. {ex.Message}.";
@@ -325,12 +336,14 @@ namespace KadOzenka.Dal.GbuObject
 
         public static int GeneralErrorColumn = 4;
 
+        public static int ValueColumnOffset = 5;
+
         #endregion
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
         /// </summary>
-        public static object locked;
+        public static object Locked;
 
         /// <summary>
         /// Общее число объектов
@@ -400,10 +413,10 @@ namespace KadOzenka.Dal.GbuObject
                 throw;
             }
 
-            long reportId = 0;
+            long reportId;
 
             ErrorMessages = new List<string>();
-            locked = new object();
+            Locked = new object();
             PrioritetList = new PriorityGroupList();
 
             var itemsGetter = new PriorityGroupingItemsGetter(Log, setting) as AItemsGetter<GroupingItem>;
@@ -483,25 +496,6 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        private static List<OMCodDictionary> GetDictionaryItems(GroupingSettings setting)
-        {
-            var dictionaryItems = new List<OMCodDictionary>();
-            if (setting.IdCodJob == null)
-                return dictionaryItems;
-
-            dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).Select(x => new
-            {
-                x.IdCodjob,
-                x.Value,
-                x.Code
-            }).Execute();
-
-            Log.ForContext("CodDictionaryId", setting.IdCodJob)
-                .Debug("Найдено {Count} значений словаря", dictionaryItems.Count);
-
-            return dictionaryItems;
-        }
-
         private static void ProcessUnits(GroupingSettings setting, List<CodDictionaryValue> dictionaryItems,
             List<GroupingItem> units, List<long> allAttributeIds,
             GbuObjectService gbuObjectService, GbuReportService reportService,
@@ -547,8 +541,8 @@ namespace KadOzenka.Dal.GbuObject
                     "Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'",
                     objectAttributes.Count, localActualDate.ToShortDateString());
 
-                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, groupedUnits.Value,
-                    objectAttributes, allAttributeIds, true, localActualDate, reportService, dataHeaderAndColumnNumber,
+                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, groupedUnits.Value,
+                    objectAttributes, allAttributeIds, true, localActualDate, reportService,
                     processCancellationToken, config));
             });
         }
@@ -569,7 +563,7 @@ namespace KadOzenka.Dal.GbuObject
             var packageSize = config.PackageSize;
             var numberOfPackages = MaxCount / packageSize + 1;
             var documents = new ConcurrentDictionary<long, OMInstance>();
-            Parallel.For(0, numberOfPackages, options, (i, s) =>
+            Parallel.For(0, numberOfPackages, options, (i, _) =>
             {
                 CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
 
@@ -587,8 +581,8 @@ namespace KadOzenka.Dal.GbuObject
                 Log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}",
                     objectAttributes.Count, i, numberOfPackages);
 
-                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, objectsPage,
-                    objectAttributes, allAttributeIds, false, actualDate, reportService, dataHeaderAndColumnNumber,
+                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, objectsPage,
+                    objectAttributes, allAttributeIds, false, actualDate, reportService,
                     processCancellationToken, config));
             });
         }
@@ -612,7 +606,7 @@ namespace KadOzenka.Dal.GbuObject
 
         private static string CleanUp(string x)
         {
-            if (x == null) return x;
+            if (x == null) return null;
             // Оставляем только значимые символы в строках и убираем мусор из значения
             return Regex
                 .Replace(x, "\\s+", "")
@@ -652,7 +646,7 @@ namespace KadOzenka.Dal.GbuObject
                     ? attributes
                     : defaultAttributes;
 
-                new PriorityItem(Log, _dictionaryService).SetPriorityGroup(inputParameters.Setting,
+                new PriorityItem(Log).SetPriorityGroup(inputParameters.Setting,
                     dict,
                     inputParameters.AllAttributeIds, item, localActualDate,
                     currentObjectAttributes, inputParameters.ReportService);
@@ -725,10 +719,9 @@ namespace KadOzenka.Dal.GbuObject
 
             var dicColumns = new Dictionary<long, long>();
             int lastColumn = GeneralErrorColumn;
-            int levelTitle = 1;
             foreach (FieldInfo propertyInfo in typeof(GroupingSettings).GetFields(BindingFlags.Instance |
-                BindingFlags.NonPublic |
-                BindingFlags.Public))
+                                                                                  BindingFlags.NonPublic |
+                                                                                  BindingFlags.Public))
             {
                 if (propertyInfo.Name.IndexOf("Level", StringComparison.Ordinal) != -1)
                 {
@@ -749,7 +742,6 @@ namespace KadOzenka.Dal.GbuObject
 
                         dicColumns.Add(lItem.IdFactor.GetValueOrDefault(), lastColumn);
                         lastColumn++;
-                        levelTitle++;
                     }
                 }
             }
@@ -762,7 +754,7 @@ namespace KadOzenka.Dal.GbuObject
         public static void AddInfoToReport(List<DataLevel> dataLevels, GbuReportService.Row rowNumber,
             Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
         {
-            lock (locked)
+            lock (Locked)
             {
                 foreach (var dataLevel in dataLevels)
                 {
@@ -796,36 +788,31 @@ namespace KadOzenka.Dal.GbuObject
 
     internal class ProcessItemInputParameters
     {
-        public ProcessItemInputParameters(GroupingSettings setting, List<CodDictionaryValue> dictionaryValues,
-            ConcurrentDictionary<long, OMInstance> documents, List<GroupingItem> items,
+        public ProcessItemInputParameters(GroupingSettings setting, List<CodDictionaryValue> dictionaryValues, List<GroupingItem> items,
             List<IGrouping<long, GbuObjectAttribute>> objectAttributes, List<long> allAttributeIds, bool useTask,
-            DateTime actualDate, GbuReportService reportService, ReportHeaderWithColumnDic dataHeaderAndColumnNumber,
+            DateTime actualDate, GbuReportService reportService,
             CancellationToken processCancellationToken, ProcessConfig processConfig)
         {
             Setting = setting;
             DictionaryValues = dictionaryValues;
-            Documents = documents;
             Items = items;
             ObjectAttributes = objectAttributes;
             AllAttributeIds = allAttributeIds;
             UseTask = useTask;
             ActualDate = actualDate;
             ReportService = reportService;
-            DataHeaderAndColumnNumber = dataHeaderAndColumnNumber;
             ProcessCancellationToken = processCancellationToken;
             ProcessConfig = processConfig;
         }
 
         public GroupingSettings Setting { get; }
         public List<CodDictionaryValue> DictionaryValues { get; }
-        public ConcurrentDictionary<long, OMInstance> Documents { get; }
         public List<GroupingItem> Items { get; }
         public List<IGrouping<long, GbuObjectAttribute>> ObjectAttributes { get; }
         public List<long> AllAttributeIds { get; }
         public bool UseTask { get; }
         public DateTime ActualDate { get; }
         public GbuReportService ReportService { get; }
-        public ReportHeaderWithColumnDic DataHeaderAndColumnNumber { get; }
         public CancellationToken ProcessCancellationToken { get; }
         public ProcessConfig ProcessConfig { get; }
     }
@@ -846,15 +833,15 @@ namespace KadOzenka.Dal.GbuObject
         public virtual bool Equals(DictRecord dictRecord)
         {
             bool equal = true;
-            equal &= Value1 == dictRecord.Value1;
-            equal &= Value2 == dictRecord.Value2;
-            equal &= Value3 == dictRecord.Value3;
-            equal &= Value4 == dictRecord.Value4;
-            equal &= Value5 == dictRecord.Value5;
-            equal &= Value6 == dictRecord.Value6;
-            equal &= Value7 == dictRecord.Value7;
-            equal &= Value8 == dictRecord.Value8;
-            equal &= Value9 == dictRecord.Value9;
+            equal &= Value1 == dictRecord?.Value1;
+            equal &= Value2 == dictRecord?.Value2;
+            equal &= Value3 == dictRecord?.Value3;
+            equal &= Value4 == dictRecord?.Value4;
+            equal &= Value5 == dictRecord?.Value5;
+            equal &= Value6 == dictRecord?.Value6;
+            equal &= Value7 == dictRecord?.Value7;
+            equal &= Value8 == dictRecord?.Value8;
+            equal &= Value9 == dictRecord?.Value9;
             return equal;
         }
 
