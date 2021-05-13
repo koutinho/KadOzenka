@@ -65,7 +65,6 @@ namespace KadOzenka.Web.Controllers
             var query = MarketObjectService.GetBaseQuery();
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
-            if (!districts.IsEmpty()) query.And(x => x.District == districts);
             if (!marketSource.IsEmpty()) query.And(x => x.Market == marketSource);
             if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
             if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
@@ -89,7 +88,7 @@ namespace KadOzenka.Web.Controllers
             string[] colorsArray = colors.Split(",");
             var query = MarketObjectService.GetBaseQuery();
 
-            List<OMReferenceItem> allDistricts = OMReferenceItem.Where(x => x.ReferenceId == Consts.DistrictAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
+            var allDistricts = new List<OMReferenceItem>();
             List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == Consts.NeighborhoodAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
             List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == Consts.ZoneRegionAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
             List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
@@ -98,9 +97,9 @@ namespace KadOzenka.Web.Controllers
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
+            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
 
-            var districtList = DistrictsData.GroupBy(x => x.District).ToList();
+            var districtList = new List<IGrouping<string, OMCoreObject>>();
             var regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
             var zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
             var quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
@@ -152,10 +151,10 @@ namespace KadOzenka.Web.Controllers
                         area = x.Area,
                         areaLand = x.AreaLand,
                         roomsCount = x.RoomsCount,
-                        link = x.Url,
+                        link = string.Empty,
                         metro = x.Metro,
                         address = x.Address,
-                        images = x.Images,
+                        images = string.Empty,
                         id = x.Id,
                         floorNumber = x.FloorNumber,
                         floorCount = x.FloorsCount,
@@ -227,15 +226,6 @@ namespace KadOzenka.Web.Controllers
                         Name = x.Name,
                         Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false
                     });
-            var districtTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.DistrictAttribute.ReferenceId)
-                    .OrderBy(x => x.Value).SelectAll().Execute()
-                    .OrderBy(x => x.ItemId).Select(x => new { 
-                        Id = x.ItemId,
-                        Code = x.Code,
-                        Value = x.Value,
-                        Name = x.Name,
-                        Selected = false
-                    });
             var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.MarketAttribute.ReferenceId).And(x => x.ItemId <= (int) MarketTypes.Rosreestr)
                     .OrderBy(x => x.Value).SelectAll().Execute()
                     .OrderBy(x => x.ItemId).Select(x => new {
@@ -285,12 +275,12 @@ namespace KadOzenka.Web.Controllers
                 },
                 districtTypeFilter = new
                 {
-                    typeControl = typeControl,
+                    typeControl = string.Empty,
                     type = type,
-                    text = Consts.DistrictAttribute.Name,
-                    districtTypeList = districtTypeList,
-                    referenceId = Consts.DistrictAttribute.ReferenceId,
-                    id = Consts.DistrictAttribute.Id
+                    text = string.Empty,
+                    districtTypeList = new List<OMReferenceItem>(),
+                    referenceId = 0,
+                    id = 0
                 },
                 sourceTypeFilter = new
                 {

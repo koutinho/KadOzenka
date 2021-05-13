@@ -26,7 +26,6 @@ namespace MarketPlaceBusiness.Common
 		public static readonly long AddressAttributeId = OMCoreObject.GetColumnAttributeId(x => x.Address);
 		
 		
-		public static readonly RegisterAttribute DistrictAttribute = OMCoreObject.GetAttributeData(x => x.District);
 		public static readonly RegisterAttribute NeighborhoodAttribute = OMCoreObject.GetAttributeData(x => x.Neighborhood);
 		public static readonly RegisterAttribute ZoneRegionAttribute = OMCoreObject.GetAttributeData(x => x.ZoneRegion);
 		public static readonly RegisterAttribute PropertyTypesCIPJSAttribute = OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS);

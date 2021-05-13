@@ -7,11 +7,6 @@ namespace MarketPlaceBusiness.Dto
     {
 	    public long Id { get; set; }
 
-        /// <summary>
-        /// 10002100 URL-адрес объявления (URL)
-        /// </summary>
-        public string Url { get; set; }
-
 		/// <summary>
 		/// 10002300 Источник информации (MARKET)
 		/// </summary>
@@ -62,11 +57,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10003200 Наименование метро (METRO)
 		/// </summary>
 		public string Metro { get; set; }
-
-		/// <summary>
-		/// 10003300 URL-адреса изображений (IMAGES)
-		/// </summary>
-		public string Images { get; set; }
 
 		/// <summary>
 		/// 10003400 Текст объявления (DESCRIPTION)
@@ -145,16 +135,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10005101 Настраиваемая зона (CUSTOM_ZONE)
 		/// </summary>
 		public string CustomZone { get; set; }
-
-		/// <summary>
-		/// 10005200 Административный округ (DISTRICT)
-		/// </summary>
-		public string District { get; set; }
-
-		/// <summary>
-		/// 10005200 Административный округ (справочный код) (DISTRICT_CODE)
-		/// </summary>
-		public Hunteds District_Code { get; set; }
 
 		/// <summary>
 		/// 10005300 Район (NEIGHBORHOOD)
@@ -281,12 +261,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007400 Код региона (REGION_ID)
 		/// </summary>
 		public long? RegionId { get; set; }
-
-
-		/// <summary>
-		/// 10007500 ID города (CITY_ID)
-		/// </summary>
-		public long? CityId { get; set; }
 
 
 		/// <summary>
