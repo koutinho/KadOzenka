@@ -61,20 +61,27 @@ namespace MarketPlaceBusiness
 
 		#endregion
 
-		public List<OMCoreObject> GetObjectsToAssignDistrictsRegionsAndZones()
-		{
-			//раньше были устовия на District, Region, Zone, но по факту процедура их не использует, 
-			//поэтому они были удалены из Where
-			return OMCoreObject.Where(x =>x.ProcessType_Code == ProcessStep.InProcess ||
-			                              x.ProcessType_Code == ProcessStep.Dealed)
-				.Select(x => new
-				{
-					x.Neighborhood_Code, x.Neighborhood, x.Market_Code, x.Market,
-					x.CadastralQuartal
-				})
-				.Execute()
-				.ToList();
-		}
+		//public List<OMCoreObject> GetObjectsToAssignDistrictsRegionsAndZones()
+		//{
+		//	//раньше были устовия на District, Region, Zone, но по факту процедура их не использует, 
+		//	//поэтому они были удалены из Where
+		//	return OMCoreObject.Where(x =>
+		//			x.ZoneRegion == null && (x.ProcessType_Code == ProcessStep.InProcess ||
+		//			                         x.ProcessType_Code == ProcessStep.Dealed))
+		//		.Select(x => new
+		//		{
+		//			x.District_Code,
+		//			x.Neighborhood_Code,
+		//			x.Neighborhood,
+		//			x.ZoneRegion,
+		//			x.Market_Code,
+		//			x.Market,
+		//			x.CadastralQuartal,
+		//			x.Zone
+		//		})
+		//		.Execute()
+		//		.ToList();
+		//}
 
 		public List<OMCoreObject> GetObjectsToAssignCoordinates()
 		{
