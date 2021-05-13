@@ -11,9 +11,6 @@
     <Compile Update="FastReports\ChangedRegisteredObjectsReport.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Update="FastReports\CorrectionByBargainReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Update="FastReports\DeclarationNotificationReport.cs">
       <SubType>Component</SubType>
     </Compile>

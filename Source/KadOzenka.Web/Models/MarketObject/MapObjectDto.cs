@@ -1,4 +1,5 @@
-﻿using ObjectModel.Market;
+﻿using MarketPlaceBusiness.Dto;
+using ObjectModel.Market;
 
 namespace KadOzenka.Web.Models.MarketObject
 {
@@ -8,7 +9,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? Latitude { get; set; }
 		public decimal? Longitude { get; set; }
 
-		public static MapObjectDto OMMap(OMCoreObject entity)
+		public static MapObjectDto OMMap(MarketObjectDto entity)
 		{
 			var dto = new MapObjectDto
 			{

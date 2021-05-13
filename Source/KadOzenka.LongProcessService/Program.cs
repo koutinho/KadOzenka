@@ -44,6 +44,7 @@ namespace KadOzenka.LongProcessService
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
+                .Enrich.WithProperty("Environment", ASPNETCORE_ENVIRONMENT)
                 .Enrich.FromLogContext()
                 .CreateLogger();
 

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json.Serialization;
@@ -21,11 +20,10 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper.Configuration;
 using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
-using KadOzenka.Dal.DuplicateCleaner;
-using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
@@ -36,6 +34,7 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.CommonFunctions.ExistFolderChecker;
 using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Groups;
@@ -51,12 +50,17 @@ using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
 using SerilogTimings;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using MappingProfile = Platform.Web.MappingProfile;
 
 namespace CIPJS
 {
@@ -74,6 +78,7 @@ namespace CIPJS
                 LongProcessManagementService service = new LongProcessManagementService();
                 service.Start();
             }
+            ExistFolderCheckerService.Run();
         }
 
         public IConfiguration Configuration { get; }
@@ -97,9 +102,9 @@ namespace CIPJS
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
 	        services.AddSingleton<GbuCurrentLongProcessesListenerService>();
-	        services.AddTransient<ScoreCommonService>();
-			services.AddTransient<ExpressScoreService>();
-	        services.AddTransient<ExpressScoreReferenceService>();
+	        //services.AddTransient<ScoreCommonService>();
+			//services.AddTransient<ExpressScoreService>();
+			//services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
 	        services.AddTransient<ModelingService>();
 	        services.AddTransient<MapBuildingService>();
@@ -113,7 +118,7 @@ namespace CIPJS
 	        services.AddTransient<DocumentService>();
 	        services.AddTransient<ModelFactorsService>();
             services.AddSingleton<KoUnloadResultsListenerService>();
-            services.AddSingleton<OutliersCheckingListenerService>();
+            //services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
@@ -145,6 +150,11 @@ namespace CIPJS
             services.AddTransient(typeof(IRegisterRepository), typeof(RegisterRepository));
             services.AddTransient(typeof(IRegisterAttributeRepository), typeof(RegisterAttributeRepository));
             services.AddTransient(typeof(IRecycleBinRepository), typeof(RecycleBinRepository));
+            services.AddTransient(typeof(IMarketObjectsRepository), typeof(MarketObjectsRepository));
+            services.AddTransient(typeof(IMarketObjectService), typeof(MarketObjectService));
+            services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
+            //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
+
             services.AddSingleton<BackgroundProcessWidgetService>();
                 services.AddHttpContextAccessor();
                 services.AddSession(options =>
@@ -170,8 +180,14 @@ namespace CIPJS
                 });
 
                 //init AutoMapping
-                Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
-                services.AddAutoMapper();
+                //Mapper.Initialize(cfg => cfg.AddProfile<MappingProfile>());
+                services.AddSingleton(provider => new MapperConfiguration(cfg =>
+                {
+	                cfg.AddProfile(new MappingProfile());
+	                cfg.AddProfile(new MarketPlaceBusiness.Dto.AutoMapper.MappingProfile());
+	                cfg.AddProfile(new KadOzenka.Web.Helpers.MappingProfile());
+                }).CreateMapper());
+
                 services.AddSignalR(hubOptions => { hubOptions.EnableDetailedErrors = true; });
 
                 services.AddMemoryCache();
@@ -224,7 +240,7 @@ namespace CIPJS
             {
                 routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
                 routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
-                routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
+                //routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
                 routes.MapHub<EsHub>("/esCheckProgress");
                 routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
@@ -252,13 +268,13 @@ namespace CIPJS
                     {
                         switch (context.Request.Path)
                         {
-                            case "/DuplicateProgress":
-                                System.Net.WebSockets.WebSocket
-                                    socket = await context.WebSockets.AcceptWebSocketAsync();
-                                await new SocketPool().SendMessage(socket, Duplicates.GetCurrentProgress());
-                                await new SocketPool().SendMessage(socket, Duplicates.GetListOfMarkets());
-                                await new SocketPool().AddSocket(socket);
-                                break;
+                            //case "/DuplicateProgress":
+                            //    System.Net.WebSockets.WebSocket
+                            //        socket = await context.WebSockets.AcceptWebSocketAsync();
+                            //    await new SocketPool().SendMessage(socket, Duplicates.GetCurrentProgress());
+                            //    await new SocketPool().SendMessage(socket, Duplicates.GetListOfMarkets());
+                            //    await new SocketPool().AddSocket(socket);
+                            //    break;
                         }
                     }
                     else await next();

@@ -2,6 +2,7 @@
 @using ObjectModel.Gbu
 @using ObjectModel.KO
 @using ObjectModel.Market
+@using Consts = MarketPlaceBusiness.Common.Consts
 
 <form id="exportForm">
     @if((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())
@@ -218,7 +219,7 @@
         var dataSource = new kendo.data.DataSource({
             data: [ ]
         });
-        var isForMarketObjects = '@((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId())' == 'True';
+        var isForMarketObjects = '@((long)ViewBag.MainRegisterId == Consts.RegisterId)' == 'True';
         var isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
         var isForUnits = '@((long)ViewBag.MainRegisterId == OMUnit.GetRegisterId())' == 'True';
 
@@ -444,7 +445,7 @@
 
             $.ajax({
                 type: 'GET',
-                @if ((long)ViewBag.MainRegisterId == OMCoreObject.GetRegisterId() || 
+                @if ((long)ViewBag.MainRegisterId == Consts.RegisterId || 
                      (long)ViewBag.MainRegisterId == OMUnit.GetRegisterId())
                 {
                     <text>

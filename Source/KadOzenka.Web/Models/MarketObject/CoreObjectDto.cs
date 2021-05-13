@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Core.Shared.Extensions;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -72,7 +75,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string Renovation { get; set; }
 		public string BuildingLine { get; set; }
 
-		public static CoreObjectDto OMMap(OMCoreObject entity)
+		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
             var dto = new CoreObjectDto
             {
@@ -119,9 +122,9 @@ namespace KadOzenka.Web.Models.MarketObject
                 Renovation = entity.Renovation,
 				BuildingLine = entity.BuildingLine
 			};
-			if (entity.PriceHistory?.Count > 0)
+			if (priceHistory?.Count > 0)
 			{
-				dto.PriceHistories = entity.PriceHistory
+				dto.PriceHistories = priceHistory
 					.OrderByDescending(x => x.ChangingDate)
 					.Select(x =>
 						new PriceHistoryDto
@@ -154,55 +157,19 @@ namespace KadOzenka.Web.Models.MarketObject
 			return dto;
 		}
 
-		public static CoreObjectDto MapToMiniCard(OMCoreObject entity)
-		{
-			string marketLogoUrl = null;
-			switch (entity.Market_Code)
-			{
-				case MarketTypes.Cian:
-					marketLogoUrl = "/MapIcons/CIANLogoTransparent.png";
-					break;
-				case MarketTypes.Avito:
-					marketLogoUrl = "/MapIcons/AvitoLogoOnly.png";
-					break;
-				case MarketTypes.YandexProterty:
-					marketLogoUrl = "/MapIcons/YandexLogoOnly.png";
-					break;
-				case MarketTypes.Rosreestr:
-					marketLogoUrl = "/MapIcons/rosreestrTransparent.png";
-					break;
-			}
-
-			var pricePerMeter = GetPricePerSquareMeter(entity);
-			return new CoreObjectDto
-			{
-				Id = entity.Id,
-				ImageUrl = entity.Images?.Split(',').ElementAtOrDefault(0),
-				Price = entity.Price,
-				PricePerSquareMeter = pricePerMeter == null 
-					? (decimal?) null 
-					: Math.Round(pricePerMeter.Value, 2),
-				AreaStr = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea 
-					? entity.AreaLand?.ToString("n") + " сот."
-					: entity.Area?.ToString("n") + " м²",
-				AddressShort = !string.IsNullOrWhiteSpace(entity.Address) && entity.Address.Length > 31 
-					? $"{entity.Address.Substring(0, 28)}..."
-					: entity.Address,
-				Address = entity.Address,
-				CadastralNumber = entity.CadastralNumber,
-				MarketSegment = entity.PropertyMarketSegment,
-				DealType = entity.DealType,
-				Market = entity.Market_Code.GetEnumDescription(),
-				MarketLogoUrl = marketLogoUrl
-			};
-		}
-
-		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)
+		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
 			decimal? result;
-			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue && entity.AreaLand.HasValue && entity.AreaLand != 0) result = entity.Price / (entity.AreaLand * 100);
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0) result = entity.Price / entity.Area;
-			else result = (decimal?) null;
+			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue &&
+			    entity.AreaLand.HasValue && entity.AreaLand != 0)
+				result = entity.Price / (entity.AreaLand * 100);
+
+			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+				result = entity.Price / entity.Area;
+
+			else
+				result = null;
+
 			return result;
 		}
 	}

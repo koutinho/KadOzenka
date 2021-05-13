@@ -2,7 +2,6 @@
 using Core.UI.Registers.Services;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
-using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
@@ -12,7 +11,6 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
-using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
@@ -98,9 +96,9 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient<TourFactorService>();
 			container.AddTransient<GbuLongProcessesService>();
 			container.AddSingleton<GbuCurrentLongProcessesListenerService>();
-			container.AddTransient<ScoreCommonService>();
-			container.AddTransient<ExpressScoreService>();
-			container.AddTransient<ExpressScoreReferenceService>();
+			//container.AddTransient<ScoreCommonService>();
+			//container.AddTransient<ExpressScoreService>();
+			//container.AddTransient<ExpressScoreReferenceService>();
 			container.AddTransient<ViewRenderService>();
 			container.AddTransient<ModelingService>();
 			container.AddTransient<MapBuildingService>();
@@ -114,7 +112,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient<DocumentService>();
 			container.AddTransient<ModelFactorsService>();
 			container.AddSingleton<KoUnloadResultsListenerService>();
-			container.AddSingleton<OutliersCheckingListenerService>();
+			//container.AddSingleton<OutliersCheckingListenerService>();
 			container.AddSingleton<DictionaryService>();
 			container.AddSingleton<EsHubService>();
 			container.AddSingleton<SignalRMessageService>();

@@ -12,6 +12,8 @@ namespace KadOzenka.Dal.Logger
 
 		public void StartLogProgress(OMImportDataLog dataLog, DataImporterGkn dataImporterGkn)
 		{
+			Serilog.Log.ForContext<DataImporterGknLongProcessProgressLogger>().Debug("Начало логирования прогресса");
+
 			if (_taskLogProgress != null)
 				StopLogProgress();
 
@@ -39,11 +41,19 @@ namespace KadOzenka.Dal.Logger
 			if (_taskLogProgress == null)
 				return;
 
-			_cancelSourceLogProcess.Cancel();
+			if(!_cancelSourceLogProcess.IsCancellationRequested)
+				_cancelSourceLogProcess.Cancel();
 
 			try
 			{
 				_taskLogProgress.Wait();
+			}
+			//падает, если задача была отменена раньше, чем стартовала
+			//такое может быть, если в файле мало данных
+			catch (TaskCanceledException exception)
+			{
+				Serilog.Log.ForContext<DataImporterGknLongProcessProgressLogger>()
+					.Error(exception, "Ошибка при отмене потока для логирования прогресса");
 			}
 			finally
 			{

@@ -318,22 +318,22 @@ namespace KadOzenka.Dal.Gadgets
             return data;
         }
 
-        /// <summary>
-        /// Экспресс-оценка (карточка основного рабочего стола)
-        /// </summary>
-        /// <returns></returns>
-        public static DataTable ExpressEvaluation()
-        {
-            var data = new DataTable();
-            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        ///// <summary>
+        ///// Экспресс-оценка (карточка основного рабочего стола)
+        ///// </summary>
+        ///// <returns></returns>
+        //public static DataTable ExpressEvaluation()
+        //{
+        //    var data = new DataTable();
+        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            data.Rows.Add("/ObjectCard?RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
-            data.Rows.Add("/ObjectCard?RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
+        //    data.Rows.Add("/ObjectCard?RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
+        //    data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
+        //    data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
+        //    data.Rows.Add("/ObjectCard?RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
 
-            return data;
-        }
+        //    return data;
+        //}
 
         /// <summary>
         /// Поддержка принятия управленческих решений (карточка основного рабочего стола)

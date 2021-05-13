@@ -3,7 +3,6 @@ using System.IO;
 using System.Data;
 using System.Configuration;
 using System.Collections.Generic;
-
 using ObjectModel.Gbu;
 using GemBox.Spreadsheet;
 using ObjectModel.Core.TD;
@@ -12,11 +11,11 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.Core.Shared;
 using KadOzenka.Dal.WebRequest;
 using ObjectModel.Market;
-using System.Net;
 using System.Linq;
 using System.Text.RegularExpressions;
 using KadOzenka.Dal.Logger;
-using System.Diagnostics;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
 {
@@ -27,10 +26,15 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         {
             get { return ConfigurationManager.AppSettings["ObjectReplicationExcelBaseFolder"]; }
         }
-
+        private IMarketObjectsForExcelReplicationService MarketObjectsService { get; set; }
         private static Dictionary<long, OMInstance> _documents = new Dictionary<long, OMInstance>();
-
         private static Dictionary<long, OMReferenceItem> _refItems = new Dictionary<long, OMReferenceItem>();
+
+
+        public ObjectReplicationExcelProcess()
+        {
+	        MarketObjectsService = new MarketObjectsForExcelReplicationService();
+        }
 
         public static void StartImport()
         {
@@ -209,9 +213,9 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             workbook.Save(filePath);
         }
 
-        public static void FormFile(string filePath)
+        public void FormFile(string filePath)
         {
-            List<OMCoreObject> initial = OMCoreObject.Where(x => x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr).Select(x => new { x.Address }).OrderBy(x => x.Address).Execute().ToList();
+            var initial = MarketObjectsService.GetRosreestrObjectAddresses();
             ExcelFile workbook = new ExcelFile();
             ExcelWorksheet worksheet = workbook.Worksheets.Add("В единственном экземпляре");
             int i = 1;
@@ -242,10 +246,11 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
         {
             ExcelFile excelFile = ExcelFile.Load(@"C:\Users\silanov\Documents\Дженикс\ЦИПЖС Объекты аналоги\Росреестр (27.09.2019)\Сделки Росреестра 2018, 2019.xlsx", new XlsxLoadOptions());
             ExcelWorksheet ws = excelFile.Worksheets[0];
-            List<OMCoreObject> list = new List<OMCoreObject>(), result = new List<OMCoreObject>();
+            var list = new List<OMCoreObject>();
+            var result = new List<OMCoreObject>();
             foreach(var row in ws.Rows.Skip(1))
             {
-                OMCoreObject obj = new OMCoreObject();
+                var obj = new OMCoreObject();
                 obj.CadastralNumber = row.Cells[0].Value.ToString();
                 obj.BuildingCadastralNumber = row.Cells[1].Value.ToString().Equals("0") ? row.Cells[0].Value.ToString() : row.Cells[1].Value.ToString();
                 obj.CadastralQuartal = getQuartal(row.Cells[0].Value.ToString(), row.Cells[1].Value.ToString(), row.Cells[2].Value.ToString());
@@ -264,6 +269,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                 obj.ProcessType_Code = ObjectModel.Directory.ProcessStep.AddressStep;
                 if (obj.PricePerMeter > 19000) list.Add(obj);
             }
+
             list.GroupBy(x => x.CadastralNumber).ToList().ForEach(x => result.Add(x.OrderByDescending(y => y.ParserTime).First()));
             result.ForEach(x => x.Save());
         }
@@ -580,11 +586,10 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             public int currentCounter;
         }
 
-        public static void SetRRFDBCoordinatesByYandex()
+        public void SetRRFDBCoordinatesByYandex()
         {
-            List<OMCoreObject> AllObjects =
-                OMCoreObject.Where(x => x.ProcessType_Code == ObjectModel.Directory.ProcessStep.AddressStep && x.Market_Code == ObjectModel.Directory.MarketTypes.Rosreestr)
-                    .Select(x => new { x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code }).Execute().Take(Int32.Parse(ConfigurationManager.AppSettings["YandexLimit"])).ToList();
+	        var objectsCount = int.Parse(ConfigurationManager.AppSettings["YandexLimit"]);
+            var AllObjects = MarketObjectsService.GetObjectsToSetCoordinatesByYandex(objectsCount);
             int ACtr = AllObjects.Count, CCur = 0, SCtr = 0, ECtr = 0;
             AllObjects.ForEach(x =>
             {
@@ -609,7 +614,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
             ConsoleLog.WriteFotter("Присвоение координат объектам росреестра завершено");
         }
 
-        public static void SetRRCoordinatesByYandex(string filePath)
+        public void SetRRCoordinatesByYandex(string filePath)
         {
             ExcelFile workbook = ExcelFile.Load(filePath);
             ExcelWorksheet worksheet = workbook.Worksheets[0];
@@ -639,7 +644,7 @@ namespace KadOzenka.BlFrontEnd.ObjectReplicationExcel
                     OMYandexAddress address = new Dal.JSONParser.YandexGeocoder().ParseYandexAddress(new YandexGeocoder().GetDataByAddress(x.address));
                     x.ids.ForEach(y => 
                     {
-                        OMCoreObject obj = OMCoreObject.Where(z => z.Id == y).Select(z => new { z.Address, z.Lng, z.Lat }).ExecuteFirstOrDefault();
+                        var obj = MarketObjectsService.GetObjectAddressAndCoordinates(y);
                         obj.Lng = address.Lng;
                         obj.Lat = address.Lat;
                         obj.Save();

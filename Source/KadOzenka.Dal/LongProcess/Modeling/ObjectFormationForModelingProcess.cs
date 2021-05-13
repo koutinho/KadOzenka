@@ -10,6 +10,8 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
@@ -30,6 +32,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         private OMQueue Queue { get; set; }
         private List<OMModelToMarketObjects> ModelObjects { get; set; }
         private ILongProcessService LongProcessService { get; }
+        protected IMarketObjectsForModelingService MarketObjectsForModelingService { get; set; }
         private ObjectFormationInputParameters InputParameters { get; set; }
         private string MessageSubject => $"Сбор данных для Модели '{Model?.Name}'";
         private object _locker { get; set; }
@@ -39,6 +42,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        _locker = new object();
             ModelObjects = new List<OMModelToMarketObjects>();
 	        LongProcessService = new LongProcessService();
+	        MarketObjectsForModelingService = new MarketObjectsForModelingService();
         }
 
 
@@ -103,15 +107,23 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         private int PrepareData(List<ModelAttributePure> modelAttributes)
         {
-	        var marketObjects = GetMarketObjects();
+	        var segment = GetGroupToMarketSegmentRelation();
+            var marketObjects = MarketObjectsForModelingService
+                .GetObjectsForFormation(Model.IsOksObjectType.GetValueOrDefault(), (long) segment.MarketSegment_Code).Select(
+		            x => new MarketObjectPure
+		            {
+			            Id = x.Id,
+			            CadastralNumber = x.CadastralNumber,
+			            PricePerMeter = x.PricePerMeter
+		            }).ToList();
             AddLog(Queue, $"Найдено {marketObjects.Count} объекта-аналога.", logger: Logger);
 
             var numberOfDeletedModelObjects = ModelObjectsService.DestroyModelMarketObjects(Model);
             AddLog(Queue, $"Удалено {numberOfDeletedModelObjects} ранее найденных объектов модели.", logger: Logger);
 
-            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == OMCoreObject.GetRegisterId()).ToList();
+            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == MarketPlaceBusiness.Common.Consts.RegisterId).ToList();
             AddLog(Queue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: Logger);
-            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != OMCoreObject.GetRegisterId()).ToList();
+            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != MarketPlaceBusiness.Common.Consts.RegisterId).ToList();
             AddLog(Queue, $"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.", logger: Logger);
 
             var dictionaries = GetDictionaries(modelAttributes);
@@ -218,70 +230,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
             return DictionaryService.GetDictionaries(dictionaryIds);
         }
-
-        private List<MarketObjectPure> GetMarketObjects()
-        {
-            var groupToMarketSegmentRelation = GetGroupToMarketSegmentRelation();
-            AddLog(Queue, $"Найден тип: {groupToMarketSegmentRelation.MarketSegment_Code.GetEnumDescription()}", logger: Logger);
-
-            //TODO ждем выполнения CIPJSKO-307
-            //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
-
-            var baseQuery = OMCoreObject.Where(x =>
-	            x.PropertyMarketSegment_Code == groupToMarketSegmentRelation.MarketSegment_Code &&
-	            x.CadastralNumber != null &&
-	            x.ProcessType_Code != ProcessStep.Excluded);
-
-            var type = Model.IsOksObjectType.GetValueOrDefault() ? QSConditionType.NotEqual : QSConditionType.Equal;
-            baseQuery.And(new QSConditionSimple(OMCoreObject.GetColumn(x => x.PropertyTypesCIPJS_Code),
-	            type, (int) PropertyTypesCIPJS.LandArea));
-
-			baseQuery.Select(x => new
-			{
-				x.CadastralNumber,
-				x.PricePerMeter
-			});
-
-			////TODO для тестирования
-			//baseQuery.SetPackageIndex(0).SetPackageSize(100);
-
-			return baseQuery
-                //TODO для тестирования расчета МС и Процента
-                //return OMCoreObject.Where(x => x.CadastralNumber == "77:06:0004004:9714")
-                //TODO ждем выполнения CIPJSKO-307
-                //.And(territoryCondition)
-                .Execute()
-                .GroupBy(x => new
-                {
-                    x.CadastralNumber,
-                    x.PricePerMeter
-                })
-                .Select(x => new MarketObjectPure
-                {
-                    Id = x.Max(y => y.Id),
-                    CadastralNumber = x.Key.CadastralNumber,
-                    PricePerMeter = x.Key.PricePerMeter.GetValueOrDefault()
-                }).ToList();
-        }
-
-        //private Expression<Func<OMCoreObject, bool>> GetConditionForTerritoryType(TerritoryType territoryType)
-        //{
-        //    switch (territoryType)
-        //    {
-        //        case TerritoryType.Main:
-        //            Expression<Func<OMCoreObject, bool>> mainTerritoryCondition = x => x.Address == "Main";
-        //            return mainTerritoryCondition;
-        //        case TerritoryType.Additional:
-        //            Expression<Func<OMCoreObject, bool>> additionalTerritoryCondition = x => x.Address == "Additional";
-        //            return additionalTerritoryCondition;
-        //        case TerritoryType.MainAndAdditional:
-        //            Expression<Func<OMCoreObject, bool>> bothTerritoryCondition = x => x.Address == "MainAndAdditional";
-        //            return bothTerritoryCondition;
-        //        default:
-        //            Expression<Func<OMCoreObject, bool>> unknownTerritoryCondition = x => x.Address == "default";
-        //            return unknownTerritoryCondition;
-        //    }
-        //}
 
         private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()
         {

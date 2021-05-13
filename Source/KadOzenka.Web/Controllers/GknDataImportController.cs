@@ -222,6 +222,9 @@ namespace KadOzenka.Web.Controllers
 			}
 			else
 			{
+				if(dto.ExcelFile == null)
+					return;
+
 				using (var stream = dto.ExcelFile.OpenReadStream())
 				{
 					var attributes = dto.ExcelColumnsMapping.Select(x => new ColumnToAttributeMapping

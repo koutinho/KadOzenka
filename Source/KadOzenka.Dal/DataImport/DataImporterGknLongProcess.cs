@@ -182,20 +182,20 @@ namespace KadOzenka.Dal.DataImport
 					omTask?.Id, omTask?.NoteType_Code.GetEnumDescription(), import.FileExtension);
 				ValidateTask(omTask);
 
-				var resultFileExtension = omTask.NoteType_Code == KoNoteType.Petition ? ".xlsx" : ".xml";
+				var resultFileExtensionForArchives = ".xml";
 
 				BaseImporter importer = null;
 				if (import.FileExtension == "zip")
 				{
-					ImportGknFromZip(import, templateFileStream, resultFileExtension);
+					ImportGknFromZip(import, templateFileStream, resultFileExtensionForArchives);
 				}
 				else if (import.FileExtension == "rar")
 				{
-					ImportGknFromRar(import, templateFileStream, resultFileExtension);
+					ImportGknFromRar(import, templateFileStream, resultFileExtensionForArchives);
 				}
 				else
 				{
-					importer = GetImporter(import.FileExtension, omTask.NoteType_Code);
+					importer = GetImporter(import.FileExtension);
 				}
 
 				urlToDownloadReportWithErrors = importer?.Import(templateFileStream, omTask, import, cancellationToken,
@@ -241,11 +241,6 @@ namespace KadOzenka.Dal.DataImport
 			    throw new Exception("Не найдено задание на оценку");
 
 			var messages = new List<string>();
-		    if (task.NoteType_Code == KoNoteType.Petition)
-		    {
-			    if (task.CreationDate == null)
-				    messages.Add("Дата создания");
-		    }
 
 			if (task.TourId == null)
 				messages.Add("Тур");
@@ -258,25 +253,20 @@ namespace KadOzenka.Dal.DataImport
 				throw new Exception($"В задании на оценку не указаны: {string.Join(',', messages)}");
 	    }
 
-	    private BaseImporter GetImporter(string fileExtension, KoNoteType taskType)
+	    private BaseImporter GetImporter(string fileExtension)
 	    {
-		    var isPetition = taskType == KoNoteType.Petition;
 		    BaseImporter importer;
-		    if (fileExtension == "xlsx" && isPetition)
+		    if (fileExtension == "xlsx")
 		    {
-			    importer = new PetitionImporter(DataImporterGknLongProcessProgressLogger);
-		    }
-		    else if (fileExtension == "xlsx" && !isPetition)
-		    {
-			    importer = new NotPetitionExcelImporter(DataImporterGknLongProcessProgressLogger);
+			    importer = new ExcelImporter(DataImporterGknLongProcessProgressLogger);
 		    }
 			else if (fileExtension == "xml")
 		    {
-			    importer = new NotPetitionXmlImporter(DataImporterGknLongProcessProgressLogger);
+			    importer = new XmlImporter(DataImporterGknLongProcessProgressLogger);
 		    }
 		    else
 		    {
-			    throw new NotSupportedException($"Неподдерживаемое расширение файла '{fileExtension}'. Для заданий типа '{KoNoteType.Petition.GetEnumDescription()}' поддерживаемые расширения: .zip, .rar, .xlsx. Для остальных типов - .zip, .rar, .html");
+			    throw new NotSupportedException($"Неподдерживаемое расширение файла '{fileExtension}'. Поддерживаемые расширения: .zip, .rar, .xlsx, .xml.");
 		    }
 
 			return importer;

@@ -1621,55 +1621,59 @@ namespace KadOzenka.Dal.XmlParser
         }
 
 
-        public xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate)
-        {
-            xmlObjectList objs = new xmlObjectList();
+        #region Импорт обращений
 
-            var mainWorkSheet = excelFile.Worksheets[0];
+        //public xmlObjectList GetExcelObjectForPetition(ExcelFile excelFile, DateTime assessmentDate)
+        //{
+        //    xmlObjectList objs = new xmlObjectList();
 
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            ParallelOptions options = new ParallelOptions
-            {
-                CancellationToken = cancelTokenSource.Token,
-                MaxDegreeOfParallelism = 1
-            };
-            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
-            Parallel.ForEach(mainWorkSheet.Rows, options, row =>
-            {
-	            string cadastralNumber = null;
-                try
-                {
-	                if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
-                    {
-	                    cadastralNumber = row.Cells[0].Value.ParseToString();
-                        string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
-                        if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") 
-	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toParcel, assessmentDate));
-                        else if (typeobject == "ЗДАНИЕ") 
-	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toBuilding, assessmentDate));
-                        else if (typeobject == "СООРУЖЕНИЕ")
-	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toConstruction, assessmentDate));
-                        else if (typeobject == "ОНС") 
-	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toUncomplited, assessmentDate));
-                        else if (typeobject == "ПОМЕЩЕНИЕ") 
-	                        objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toFlat, assessmentDate));
-                        else
-                        {
-	                        throw new Exception($"Неизвестный тип объекта '{typeobject}'");
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-	                lock (_locker)
-	                {
-		                LogErrorInExcel(row.Index, cadastralNumber, ex);
-                    }
-                }
-            });
+        //    var mainWorkSheet = excelFile.Worksheets[0];
 
-            return objs;
-        }
+        //    CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+        //    ParallelOptions options = new ParallelOptions
+        //    {
+        //        CancellationToken = cancelTokenSource.Token,
+        //        MaxDegreeOfParallelism = 1
+        //    };
+        //    var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+        //    Parallel.ForEach(mainWorkSheet.Rows, options, row =>
+        //    {
+        //     string cadastralNumber = null;
+        //        try
+        //        {
+        //         if (row.Index != 0 && row.Index <= lastUsedRowIndex) //все, кроме заголовков и пустых строк в конце страницы
+        //            {
+        //             cadastralNumber = row.Cells[0].Value.ParseToString();
+        //                string typeobject = mainWorkSheet.Rows[row.Index].Cells[1].Value.ParseToString().ToUpper();
+        //                if (typeobject == "ЗЕМЕЛЬНЫЙ УЧАСТОК") 
+        //                 objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toParcel, assessmentDate));
+        //                else if (typeobject == "ЗДАНИЕ") 
+        //                 objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toBuilding, assessmentDate));
+        //                else if (typeobject == "СООРУЖЕНИЕ")
+        //                 objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toConstruction, assessmentDate));
+        //                else if (typeobject == "ОНС") 
+        //                 objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toUncomplited, assessmentDate));
+        //                else if (typeobject == "ПОМЕЩЕНИЕ") 
+        //                 objs.Add(GetData(mainWorkSheet.Rows[row.Index], cadastralNumber, enTypeObject.toFlat, assessmentDate));
+        //                else
+        //                {
+        //                 throw new Exception($"Неизвестный тип объекта '{typeobject}'");
+        //                }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //         lock (_locker)
+        //         {
+        //          LogErrorInExcel(row.Index, cadastralNumber, ex);
+        //            }
+        //        }
+        //    });
+
+        //    return objs;
+        //}
+
+        #endregion
 
         #region Excel Mapping
 

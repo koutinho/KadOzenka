@@ -10,8 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
-using ObjectModel.Market;
 using Core.Shared.Extensions;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Interfaces;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -20,14 +22,17 @@ namespace KadOzenka.Web.Controllers
 	{
 		private readonly CoreUiService _service;
 		private readonly RegistersService _registersService;
-
+		private IMarketObjectService MarketObjectService { get; }
 		public string MarketObjectsRegisterViewId => "MarketObjects";
 
-		public PrefilterController(CoreUiService service, RegistersService registersService)
+
+		public PrefilterController(CoreUiService service, RegistersService registersService,
+			IMarketObjectService marketObjectService)
 		{
 			_service = service;
-            _registersService = registersService;
-        }
+			_registersService = registersService;
+			MarketObjectService = marketObjectService;
+		}
 
 		[HttpGet]
 		public IActionResult Prefilter()
@@ -38,9 +43,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult MarketSegmentList()
 		{
-			var marketSegmentReferenceId = OMCoreObject
-				.GetAttributeData(x => x.PropertyMarketSegment)
-				.ReferenceId;
+			var marketSegmentReferenceId = Consts.PropertyMarketSegmentAttribute.ReferenceId;
 			var marketSegmentList = OMReferenceItem
 				.Where(x => x.ReferenceId == marketSegmentReferenceId)
 				.OrderBy(x => x.Value)
@@ -54,9 +57,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult DealTypeList()
 		{
-			var dealTypeReferenceId = OMCoreObject
-				.GetAttributeData(x => x.DealType)
-				.ReferenceId;
+			var dealTypeReferenceId = Consts.DealTypeAttribute.ReferenceId;
 			var dealTypeList = OMReferenceItem
 				.Where(x => x.ReferenceId == dealTypeReferenceId)
 				.OrderBy(x => x.Value)
@@ -70,9 +71,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult PropertyTypeList()
 		{
-			var propertyTypeId = OMCoreObject
-				.GetAttributeData(x => x.PropertyTypesCIPJS)
-				.ReferenceId;
+			var propertyTypeId = Consts.PropertyTypesCIPJSAttribute.ReferenceId;
 			var propertyTypeList = OMReferenceItem
 				.Where(x => x.ReferenceId == propertyTypeId)
 				.OrderBy(x => x.Value)
@@ -104,8 +103,7 @@ namespace KadOzenka.Web.Controllers
 
                 if (model.PropertyTypeItemIds?.Length > 0)
                 {
-                    var propertyType = OMCoreObject
-                        .GetAttributeData(x => x.PropertyTypesCIPJS);
+                    var propertyType = Consts.PropertyTypesCIPJSAttribute;
                     var filterModel = new FilterModel
                     {
                         TypeControl = "value",
@@ -121,8 +119,7 @@ namespace KadOzenka.Web.Controllers
 
 				if (model.MarketSegmentItemIds?.Length > 0)
 				{
-					var marketSegment = OMCoreObject
-						.GetAttributeData(x => x.PropertyMarketSegment);
+					var marketSegment = Consts.PropertyMarketSegmentAttribute;
 					var filterModel = new FilterModel
 					{
 						TypeControl = "value",
@@ -137,8 +134,7 @@ namespace KadOzenka.Web.Controllers
 				}
 				if (model.DealTypeItemIds?.Length > 0)
 				{
-					var dealType = OMCoreObject
-						.GetAttributeData(x => x.DealType);
+					var dealType = Consts.DealTypeAttribute;
 					var filterModel = new FilterModel
 					{
 						TypeControl = "value",
@@ -158,8 +154,7 @@ namespace KadOzenka.Web.Controllers
 						throw new Exception("Задан некорректный диапазон цен");
 					}
 
-					var priceType = OMCoreObject
-						.GetAttributeData(x => x.Price);
+					var priceType = Consts.PriceAttribute;
 					var filterModel = new FilterModel
 					{
 						TypeControl = "range",
@@ -173,8 +168,7 @@ namespace KadOzenka.Web.Controllers
 				}
 				if (!string.IsNullOrEmpty(model.Metro))
 				{
-					var metroType = OMCoreObject
-						.GetAttributeData(x => x.Metro);
+					var metroType = Consts.Metrottribute;
 
 					var filterModel = new FilterModel
 					{

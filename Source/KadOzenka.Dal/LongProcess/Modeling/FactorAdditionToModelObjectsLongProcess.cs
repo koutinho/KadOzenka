@@ -8,6 +8,8 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -70,7 +72,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				AddLog(Queue, $"Найдено {objects.Count} объектов Модели.", logger: Logger);
 
 				AddLog(Queue, "Начат сбор коэффициентов.", logger: Logger);
-				var coefficients = Attribute.RegisterId == OMCoreObject.GetRegisterId()
+				var coefficients = Attribute.RegisterId == Consts.RegisterId
 					? GetCoefficientsFromMarketObject(objects.Select(x => x.MarketObjectId.GetValueOrDefault()).ToList(), dictionaries, attributes)
 					: GetCoefficientsFromTourFactors(objects.Where(x => x.UnitId != null).Select(x => x.UnitId.Value).Distinct().ToList(), dictionaries, attributes);
 				AddLog(Queue, "Закончен сбор коэффициентов.", logger: Logger);
@@ -105,7 +107,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			for (var i = 0; i < objects.Count; i++)
 			{
-				var objectId = Attribute.RegisterId == OMCoreObject.GetRegisterId() ? objects[i].MarketObjectId : objects[i].UnitId;
+				var objectId = Attribute.RegisterId == Consts.RegisterId ? objects[i].MarketObjectId : objects[i].UnitId;
 				coefficientsToObject.TryGetValue(objectId.GetValueOrDefault(), out var coefficients);
 				var coefficient = coefficients?.FirstOrDefault();
 

@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.714" />
+    <PackageReference Include="Platform.Web" Version="1.0.722-beta.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspnetcoreHttpcontext" Version="1.1.0" />
     <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />
@@ -65,11 +65,11 @@
         <Optimize>false</Optimize>
         <OutputPath>.\bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
-        <EnvironmentName>Development</EnvironmentName>
-        <ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
-        <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
       </PropertyGroup>
-    </When>
+      <ItemGroup>
+		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json" />
+	  </ItemGroup>
+	</When>
     <When Condition=" '$(Configuration)'=='QA' ">
       <PropertyGroup>
         <DebugSymbols>true</DebugSymbols>

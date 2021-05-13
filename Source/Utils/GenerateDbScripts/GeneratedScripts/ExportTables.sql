@@ -2418,6 +2418,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('CORE_LIST', 'last_use_date')) then
+        execute 'alter table CORE_LIST add "last_use_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_920_quant_pk')) then
     execute 'alter table CORE_LIST add constraint reg_920_quant_pk primary key (id)';
   end if;
@@ -9900,277 +9909,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_REFERENCE')) then
-		execute 'create table ES_REFERENCE ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'id')) then
-        execute 'alter table ES_REFERENCE add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'name')) then
-        execute 'alter table ES_REFERENCE add "name" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'value_type')) then
-        execute 'alter table ES_REFERENCE add "value_type" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'value_type_code')) then
-        execute 'alter table ES_REFERENCE add "value_type_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'use_interval')) then
-        execute 'alter table ES_REFERENCE add "use_interval" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'change_user_id')) then
-        execute 'alter table ES_REFERENCE add "change_user_id" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE', 'change_date')) then
-        execute 'alter table ES_REFERENCE add "change_date" TIMESTAMP';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_609_q_pk')) then
-    execute 'alter table ES_REFERENCE add constraint reg_609_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_REFERENCE_ITEM')) then
-		execute 'create table ES_REFERENCE_ITEM ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'id')) then
-        execute 'alter table ES_REFERENCE_ITEM add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'es_reference_id')) then
-        execute 'alter table ES_REFERENCE_ITEM add "es_reference_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'value')) then
-        execute 'alter table ES_REFERENCE_ITEM add "value" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'calculation_value')) then
-        execute 'alter table ES_REFERENCE_ITEM add "calculation_value" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'common_value')) then
-        execute 'alter table ES_REFERENCE_ITEM add "common_value" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'value_from')) then
-        execute 'alter table ES_REFERENCE_ITEM add "value_from" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_REFERENCE_ITEM', 'value_to')) then
-        execute 'alter table ES_REFERENCE_ITEM add "value_to" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_610_q_pk')) then
-    execute 'alter table ES_REFERENCE_ITEM add constraint reg_610_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_SETTINGS_PARAMS')) then
-		execute 'create table ES_SETTINGS_PARAMS ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'id')) then
-        execute 'alter table ES_SETTINGS_PARAMS add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'id_tour')) then
-        execute 'alter table ES_SETTINGS_PARAMS add "id_tour" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'id_register')) then
-        execute 'alter table ES_SETTINGS_PARAMS add "id_register" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'cost_factors')) then
-        execute 'alter table ES_SETTINGS_PARAMS add "cost_factors" VARCHAR';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'segment_type')) then
-        execute 'alter table ES_SETTINGS_PARAMS add "segment_type" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_SETTINGS_PARAMS', 'build_cad_number')) then
-        execute 'alter table ES_SETTINGS_PARAMS add "build_cad_number" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_settings_params_pkey')) then
-    execute 'alter table ES_SETTINGS_PARAMS add constraint es_settings_params_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('ES_TO_MARKET_CORE_OBJECT')) then
-		execute 'create table ES_TO_MARKET_CORE_OBJECT ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_TO_MARKET_CORE_OBJECT', 'id')) then
-        execute 'alter table ES_TO_MARKET_CORE_OBJECT add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_TO_MARKET_CORE_OBJECT', 'es_id')) then
-        execute 'alter table ES_TO_MARKET_CORE_OBJECT add "es_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('ES_TO_MARKET_CORE_OBJECT', 'market_object_id')) then
-        execute 'alter table ES_TO_MARKET_CORE_OBJECT add "market_object_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('es_to_market_core_object_pkey')) then
-    execute 'alter table ES_TO_MARKET_CORE_OBJECT add constraint es_to_market_core_object_pkey primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('FM_REPORTS_SAVEDREPORT')) then
 		execute 'create table FM_REPORTS_SAVEDREPORT ("id" BIGINT NOT NULL)';
 	end if;
@@ -10377,6 +10115,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'use_parent_attribute_for_car_place')) then
         execute 'alter table GBU_ATTRIBUTE_SETTINGS add "use_parent_attribute_for_car_place" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('GBU_ATTRIBUTE_SETTINGS', 'disable_editing')) then
+        execute 'alter table GBU_ATTRIBUTE_SETTINGS add "disable_editing" SMALLINT';
     end if;
 end $$;
 
@@ -33584,7 +33331,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('gbu_source2_a_1466', 'value')) then
-        execute 'alter table gbu_source2_a_1466 add "value" VARCHAR(5000)';
+        execute 'alter table gbu_source2_a_1466 add "value" VARCHAR(25000)';
     end if;
 end $$;
 
@@ -57875,6 +57622,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('ko_objects_characteristics_register', 'disable_editing')) then
+        execute 'alter table ko_objects_characteristics_register add "disable_editing" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('reg_600_q_pk')) then
     execute 'alter table ko_objects_characteristics_register add constraint reg_600_q_pk primary key (id)';
   end if;
@@ -57902,6 +57658,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_OBJECTS_CHARACTERISTICS_REGISTER', 'register_id')) then
         execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add "register_id" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_OBJECTS_CHARACTERISTICS_REGISTER', 'disable_editing')) then
+        execute 'alter table KO_OBJECTS_CHARACTERISTICS_REGISTER add "disable_editing" SMALLINT';
     end if;
 end $$;
 

@@ -24,7 +24,7 @@
     <PackageReference Include="NPetrovich" Version="1.2.0" />
     <PackageReference Include="Platform" Version="1.0.390" />
     <PackageReference Include="Platform.Reports" Version="1.0.55" />
-    <PackageReference Include="Platform.Web" Version="1.0.714" />
+    <PackageReference Include="Platform.Web" Version="1.0.722-beta.0" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.4.0" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.Support" Version="3.141.0" />
@@ -42,6 +42,7 @@
     <ProjectReference Include="..\ImageProccessor\ImageProccessor.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
     <ProjectReference Include="..\KadOzenka.WebClients\KadOzenka.WebClients.csproj" />
+    <ProjectReference Include="..\MarketPlaceBusiness\MarketPlaceBusiness.csproj" />
     <ProjectReference Include="..\Utils\EP.SdkCore\EP.Sdk.Core.csproj" />
   </ItemGroup>
 
@@ -58,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Correction\Dto\" />
     <Folder Include="DataImport\DataImportKoFactory\ImportKoFactoryCommon\" />
     <Folder Include="DataImport\DataImportKoFactory\Interface\" />
     <Folder Include="Documents\Dto\" />

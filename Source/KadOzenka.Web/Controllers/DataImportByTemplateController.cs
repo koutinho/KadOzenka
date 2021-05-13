@@ -6,13 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
-using Core.ErrorManagment;
 using Core.Shared.Extensions;
-using Core.UI.Registers.CoreUI.Registers;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using ObjectModel.Core.Shared;
-using static Core.UI.Registers.CoreUI.Registers.RegistersCommon;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -25,8 +22,8 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.KO;
-using ObjectModel.Market;
 using ConfigurationManager = KadOzenka.Dal.ConfigurationManagers.ConfigurationManager;
+using Consts = MarketPlaceBusiness.Common.Consts;
 
 
 namespace KadOzenka.Web.Controllers
@@ -152,7 +149,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = "")]
 		public IActionResult ImportDataFromExcel(ImportGbuObjectModel model)
 		{
-			if (model.MainRegisterId != OMCoreObject.GetRegisterId() && !model.Document.IsNewDocument && model.Document.IdDocument == null)
+			if (model.MainRegisterId != Consts.RegisterId && !model.Document.IsNewDocument && model.Document.IdDocument == null)
 			{
 				throw new Exception("Поле Документ обязательно для заполнения");
 			}
@@ -312,13 +309,13 @@ namespace KadOzenka.Web.Controllers
                 .Select(x => (long) x.Value.RegisterId).Distinct().ToList();
 
 	        var unitRegisterId = OMUnit.GetRegisterId();
-	        var unitRequiredAttributeIds = Dal.DataImport.DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds;
+	        var requiredAttributeIds = Dal.DataImport.DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds;
 
 	        availableRegisters.Add(unitRegisterId);
-	        availableAttributeIds.AddRange(unitRequiredAttributeIds);
+	        availableAttributeIds.AddRange(requiredAttributeIds);
 
 	        var attributesTree = BuildAttributesTreeInternal(availableRegisters, availableAttributeIds, true);
-			attributesTree.Where(x => unitRequiredAttributeIds.Contains(x.AttributeId)).ForEach(x => x.IsRequired = true);
+			attributesTree.Where(x => requiredAttributeIds.Contains(x.AttributeId)).ForEach(x => x.IsRequired = true);
 			var sortedAttributes = attributesTree.OrderByDescending(x => x.IsRequired).ThenBy(x => x.Description).ToList();
 
 			return Json(sortedAttributes);
