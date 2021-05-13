@@ -443,26 +443,6 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _arealiving;
-        /// <summary>
-        /// 10004500 Жилая площадь (AREA_LIVING)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004500)]
-        public decimal? AreaLiving
-        {
-            get
-            {
-                CheckPropertyInited("AreaLiving");
-                return _arealiving;
-            }
-            set
-            {
-                _arealiving = value;
-                NotifyPropertyChanged("AreaLiving");
-            }
-        }
-
-
         private decimal? _arealand;
         /// <summary>
         /// 10004600 Площадь ЗУ (AREA_LAND)
@@ -479,26 +459,6 @@ namespace ObjectModel.Market
             {
                 _arealand = value;
                 NotifyPropertyChanged("AreaLand");
-            }
-        }
-
-
-        private string _zoneregion;
-        /// <summary>
-        /// 10005100 Зона_Округ (ZONE_REGION)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005100)]
-        public string ZoneRegion
-        {
-            get
-            {
-                CheckPropertyInited("ZoneRegion");
-                return _zoneregion;
-            }
-            set
-            {
-                _zoneregion = value;
-                NotifyPropertyChanged("ZoneRegion");
             }
         }
 
@@ -674,26 +634,6 @@ namespace ObjectModel.Market
             {
                 _subgroup_Code = value;
                 NotifyPropertyChanged("Subgroup_Code");
-            }
-        }
-
-
-        private long? _zone;
-        /// <summary>
-        /// 10005900 Зона (ZONE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005900)]
-        public long? Zone
-        {
-            get
-            {
-                CheckPropertyInited("Zone");
-                return _zone;
-            }
-            set
-            {
-                _zone = value;
-                NotifyPropertyChanged("Zone");
             }
         }
 

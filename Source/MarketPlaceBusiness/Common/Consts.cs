@@ -26,7 +26,6 @@ namespace MarketPlaceBusiness.Common
 		
 		
 		public static readonly RegisterAttribute NeighborhoodAttribute = OMCoreObject.GetAttributeData(x => x.Neighborhood);
-		public static readonly RegisterAttribute ZoneRegionAttribute = OMCoreObject.GetAttributeData(x => x.ZoneRegion);
 		public static readonly RegisterAttribute PropertyTypesCIPJSAttribute = OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS);
 		public static readonly RegisterAttribute DealTypeAttribute = OMCoreObject.GetAttributeData(x => x.DealType);
 		public static readonly RegisterAttribute PropertyMarketSegmentAttribute = OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment);

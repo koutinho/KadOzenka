@@ -46,8 +46,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
 		public decimal? AreaKitchen { get; set; }
-		public decimal? AreaLiving { get; set; }
-		public long? Zone { get; set; }
 		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
@@ -90,8 +88,6 @@ namespace KadOzenka.Web.Models.MarketObject
 				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
 				AreaKitchen = entity.AreaKitchen,
-				AreaLiving = entity.AreaLiving,
-				Zone = entity.Zone,
 				Subgroup = entity.Subgroup,
 				Status = entity.ProcessType,
 				StatusCode = entity.ProcessType_Code,

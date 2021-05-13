@@ -106,11 +106,6 @@ namespace MarketPlaceBusiness.Dto
 		public decimal? AreaKitchen { get; set; }
 
 		/// <summary>
-		/// 10004500 Жилая площадь (AREA_LIVING)
-		/// </summary>
-		public decimal? AreaLiving { get; set; }
-
-		/// <summary>
 		/// 10004600 Площадь ЗУ (AREA_LAND)
 		/// </summary>
 		public decimal? AreaLand { get; set; }
@@ -121,10 +116,6 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public long? BuildingYear { get; set; }
 
-		/// <summary>
-		/// 10005100 Зона_Округ (ZONE_REGION)
-		/// </summary>
-		public string ZoneRegion { get; set; }
 
 		/// <summary>
 		/// 10005101 Настраиваемая зона (CUSTOM_ZONE)
@@ -168,11 +159,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10005800 Подгруппа сегмента рынка (справочный код) (KO_SUBGROUP_CODE)
 		/// </summary>
 		public long? Subgroup_Code { get; set; }
-
-		/// <summary>
-		/// 10005900 Зона (ZONE)
-		/// </summary>
-		public long? Zone { get; set; }
 
 		/// <summary>
 		/// 10006000 Статус (PROCESS_TYPE)

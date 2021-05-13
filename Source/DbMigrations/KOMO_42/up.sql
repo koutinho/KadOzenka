@@ -64,3 +64,12 @@ ALTER TABLE market_core_object DROP COLUMN KO_GROUP_CODE;
 delete from core_register_attribute where id = 10007600;
 ALTER TABLE market_core_object DROP COLUMN LAST_DATE_UPDATE;
 
+delete from core_register_attribute where id = 10004500;
+ALTER TABLE market_core_object DROP COLUMN AREA_LIVING;
+
+delete from core_register_attribute where id = 10005900;
+ALTER TABLE market_core_object DROP COLUMN ZONE;
+
+delete from core_register_attribute where id = 10005100;
+ALTER TABLE market_core_object DROP COLUMN ZONE_REGION;
+

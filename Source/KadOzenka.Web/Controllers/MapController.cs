@@ -90,18 +90,18 @@ namespace KadOzenka.Web.Controllers
 
             var allDistricts = new List<OMReferenceItem>();
             List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == Consts.NeighborhoodAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
-            List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == Consts.ZoneRegionAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
+            List<OMReferenceItem> allZones = new List<OMReferenceItem>();
             List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
 
             PrepareQueryByUserFilter(query);
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
+            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code, x.CadastralQuartal }).Execute().ToList();
 
             var districtList = new List<IGrouping<string, OMCoreObject>>();
             var regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
-            var zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
+            var zoneList = new List<IGrouping<string, OMCoreObject>>();
             var quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
