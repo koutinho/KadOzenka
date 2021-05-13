@@ -321,9 +321,9 @@ namespace KadOzenka.Dal.GbuObject
 
         public static int SourceColumn = 3;
 
-        public static int ErrorColumn = 4;
+        public static int ErrorColumn = 3;
 
-        public static int GeneralErrorColumn = 5;
+        public static int GeneralErrorColumn = 4;
 
         #endregion
 
@@ -384,14 +384,14 @@ namespace KadOzenka.Dal.GbuObject
                 reportService.SetIndividualWidth(KnColumn, 4);
                 reportService.SetIndividualWidth(ResultColumn, 6);
                 reportService.SetIndividualWidth(ValueColumn, 3);
-                reportService.SetIndividualWidth(SourceColumn, 6);
+                //reportService.SetIndividualWidth(SourceColumn, 6);
                 reportService.SetIndividualWidth(ErrorColumn, 5);
                 reportService.SetIndividualWidth(GeneralErrorColumn, 5);
 
                 foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
                 {
                     reportService.SetIndividualWidth((int) dictionaryColumn.Value, 3);
-                    reportService.SetIndividualWidth((int) dictionaryColumn.Value + 1, 3);
+                    //reportService.SetIndividualWidth((int) dictionaryColumn.Value + 1, 3);
                 }
             }
             catch (Exception ex)
@@ -717,7 +717,8 @@ namespace KadOzenka.Dal.GbuObject
         {
             List<string> resHeaderList = new List<string>
             {
-                "КН", "Поле в которое вносилось значение", "Внесенное значение", "Источник внесенного значения",
+                "КН", "Поле в которое вносилось значение", "Внесенное значение",
+                //"Источник внесенного значения",
                 "Ошибка внесенного значения", "Ошибка"
             };
             ReportHeaderWithColumnDic res = new ReportHeaderWithColumnDic();
@@ -739,7 +740,7 @@ namespace KadOzenka.Dal.GbuObject
                         resHeaderList.AddRange(new List<string>
                         {
                             GbuObjectService.GetAttributeNameById(lItem.IdFactor.GetValueOrDefault()),
-                            $"(Уровень - {levelTitle}) Источник информации"
+                            //$"(Уровень - {levelTitle}) Источник информации"
                         });
 
                         Serilog.Log.Verbose("Атрибут ОН. {FactorName}, Id {FactorID}",
