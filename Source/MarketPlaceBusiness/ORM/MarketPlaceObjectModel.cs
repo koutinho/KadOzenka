@@ -88,26 +88,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _marketid;
-        /// <summary>
-        /// 10002600 Идентификатор в Источнике данных (MARKET_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002600)]
-        public long? MarketId
-        {
-            get
-            {
-                CheckPropertyInited("MarketId");
-                return _marketid;
-            }
-            set
-            {
-                _marketid = value;
-                NotifyPropertyChanged("MarketId");
-            }
-        }
-
-
         private decimal? _price;
         /// <summary>
         /// 10002700 Цена сделки/предложения (PRICE)
@@ -1104,26 +1084,6 @@ namespace ObjectModel.Market
             {
                 _priceaftercorrectionbyrooms = value;
                 NotifyPropertyChanged("PriceAfterCorrectionByRooms");
-            }
-        }
-
-
-        private long? _formalizedaddressid;
-        /// <summary>
-        /// 10008600 Идентификатор формализованного адреса (FORMALIZED_ADDRESS_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10008600)]
-        public long? FormalizedAddressId
-        {
-            get
-            {
-                CheckPropertyInited("FormalizedAddressId");
-                return _formalizedaddressid;
-            }
-            set
-            {
-                _formalizedaddressid = value;
-                NotifyPropertyChanged("FormalizedAddressId");
             }
         }
 

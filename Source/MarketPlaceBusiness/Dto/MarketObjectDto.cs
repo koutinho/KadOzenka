@@ -18,11 +18,6 @@ namespace MarketPlaceBusiness.Dto
 		public MarketTypes Market_Code { get; set; }
 
 		/// <summary>
-		/// 10002600 Идентификатор в Источнике данных (MARKET_ID)
-		/// </summary>
-		public long? MarketId { get; set; }
-
-		/// <summary>
 		/// 10002700 Цена сделки/предложения (PRICE)
 		/// </summary>
 		public decimal? Price { get; set; }
@@ -269,12 +264,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008400 Цена после корректировки на комнатность (PRICE_AFTER_CORRECTION_BY_ROOMS)
 		/// </summary>
 		public decimal? PriceAfterCorrectionByRooms { get; set; }
-
-
-		/// <summary>
-		/// 10008600 Идентификатор формализованного адреса (FORMALIZED_ADDRESS_ID)
-		/// </summary>
-		public long? FormalizedAddressId { get; set; }
 
 
 		/// <summary>

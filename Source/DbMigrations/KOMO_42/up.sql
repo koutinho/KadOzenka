@@ -73,3 +73,11 @@ ALTER TABLE market_core_object DROP COLUMN ZONE;
 delete from core_register_attribute where id = 10005100;
 ALTER TABLE market_core_object DROP COLUMN ZONE_REGION;
 
+delete from core_register_attribute where id = 10002600;
+ALTER TABLE market_core_object DROP COLUMN MARKET_ID;
+
+delete from core_register_attribute where id = 10008600;
+ALTER TABLE market_core_object DROP COLUMN FORMALIZED_ADDRESS_ID;
+
+
+
