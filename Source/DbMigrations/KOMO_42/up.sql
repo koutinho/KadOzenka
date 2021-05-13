@@ -22,3 +22,13 @@ ALTER TABLE market_core_object DROP COLUMN OWNERSHIP_TYPE;
 delete from core_register_attribute where id = 10004700;
 ALTER TABLE market_core_object DROP COLUMN BUILDING_YEAR;
 
+delete from core_register_attribute where id = 10003000;
+ALTER TABLE market_core_object DROP COLUMN CITY;
+
+delete from core_register_attribute where id = 10005700;
+ALTER TABLE market_core_object DROP COLUMN KO_GROUP;
+ALTER TABLE market_core_object DROP COLUMN KO_GROUP_CODE;
+
+delete from core_register_attribute where id = 10007600;
+ALTER TABLE market_core_object DROP COLUMN LAST_DATE_UPDATE;
+

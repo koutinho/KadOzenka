@@ -12,7 +12,7 @@ namespace MarketPlaceBusiness
 		{
 			return OMCoreObject.Where(x =>
 				(x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
-				x.Lng != null && x.Lat != null && (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+				x.Lng != null && x.Lat != null && x.Market_Code == MarketTypes.Rosreestr);
 		}
 
 		public void UpdateInfoFromCard(MarketObjectDto dto)

@@ -188,26 +188,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _city;
-        /// <summary>
-        /// 10003000 Город (CITY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003000)]
-        public string City
-        {
-            get
-            {
-                CheckPropertyInited("City");
-                return _city;
-            }
-            set
-            {
-                _city = value;
-                NotifyPropertyChanged("City");
-            }
-        }
-
-
         private string _address;
         /// <summary>
         /// 10003100 Адресный ориентир (ADDRESS)
@@ -658,46 +638,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _group;
-        /// <summary>
-        /// 10005700 Группа сегмента рынка (KO_GROUP)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005700)]
-        public string Group
-        {
-            get
-            {
-                CheckPropertyInited("Group");
-                return _group;
-            }
-            set
-            {
-                _group = value;
-                NotifyPropertyChanged("Group");
-            }
-        }
-
-
-        private long? _group_Code;
-        /// <summary>
-        /// 10005700 Группа сегмента рынка (справочный код) (KO_GROUP_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005700)]
-        public long? Group_Code
-        {
-            get
-            {
-                CheckPropertyInited("Group_Code");
-                return _group_Code;
-            }
-            set
-            {
-                _group_Code = value;
-                NotifyPropertyChanged("Group_Code");
-            }
-        }
-
-
         private string _subgroup;
         /// <summary>
         /// 10005800 Подгруппа сегмента рынка (KO_SUBGROUP)
@@ -1089,26 +1029,6 @@ namespace ObjectModel.Market
             {
                 _regionid = value;
                 NotifyPropertyChanged("RegionId");
-            }
-        }
-
-
-        private DateTime? _lastdateupdate;
-        /// <summary>
-        /// 10007600 Дата последнего обновления цены (LAST_DATE_UPDATE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007600)]
-        public DateTime? LastDateUpdate
-        {
-            get
-            {
-                CheckPropertyInited("LastDateUpdate");
-                return _lastdateupdate;
-            }
-            set
-            {
-                _lastdateupdate = value;
-                NotifyPropertyChanged("LastDateUpdate");
             }
         }
 

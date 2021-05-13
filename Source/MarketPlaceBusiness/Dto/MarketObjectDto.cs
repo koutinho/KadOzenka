@@ -44,11 +44,6 @@ namespace MarketPlaceBusiness.Dto
 		public string Region { get; set; }
 
 		/// <summary>
-		/// 10003000 Город (CITY)
-		/// </summary>
-		public string City { get; set; }
-
-		/// <summary>
 		/// 10003100 Адресный ориентир (ADDRESS)
 		/// </summary>
 		public string Address { get; set; }
@@ -162,15 +157,6 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public string CadastralQuartal { get; set; }
 
-		/// <summary>
-		/// 10005700 Группа сегмента рынка (KO_GROUP)
-		/// </summary>
-		public string Group { get; set; }
-
-		/// <summary>
-		/// 10005700 Группа сегмента рынка (справочный код) (KO_GROUP_CODE)
-		/// </summary>
-		public long? Group_Code { get; set; }
 
 		/// <summary>
 		/// 10005800 Подгруппа сегмента рынка (KO_SUBGROUP)
@@ -261,12 +247,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007400 Код региона (REGION_ID)
 		/// </summary>
 		public long? RegionId { get; set; }
-
-
-		/// <summary>
-		/// 10007600 Дата последнего обновления цены (LAST_DATE_UPDATE)
-		/// </summary>
-		public DateTime? LastDateUpdate { get; set; }
 
 
 		/// <summary>

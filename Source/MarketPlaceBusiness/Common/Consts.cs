@@ -17,7 +17,6 @@ namespace MarketPlaceBusiness.Common
 		public static readonly QSColumn LngColumn = OMCoreObject.GetColumn(x => x.Lng);
 		public static readonly QSColumn LatColumn = OMCoreObject.GetColumn(x => x.Lat);
 		public static readonly QSColumn ParserTimeColumn = OMCoreObject.GetColumn(x => x.ParserTime);
-		public static readonly QSColumn LastDateUpdateColumn = OMCoreObject.GetColumn(x => x.LastDateUpdate);
 		public static readonly QSColumn CadastralNumberColumn = OMCoreObject.GetColumn(x => x.CadastralNumber);
 
 
