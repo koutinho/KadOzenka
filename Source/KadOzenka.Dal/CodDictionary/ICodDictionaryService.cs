@@ -23,6 +23,8 @@ namespace KadOzenka.Dal.CodDictionary
 
         List<CodDictionaryValue> GetDictionaryValues(long registerId);
 
+        List<CodDictionaryValue> GetDictionaryValuesByDictId(long codJobId);
+
         List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true);
     }
 }

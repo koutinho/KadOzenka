@@ -62,27 +62,11 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// Настройки 9 уровня группировки
         /// </summary>
         public LevelItem Level9;
-        /// <summary>
-        /// Настройки 10 уровня группировки
-        /// </summary>
-        public LevelItem Level10;
-        /// <summary>
-        /// Настройки 11 уровня группировки
-        /// </summary>
-        public LevelItem Level11;
 
         /// <summary>
         /// Идентификатор атрибута, куда будет записан результат 
         /// </summary>
         public long? IdAttributeResult;
-        /// <summary>
-        /// Идентификатор атрибута, куда будут записаны источники 
-        /// </summary>
-        public long? IdAttributeSource;
-        /// <summary>
-        /// Идентификатор атрибута, куда будут записаны документы 
-        /// </summary>
-        public long? IdAttributeDocument;
         /// <summary>
         /// Дата на которую делается группировка 
         /// </summary>
