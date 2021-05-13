@@ -34,7 +34,6 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.Neighborhood_Code, SetPreCondition(y => y.Neighborhood_Code))
 				.ForMember(m => m.CadastralNumber, SetPreCondition(y => y.CadastralNumber))
 				.ForMember(m => m.BuildingCadastralNumber, SetPreCondition(y => y.BuildingCadastralNumber))
-				.ForMember(m => m.CadastralQuartal, SetPreCondition(y => y.CadastralQuartal))
 				.ForMember(m => m.Subgroup, SetPreCondition(y => y.Subgroup))
 				.ForMember(m => m.Subgroup_Code, SetPreCondition(y => y.Subgroup_Code))
 				.ForMember(m => m.ProcessType, SetPreCondition(y => y.ProcessType))

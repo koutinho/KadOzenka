@@ -558,26 +558,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _cadastralquartal;
-        /// <summary>
-        /// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005600)]
-        public string CadastralQuartal
-        {
-            get
-            {
-                CheckPropertyInited("CadastralQuartal");
-                return _cadastralquartal;
-            }
-            set
-            {
-                _cadastralquartal = value;
-                NotifyPropertyChanged("CadastralQuartal");
-            }
-        }
-
-
         private string _subgroup;
         /// <summary>
         /// 10005800 Подгруппа сегмента рынка (KO_SUBGROUP)

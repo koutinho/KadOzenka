@@ -97,12 +97,12 @@ namespace KadOzenka.Web.Controllers
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code, x.CadastralQuartal }).Execute().ToList();
+            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code }).Execute().ToList();
 
             var districtList = new List<IGrouping<string, OMCoreObject>>();
             var regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
             var zoneList = new List<IGrouping<string, OMCoreObject>>();
-            var quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
+            var quartalList = new List<IGrouping<string, OMCoreObject>>();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
                 new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allDistricts, districtList), colorsArray);

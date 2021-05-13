@@ -475,6 +475,7 @@ INSERT INTO core_register_attribute (id, name, registerid, type, parentid, refer
 
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) VALUES (10002600, 'Идентификатор в Источнике данных', 100, 1, null, null, 'MARKET_ID', null, null, null, null, null, 'MarketId', 1, null, null, null, 0, null, null, 0);
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) VALUES (10008600, 'Идентификатор формализованного адреса', 100, 1, null, null, 'FORMALIZED_ADDRESS_ID', null, null, null, null, null, 'FormalizedAddressId', 1, null, null, null, null, 2, '2020-04-01 15:53:52.000000', 0);
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) VALUES (10005600, 'Кадастровый квартал', 100, 4, null, null, 'CADASTRAL_QUARTAL', null, null, null, null, null, 'CadastralQuartal', 1, null, null, null, 0, null, null, 0);
 
 
 

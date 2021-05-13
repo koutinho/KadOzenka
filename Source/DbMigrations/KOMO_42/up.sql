@@ -79,5 +79,8 @@ ALTER TABLE market_core_object DROP COLUMN MARKET_ID;
 delete from core_register_attribute where id = 10008600;
 ALTER TABLE market_core_object DROP COLUMN FORMALIZED_ADDRESS_ID;
 
+delete from core_register_attribute where id = 10005600;
+ALTER TABLE market_core_object DROP COLUMN CADASTRAL_QUARTAL;
+
 
 
