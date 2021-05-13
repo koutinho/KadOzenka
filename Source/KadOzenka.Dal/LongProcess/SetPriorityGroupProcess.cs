@@ -3,6 +3,7 @@ using System.Threading;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Core.LongProcess;
@@ -14,6 +15,12 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		public const string LongProcessName = "SetPriorityGroupProcess";
 		private readonly ILogger _log = Log.ForContext<SetPriorityGroupProcess>();
+		private readonly ICodDictionaryService _dictionaryService;
+
+		public SetPriorityGroupProcess(ICodDictionaryService dictionaryService)
+		{
+			_dictionaryService = dictionaryService;
+		}
 
 		public static long AddProcessToQueue(GroupingSettings settings)
 		{
@@ -24,13 +31,13 @@ namespace KadOzenka.Dal.LongProcess
 		{
 			try
 			{
-				_log.Information("Начато выполнение фонового процесса: {ProcessType}", processType.Description);
+				_log.Information("Начато выполнение фонового процесса: {ProcessType}", processType.Description ?? "debug");
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettings>();
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => PriorityGrouping.MaxCount, () => PriorityGrouping.CurrentCount);
 
-				var url = PriorityGrouping.SetPriorityGroup(settings, cancellationToken);
+				var url = new PriorityGrouping(_dictionaryService).SetPriorityGroup(settings, cancellationToken);
 				//TestLongRunningProcess(settings);
 
 				LongProcessProgressLogger.StopLogProgress();

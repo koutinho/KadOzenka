@@ -46,8 +46,8 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Идентификатор задания ЦОД
 		/// </summary>
-		[Display(Name = "Справочник ЦОД")]
-		[Required(ErrorMessage = "Заполните справочник ЦОД")]
+		[Display(Name = "Справочник")]
+		[Required(ErrorMessage = "Заполните справочник")]
 		public int? IdCodJob { get; set; }
 
 		/// <summary>
@@ -120,11 +120,11 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Идентификатор атрибута, куда будут записаны источники 
 		/// </summary>
-		[Display(Name = "Источник")]
-		public int? IdAttributeSource { get; set; }
+		//[Display(Name = "Источник")]
+		//public int? IdAttributeSource { get; set; }
 
-	    [Display(Name = "Документ")]
-        public int? IdAttributeDocument { get; set; }
+	    // [Display(Name = "Документ")]
+     //    public int? IdAttributeDocument { get; set; }
 
         public GroupingObject()
         {
@@ -145,9 +145,9 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GroupingSettings
 			{
 				IdCodJob = IdCodJob,
-				IdAttributeDocument = IdAttributeDocument,
+				//IdAttributeDocument = IdAttributeDocument,
 				IdAttributeResult = IdAttributeResult,
-				IdAttributeSource = IdAttributeSource,
+				//IdAttributeSource = IdAttributeSource,
 				Level1 = Level1.ConvertToLevelItem(),
 				Level2 = Level2.ConvertToLevelItem(),
 				Level3 = Level3.ConvertToLevelItem(),

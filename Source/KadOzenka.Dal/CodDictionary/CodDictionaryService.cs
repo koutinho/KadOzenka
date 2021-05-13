@@ -333,6 +333,12 @@ namespace KadOzenka.Dal.CodDictionary
             return GetDictionaryValuesInternal(attributes, query);
         }
 
+        public List<CodDictionaryValue> GetDictionaryValuesByDictId(long codJobId)
+        {
+            var dict = CodDictionaryRepository.GetById(codJobId, null);
+            return GetDictionaryValues(dict.RegisterId);
+        }
+
         public List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true)
         {
             return RegisterCacheWrapper.GetRegisterAttributesCache()
