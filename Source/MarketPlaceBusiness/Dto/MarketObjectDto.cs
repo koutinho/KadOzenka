@@ -34,11 +34,6 @@ namespace MarketPlaceBusiness.Dto
 		public DateTime? ParserTime { get; set; }
 
 		/// <summary>
-		/// 10002900 Регион (REGION)
-		/// </summary>
-		public string Region { get; set; }
-
-		/// <summary>
 		/// 10003100 Адресный ориентир (ADDRESS)
 		/// </summary>
 		public string Address { get; set; }
@@ -151,11 +146,6 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public QualityClass QualityClass_Code { get; set; }
 
-		/// <summary>
-		/// 10007300 Расстояние до ближайшей станции метро (SUBWAY_SPACE)
-		/// </summary>
-		public decimal? SubwaySpace { get; set; }
-
 
 		/// <summary>
 		/// 10007700 Вид объекта недвижимости (PROPERTY_TYPETS_CIPJS)
@@ -203,13 +193,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10009003 Тип помещения (PLACEMENT_TYPE)
 		/// </summary>
 		public string PlacementType { get; set; }
-
-
-		/// <summary>
-		/// 10009004 Состояние (QUALITY)
-		/// </summary>
-		public string Quality { get; set; }
-
 
 		/// <summary>
 		/// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)

@@ -148,26 +148,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _region;
-        /// <summary>
-        /// 10002900 Регион (REGION)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002900)]
-        public string Region
-        {
-            get
-            {
-                CheckPropertyInited("Region");
-                return _region;
-            }
-            set
-            {
-                _region = value;
-                NotifyPropertyChanged("Region");
-            }
-        }
-
-
         private string _address;
         /// <summary>
         /// 10003100 Адресный ориентир (ADDRESS)
@@ -623,26 +603,6 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _subwayspace;
-        /// <summary>
-        /// 10007300 Расстояние до ближайшей станции метро (SUBWAY_SPACE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007300)]
-        public decimal? SubwaySpace
-        {
-            get
-            {
-                CheckPropertyInited("SubwaySpace");
-                return _subwayspace;
-            }
-            set
-            {
-                _subwayspace = value;
-                NotifyPropertyChanged("SubwaySpace");
-            }
-        }
-
-
         private string _propertytypescipjs;
         /// <summary>
         /// 10007700 Вид объекта недвижимости (PROPERTY_TYPETS_CIPJS)
@@ -814,26 +774,6 @@ namespace ObjectModel.Market
             {
                 _placementtype = value;
                 NotifyPropertyChanged("PlacementType");
-            }
-        }
-
-
-        private string _quality;
-        /// <summary>
-        /// 10009004 Состояние (QUALITY)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009004)]
-        public string Quality
-        {
-            get
-            {
-                CheckPropertyInited("Quality");
-                return _quality;
-            }
-            set
-            {
-                _quality = value;
-                NotifyPropertyChanged("Quality");
             }
         }
 

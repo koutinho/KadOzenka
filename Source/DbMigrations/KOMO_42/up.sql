@@ -174,3 +174,12 @@ ALTER TABLE market_core_object DROP COLUMN PROPERTY_PART_SIZE;
 
 delete from core_register_attribute where id = 10005300;
 ALTER TABLE market_core_object DROP COLUMN NEIGHBORHOOD;
+
+delete from core_register_attribute where id = 10007300;
+ALTER TABLE market_core_object DROP COLUMN SUBWAY_SPACE;
+
+delete from core_register_attribute where id = 10002900;
+ALTER TABLE market_core_object DROP COLUMN REGION;
+
+delete from core_register_attribute where id = 10009004;
+ALTER TABLE market_core_object DROP COLUMN QUALITY;
