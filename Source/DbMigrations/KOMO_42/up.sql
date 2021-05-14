@@ -202,3 +202,19 @@ ALTER TABLE market_core_object DROP COLUMN ENTRANCE_TYPE;
 
 delete from core_register_attribute where id = 10009003;
 ALTER TABLE market_core_object DROP COLUMN PLACEMENT_TYPE;
+
+delete from core_register_attribute where id = 10008100;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_DATE;
+
+delete from core_register_attribute where id = 10008400;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_ROOMS;
+
+delete from core_register_attribute where id = 10008800;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR;
+
+delete from core_register_attribute where id = 10008200;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_BARGAIN;
+
+delete from core_register_attribute where id = 10008900;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_STAGE;
+

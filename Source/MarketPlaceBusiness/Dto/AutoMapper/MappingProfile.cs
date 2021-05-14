@@ -32,11 +32,6 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.QualityClass_Code, SetPreCondition(y => y.QualityClass_Code))
 				.ForMember(m => m.PropertyTypesCIPJS, SetPreCondition(y => y.PropertyTypesCIPJS))
 				.ForMember(m => m.PropertyTypesCIPJS_Code, SetPreCondition(y => y.PropertyTypesCIPJS_Code))
-				.ForMember(m => m.PriceAfterCorrectionByDate, SetPreCondition(y => y.PriceAfterCorrectionByDate))
-				.ForMember(m => m.PriceAfterCorrectionByBargain, SetPreCondition(y => y.PriceAfterCorrectionByBargain))
-				.ForMember(m => m.PriceAfterCorrectionByRooms, SetPreCondition(y => y.PriceAfterCorrectionByRooms))
-				.ForMember(m => m.PriceAfterCorrectionForFirstFloor, SetPreCondition(y => y.PriceAfterCorrectionForFirstFloor))
-				.ForMember(m => m.PriceAfterCorrectionByStage, SetPreCondition(y => y.PriceAfterCorrectionByStage))
 				.ForMember(m => m.IsOperatingCostsIncluded, SetPreCondition(y => y.IsOperatingCostsIncluded));
 				//.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
 				//.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))
