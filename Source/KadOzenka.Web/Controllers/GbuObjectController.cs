@@ -236,9 +236,27 @@ namespace KadOzenka.Web.Controllers
             });
 		}
 
-		public List<LevelItem> GetCodJobParam(long codJobId)
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
+		public ActionResult GroupingObjectFinalize()
 		{
-			return _dictionaryService.GetSelectCodJobInfo(codJobId);
+			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				Value = x.Id,
+				Text = x.NameJob
+			}).AsEnumerable();
+
+			ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
+
+			return View(new GroupingObjectFinalize());
+		}
+
+		public List<LevelItem> GetCodJobParam(long? codJobId)
+		{
+			if (codJobId == 0 || codJobId == null)
+				return new List<LevelItem>();
+			return _dictionaryService.GetSelectCodJobInfo(codJobId.Value);
 		}
 		#endregion
 
