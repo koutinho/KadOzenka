@@ -1,6 +1,6 @@
 ﻿namespace MarketPlaceBusiness.Dto.Modeling
 {
-	public class MarketObjectPureOutSide
+	public class MarketObjectPure
 	{
 		public long Id { get; set; }
 		public string CadastralNumber { get; set; }

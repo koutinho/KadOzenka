@@ -14,7 +14,7 @@ namespace MarketPlaceBusiness
 	public class MarketObjectsForModelingService : IMarketObjectsForModelingService
 	{
 		//TODO KOMO-33 убрать long segment, сделать через enum
-        public List<MarketObjectPureOutSide> GetObjectsForFormation(bool isOks, long segment)
+        public List<MarketObjectPure> GetObjectsForFormation(bool isOks, long segment)
         {
 	        //TODO ждем выполнения CIPJSKO-307
             //var territoryCondition = ModelingService.GetConditionForTerritoryType(groupToMarketSegmentRelation.TerritoryType_Code);
@@ -48,7 +48,7 @@ namespace MarketPlaceBusiness
                     x.CadastralNumber,
                     x.PricePerMeter
                 })
-                .Select(x => new MarketObjectPureOutSide
+                .Select(x => new MarketObjectPure
                 {
                     Id = x.Max(y => y.Id),
                     CadastralNumber = x.Key.CadastralNumber,
