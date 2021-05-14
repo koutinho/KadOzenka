@@ -71,11 +71,6 @@ namespace MarketPlaceBusiness.Dto
 		public DealType DealType_Code { get; set; }
 
 		/// <summary>
-		/// 10003900 Количество комнат (ROOMS_COUNT)
-		/// </summary>
-		public long? RoomsCount { get; set; }
-
-		/// <summary>
 		/// 10004000 Долгота (LNG)
 		/// </summary>
 		public decimal? Lng { get; set; }
@@ -132,11 +127,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10005400 Кадастровый номер (CADASTRAL_NUMBER)
 		/// </summary>
 		public string CadastralNumber { get; set; }
-
-		/// <summary>
-		/// 10005500 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
-		/// </summary>
-		public string BuildingCadastralNumber { get; set; }
 
 		/// <summary>
 		/// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
@@ -222,12 +212,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007300 Расстояние до ближайшей станции метро (SUBWAY_SPACE)
 		/// </summary>
 		public decimal? SubwaySpace { get; set; }
-
-
-		/// <summary>
-		/// 10007400 Код региона (REGION_ID)
-		/// </summary>
-		public long? RegionId { get; set; }
 
 
 		/// <summary>

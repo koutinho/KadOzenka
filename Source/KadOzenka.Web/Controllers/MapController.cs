@@ -150,7 +150,7 @@ namespace KadOzenka.Web.Controllers
                         price = x.Price,
                         area = x.Area,
                         areaLand = x.AreaLand,
-                        roomsCount = x.RoomsCount,
+                        roomsCount =(int?) null,
                         link = string.Empty,
                         metro = x.Metro,
                         address = x.Address,

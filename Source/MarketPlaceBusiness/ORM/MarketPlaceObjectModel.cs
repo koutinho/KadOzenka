@@ -303,26 +303,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _roomscount;
-        /// <summary>
-        /// 10003900 Количество комнат (ROOMS_COUNT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003900)]
-        public long? RoomsCount
-        {
-            get
-            {
-                CheckPropertyInited("RoomsCount");
-                return _roomscount;
-            }
-            set
-            {
-                _roomscount = value;
-                NotifyPropertyChanged("RoomsCount");
-            }
-        }
-
-
         private decimal? _lng;
         /// <summary>
         /// 10004000 Долгота (LNG)
@@ -534,26 +514,6 @@ namespace ObjectModel.Market
             {
                 _cadastralnumber = value;
                 NotifyPropertyChanged("CadastralNumber");
-            }
-        }
-
-
-        private string _buildingcadastralnumber;
-        /// <summary>
-        /// 10005500 Кадастровый номер здания (BUILDING_CADASTRAL_NUMBER)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005500)]
-        public string BuildingCadastralNumber
-        {
-            get
-            {
-                CheckPropertyInited("BuildingCadastralNumber");
-                return _buildingcadastralnumber;
-            }
-            set
-            {
-                _buildingcadastralnumber = value;
-                NotifyPropertyChanged("BuildingCadastralNumber");
             }
         }
 
@@ -909,26 +869,6 @@ namespace ObjectModel.Market
             {
                 _subwayspace = value;
                 NotifyPropertyChanged("SubwaySpace");
-            }
-        }
-
-
-        private long? _regionid;
-        /// <summary>
-        /// 10007400 Код региона (REGION_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007400)]
-        public long? RegionId
-        {
-            get
-            {
-                CheckPropertyInited("RegionId");
-                return _regionid;
-            }
-            set
-            {
-                _regionid = value;
-                NotifyPropertyChanged("RegionId");
             }
         }
 

@@ -41,7 +41,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? Price { get; set; }
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
-		public string BuildingCadastralNumber { get; set; }
 		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
 		public decimal? AreaKitchen { get; set; }
@@ -82,7 +81,6 @@ namespace KadOzenka.Web.Models.MarketObject
 				Description = entity.Description,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
-				BuildingCadastralNumber = entity.BuildingCadastralNumber,
 				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
 				AreaKitchen = entity.AreaKitchen,
