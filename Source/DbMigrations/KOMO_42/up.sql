@@ -164,3 +164,13 @@ ALTER TABLE market_core_object DROP COLUMN AREA_KITCHEN;
 delete from core_register_attribute where id = 10005800;
 ALTER TABLE market_core_object DROP COLUMN KO_SUBGROUP;
 ALTER TABLE market_core_object DROP COLUMN KO_SUBGROUP_CODE;
+
+delete from core_register_attribute where id = 10006001;
+ALTER TABLE market_core_object DROP COLUMN EXCLUSION_STATUS;
+ALTER TABLE market_core_object DROP COLUMN EXCLUSION_STATUS_CODE;
+
+delete from core_register_attribute where id = 10007900;
+ALTER TABLE market_core_object DROP COLUMN PROPERTY_PART_SIZE;
+
+delete from core_register_attribute where id = 10005300;
+ALTER TABLE market_core_object DROP COLUMN NEIGHBORHOOD;

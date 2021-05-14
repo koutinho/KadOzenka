@@ -363,61 +363,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _neighborhood;
-        /// <summary>
-        /// 10005300 Район (NEIGHBORHOOD)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005300)]
-        public string Neighborhood
-        {
-            get
-            {
-                CheckPropertyInited("Neighborhood");
-                return _neighborhood;
-            }
-            set
-            {
-                _neighborhood = value;
-                NotifyPropertyChanged("Neighborhood");
-            }
-        }
-
-
-        private Districts _neighborhood_Code;
-        /// <summary>
-        /// 10005300 Район (справочный код) (NEIGHBORHOOD_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005300)]
-        public Districts Neighborhood_Code
-        {
-            get
-            {
-                CheckPropertyInited("Neighborhood_Code");
-                return this._neighborhood_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_neighborhood))
-                    {
-                         _neighborhood = descr;
-                    }
-                }
-                else
-                {
-                     _neighborhood = descr;
-                }
-
-                this._neighborhood_Code = value;
-                NotifyPropertyChanged("Neighborhood");
-                NotifyPropertyChanged("Neighborhood_Code");
-            }
-        }
-
-
         private string _cadastralnumber;
         /// <summary>
         /// 10005400 Кадастровый номер (CADASTRAL_NUMBER)
@@ -489,61 +434,6 @@ namespace ObjectModel.Market
                 this._processtype_Code = value;
                 NotifyPropertyChanged("ProcessType");
                 NotifyPropertyChanged("ProcessType_Code");
-            }
-        }
-
-
-        private string _exclusionstatus;
-        /// <summary>
-        /// 10006001 Причина исключения (EXCLUSION_STATUS)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006001)]
-        public string ExclusionStatus
-        {
-            get
-            {
-                CheckPropertyInited("ExclusionStatus");
-                return _exclusionstatus;
-            }
-            set
-            {
-                _exclusionstatus = value;
-                NotifyPropertyChanged("ExclusionStatus");
-            }
-        }
-
-
-        private ExclusionStatus _exclusionstatus_Code;
-        /// <summary>
-        /// 10006001 Причина исключения (справочный код) (EXCLUSION_STATUS_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006001)]
-        public ExclusionStatus ExclusionStatus_Code
-        {
-            get
-            {
-                CheckPropertyInited("ExclusionStatus_Code");
-                return this._exclusionstatus_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_exclusionstatus))
-                    {
-                         _exclusionstatus = descr;
-                    }
-                }
-                else
-                {
-                     _exclusionstatus = descr;
-                }
-
-                this._exclusionstatus_Code = value;
-                NotifyPropertyChanged("ExclusionStatus");
-                NotifyPropertyChanged("ExclusionStatus_Code");
             }
         }
 
@@ -804,26 +694,6 @@ namespace ObjectModel.Market
                 this._propertytypescipjs_Code = value;
                 NotifyPropertyChanged("PropertyTypesCIPJS");
                 NotifyPropertyChanged("PropertyTypesCIPJS_Code");
-            }
-        }
-
-
-        private string _propertypartsize;
-        /// <summary>
-        /// 10007900 Размер доли (PROPERTY_PART_SIZE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007900)]
-        public string PropertyPartSize
-        {
-            get
-            {
-                CheckPropertyInited("PropertyPartSize");
-                return _propertypartsize;
-            }
-            set
-            {
-                _propertypartsize = value;
-                NotifyPropertyChanged("PropertyPartSize");
             }
         }
 

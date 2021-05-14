@@ -89,7 +89,7 @@ namespace KadOzenka.Web.Controllers
             var query = MarketObjectService.GetBaseQuery();
 
             var allDistricts = new List<OMReferenceItem>();
-            List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == Consts.NeighborhoodAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
+            List<OMReferenceItem> allRegions = new List<OMReferenceItem>();
             List<OMReferenceItem> allZones = new List<OMReferenceItem>();
             List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
 
@@ -97,10 +97,10 @@ namespace KadOzenka.Web.Controllers
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code }).Execute().ToList();
+            var DistrictsData = query.Select(x => new { x.PricePerMeter }).Execute().ToList();
 
             var districtList = new List<IGrouping<string, OMCoreObject>>();
-            var regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
+            var regionList = new List<IGrouping<string, OMCoreObject>>();
             var zoneList = new List<IGrouping<string, OMCoreObject>>();
             var quartalList = new List<IGrouping<string, OMCoreObject>>();
 

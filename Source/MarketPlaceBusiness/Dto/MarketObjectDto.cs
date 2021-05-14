@@ -90,18 +90,6 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public long? BuildingYear { get; set; }
 
-
-		/// <summary>
-		/// 10005300 Район (NEIGHBORHOOD)
-		/// </summary>
-		public string Neighborhood { get; set; }
-
-
-		/// <summary>
-		/// 10005300 Район (справочный код) (NEIGHBORHOOD_CODE)
-		/// </summary>
-		public Districts Neighborhood_Code { get; set; }
-
 		/// <summary>
 		/// 10005400 Кадастровый номер (CADASTRAL_NUMBER)
 		/// </summary>
@@ -121,18 +109,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10006000 Статус (справочный код) (PROCESS_TYPE_CODE)
 		/// </summary>
 		public ProcessStep ProcessType_Code { get; set; }
-
-		/// <summary>
-		/// 10006001 Причина исключения (EXCLUSION_STATUS)
-		/// </summary>
-		public string ExclusionStatus { get; set; }
-
-
-		/// <summary>
-		/// 10006001 Причина исключения (справочный код) (EXCLUSION_STATUS_CODE)
-		/// </summary>
-		public ExclusionStatus ExclusionStatus_Code { get; set; }
-
 
 		/// <summary>
 		/// 10006500 Телефонный номер (PHONE_NUMBER)
@@ -191,12 +167,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007700 Вид объекта недвижимости (справочный код) (PROPERTY_TYPETS_CIPJS_CODE)
 		/// </summary>
 		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
-
-
-		/// <summary>
-		/// 10007900 Размер доли (PROPERTY_PART_SIZE)
-		/// </summary>
-		public string PropertyPartSize { get; set; }
 
 
 		/// <summary>
