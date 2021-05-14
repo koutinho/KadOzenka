@@ -64,7 +64,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string EntranceType { get; set; }
 		public QualityClass? QualityClassCode { get; set; }
 		public string Renovation { get; set; }
-		public string BuildingLine { get; set; }
+		//public string BuildingLine { get; set; }
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -102,7 +102,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 EntranceType = entity.EntranceType,
                 QualityClassCode = entity.QualityClass_Code,
                 Renovation = entity.Renovation,
-				BuildingLine = entity.BuildingLine
+                //BuildingLine = entity.BuildingLine
 			};
 			if (priceHistory?.Count > 0)
 			{

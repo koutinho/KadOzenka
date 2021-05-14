@@ -57,13 +57,11 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.PlacementType, SetPreCondition(y => y.PlacementType))
 				.ForMember(m => m.Quality, SetPreCondition(y => y.Quality))
 				.ForMember(m => m.IsOperatingCostsIncluded, SetPreCondition(y => y.IsOperatingCostsIncluded))
-				.ForMember(m => m.IsUtilitiesIncluded, SetPreCondition(y => y.IsUtilitiesIncluded))
 				.ForMember(m => m.Vat, SetPreCondition(y => y.Vat))
 				.ForMember(m => m.Vat_Code, SetPreCondition(y => y.Vat_Code))
 				.ForMember(m => m.EntranceType, SetPreCondition(y => y.EntranceType))
-				.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation))
-				.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))
-				.ForMember(m => m.CCT, SetPreCondition(y => y.CCT));
+				.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
+				//.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))
 		}
 
 

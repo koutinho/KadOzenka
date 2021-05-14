@@ -281,12 +281,6 @@ namespace MarketPlaceBusiness.Dto
 
 
 		/// <summary>
-		/// 10009006 Коммунальные платежи включены (IS_UTILITIES_INCLUDED)
-		/// </summary>
-		public bool? IsUtilitiesIncluded { get; set; }
-
-
-		/// <summary>
 		/// 10009007 НДС (VAT)
 		/// </summary>
 		public string Vat { get; set; }
@@ -314,11 +308,5 @@ namespace MarketPlaceBusiness.Dto
 		/// 10009010 Линия застройки (BUILDING_LINE)
 		/// </summary>
 		public string BuildingLine { get; set; }
-
-
-		/// <summary>
-		/// 10009011 Коэффициент ценности территории (КЦТ) (CCT)
-		/// </summary>
-		public decimal? CCT { get; set; }
-	}
+    }
 }

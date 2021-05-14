@@ -1108,26 +1108,6 @@ namespace ObjectModel.Market
         }
 
 
-        private bool? _isutilitiesincluded;
-        /// <summary>
-        /// 10009006 Коммунальные платежи включены (IS_UTILITIES_INCLUDED)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009006)]
-        public bool? IsUtilitiesIncluded
-        {
-            get
-            {
-                CheckPropertyInited("IsUtilitiesIncluded");
-                return _isutilitiesincluded;
-            }
-            set
-            {
-                _isutilitiesincluded = value;
-                NotifyPropertyChanged("IsUtilitiesIncluded");
-            }
-        }
-
-
         private string _vat;
         /// <summary>
         /// 10009007 НДС (VAT)
@@ -1219,46 +1199,6 @@ namespace ObjectModel.Market
             {
                 _renovation = value;
                 NotifyPropertyChanged("Renovation");
-            }
-        }
-
-
-        private string _buildingline;
-        /// <summary>
-        /// 10009010 Линия застройки (BUILDING_LINE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009010)]
-        public string BuildingLine
-        {
-            get
-            {
-                CheckPropertyInited("BuildingLine");
-                return _buildingline;
-            }
-            set
-            {
-                _buildingline = value;
-                NotifyPropertyChanged("BuildingLine");
-            }
-        }
-
-
-        private decimal? _cct;
-        /// <summary>
-        /// 10009011 Коэффициент ценности территории (КЦТ) (CCT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009011)]
-        public decimal? CCT
-        {
-            get
-            {
-                CheckPropertyInited("CCT");
-                return _cct;
-            }
-            set
-            {
-                _cct = value;
-                NotifyPropertyChanged("CCT");
             }
         }
 

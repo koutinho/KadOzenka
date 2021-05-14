@@ -167,7 +167,7 @@ namespace KadOzenka.Web.Controllers
                         qualityClassCode = x.QualityClass_Code,
                         qualityClass = x.QualityClass,
                         renovation = x.Renovation,
-                        buildingLine = x.BuildingLine
+                        buildingLine = string.Empty
                     });
                 });
             }
@@ -342,7 +342,8 @@ namespace KadOzenka.Web.Controllers
 	            qualityClassCode = marketObjectDto.QualityClass_Code,
 	            qualityClass = marketObjectDto.QualityClass,
 	            renovation = marketObjectDto.Renovation,
-	            buildingLine = marketObjectDto.BuildingLine,
+                //TODO будет справочник
+	            buildingLine = string.Empty,
 	            floorNumber = marketObjectDto.FloorNumber,
 	            floorCount = marketObjectDto.FloorsCount
             };

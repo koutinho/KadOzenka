@@ -164,12 +164,13 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" id="Renovation" value="@Model.Renovation" />
                         </div>
-                        <div class="col-sm-2">
+                        @* <div class="col-sm-2">
+                            TODO KOMO-1: сделать через справочник
                             <label class="control-label">Линия застройки</label>
                         </div>
                         <div class="col-sm-2">
                             <input class="k-textbox" id="BuildingLine" value="@Model.BuildingLine" />
-                        </div>
+                        </div>*@
                     </div>
                 </div>
             </div>
@@ -475,7 +476,7 @@
             "@Model.EntranceType" != $('#EntranceType').val() ||
             "@((long)Model.QualityClassCode.GetValueOrDefault())" != $('#QualityClassCode').data("kendoDropDownList").value() ||
             "@Model.Renovation" != $('#Renovation').val() ||
-            "@Model.BuildingLine" != $('#BuildingLine').val() ||
+            @*"@Model.BuildingLine" != $('#BuildingLine').val() ||*@
             "@Model.FloorNumber.ToString()" != $('#FloorNumber').val()) {
             document.getElementById("saveBtn").classList.remove("blocked");
             document.getElementById("cancelBtn").classList.remove("blocked");

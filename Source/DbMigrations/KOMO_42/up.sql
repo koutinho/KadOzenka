@@ -91,5 +91,15 @@ ALTER TABLE market_core_object DROP COLUMN REGION_ID;
 delete from core_register_attribute where id = 10003900;
 ALTER TABLE market_core_object DROP COLUMN ROOMS_COUNT;
 
+delete from core_register_attribute where id = 10009006;
+ALTER TABLE market_core_object DROP COLUMN IS_UTILITIES_INCLUDED;
+
+delete from core_register_attribute where id = 10009011;
+ALTER TABLE market_core_object DROP COLUMN CCT;
+
+delete from core_register_attribute where id = 10009010;
+ALTER TABLE market_core_object DROP COLUMN BUILDING_LINE;
+
+
 
 

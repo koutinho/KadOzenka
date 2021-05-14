@@ -27,7 +27,7 @@ namespace MarketPlaceBusiness
 			obj.EntranceType = dto.EntranceType;
 			obj.QualityClass_Code = dto.QualityClass_Code;
 			obj.Renovation = dto.Renovation;
-			obj.BuildingLine = dto.BuildingLine;
+			//obj.BuildingLine = dto.BuildingLine;
 			obj.FloorNumber = dto.FloorNumber;
 
 			obj.Save();
