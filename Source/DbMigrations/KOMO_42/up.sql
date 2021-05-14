@@ -194,3 +194,11 @@ ALTER TABLE market_core_object DROP COLUMN PROCESS_TYPE_CODE;
 delete from core_register_attribute where id = 10003400;
 ALTER TABLE market_core_object DROP COLUMN DESCRIPTION;
 
+delete from core_register_attribute where id = 10006500;
+ALTER TABLE market_core_object DROP COLUMN PHONE_NUMBER;
+
+delete from core_register_attribute where id = 10009008;
+ALTER TABLE market_core_object DROP COLUMN ENTRANCE_TYPE;
+
+delete from core_register_attribute where id = 10009003;
+ALTER TABLE market_core_object DROP COLUMN PLACEMENT_TYPE;

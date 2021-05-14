@@ -116,12 +116,6 @@
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            <label class="control-label">Тип входа</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" id="EntranceType" value="@Model.EntranceType" />
-                        </div>
-                        <div class="col-sm-2">
                             <label class="control-label">Класс качества</label>
                         </div>
                         <div class="col-sm-2">
@@ -395,7 +389,6 @@
     document.getElementById("latTextBox").addEventListener("input", function () { dataChanged(); });
     jQuery("#ObjectType").change(function () { dataChanged(); });
     jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
-    $('#EntranceType').change(function () { dataChanged(); });
     $('#QualityClassCode').change(function () { dataChanged(); });
     $('#Renovation').change(function () { dataChanged(); });
     $('#BuildingLine').change(function () { dataChanged(); });
@@ -408,7 +401,6 @@
             "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
             "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
             "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value() ||
-            "@Model.EntranceType" != $('#EntranceType').val() ||
             "@((long)Model.QualityClassCode.GetValueOrDefault())" != $('#QualityClassCode').data("kendoDropDownList").value() ||
             @*"@Model.Renovation" != $('#Renovation').val() ||*@
             @*"@Model.BuildingLine" != $('#BuildingLine').val() ||*@
@@ -437,7 +429,6 @@
                 lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
                 propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
                 marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value),
-                entranceType: $('#EntranceType').val(),
                 qualityClassCode: $('#QualityClassCode').data("kendoDropDownList").value(),
                 renovation: $('#Renovation').val(),
                 buildingLine: $('#BuildingLine').val(),

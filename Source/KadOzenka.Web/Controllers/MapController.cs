@@ -163,7 +163,7 @@ namespace KadOzenka.Web.Controllers
                         lastUpdateDate = (DateTime?)null,
                         lng = x.Lng,
                         lat = x.Lat,
-                        entranceType = x.EntranceType,
+                        entranceType = string.Empty,
                         qualityClassCode = x.QualityClass_Code,
                         qualityClass = x.QualityClass,
                         renovation = string.Empty,
@@ -338,7 +338,7 @@ namespace KadOzenka.Web.Controllers
 	            id = marketObjectDto.Id,
 	            lng = marketObjectDto.Lng,
 	            lat = marketObjectDto.Lat,
-	            entranceType = marketObjectDto.EntranceType,
+	            entranceType = string.Empty,
 	            qualityClassCode = marketObjectDto.QualityClass_Code,
 	            qualityClass = marketObjectDto.QualityClass,
 	            //TODO будет справочник

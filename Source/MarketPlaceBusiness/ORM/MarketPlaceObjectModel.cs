@@ -343,26 +343,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _phonenumber;
-        /// <summary>
-        /// 10006500 Телефонный номер (PHONE_NUMBER)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006500)]
-        public string PhoneNumber
-        {
-            get
-            {
-                CheckPropertyInited("PhoneNumber");
-                return _phonenumber;
-            }
-            set
-            {
-                _phonenumber = value;
-                NotifyPropertyChanged("PhoneNumber");
-            }
-        }
-
-
         private string _propertymarketsegment;
         /// <summary>
         /// 10007000 Сегмент рынка (PROPERTY_MARKET_SEGMENT)
@@ -683,26 +663,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _placementtype;
-        /// <summary>
-        /// 10009003 Тип помещения (PLACEMENT_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009003)]
-        public string PlacementType
-        {
-            get
-            {
-                CheckPropertyInited("PlacementType");
-                return _placementtype;
-            }
-            set
-            {
-                _placementtype = value;
-                NotifyPropertyChanged("PlacementType");
-            }
-        }
-
-
         private bool? _isoperatingcostsincluded;
         /// <summary>
         /// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
@@ -719,26 +679,6 @@ namespace ObjectModel.Market
             {
                 _isoperatingcostsincluded = value;
                 NotifyPropertyChanged("IsOperatingCostsIncluded");
-            }
-        }
-
-
-        private string _entrancetype;
-        /// <summary>
-        /// 10009008 Тип входа (ENTRANCE_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009008)]
-        public string EntranceType
-        {
-            get
-            {
-                CheckPropertyInited("EntranceType");
-                return _entrancetype;
-            }
-            set
-            {
-                _entrancetype = value;
-                NotifyPropertyChanged("EntranceType");
             }
         }
 

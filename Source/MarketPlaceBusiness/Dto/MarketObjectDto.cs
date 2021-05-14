@@ -90,12 +90,6 @@ namespace MarketPlaceBusiness.Dto
 		public string CadastralQuartal { get; set; }
 
 		/// <summary>
-		/// 10006500 Телефонный номер (PHONE_NUMBER)
-		/// </summary>
-		public string PhoneNumber { get; set; }
-
-
-		/// <summary>
 		/// 10007000 Сегмент рынка (PROPERTY_MARKET_SEGMENT)
 		/// </summary>
 		public string PropertyMarketSegment { get; set; }
@@ -172,22 +166,10 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public decimal? PriceAfterCorrectionByStage { get; set; }
 
-
-		/// <summary>
-		/// 10009003 Тип помещения (PLACEMENT_TYPE)
-		/// </summary>
-		public string PlacementType { get; set; }
-
 		/// <summary>
 		/// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
 		/// </summary>
 		public bool? IsOperatingCostsIncluded { get; set; }
-
-
-		/// <summary>
-		/// 10009008 Тип входа (ENTRANCE_TYPE)
-		/// </summary>
-		public string EntranceType { get; set; }
 
 
 		///// <summary>

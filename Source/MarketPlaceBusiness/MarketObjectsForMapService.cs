@@ -21,7 +21,6 @@ namespace MarketPlaceBusiness
 			obj.Lat = dto.Lat;
 			obj.PropertyTypesCIPJS_Code = dto.PropertyTypesCIPJS_Code;
 			obj.PropertyMarketSegment_Code = dto.PropertyMarketSegment_Code;
-			obj.EntranceType = dto.EntranceType;
 			obj.QualityClass_Code = dto.QualityClass_Code;
 			//obj.Renovation = dto.Renovation;
 			//obj.BuildingLine = dto.BuildingLine;
