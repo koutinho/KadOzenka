@@ -28,6 +28,51 @@ delete from core_layout_details where id in (1002310, 1002267, 1002235, 1002348,
                                             1002254, 1002269, 1002273, 1002288, 1002394, 1002395, 1002676, 1002677, 1002673, 1002674, 1002675);
 
 
+--обновление виртуальных колонок
+update core_register_attribute set qscolumn = '<?xml version="1.0" encoding="utf-16"?>
+<QSColumn xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="QSColumnIf">
+  <Alias>Колонка_1</Alias>
+  <Blocks>
+    <QSColumnIfBlock>
+      <Condition xsi:type="QSConditionSimple">
+        <ConditionType>IsNotNull</ConditionType>
+        <LeftOperand xsi:type="QSColumnSimple">
+          <Alias>Колонка_1</Alias>
+          <AttributeID>10004300</AttributeID>
+          <Type>Value</Type>
+          <Level>0</Level>
+        </LeftOperand>
+        <LeftOperandLevel>0</LeftOperandLevel>
+        <RightOperandLevel>0</RightOperandLevel>
+      </Condition>
+      <Result xsi:type="QSColumnFunction">
+        <Alias>Колонка_2</Alias>
+        <FunctionType>Divide</FunctionType>
+        <Operands>
+          <QSColumn xsi:type="QSColumnSimple">
+            <Alias>Колонка_2</Alias>
+            <AttributeID>10002700</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </QSColumn>
+          <QSColumn xsi:type="QSColumnSimple">
+            <Alias>Колонка_4</Alias>
+            <AttributeID>10004300</AttributeID>
+            <Type>Value</Type>
+            <Level>0</Level>
+          </QSColumn>
+        </Operands>
+      </Result>
+    </QSColumnIfBlock>
+    <QSColumnIfBlock>
+      <Result xsi:type="QSColumnConstant">
+        <Alias>Колонка_6</Alias>
+      </Result>
+    </QSColumnIfBlock>
+  </Blocks>
+</QSColumn>'
+where id = 10002701;
+
 
 --колонки
 delete from core_register_attribute where id = 10007500;
@@ -110,5 +155,12 @@ delete from core_register_attribute where id = 10009007;
 ALTER TABLE market_core_object DROP COLUMN VAT;
 ALTER TABLE market_core_object DROP COLUMN VAT_CODE;
 
+delete from core_register_attribute where id = 10004600;
+ALTER TABLE market_core_object DROP COLUMN AREA_LAND;
 
+delete from core_register_attribute where id = 10004400;
+ALTER TABLE market_core_object DROP COLUMN AREA_KITCHEN;
 
+delete from core_register_attribute where id = 10005800;
+ALTER TABLE market_core_object DROP COLUMN KO_SUBGROUP;
+ALTER TABLE market_core_object DROP COLUMN KO_SUBGROUP_CODE;

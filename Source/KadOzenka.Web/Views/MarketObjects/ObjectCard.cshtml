@@ -272,36 +272,10 @@
                             @Html.KendoNumericTextBoxFor(x => x.FloorNumber, precision:0, isReadonly:false, id: "FloorNumber")
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Площадь кухни</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.AreaKitchen" />
-                        </div>
-                    </div>
                 </div>
             </div>
         </li>
-        <li id="Section_Group" data-expand>
-            <span>Группировка</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Подгруппа</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <textarea class="k-textbox" readonly rows="2" style="resize:none; padding: 5px">@Model.Subgroup</textarea>
-                        </div>
-                    </div>
-                    <div id="gu_list">
-                    </div>
-                </div>
-            </div>
-        </li>
-        @if (Model.Latitude != null && Model.Longitude != null)
+    @if (Model.Latitude != null && Model.Longitude != null)
         {
             <li id="Section_Map" data-expand>
                 <span>На карте</span>

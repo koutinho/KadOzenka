@@ -363,46 +363,6 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _areakitchen;
-        /// <summary>
-        /// 10004400 Площадь кухни (AREA_KITCHEN)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004400)]
-        public decimal? AreaKitchen
-        {
-            get
-            {
-                CheckPropertyInited("AreaKitchen");
-                return _areakitchen;
-            }
-            set
-            {
-                _areakitchen = value;
-                NotifyPropertyChanged("AreaKitchen");
-            }
-        }
-
-
-        private decimal? _arealand;
-        /// <summary>
-        /// 10004600 Площадь ЗУ (AREA_LAND)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004600)]
-        public decimal? AreaLand
-        {
-            get
-            {
-                CheckPropertyInited("AreaLand");
-                return _arealand;
-            }
-            set
-            {
-                _arealand = value;
-                NotifyPropertyChanged("AreaLand");
-            }
-        }
-
-
         private string _neighborhood;
         /// <summary>
         /// 10005300 Район (NEIGHBORHOOD)
@@ -474,46 +434,6 @@ namespace ObjectModel.Market
             {
                 _cadastralnumber = value;
                 NotifyPropertyChanged("CadastralNumber");
-            }
-        }
-
-
-        private string _subgroup;
-        /// <summary>
-        /// 10005800 Подгруппа сегмента рынка (KO_SUBGROUP)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005800)]
-        public string Subgroup
-        {
-            get
-            {
-                CheckPropertyInited("Subgroup");
-                return _subgroup;
-            }
-            set
-            {
-                _subgroup = value;
-                NotifyPropertyChanged("Subgroup");
-            }
-        }
-
-
-        private long? _subgroup_Code;
-        /// <summary>
-        /// 10005800 Подгруппа сегмента рынка (справочный код) (KO_SUBGROUP_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005800)]
-        public long? Subgroup_Code
-        {
-            get
-            {
-                CheckPropertyInited("Subgroup_Code");
-                return _subgroup_Code;
-            }
-            set
-            {
-                _subgroup_Code = value;
-                NotifyPropertyChanged("Subgroup_Code");
             }
         }
 

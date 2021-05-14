@@ -42,8 +42,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string CadastralNumber { get; set; }
 		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
-		public decimal? AreaKitchen { get; set; }
-		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
 		public string Status { get; set; }
@@ -75,14 +73,12 @@ namespace KadOzenka.Web.Models.MarketObject
                 DealTypeCode = entity.DealType_Code,
                 ParserTime = entity.ParserTime,
                 Address = entity.Address,
-                Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
+                Area = entity.Area,
 				Description = entity.Description,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
 				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
-				AreaKitchen = entity.AreaKitchen,
-				Subgroup = entity.Subgroup,
 				Status = entity.ProcessType,
 				StatusCode = entity.ProcessType_Code,
 				Latitude = entity.Lat,
@@ -140,11 +136,8 @@ namespace KadOzenka.Web.Models.MarketObject
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
 			decimal? result;
-			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue &&
-			    entity.AreaLand.HasValue && entity.AreaLand != 0)
-				result = entity.Price / (entity.AreaLand * 100);
-
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+			
+			if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
 				result = entity.Price / entity.Area;
 
 			else

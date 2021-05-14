@@ -86,17 +86,6 @@ namespace MarketPlaceBusiness.Dto
 		public decimal? Area { get; set; }
 
 		/// <summary>
-		/// 10004400 Площадь кухни (AREA_KITCHEN)
-		/// </summary>
-		public decimal? AreaKitchen { get; set; }
-
-		/// <summary>
-		/// 10004600 Площадь ЗУ (AREA_LAND)
-		/// </summary>
-		public decimal? AreaLand { get; set; }
-
-
-		/// <summary>
 		/// 10004700 Год постройки (BUILDING_YEAR)
 		/// </summary>
 		public long? BuildingYear { get; set; }
@@ -122,18 +111,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
 		/// </summary>
 		public string CadastralQuartal { get; set; }
-
-
-		/// <summary>
-		/// 10005800 Подгруппа сегмента рынка (KO_SUBGROUP)
-		/// </summary>
-		public string Subgroup { get; set; }
-
-
-		/// <summary>
-		/// 10005800 Подгруппа сегмента рынка (справочный код) (KO_SUBGROUP_CODE)
-		/// </summary>
-		public long? Subgroup_Code { get; set; }
 
 		/// <summary>
 		/// 10006000 Статус (PROCESS_TYPE)
