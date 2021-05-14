@@ -152,7 +152,7 @@ namespace KadOzenka.Web.Controllers
                         areaLand = x.AreaLand,
                         roomsCount =(int?) null,
                         link = string.Empty,
-                        metro = x.Metro,
+                        metro = string.Empty,
                         address = x.Address,
                         images = string.Empty,
                         id = x.Id,
@@ -413,11 +413,6 @@ namespace KadOzenka.Web.Controllers
 					var filter = filters.First(f => f.Id == Consts.PriceAttributeId);
 					if (filter.From.HasValue) query.And(x => x.Price >= filter.From.Value);
 					if (filter.To.HasValue) query.And(x => x.Price <= filter.To.Value);
-				}
-				if (filters.Any(f => f.Id == Consts.Metrottribute.Id))
-				{
-					var filter = filters.First(f => f.Id == Consts.Metrottribute.Id);
-					query.And(x => x.Metro.Contains(filter.ValueStringCasted));
 				}
 			}
 		}

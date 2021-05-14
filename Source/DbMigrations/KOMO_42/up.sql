@@ -100,6 +100,15 @@ ALTER TABLE market_core_object DROP COLUMN CCT;
 delete from core_register_attribute where id = 10009010;
 ALTER TABLE market_core_object DROP COLUMN BUILDING_LINE;
 
+delete from core_register_attribute where id = 10003200;
+ALTER TABLE market_core_object DROP COLUMN METRO;
+
+delete from core_register_attribute where id = 10005101;
+ALTER TABLE market_core_object DROP COLUMN CUSTOM_ZONE;
+
+delete from core_register_attribute where id = 10009007;
+ALTER TABLE market_core_object DROP COLUMN VAT;
+ALTER TABLE market_core_object DROP COLUMN VAT_CODE;
 
 
 

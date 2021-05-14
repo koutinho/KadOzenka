@@ -33,6 +33,5 @@ namespace MarketPlaceBusiness.Common
 		public static readonly RegisterAttribute ProcessTypeCodeAttribute = OMCoreObject.GetAttributeData(x => x.ProcessType_Code);
 		public static readonly RegisterAttribute QualityClassCodeAttribute = OMCoreObject.GetAttributeData(x => x.QualityClass_Code);
 		public static readonly RegisterAttribute PriceAttribute = OMCoreObject.GetAttributeData(x => x.Price);
-		public static readonly RegisterAttribute Metrottribute = OMCoreObject.GetAttributeData(x => x.Metro);
 	}
 }

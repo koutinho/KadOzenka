@@ -188,26 +188,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _metro;
-        /// <summary>
-        /// 10003200 Наименование метро (METRO)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003200)]
-        public string Metro
-        {
-            get
-            {
-                CheckPropertyInited("Metro");
-                return _metro;
-            }
-            set
-            {
-                _metro = value;
-                NotifyPropertyChanged("Metro");
-            }
-        }
-
-
         private string _description;
         /// <summary>
         /// 10003400 Текст объявления (DESCRIPTION)
@@ -419,26 +399,6 @@ namespace ObjectModel.Market
             {
                 _arealand = value;
                 NotifyPropertyChanged("AreaLand");
-            }
-        }
-
-
-        private string _customzone;
-        /// <summary>
-        /// 10005101 Настраиваемая зона (CUSTOM_ZONE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10005101)]
-        public string CustomZone
-        {
-            get
-            {
-                CheckPropertyInited("CustomZone");
-                return _customzone;
-            }
-            set
-            {
-                _customzone = value;
-                NotifyPropertyChanged("CustomZone");
             }
         }
 
@@ -1104,61 +1064,6 @@ namespace ObjectModel.Market
             {
                 _isoperatingcostsincluded = value;
                 NotifyPropertyChanged("IsOperatingCostsIncluded");
-            }
-        }
-
-
-        private string _vat;
-        /// <summary>
-        /// 10009007 НДС (VAT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009007)]
-        public string Vat
-        {
-            get
-            {
-                CheckPropertyInited("Vat");
-                return _vat;
-            }
-            set
-            {
-                _vat = value;
-                NotifyPropertyChanged("Vat");
-            }
-        }
-
-
-        private VatType _vat_Code;
-        /// <summary>
-        /// 10009007 НДС (справочный код) (VAT_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009007)]
-        public VatType Vat_Code
-        {
-            get
-            {
-                CheckPropertyInited("Vat_Code");
-                return this._vat_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_vat))
-                    {
-                         _vat = descr;
-                    }
-                }
-                else
-                {
-                     _vat = descr;
-                }
-
-                this._vat_Code = value;
-                NotifyPropertyChanged("Vat");
-                NotifyPropertyChanged("Vat_Code");
             }
         }
 

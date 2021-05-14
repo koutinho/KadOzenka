@@ -31,7 +31,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
-		public string Metro { get; set; }
 		[DisplayName("Площадь")]
 		public decimal? Area { get; set; }
 		[DisplayName("Площадь")]
@@ -76,8 +75,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 DealTypeCode = entity.DealType_Code,
                 ParserTime = entity.ParserTime,
                 Address = entity.Address,
-				Metro = entity.Metro,
-				Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
+                Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
 				Description = entity.Description,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,

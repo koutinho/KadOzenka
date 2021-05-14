@@ -166,20 +166,6 @@ namespace KadOzenka.Web.Controllers
 					};
 					subFilters.Add(filterModel.ConvertToString());
 				}
-				if (!string.IsNullOrEmpty(model.Metro))
-				{
-					var metroType = Consts.Metrottribute;
-
-					var filterModel = new FilterModel
-					{
-						TypeControl = "value",
-						Type = "STRING",
-						Text = $"{metroType.Name}: Содержит {model.Metro} ",
-						Value = model.Metro,
-						Id = metroType.Id,
-					};
-					subFilters.Add(filterModel.ConvertToString());
-				}
 
 				return "[" + string.Join(",", subFilters) + "]";
 			}

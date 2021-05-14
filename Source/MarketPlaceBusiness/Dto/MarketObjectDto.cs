@@ -44,11 +44,6 @@ namespace MarketPlaceBusiness.Dto
 		public string Address { get; set; }
 
 		/// <summary>
-		/// 10003200 Наименование метро (METRO)
-		/// </summary>
-		public string Metro { get; set; }
-
-		/// <summary>
 		/// 10003400 Текст объявления (DESCRIPTION)
 		/// </summary>
 		public string Description { get; set; }
@@ -106,11 +101,6 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public long? BuildingYear { get; set; }
 
-
-		/// <summary>
-		/// 10005101 Настраиваемая зона (CUSTOM_ZONE)
-		/// </summary>
-		public string CustomZone { get; set; }
 
 		/// <summary>
 		/// 10005300 Район (NEIGHBORHOOD)
@@ -278,18 +268,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
 		/// </summary>
 		public bool? IsOperatingCostsIncluded { get; set; }
-
-
-		/// <summary>
-		/// 10009007 НДС (VAT)
-		/// </summary>
-		public string Vat { get; set; }
-
-
-		/// <summary>
-		/// 10009007 НДС (справочный код) (VAT_CODE)
-		/// </summary>
-		public VatType Vat_Code { get; set; }
 
 
 		/// <summary>
