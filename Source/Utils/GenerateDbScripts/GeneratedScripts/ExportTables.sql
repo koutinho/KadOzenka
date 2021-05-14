@@ -67919,372 +67919,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_coefficient_for_rooms_correction')) then
-		execute 'create table market_coefficient_for_rooms_correction ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'id')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'building_cadastral_number')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "building_cadastral_number" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'changing_date')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'one_room_coefficient')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "one_room_coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'three_rooms_coefficient')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "three_rooms_coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'market_segment')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "market_segment" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'market_segment_code')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficient_for_rooms_correction', 'is_excluded')) then
-        execute 'alter table market_coefficient_for_rooms_correction add "is_excluded" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_111_q_pk')) then
-    execute 'alter table market_coefficient_for_rooms_correction add constraint reg_111_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('correction_by_rooms_history_index')) then
-	execute 'CREATE UNIQUE INDEX correction_by_rooms_history_index on market_coefficient_for_rooms_correction (building_cadastral_number, changing_date, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION')) then
-		execute 'create table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'id')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'building_cadastral_number')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "building_cadastral_number" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'changing_date')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'one_room_coefficient')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "one_room_coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'three_rooms_coefficient')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "three_rooms_coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'market_segment')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "market_segment" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'market_segment_code')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION', 'is_excluded')) then
-        execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add "is_excluded" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_111_q_pk')) then
-    execute 'alter table MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION add constraint reg_111_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('correction_by_rooms_history_index')) then
-	execute 'CREATE UNIQUE INDEX correction_by_rooms_history_index on MARKET_COEFFICIENT_FOR_ROOMS_CORRECTION (building_cadastral_number, changing_date, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_coefficients_for_first_floor_corr')) then
-		execute 'create table market_coefficients_for_first_floor_corr ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'id')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'stats_date')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "stats_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'building_cadastral_number')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "building_cadastral_number" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'market_segment')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "market_segment" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'market_segment_code')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'first_to_upper_floor_rate')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "first_to_upper_floor_rate" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_coefficients_for_first_floor_corr', 'is_excluded_from_calculation')) then
-        execute 'alter table market_coefficients_for_first_floor_corr add "is_excluded_from_calculation" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_114_q_pk')) then
-    execute 'alter table market_coefficients_for_first_floor_corr add constraint reg_114_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('coefficient_for_first_floor_correction_index')) then
-	execute 'CREATE UNIQUE INDEX coefficient_for_first_floor_correction_index on market_coefficients_for_first_floor_corr (building_cadastral_number, stats_date, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR')) then
-		execute 'create table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'id')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'stats_date')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "stats_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'building_cadastral_number')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "building_cadastral_number" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'market_segment')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "market_segment" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'market_segment_code')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'first_to_upper_floor_rate')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "first_to_upper_floor_rate" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR', 'is_excluded_from_calculation')) then
-        execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add "is_excluded_from_calculation" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_114_q_pk')) then
-    execute 'alter table MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR add constraint reg_114_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('coefficient_for_first_floor_correction_index')) then
-	execute 'CREATE UNIQUE INDEX coefficient_for_first_floor_correction_index on MARKET_COEFFICIENTS_FOR_FIRST_FLOOR_CORR (building_cadastral_number, stats_date, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('market_core_object')) then
 		execute 'create table market_core_object ("id" BIGINT NOT NULL)';
 	end if;
@@ -68295,15 +67929,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'id')) then
         execute 'alter table market_core_object add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'url')) then
-        execute 'alter table market_core_object add "url" VARCHAR(1000)';
     end if;
 end $$;
 
@@ -68365,15 +67990,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'city')) then
-        execute 'alter table market_core_object add "city" VARCHAR(1000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'address')) then
         execute 'alter table market_core_object add "address" VARCHAR(2000)';
     end if;
@@ -68385,15 +68001,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'metro')) then
         execute 'alter table market_core_object add "metro" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'images')) then
-        execute 'alter table market_core_object add "images" VARCHAR(10000)';
     end if;
 end $$;
 
@@ -68509,26 +68116,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'building_year')) then
-        execute 'alter table market_core_object add "building_year" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'region_id')) then
         execute 'alter table market_core_object add "region_id" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'city_id')) then
-        execute 'alter table market_core_object add "city_id" BIGINT';
     end if;
 end $$;
 
@@ -68563,35 +68152,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'ko_group')) then
-        execute 'alter table market_core_object add "ko_group" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'ko_group_code')) then
-        execute 'alter table market_core_object add "ko_group_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'zone')) then
         execute 'alter table market_core_object add "zone" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'district')) then
-        execute 'alter table market_core_object add "district" VARCHAR(256)';
     end if;
 end $$;
 
@@ -68743,15 +68305,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'last_date_update')) then
-        execute 'alter table market_core_object add "last_date_update" TIMESTAMP';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs')) then
         execute 'alter table market_core_object add "property_typets_cipjs" VARCHAR(255)';
     end if;
@@ -68763,15 +68316,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs_code')) then
         execute 'alter table market_core_object add "property_typets_cipjs_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'property_law_type')) then
-        execute 'alter table market_core_object add "property_law_type" VARCHAR(255)';
     end if;
 end $$;
 
@@ -68871,15 +68415,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'phone_number')) then
         execute 'alter table market_core_object add "phone_number" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'ownership_type')) then
-        execute 'alter table market_core_object add "ownership_type" VARCHAR(256)';
     end if;
 end $$;
 
@@ -69019,14 +68554,6 @@ end $$;
 
 DO $$
 begin
-  if (not CORE_UPDSTRU_CheckExistIndex('url_index')) then
-	execute 'CREATE  INDEX url_index on market_core_object (url)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
   if (not CORE_UPDSTRU_CheckExistIndex('parser_time_index')) then
 	execute 'CREATE  INDEX parser_time_index on market_core_object (parser_time)';
   end if;
@@ -69045,15 +68572,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'id')) then
         execute 'alter table MARKET_CORE_OBJECT add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'url')) then
-        execute 'alter table MARKET_CORE_OBJECT add "url" VARCHAR(1000)';
     end if;
 end $$;
 
@@ -69115,15 +68633,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'city')) then
-        execute 'alter table MARKET_CORE_OBJECT add "city" VARCHAR(1000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'address')) then
         execute 'alter table MARKET_CORE_OBJECT add "address" VARCHAR(2000)';
     end if;
@@ -69135,15 +68644,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'metro')) then
         execute 'alter table MARKET_CORE_OBJECT add "metro" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'images')) then
-        execute 'alter table MARKET_CORE_OBJECT add "images" VARCHAR(10000)';
     end if;
 end $$;
 
@@ -69259,26 +68759,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'building_year')) then
-        execute 'alter table MARKET_CORE_OBJECT add "building_year" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'region_id')) then
         execute 'alter table MARKET_CORE_OBJECT add "region_id" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'city_id')) then
-        execute 'alter table MARKET_CORE_OBJECT add "city_id" BIGINT';
     end if;
 end $$;
 
@@ -69313,35 +68795,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'ko_group')) then
-        execute 'alter table MARKET_CORE_OBJECT add "ko_group" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'ko_group_code')) then
-        execute 'alter table MARKET_CORE_OBJECT add "ko_group_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'zone')) then
         execute 'alter table MARKET_CORE_OBJECT add "zone" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'district')) then
-        execute 'alter table MARKET_CORE_OBJECT add "district" VARCHAR(256)';
     end if;
 end $$;
 
@@ -69493,15 +68948,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'last_date_update')) then
-        execute 'alter table MARKET_CORE_OBJECT add "last_date_update" TIMESTAMP';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_typets_cipjs')) then
         execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs" VARCHAR(255)';
     end if;
@@ -69513,15 +68959,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_typets_cipjs_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_law_type')) then
-        execute 'alter table MARKET_CORE_OBJECT add "property_law_type" VARCHAR(255)';
     end if;
 end $$;
 
@@ -69621,15 +69058,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'phone_number')) then
         execute 'alter table MARKET_CORE_OBJECT add "phone_number" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'ownership_type')) then
-        execute 'alter table MARKET_CORE_OBJECT add "ownership_type" VARCHAR(256)';
     end if;
 end $$;
 
@@ -69763,14 +69191,6 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('deal_type_code_index')) then
 	execute 'CREATE  INDEX deal_type_code_index on MARKET_CORE_OBJECT (deal_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('url_index')) then
-	execute 'CREATE  INDEX url_index on MARKET_CORE_OBJECT (url)';
   end if;
 end $$;
 --<DO>--
@@ -70141,110 +69561,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_correction_settings')) then
-		execute 'create table market_correction_settings ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_correction_settings', 'id')) then
-        execute 'alter table market_correction_settings add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_correction_settings', 'correction_type')) then
-        execute 'alter table market_correction_settings add "correction_type" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_correction_settings', 'correction_type_code')) then
-        execute 'alter table market_correction_settings add "correction_type_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_correction_settings', 'settings')) then
-        execute 'alter table market_correction_settings add "settings" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_117_q_pk')) then
-    execute 'alter table market_correction_settings add constraint reg_117_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_CORRECTION_SETTINGS')) then
-		execute 'create table MARKET_CORRECTION_SETTINGS ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'id')) then
-        execute 'alter table MARKET_CORRECTION_SETTINGS add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'correction_type')) then
-        execute 'alter table MARKET_CORRECTION_SETTINGS add "correction_type" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'correction_type_code')) then
-        execute 'alter table MARKET_CORRECTION_SETTINGS add "correction_type_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORRECTION_SETTINGS', 'settings')) then
-        execute 'alter table MARKET_CORRECTION_SETTINGS add "settings" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_117_q_pk')) then
-    execute 'alter table MARKET_CORRECTION_SETTINGS add constraint reg_117_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('market_duplicates_history')) then
 		execute 'create table market_duplicates_history ("id" BIGINT NOT NULL)';
 	end if;
@@ -70415,196 +69731,6 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_106_q_pk')) then
     execute 'alter table MARKET_DUPLICATES_HISTORY add constraint reg_106_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_indexes_for_date_correction')) then
-		execute 'create table market_indexes_for_date_correction ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'id')) then
-        execute 'alter table market_indexes_for_date_correction add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'date')) then
-        execute 'alter table market_indexes_for_date_correction add "date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'building_cadastral_number')) then
-        execute 'alter table market_indexes_for_date_correction add "building_cadastral_number" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'coefficient')) then
-        execute 'alter table market_indexes_for_date_correction add "coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'market_segment')) then
-        execute 'alter table market_indexes_for_date_correction add "market_segment" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'market_segment_code')) then
-        execute 'alter table market_indexes_for_date_correction add "market_segment_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_indexes_for_date_correction', 'is_excluded')) then
-        execute 'alter table market_indexes_for_date_correction add "is_excluded" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('market_indexes_for_date_correction_date_key')) then
-    execute 'alter table market_indexes_for_date_correction add constraint market_indexes_for_date_correction_date_key unique (date, building_cadastral_number, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_108_q_pk')) then
-    execute 'alter table market_indexes_for_date_correction add constraint reg_108_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('market_indexes_for_date_correction_date_key')) then
-	execute 'CREATE UNIQUE INDEX market_indexes_for_date_correction_date_key on market_indexes_for_date_correction (date, building_cadastral_number, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_INDEXES_FOR_DATE_CORRECTION')) then
-		execute 'create table MARKET_INDEXES_FOR_DATE_CORRECTION ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'id')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'date')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'building_cadastral_number')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "building_cadastral_number" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'coefficient')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'market_segment')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "market_segment" VARCHAR(255) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'market_segment_code')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "market_segment_code" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_INDEXES_FOR_DATE_CORRECTION', 'is_excluded')) then
-        execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add "is_excluded" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('market_indexes_for_date_correction_date_key')) then
-    execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add constraint market_indexes_for_date_correction_date_key unique (date, building_cadastral_number, market_segment_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_108_q_pk')) then
-    execute 'alter table MARKET_INDEXES_FOR_DATE_CORRECTION add constraint reg_108_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('market_indexes_for_date_correction_date_key')) then
-	execute 'CREATE UNIQUE INDEX market_indexes_for_date_correction_date_key on MARKET_INDEXES_FOR_DATE_CORRECTION (date, building_cadastral_number, market_segment_code)';
   end if;
 end $$;
 --<DO>--
@@ -70871,512 +69997,6 @@ DO $$
 begin
   if (not core_updstru_checkexistconstraint('reg_119_q_pk')) then
     execute 'alter table MARKET_OUTLIERS_CHECKING_HISTORY add constraint reg_119_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_price_after_correction_by_date_h')) then
-		execute 'create table market_price_after_correction_by_date_h ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'id')) then
-        execute 'alter table market_price_after_correction_by_date_h add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'price_value_to')) then
-        execute 'alter table market_price_after_correction_by_date_h add "price_value_to" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'initial_id')) then
-        execute 'alter table market_price_after_correction_by_date_h add "initial_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'changing_date')) then
-        execute 'alter table market_price_after_correction_by_date_h add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_date_h', 'price_value_from')) then
-        execute 'alter table market_price_after_correction_by_date_h add "price_value_from" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_116_q_pk')) then
-    execute 'alter table market_price_after_correction_by_date_h add constraint reg_116_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H')) then
-		execute 'create table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'id')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'price_value_to')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_to" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'initial_id')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "initial_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'changing_date')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H', 'price_value_from')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add "price_value_from" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_116_q_pk')) then
-    execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_DATE_H add constraint reg_116_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_price_after_correction_by_rooms_h')) then
-		execute 'create table market_price_after_correction_by_rooms_h ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'id')) then
-        execute 'alter table market_price_after_correction_by_rooms_h add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'initial_id')) then
-        execute 'alter table market_price_after_correction_by_rooms_h add "initial_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'changing_date')) then
-        execute 'alter table market_price_after_correction_by_rooms_h add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'price_value_from')) then
-        execute 'alter table market_price_after_correction_by_rooms_h add "price_value_from" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_after_correction_by_rooms_h', 'price_value_to')) then
-        execute 'alter table market_price_after_correction_by_rooms_h add "price_value_to" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_113_q_pk')) then
-    execute 'alter table market_price_after_correction_by_rooms_h add constraint reg_113_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H')) then
-		execute 'create table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'id')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'initial_id')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "initial_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'changing_date')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'price_value_from')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_from" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H', 'price_value_to')) then
-        execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add "price_value_to" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_113_q_pk')) then
-    execute 'alter table MARKET_PRICE_AFTER_CORRECTION_BY_ROOMS_H add constraint reg_113_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_price_correction_by_stage_history')) then
-		execute 'create table market_price_correction_by_stage_history ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'id')) then
-        execute 'alter table market_price_correction_by_stage_history add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'building_cadastral_number')) then
-        execute 'alter table market_price_correction_by_stage_history add "building_cadastral_number" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'changing_date')) then
-        execute 'alter table market_price_correction_by_stage_history add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'stage_coefficient')) then
-        execute 'alter table market_price_correction_by_stage_history add "stage_coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'market_segment')) then
-        execute 'alter table market_price_correction_by_stage_history add "market_segment" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'market_segment_code')) then
-        execute 'alter table market_price_correction_by_stage_history add "market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_correction_by_stage_history', 'is_excluded')) then
-        execute 'alter table market_price_correction_by_stage_history add "is_excluded" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_112_q_pk')) then
-    execute 'alter table market_price_correction_by_stage_history add constraint reg_112_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY')) then
-		execute 'create table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'id')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'building_cadastral_number')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "building_cadastral_number" VARCHAR NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'changing_date')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "changing_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'stage_coefficient')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "stage_coefficient" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'market_segment')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "market_segment" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'market_segment_code')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY', 'is_excluded')) then
-        execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add "is_excluded" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_112_q_pk')) then
-    execute 'alter table MARKET_PRICE_CORRECTION_BY_STAGE_HISTORY add constraint reg_112_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('market_price_for_first_floor_history')) then
-		execute 'create table market_price_for_first_floor_history ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'id')) then
-        execute 'alter table market_price_for_first_floor_history add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'stats_date')) then
-        execute 'alter table market_price_for_first_floor_history add "stats_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'price_with_correction_for_first_floor')) then
-        execute 'alter table market_price_for_first_floor_history add "price_with_correction_for_first_floor" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_price_for_first_floor_history', 'object_id')) then
-        execute 'alter table market_price_for_first_floor_history add "object_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_115_q_pk')) then
-    execute 'alter table market_price_for_first_floor_history add constraint reg_115_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-	if (not CORE_UPDSTRU_CheckExistTable('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY')) then
-		execute 'create table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'id')) then
-        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'stats_date')) then
-        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "stats_date" TIMESTAMP NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'price_with_correction_for_first_floor')) then
-        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "price_with_correction_for_first_floor" NUMERIC NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY', 'object_id')) then
-        execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add "object_id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_115_q_pk')) then
-    execute 'alter table MARKET_PRICE_FOR_FIRST_FLOOR_HISTORY add constraint reg_115_q_pk primary key (id)';
   end if;
 end $$;
 --<DO>--

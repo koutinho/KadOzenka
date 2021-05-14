@@ -32,12 +32,6 @@
                             else
                             {<label class="control-label">Дата предложения</label>}
                         </div>
-                        <div class="col-sm-2">
-                            @if (Model.LastDateUpdate != null)
-                            {<input class="k-textbox" readonly value="@Model.LastDateUpdate.Value.ToString("dd.MM.yyyy")" />}
-                            else
-                            {<input class="k-textbox" readonly value="@Model.ParserTime.Value.ToString("dd.MM.yyyy")" />}
-                        </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
@@ -326,12 +320,6 @@
                         </div>
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Zone" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Группа</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.Group" />
                         </div>
                     </div>
                     <div class="form-group">

@@ -160,7 +160,7 @@ namespace KadOzenka.Web.Controllers
                         floorCount = x.FloorsCount,
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
-                        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy"),
+                        lastUpdateDate = (DateTime?)null,
                         lng = x.Lng,
                         lat = x.Lat,
                         entranceType = x.EntranceType,

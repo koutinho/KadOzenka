@@ -255,8 +255,8 @@ function saveDataChanges(cartData) {
     if (!document.getElementById(`undoBtn_${cartData.id}`).classList.contains("blocked")) {
         var result = {
             id: cartData.id,
-            lng: parseFloat(document.getElementById(`lngTextBox_${cartData.id}`).value),
-            lat: parseFloat(document.getElementById(`latTextBox_${cartData.id}`).value),
+            lng: document.getElementById(`lngTextBox_${cartData.id}`).value.replace(".", ","),
+            lat: document.getElementById(`latTextBox_${cartData.id}`).value.replace(".", ","),
             propertyTypeCode: parseInt(document.getElementById(`typeSelect_${cartData.id}`).value),
             marketSegmentCode: parseInt(document.getElementById(`segmentSelect_${cartData.id}`).value),
             statusCode: parseInt(document.getElementById(`statusSelect_${cartData.id}`).value),

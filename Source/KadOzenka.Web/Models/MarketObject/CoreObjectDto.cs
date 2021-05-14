@@ -28,8 +28,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string DealType { get; set; }
         public DealType DealTypeCode { get; set; }
 		public DateTime? ParserTime { get; set; }
-        public DateTime? LastDateUpdate { get; set; }
-        [DisplayName("Адрес")]
+		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
 		public string Metro { get; set; }
@@ -49,7 +48,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? AreaKitchen { get; set; }
 		public decimal? AreaLiving { get; set; }
 		public long? Zone { get; set; }
-		public string Group { get; set; }
 		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
@@ -81,7 +79,6 @@ namespace KadOzenka.Web.Models.MarketObject
                 DealType = entity.DealType,
                 DealTypeCode = entity.DealType_Code,
                 ParserTime = entity.ParserTime,
-                LastDateUpdate = entity.LastDateUpdate, // != null ? entity.LastDateUpdate : new DateTime(1970, 1, 1, 0, 0, 0, 1),
                 Address = entity.Address,
 				Metro = entity.Metro,
 				Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
@@ -95,7 +92,6 @@ namespace KadOzenka.Web.Models.MarketObject
 				AreaKitchen = entity.AreaKitchen,
 				AreaLiving = entity.AreaLiving,
 				Zone = entity.Zone,
-				Group = entity.Group,
 				Subgroup = entity.Subgroup,
 				Status = entity.ProcessType,
 				StatusCode = entity.ProcessType_Code,
