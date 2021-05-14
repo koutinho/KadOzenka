@@ -6,18 +6,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace KadOzenka.Web.Models.GbuCod
 {
-	public class CodJobViewModel : IValidatableObject
+    public class CodJobViewModel : IValidatableObject
     {
         public long Id { get; set; }
         public bool IsReadOnly => Id != -1;
 
-        [Display(Name="Задание ЦОД")]
-		public string Name { get; set; }
+        [Display(Name = "Задание ЦОД")] public string Name { get; set; }
 
         [Display(Name = "Количество значений")]
         public int ValuesCount { get; set; }
-        public List<SelectListItem> PossibleValuesCount { get; set; }
 
+        public List<SelectListItem> PossibleValuesCount { get; set; }
 
 
         public CodJobViewModel()
@@ -30,7 +29,7 @@ namespace KadOzenka.Web.Models.GbuCod
                 {
                     Text = i.ToString(),
                     Value = i.ToString()
-				});
+                });
             }
         }
 

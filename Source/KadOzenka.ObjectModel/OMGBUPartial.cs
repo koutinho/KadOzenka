@@ -26,9 +26,13 @@ namespace ObjectModel.Gbu.GroupingAlgoritm
     public struct LevelItem
     {
         /// <summary>
-        /// Признак использования классификатора ЦОД
+        /// Название значения
         /// </summary>
-        public bool UseDictionary { get; set; }
+        public string CodValueName { get; set; }
+        /// <summary>
+        /// Идентификатор значения в справочнике
+        /// </summary>
+        public long? CodValueId { get; set; }
         /// <summary>
         /// Признак пропуска дефиса
         /// </summary>

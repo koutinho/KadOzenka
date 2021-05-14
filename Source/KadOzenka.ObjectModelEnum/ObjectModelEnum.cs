@@ -11858,6 +11858,14 @@ namespace ObjectModel.Directory.Common
         [EnumCode("9")]
         [ShortTitle("Выгрузка факторов единиц оценки по заданию на оценку")]
         ExportFactorsByTask = 9,
+
+		/// <summary>
+		/// Нормализация (1)
+		/// </summary>
+		[Description("Финализация нормализации")]
+		[EnumCode("10")]
+		[ShortTitle("Финализация нормализации")]
+		NormalisationFinal = 10,
     }
 }
 

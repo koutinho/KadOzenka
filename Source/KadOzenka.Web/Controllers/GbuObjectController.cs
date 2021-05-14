@@ -10,6 +10,7 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
@@ -25,6 +26,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Gbu;
+using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
@@ -35,13 +37,15 @@ namespace KadOzenka.Web.Controllers
 		#region Initialization
 
 		private readonly GbuObjectService _service;
+		private readonly CodDictionaryService _dictionaryService;
 		private readonly TaskService _taskService;
 	    private TourFactorService _tourFactorService;
 	    private TemplateService _templateService;
 
-        public GbuObjectController(GbuObjectService service, TaskService taskService, TourFactorService tourFactorService, TemplateService templateService)
+        public GbuObjectController(GbuObjectService service, CodDictionaryService dictService, TaskService taskService, TourFactorService tourFactorService, TemplateService templateService)
 		{
 			_service = service;
+			_dictionaryService = dictService;
 			_taskService = taskService;
 		    _tourFactorService = tourFactorService;
             _templateService = templateService;
@@ -230,6 +234,29 @@ namespace KadOzenka.Web.Controllers
 		        idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null,
                 QueueId = queueId
             });
+		}
+
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
+		public ActionResult GroupingObjectFinalize()
+		{
+			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
+			{
+				Value = x.Id,
+				Text = x.NameJob
+			}).AsEnumerable();
+
+			ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
+
+			return View(new GroupingObjectFinalize());
+		}
+
+		public List<LevelItem> GetCodJobParam(long? codJobId)
+		{
+			if (codJobId == 0 || codJobId == null)
+				return new List<LevelItem>();
+			return _dictionaryService.GetSelectCodJobInfo(codJobId.Value);
 		}
 		#endregion
 
