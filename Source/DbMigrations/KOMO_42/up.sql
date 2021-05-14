@@ -183,3 +183,38 @@ ALTER TABLE market_core_object DROP COLUMN REGION;
 
 delete from core_register_attribute where id = 10009004;
 ALTER TABLE market_core_object DROP COLUMN QUALITY;
+
+delete from core_register_attribute where id = 10009009;
+ALTER TABLE market_core_object DROP COLUMN RENOVATION;
+
+delete from core_register_attribute where id = 10006000;
+ALTER TABLE market_core_object DROP COLUMN PROCESS_TYPE;
+ALTER TABLE market_core_object DROP COLUMN PROCESS_TYPE_CODE;
+
+delete from core_register_attribute where id = 10003400;
+ALTER TABLE market_core_object DROP COLUMN DESCRIPTION;
+
+delete from core_register_attribute where id = 10006500;
+ALTER TABLE market_core_object DROP COLUMN PHONE_NUMBER;
+
+delete from core_register_attribute where id = 10009008;
+ALTER TABLE market_core_object DROP COLUMN ENTRANCE_TYPE;
+
+delete from core_register_attribute where id = 10009003;
+ALTER TABLE market_core_object DROP COLUMN PLACEMENT_TYPE;
+
+delete from core_register_attribute where id = 10008100;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_DATE;
+
+delete from core_register_attribute where id = 10008400;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_ROOMS;
+
+delete from core_register_attribute where id = 10008800;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR;
+
+delete from core_register_attribute where id = 10008200;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_BARGAIN;
+
+delete from core_register_attribute where id = 10008900;
+ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_STAGE;
+

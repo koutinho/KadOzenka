@@ -144,8 +144,8 @@ namespace KadOzenka.Web.Controllers
                         propertyTypeCode = x.PropertyTypesCIPJS_Code,
                         marketSegment = x.PropertyMarketSegment,
                         marketSegmentCode = x.PropertyMarketSegment_Code,
-                        status = x.ProcessType,
-                        statusCode = x.ProcessType_Code,
+                        status = string.Empty,
+                        statusCode = string.Empty,
                         source = x.Market,
                         price = x.Price,
                         area = x.Area,
@@ -163,10 +163,10 @@ namespace KadOzenka.Web.Controllers
                         lastUpdateDate = (DateTime?)null,
                         lng = x.Lng,
                         lat = x.Lat,
-                        entranceType = x.EntranceType,
+                        entranceType = string.Empty,
                         qualityClassCode = x.QualityClass_Code,
                         qualityClass = x.QualityClass,
-                        renovation = x.Renovation,
+                        renovation = string.Empty,
                         buildingLine = string.Empty
                     });
                 });
@@ -306,7 +306,7 @@ namespace KadOzenka.Web.Controllers
         {
             List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyTypesCIPJSAttribute.ReferenceId).SelectAll().Execute();
             List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId).SelectAll().Execute();
-            List<OMReferenceItem> status = OMReferenceItem.Where(x => x.ReferenceId == Consts.ProcessTypeCodeAttribute.ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> status = new List<OMReferenceItem>();
             List<OMReferenceItem> qualityClass = OMReferenceItem.Where(x => x.ReferenceId == Consts.QualityClassCodeAttribute.ReferenceId).SelectAll().Execute();
             qualityClass.Add(new OMReferenceItem{ItemId = 0, Value = null});
 
@@ -333,15 +333,16 @@ namespace KadOzenka.Web.Controllers
 	            propertyTypeCode = marketObjectDto.PropertyTypesCIPJS_Code,
 	            marketSegment = marketObjectDto.PropertyMarketSegment,
 	            marketSegmentCode = marketObjectDto.PropertyMarketSegment_Code,
-	            status = marketObjectDto.ProcessType,
-	            statusCode = marketObjectDto.ProcessType_Code,
+	            status = string.Empty,
+	            statusCode = string.Empty,
 	            id = marketObjectDto.Id,
 	            lng = marketObjectDto.Lng,
 	            lat = marketObjectDto.Lat,
-	            entranceType = marketObjectDto.EntranceType,
+	            entranceType = string.Empty,
 	            qualityClassCode = marketObjectDto.QualityClass_Code,
 	            qualityClass = marketObjectDto.QualityClass,
-	            renovation = marketObjectDto.Renovation,
+	            //TODO будет справочник
+                renovation = string.Empty,
                 //TODO будет справочник
 	            buildingLine = string.Empty,
 	            floorNumber = marketObjectDto.FloorNumber,

@@ -39,12 +39,6 @@ namespace MarketPlaceBusiness.Dto
 		public string Address { get; set; }
 
 		/// <summary>
-		/// 10003400 Текст объявления (DESCRIPTION)
-		/// </summary>
-		public string Description { get; set; }
-
-
-		/// <summary>
 		/// 10003500 Широта (LAT)
 		/// </summary>
 		public decimal? Lat { get; set; }
@@ -96,22 +90,6 @@ namespace MarketPlaceBusiness.Dto
 		public string CadastralQuartal { get; set; }
 
 		/// <summary>
-		/// 10006000 Статус (PROCESS_TYPE)
-		/// </summary>
-		public string ProcessType { get; set; }
-
-		/// <summary>
-		/// 10006000 Статус (справочный код) (PROCESS_TYPE_CODE)
-		/// </summary>
-		public ProcessStep ProcessType_Code { get; set; }
-
-		/// <summary>
-		/// 10006500 Телефонный номер (PHONE_NUMBER)
-		/// </summary>
-		public string PhoneNumber { get; set; }
-
-
-		/// <summary>
 		/// 10007000 Сегмент рынка (PROPERTY_MARKET_SEGMENT)
 		/// </summary>
 		public string PropertyMarketSegment { get; set; }
@@ -158,63 +136,19 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
 
-
-		/// <summary>
-		/// 10008100 Цена после корректировки на дату (PRICE_AFTER_CORRECTION_BY_DATE)
-		/// </summary>
-		public decimal? PriceAfterCorrectionByDate { get; set; }
-
-
-		/// <summary>
-		/// 10008200 Цена после корректировки на торг (PRICE_AFTER_CORRECTION_BY_BARGAIN)
-		/// </summary>
-		public decimal? PriceAfterCorrectionByBargain { get; set; }
-
-
-		/// <summary>
-		/// 10008400 Цена после корректировки на комнатность (PRICE_AFTER_CORRECTION_BY_ROOMS)
-		/// </summary>
-		public decimal? PriceAfterCorrectionByRooms { get; set; }
-
-
-		/// <summary>
-		/// 10008800 Цена после корректировки на первый этаж (PRICE_AFTER_CORRECTION_FOR_FIRST_FLOOR)
-		/// </summary>
-		public decimal? PriceAfterCorrectionForFirstFloor { get; set; }
-
-
-		/// <summary>
-		/// 10008900 Цена после корректировки на цоколь/подвал (PRICE_AFTER_CORRECTION_BY_STAGE)
-		/// </summary>
-		public decimal? PriceAfterCorrectionByStage { get; set; }
-
-
-		/// <summary>
-		/// 10009003 Тип помещения (PLACEMENT_TYPE)
-		/// </summary>
-		public string PlacementType { get; set; }
-
 		/// <summary>
 		/// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
 		/// </summary>
 		public bool? IsOperatingCostsIncluded { get; set; }
 
+		///// <summary>
+		///// 10009009 Состояние отделки (RENOVATION)
+		///// </summary>
+		//public string Renovation { get; set; }
 
-		/// <summary>
-		/// 10009008 Тип входа (ENTRANCE_TYPE)
-		/// </summary>
-		public string EntranceType { get; set; }
-
-
-		/// <summary>
-		/// 10009009 Состояние отделки (RENOVATION)
-		/// </summary>
-		public string Renovation { get; set; }
-
-
-		/// <summary>
-		/// 10009010 Линия застройки (BUILDING_LINE)
-		/// </summary>
-		public string BuildingLine { get; set; }
+		///// <summary>
+		///// 10009010 Линия застройки (BUILDING_LINE)
+		///// </summary>
+		//public string BuildingLine { get; set; }
     }
 }

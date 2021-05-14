@@ -10,7 +10,6 @@ namespace MarketPlaceBusiness.Common
 
 		//TODO KOMO-33: если будет много колонок, подумать над отдельным методом
 		public static readonly QSColumn PrimaryKeyColumn = OMCoreObject.GetColumn(x => x.Id);
-		public static readonly QSColumn ProcessTypeCodeColumn = OMCoreObject.GetColumn(x => x.ProcessType_Code);
 		public static readonly QSColumn MarketSegmentCodeColumn = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code);
 		public static readonly QSColumn AreaColumn = OMCoreObject.GetColumn(x => x.Area);
 		public static readonly QSColumn DealTypeCodeColumn = OMCoreObject.GetColumn(x => x.DealType_Code);
@@ -29,7 +28,6 @@ namespace MarketPlaceBusiness.Common
 		public static readonly RegisterAttribute DealTypeAttribute = OMCoreObject.GetAttributeData(x => x.DealType);
 		public static readonly RegisterAttribute PropertyMarketSegmentAttribute = OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment);
 		public static readonly RegisterAttribute MarketAttribute = OMCoreObject.GetAttributeData(x => x.Market);
-		public static readonly RegisterAttribute ProcessTypeCodeAttribute = OMCoreObject.GetAttributeData(x => x.ProcessType_Code);
 		public static readonly RegisterAttribute QualityClassCodeAttribute = OMCoreObject.GetAttributeData(x => x.QualityClass_Code);
 		public static readonly RegisterAttribute PriceAttribute = OMCoreObject.GetAttributeData(x => x.Price);
 	}

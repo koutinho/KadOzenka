@@ -16,7 +16,6 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.PricePerMeter, SetPreCondition(y => y.PricePerMeter))
 				.ForMember(m => m.ParserTime, SetPreCondition(y => y.ParserTime))
 				.ForMember(m => m.Address, SetPreCondition(y => y.Address))
-				.ForMember(m => m.Description, SetPreCondition(y => y.Description))
 				.ForMember(m => m.Lat, SetPreCondition(y => y.Lat))
 				.ForMember(m => m.DealType, SetPreCondition(y => y.DealType))
 				.ForMember(m => m.DealType_Code, SetPreCondition(y => y.DealType_Code))
@@ -25,9 +24,6 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.FloorsCount, SetPreCondition(y => y.FloorsCount))
 				.ForMember(m => m.Area, SetPreCondition(y => y.Area))
 				.ForMember(m => m.CadastralNumber, SetPreCondition(y => y.CadastralNumber))
-				.ForMember(m => m.ProcessType, SetPreCondition(y => y.ProcessType))
-				.ForMember(m => m.ProcessType_Code, SetPreCondition(y => y.ProcessType_Code))
-				.ForMember(m => m.PhoneNumber, SetPreCondition(y => y.PhoneNumber))
 				.ForMember(m => m.PropertyMarketSegment, SetPreCondition(y => y.PropertyMarketSegment))
 				.ForMember(m => m.PropertyMarketSegment_Code, SetPreCondition(y => y.PropertyMarketSegment_Code))
 				.ForMember(m => m.WallMaterial, SetPreCondition(y => y.WallMaterial))
@@ -36,15 +32,8 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.QualityClass_Code, SetPreCondition(y => y.QualityClass_Code))
 				.ForMember(m => m.PropertyTypesCIPJS, SetPreCondition(y => y.PropertyTypesCIPJS))
 				.ForMember(m => m.PropertyTypesCIPJS_Code, SetPreCondition(y => y.PropertyTypesCIPJS_Code))
-				.ForMember(m => m.PriceAfterCorrectionByDate, SetPreCondition(y => y.PriceAfterCorrectionByDate))
-				.ForMember(m => m.PriceAfterCorrectionByBargain, SetPreCondition(y => y.PriceAfterCorrectionByBargain))
-				.ForMember(m => m.PriceAfterCorrectionByRooms, SetPreCondition(y => y.PriceAfterCorrectionByRooms))
-				.ForMember(m => m.PriceAfterCorrectionForFirstFloor, SetPreCondition(y => y.PriceAfterCorrectionForFirstFloor))
-				.ForMember(m => m.PriceAfterCorrectionByStage, SetPreCondition(y => y.PriceAfterCorrectionByStage))
-				.ForMember(m => m.PlacementType, SetPreCondition(y => y.PlacementType))
-				.ForMember(m => m.IsOperatingCostsIncluded, SetPreCondition(y => y.IsOperatingCostsIncluded))
-				.ForMember(m => m.EntranceType, SetPreCondition(y => y.EntranceType))
-				.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
+				.ForMember(m => m.IsOperatingCostsIncluded, SetPreCondition(y => y.IsOperatingCostsIncluded));
+				//.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
 				//.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))
 		}
 
