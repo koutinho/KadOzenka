@@ -51,6 +51,18 @@ namespace KadOzenka.Dal.CodDictionary
             RegisterAttributeRepository = registerAttributeRepository;
         }
 
+        public CodDictionaryService()
+        {
+            RegisterService = new RegisterService();
+            RegisterAttributeService = new RegisterAttributeService();
+            RegisterConfiguratorWrapper = new RegisterConfiguratorWrapper();
+            RecycleBinService = new RecycleBinService();
+            RegisterObjectWrapper = new RegisterObjectWrapper();
+            RegisterCacheWrapper = new RegisterCacheWrapper();
+            CodDictionaryRepository = new CodDictionaryRepository();
+            RegisterAttributeRepository = new RegisterAttributeRepository();
+        }
+
 
         #region Словарь
 

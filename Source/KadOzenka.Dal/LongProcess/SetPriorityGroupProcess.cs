@@ -22,6 +22,12 @@ namespace KadOzenka.Dal.LongProcess
 			_dictionaryService = dictionaryService;
 		}
 
+		public SetPriorityGroupProcess()
+		{
+
+			_dictionaryService = new CodDictionaryService();
+		}
+
 		public static long AddProcessToQueue(GroupingSettings settings)
 		{
 			return LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
