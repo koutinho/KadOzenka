@@ -48,29 +48,6 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Area" />
                         </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Статус</label>
-                        </div>
-                        <div class="col-sm-2">
-                            @*<input class="k-textbox" readonly value="@Model.Status" />*@
-                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
-                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
-                                    <span unselectable="on" class="k-input">@Html.Raw(Model.Status)</span>
-                                    <span unselectable="on" class="k-select" aria-label="select">
-                                        <span class="k-icon k-i-arrow-60-down" id="ObjectStatusSelectedValue"></span>
-                                    </span>
-                                </span>
-                                <input data-val="true" data-val-required="Поле Статус обработки обязательное" editmode="true" id="ObjectStatus" name="ObjectStatus" type="text" value="2" data-role="dropdownlist" style="display: none;">
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Описание</label>
-                        </div>
-                        <div class="col-sm-10">
-                            <textarea class="k-textbox" readonly rows="5" style="resize:none; padding: 5px">@Model.Description</textarea>
-                        </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
@@ -152,12 +129,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <div class="col-sm-2">
+                        @*<div class="col-sm-2">
+                            TODO KOMO-1: сделать через справочник
                             <label class="control-label">Состояние отделки</label>
                         </div>
                         <div class="col-sm-2">
                             <input class="k-textbox" id="Renovation" value="@Model.Renovation" />
-                        </div>
+                        </div>*@
                         @* <div class="col-sm-2">
                             TODO KOMO-1: сделать через справочник
                             <label class="control-label">Линия застройки</label>
@@ -298,7 +276,7 @@
             <a href="#Section_Reestr">Данные Росреестра</a>
             <a href="#Section_OKS">Данные ОКС</a>
             <a href="#Section_Group">Группировка</a>
-            @if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess)
+            @if (Model.Latitude != null && Model.Longitude != null)
             {<a href="#Section_Map">На карте</a>}
             <div style="position:absolute; bottom:0px; width:100%; display:flex; justify-content: space-between;" id="toolbar" data-role="toolbar" class="k-toolbar k-widget k-toolbar-resizable" tabindex="0">
                 <div tabindex="0" class="k-overflow-anchor k-button" style="visibility: hidden; width: 1px;">
@@ -410,15 +388,6 @@
                     "dataSource": avaliableData.MarketSegment.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.MarketSegmentCode) ? false : true } })
                 });
             });
-            kendo.syncReady(function () {
-                jQuery("#ObjectStatus").kendoDropDownList({
-                    "dataTextField": "Text",
-                    "dataValueField": "Value",
-                    "noDataTemplate": "Ничего не найдено!",
-                    "value": "@Html.Raw((int)Model.StatusCode)",
-                    "dataSource": avaliableData.Status.map(function (x) { return { Text: x.value, Value: x.code.toString(), Selected: x.code != @Html.Raw((int)Model.StatusCode) ? false : true } })
-                });
-            });
         }
     });
 
@@ -426,7 +395,6 @@
     document.getElementById("latTextBox").addEventListener("input", function () { dataChanged(); });
     jQuery("#ObjectType").change(function () { dataChanged(); });
     jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
-    jQuery("#ObjectStatus").change(function () { dataChanged(); });
     $('#EntranceType').change(function () { dataChanged(); });
     $('#QualityClassCode').change(function () { dataChanged(); });
     $('#Renovation').change(function () { dataChanged(); });
@@ -439,11 +407,10 @@
         if ("@Model.Longitude.ToString()" != document.getElementById("lngTextBox").value ||
             "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
             "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
-            "@Html.Raw((int)Model.StatusCode)" != jQuery("#ObjectStatus").data("kendoDropDownList").value() ||
             "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value() ||
             "@Model.EntranceType" != $('#EntranceType').val() ||
             "@((long)Model.QualityClassCode.GetValueOrDefault())" != $('#QualityClassCode').data("kendoDropDownList").value() ||
-            "@Model.Renovation" != $('#Renovation').val() ||
+            @*"@Model.Renovation" != $('#Renovation').val() ||*@
             @*"@Model.BuildingLine" != $('#BuildingLine').val() ||*@
             "@Model.FloorNumber.ToString()" != $('#FloorNumber').val()) {
             document.getElementById("saveBtn").classList.remove("blocked");
@@ -470,7 +437,6 @@
                 lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
                 propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
                 marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value),
-                statusCode: parseInt(jQuery("#ObjectStatus").get()[0].value),
                 entranceType: $('#EntranceType').val(),
                 qualityClassCode: $('#QualityClassCode').data("kendoDropDownList").value(),
                 renovation: $('#Renovation').val(),
@@ -598,7 +564,7 @@
 				decimals: 0,
 				spinners: false
 			});
-			@if (Model.Latitude != null && Model.Longitude != null && Model.ProcessType == ProcessStep.InProcess)
+			@if (Model.Latitude != null && Model.Longitude != null)
 			{
 				@Html.Raw(@"initMap();");
 			}

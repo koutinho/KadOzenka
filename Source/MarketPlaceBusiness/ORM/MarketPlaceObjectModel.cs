@@ -168,26 +168,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _description;
-        /// <summary>
-        /// 10003400 Текст объявления (DESCRIPTION)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003400)]
-        public string Description
-        {
-            get
-            {
-                CheckPropertyInited("Description");
-                return _description;
-            }
-            set
-            {
-                _description = value;
-                NotifyPropertyChanged("Description");
-            }
-        }
-
-
         private decimal? _lat;
         /// <summary>
         /// 10003500 Широта (LAT)
@@ -359,61 +339,6 @@ namespace ObjectModel.Market
             {
                 _cadastralnumber = value;
                 NotifyPropertyChanged("CadastralNumber");
-            }
-        }
-
-
-        private string _processtype;
-        /// <summary>
-        /// 10006000 Статус (PROCESS_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006000)]
-        public string ProcessType
-        {
-            get
-            {
-                CheckPropertyInited("ProcessType");
-                return _processtype;
-            }
-            set
-            {
-                _processtype = value;
-                NotifyPropertyChanged("ProcessType");
-            }
-        }
-
-
-        private ProcessStep _processtype_Code;
-        /// <summary>
-        /// 10006000 Статус (справочный код) (PROCESS_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10006000)]
-        public ProcessStep ProcessType_Code
-        {
-            get
-            {
-                CheckPropertyInited("ProcessType_Code");
-                return this._processtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_processtype))
-                    {
-                         _processtype = descr;
-                    }
-                }
-                else
-                {
-                     _processtype = descr;
-                }
-
-                this._processtype_Code = value;
-                NotifyPropertyChanged("ProcessType");
-                NotifyPropertyChanged("ProcessType_Code");
             }
         }
 
@@ -814,26 +739,6 @@ namespace ObjectModel.Market
             {
                 _entrancetype = value;
                 NotifyPropertyChanged("EntranceType");
-            }
-        }
-
-
-        private string _renovation;
-        /// <summary>
-        /// 10009009 Состояние отделки (RENOVATION)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009009)]
-        public string Renovation
-        {
-            get
-            {
-                CheckPropertyInited("Renovation");
-                return _renovation;
-            }
-            set
-            {
-                _renovation = value;
-                NotifyPropertyChanged("Renovation");
             }
         }
 

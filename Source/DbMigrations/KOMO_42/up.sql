@@ -183,3 +183,14 @@ ALTER TABLE market_core_object DROP COLUMN REGION;
 
 delete from core_register_attribute where id = 10009004;
 ALTER TABLE market_core_object DROP COLUMN QUALITY;
+
+delete from core_register_attribute where id = 10009009;
+ALTER TABLE market_core_object DROP COLUMN RENOVATION;
+
+delete from core_register_attribute where id = 10006000;
+ALTER TABLE market_core_object DROP COLUMN PROCESS_TYPE;
+ALTER TABLE market_core_object DROP COLUMN PROCESS_TYPE_CODE;
+
+delete from core_register_attribute where id = 10003400;
+ALTER TABLE market_core_object DROP COLUMN DESCRIPTION;
+

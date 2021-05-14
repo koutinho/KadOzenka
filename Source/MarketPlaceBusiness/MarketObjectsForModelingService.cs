@@ -21,8 +21,7 @@ namespace MarketPlaceBusiness
 
             var baseQuery = OMCoreObject.Where(x =>
                 x.PropertyMarketSegment_Code == (MarketSegment)segment &&
-                x.CadastralNumber != null &&
-                x.ProcessType_Code != ProcessStep.Excluded);
+                x.CadastralNumber != null);
 
             var type = isOks ? QSConditionType.NotEqual : QSConditionType.Equal;
             baseQuery.And(new QSConditionSimple(OMCoreObject.GetColumn(x => x.PropertyTypesCIPJS_Code),

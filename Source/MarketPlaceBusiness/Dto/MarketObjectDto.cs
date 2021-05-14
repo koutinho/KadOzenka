@@ -39,12 +39,6 @@ namespace MarketPlaceBusiness.Dto
 		public string Address { get; set; }
 
 		/// <summary>
-		/// 10003400 Текст объявления (DESCRIPTION)
-		/// </summary>
-		public string Description { get; set; }
-
-
-		/// <summary>
 		/// 10003500 Широта (LAT)
 		/// </summary>
 		public decimal? Lat { get; set; }
@@ -94,16 +88,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10005600 Кадастровый квартал (CADASTRAL_QUARTAL)
 		/// </summary>
 		public string CadastralQuartal { get; set; }
-
-		/// <summary>
-		/// 10006000 Статус (PROCESS_TYPE)
-		/// </summary>
-		public string ProcessType { get; set; }
-
-		/// <summary>
-		/// 10006000 Статус (справочный код) (PROCESS_TYPE_CODE)
-		/// </summary>
-		public ProcessStep ProcessType_Code { get; set; }
 
 		/// <summary>
 		/// 10006500 Телефонный номер (PHONE_NUMBER)
@@ -206,15 +190,15 @@ namespace MarketPlaceBusiness.Dto
 		public string EntranceType { get; set; }
 
 
-		/// <summary>
-		/// 10009009 Состояние отделки (RENOVATION)
-		/// </summary>
-		public string Renovation { get; set; }
+		///// <summary>
+		///// 10009009 Состояние отделки (RENOVATION)
+		///// </summary>
+		//public string Renovation { get; set; }
 
 
-		/// <summary>
-		/// 10009010 Линия застройки (BUILDING_LINE)
-		/// </summary>
-		public string BuildingLine { get; set; }
+		///// <summary>
+		///// 10009010 Линия застройки (BUILDING_LINE)
+		///// </summary>
+		//public string BuildingLine { get; set; }
     }
 }
