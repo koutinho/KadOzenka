@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.UI.Fluent;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
+//using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using ObjectModel.Core.Shared;
 
@@ -25,10 +25,10 @@ namespace KadOzenka.Web.Helpers
 			Expression<Func<TModel, TValue>> expression, IEnumerable<DropDownTreeItemModel> data, string dataTextField = "Text",
 			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null)
 		{
-			ModelExplorer modelExplorer =
-				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
+			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
 
-			var htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			string htmlFieldName = GetExpressionText(html, expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
 			var className = name.Replace(".", "_").Replace('[', '_').Replace(']', '_');
 			if (!string.IsNullOrEmpty(idPrefix))
@@ -140,10 +140,10 @@ namespace KadOzenka.Web.Helpers
 			Expression<Func<TModel, TValue>> expression, IEnumerable data, string dataTextField = "Text",
 			string dataValueField = "Value", string filter = "contains", bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null, string modelPrefix = null)
 		{
-			ModelExplorer modelExplorer =
-				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
+			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
 
-			var htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			string htmlFieldName = GetExpressionText(html, expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
 		    if (!string.IsNullOrEmpty(modelPrefix))
 		    {
@@ -266,10 +266,10 @@ namespace KadOzenka.Web.Helpers
 			Expression<Func<TModel, TValue>> expression, IEnumerable data, string dataTextField = "Text",
 			string dataValueField = "Value", string filter = "contains", double minLength = 3)
 		{
-			ModelExplorer modelExplorer =
-				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
+			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
 
-			var htmlFieldName = ExpressionHelper.GetExpressionText(expression);
+			string htmlFieldName = GetExpressionText(html, expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
 			var textName = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName) + "Text";
 
@@ -361,8 +361,8 @@ namespace KadOzenka.Web.Helpers
 			Expression<Func<TModel, TValue>> expression,
 			long? referenceId, bool isReadonly = true, bool withOptionLabel = true, string filter = "contains")
 		{
-			ModelExplorer modelExplorer =
-				ExpressionMetadataProvider.FromLambdaExpression(expression, html.ViewData, html.MetadataProvider);
+			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
+			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
 
 			List<OMReferenceItem> referenceItems = ReferencesCommon.GetItems(referenceId.GetValueOrDefault(-1), false);
 			List<SelectListItem> dataSource = referenceItems
@@ -401,6 +401,14 @@ namespace KadOzenka.Web.Helpers
 					</div>
 				</div>");
 			return html.Raw(str);
+		}
+		public static string GetExpressionText<TModel, TResult>(
+		   this IHtmlHelper<TModel> htmlHelper,
+		   Expression<Func<TModel, TResult>> expression)
+		{
+			var expresionProvider = htmlHelper.ViewContext.HttpContext.RequestServices
+			.GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
+			return expresionProvider.GetExpressionText(expression);
 		}
 	}
 }

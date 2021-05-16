@@ -171,7 +171,7 @@ namespace CIPJS
                             .Build()));
                         opts.Filters.Add(new MasterPageHeaderAttribute());
                     })
-                    .AddJsonOptions(options =>
+                    .AddNewtonsoftJson(options =>
                         options.SerializerSettings.ContractResolver = new DefaultContractResolver());
                 services.Configure<FormOptions>(x =>
                 {
@@ -236,29 +236,50 @@ namespace CIPJS
                 app.UseSession();
                 app.UseAuthentication();
 
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
-                routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
-                //routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
-                routes.MapHub<EsHub>("/esCheckProgress");
-                routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
-                routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
-                routes.MapHub<UrgentMessageHub>("/coreMessageData");
-                routes.MapHub<NotificationMessageHub>("/coreMessagesList");
-                routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
-            });
+                //app.UseSignalR(routes =>
+                //{
+                //    routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
+                //    routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
+                //    //routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
+                //    routes.MapHub<EsHub>("/esCheckProgress");
+                //    routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
+                //    routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
+                //    routes.MapHub<UrgentMessageHub>("/coreMessageData");
+                //    routes.MapHub<NotificationMessageHub>("/coreMessagesList");
+                //    routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
+                //});
 
-                app.UseMvc(routes =>
+                //app.UseMvc(routes =>
+                //{
+                //    routes.MapRoute(
+                //        name: "Register",
+                //        template: "RegistersView/{registerId}",
+                //        defaults: new {controller = "RegistersView", action = "Index"});
+                //    routes.MapRoute(
+                //        name: "default",
+                //        template: "{controller=Home}/{action=Index}/{id?}");
+                //});
+
+                app.UseRouting();
+                app.UseEndpoints(endpoints =>
                 {
-                    routes.MapRoute(
+                    endpoints.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
+                    endpoints.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
+                    endpoints.MapHub<EsHub>("/esCheckProgress");
+                    endpoints.MapHub<ActivateCoordinates>("/ActivateCoordinates");
+                    endpoints.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
+                    endpoints.MapHub<UrgentMessageHub>("/coreMessageData");
+                    endpoints.MapHub<NotificationMessageHub>("/coreMessagesList");
+                    endpoints.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
+                    endpoints.MapControllerRoute(
                         name: "Register",
-                        template: "RegistersView/{registerId}",
-                        defaults: new {controller = "RegistersView", action = "Index"});
-                    routes.MapRoute(
+                        pattern: "RegistersView/{registerId}",
+                        defaults: new { controller = "RegistersView", action = "Index" });
+                    endpoints.MapControllerRoute(
                         name: "default",
-                        template: "{controller=Home}/{action=Index}/{id?}");
+                        pattern: "{controller=Home}/{action=Index}/{id?}");
                 });
+
                 app.UseSerilogRequestLogging();
                 app.UseWebSockets();
 

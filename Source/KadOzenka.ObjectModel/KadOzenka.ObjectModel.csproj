@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Platform" Version="1.0.390" />
+    <PackageReference Include="Platform" Version="1.0.392-beta.2" />
   </ItemGroup>
 
   <ItemGroup>

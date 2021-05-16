@@ -9,7 +9,7 @@ namespace KadOzenka.LongProcessService
 {
     public class Startup
     {
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             Log.Information("Configure called");
             app.UseMiddleware<SerilogMiddleware>();

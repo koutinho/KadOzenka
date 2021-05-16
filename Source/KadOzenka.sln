@@ -75,7 +75,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MarketPlaceBusiness", "Mark
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MarketPlace", "MarketPlace", "{FB8DB891-8531-4AF9-B6F3-C8177868F211}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KadOzenka.ObjectModelEnum", "KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj", "{15D54D99-B9A2-49D7-ABB3-2413DF68F45E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.ObjectModelEnum", "KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj", "{15D54D99-B9A2-49D7-ABB3-2413DF68F45E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
