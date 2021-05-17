@@ -3,9 +3,9 @@ using ObjectModel.Directory;
 
 namespace MarketPlaceBusiness.Dto
 {
-    public class MarketObjectDto
-    {
-	    public long Id { get; set; }
+	public class MarketObjectDto
+	{
+		public long Id { get; set; }
 
 		/// <summary>
 		/// 10002300 Источник информации (MARKET)
@@ -91,12 +91,17 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
 
-
 		/// <summary>
 		/// 10007800 Дата загрузки (download_date)
 		/// </summary>
-		public DateTime? DownloadDate;
+		public DateTime? DownloadDate { get; set; }
 
+		/// <summary>
+		/// 10007900 Внешний Id объявления (external_advertisement_id)
+		/// </summary>
+		public string ExternalAdvertisementId { get; set; }
+		
+		
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)
 		///// </summary>
@@ -106,5 +111,5 @@ namespace MarketPlaceBusiness.Dto
 		///// 10009010 Линия застройки (BUILDING_LINE)
 		///// </summary>
 		//public string BuildingLine { get; set; }
-    }
+	}
 }

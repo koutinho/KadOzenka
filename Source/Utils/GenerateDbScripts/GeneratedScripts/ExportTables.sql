@@ -68098,6 +68098,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'external_advertisement_id')) then
+        execute 'alter table market_core_object add "external_advertisement_id" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68286,6 +68295,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'download_date')) then
         execute 'alter table MARKET_CORE_OBJECT add "download_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'external_advertisement_id')) then
+        execute 'alter table MARKET_CORE_OBJECT add "external_advertisement_id" VARCHAR(255)';
     end if;
 end $$;
 

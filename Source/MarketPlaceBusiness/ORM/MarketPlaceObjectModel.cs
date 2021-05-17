@@ -392,6 +392,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _externaladvertisementid;
+        /// <summary>
+        /// 10007900 Внешний Id объявления (external_advertisement_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007900)]
+        public string ExternalAdvertisementId
+        {
+            get
+            {
+                CheckPropertyInited("ExternalAdvertisementId");
+                return _externaladvertisementid;
+            }
+            set
+            {
+                _externaladvertisementid = value;
+                NotifyPropertyChanged("ExternalAdvertisementId");
+            }
+        }
+
     }
 }
 

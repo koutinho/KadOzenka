@@ -119,6 +119,14 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ExternalAdvertisementId, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.ExternalAdvertisementId, isReadonly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
                         @*<div class="col-sm-2">
                             TODO KOMO-1: сделать через справочник
                             <label class="control-label">Состояние отделки</label>
