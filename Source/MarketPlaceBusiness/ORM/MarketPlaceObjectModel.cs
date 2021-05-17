@@ -90,7 +90,7 @@ namespace ObjectModel.Market
 
         private decimal? _price;
         /// <summary>
-        /// 10002700 Цена сделки/предложения (PRICE)
+        /// 10002700 Стоимость (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
         public decimal? Price
@@ -150,7 +150,7 @@ namespace ObjectModel.Market
 
         private string _address;
         /// <summary>
-        /// 10003100 Адресный ориентир (ADDRESS)
+        /// 10003100 Адрес (ADDRESS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003100)]
         public string Address
