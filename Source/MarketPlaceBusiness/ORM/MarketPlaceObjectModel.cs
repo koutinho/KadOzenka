@@ -35,7 +35,7 @@ namespace ObjectModel.Market
 
         private string _market;
         /// <summary>
-        /// 10002300 Источник информации (MARKET)
+        /// 10002300 Источник объявления (MARKET)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public string Market
@@ -55,7 +55,7 @@ namespace ObjectModel.Market
 
         private MarketTypes _market_Code;
         /// <summary>
-        /// 10002300 Источник информации (справочный код) (MARKET_CODE)
+        /// 10002300 Источник объявления (справочный код) (MARKET_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public MarketTypes Market_Code
@@ -90,7 +90,7 @@ namespace ObjectModel.Market
 
         private decimal? _price;
         /// <summary>
-        /// 10002700 Цена сделки/предложения (PRICE)
+        /// 10002700 Стоимость (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
         public decimal? Price
@@ -128,29 +128,9 @@ namespace ObjectModel.Market
         }
 
 
-        private DateTime? _parsertime;
-        /// <summary>
-        /// 10002800 Дата предложения (сделки) (PARSER_TIME)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002800)]
-        public DateTime? ParserTime
-        {
-            get
-            {
-                CheckPropertyInited("ParserTime");
-                return _parsertime;
-            }
-            set
-            {
-                _parsertime = value;
-                NotifyPropertyChanged("ParserTime");
-            }
-        }
-
-
         private string _address;
         /// <summary>
-        /// 10003100 Адресный ориентир (ADDRESS)
+        /// 10003100 Адрес (ADDRESS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003100)]
         public string Address
@@ -164,101 +144,6 @@ namespace ObjectModel.Market
             {
                 _address = value;
                 NotifyPropertyChanged("Address");
-            }
-        }
-
-
-        private decimal? _lat;
-        /// <summary>
-        /// 10003500 Широта (LAT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003500)]
-        public decimal? Lat
-        {
-            get
-            {
-                CheckPropertyInited("Lat");
-                return _lat;
-            }
-            set
-            {
-                _lat = value;
-                NotifyPropertyChanged("Lat");
-            }
-        }
-
-
-        private string _dealtype;
-        /// <summary>
-        /// 10003600 Тип сделки (DEAL_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003600)]
-        public string DealType
-        {
-            get
-            {
-                CheckPropertyInited("DealType");
-                return _dealtype;
-            }
-            set
-            {
-                _dealtype = value;
-                NotifyPropertyChanged("DealType");
-            }
-        }
-
-
-        private DealType _dealtype_Code;
-        /// <summary>
-        /// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003600)]
-        public DealType DealType_Code
-        {
-            get
-            {
-                CheckPropertyInited("DealType_Code");
-                return this._dealtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_dealtype))
-                    {
-                         _dealtype = descr;
-                    }
-                }
-                else
-                {
-                     _dealtype = descr;
-                }
-
-                this._dealtype_Code = value;
-                NotifyPropertyChanged("DealType");
-                NotifyPropertyChanged("DealType_Code");
-            }
-        }
-
-
-        private decimal? _lng;
-        /// <summary>
-        /// 10004000 Долгота (LNG)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004000)]
-        public decimal? Lng
-        {
-            get
-            {
-                CheckPropertyInited("Lng");
-                return _lng;
-            }
-            set
-            {
-                _lng = value;
-                NotifyPropertyChanged("Lng");
             }
         }
 
@@ -374,61 +259,6 @@ namespace ObjectModel.Market
                 this._propertymarketsegment_Code = value;
                 NotifyPropertyChanged("PropertyMarketSegment");
                 NotifyPropertyChanged("PropertyMarketSegment_Code");
-            }
-        }
-
-
-        private string _wallmaterial;
-        /// <summary>
-        /// 10007100 Материал стен (WALL_MATERIAL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007100)]
-        public string WallMaterial
-        {
-            get
-            {
-                CheckPropertyInited("WallMaterial");
-                return _wallmaterial;
-            }
-            set
-            {
-                _wallmaterial = value;
-                NotifyPropertyChanged("WallMaterial");
-            }
-        }
-
-
-        private WallMaterial _wallmaterial_Code;
-        /// <summary>
-        /// 10007100 Материал стен (справочный код) (WALL_MATERIAL_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007100)]
-        public WallMaterial WallMaterial_Code
-        {
-            get
-            {
-                CheckPropertyInited("WallMaterial_Code");
-                return this._wallmaterial_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_wallmaterial))
-                    {
-                         _wallmaterial = descr;
-                    }
-                }
-                else
-                {
-                     _wallmaterial = descr;
-                }
-
-                this._wallmaterial_Code = value;
-                NotifyPropertyChanged("WallMaterial");
-                NotifyPropertyChanged("WallMaterial_Code");
             }
         }
 

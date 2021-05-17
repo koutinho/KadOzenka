@@ -24,10 +24,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long Id { get; set; }
 		[DisplayName("Источник")]
 		public string Market { get; set; }
-		[DisplayName("Тип сделки")]
-		public string DealType { get; set; }
-        public DealType DealTypeCode { get; set; }
-		public DateTime? ParserTime { get; set; }
 		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
@@ -42,8 +38,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long? FloorNumber { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
-		public decimal? Latitude { get; set; }
-		public decimal? Longitude { get; set; }
 		public MarketTypes MarketType { get; set; }
         public string CIPJSType { get; set; }
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
@@ -63,25 +57,17 @@ namespace KadOzenka.Web.Models.MarketObject
             {
                 Id = entity.Id,
                 Market = entity.Market,
-                DealType = entity.DealType,
-                DealTypeCode = entity.DealType_Code,
-                ParserTime = entity.ParserTime,
                 Address = entity.Address,
                 Area = entity.Area,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
 				FloorNumber = entity.FloorNumber,
-				Latitude = entity.Lat,
-				Longitude = entity.Lng,
 				MarketType = entity.Market_Code,
                 CIPJSType = entity.PropertyTypesCIPJS,
                 CIPJSTypeCode = entity.PropertyTypesCIPJS_Code,
                 MarketSegment = entity.PropertyMarketSegment,
                 MarketSegmentCode = entity.PropertyMarketSegment_Code,
-                PricePerSquareMeter =
-					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
-					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
-						? GetPricePerSquareMeter(entity) : (decimal?) null,
+                PricePerSquareMeter = GetPricePerSquareMeter(entity),
                 QualityClassCode = entity.QualityClass_Code,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
