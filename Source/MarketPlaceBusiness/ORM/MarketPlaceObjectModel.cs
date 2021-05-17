@@ -35,7 +35,7 @@ namespace ObjectModel.Market
 
         private string _market;
         /// <summary>
-        /// 10002300 Источник информации (MARKET)
+        /// 10002300 Источник объявления (MARKET)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public string Market
@@ -55,7 +55,7 @@ namespace ObjectModel.Market
 
         private MarketTypes _market_Code;
         /// <summary>
-        /// 10002300 Источник информации (справочный код) (MARKET_CODE)
+        /// 10002300 Источник объявления (справочный код) (MARKET_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public MarketTypes Market_Code
@@ -259,61 +259,6 @@ namespace ObjectModel.Market
                 this._propertymarketsegment_Code = value;
                 NotifyPropertyChanged("PropertyMarketSegment");
                 NotifyPropertyChanged("PropertyMarketSegment_Code");
-            }
-        }
-
-
-        private string _wallmaterial;
-        /// <summary>
-        /// 10007100 Материал стен (WALL_MATERIAL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007100)]
-        public string WallMaterial
-        {
-            get
-            {
-                CheckPropertyInited("WallMaterial");
-                return _wallmaterial;
-            }
-            set
-            {
-                _wallmaterial = value;
-                NotifyPropertyChanged("WallMaterial");
-            }
-        }
-
-
-        private WallMaterial _wallmaterial_Code;
-        /// <summary>
-        /// 10007100 Материал стен (справочный код) (WALL_MATERIAL_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007100)]
-        public WallMaterial WallMaterial_Code
-        {
-            get
-            {
-                CheckPropertyInited("WallMaterial_Code");
-                return this._wallmaterial_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_wallmaterial))
-                    {
-                         _wallmaterial = descr;
-                    }
-                }
-                else
-                {
-                     _wallmaterial = descr;
-                }
-
-                this._wallmaterial_Code = value;
-                NotifyPropertyChanged("WallMaterial");
-                NotifyPropertyChanged("WallMaterial_Code");
             }
         }
 

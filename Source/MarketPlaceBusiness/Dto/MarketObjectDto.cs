@@ -63,24 +63,10 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public string PropertyMarketSegment { get; set; }
 
-
 		/// <summary>
 		/// 10007000 Сегмент рынка (справочный код) (PROPERTY_MARKET_SEGMENT_CODE)
 		/// </summary>
 		public MarketSegment PropertyMarketSegment_Code { get; set; }
-
-
-		/// <summary>
-		/// 10007100 Материал стен (WALL_MATERIAL)
-		/// </summary>
-		public string WallMaterial { get; set; }
-
-
-		/// <summary>
-		/// 10007100 Материал стен (справочный код) (WALL_MATERIAL_CODE)
-		/// </summary>
-		public WallMaterial WallMaterial_Code { get; set; }
-
 
 		/// <summary>
 		/// 10007200 Класс качества (QUALITY_CLASS)
