@@ -39,16 +39,6 @@ namespace MarketPlaceBusiness.Dto
 		public string Address { get; set; }
 
 		/// <summary>
-		/// 10003600 Тип сделки (DEAL_TYPE)
-		/// </summary>
-		public string DealType { get; set; }
-
-		/// <summary>
-		/// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
-		/// </summary>
-		public DealType DealType_Code { get; set; }
-
-		/// <summary>
 		/// 10004100 Номер этажа (FLOOR_NUMBER)
 		/// </summary>
 		public long? FloorNumber { get; set; }

@@ -168,61 +168,6 @@ namespace ObjectModel.Market
         }
 
 
-        private string _dealtype;
-        /// <summary>
-        /// 10003600 Тип сделки (DEAL_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003600)]
-        public string DealType
-        {
-            get
-            {
-                CheckPropertyInited("DealType");
-                return _dealtype;
-            }
-            set
-            {
-                _dealtype = value;
-                NotifyPropertyChanged("DealType");
-            }
-        }
-
-
-        private DealType _dealtype_Code;
-        /// <summary>
-        /// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003600)]
-        public DealType DealType_Code
-        {
-            get
-            {
-                CheckPropertyInited("DealType_Code");
-                return this._dealtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_dealtype))
-                    {
-                         _dealtype = descr;
-                    }
-                }
-                else
-                {
-                     _dealtype = descr;
-                }
-
-                this._dealtype_Code = value;
-                NotifyPropertyChanged("DealType");
-                NotifyPropertyChanged("DealType_Code");
-            }
-        }
-
-
         private long? _floornumber;
         /// <summary>
         /// 10004100 Номер этажа (FLOOR_NUMBER)

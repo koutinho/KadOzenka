@@ -20,18 +20,6 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Market" />
                         </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Тип сделки</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input class="k-textbox" readonly value="@Model.DealType" />
-                        </div>
-                        <div class="col-sm-2">
-                            @if (Model.DealTypeCode == DealType.RentDeal || Model.DealTypeCode == DealType.SaleDeal)
-                            {<label class="control-label">Дата сделки</label>}
-                            else
-                            {<label class="control-label">Дата предложения</label>}
-                        </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">

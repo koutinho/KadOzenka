@@ -232,3 +232,8 @@ ALTER TABLE market_core_object DROP COLUMN LNG;
 delete from core_register_attribute where id = 10003500;
 ALTER TABLE market_core_object DROP COLUMN LAT;
 
+delete from core_register_attribute where id = 10003600;
+ALTER TABLE market_core_object DROP COLUMN DEAL_TYPE;
+ALTER TABLE market_core_object DROP COLUMN DEAL_TYPE_CODE;
+
+

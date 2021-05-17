@@ -70,9 +70,9 @@ namespace KadOzenka.Web.Controllers
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
-            var analogItem = query.Select(x => new { x.Id, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
+            var analogItem = query.Select(x => new { x.Id, x.PropertyMarketSegment, x.PropertyTypesCIPJS }).Execute().ToList();
             analogItem.ForEach(x => point.Add(new {
-                points = new[] { 0, 0 }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = FormDealType(x.DealType), propertyType = x.PropertyTypesCIPJS
+                points = new[] { 0, 0 }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = 0, propertyType = x.PropertyTypesCIPJS
             }));
             return Json(new { token = token, arr = point, allCount = size });
         }
@@ -135,7 +135,7 @@ namespace KadOzenka.Web.Controllers
                     allData.Add(new
                     {
                         segment = FormSegment(x.PropertyMarketSegment),
-                        dealType = x.DealType,
+                        dealType = string.Empty,
                         propertyType = x.PropertyTypesCIPJS,
                         propertyTypeCode = x.PropertyTypesCIPJS_Code,
                         marketSegment = x.PropertyMarketSegment,
@@ -180,7 +180,6 @@ namespace KadOzenka.Web.Controllers
             if (filters != null)
             {
                 propertyTypes = filters.Where(x => x.ReferenceId == Consts.PropertyTypesCIPJSAttribute.ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
-                dealTypes = filters.Where(x => x.ReferenceId == Consts.DealTypeAttribute.ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
                 marketSegments = filters.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
             }
             var propertyTypeList =
@@ -212,15 +211,6 @@ namespace KadOzenka.Web.Controllers
                         Value = x.Value, 
                         Name = x.Name,
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
-                    });
-            var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.DealTypeAttribute.ReferenceId)
-                    .OrderBy(x => x.Value).SelectAll().Execute()
-                    .OrderBy(x => x.ItemId).Select(x => new {
-                        Id = x.ItemId, 
-                        Code = x.Code, 
-                        Value = x.Value, 
-                        Name = x.Name,
-                        Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false
                     });
             var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.MarketAttribute.ReferenceId).And(x => x.ItemId <= (int) MarketTypes.Rosreestr)
                     .OrderBy(x => x.Value).SelectAll().Execute()
@@ -262,12 +252,12 @@ namespace KadOzenka.Web.Controllers
                 },
                 dealTypeFilter = new
                 {
-                    typeControl = typeControl,
+                    typeControl = string.Empty,
                     type = type,
-                    text = Consts.DealTypeAttribute.Name,
-                    dealTypeList = dealTypeList,
-                    referenceId = Consts.DealTypeAttribute.ReferenceId,
-                    id = Consts.DealTypeAttribute.Id
+                    text = string.Empty,
+                    dealTypeList = new List<OMReferenceItem>(),
+                    referenceId = 0,
+                    id = 0
                 },
                 districtTypeFilter = new
                 {
@@ -369,7 +359,7 @@ namespace KadOzenka.Web.Controllers
 	    {
 		    var marketObject = MarketObjectService.GetMappedObjectById(objectId);
             if (marketObject == null)throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
-            query.And(x => x.DealType_Code == marketObject.DealType_Code && x.PropertyMarketSegment_Code == marketObject.PropertyMarketSegment_Code);
+            query.And(x => x.PropertyMarketSegment_Code == marketObject.PropertyMarketSegment_Code);
 	    }
 
 		private void PrepareQueryByUserFilter(QSQuery<OMCoreObject> query)
@@ -396,16 +386,7 @@ namespace KadOzenka.Web.Controllers
 						query.And(x => list.Contains(x.PropertyMarketSegment));
 					}
 				}
-				if (filters.Any(f => f.Id == Consts.DealTypeAttribute.Id))
-				{
-					var filter = filters.First(f => f.Id == Consts.DealTypeAttribute.Id);
-					if (filter.ValueLongArrayCasted != null)
-					{
-						var list = filter.ValueLongArrayCasted.Select(y => ((DealType)y).GetEnumDescription()).ToList();
-						query.And(x => list.Contains(x.DealType));
-					}
-				}
-				if (filters.Any(f => f.Id == Consts.PriceAttributeId))
+                if (filters.Any(f => f.Id == Consts.PriceAttributeId))
 				{
 					var filter = filters.First(f => f.Id == Consts.PriceAttributeId);
 					if (filter.From.HasValue) query.And(x => x.Price >= filter.From.Value);
