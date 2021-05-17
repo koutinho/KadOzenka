@@ -247,4 +247,5 @@ ALTER TABLE market_core_object DROP COLUMN WALL_MATERIAL_CODE;
 update core_register_attribute set name='Адрес' where id=10003100;
 update core_register_attribute set name='Стоимость' where id=10002700;
 update core_register_attribute set name='Источник объявления' where id=10002300;
+update core_register_attribute set name='Этаж' where id=10004100;
 
