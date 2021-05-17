@@ -10,14 +10,12 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		public const long SetPriorityGroupProcessTypeId = 12;
 		public const long HarmonizationProcessTypeId = 13;
-		public const long HarmonizationCodProcessTypeId = 14;
 
 		public List<LongProcessDto> GetCurrentLongProcessesList()
 		{
 			return OMQueue.Where(x => 
 				(x.ProcessTypeId == SetPriorityGroupProcessTypeId ||
-				   x.ProcessTypeId == HarmonizationProcessTypeId ||
-				   x.ProcessTypeId == HarmonizationCodProcessTypeId)
+				   x.ProcessTypeId == HarmonizationProcessTypeId)
 				&& (x.Status_Code == Status.Added
 					  || x.Status_Code == Status.PrepareToRun
 					  || x.Status_Code == Status.Running))

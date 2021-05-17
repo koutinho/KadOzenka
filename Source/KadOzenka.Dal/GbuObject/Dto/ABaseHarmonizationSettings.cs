@@ -118,23 +118,4 @@ namespace KadOzenka.Dal.GbuObject.Dto
     {
 
     }
-
-    /// <summary>
-    /// Настройки гармонизации с использованием справочника ЦОД
-    /// </summary>
-    public class HarmonizationCODSettings : ABaseHarmonizationSettings
-    {
-        /// <summary>
-        /// Идентификатор задания ЦОД
-        /// </summary>
-        public long? IdCodJob;
-        /// <summary>
-        /// Значение по умолчанию 
-        /// </summary>
-        public string DefaultValue;
-        /// <summary>
-        /// Документ для значения по умолчанию 
-        /// </summary>
-        public long? IdDocument;
-    }
 }

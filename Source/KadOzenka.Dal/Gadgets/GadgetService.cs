@@ -213,7 +213,6 @@ namespace KadOzenka.Dal.Gadgets
 
             data.Rows.Add("/RegistersView/GbuObjects", "Реестр объектов недвижимости", _moveToPageSymbol);
             data.Rows.Add("/GbuObject/Harmonization?useMasterPage=true", "Выполнить гармонизацию", _moveToPageSymbol);
-            // data.Rows.Add("/GbuObject/HarmonizationCOD?useMasterPage=true", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/GroupingObject?useMasterPage=true", "Выполнить нормализацию", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/GroupingObjectFinalize?useMasterPage=true", "Финализировать нормализацию", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/Inheritance?useMasterPage=true", "Выполнить наследование", _moveToPageSymbol);
