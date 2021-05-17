@@ -42,8 +42,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long? FloorNumber { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
-		public decimal? Latitude { get; set; }
-		public decimal? Longitude { get; set; }
 		public MarketTypes MarketType { get; set; }
         public string CIPJSType { get; set; }
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
@@ -71,8 +69,6 @@ namespace KadOzenka.Web.Models.MarketObject
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
 				FloorNumber = entity.FloorNumber,
-				Latitude = entity.Lat,
-				Longitude = entity.Lng,
 				MarketType = entity.Market_Code,
                 CIPJSType = entity.PropertyTypesCIPJS,
                 CIPJSTypeCode = entity.PropertyTypesCIPJS_Code,

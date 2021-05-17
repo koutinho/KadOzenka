@@ -168,26 +168,6 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _lat;
-        /// <summary>
-        /// 10003500 Широта (LAT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003500)]
-        public decimal? Lat
-        {
-            get
-            {
-                CheckPropertyInited("Lat");
-                return _lat;
-            }
-            set
-            {
-                _lat = value;
-                NotifyPropertyChanged("Lat");
-            }
-        }
-
-
         private string _dealtype;
         /// <summary>
         /// 10003600 Тип сделки (DEAL_TYPE)
@@ -239,26 +219,6 @@ namespace ObjectModel.Market
                 this._dealtype_Code = value;
                 NotifyPropertyChanged("DealType");
                 NotifyPropertyChanged("DealType_Code");
-            }
-        }
-
-
-        private decimal? _lng;
-        /// <summary>
-        /// 10004000 Долгота (LNG)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004000)]
-        public decimal? Lng
-        {
-            get
-            {
-                CheckPropertyInited("Lng");
-                return _lng;
-            }
-            set
-            {
-                _lng = value;
-                NotifyPropertyChanged("Lng");
             }
         }
 

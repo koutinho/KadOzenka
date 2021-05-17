@@ -141,28 +141,7 @@
                 </div>
             </div>
         </li>
-        <li id="Coordinates_Group" data-expand>
-            <span>Координаты</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            <label class="control-label">Долгота</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input id="lngTextBox" class="k-textbox" value="@Model.Longitude" />
-                        </div>
-                        <div class="col-sm-2">
-                            <label class="control-label">Широта</label>
-                        </div>
-                        <div class="col-sm-2">
-                            <input id="latTextBox" class="k-textbox" value="@Model.Latitude" />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
+
         @if (@Model.PriceHistories?.Count > 0)
         {
             <li id="Section_PriceHistoryChart" data-expand>
@@ -241,19 +220,6 @@
                 </div>
             </div>
         </li>
-    @if (Model.Latitude != null && Model.Longitude != null)
-        {
-            <li id="Section_Map" data-expand>
-                <span>На карте</span>
-                <div>
-                    <div class="form-horizontal col-sm-12">
-                        <div class="MapContainer">
-                            <div id="objectMap" class="Map"></div>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        }
     </ul>
     <div class="static-nav">
         <nav id="navigation-menu">
@@ -264,8 +230,6 @@
             <a href="#Section_Reestr">Данные Росреестра</a>
             <a href="#Section_OKS">Данные ОКС</a>
             <a href="#Section_Group">Группировка</a>
-            @if (Model.Latitude != null && Model.Longitude != null)
-            {<a href="#Section_Map">На карте</a>}
             <div style="position:absolute; bottom:0px; width:100%; display:flex; justify-content: space-between;" id="toolbar" data-role="toolbar" class="k-toolbar k-widget k-toolbar-resizable" tabindex="0">
                 <div tabindex="0" class="k-overflow-anchor k-button" style="visibility: hidden; width: 1px;">
                     <span class="k-icon k-i-more-vertical"></span>
@@ -379,8 +343,6 @@
         }
     });
 
-    document.getElementById("lngTextBox").addEventListener("input", function () { dataChanged(); });
-    document.getElementById("latTextBox").addEventListener("input", function () { dataChanged(); });
     jQuery("#ObjectType").change(function () { dataChanged(); });
     jQuery("#ObjectMarketSegment").change(function () { dataChanged(); });
     $('#QualityClassCode').change(function () { dataChanged(); });
@@ -391,9 +353,7 @@
     document.getElementById("saveBtn").addEventListener("click", function () { saveData(); });
 
     function dataChanged() {
-        if ("@Model.Longitude.ToString()" != document.getElementById("lngTextBox").value ||
-            "@Model.Latitude.ToString()" != document.getElementById("latTextBox").value ||
-            "@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
+        if ("@Html.Raw((int)Model.CIPJSTypeCode)" != jQuery("#ObjectType").data("kendoDropDownList").value() ||
             "@Html.Raw((int)Model.MarketSegmentCode)" != jQuery("#ObjectMarketSegment").data("kendoDropDownList").value() ||
             "@((long)Model.QualityClassCode.GetValueOrDefault())" != $('#QualityClassCode').data("kendoDropDownList").value() ||
             @*"@Model.Renovation" != $('#Renovation').val() ||*@
@@ -419,8 +379,6 @@
 
             var data = {
                 id: @Model.Id,
-                lng: parseFloat(document.getElementById("lngTextBox").value.replace(',', '.')),
-                lat: parseFloat(document.getElementById("latTextBox").value.replace(',', '.')),
                 propertyTypeCode: parseInt(jQuery("#ObjectType").get()[0].value),
                 marketSegmentCode: parseInt(jQuery("#ObjectMarketSegment").get()[0].value),
                 qualityClassCode: $('#QualityClassCode').data("kendoDropDownList").value(),
@@ -532,8 +490,8 @@
 
     <script>
 		var objectMap;
-		var objectLatitude = @(Model.Latitude.HasValue ? Model.Latitude.ToString().Replace(',', '.') : "undefined");
-		var objectLongitude = @(Model.Longitude.HasValue ? Model.Longitude.ToString().Replace(',', '.') : "undefined");
+		var objectLatitude = "undefined";
+		var objectLongitude = "undefined";
 		var objectPricePerSquareMeter = '@(Model.PricePerSquareMeter.HasValue ? Math.Round(Model.PricePerSquareMeter.Value).ToString("#,0") : "")';
 
 		$(function() {
@@ -549,11 +507,7 @@
 				decimals: 0,
 				spinners: false
 			});
-			@if (Model.Latitude != null && Model.Longitude != null)
-			{
-				@Html.Raw(@"initMap();");
-			}
-		});
+        });
 
 		function onDataBoundPriceHistory(e) {
 			var items = e.sender.items();

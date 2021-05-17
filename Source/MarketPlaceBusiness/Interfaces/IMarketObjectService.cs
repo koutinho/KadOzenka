@@ -12,6 +12,6 @@ namespace MarketPlaceBusiness.Interfaces
 
 		//List<OMCoreObject> GetObjectsToAssignDistrictsRegionsAndZones();
 
-		List<OMCoreObject> GetObjectsToAssignCoordinates();
+		//List<OMCoreObject> GetObjectsToAssignCoordinates();
 	}
 }

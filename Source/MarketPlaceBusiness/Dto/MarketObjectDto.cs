@@ -39,25 +39,14 @@ namespace MarketPlaceBusiness.Dto
 		public string Address { get; set; }
 
 		/// <summary>
-		/// 10003500 Широта (LAT)
-		/// </summary>
-		public decimal? Lat { get; set; }
-
-		/// <summary>
 		/// 10003600 Тип сделки (DEAL_TYPE)
 		/// </summary>
 		public string DealType { get; set; }
-
 
 		/// <summary>
 		/// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
 		/// </summary>
 		public DealType DealType_Code { get; set; }
-
-		/// <summary>
-		/// 10004000 Долгота (LNG)
-		/// </summary>
-		public decimal? Lng { get; set; }
 
 		/// <summary>
 		/// 10004100 Номер этажа (FLOOR_NUMBER)

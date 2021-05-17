@@ -226,3 +226,9 @@ ALTER TABLE market_core_object DROP COLUMN IS_OPERATING_COSTS_INCLUDED;
 delete from core_register_attribute where id = 10004200;
 ALTER TABLE market_core_object DROP COLUMN FLOORS_COUNT;
 
+delete from core_register_attribute where id = 10004000;
+ALTER TABLE market_core_object DROP COLUMN LNG;
+
+delete from core_register_attribute where id = 10003500;
+ALTER TABLE market_core_object DROP COLUMN LAT;
+

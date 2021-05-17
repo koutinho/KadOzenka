@@ -66,17 +66,13 @@ namespace KadOzenka.Web.Controllers
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
             if (!marketSource.IsEmpty()) query.And(x => x.Market == marketSource);
-            if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
-            if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
-            if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
-            if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
-            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
+            var analogItem = query.Select(x => new { x.Id, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
             analogItem.ForEach(x => point.Add(new {
-                points = new[] { x.Lat, x.Lng }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = FormDealType(x.DealType), propertyType = x.PropertyTypesCIPJS
+                points = new[] { 0, 0 }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = FormDealType(x.DealType), propertyType = x.PropertyTypesCIPJS
             }));
             return Json(new { token = token, arr = point, allCount = size });
         }
@@ -161,8 +157,8 @@ namespace KadOzenka.Web.Controllers
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
                         lastUpdateDate = (DateTime?)null,
-                        lng = x.Lng,
-                        lat = x.Lat,
+                        lng = 0,
+                        lat = 0,
                         entranceType = string.Empty,
                         qualityClassCode = x.QualityClass_Code,
                         qualityClass = x.QualityClass,
@@ -336,8 +332,8 @@ namespace KadOzenka.Web.Controllers
 	            status = string.Empty,
 	            statusCode = string.Empty,
 	            id = marketObjectDto.Id,
-	            lng = marketObjectDto.Lng,
-	            lat = marketObjectDto.Lat,
+	            lng = 0,
+	            lat = 0,
 	            entranceType = string.Empty,
 	            qualityClassCode = marketObjectDto.QualityClass_Code,
 	            qualityClass = marketObjectDto.QualityClass,
