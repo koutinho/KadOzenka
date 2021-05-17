@@ -68089,6 +68089,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'download_date')) then
+        execute 'alter table market_core_object add "download_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68268,6 +68277,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'change_date')) then
         execute 'alter table MARKET_CORE_OBJECT add "change_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'download_date')) then
+        execute 'alter table MARKET_CORE_OBJECT add "download_date" TIMESTAMP';
     end if;
 end $$;
 

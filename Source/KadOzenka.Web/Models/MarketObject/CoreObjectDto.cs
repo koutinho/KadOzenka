@@ -48,6 +48,8 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
 		public QualityClass? QualityClassCode { get; set; }
+		[DisplayName("Дата загрузки")]
+		public DateTime? DownloadDate { get; set; }
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
 
@@ -69,6 +71,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 MarketSegmentCode = entity.PropertyMarketSegment_Code,
                 PricePerSquareMeter = GetPricePerSquareMeter(entity),
                 QualityClassCode = entity.QualityClass_Code,
+                DownloadDate = entity.DownloadDate,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
 			};

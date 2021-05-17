@@ -91,6 +91,12 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
 
+
+		/// <summary>
+		/// 10007800 Дата загрузки (download_date)
+		/// </summary>
+		public DateTime? DownloadDate;
+
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)
 		///// </summary>

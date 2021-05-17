@@ -150,7 +150,7 @@ namespace ObjectModel.Market
 
         private long? _floornumber;
         /// <summary>
-        /// 10004100 Номер этажа (FLOOR_NUMBER)
+        /// 10004100 Этаж (FLOOR_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10004100)]
         public long? FloorNumber
@@ -369,6 +369,26 @@ namespace ObjectModel.Market
                 this._propertytypescipjs_Code = value;
                 NotifyPropertyChanged("PropertyTypesCIPJS");
                 NotifyPropertyChanged("PropertyTypesCIPJS_Code");
+            }
+        }
+
+
+        private DateTime? _downloaddate;
+        /// <summary>
+        /// 10007800 Дата загрузки (download_date)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007800)]
+        public DateTime? DownloadDate
+        {
+            get
+            {
+                CheckPropertyInited("DownloadDate");
+                return _downloaddate;
+            }
+            set
+            {
+                _downloaddate = value;
+                NotifyPropertyChanged("DownloadDate");
             }
         }
 
