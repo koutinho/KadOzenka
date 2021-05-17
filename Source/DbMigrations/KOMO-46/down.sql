@@ -5,7 +5,7 @@ on conflict (id) do update set "process_name"='HarmonizationCodProcess', "class_
 update core_reference
 set simple_values = (
     with sel as (select jsonb_array_elements(regexp_replace(simple_values, ',\r\n\]', ']')::jsonb
-            || '{"Id":"3","Value":"Гармонизация по классификатору ЦОД","Name":"HarmonizationCOD" }') val
+            || '{"Id": 3,"Value":"Гармонизация по классификатору ЦОД","Name":"HarmonizationCOD" }') val
           from core_reference
           where referenceid = 801
     )
