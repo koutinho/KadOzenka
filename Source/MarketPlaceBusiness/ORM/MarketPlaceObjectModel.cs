@@ -128,26 +128,6 @@ namespace ObjectModel.Market
         }
 
 
-        private DateTime? _parsertime;
-        /// <summary>
-        /// 10002800 Дата предложения (сделки) (PARSER_TIME)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002800)]
-        public DateTime? ParserTime
-        {
-            get
-            {
-                CheckPropertyInited("ParserTime");
-                return _parsertime;
-            }
-            set
-            {
-                _parsertime = value;
-                NotifyPropertyChanged("ParserTime");
-            }
-        }
-
-
         private string _address;
         /// <summary>
         /// 10003100 Адрес (ADDRESS)

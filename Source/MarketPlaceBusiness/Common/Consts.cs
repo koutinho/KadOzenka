@@ -12,7 +12,6 @@ namespace MarketPlaceBusiness.Common
 		public static readonly QSColumn PrimaryKeyColumn = OMCoreObject.GetColumn(x => x.Id);
 		public static readonly QSColumn MarketSegmentCodeColumn = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code);
 		public static readonly QSColumn AreaColumn = OMCoreObject.GetColumn(x => x.Area);
-		public static readonly QSColumn ParserTimeColumn = OMCoreObject.GetColumn(x => x.ParserTime);
 		public static readonly QSColumn CadastralNumberColumn = OMCoreObject.GetColumn(x => x.CadastralNumber);
 
 

@@ -24,7 +24,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long Id { get; set; }
 		[DisplayName("Источник")]
 		public string Market { get; set; }
-		public DateTime? ParserTime { get; set; }
 		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
@@ -58,7 +57,6 @@ namespace KadOzenka.Web.Models.MarketObject
             {
                 Id = entity.Id,
                 Market = entity.Market,
-                ParserTime = entity.ParserTime,
                 Address = entity.Address,
                 Area = entity.Area,
 				Price = entity.Price,

@@ -236,6 +236,9 @@ delete from core_register_attribute where id = 10003600;
 ALTER TABLE market_core_object DROP COLUMN DEAL_TYPE;
 ALTER TABLE market_core_object DROP COLUMN DEAL_TYPE_CODE;
 
+delete from core_register_attribute where id = 10002800;
+ALTER TABLE market_core_object DROP COLUMN PARSER_TIME;
+
 update core_register_attribute set name='Адрес' where id=10003100;
 update core_register_attribute set name='Стоимость' where id=10002700;
 

@@ -66,7 +66,6 @@ namespace KadOzenka.Web.Controllers
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
             if (!marketSource.IsEmpty()) query.And(x => x.Market == marketSource);
-            if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
@@ -90,8 +89,6 @@ namespace KadOzenka.Web.Controllers
             List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
 
             PrepareQueryByUserFilter(query);
-
-            if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
             var DistrictsData = query.Select(x => new { x.PricePerMeter }).Execute().ToList();
 
@@ -155,7 +152,7 @@ namespace KadOzenka.Web.Controllers
                         floorNumber = x.FloorNumber,
                         floorCount = 0,
                         cadastralNumber = x.CadastralNumber,
-                        parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
+                        parserTime = (DateTime?)null,
                         lastUpdateDate = (DateTime?)null,
                         lng = 0,
                         lat = 0,

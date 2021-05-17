@@ -29,11 +29,6 @@ namespace MarketPlaceBusiness.Dto
 		public decimal? PricePerMeter { get; set; }
 
 		/// <summary>
-		/// 10002800 Дата предложения (сделки) (PARSER_TIME)
-		/// </summary>
-		public DateTime? ParserTime { get; set; }
-
-		/// <summary>
 		/// 10003100 Адресный ориентир (ADDRESS)
 		/// </summary>
 		public string Address { get; set; }

@@ -14,7 +14,6 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.Market_Code, SetPreCondition(y => y.Market_Code))
 				.ForMember(m => m.Price, SetPreCondition(y => y.Price))
 				.ForMember(m => m.PricePerMeter, SetPreCondition(y => y.PricePerMeter))
-				.ForMember(m => m.ParserTime, SetPreCondition(y => y.ParserTime))
 				.ForMember(m => m.Address, SetPreCondition(y => y.Address))
 				.ForMember(m => m.FloorNumber, SetPreCondition(y => y.FloorNumber))
 				.ForMember(m => m.Area, SetPreCondition(y => y.Area))
