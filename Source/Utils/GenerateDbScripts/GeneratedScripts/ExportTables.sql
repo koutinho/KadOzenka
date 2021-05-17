@@ -55975,76 +55975,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_DICTIONARY')) then
-		execute 'create table KO_COD_DICTIONARY ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'id')) then
-        execute 'alter table KO_COD_DICTIONARY add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'id_codjob')) then
-        execute 'alter table KO_COD_DICTIONARY add "id_codjob" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'value')) then
-        execute 'alter table KO_COD_DICTIONARY add "value" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'code')) then
-        execute 'alter table KO_COD_DICTIONARY add "code" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'source')) then
-        execute 'alter table KO_COD_DICTIONARY add "source" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'expert')) then
-        execute 'alter table KO_COD_DICTIONARY add "expert" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_214_q_pk')) then
-    execute 'alter table KO_COD_DICTIONARY add constraint reg_214_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_JOB')) then
 		execute 'create table KO_COD_JOB ("id" BIGINT NOT NULL)';
 	end if;
@@ -68107,6 +68037,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'advertisement_description')) then
+        execute 'alter table market_core_object add "advertisement_description" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68304,6 +68243,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'external_advertisement_id')) then
         execute 'alter table MARKET_CORE_OBJECT add "external_advertisement_id" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'advertisement_description')) then
+        execute 'alter table MARKET_CORE_OBJECT add "advertisement_description" VARCHAR(255)';
     end if;
 end $$;
 

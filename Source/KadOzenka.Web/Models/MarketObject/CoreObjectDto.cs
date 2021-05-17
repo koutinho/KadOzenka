@@ -54,6 +54,10 @@ namespace KadOzenka.Web.Models.MarketObject
 
 		[DisplayName("Внешний Id объявления")]
 		public string ExternalAdvertisementId { get; set; }
+
+		[DisplayName("Текст объявления")]
+		public string AdvertisementDescription { get; set; }
+
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
 
@@ -77,6 +81,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 QualityClassCode = entity.QualityClass_Code,
                 DownloadDate = entity.DownloadDate,
                 ExternalAdvertisementId = entity.ExternalAdvertisementId,
+                AdvertisementDescription = entity.AdvertisementDescription,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
 			};

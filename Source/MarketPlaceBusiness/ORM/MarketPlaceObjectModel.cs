@@ -412,6 +412,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _advertisementdescription;
+        /// <summary>
+        /// 10008000 Текст объявления (advertisement_description)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008000)]
+        public string AdvertisementDescription
+        {
+            get
+            {
+                CheckPropertyInited("AdvertisementDescription");
+                return _advertisementdescription;
+            }
+            set
+            {
+                _advertisementdescription = value;
+                NotifyPropertyChanged("AdvertisementDescription");
+            }
+        }
+
     }
 }
 

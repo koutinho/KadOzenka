@@ -125,6 +125,12 @@
                         <div class="col-sm-2">
                             @Html.KendoTextBoxFor(x => x.ExternalAdvertisementId, isReadonly: true)
                         </div>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.AdvertisementDescription, true)
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.KendoTextBoxFor(x => x.AdvertisementDescription, isReadonly: true)
+                        </div>
                     </div>
                     <div class="form-group">
                         @*<div class="col-sm-2">

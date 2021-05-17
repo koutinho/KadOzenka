@@ -100,8 +100,12 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007900 Внешний Id объявления (external_advertisement_id)
 		/// </summary>
 		public string ExternalAdvertisementId { get; set; }
-		
-		
+
+		/// <summary>
+		/// 10008000 Текст объявления (advertisement_description)
+		/// </summary>
+		public string AdvertisementDescription { get; set; }
+
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)
 		///// </summary>
