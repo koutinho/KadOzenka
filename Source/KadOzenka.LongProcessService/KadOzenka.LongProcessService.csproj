@@ -37,11 +37,6 @@
 		<None Update="Config\SqlQueries\**\*" CopyToOutputDirectory="PreserveNewest" />
 		<None Update="Config\ExcelTemplates\*" CopyToOutputDirectory="PreserveNewest" />
 
-		<Content Remove="gknImportSettings.json" />
-
-
-		<None Include="Config\Param\ModelingProcessConfig.xml" Condition="'$(Configuration)'=='Release' or '$(Configuration)'=='UAT'" CopyToOutputDirectory="PreserveNewest" />
-
 		<None Include="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" CopyToOutputDirectory="PreserveNewest" />
 		<None Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" CopyToOutputDirectory="PreserveNewest" />
