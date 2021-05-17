@@ -10,15 +10,14 @@ namespace MarketPlaceBusiness
 	{
 		public QSQuery<OMCoreObject> GetBaseQuery()
 		{
-			return OMCoreObject.Where(x => x.Lng != null && x.Lat != null && x.Market_Code == MarketTypes.Rosreestr);
+			//return OMCoreObject.Where(x => x.Lng != null && x.Lat != null && x.Market_Code == MarketTypes.Rosreestr);
+			return OMCoreObject.Where(x => x.Market_Code == MarketTypes.Rosreestr);
 		}
 
 		public void UpdateInfoFromCard(MarketObjectDto dto)
 		{
 			var obj = GetById(dto.Id);
 
-			obj.Lng = dto.Lng;
-			obj.Lat = dto.Lat;
 			obj.PropertyTypesCIPJS_Code = dto.PropertyTypesCIPJS_Code;
 			obj.PropertyMarketSegment_Code = dto.PropertyMarketSegment_Code;
 			obj.QualityClass_Code = dto.QualityClass_Code;

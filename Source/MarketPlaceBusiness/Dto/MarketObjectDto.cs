@@ -29,35 +29,9 @@ namespace MarketPlaceBusiness.Dto
 		public decimal? PricePerMeter { get; set; }
 
 		/// <summary>
-		/// 10002800 Дата предложения (сделки) (PARSER_TIME)
-		/// </summary>
-		public DateTime? ParserTime { get; set; }
-
-		/// <summary>
 		/// 10003100 Адресный ориентир (ADDRESS)
 		/// </summary>
 		public string Address { get; set; }
-
-		/// <summary>
-		/// 10003500 Широта (LAT)
-		/// </summary>
-		public decimal? Lat { get; set; }
-
-		/// <summary>
-		/// 10003600 Тип сделки (DEAL_TYPE)
-		/// </summary>
-		public string DealType { get; set; }
-
-
-		/// <summary>
-		/// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
-		/// </summary>
-		public DealType DealType_Code { get; set; }
-
-		/// <summary>
-		/// 10004000 Долгота (LNG)
-		/// </summary>
-		public decimal? Lng { get; set; }
 
 		/// <summary>
 		/// 10004100 Номер этажа (FLOOR_NUMBER)
@@ -89,24 +63,10 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public string PropertyMarketSegment { get; set; }
 
-
 		/// <summary>
 		/// 10007000 Сегмент рынка (справочный код) (PROPERTY_MARKET_SEGMENT_CODE)
 		/// </summary>
 		public MarketSegment PropertyMarketSegment_Code { get; set; }
-
-
-		/// <summary>
-		/// 10007100 Материал стен (WALL_MATERIAL)
-		/// </summary>
-		public string WallMaterial { get; set; }
-
-
-		/// <summary>
-		/// 10007100 Материал стен (справочный код) (WALL_MATERIAL_CODE)
-		/// </summary>
-		public WallMaterial WallMaterial_Code { get; set; }
-
 
 		/// <summary>
 		/// 10007200 Класс качества (QUALITY_CLASS)

@@ -57,7 +57,8 @@ namespace KadOzenka.Web.Controllers
 		[HttpGet]
 		public ActionResult DealTypeList()
 		{
-			var dealTypeReferenceId = Consts.DealTypeAttribute.ReferenceId;
+			//DealType
+			var dealTypeReferenceId = 110;
 			var dealTypeList = OMReferenceItem
 				.Where(x => x.ReferenceId == dealTypeReferenceId)
 				.OrderBy(x => x.Value)
@@ -129,21 +130,6 @@ namespace KadOzenka.Web.Controllers
 						Value = model.MarketSegmentItemIds,
 						ReferenceId = marketSegment.ReferenceId,
 						Id = marketSegment.Id,
-					};
-					subFilters.Add(filterModel.ConvertToString());
-				}
-				if (model.DealTypeItemIds?.Length > 0)
-				{
-					var dealType = Consts.DealTypeAttribute;
-					var filterModel = new FilterModel
-					{
-						TypeControl = "value",
-						Type = "REFERENCE",
-						Text =
-							$"{dealType.Name}: {string.Join(", ", model.DealTypeItemIds.Select(x => ((DealType) x).GetEnumDescription()))}",
-						Value = model.DealTypeItemIds,
-						ReferenceId = dealType.ReferenceId,
-						Id = dealType.Id,
 					};
 					subFilters.Add(filterModel.ConvertToString());
 				}

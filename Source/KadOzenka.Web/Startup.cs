@@ -242,7 +242,7 @@ namespace CIPJS
                 routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
                 //routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
                 routes.MapHub<EsHub>("/esCheckProgress");
-                routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
+                //routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                 routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                 routes.MapHub<UrgentMessageHub>("/coreMessageData");
                 routes.MapHub<NotificationMessageHub>("/coreMessagesList");
