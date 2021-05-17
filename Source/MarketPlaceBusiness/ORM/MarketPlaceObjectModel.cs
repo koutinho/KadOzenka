@@ -283,26 +283,6 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _floorscount;
-        /// <summary>
-        /// 10004200 Этажность (FLOORS_COUNT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004200)]
-        public long? FloorsCount
-        {
-            get
-            {
-                CheckPropertyInited("FloorsCount");
-                return _floorscount;
-            }
-            set
-            {
-                _floorscount = value;
-                NotifyPropertyChanged("FloorsCount");
-            }
-        }
-
-
         private decimal? _area;
         /// <summary>
         /// 10004300 Общая площадь (AREA)
@@ -559,26 +539,6 @@ namespace ObjectModel.Market
                 this._propertytypescipjs_Code = value;
                 NotifyPropertyChanged("PropertyTypesCIPJS");
                 NotifyPropertyChanged("PropertyTypesCIPJS_Code");
-            }
-        }
-
-
-        private bool? _isoperatingcostsincluded;
-        /// <summary>
-        /// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10009005)]
-        public bool? IsOperatingCostsIncluded
-        {
-            get
-            {
-                CheckPropertyInited("IsOperatingCostsIncluded");
-                return _isoperatingcostsincluded;
-            }
-            set
-            {
-                _isoperatingcostsincluded = value;
-                NotifyPropertyChanged("IsOperatingCostsIncluded");
             }
         }
 

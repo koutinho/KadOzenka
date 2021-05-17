@@ -65,11 +65,6 @@ namespace MarketPlaceBusiness.Dto
 		public long? FloorNumber { get; set; }
 
 		/// <summary>
-		/// 10004200 Этажность (FLOORS_COUNT)
-		/// </summary>
-		public long? FloorsCount { get; set; }
-
-		/// <summary>
 		/// 10004300 Общая площадь (AREA)
 		/// </summary>
 		public decimal? Area { get; set; }
@@ -135,11 +130,6 @@ namespace MarketPlaceBusiness.Dto
 		/// 10007700 Вид объекта недвижимости (справочный код) (PROPERTY_TYPETS_CIPJS_CODE)
 		/// </summary>
 		public PropertyTypesCIPJS PropertyTypesCIPJS_Code { get; set; }
-
-		/// <summary>
-		/// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
-		/// </summary>
-		public bool? IsOperatingCostsIncluded { get; set; }
 
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)

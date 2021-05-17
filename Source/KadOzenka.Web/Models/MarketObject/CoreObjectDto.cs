@@ -39,7 +39,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? Price { get; set; }
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
-		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
@@ -71,7 +70,6 @@ namespace KadOzenka.Web.Models.MarketObject
                 Area = entity.Area,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
-				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
 				Latitude = entity.Lat,
 				Longitude = entity.Lng,

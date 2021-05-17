@@ -218,3 +218,11 @@ ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_BARGAIN;
 delete from core_register_attribute where id = 10008900;
 ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_STAGE;
 
+delete from core_register_attribute where id = 10008000;
+
+delete from core_register_attribute where id = 10009005;
+ALTER TABLE market_core_object DROP COLUMN IS_OPERATING_COSTS_INCLUDED;
+
+delete from core_register_attribute where id = 10004200;
+ALTER TABLE market_core_object DROP COLUMN FLOORS_COUNT;
+

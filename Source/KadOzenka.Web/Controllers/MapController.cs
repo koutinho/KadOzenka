@@ -157,7 +157,7 @@ namespace KadOzenka.Web.Controllers
                         images = string.Empty,
                         id = x.Id,
                         floorNumber = x.FloorNumber,
-                        floorCount = x.FloorsCount,
+                        floorCount = 0,
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
                         lastUpdateDate = (DateTime?)null,
@@ -346,7 +346,7 @@ namespace KadOzenka.Web.Controllers
                 //TODO будет справочник
 	            buildingLine = string.Empty,
 	            floorNumber = marketObjectDto.FloorNumber,
-	            floorCount = marketObjectDto.FloorsCount
+	            floorCount = 0
             };
 
             return Json(result);
