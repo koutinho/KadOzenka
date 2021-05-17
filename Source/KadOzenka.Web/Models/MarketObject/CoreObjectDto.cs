@@ -31,31 +31,19 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
-		public string Metro { get; set; }
 		[DisplayName("Площадь")]
 		public decimal? Area { get; set; }
 		[DisplayName("Площадь")]
 		public string AreaStr { get; set; }
-		public string Description { get; set; }
 		[DisplayName("Цена")]
 		public decimal? Price { get; set; }
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
-		public string CadastralQuartal { get; set; }
-		public string BuildingCadastralNumber { get; set; }
-		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
-		public decimal? AreaKitchen { get; set; }
-		public decimal? AreaLiving { get; set; }
-		public long? Zone { get; set; }
-		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
-		public string Status { get; set; }
-		public ProcessStep StatusCode { get; set; }
 		public decimal? Latitude { get; set; }
 		public decimal? Longitude { get; set; }
-		public ProcessStep ProcessType { get; set; }
 		public MarketTypes MarketType { get; set; }
         public string CIPJSType { get; set; }
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
@@ -65,10 +53,9 @@ namespace KadOzenka.Web.Models.MarketObject
         public decimal? PricePerSquareMeter { get; set; }
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
-		public string EntranceType { get; set; }
 		public QualityClass? QualityClassCode { get; set; }
-		public string Renovation { get; set; }
-		public string BuildingLine { get; set; }
+		//public string Renovation { get; set; }
+		//public string BuildingLine { get; set; }
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -80,24 +67,12 @@ namespace KadOzenka.Web.Models.MarketObject
                 DealTypeCode = entity.DealType_Code,
                 ParserTime = entity.ParserTime,
                 Address = entity.Address,
-				Metro = entity.Metro,
-				Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
-				Description = entity.Description,
+                Area = entity.Area,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
-				CadastralQuartal = entity.CadastralQuartal,
-				BuildingCadastralNumber = entity.BuildingCadastralNumber,
-				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
-				AreaKitchen = entity.AreaKitchen,
-				AreaLiving = entity.AreaLiving,
-				Zone = entity.Zone,
-				Subgroup = entity.Subgroup,
-				Status = entity.ProcessType,
-				StatusCode = entity.ProcessType_Code,
 				Latitude = entity.Lat,
 				Longitude = entity.Lng,
-				ProcessType = entity.ProcessType_Code,
 				MarketType = entity.Market_Code,
                 CIPJSType = entity.PropertyTypesCIPJS,
                 CIPJSTypeCode = entity.PropertyTypesCIPJS_Code,
@@ -107,10 +82,9 @@ namespace KadOzenka.Web.Models.MarketObject
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
 					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
 						? GetPricePerSquareMeter(entity) : (decimal?) null,
-                EntranceType = entity.EntranceType,
                 QualityClassCode = entity.QualityClass_Code,
-                Renovation = entity.Renovation,
-				BuildingLine = entity.BuildingLine
+                //Renovation = entity.Renovation,
+                //BuildingLine = entity.BuildingLine
 			};
 			if (priceHistory?.Count > 0)
 			{
@@ -150,11 +124,8 @@ namespace KadOzenka.Web.Models.MarketObject
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
 			decimal? result;
-			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue &&
-			    entity.AreaLand.HasValue && entity.AreaLand != 0)
-				result = entity.Price / (entity.AreaLand * 100);
-
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+			
+			if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
 				result = entity.Price / entity.Area;
 
 			else

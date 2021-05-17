@@ -6,7 +6,8 @@ namespace MarketPlaceBusiness.Interfaces
 {
 	public interface IMarketObjectsForModelingService
 	{
-		List<MarketObjectPureOutSide> GetObjectsForFormation(bool isOks, long segment);
+		List<MarketObjectPure> GetObjectsForFormation(bool isOks, long segment);
+
 		CorrelationDto GetObjectsForCorrelation(List<long> objectIds, List<OMAttribute> attributes);
 	}
 }

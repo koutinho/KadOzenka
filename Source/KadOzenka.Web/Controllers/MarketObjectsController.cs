@@ -108,12 +108,12 @@ namespace KadOzenka.Web.Controllers
 			}
 		}
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_PROCESS)]
-        public ActionResult ActivateProcess()
-        {
-            return View("~/Views/AnalogCheck/ActivateDistrictsRegionsZones.cshtml");
-        }
+        //[HttpGet]
+        //[SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_PROCESS)]
+        //public ActionResult ActivateProcess()
+        //{
+        //    return View("~/Views/AnalogCheck/ActivateDistrictsRegionsZones.cshtml");
+        //}
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_ACTIVATE_COORDINATES)]

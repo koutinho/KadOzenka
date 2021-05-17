@@ -89,20 +89,20 @@ namespace KadOzenka.Web.Controllers
             var query = MarketObjectService.GetBaseQuery();
 
             var allDistricts = new List<OMReferenceItem>();
-            List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == Consts.NeighborhoodAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
-            List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == Consts.ZoneRegionAttribute.ReferenceId).Select(x => x.Value).Execute().ToList();
+            List<OMReferenceItem> allRegions = new List<OMReferenceItem>();
+            List<OMReferenceItem> allZones = new List<OMReferenceItem>();
             List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
 
             PrepareQueryByUserFilter(query);
 
             if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
 
-            var DistrictsData = query.Select(x => new { x.PricePerMeter, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
+            var DistrictsData = query.Select(x => new { x.PricePerMeter }).Execute().ToList();
 
             var districtList = new List<IGrouping<string, OMCoreObject>>();
-            var regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
-            var zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
-            var quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
+            var regionList = new List<IGrouping<string, OMCoreObject>>();
+            var zoneList = new List<IGrouping<string, OMCoreObject>>();
+            var quartalList = new List<IGrouping<string, OMCoreObject>>();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
                 new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allDistricts, districtList), colorsArray);
@@ -144,30 +144,30 @@ namespace KadOzenka.Web.Controllers
                         propertyTypeCode = x.PropertyTypesCIPJS_Code,
                         marketSegment = x.PropertyMarketSegment,
                         marketSegmentCode = x.PropertyMarketSegment_Code,
-                        status = x.ProcessType,
-                        statusCode = x.ProcessType_Code,
+                        status = string.Empty,
+                        statusCode = string.Empty,
                         source = x.Market,
                         price = x.Price,
                         area = x.Area,
-                        areaLand = x.AreaLand,
-                        roomsCount = x.RoomsCount,
+                        areaLand = (decimal?) null,
+                        roomsCount = (int?) null,
                         link = string.Empty,
-                        metro = x.Metro,
+                        metro = string.Empty,
                         address = x.Address,
                         images = string.Empty,
                         id = x.Id,
                         floorNumber = x.FloorNumber,
-                        floorCount = x.FloorsCount,
+                        floorCount = 0,
                         cadastralNumber = x.CadastralNumber,
                         parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
                         lastUpdateDate = (DateTime?)null,
                         lng = x.Lng,
                         lat = x.Lat,
-                        entranceType = x.EntranceType,
+                        entranceType = string.Empty,
                         qualityClassCode = x.QualityClass_Code,
                         qualityClass = x.QualityClass,
-                        renovation = x.Renovation,
-                        buildingLine = x.BuildingLine
+                        renovation = string.Empty,
+                        buildingLine = string.Empty
                     });
                 });
             }
@@ -306,7 +306,7 @@ namespace KadOzenka.Web.Controllers
         {
             List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyTypesCIPJSAttribute.ReferenceId).SelectAll().Execute();
             List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId).SelectAll().Execute();
-            List<OMReferenceItem> status = OMReferenceItem.Where(x => x.ReferenceId == Consts.ProcessTypeCodeAttribute.ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> status = new List<OMReferenceItem>();
             List<OMReferenceItem> qualityClass = OMReferenceItem.Where(x => x.ReferenceId == Consts.QualityClassCodeAttribute.ReferenceId).SelectAll().Execute();
             qualityClass.Add(new OMReferenceItem{ItemId = 0, Value = null});
 
@@ -333,18 +333,20 @@ namespace KadOzenka.Web.Controllers
 	            propertyTypeCode = marketObjectDto.PropertyTypesCIPJS_Code,
 	            marketSegment = marketObjectDto.PropertyMarketSegment,
 	            marketSegmentCode = marketObjectDto.PropertyMarketSegment_Code,
-	            status = marketObjectDto.ProcessType,
-	            statusCode = marketObjectDto.ProcessType_Code,
+	            status = string.Empty,
+	            statusCode = string.Empty,
 	            id = marketObjectDto.Id,
 	            lng = marketObjectDto.Lng,
 	            lat = marketObjectDto.Lat,
-	            entranceType = marketObjectDto.EntranceType,
+	            entranceType = string.Empty,
 	            qualityClassCode = marketObjectDto.QualityClass_Code,
 	            qualityClass = marketObjectDto.QualityClass,
-	            renovation = marketObjectDto.Renovation,
-	            buildingLine = marketObjectDto.BuildingLine,
+	            //TODO будет справочник
+                renovation = string.Empty,
+                //TODO будет справочник
+	            buildingLine = string.Empty,
 	            floorNumber = marketObjectDto.FloorNumber,
-	            floorCount = marketObjectDto.FloorsCount
+	            floorCount = 0
             };
 
             return Json(result);
@@ -412,11 +414,6 @@ namespace KadOzenka.Web.Controllers
 					var filter = filters.First(f => f.Id == Consts.PriceAttributeId);
 					if (filter.From.HasValue) query.And(x => x.Price >= filter.From.Value);
 					if (filter.To.HasValue) query.And(x => x.Price <= filter.To.Value);
-				}
-				if (filters.Any(f => f.Id == Consts.Metrottribute.Id))
-				{
-					var filter = filters.First(f => f.Id == Consts.Metrottribute.Id);
-					query.And(x => x.Metro.Contains(filter.ValueStringCasted));
 				}
 			}
 		}
