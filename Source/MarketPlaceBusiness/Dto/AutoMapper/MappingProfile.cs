@@ -27,7 +27,12 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.DownloadDate, SetPreCondition(y => y.DownloadDate))
 				.ForMember(m => m.ExternalAdvertisementId, SetPreCondition(y => y.ExternalAdvertisementId))
 				.ForMember(m => m.AdvertisementDescription, SetPreCondition(y => y.AdvertisementDescription))
-				.ForMember(m => m.AreaFrom, SetPreCondition(y => y.AreaFrom));
+				.ForMember(m => m.AreaFrom, SetPreCondition(y => y.AreaFrom))
+				.ForMember(m => m.Name, SetPreCondition(y => y.Name))
+				.ForMember(m => m.FlatNumber, SetPreCondition(y => y.FlatNumber))
+				.ForMember(m => m.SectionNumber, SetPreCondition(y => y.SectionNumber))
+				.ForMember(m => m.FlatType, SetPreCondition(y => y.FlatType))
+				;
 				//.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
 				//.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))
 		}

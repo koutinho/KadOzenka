@@ -452,6 +452,86 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _name;
+        /// <summary>
+        /// 10008200 Название (name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private long? _flatnumber;
+        /// <summary>
+        /// 10008300 Номер квартиры на площадке (flat_number)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008300)]
+        public long? FlatNumber
+        {
+            get
+            {
+                CheckPropertyInited("FlatNumber");
+                return _flatnumber;
+            }
+            set
+            {
+                _flatnumber = value;
+                NotifyPropertyChanged("FlatNumber");
+            }
+        }
+
+
+        private string _sectionnumber;
+        /// <summary>
+        /// 10008400 Номер секции (section_number)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008400)]
+        public string SectionNumber
+        {
+            get
+            {
+                CheckPropertyInited("SectionNumber");
+                return _sectionnumber;
+            }
+            set
+            {
+                _sectionnumber = value;
+                NotifyPropertyChanged("SectionNumber");
+            }
+        }
+
+
+        private string _flattype;
+        /// <summary>
+        /// 10008500 Тип квартиры (flat_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008500)]
+        public string FlatType
+        {
+            get
+            {
+                CheckPropertyInited("FlatType");
+                return _flattype;
+            }
+            set
+            {
+                _flattype = value;
+                NotifyPropertyChanged("FlatType");
+            }
+        }
+
     }
 }
 

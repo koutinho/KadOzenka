@@ -9,3 +9,15 @@ delete from core_register_attribute where id=10008000;
 
 alter table market_core_object drop column area_from;
 delete from core_register_attribute where id=10008100;
+
+alter table market_core_object drop column name;
+delete from core_register_attribute where id=10008200;
+
+alter table market_core_object drop column flat_number;
+delete from core_register_attribute where id=10008300;
+
+alter table market_core_object drop column section_number;
+delete from core_register_attribute where id=10008400;
+
+alter table market_core_object drop column flat_type;
+delete from core_register_attribute where id=10008500;

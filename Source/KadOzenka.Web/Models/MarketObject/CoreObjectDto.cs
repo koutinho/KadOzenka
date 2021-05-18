@@ -58,8 +58,21 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Текст объявления")]
 		public string AdvertisementDescription { get; set; }
 
-		[DisplayName("Площадь от ")]
+		[DisplayName("Площадь от")]
 		public decimal? AreaFrom { get; set; }
+
+		[DisplayName("Название")]
+		public string Name { get; set; }
+
+		[DisplayName("Номер на площадке")]
+		public long? FlatNumber { get; set; }
+
+		[DisplayName("Номер секции")]
+		public string SectionNumber { get; set; }
+
+		[DisplayName("Тип квартиры")]
+		public string FlatType { get; set; }
+
 
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
@@ -86,6 +99,10 @@ namespace KadOzenka.Web.Models.MarketObject
                 ExternalAdvertisementId = entity.ExternalAdvertisementId,
                 AdvertisementDescription = entity.AdvertisementDescription,
                 AreaFrom = entity.AreaFrom,
+                Name = entity.Name,
+                FlatNumber = entity.FlatNumber,
+				SectionNumber = entity.SectionNumber,
+				FlatType = entity.FlatType,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
 			};

@@ -111,6 +111,26 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public decimal? AreaFrom { get; set; }
 
+		/// <summary>
+		/// 10008200 Название (name)
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// 10008300 Номер квартиры на площадке (flat_number)
+		/// </summary>
+		public long? FlatNumber { get; set; }
+
+		/// <summary>
+		/// 10008400 Номер секции (section_number)
+		/// </summary>
+		public string SectionNumber { get; set; }
+
+		/// <summary>
+		/// 10008500 Тип квартиры (flat_type)
+		/// </summary>
+		public string FlatType { get; set; }
+
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)
 		///// </summary>
