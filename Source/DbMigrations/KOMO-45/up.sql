@@ -45,3 +45,8 @@ alter table market_core_object add "house_line" VARCHAR(255);
 alter table market_core_object add "house_line_code" BIGINT;
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10008600, 'Линия застройки домов', 100, 4, null, 12083, 'house_line', 'house_line_code', null, 0, null, null, 'HouseLine', 1, null, null, null, 0, 1, '2021-05-18 16:45:07.247678', 0);
+
+alter table market_core_object add "developer" VARCHAR(255);
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (10008700, 'Застройщик', 100, 4, null, null, 'developer', null, null, 0, null, null, 'Developer', 1, null, null, null, 0, 1, '2021-05-18 17:01:11.716191', 0);
+

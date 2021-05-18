@@ -150,5 +150,10 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008600 Линия застройки домов (справочный код) (house_line_code)
 		/// </summary>
 		public HouseLineType HouseLine_Code { get; set; }
+
+		/// <summary>
+		/// 10008700 Застройщик (developer)
+		/// </summary>
+		public string Developer { get; set; }
 	}
 }

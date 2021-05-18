@@ -79,6 +79,8 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Линия застройки")]
 		public string HouseLine { get; set; }
 
+		[DisplayName("Застройщик")]
+		public string Developer { get; set; }
 
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
@@ -111,9 +113,8 @@ namespace KadOzenka.Web.Models.MarketObject
 				FlatType = entity.FlatType,
 				DealType = entity.DealType,
 				HouseLine = entity.HouseLine,
-                //Renovation = entity.Renovation,
-                //BuildingLine = entity.BuildingLine
-			};
+				Developer = entity.Developer,
+            };
 			if (priceHistory?.Count > 0)
 			{
 				dto.PriceHistories = priceHistory

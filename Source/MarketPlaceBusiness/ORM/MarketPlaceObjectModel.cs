@@ -642,6 +642,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _developer;
+        /// <summary>
+        /// 10008700 Застройщик (developer)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008700)]
+        public string Developer
+        {
+            get
+            {
+                CheckPropertyInited("Developer");
+                return _developer;
+            }
+            set
+            {
+                _developer = value;
+                NotifyPropertyChanged("Developer");
+            }
+        }
+
     }
 }
 

@@ -25,3 +25,11 @@ delete from core_register_attribute where id=10008500;
 alter table market_core_object drop column deal_type;
 alter table market_core_object drop column deal_type_code;
 delete from core_register_attribute where id=10003600;
+
+alter table market_core_object drop column house_line;
+alter table market_core_object drop column house_line_code;
+delete from core_register_attribute where id=10008600;
+
+alter table market_core_object drop column developer;
+delete from core_register_attribute where id=10008700;
+

@@ -173,14 +173,13 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        @*<div class="col-sm-2">
-                            TODO KOMO-1: сделать через справочник
-                            <label class="control-label">Состояние отделки</label>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Developer, true)
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" id="Renovation" value="@Model.Renovation" />
-                        </div>*@
-                         <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.Developer, isReadonly: true)
+                        </div>
+                         <div class="col-sm-1 col-sm-offset-1">
                              @Html.CustomLabelFor(x => x.HouseLine, true)
                         </div>
                         <div class="col-sm-2">
