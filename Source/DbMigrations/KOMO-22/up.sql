@@ -1,7 +1,7 @@
 update core_reference
 set simple_values = (
     with sel as (select jsonb_array_elements(regexp_replace(simple_values, ',\n\]', ']')::jsonb
-        || '{"Id": 10,"Value":"Финализация нормализации":"NormalisationFinal" }') val
+        || '{"Id": 10,"Value":"Финализация нормализации", "Name":"NormalisationFinal" }') val
                  from core_reference
                  where referenceid = 801
     )
