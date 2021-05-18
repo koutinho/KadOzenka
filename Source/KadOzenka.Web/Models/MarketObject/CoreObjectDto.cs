@@ -73,6 +73,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Тип квартиры")]
 		public string FlatType { get; set; }
 
+		[DisplayName("Тип сделки")]
+		public string DealType { get; set; }
+
 
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
@@ -103,6 +106,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 FlatNumber = entity.FlatNumber,
 				SectionNumber = entity.SectionNumber,
 				FlatType = entity.FlatType,
+				DealType = entity.DealType,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
 			};

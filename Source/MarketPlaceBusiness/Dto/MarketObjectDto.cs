@@ -131,6 +131,16 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public string FlatType { get; set; }
 
+		/// <summary>
+		/// 10003600 Тип сделки (DEAL_TYPE)
+		/// </summary>
+		public string DealType { get; set; }
+
+		/// <summary>
+		/// 10003600 Тип сделки (справочный код) (DEAL_TYPE_CODE)
+		/// </summary>
+		public DealType DealType_Code { get; set; }
+
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)
 		///// </summary>

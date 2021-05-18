@@ -21,3 +21,7 @@ delete from core_register_attribute where id=10008400;
 
 alter table market_core_object drop column flat_type;
 delete from core_register_attribute where id=10008500;
+
+alter table market_core_object drop column deal_type;
+alter table market_core_object drop column deal_type_code;
+delete from core_register_attribute where id=10003600;

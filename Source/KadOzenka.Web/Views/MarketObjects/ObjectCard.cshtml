@@ -20,6 +20,12 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Market" />
                         </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.DealType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.DealType, isReadonly: true)
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
