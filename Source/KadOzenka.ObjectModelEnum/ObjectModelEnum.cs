@@ -240,105 +240,146 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 114)]
     public enum MarketSegment : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
         [EnumCode("0")]
-        [ShortTitle("")]
+        [ShortTitle("Значение отсутствует")]
         None = 0,
-
 		/// <summary>
-		/// Апартаменты (744)
+		/// Квартира (1)
 		/// </summary>
-		[Description("Апартаменты")]
-        [EnumCode("104")]
-        [ShortTitle("")]
-        Appartment = 744,
-		/// <summary>
-		/// Гаражи (745)
-		/// </summary>
-		[Description("Гаражи")]
-        [EnumCode("2")]
-        [ShortTitle("")]
-        Parking = 745,
-		/// <summary>
-		/// Гостиницы (746)
-		/// </summary>
-		[Description("Гостиницы")]
-        [EnumCode("3")]
-        [ShortTitle("")]
-        Hotel = 746,
-		/// <summary>
-		/// ИЖС (747)
-		/// </summary>
-		[Description("ИЖС")]
-        [EnumCode("101")]
-        [ShortTitle("")]
-        IZHS = 747,
-		/// <summary>
-		/// Машиноместа (748)
-		/// </summary>
-		[Description("Машиноместа")]
+		[Description("Квартира")]
         [EnumCode("1")]
-        [ShortTitle("")]
-        CarParking = 748,
+        [ShortTitle("Квартира")]
+        Flat = 1,
 		/// <summary>
-		/// МЖС (749)
+		/// Койко-место (2)
 		/// </summary>
-		[Description("МЖС")]
-        [EnumCode("102")]
-        [ShortTitle("")]
-        MZHS = 749,
+		[Description("Койко-место")]
+        [EnumCode("2")]
+        [ShortTitle("Койко-место")]
+        Bed = 2,
 		/// <summary>
-		/// Офисы (750)
+		/// Комната (3)
 		/// </summary>
-		[Description("Офисы")]
-        [EnumCode("5")]
-        [ShortTitle("")]
-        Office = 750,
+		[Description("Комната")]
+        [EnumCode("3")]
+        [ShortTitle("Комната")]
+        Room = 3,
 		/// <summary>
-		/// Производство и склады (751)
+		/// Дом/дача (4)
 		/// </summary>
-		[Description("Производство и склады")]
+		[Description("Дом/дача")]
         [EnumCode("4")]
-        [ShortTitle("")]
-        Factory = 751,
+        [ShortTitle("Дом/дача")]
+        House = 4,
 		/// <summary>
-		/// Садоводческое, огородническое и дачное использование (752)
+		/// Коттедж (5)
 		/// </summary>
-		[Description("Садоводческое, огородническое и дачное использование")]
-        [EnumCode("106")]
-        [ShortTitle("")]
-        Garden = 752,
+		[Description("Коттедж")]
+        [EnumCode("5")]
+        [ShortTitle("Коттедж")]
+        Cottage = 5,
 		/// <summary>
-		/// Санатории (753)
+		/// Таунхаус (6)
 		/// </summary>
-		[Description("Санатории")]
-        [EnumCode("105")]
-        [ShortTitle("")]
-        Sanatorium = 753,
-		/// <summary>
-		/// Торговля (754)
-		/// </summary>
-		[Description("Торговля")]
+		[Description("Таунхаус")]
         [EnumCode("6")]
-        [ShortTitle("")]
-        Trading = 754,
+        [ShortTitle("Таунхаус")]
+        Townhouse = 6,
 		/// <summary>
-		/// Общепит (795)
+		/// Часть дома (7)
 		/// </summary>
-		[Description("Общепит")]
+		[Description("Часть дома")]
         [EnumCode("7")]
-        [ShortTitle("")]
-        PublicCatering = 795,
+        [ShortTitle("Часть дома")]
+        HouseShare = 7,
 		/// <summary>
-		/// Без сегмента (798)
+		/// Гараж (8)
 		/// </summary>
-		[Description("Без сегмента")]
+		[Description("Гараж")]
+        [EnumCode("8")]
+        [ShortTitle("Гараж")]
+        Garage = 8,
+		/// <summary>
+		/// Готовый бизнес (9)
+		/// </summary>
+		[Description("Готовый бизнес")]
         [EnumCode("9")]
-        [ShortTitle("")]
-        NoSegment = 798,
+        [ShortTitle("Готовый бизнес")]
+        Business = 9,
+		/// <summary>
+		/// Здание (10)
+		/// </summary>
+		[Description("Здание")]
+        [EnumCode("10")]
+        [ShortTitle("Здание")]
+        Building = 10,
+		/// <summary>
+		/// Коммерческая земля (11)
+		/// </summary>
+		[Description("Коммерческая земля")]
+        [EnumCode("11")]
+        [ShortTitle("Коммерческая земля")]
+        CommercialLand = 11,
+		/// <summary>
+		/// Офис (12)
+		/// </summary>
+		[Description("Офис")]
+        [EnumCode("12")]
+        [ShortTitle("Офис")]
+        Office = 12,
+		/// <summary>
+		/// Помещение свободного назначения (13)
+		/// </summary>
+		[Description("Помещение свободного назначения")]
+        [EnumCode("13")]
+        [ShortTitle("Помещение свободного назначения")]
+        FreeAppointmentObject = 13,
+		/// <summary>
+		/// Производство (14)
+		/// </summary>
+		[Description("Производство")]
+        [EnumCode("14")]
+        [ShortTitle("Производство")]
+        Industry = 14,
+		/// <summary>
+		/// Склад (15)
+		/// </summary>
+		[Description("Склад")]
+        [EnumCode("15")]
+        [ShortTitle("Склад")]
+        Warehouse = 15,
+		/// <summary>
+		/// Торговая площадь (16)
+		/// </summary>
+		[Description("Торговая площадь")]
+        [EnumCode("16")]
+        [ShortTitle("Торговая площадь")]
+        ShoppingArea = 16,
+		/// <summary>
+		/// Доля в квартире (17)
+		/// </summary>
+		[Description("Доля в квартире")]
+        [EnumCode("17")]
+        [ShortTitle("Доля в квартире")]
+        FlatShare = 17,
+		/// <summary>
+		/// Квартира в новостройке (17)
+		/// </summary>
+		[Description("Квартира в новостройке")]
+        [EnumCode("17")]
+        [ShortTitle("Квартира в новостройке")]
+        NewBuildingFlat = 17,
+		/// <summary>
+		/// Участок (18)
+		/// </summary>
+		[Description("Участок")]
+        [EnumCode("18")]
+        [ShortTitle("Участок")]
+        Land = 18,
     }
 }
 

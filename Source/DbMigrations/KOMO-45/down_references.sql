@@ -1,4 +1,19 @@
-﻿--справочник "Источник объявления"
+﻿--справочник "Сегмент рынка"
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (744, 114, '104', 'Апартаменты', null, null, null, null, null, null, 'Appartment');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (745, 114, '2', 'Гаражи', null, null, null, null, null, null, 'Parking');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (746, 114, '3', 'Гостиницы', null, null, null, null, null, null, 'Hotel');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (747, 114, '101', 'ИЖС', null, null, null, null, null, null, 'IZHS');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (748, 114, '1', 'Машиноместа', null, null, null, null, null, null, 'CarParking');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (749, 114, '102', 'МЖС', null, null, null, null, null, null, 'MZHS');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (750, 114, '5', 'Офисы', null, null, null, null, null, null, 'Office');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (751, 114, '4', 'Производство и склады', null, null, null, null, null, null, 'Factory');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (752, 114, '106', 'Садоводческое, огородническое и дачное использование', null, null, null, null, null, null, 'Garden');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (753, 114, '105', 'Санатории', null, null, null, null, null, null, 'Sanatorium');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (754, 114, '6', 'Торговля', null, null, null, null, null, null, 'Trading');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (795, 114, '7', 'Общепит', null, null, null, null, null, null, 'PublicCatering');
+INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (798, 114, '9', 'Без сегмента', null, null, null, null, null, null, 'NoSegment');
+
+--справочник "Источник объявления"
 INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (2, 101, '2', 'Авито', null, null, null, null, null, null, 'Avito');
 INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (3, 101, '3', 'Яндекс недвижимость', null, null, null, null, null, null, 'YandexProterty');
 INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (737, 101, '4', 'Росреестр', null, null, null, null, null, null, 'Rosreestr');

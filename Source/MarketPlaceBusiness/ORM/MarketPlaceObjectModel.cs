@@ -265,7 +265,7 @@ namespace ObjectModel.Market
 
         private string _qualityclass;
         /// <summary>
-        /// 10007200 Класс качества (QUALITY_CLASS)
+        /// 10007200 Класс строения (QUALITY_CLASS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007200)]
         public string QualityClass
@@ -285,7 +285,7 @@ namespace ObjectModel.Market
 
         private QualityClass _qualityclass_Code;
         /// <summary>
-        /// 10007200 Класс качества (справочный код) (QUALITY_CLASS_CODE)
+        /// 10007200 Класс строения (справочный код) (QUALITY_CLASS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007200)]
         public QualityClass QualityClass_Code
