@@ -58,6 +58,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Текст объявления")]
 		public string AdvertisementDescription { get; set; }
 
+		[DisplayName("Площадь от ")]
+		public decimal? AreaFrom { get; set; }
+
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
 
@@ -82,6 +85,7 @@ namespace KadOzenka.Web.Models.MarketObject
                 DownloadDate = entity.DownloadDate,
                 ExternalAdvertisementId = entity.ExternalAdvertisementId,
                 AdvertisementDescription = entity.AdvertisementDescription,
+                AreaFrom = entity.AreaFrom,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
 			};
@@ -119,6 +123,7 @@ namespace KadOzenka.Web.Models.MarketObject
 			}
 			return dto;
 		}
+
 
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{

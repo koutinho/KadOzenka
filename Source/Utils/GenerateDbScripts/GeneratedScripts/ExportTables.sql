@@ -68046,6 +68046,15 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'area_from')) then
+        execute 'alter table market_core_object add "area_from" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68252,6 +68261,15 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'advertisement_description')) then
         execute 'alter table MARKET_CORE_OBJECT add "advertisement_description" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'area_from')) then
+        execute 'alter table MARKET_CORE_OBJECT add "area_from" NUMERIC';
     end if;
 end $$;
 

@@ -432,6 +432,26 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private decimal? _areafrom;
+        /// <summary>
+        /// 10008100 Площадь от (area_from)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008100)]
+        public decimal? AreaFrom
+        {
+            get
+            {
+                CheckPropertyInited("AreaFrom");
+                return _areafrom;
+            }
+            set
+            {
+                _areafrom = value;
+                NotifyPropertyChanged("AreaFrom");
+            }
+        }
+
     }
 }
 

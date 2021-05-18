@@ -106,6 +106,11 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public string AdvertisementDescription { get; set; }
 
+		// <summary>
+		/// 10008100 Площадь от (area_from)
+		/// </summary>
+		public decimal? AreaFrom { get; set; }
+
 		///// <summary>
 		///// 10009009 Состояние отделки (RENOVATION)
 		///// </summary>
