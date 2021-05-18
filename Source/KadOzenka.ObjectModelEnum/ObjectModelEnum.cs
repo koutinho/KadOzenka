@@ -7235,3 +7235,42 @@ namespace ObjectModel.Directory.KO
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Линия застройки (12083)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12083)]
+    public enum HouseLineType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Первая (1)
+		/// </summary>
+		[Description("Первая")]
+        [EnumCode("1")]
+        [ShortTitle("Первая")]
+        First = 1,
+		/// <summary>
+		/// Вторая (2)
+		/// </summary>
+		[Description("Вторая")]
+        [EnumCode("2")]
+        [ShortTitle("Вторая")]
+        Second  = 2,
+		/// <summary>
+		/// Иная (3)
+		/// </summary>
+		[Description("Иная")]
+        [EnumCode("3")]
+        [ShortTitle("Иная")]
+        Other = 3,
+    }
+}
+

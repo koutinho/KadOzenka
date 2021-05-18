@@ -111,3 +111,29 @@ update core_reference set progid='Core.RefLib.Executors.ReferenceExecutorSimple'
 	}
 ]'
 where referenceid=114;
+
+
+--Справочник "Линия застройки"
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values) 
+VALUES (12083, 'Линия застройки', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'HouseLineType', null, '[
+	{
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Первая",
+		"Name": "First"
+	},
+	{
+		"Id": 2,
+		"Value": "Вторая",
+		"Name": "Second "
+	},
+	{
+		"Id": 3,
+		"Value": "Иная",
+		"Name": "Other"
+	}
+]');

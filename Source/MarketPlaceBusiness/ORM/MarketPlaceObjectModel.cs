@@ -587,6 +587,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _houseline;
+        /// <summary>
+        /// 10008600 Линия застройки домов (house_line)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008600)]
+        public string HouseLine
+        {
+            get
+            {
+                CheckPropertyInited("HouseLine");
+                return _houseline;
+            }
+            set
+            {
+                _houseline = value;
+                NotifyPropertyChanged("HouseLine");
+            }
+        }
+
+
+        private HouseLineType _houseline_Code;
+        /// <summary>
+        /// 10008600 Линия застройки домов (справочный код) (house_line_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008600)]
+        public HouseLineType HouseLine_Code
+        {
+            get
+            {
+                CheckPropertyInited("HouseLine_Code");
+                return this._houseline_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_houseline))
+                    {
+                         _houseline = descr;
+                    }
+                }
+                else
+                {
+                     _houseline = descr;
+                }
+
+                this._houseline_Code = value;
+                NotifyPropertyChanged("HouseLine");
+                NotifyPropertyChanged("HouseLine_Code");
+            }
+        }
+
     }
 }
 

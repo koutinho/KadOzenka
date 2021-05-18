@@ -141,14 +141,14 @@ namespace MarketPlaceBusiness.Dto
 		/// </summary>
 		public DealType DealType_Code { get; set; }
 
-		///// <summary>
-		///// 10009009 Состояние отделки (RENOVATION)
-		///// </summary>
-		//public string Renovation { get; set; }
+		/// <summary>
+		/// 10008600 Линия застройки домов (house_line)
+		/// </summary>
+		public string HouseLine { get; set; }
 
-		///// <summary>
-		///// 10009010 Линия застройки (BUILDING_LINE)
-		///// </summary>
-		//public string BuildingLine { get; set; }
+		/// <summary>
+		/// 10008600 Линия застройки домов (справочный код) (house_line_code)
+		/// </summary>
+		public HouseLineType HouseLine_Code { get; set; }
 	}
 }

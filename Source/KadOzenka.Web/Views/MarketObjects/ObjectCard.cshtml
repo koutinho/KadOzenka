@@ -180,13 +180,12 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" id="Renovation" value="@Model.Renovation" />
                         </div>*@
-                        @* <div class="col-sm-2">
-                            TODO KOMO-1: сделать через справочник
-                            <label class="control-label">Линия застройки</label>
+                         <div class="col-sm-2">
+                             @Html.CustomLabelFor(x => x.HouseLine, true)
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" id="BuildingLine" value="@Model.BuildingLine" />
-                        </div>*@
+                            @Html.KendoTextBoxFor(x => x.HouseLine, isReadonly: true)
+                        </div>
                     </div>
                 </div>
             </div>

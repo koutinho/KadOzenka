@@ -76,6 +76,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Тип сделки")]
 		public string DealType { get; set; }
 
+		[DisplayName("Линия застройки")]
+		public string HouseLine { get; set; }
+
 
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
@@ -107,6 +110,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				SectionNumber = entity.SectionNumber,
 				FlatType = entity.FlatType,
 				DealType = entity.DealType,
+				HouseLine = entity.HouseLine,
                 //Renovation = entity.Renovation,
                 //BuildingLine = entity.BuildingLine
 			};
@@ -144,7 +148,6 @@ namespace KadOzenka.Web.Models.MarketObject
 			}
 			return dto;
 		}
-
 
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
