@@ -209,7 +209,7 @@ namespace KadOzenka.Web.Controllers
                         Name = x.Name,
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
                     });
-            var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.MarketAttribute.ReferenceId).And(x => x.ItemId <= (int) MarketTypes.Rosreestr)
+            var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.MarketAttribute.ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute()
                     .OrderBy(x => x.ItemId).Select(x => new {
                         Id = x.ItemId,
