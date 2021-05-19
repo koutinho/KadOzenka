@@ -47,9 +47,13 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.PermittedUseType_Code, SetPreCondition(y => y.PermittedUseType_Code))
 				.ForMember(m => m.DrivewayType, SetPreCondition(y => y.DrivewayType))
 				.ForMember(m => m.DrivewayType_Code, SetPreCondition(y => y.DrivewayType_Code))
+				.ForMember(m => m.ParcelAreaUnitType, SetPreCondition(y => y.ParcelAreaUnitType))
+				.ForMember(m => m.ParcelAreaUnitType_Code, SetPreCondition(y => y.ParcelAreaUnitType_Code))
+				.ForMember(m => m.ParcelType, SetPreCondition(y => y.ParcelType))
+				.ForMember(m => m.ParcelType_Code, SetPreCondition(y => y.ParcelType_Code))
+				.ForMember(m => m.ParcelStatus, SetPreCondition(y => y.ParcelStatus))
+				.ForMember(m => m.ParcelStatus_Code, SetPreCondition(y => y.ParcelStatus_Code))
 				;
-				//.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
-				//.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))
 		}
 
 

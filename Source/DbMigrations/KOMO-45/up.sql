@@ -75,3 +75,19 @@ alter table market_core_object add "driveway_type_code" BIGINT;
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10009200, 'Подъездные пути', 100, 4, null, 12088, 'driveway_type', 'driveway_type_code', null, 0, null, null, 'DrivewayType', 1, null, null, null, 0, 1, '2021-05-19 11:03:29.477667', 0);
 
+
+alter table market_core_object add "parcel_area_unit_type" VARCHAR(255);
+alter table market_core_object add "parcel_area_unit_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") 
+values (10009300, 'Единица измерения площади участка', 100, 4, NULL, 12089, 'parcel_area_unit_type', 'parcel_area_unit_type_code', NULL, 0, NULL, NULL, 'ParcelAreaUnitType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 14:52:51', 'YYYY.MM.DD HH24:MI:SS'), 0)
+
+alter table market_core_object add "parcel_status" VARCHAR(255);
+alter table market_core_object add "parcel_status_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") 
+values (10009400, 'Статус земли', 100, 4, NULL, 12091, 'parcel_status', 'parcel_status_code', NULL, 0, NULL, NULL, 'ParcelStatus', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 14:55:29', 'YYYY.MM.DD HH24:MI:SS'), 0)
+
+alter table market_core_object add "parcel_type" VARCHAR(255);
+alter table market_core_object add "parcel_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") 
+values (10009500, 'Тип участка', 100, 4, NULL, 12090, 'parcel_type', 'parcel_type_code', NULL, 0, NULL, NULL, 'ParcelType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 14:57:07', 'YYYY.MM.DD HH24:MI:SS'), 0)
+

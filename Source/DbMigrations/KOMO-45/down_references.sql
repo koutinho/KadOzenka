@@ -534,3 +534,12 @@ delete from core_reference where referenceid=12087;
 
 --Справочник "Подъездные пути"
 delete from core_reference where referenceid=12088;
+
+--Справочник "Единица измерения"
+delete from core_reference where referenceid=12089;
+
+--Справочник "Тип участка"
+delete from core_reference where referenceid=12090;
+
+--Справочник "Статус земли"
+delete from core_reference where referenceid=12091;

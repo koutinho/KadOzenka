@@ -381,3 +381,100 @@ VALUES (12088, 'Подъездные пути', 1, 'Core.RefLib.Executors.Refere
 		"Name": "No"
 	}
 ]');
+
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12089, 'Единица измерения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'ParcelAreaUnitType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Гектар",
+		"Name": "Hectare"
+	},
+	{
+		"Id": 2,
+		"Value": "Сотка",
+		"Name": "Sotka"
+	}
+]');
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12090, 'Тип участка', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'ParcelType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "В собственности",
+		"Name": "Owned"
+	},
+	{
+		"Id": 2,
+		"Value": "В аренде",
+		"Name": "Rent"
+	}
+]');
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12091, 'Статус земли', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'ParcelStatus', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Фермерское хозяйство",
+		"Name": "Farm"
+	},
+	{
+		"Id": 2,
+		"Value": "Садоводство",
+		"Name": "Gardening"
+	},
+	{
+		"Id": 3,
+		"Value": "Индивидуальное жилищное строительство",
+		"Name": "IndividualHousingConstruction"
+	},
+	{
+		"Id": 4,
+		"Value": "Земля промышленного назначения",
+		"Name": "IndustrialLand"
+	},
+	{
+		"Id": 5,
+		"Value": "Инвестпроект",
+		"Name": "InvestmentProject"
+	},
+	{
+		"Id": 6,
+		"Value": "Личное подсобное хозяйство",
+		"Name": "PrivateFarm"
+	},
+	{
+		"Id": 7,
+		"Value": "Дачное некоммерческое партнерство",
+		"Name": "SuburbanNonProfitPartnership"
+	},
+	{
+		"Id": 8,
+		"Value": "Участок сельскохозяйственного назначения",
+		"Name": "ForAgriculturalPurposes"
+	},
+	{
+		"Id": 9,
+		"Value": "Участок промышленности, транспорта, связи и иного не сельхоз. назначения",
+		"Name": "IndustryTransportCommunications"
+	},
+	{
+		"Id": 10,
+		"Value": "Поселений",
+		"Name": "Settlements"
+	}
+]');
+

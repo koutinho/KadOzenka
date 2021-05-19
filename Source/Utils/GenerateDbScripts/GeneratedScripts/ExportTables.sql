@@ -68226,6 +68226,60 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_area_unit_type')) then
+        execute 'alter table market_core_object add "parcel_area_unit_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_area_unit_type_code')) then
+        execute 'alter table market_core_object add "parcel_area_unit_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_status')) then
+        execute 'alter table market_core_object add "parcel_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_status_code')) then
+        execute 'alter table market_core_object add "parcel_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_type')) then
+        execute 'alter table market_core_object add "parcel_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_type_code')) then
+        execute 'alter table market_core_object add "parcel_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68612,6 +68666,60 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'driveway_type_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "driveway_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_area_unit_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_area_unit_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_area_unit_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_area_unit_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_status')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_status_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_type_code" BIGINT';
     end if;
 end $$;
 

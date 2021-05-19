@@ -7637,3 +7637,155 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Единица измерения (12089)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12089)]
+    public enum ParcelAreaUnitType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Гектар (1)
+		/// </summary>
+		[Description("Гектар")]
+        [EnumCode("1")]
+        [ShortTitle("Гектар")]
+        Hectare = 1,
+		/// <summary>
+		/// Сотка (2)
+		/// </summary>
+		[Description("Сотка")]
+        [EnumCode("2")]
+        [ShortTitle("Сотка")]
+        Sotka = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип участка (12090)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12090)]
+    public enum ParcelType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// В собственности (1)
+		/// </summary>
+		[Description("В собственности")]
+        [EnumCode("1")]
+        [ShortTitle("В собственности")]
+        Owned = 1,
+		/// <summary>
+		/// В аренде (2)
+		/// </summary>
+		[Description("В аренде")]
+        [EnumCode("2")]
+        [ShortTitle("В аренде")]
+        Rent = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Статус земли (12091)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12091)]
+    public enum ParcelStatus : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Фермерское хозяйство (1)
+		/// </summary>
+		[Description("Фермерское хозяйство")]
+        [EnumCode("1")]
+        [ShortTitle("Фермерское хозяйство")]
+        Farm = 1,
+		/// <summary>
+		/// Садоводство (2)
+		/// </summary>
+		[Description("Садоводство")]
+        [EnumCode("2")]
+        [ShortTitle("Садоводство")]
+        Gardening = 2,
+		/// <summary>
+		/// Индивидуальное жилищное строительство (3)
+		/// </summary>
+		[Description("Индивидуальное жилищное строительство")]
+        [EnumCode("3")]
+        [ShortTitle("Индивидуальное жилищное строительство")]
+        IndividualHousingConstruction = 3,
+		/// <summary>
+		/// Земля промышленного назначения (4)
+		/// </summary>
+		[Description("Земля промышленного назначения")]
+        [EnumCode("4")]
+        [ShortTitle("Земля промышленного назначения")]
+        IndustrialLand = 4,
+		/// <summary>
+		/// Инвестпроект (5)
+		/// </summary>
+		[Description("Инвестпроект")]
+        [EnumCode("5")]
+        [ShortTitle("Инвестпроект")]
+        InvestmentProject = 5,
+		/// <summary>
+		/// Личное подсобное хозяйство (6)
+		/// </summary>
+		[Description("Личное подсобное хозяйство")]
+        [EnumCode("6")]
+        [ShortTitle("Личное подсобное хозяйство")]
+        PrivateFarm = 6,
+		/// <summary>
+		/// Дачное некоммерческое партнерство (7)
+		/// </summary>
+		[Description("Дачное некоммерческое партнерство")]
+        [EnumCode("7")]
+        [ShortTitle("Дачное некоммерческое партнерство")]
+        SuburbanNonProfitPartnership = 7,
+		/// <summary>
+		/// Участок сельскохозяйственного назначения (8)
+		/// </summary>
+		[Description("Участок сельскохозяйственного назначения")]
+        [EnumCode("8")]
+        [ShortTitle("Участок сельскохозяйственного назначения")]
+        ForAgriculturalPurposes = 8,
+		/// <summary>
+		/// Участок промышленности, транспорта, связи и иного не сельхоз. назначения (9)
+		/// </summary>
+		[Description("Участок промышленности, транспорта, связи и иного не сельхоз. назначения")]
+        [EnumCode("9")]
+        [ShortTitle("Участок промышленности, транспорта, связи и иного не сельхоз. назначения")]
+        IndustryTransportCommunications = 9,
+		/// <summary>
+		/// Поселений (10)
+		/// </summary>
+		[Description("Поселений")]
+        [EnumCode("10")]
+        [ShortTitle("Поселений")]
+        Settlements = 10,
+    }
+}
+

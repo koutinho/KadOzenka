@@ -937,6 +937,171 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _parcelareaunittype;
+        /// <summary>
+        /// 10009300 Единица измерения площади участка (parcel_area_unit_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009300)]
+        public string ParcelAreaUnitType
+        {
+            get
+            {
+                CheckPropertyInited("ParcelAreaUnitType");
+                return _parcelareaunittype;
+            }
+            set
+            {
+                _parcelareaunittype = value;
+                NotifyPropertyChanged("ParcelAreaUnitType");
+            }
+        }
+
+
+        private ParcelAreaUnitType _parcelareaunittype_Code;
+        /// <summary>
+        /// 10009300 Единица измерения площади участка (справочный код) (parcel_area_unit_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009300)]
+        public ParcelAreaUnitType ParcelAreaUnitType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParcelAreaUnitType_Code");
+                return this._parcelareaunittype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parcelareaunittype))
+                    {
+                         _parcelareaunittype = descr;
+                    }
+                }
+                else
+                {
+                     _parcelareaunittype = descr;
+                }
+
+                this._parcelareaunittype_Code = value;
+                NotifyPropertyChanged("ParcelAreaUnitType");
+                NotifyPropertyChanged("ParcelAreaUnitType_Code");
+            }
+        }
+
+
+        private string _parcelstatus;
+        /// <summary>
+        /// 10009400 Статус земли (parcel_status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009400)]
+        public string ParcelStatus
+        {
+            get
+            {
+                CheckPropertyInited("ParcelStatus");
+                return _parcelstatus;
+            }
+            set
+            {
+                _parcelstatus = value;
+                NotifyPropertyChanged("ParcelStatus");
+            }
+        }
+
+
+        private ParcelStatus _parcelstatus_Code;
+        /// <summary>
+        /// 10009400 Статус земли (справочный код) (parcel_status_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009400)]
+        public ParcelStatus ParcelStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParcelStatus_Code");
+                return this._parcelstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parcelstatus))
+                    {
+                         _parcelstatus = descr;
+                    }
+                }
+                else
+                {
+                     _parcelstatus = descr;
+                }
+
+                this._parcelstatus_Code = value;
+                NotifyPropertyChanged("ParcelStatus");
+                NotifyPropertyChanged("ParcelStatus_Code");
+            }
+        }
+
+
+        private string _parceltype;
+        /// <summary>
+        /// 10009500 Тип участка (parcel_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009500)]
+        public string ParcelType
+        {
+            get
+            {
+                CheckPropertyInited("ParcelType");
+                return _parceltype;
+            }
+            set
+            {
+                _parceltype = value;
+                NotifyPropertyChanged("ParcelType");
+            }
+        }
+
+
+        private ParcelType _parceltype_Code;
+        /// <summary>
+        /// 10009500 Тип участка (справочный код) (parcel_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009500)]
+        public ParcelType ParcelType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParcelType_Code");
+                return this._parceltype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parceltype))
+                    {
+                         _parceltype = descr;
+                    }
+                }
+                else
+                {
+                     _parceltype = descr;
+                }
+
+                this._parceltype_Code = value;
+                NotifyPropertyChanged("ParcelType");
+                NotifyPropertyChanged("ParcelType_Code");
+            }
+        }
+
     }
 }
 
