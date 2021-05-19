@@ -48,8 +48,55 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
 		public QualityClass? QualityClassCode { get; set; }
-		//public string Renovation { get; set; }
-		//public string BuildingLine { get; set; }
+
+		[DisplayName("Дата загрузки")]
+		public DateTime? DownloadDate { get; set; }
+
+		[DisplayName("Внешний Id объявления")]
+		public string ExternalAdvertisementId { get; set; }
+
+		[DisplayName("Текст объявления")]
+		public string AdvertisementDescription { get; set; }
+
+		[DisplayName("Площадь от")]
+		public decimal? AreaFrom { get; set; }
+
+		[DisplayName("Название")]
+		public string Name { get; set; }
+
+		[DisplayName("Номер на площадке")]
+		public long? FlatNumber { get; set; }
+
+		[DisplayName("Номер секции")]
+		public string SectionNumber { get; set; }
+
+		[DisplayName("Тип квартиры")]
+		public string FlatType { get; set; }
+
+		[DisplayName("Тип сделки")]
+		public string DealType { get; set; }
+
+		[DisplayName("Линия застройки")]
+		public string HouseLine { get; set; }
+
+		[DisplayName("Застройщик")]
+		public string Developer { get; set; }
+
+		[DisplayName("Состояние отделки")]
+		public string FinishingCondition { get; set; }
+
+		[DisplayName("Тип дома")]
+		public string HouseType { get; set; }
+
+		[DisplayName("Планировка")]
+		public string Layout { get; set; }
+
+		[DisplayName("Вид разрешённого использования")]
+		public string PermittedUseType { get; set; }
+
+		[DisplayName("Подъездные пути")]
+		public string DrivewayType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -69,9 +116,23 @@ namespace KadOzenka.Web.Models.MarketObject
                 MarketSegmentCode = entity.PropertyMarketSegment_Code,
                 PricePerSquareMeter = GetPricePerSquareMeter(entity),
                 QualityClassCode = entity.QualityClass_Code,
-                //Renovation = entity.Renovation,
-                //BuildingLine = entity.BuildingLine
-			};
+                DownloadDate = entity.DownloadDate,
+                ExternalAdvertisementId = entity.ExternalAdvertisementId,
+                AdvertisementDescription = entity.AdvertisementDescription,
+                AreaFrom = entity.AreaFrom,
+                Name = entity.Name,
+                FlatNumber = entity.FlatNumber,
+				SectionNumber = entity.SectionNumber,
+				FlatType = entity.FlatType,
+				DealType = entity.DealType,
+				HouseLine = entity.HouseLine,
+				Developer = entity.Developer,
+				FinishingCondition = entity.FinishingCondition,
+				HouseType = entity.HouseType,
+				Layout = entity.Layout,
+				PermittedUseType = entity.PermittedUseType,
+				DrivewayType = entity.DrivewayType,
+            };
 			if (priceHistory?.Count > 0)
 			{
 				dto.PriceHistories = priceHistory
@@ -106,6 +167,7 @@ namespace KadOzenka.Web.Models.MarketObject
 			}
 			return dto;
 		}
+
 
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
