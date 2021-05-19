@@ -205,5 +205,23 @@ namespace MarketPlaceBusiness.Dto
 		/// 10009200 Подъездные пути (справочный код) (driveway_type_code)
 		/// </summary>
 		public DrivewayType DrivewayType_Code { get; set; }
+
+		/// <summary>
+		/// 10009300 Единица измерения площади участка (parcel_area_unit_type)
+		/// </summary>
+		public string ParcelAreaUnitType { get; set; }
+
+		/// <summary>
+		/// 10009300 Единица измерения площади участка (справочный код) (parcel_area_unit_type_code)
+		/// </summary>
+		public ParcelAreaUnitType ParcelAreaUnitType_Code { get; set; }
+
+		public string ParcelType { get; set; }
+
+		public ParcelType ParcelType_Code { get; set; }
+
+		public string ParcelStatus { get; set; }
+
+		public ParcelStatus ParcelStatus_Code { get; set; }
 	}
 }

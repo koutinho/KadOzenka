@@ -52,3 +52,15 @@ delete from core_register_attribute where id=10009100;
 alter table market_core_object drop column driveway_type;
 alter table market_core_object drop column driveway_type_code;
 delete from core_register_attribute where id=10009200;
+
+alter table market_core_object drop column parcel_area_unit_type;
+alter table market_core_object drop column parcel_area_unit_type_code;
+delete from core_register_attribute where id=10009300;
+
+alter table market_core_object drop column parcel_status;
+alter table market_core_object drop column parcel_status_code;
+delete from core_register_attribute where id=10009400;
+
+alter table market_core_object drop column parcel_type;
+alter table market_core_object drop column parcel_type_code;
+delete from core_register_attribute where id=10009500;

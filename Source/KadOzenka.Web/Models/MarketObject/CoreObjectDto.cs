@@ -97,6 +97,15 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Подъездные пути")]
 		public string DrivewayType { get; set; }
 
+		[DisplayName("Статус земли")]
+		public string ParcelStatus { get; set; }
+
+		[DisplayName("Тип участка")]
+		public string ParcelType { get; set; }
+
+		[DisplayName("Единица измерения площади участка")]
+		public string ParcelAreaUnitType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -132,6 +141,9 @@ namespace KadOzenka.Web.Models.MarketObject
 				Layout = entity.Layout,
 				PermittedUseType = entity.PermittedUseType,
 				DrivewayType = entity.DrivewayType,
+				ParcelAreaUnitType = entity.ParcelAreaUnitType,
+				ParcelType = entity.ParcelType,
+				ParcelStatus = entity.ParcelStatus,
             };
 			if (priceHistory?.Count > 0)
 			{
