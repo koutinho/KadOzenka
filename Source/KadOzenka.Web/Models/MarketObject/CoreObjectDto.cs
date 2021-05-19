@@ -85,6 +85,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Состояние отделки")]
 		public string FinishingCondition { get; set; }
 
+		[DisplayName("Тип дома")]
+		public string HouseType { get; set; }
+
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
 
@@ -118,6 +121,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				HouseLine = entity.HouseLine,
 				Developer = entity.Developer,
 				FinishingCondition = entity.FinishingCondition,
+				HouseType = entity.HouseType,
             };
 			if (priceHistory?.Count > 0)
 			{

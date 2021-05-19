@@ -55,3 +55,8 @@ alter table market_core_object add "finishing_condition_code" BIGINT;
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10008800, 'Состояние отделки', 100, 4, null, 12084, 'finishing_condition', 'finishing_condition_code', null, 0, null, null, 'FinishingCondition', 1, null, null, null, 0, 1, '2021-05-19 09:41:33.626469', 0);
 
+alter table market_core_object add "house_type" VARCHAR(255);
+alter table market_core_object add "house_type_code" BIGINT;
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (10008900, 'Тип дома', 100, 4, null, 12085, 'house_type', 'house_type_code', null, 0, null, null, 'HouseType', 1, null, null, null, 0, 1, '2021-05-19 10:03:55.384762', 0);
+

@@ -717,6 +717,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _housetype;
+        /// <summary>
+        /// 10008900 Тип дома (house_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008900)]
+        public string HouseType
+        {
+            get
+            {
+                CheckPropertyInited("HouseType");
+                return _housetype;
+            }
+            set
+            {
+                _housetype = value;
+                NotifyPropertyChanged("HouseType");
+            }
+        }
+
+
+        private HouseType _housetype_Code;
+        /// <summary>
+        /// 10008900 Тип дома (справочный код) (house_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008900)]
+        public HouseType HouseType_Code
+        {
+            get
+            {
+                CheckPropertyInited("HouseType_Code");
+                return this._housetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_housetype))
+                    {
+                         _housetype = descr;
+                    }
+                }
+                else
+                {
+                     _housetype = descr;
+                }
+
+                this._housetype_Code = value;
+                NotifyPropertyChanged("HouseType");
+                NotifyPropertyChanged("HouseType_Code");
+            }
+        }
+
     }
 }
 

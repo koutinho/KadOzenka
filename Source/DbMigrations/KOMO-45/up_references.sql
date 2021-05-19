@@ -177,3 +177,80 @@ VALUES (12084, 'Состояние отделки', 1, 'Core.RefLib.Executors.Re
 		"Name": "Typical"
 	}
 ]');
+
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12085, 'Тип дома', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'HouseType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Газобетонный блок",
+		"Name": "AerocreteBlock"
+	},
+	{
+		"Id": 2,
+		"Value": "Блочный",
+		"Name": "Block"
+	},
+	{
+		"Id": 3,
+		"Value": "Щитовой",
+		"Name": "Boards"
+	},
+	{
+		"Id": 4,
+		"Value": "Кирпичный",
+		"Name": "Brick"
+	},
+	{
+		"Id": 5,
+		"Value": "Пенобетонный блок",
+		"Name": "FoamConcreteBlock"
+	},
+	{
+		"Id": 6,
+		"Value": "Газосиликатный блок",
+		"Name": "GasSilicateBlock"
+	},
+	{
+		"Id": 7,
+		"Value": "Монолитный",
+		"Name": "Monolith"
+	},
+	{
+		"Id": 8,
+		"Value": "Монолитно-кирпичный",
+		"Name": "MonolithBrick"
+	},
+	{
+		"Id": 9,
+		"Value": "Старый фонд",
+		"Name": "Old"
+	},
+	{
+		"Id": 10,
+		"Value": "Панельный",
+		"Name": "Panel "
+	},
+	{
+		"Id": 11,
+		"Value": "Сталинский",
+		"Name": "Stalin"
+	},
+	{
+		"Id": 12,
+		"Value": "Каркасный",
+		"Name": "Wireframe"
+	},
+	{
+		"Id": 13,
+		"Value": "Деревянный",
+		"Name": "Wood"
+	}
+]');
+
+

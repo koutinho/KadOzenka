@@ -172,14 +172,16 @@
                             @Html.KendoTextBoxFor(x => x.FlatType, isReadonly: true)
                         </div>
                     </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.Developer, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.Developer, isReadonly: true)
+                    </div>
+                </div>
                     <div class="form-group">
                         <div class="col-sm-2">
-                            @Html.CustomLabelFor(x => x.Developer, true)
-                        </div>
-                        <div class="col-sm-2">
-                            @Html.KendoTextBoxFor(x => x.Developer, isReadonly: true)
-                        </div>
-                         <div class="col-sm-1 col-sm-offset-1">
                              @Html.CustomLabelFor(x => x.HouseLine, true)
                         </div>
                         <div class="col-sm-2">
@@ -190,6 +192,12 @@
                         </div>
                         <div class="col-sm-2">
                             @Html.KendoTextBoxFor(x => x.FinishingCondition, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.HouseType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.HouseType, isReadonly: true)
                         </div>
                     </div>
                 </div>

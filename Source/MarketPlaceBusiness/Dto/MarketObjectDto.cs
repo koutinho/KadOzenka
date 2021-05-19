@@ -165,5 +165,15 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008800 Состояние отделки (справочный код) ()
 		/// </summary>
 		public FinishingCondition FinishingCondition_Code { get; set; }
+
+		/// <summary>
+		/// 10008900 Тип дома (house_type)
+		/// </summary>
+		public string HouseType { get; set; }
+
+		/// <summary>
+		/// 10008900 Тип дома (справочный код) (house_type_code)
+		/// </summary>
+		public HouseType HouseType_Code { get; set; }
 	}
 }

@@ -36,3 +36,7 @@ delete from core_register_attribute where id=10008700;
 alter table market_core_object drop column finishing_condition;
 alter table market_core_object drop column finishing_condition_code;
 delete from core_register_attribute where id=10008800;
+
+alter table market_core_object drop column house_type;
+alter table market_core_object drop column house_type_code;
+delete from core_register_attribute where id=10008900;

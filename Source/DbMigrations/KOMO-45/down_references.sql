@@ -516,3 +516,12 @@ INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_
 
 
 delete from core_reference_item where itemid=1000902;
+
+--Справочник "Линия застройки"
+delete from core_reference where referenceid=12083;
+
+--Справочник "Состояние отделки"
+delete from core_reference where referenceid=12084;
+
+--Справочник "Тип дома"
+delete from core_reference where referenceid=12085;

@@ -7334,3 +7334,112 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип дома (12085)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12085)]
+    public enum HouseType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Газобетонный блок (1)
+		/// </summary>
+		[Description("Газобетонный блок")]
+        [EnumCode("1")]
+        [ShortTitle("Газобетонный блок")]
+        AerocreteBlock = 1,
+		/// <summary>
+		/// Блочный (2)
+		/// </summary>
+		[Description("Блочный")]
+        [EnumCode("2")]
+        [ShortTitle("Блочный")]
+        Block = 2,
+		/// <summary>
+		/// Щитовой (3)
+		/// </summary>
+		[Description("Щитовой")]
+        [EnumCode("3")]
+        [ShortTitle("Щитовой")]
+        Boards = 3,
+		/// <summary>
+		/// Кирпичный (4)
+		/// </summary>
+		[Description("Кирпичный")]
+        [EnumCode("4")]
+        [ShortTitle("Кирпичный")]
+        Brick = 4,
+		/// <summary>
+		/// Пенобетонный блок (5)
+		/// </summary>
+		[Description("Пенобетонный блок")]
+        [EnumCode("5")]
+        [ShortTitle("Пенобетонный блок")]
+        FoamConcreteBlock = 5,
+		/// <summary>
+		/// Газосиликатный блок (6)
+		/// </summary>
+		[Description("Газосиликатный блок")]
+        [EnumCode("6")]
+        [ShortTitle("Газосиликатный блок")]
+        GasSilicateBlock = 6,
+		/// <summary>
+		/// Монолитный (7)
+		/// </summary>
+		[Description("Монолитный")]
+        [EnumCode("7")]
+        [ShortTitle("Монолитный")]
+        Monolith = 7,
+		/// <summary>
+		/// Монолитно-кирпичный (8)
+		/// </summary>
+		[Description("Монолитно-кирпичный")]
+        [EnumCode("8")]
+        [ShortTitle("Монолитно-кирпичный")]
+        MonolithBrick = 8,
+		/// <summary>
+		/// Старый фонд (9)
+		/// </summary>
+		[Description("Старый фонд")]
+        [EnumCode("9")]
+        [ShortTitle("Старый фонд")]
+        Old = 9,
+		/// <summary>
+		/// Панельный (10)
+		/// </summary>
+		[Description("Панельный")]
+        [EnumCode("10")]
+        [ShortTitle("Панельный")]
+        Panel  = 10,
+		/// <summary>
+		/// Сталинский (11)
+		/// </summary>
+		[Description("Сталинский")]
+        [EnumCode("11")]
+        [ShortTitle("Сталинский")]
+        Stalin = 11,
+		/// <summary>
+		/// Каркасный (12)
+		/// </summary>
+		[Description("Каркасный")]
+        [EnumCode("12")]
+        [ShortTitle("Каркасный")]
+        Wireframe = 12,
+		/// <summary>
+		/// Деревянный (13)
+		/// </summary>
+		[Description("Деревянный")]
+        [EnumCode("13")]
+        [ShortTitle("Деревянный")]
+        Wood = 13,
+    }
+}
+
