@@ -155,5 +155,15 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008700 Застройщик (developer)
 		/// </summary>
 		public string Developer { get; set; }
+
+		/// <summary>
+		/// 10008800 Состояние отделки (finishing_condition)
+		/// </summary>
+		public string FinishingCondition { get; set; }
+
+		/// <summary>
+		/// 10008800 Состояние отделки (справочный код) ()
+		/// </summary>
+		public FinishingCondition FinishingCondition_Code { get; set; }
 	}
 }

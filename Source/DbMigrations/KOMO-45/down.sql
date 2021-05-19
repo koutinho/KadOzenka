@@ -33,3 +33,6 @@ delete from core_register_attribute where id=10008600;
 alter table market_core_object drop column developer;
 delete from core_register_attribute where id=10008700;
 
+alter table market_core_object drop column finishing_condition;
+alter table market_core_object drop column finishing_condition_code;
+delete from core_register_attribute where id=10008800;

@@ -185,6 +185,12 @@
                         <div class="col-sm-2">
                             @Html.KendoTextBoxFor(x => x.HouseLine, isReadonly: true)
                         </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.FinishingCondition, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.FinishingCondition, isReadonly: true)
+                        </div>
                     </div>
                 </div>
             </div>

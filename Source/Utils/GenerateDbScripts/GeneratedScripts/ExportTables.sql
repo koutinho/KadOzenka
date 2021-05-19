@@ -68136,6 +68136,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'finishing_condition')) then
+        execute 'alter table market_core_object add "finishing_condition" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'finishing_condition_code')) then
+        execute 'alter table market_core_object add "finishing_condition_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68432,6 +68450,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'developer')) then
         execute 'alter table MARKET_CORE_OBJECT add "developer" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'finishing_condition')) then
+        execute 'alter table MARKET_CORE_OBJECT add "finishing_condition" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'finishing_condition_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "finishing_condition_code" BIGINT';
     end if;
 end $$;
 

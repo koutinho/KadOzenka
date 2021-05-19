@@ -137,3 +137,43 @@ VALUES (12083, 'Линия застройки', 1, 'Core.RefLib.Executors.Refere
 		"Name": "Other"
 	}
 ]');
+
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12084, 'Состояние отделки', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'FinishingCondition', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Требуется косметический ремонт",
+		"Name": "CosmeticRepairsRequired"
+	},
+	{
+		"Id": 2,
+		"Value": "Дизайнерский ремонт",
+		"Name": "Design"
+	},
+	{
+		"Id": 3,
+		"Value": "Под чистовую отделку",
+		"Name": "Finishing"
+	},
+	{
+		"Id": 4,
+		"Value": "Требуется капитальный ремонт",
+		"Name": "MajorRepairsRequired"
+	},
+	{
+		"Id": 5,
+		"Value": "Офисная отделка",
+		"Name": "Office"
+	},
+	{
+		"Id": 6,
+		"Value": "Типовой ремонт",
+		"Name": "Typical"
+	}
+]');

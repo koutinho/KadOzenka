@@ -7274,3 +7274,63 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Состояние отделки (12084)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12084)]
+    public enum FinishingCondition : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Требуется косметический ремонт (1)
+		/// </summary>
+		[Description("Требуется косметический ремонт")]
+        [EnumCode("1")]
+        [ShortTitle("Требуется косметический ремонт")]
+        CosmeticRepairsRequired = 1,
+		/// <summary>
+		/// Дизайнерский ремонт (2)
+		/// </summary>
+		[Description("Дизайнерский ремонт")]
+        [EnumCode("2")]
+        [ShortTitle("Дизайнерский ремонт")]
+        Design = 2,
+		/// <summary>
+		/// Под чистовую отделку (3)
+		/// </summary>
+		[Description("Под чистовую отделку")]
+        [EnumCode("3")]
+        [ShortTitle("Под чистовую отделку")]
+        Finishing = 3,
+		/// <summary>
+		/// Требуется капитальный ремонт (4)
+		/// </summary>
+		[Description("Требуется капитальный ремонт")]
+        [EnumCode("4")]
+        [ShortTitle("Требуется капитальный ремонт")]
+        MajorRepairsRequired = 4,
+		/// <summary>
+		/// Офисная отделка (5)
+		/// </summary>
+		[Description("Офисная отделка")]
+        [EnumCode("5")]
+        [ShortTitle("Офисная отделка")]
+        Office = 5,
+		/// <summary>
+		/// Типовой ремонт (6)
+		/// </summary>
+		[Description("Типовой ремонт")]
+        [EnumCode("6")]
+        [ShortTitle("Типовой ремонт")]
+        Typical = 6,
+    }
+}
+

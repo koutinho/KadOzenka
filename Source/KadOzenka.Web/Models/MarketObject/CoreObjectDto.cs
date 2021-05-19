@@ -82,6 +82,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Застройщик")]
 		public string Developer { get; set; }
 
+		[DisplayName("Состояние отделки")]
+		public string FinishingCondition { get; set; }
+
 		//public string Renovation { get; set; }
 		//public string BuildingLine { get; set; }
 
@@ -114,6 +117,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				DealType = entity.DealType,
 				HouseLine = entity.HouseLine,
 				Developer = entity.Developer,
+				FinishingCondition = entity.FinishingCondition,
             };
 			if (priceHistory?.Count > 0)
 			{

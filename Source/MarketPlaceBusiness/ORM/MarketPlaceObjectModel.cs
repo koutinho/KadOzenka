@@ -662,6 +662,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _finishingcondition;
+        /// <summary>
+        /// 10008800 Состояние отделки (finishing_condition)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008800)]
+        public string FinishingCondition
+        {
+            get
+            {
+                CheckPropertyInited("FinishingCondition");
+                return _finishingcondition;
+            }
+            set
+            {
+                _finishingcondition = value;
+                NotifyPropertyChanged("FinishingCondition");
+            }
+        }
+
+
+        private FinishingCondition _finishingcondition_Code;
+        /// <summary>
+        /// 10008800 Состояние отделки (справочный код) (finishing_condition_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008800)]
+        public FinishingCondition FinishingCondition_Code
+        {
+            get
+            {
+                CheckPropertyInited("FinishingCondition_Code");
+                return this._finishingcondition_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_finishingcondition))
+                    {
+                         _finishingcondition = descr;
+                    }
+                }
+                else
+                {
+                     _finishingcondition = descr;
+                }
+
+                this._finishingcondition_Code = value;
+                NotifyPropertyChanged("FinishingCondition");
+                NotifyPropertyChanged("FinishingCondition_Code");
+            }
+        }
+
     }
 }
 
