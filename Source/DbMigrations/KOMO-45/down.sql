@@ -40,3 +40,7 @@ delete from core_register_attribute where id=10008800;
 alter table market_core_object drop column house_type;
 alter table market_core_object drop column house_type_code;
 delete from core_register_attribute where id=10008900;
+
+alter table market_core_object drop column layout;
+alter table market_core_object drop column layout_code;
+delete from core_register_attribute where id=10009000;

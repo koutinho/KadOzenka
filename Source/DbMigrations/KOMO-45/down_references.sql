@@ -525,3 +525,6 @@ delete from core_reference where referenceid=12084;
 
 --Справочник "Тип дома"
 delete from core_reference where referenceid=12085;
+
+--Справочник "Планировка"
+delete from core_reference where referenceid=12086;

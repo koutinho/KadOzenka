@@ -41,6 +41,8 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.FinishingCondition_Code, SetPreCondition(y => y.FinishingCondition_Code))
 				.ForMember(m => m.HouseType, SetPreCondition(y => y.HouseType))
 				.ForMember(m => m.HouseType_Code, SetPreCondition(y => y.HouseType_Code))
+				.ForMember(m => m.Layout, SetPreCondition(y => y.Layout))
+				.ForMember(m => m.Layout_Code, SetPreCondition(y => y.Layout_Code))
 				;
 				//.ForMember(m => m.Renovation, SetPreCondition(y => y.Renovation));
 				//.ForMember(m => m.BuildingLine, SetPreCondition(y => y.BuildingLine))

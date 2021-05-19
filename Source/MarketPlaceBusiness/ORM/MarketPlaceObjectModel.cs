@@ -772,6 +772,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _layout;
+        /// <summary>
+        /// 10009000 Планировка (layout)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009000)]
+        public string Layout
+        {
+            get
+            {
+                CheckPropertyInited("Layout");
+                return _layout;
+            }
+            set
+            {
+                _layout = value;
+                NotifyPropertyChanged("Layout");
+            }
+        }
+
+
+        private Layout _layout_Code;
+        /// <summary>
+        /// 10009000 Планировка (справочный код) (layout_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009000)]
+        public Layout Layout_Code
+        {
+            get
+            {
+                CheckPropertyInited("Layout_Code");
+                return this._layout_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_layout))
+                    {
+                         _layout = descr;
+                    }
+                }
+                else
+                {
+                     _layout = descr;
+                }
+
+                this._layout_Code = value;
+                NotifyPropertyChanged("Layout");
+                NotifyPropertyChanged("Layout_Code");
+            }
+        }
+
     }
 }
 

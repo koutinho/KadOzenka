@@ -7443,3 +7443,49 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Планировка (12086)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12086)]
+    public enum Layout : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Кабинетная (1)
+		/// </summary>
+		[Description("Кабинетная")]
+        [EnumCode("1")]
+        [ShortTitle("Кабинетная")]
+        Cabinet = 1,
+		/// <summary>
+		/// Коридорная (2)
+		/// </summary>
+		[Description("Коридорная")]
+        [EnumCode("2")]
+        [ShortTitle("Коридорная")]
+        Corridorplan = 2,
+		/// <summary>
+		/// Смешанная (3)
+		/// </summary>
+		[Description("Смешанная")]
+        [EnumCode("3")]
+        [ShortTitle("Смешанная")]
+        Mixed = 3,
+		/// <summary>
+		/// Открытая (4)
+		/// </summary>
+		[Description("Открытая")]
+        [EnumCode("4")]
+        [ShortTitle("Открытая")]
+        OpenSpace = 4,
+    }
+}
+

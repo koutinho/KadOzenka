@@ -175,5 +175,15 @@ namespace MarketPlaceBusiness.Dto
 		/// 10008900 Тип дома (справочный код) (house_type_code)
 		/// </summary>
 		public HouseType HouseType_Code { get; set; }
+
+		/// <summary>
+		/// 10009000 Планировка (layout)
+		/// </summary>
+		public string Layout { get; set; }
+
+		/// <summary>
+		/// 10009000 Планировка (справочный код) (layout_code)
+		/// </summary>
+		public Layout Layout_Code { get; set; }
 	}
 }

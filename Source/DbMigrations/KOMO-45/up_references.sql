@@ -253,4 +253,32 @@ VALUES (12085, 'Тип дома', 1, 'Core.RefLib.Executors.ReferenceExecutorSim
 	}
 ]');
 
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12086, 'Планировка', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'Layout', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Кабинетная",
+		"Name": "Cabinet"
+	},
+	{
+		"Id": 2,
+		"Value": "Коридорная",
+		"Name": "Corridorplan"
+	},
+	{
+		"Id": 3,
+		"Value": "Смешанная",
+		"Name": "Mixed"
+	},
+	{
+		"Id": 4,
+		"Value": "Открытая",
+		"Name": "OpenSpace"
+	}
+]');
 

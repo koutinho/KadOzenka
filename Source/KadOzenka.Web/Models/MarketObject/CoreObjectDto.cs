@@ -88,8 +88,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Тип дома")]
 		public string HouseType { get; set; }
 
-		//public string Renovation { get; set; }
-		//public string BuildingLine { get; set; }
+		[DisplayName("Планировка")]
+		public string Layout { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -122,6 +123,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				Developer = entity.Developer,
 				FinishingCondition = entity.FinishingCondition,
 				HouseType = entity.HouseType,
+				Layout = entity.Layout,
             };
 			if (priceHistory?.Count > 0)
 			{
@@ -157,6 +159,7 @@ namespace KadOzenka.Web.Models.MarketObject
 			}
 			return dto;
 		}
+
 
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
