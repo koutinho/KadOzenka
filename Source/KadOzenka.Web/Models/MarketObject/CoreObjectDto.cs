@@ -94,6 +94,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Вид разрешённого использования")]
 		public string PermittedUseType { get; set; }
 
+		[DisplayName("Подъездные пути")]
+		public string DrivewayType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -128,6 +131,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				HouseType = entity.HouseType,
 				Layout = entity.Layout,
 				PermittedUseType = entity.PermittedUseType,
+				DrivewayType = entity.DrivewayType,
             };
 			if (priceHistory?.Count > 0)
 			{

@@ -282,6 +282,7 @@ VALUES (12086, 'Планировка', 1, 'Core.RefLib.Executors.ReferenceExecut
 	}
 ]');
 
+
 INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
 VALUES (12087, 'Вид разрешённого использования', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'PermittedUseType', null, '[
     {
@@ -353,5 +354,30 @@ VALUES (12087, 'Вид разрешённого использования', 1, 
 		"Id": 13,
 		"Value": "Склады",
 		"Name": "Warehouses"
+	}
+]');
+
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12088, 'Подъездные пути', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'DrivewayType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Асфальтированная дорога",
+		"Name": "Asphalt"
+	},
+	{
+		"Id": 2,
+		"Value": "Грунтовая дорога",
+		"Name": "Ground"
+	},
+	{
+		"Id": 3,
+		"Value": "Нет",
+		"Name": "No"
 	}
 ]');

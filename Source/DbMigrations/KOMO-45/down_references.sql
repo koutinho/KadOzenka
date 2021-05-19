@@ -531,3 +531,6 @@ delete from core_reference where referenceid=12086;
 
 --Справочник "Вид разрешённого использования"
 delete from core_reference where referenceid=12087;
+
+--Справочник "Подъездные пути"
+delete from core_reference where referenceid=12088;

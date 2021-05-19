@@ -201,20 +201,28 @@
                             @Html.KendoTextBoxFor(x => x.HouseType, isReadonly: true)
                         </div>
                     </div>
-                    <div class="form-group">
-                        <div class="col-sm-2">
-                            @Html.CustomLabelFor(x => x.Layout, true)
-                        </div>
-                        <div class="col-sm-2">
-                            @Html.KendoTextBoxFor(x => x.Layout, isReadonly: true)
-                        </div>
-                        <div class="col-sm-1 col-sm-offset-1">
-                            @Html.CustomLabelFor(x => x.PermittedUseType, true)
-                        </div>
-                        <div class="col-sm-6">
-                            @Html.KendoTextBoxFor(x => x.PermittedUseType, isReadonly: true)
-                        </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.Layout, true)
                     </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.Layout, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1 col-sm-offset-1">
+                        @Html.CustomLabelFor(x => x.PermittedUseType, true)
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.KendoTextBoxFor(x => x.PermittedUseType, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.DrivewayType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.DrivewayType, isReadonly: true)
+                    </div>
+                </div>
                 </div>
             </div>
         </li>

@@ -70,3 +70,8 @@ alter table market_core_object add "permitted_use_type_code" BIGINT;
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10009100, 'Вид разрешённого использования', 100, 4, null, 12087, 'permitted_use_type', 'permitted_use_type_code', null, 0, null, null, 'PermittedUseType', 1, null, null, null, 0, 1, '2021-05-19 10:46:53.959408', 0);
 
+alter table market_core_object add "driveway_type" VARCHAR(255);
+alter table market_core_object add "driveway_type_code" BIGINT;
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (10009200, 'Подъездные пути', 100, 4, null, 12088, 'driveway_type', 'driveway_type_code', null, 0, null, null, 'DrivewayType', 1, null, null, null, 0, 1, '2021-05-19 11:03:29.477667', 0);
+

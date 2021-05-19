@@ -49,3 +49,6 @@ alter table market_core_object drop column permitted_use_type;
 alter table market_core_object drop column permitted_use_type_code;
 delete from core_register_attribute where id=10009100;
 
+alter table market_core_object drop column driveway_type;
+alter table market_core_object drop column driveway_type_code;
+delete from core_register_attribute where id=10009200;

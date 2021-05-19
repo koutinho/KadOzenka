@@ -882,6 +882,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _drivewaytype;
+        /// <summary>
+        /// 10009200 Подъездные пути (driveway_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009200)]
+        public string DrivewayType
+        {
+            get
+            {
+                CheckPropertyInited("DrivewayType");
+                return _drivewaytype;
+            }
+            set
+            {
+                _drivewaytype = value;
+                NotifyPropertyChanged("DrivewayType");
+            }
+        }
+
+
+        private DrivewayType _drivewaytype_Code;
+        /// <summary>
+        /// 10009200 Подъездные пути (справочный код) (driveway_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009200)]
+        public DrivewayType DrivewayType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DrivewayType_Code");
+                return this._drivewaytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_drivewaytype))
+                    {
+                         _drivewaytype = descr;
+                    }
+                }
+                else
+                {
+                     _drivewaytype = descr;
+                }
+
+                this._drivewaytype_Code = value;
+                NotifyPropertyChanged("DrivewayType");
+                NotifyPropertyChanged("DrivewayType_Code");
+            }
+        }
+
     }
 }
 

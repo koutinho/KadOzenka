@@ -195,5 +195,15 @@ namespace MarketPlaceBusiness.Dto
 		/// 10009100 Вид разрешённого использования (справочный код) (permitted_use_type_code)
 		/// </summary>
 		public PermittedUseType PermittedUseType_Code { get; set; }
+
+		/// <summary>
+		/// 10009200 Подъездные пути (driveway_type)
+		/// </summary>
+		public string DrivewayType { get; set; }
+
+		/// <summary>
+		/// 10009200 Подъездные пути (справочный код) (driveway_type_code)
+		/// </summary>
+		public DrivewayType DrivewayType_Code { get; set; }
 	}
 }

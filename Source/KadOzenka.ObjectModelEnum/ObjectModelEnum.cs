@@ -7598,3 +7598,42 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Подъездные пути (12088)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12088)]
+    public enum DrivewayType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Асфальтированная дорога (1)
+		/// </summary>
+		[Description("Асфальтированная дорога")]
+        [EnumCode("1")]
+        [ShortTitle("Асфальтированная дорога")]
+        Asphalt = 1,
+		/// <summary>
+		/// Грунтовая дорога (2)
+		/// </summary>
+		[Description("Грунтовая дорога")]
+        [EnumCode("2")]
+        [ShortTitle("Грунтовая дорога")]
+        Ground = 2,
+		/// <summary>
+		/// Нет (3)
+		/// </summary>
+		[Description("Нет")]
+        [EnumCode("3")]
+        [ShortTitle("Нет")]
+        No = 3,
+    }
+}
+
