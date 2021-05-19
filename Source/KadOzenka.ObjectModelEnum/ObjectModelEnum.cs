@@ -7789,3 +7789,35 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация электроснабжения (12092)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12092)]
+    public enum ElectricityLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+

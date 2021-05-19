@@ -91,3 +91,16 @@ alter table market_core_object add "parcel_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") 
 values (10009500, 'Тип участка', 100, 4, NULL, 12090, 'parcel_type', 'parcel_type_code', NULL, 0, NULL, NULL, 'ParcelType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 14:57:07', 'YYYY.MM.DD HH24:MI:SS'), 0)
 
+
+alter table market_core_object add "electricity_location_type" VARCHAR(255);
+alter table market_core_object add "electricity_location_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10009600, 'Локация электроснабжения', 100, 4, NULL, 12092, 'electricity_location_type', 'electricity_location_type_code', NULL, 0, NULL, NULL, 'ElectricityLocationType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 16:07:23', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "possibility_to_connect_electricity" SMALLINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10009700, 'Возможность подключения электичества', 100, 3, NULL, NULL, 'possibility_to_connect_electricity', NULL, NULL, 0, NULL, NULL, 'PossibilityToConnectElectricity', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 16:09:01', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "electricity_power" BIGINT;
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (10009800, 'Мощность электричества, кВТ', 100, 1, null, null, 'electricity_power', null, null, 0, null, null, 'ElectricityPower', 1, null, null, null, 0, 1, '2021-05-19 16:37:55.556421', 0);

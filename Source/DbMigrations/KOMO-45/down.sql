@@ -64,3 +64,14 @@ delete from core_register_attribute where id=10009400;
 alter table market_core_object drop column parcel_type;
 alter table market_core_object drop column parcel_type_code;
 delete from core_register_attribute where id=10009500;
+
+
+alter table market_core_object drop column electricity_location_type;
+alter table market_core_object drop column electricity_location_type_code;
+delete from core_register_attribute where id=10009600;
+
+alter table market_core_object drop column possibility_to_connect_electricity;
+delete from core_register_attribute where id=10009700;
+
+alter table market_core_object drop column electricity_power;
+delete from core_register_attribute where id=10009800;

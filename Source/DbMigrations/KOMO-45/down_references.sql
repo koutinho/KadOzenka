@@ -543,3 +543,6 @@ delete from core_reference where referenceid=12090;
 
 --Справочник "Статус земли"
 delete from core_reference where referenceid=12091;
+
+--Справочник "Локация электроснабжения"
+delete from core_reference where referenceid=12092;

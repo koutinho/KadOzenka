@@ -478,3 +478,22 @@ VALUES (12091, 'Статус земли', 1, 'Core.RefLib.Executors.ReferenceExe
 	}
 ]');
 
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12092, 'Локация электроснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'ElectricityLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+

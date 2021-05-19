@@ -223,5 +223,13 @@ namespace MarketPlaceBusiness.Dto
 		public string ParcelStatus { get; set; }
 
 		public ParcelStatus ParcelStatus_Code { get; set; }
+
+		public string ElectricityLocationType { get; set; }
+
+		public ElectricityLocationType ElectricityLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectElectricity { get; set; }
+
+		public long? ElectricityPower { get; set; }
 	}
 }

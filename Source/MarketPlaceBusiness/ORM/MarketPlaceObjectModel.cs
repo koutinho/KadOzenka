@@ -1102,6 +1102,101 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _electricitylocationtype;
+        /// <summary>
+        /// 10009600 Локация электроснабжения (electricity_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009600)]
+        public string ElectricityLocationType
+        {
+            get
+            {
+                CheckPropertyInited("ElectricityLocationType");
+                return _electricitylocationtype;
+            }
+            set
+            {
+                _electricitylocationtype = value;
+                NotifyPropertyChanged("ElectricityLocationType");
+            }
+        }
+
+
+        private ElectricityLocationType _electricitylocationtype_Code;
+        /// <summary>
+        /// 10009600 Локация электроснабжения (справочный код) (electricity_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009600)]
+        public ElectricityLocationType ElectricityLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ElectricityLocationType_Code");
+                return this._electricitylocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_electricitylocationtype))
+                    {
+                         _electricitylocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _electricitylocationtype = descr;
+                }
+
+                this._electricitylocationtype_Code = value;
+                NotifyPropertyChanged("ElectricityLocationType");
+                NotifyPropertyChanged("ElectricityLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectelectricity;
+        /// <summary>
+        /// 10009700 Возможность подключения электичества (possibility_to_connect_electricity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009700)]
+        public bool? PossibilityToConnectElectricity
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectElectricity");
+                return _possibilitytoconnectelectricity;
+            }
+            set
+            {
+                _possibilitytoconnectelectricity = value;
+                NotifyPropertyChanged("PossibilityToConnectElectricity");
+            }
+        }
+
+
+        private long? _electricitypower;
+        /// <summary>
+        /// 10009800 Мощность электричества, кВТ (electricity_power)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009800)]
+        public long? ElectricityPower
+        {
+            get
+            {
+                CheckPropertyInited("ElectricityPower");
+                return _electricitypower;
+            }
+            set
+            {
+                _electricitypower = value;
+                NotifyPropertyChanged("ElectricityPower");
+            }
+        }
+
     }
 }
 
