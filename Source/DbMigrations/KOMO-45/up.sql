@@ -65,3 +65,8 @@ alter table market_core_object add "layout_code" BIGINT;
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10009000, 'Планировка', 100, 4, null, 12086, 'layout', 'layout_code', null, 0, null, null, 'Layout', 1, null, null, null, 0, 1, '2021-05-19 10:27:26.006963', 0);
 
+alter table market_core_object add "permitted_use_type" VARCHAR(255);
+alter table market_core_object add "permitted_use_type_code" BIGINT;
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (10009100, 'Вид разрешённого использования', 100, 4, null, 12087, 'permitted_use_type', 'permitted_use_type_code', null, 0, null, null, 'PermittedUseType', 1, null, null, null, 0, 1, '2021-05-19 10:46:53.959408', 0);
+

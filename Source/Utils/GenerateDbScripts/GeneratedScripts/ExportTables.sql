@@ -68190,6 +68190,24 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'permitted_use_type')) then
+        execute 'alter table market_core_object add "permitted_use_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'permitted_use_type_code')) then
+        execute 'alter table market_core_object add "permitted_use_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68540,6 +68558,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'layout_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "layout_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'permitted_use_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "permitted_use_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'permitted_use_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "permitted_use_type_code" BIGINT';
     end if;
 end $$;
 

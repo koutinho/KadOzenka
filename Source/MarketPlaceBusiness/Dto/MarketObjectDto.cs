@@ -185,5 +185,15 @@ namespace MarketPlaceBusiness.Dto
 		/// 10009000 Планировка (справочный код) (layout_code)
 		/// </summary>
 		public Layout Layout_Code { get; set; }
+
+		/// <summary>
+		/// 10009100 Вид разрешённого использования (permitted_use_type)
+		/// </summary>
+		public string PermittedUseType { get; set; }
+
+		/// <summary>
+		/// 10009100 Вид разрешённого использования (справочный код) (permitted_use_type_code)
+		/// </summary>
+		public PermittedUseType PermittedUseType_Code { get; set; }
 	}
 }

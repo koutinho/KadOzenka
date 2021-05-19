@@ -7489,3 +7489,112 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Вид разрешённого использования (12087)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12087)]
+    public enum PermittedUseType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Cельскохозяйственное использование (1)
+		/// </summary>
+		[Description("Cельскохозяйственное использование")]
+        [EnumCode("1")]
+        [ShortTitle("Cельскохозяйственное использование")]
+        Agricultural = 1,
+		/// <summary>
+		/// Деловое управление (2)
+		/// </summary>
+		[Description("Деловое управление")]
+        [EnumCode("2")]
+        [ShortTitle("Деловое управление")]
+        BusinessManagement = 2,
+		/// <summary>
+		/// Общее пользование территории (3)
+		/// </summary>
+		[Description("Общее пользование территории")]
+        [EnumCode("3")]
+        [ShortTitle("Общее пользование территории")]
+        CommonUseArea = 3,
+		/// <summary>
+		/// Высотная застройка (4)
+		/// </summary>
+		[Description("Высотная застройка")]
+        [EnumCode("4")]
+        [ShortTitle("Высотная застройка")]
+        HighriseBuildings = 4,
+		/// <summary>
+		/// Гостиничное обслуживание (5)
+		/// </summary>
+		[Description("Гостиничное обслуживание")]
+        [EnumCode("5")]
+        [ShortTitle("Гостиничное обслуживание")]
+        HotelAmenities = 5,
+		/// <summary>
+		/// Индивидуальное жилищное строительство (ИЖС) (6)
+		/// </summary>
+		[Description("Индивидуальное жилищное строительство (ИЖС)")]
+        [EnumCode("6")]
+        [ShortTitle("Индивидуальное жилищное строительство (ИЖС)")]
+        IndividualHousingConstruction = 6,
+		/// <summary>
+		/// Промышленность (7)
+		/// </summary>
+		[Description("Промышленность")]
+        [EnumCode("7")]
+        [ShortTitle("Промышленность")]
+        Industry = 7,
+		/// <summary>
+		/// Отдых (рекреация) (8)
+		/// </summary>
+		[Description("Отдых (рекреация)")]
+        [EnumCode("8")]
+        [ShortTitle("Отдых (рекреация)")]
+        Leisure = 8,
+		/// <summary>
+		/// Малоэтажное жилищное строительство (МЖС) (9)
+		/// </summary>
+		[Description("Малоэтажное жилищное строительство (МЖС)")]
+        [EnumCode("9")]
+        [ShortTitle("Малоэтажное жилищное строительство (МЖС)")]
+        LowriseHousing = 9,
+		/// <summary>
+		/// Общественное использование объектов капитального строительства (10)
+		/// </summary>
+		[Description("Общественное использование объектов капитального строительства")]
+        [EnumCode("10")]
+        [ShortTitle("Общественное использование объектов капитального строительства")]
+        PublicUseOfCapitalConstruction = 10,
+		/// <summary>
+		/// Обслуживание автотранспорта (11)
+		/// </summary>
+		[Description("Обслуживание автотранспорта")]
+        [EnumCode("11")]
+        [ShortTitle("Обслуживание автотранспорта")]
+        ServiceVehicles = 11,
+		/// <summary>
+		/// Торговые центры (12)
+		/// </summary>
+		[Description("Торговые центры")]
+        [EnumCode("12")]
+        [ShortTitle("Торговые центры")]
+        ShoppingCenters = 12,
+		/// <summary>
+		/// Склады (13)
+		/// </summary>
+		[Description("Склады")]
+        [EnumCode("13")]
+        [ShortTitle("Склады")]
+        Warehouses = 13,
+    }
+}
+

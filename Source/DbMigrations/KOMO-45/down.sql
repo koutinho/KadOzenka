@@ -44,3 +44,8 @@ delete from core_register_attribute where id=10008900;
 alter table market_core_object drop column layout;
 alter table market_core_object drop column layout_code;
 delete from core_register_attribute where id=10009000;
+
+alter table market_core_object drop column permitted_use_type;
+alter table market_core_object drop column permitted_use_type_code;
+delete from core_register_attribute where id=10009100;
+

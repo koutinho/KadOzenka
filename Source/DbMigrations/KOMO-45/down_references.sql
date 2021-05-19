@@ -528,3 +528,6 @@ delete from core_reference where referenceid=12085;
 
 --Справочник "Планировка"
 delete from core_reference where referenceid=12086;
+
+--Справочник "Вид разрешённого использования"
+delete from core_reference where referenceid=12087;

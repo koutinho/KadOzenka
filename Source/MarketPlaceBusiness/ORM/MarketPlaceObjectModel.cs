@@ -827,6 +827,61 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _permittedusetype;
+        /// <summary>
+        /// 10009100 Вид разрешённого использования (permitted_use_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009100)]
+        public string PermittedUseType
+        {
+            get
+            {
+                CheckPropertyInited("PermittedUseType");
+                return _permittedusetype;
+            }
+            set
+            {
+                _permittedusetype = value;
+                NotifyPropertyChanged("PermittedUseType");
+            }
+        }
+
+
+        private PermittedUseType _permittedusetype_Code;
+        /// <summary>
+        /// 10009100 Вид разрешённого использования (справочный код) (permitted_use_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009100)]
+        public PermittedUseType PermittedUseType_Code
+        {
+            get
+            {
+                CheckPropertyInited("PermittedUseType_Code");
+                return this._permittedusetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_permittedusetype))
+                    {
+                         _permittedusetype = descr;
+                    }
+                }
+                else
+                {
+                     _permittedusetype = descr;
+                }
+
+                this._permittedusetype_Code = value;
+                NotifyPropertyChanged("PermittedUseType");
+                NotifyPropertyChanged("PermittedUseType_Code");
+            }
+        }
+
     }
 }
 

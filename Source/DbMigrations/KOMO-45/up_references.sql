@@ -282,3 +282,76 @@ VALUES (12086, 'Планировка', 1, 'Core.RefLib.Executors.ReferenceExecut
 	}
 ]');
 
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12087, 'Вид разрешённого использования', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'PermittedUseType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Cельскохозяйственное использование",
+		"Name": "Agricultural"
+	},
+	{
+		"Id": 2,
+		"Value": "Деловое управление",
+		"Name": "BusinessManagement"
+	},
+	{
+		"Id": 3,
+		"Value": "Общее пользование территории",
+		"Name": "CommonUseArea"
+	},
+	{
+		"Id": 4,
+		"Value": "Высотная застройка",
+		"Name": "HighriseBuildings"
+	},
+	{
+		"Id": 5,
+		"Value": "Гостиничное обслуживание",
+		"Name": "HotelAmenities"
+	},
+	{
+		"Id": 6,
+		"Value": "Индивидуальное жилищное строительство (ИЖС)",
+		"Name": "IndividualHousingConstruction"
+	},
+	{
+		"Id": 7,
+		"Value": "Промышленность",
+		"Name": "Industry"
+	},
+	{
+		"Id": 8,
+		"Value": "Отдых (рекреация)",
+		"Name": "Leisure"
+	},
+	{
+		"Id": 9,
+		"Value": "Малоэтажное жилищное строительство (МЖС)",
+		"Name": "LowriseHousing"
+	},
+	{
+		"Id": 10,
+		"Value": "Общественное использование объектов капитального строительства",
+		"Name": "PublicUseOfCapitalConstruction"
+	},
+	{
+		"Id": 11,
+		"Value": "Обслуживание автотранспорта",
+		"Name": "ServiceVehicles"
+	},
+	{
+		"Id": 12,
+		"Value": "Торговые центры",
+		"Name": "ShoppingCenters"
+	},
+	{
+		"Id": 13,
+		"Value": "Склады",
+		"Name": "Warehouses"
+	}
+]');

@@ -91,6 +91,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Планировка")]
 		public string Layout { get; set; }
 
+		[DisplayName("Вид разрешённого использования")]
+		public string PermittedUseType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -124,6 +127,7 @@ namespace KadOzenka.Web.Models.MarketObject
 				FinishingCondition = entity.FinishingCondition,
 				HouseType = entity.HouseType,
 				Layout = entity.Layout,
+				PermittedUseType = entity.PermittedUseType,
             };
 			if (priceHistory?.Count > 0)
 			{
