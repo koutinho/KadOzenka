@@ -127,6 +127,19 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Локация газоснабжения")]
 		public string GasLocationType { get; set; }
 
+		[DisplayName("Тип канализации")]
+		public string DrainageType { get; set; }
+
+		[DisplayName("Объём канализации, м³/сутки")]
+		public long? DrainageCapacity { get; set; }
+
+		[DisplayName("Возможность подключения канализации")]
+		public bool? PossibilityToConnectDrainage { get; set; }
+
+		[DisplayName("Локация канализации")]
+		public string DrainageLocationType { get; set; }
+
+
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
             var dto = new CoreObjectDto
@@ -171,6 +184,10 @@ namespace KadOzenka.Web.Models.MarketObject
 				PossibilityToConnectGas = entity.PossibilityToConnectGas,
 				GasCapacity = entity.GasCapacity,
 				GasPressureType = entity.GasPressureType,
+				DrainageLocationType = entity.DrainageLocationType,
+				PossibilityToConnectDrainage = entity.PossibilityToConnectDrainage,
+				DrainageCapacity = entity.DrainageCapacity,
+				DrainageType = entity.DrainageType,
             };
 			if (priceHistory?.Count > 0)
 			{

@@ -7876,19 +7876,83 @@ namespace ObjectModel.Directory
         [ShortTitle("Высокое")]
         High = 1,
 		/// <summary>
-		/// Среднее (1)
+		/// Среднее (2)
 		/// </summary>
 		[Description("Среднее")]
-        [EnumCode("1")]
+        [EnumCode("2")]
         [ShortTitle("Среднее")]
-        Middle = 1,
+        Middle = 2,
 		/// <summary>
-		/// Низкое (2)
+		/// Низкое (3)
 		/// </summary>
 		[Description("Низкое")]
-        [EnumCode("2")]
+        [EnumCode("3")]
         [ShortTitle("Низкое")]
-        Low = 2,
+        Low = 3,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация канализации (12095)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12095)]
+    public enum DrainageLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип канализации (12096)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12096)]
+    public enum DrainageType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Автономная (1)
+		/// </summary>
+		[Description("Автономная")]
+        [EnumCode("1")]
+        [ShortTitle("Автономная")]
+        Autonomous = 1,
+		/// <summary>
+		/// Центральная (2)
+		/// </summary>
+		[Description("Центральная")]
+        [EnumCode("2")]
+        [ShortTitle("Центральная")]
+        Central = 2,
     }
 }
 

@@ -122,3 +122,22 @@ alter table market_core_object add "gas_pressure_type" VARCHAR(255);
 alter table market_core_object add "gas_pressure_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
 (10010200, 'Давление газа', 100, 4, NULL, 12094, 'gas_pressure_type', 'gas_pressure_type_code', NULL, 0, NULL, NULL, 'GasPressureType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 09:18:43', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+
+alter table market_core_object add "drainage_location_type" VARCHAR(255);
+alter table market_core_object add "drainage_location_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010300, 'Локация канализации', 100, 4, NULL, 12095, 'drainage_location_type', 'drainage_location_type_code', NULL, 0, NULL, NULL, 'DrainageLocationType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 10:02:49', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "possibility_to_connect_drainage" SMALLINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010400, 'Возможность подключения канализации', 100, 3, NULL, NULL, 'possibility_to_connect_drainage', NULL, NULL, 0, NULL, NULL, 'PossibilityToConnectDrainage', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 10:04:04', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "drainage_capacity" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010500, 'Объем канализации', 100, 1, NULL, NULL, 'drainage_capacity', NULL, NULL, 0, NULL, NULL, 'DrainageCapacity', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 10:04:49', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "drainage_type" VARCHAR(255);
+alter table market_core_object add "drainage_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010600, 'Тип канализации', 100, 4, NULL, 12096, 'drainage_type', 'drainage_type_code', NULL, 0, NULL, NULL, 'DrainageType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 10:05:33', 'YYYY.MM.DD HH24:MI:SS'), 0);

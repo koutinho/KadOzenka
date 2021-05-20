@@ -68370,6 +68370,60 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_location_type')) then
+        execute 'alter table market_core_object add "drainage_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_location_type_code')) then
+        execute 'alter table market_core_object add "drainage_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_drainage')) then
+        execute 'alter table market_core_object add "possibility_to_connect_drainage" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_capacity')) then
+        execute 'alter table market_core_object add "drainage_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_type')) then
+        execute 'alter table market_core_object add "drainage_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_type_code')) then
+        execute 'alter table market_core_object add "drainage_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68900,6 +68954,60 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_pressure_type_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "gas_pressure_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_drainage')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_drainage" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_capacity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_type_code" BIGINT';
     end if;
 end $$;
 

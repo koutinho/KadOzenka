@@ -1347,6 +1347,156 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _drainagelocationtype;
+        /// <summary>
+        /// 10010300 Локация канализации (drainage_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010300)]
+        public string DrainageLocationType
+        {
+            get
+            {
+                CheckPropertyInited("DrainageLocationType");
+                return _drainagelocationtype;
+            }
+            set
+            {
+                _drainagelocationtype = value;
+                NotifyPropertyChanged("DrainageLocationType");
+            }
+        }
+
+
+        private DrainageLocationType _drainagelocationtype_Code;
+        /// <summary>
+        /// 10010300 Локация канализации (справочный код) (drainage_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010300)]
+        public DrainageLocationType DrainageLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DrainageLocationType_Code");
+                return this._drainagelocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_drainagelocationtype))
+                    {
+                         _drainagelocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _drainagelocationtype = descr;
+                }
+
+                this._drainagelocationtype_Code = value;
+                NotifyPropertyChanged("DrainageLocationType");
+                NotifyPropertyChanged("DrainageLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectdrainage;
+        /// <summary>
+        /// 10010400 Возможность подключения канализации (possibility_to_connect_drainage)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010400)]
+        public bool? PossibilityToConnectDrainage
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectDrainage");
+                return _possibilitytoconnectdrainage;
+            }
+            set
+            {
+                _possibilitytoconnectdrainage = value;
+                NotifyPropertyChanged("PossibilityToConnectDrainage");
+            }
+        }
+
+
+        private long? _drainagecapacity;
+        /// <summary>
+        /// 10010500 Объем канализации (drainage_capacity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010500)]
+        public long? DrainageCapacity
+        {
+            get
+            {
+                CheckPropertyInited("DrainageCapacity");
+                return _drainagecapacity;
+            }
+            set
+            {
+                _drainagecapacity = value;
+                NotifyPropertyChanged("DrainageCapacity");
+            }
+        }
+
+
+        private string _drainagetype;
+        /// <summary>
+        /// 10010600 Тип канализации (drainage_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010600)]
+        public string DrainageType
+        {
+            get
+            {
+                CheckPropertyInited("DrainageType");
+                return _drainagetype;
+            }
+            set
+            {
+                _drainagetype = value;
+                NotifyPropertyChanged("DrainageType");
+            }
+        }
+
+
+        private DrainageType _drainagetype_Code;
+        /// <summary>
+        /// 10010600 Тип канализации (справочный код) (drainage_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010600)]
+        public DrainageType DrainageType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DrainageType_Code");
+                return this._drainagetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_drainagetype))
+                    {
+                         _drainagetype = descr;
+                    }
+                }
+                else
+                {
+                     _drainagetype = descr;
+                }
+
+                this._drainagetype_Code = value;
+                NotifyPropertyChanged("DrainageType");
+                NotifyPropertyChanged("DrainageType_Code");
+            }
+        }
+
     }
 }
 

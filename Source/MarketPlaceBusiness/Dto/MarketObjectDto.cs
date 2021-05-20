@@ -243,5 +243,17 @@ namespace MarketPlaceBusiness.Dto
 		public string GasPressureType { get; set; }
 
 		public GasPressureType GasPressureType_Code { get; set; }
+
+		public string DrainageLocationType { get; set; }
+
+		public DrainageLocationType DrainageLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectDrainage { get; set; }
+
+		public long? DrainageCapacity { get; set; }
+
+		public string DrainageType { get; set; }
+
+		public DrainageType DrainageType_Code { get; set; }
 	}
 }

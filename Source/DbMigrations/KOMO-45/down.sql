@@ -88,3 +88,18 @@ delete from core_register_attribute where id=10010100;
 alter table market_core_object drop column gas_pressure_type;
 alter table market_core_object drop column gas_pressure_type_code;
 delete from core_register_attribute where id=10010200;
+
+alter table market_core_object drop column drainage_location_type;
+alter table market_core_object drop column drainage_location_type_code;
+delete from core_register_attribute where id=10010300;
+
+alter table market_core_object drop column possibility_to_connect_drainage;
+delete from core_register_attribute where id=10010400;
+
+alter table market_core_object drop column drainage_capacity;
+delete from core_register_attribute where id=10010500;
+
+alter table market_core_object drop column drainage_type;
+alter table market_core_object drop column drainage_type_code;
+delete from core_register_attribute where id=10010600;
+

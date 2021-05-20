@@ -529,14 +529,52 @@ VALUES (12094, 'Давление газа', 1, 'Core.RefLib.Executors.ReferenceE
 		"Name": "High"
 	},
 	{
-		"Id": 1,
+		"Id": 2,
 		"Value": "Среднее",
 		"Name": "Middle"
 	},
 	{
-		"Id": 2,
+		"Id": 3,
 		"Value": "Низкое",
 		"Name": "Low"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12095, 'Локация канализации', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'DrainageLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12096, 'Тип канализации', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'DrainageType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Автономная",
+		"Name": "Autonomous"
+	},
+	{
+		"Id": 2,
+		"Value": "Центральная",
+		"Name": "Central"
 	}
 ]');
 

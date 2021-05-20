@@ -552,3 +552,9 @@ delete from core_reference where referenceid=12093;
 
 --Справочник "Давление газа"
 delete from core_reference where referenceid=12094;
+
+--Справочник "Локация канализации"
+delete from core_reference where referenceid=12095;
+
+--Справочник "Тип канализации"
+delete from core_reference where referenceid=12096;
