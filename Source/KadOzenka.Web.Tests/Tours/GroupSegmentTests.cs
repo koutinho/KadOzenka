@@ -30,7 +30,7 @@ namespace KadOzenka.Web.Tests.Tours
 			var model = new GroupSegmentSettingsModel
 			{
 				GroupId = RandomGenerator.GenerateRandomInteger(),
-				MarketSegment = MarketSegment.Appartment,
+				MarketSegment = MarketSegment.Bed,
 				TerritoryType = TerritoryType.None
 			};
 
