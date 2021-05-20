@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Core.Register;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
@@ -15,6 +16,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -1665,7 +1667,7 @@ namespace KadOzenka.Dal.XmlParser
         //        {
         //         lock (_locker)
         //         {
-        //          LogErrorInExcel(row.Index, cadastralNumber, ex);
+        //          LogErrorInReport(row.Index, cadastralNumber, ex);
         //            }
         //        }
         //    });
@@ -1692,7 +1694,11 @@ namespace KadOzenka.Dal.XmlParser
 	        mainWorkSheet.Rows.ForEach(row =>
 	        {
 		        string cadastralNumber = null;
-		        try
+                var reportInfo = new ReportInfo
+	            {
+		            RowIndex = row.Index
+	            };
+	            try
 		        {
 			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
 				        return;
@@ -1703,18 +1709,26 @@ namespace KadOzenka.Dal.XmlParser
                     var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
                     var typeEnum = GetObjectType(objectTypeDescriptions, typeFromFile);
 
-                    var obj = MapExcelRowToObject(row, cadastralNumber, square, assessmentDate, typeEnum,
+                    reportInfo.CadastralNumber = cadastralNumber;
+                    var obj = MapExcelRowToObject(row, reportInfo, cadastralNumber, square, assessmentDate, typeEnum,
 	                    columnsMapping, importedAttributes);
 			        objects.Add(obj);
 		        }
 		        catch (Exception ex)
 		        {
-			        LogErrorInExcel(row.Index, cadastralNumber, ex);
+			        Serilog.Log.Error(ex, $"Ошибка при обработке {row.Index + 1} строки excel-файла. Объект '{cadastralNumber}'.");
+                    reportInfo.Error = ex.Message;
 		        }
+
+                if (reportInfo.MustWriteToReport)
+                {
+	                LogInfoToReport(reportInfo);
+                }
 	        });
 
 	        return objects;
         }
+
 
         #region Support Methods
 
@@ -1751,9 +1765,9 @@ namespace KadOzenka.Dal.XmlParser
             throw new Exception($"Указан неизвестный тип объекта '{typeFromFile}'");
         }
 
-        private xmlObject MapExcelRowToObject(ExcelRow row, string cadastralNumber, double? square,
-	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping,
-	        GknAllAttributes importedAttributes)
+        private xmlObject MapExcelRowToObject(ExcelRow row, ReportInfo reportInfo, string cadastralNumber,
+	        double? square, DateTime? assessmentDate, enTypeObject objectType, 
+	        List<ColumnToAttributeMapping> columnsMapping, GknAllAttributes importedAttributes)
         {
 	        ValidateExcelObjectRequiredColumns(cadastralNumber, square, assessmentDate);
 
@@ -1788,6 +1802,19 @@ namespace KadOzenka.Dal.XmlParser
             columnsMapping.ForEach(map =>
             {
 	            var attributeInfo = attributes.FirstOrDefault(x => x.AttributeId == map.AttributeId);
+	            //если атрибут не соответствует типу ОН (например, пытаемся записать Материал стен в ЗУ
+	            if (attributeInfo == null)
+	            {
+		            var attributeData = RegisterCache.GetAttributeData(map.AttributeId);
+		            if (attributeData.RegisterId != OMUnit.GetRegisterId())
+		            {
+			            reportInfo.NotProcessedAttributeNames = 
+				            !string.IsNullOrWhiteSpace(reportInfo.NotProcessedAttributeNames) 
+					            ? $"{reportInfo.NotProcessedAttributeNames};{Environment.NewLine}{attributeData.Name};" 
+					            : $"{attributeData.Name}";
+			            reportInfo.ColumnIndex = map.ColumnIndex;
+		            }
+	            }
 	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
 	            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
             });
@@ -1841,19 +1868,40 @@ namespace KadOzenka.Dal.XmlParser
 	        }
         }
 
-        #endregion
-
-        #endregion
-
-        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex)
+        private class ReportInfo
         {
-	        var realRowIndex = rowIndex + 1;
-	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла. Объект '{cadastralNumber}'.");
+	        public int RowIndex { get; set; }
+	        public int ColumnIndex { get; set; }
+	        public string CadastralNumber { get; set; }
+	        public string Error { get; set; }
+	        public string NotProcessedAttributeNames { get; set; }
+	        public bool MustWriteToReport => !string.IsNullOrWhiteSpace(Error) || !string.IsNullOrWhiteSpace(NotProcessedAttributeNames);
+
+	        public ReportInfo()
+	        {
+                //не всегда можно узнать, в какой колонке произошла ошибка
+		        ColumnIndex = -1;
+	        }
+        }
+
+        #endregion
+
+        #endregion
+
+        private void LogInfoToReport(ReportInfo reportInfo)
+        {
+	        var comment = $"Строка в файле - {reportInfo.RowIndex + 1}";
+	        if (reportInfo.ColumnIndex != -1)
+	        {
+		        comment += $", колонка - {reportInfo.ColumnIndex + 1}";
+	        }
 
 	        var reportRow = _gbuReportService.GetCurrentRow();
-	        _gbuReportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
-	        _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
-	        _gbuReportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
+
+            _gbuReportService.AddValue(reportInfo.CadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.Error, BaseImporter.ErrorMessageColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.NotProcessedAttributeNames, BaseImporter.NotProcessedAttributesColumnIndex, reportRow);
+	        _gbuReportService.AddValue(comment, BaseImporter.CommentColumnIndex, reportRow);
         }
     }
 }
