@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Core.Register;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Gbu.GroupingAlgoritm;
@@ -34,61 +35,36 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Настройки 1 уровня группировки
 		/// </summary>
-		public LevelItemGroup Level1 { get; set; }
+		public LevelItemGroup IdAttributeSource { get; set; }
 
 		/// <summary>
 		/// Настройки 2 уровня группировки
 		/// </summary>
-		public LevelItemGroup Level2 { get; set; }
+		public LevelItemGroup IdAttributeForSelectionBetween2 { get; set; }
+
+		public UiFilters Filter1ForSelectionBetween2 { get; set; }
+		public UiFilters Filter2ForSelectionBetween2 { get; set; }
 
 		/// <summary>
 		/// Настройки 3 уровня группировки
 		/// </summary>
-		public LevelItemGroup Level3 { get; set; }
-
-		/// <summary>
-		/// Настройки 4 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level4 { get; set; }
-
-		/// <summary>
-		/// Настройки 5 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level5 { get; set; }
-
-		/// <summary>
-		/// Настройки 6 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level6 { get; set; }
-
-		/// <summary>
-		/// Настройки 7 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level7 { get; set; }
-
-		/// <summary>
-		/// Настройки 8 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level8 { get; set; }
-
-		/// <summary>
-		/// Настройки 9 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level9 { get; set; }
+		public LevelItemGroup IdAttributeForSelectionBetween3 { get; set; }
+		public UiFilters Filter1ForSelectionBetween3 { get; set; }
+		public UiFilters Filter2ForSelectionBetween3 { get; set; }
+		public UiFilters Filter3ForSelectionBetween3 { get; set; }
 
 
 
-        public GroupingObjectFinalize()
+		public GroupingObjectFinalize()
         {
-	        Level1 = new LevelItemGroup();
-	        Level2 = new LevelItemGroup();
-	        Level3 = new LevelItemGroup();
-	        Level4 = new LevelItemGroup();
-	        Level5 = new LevelItemGroup();
-	        Level6 = new LevelItemGroup();
-	        Level7 = new LevelItemGroup();
-	        Level8 = new LevelItemGroup();
-	        Level9 = new LevelItemGroup();
+	        IdAttributeSource = new LevelItemGroup();
+	        IdAttributeForSelectionBetween2 = new LevelItemGroup();
+	        IdAttributeForSelectionBetween3 = new LevelItemGroup();
+	        Filter1ForSelectionBetween2 = new UiFilters();
+	        Filter2ForSelectionBetween2 = new UiFilters();
+	        Filter1ForSelectionBetween3 = new UiFilters();
+	        Filter2ForSelectionBetween3 = new UiFilters();
+	        Filter3ForSelectionBetween3 = new UiFilters();
         }
 
 
@@ -99,15 +75,9 @@ namespace KadOzenka.Web.Models.GbuObject
 				//IdAttributeDocument = IdAttributeDocument,
 				IdAttributeResult = IdAttributeResult,
 				//IdAttributeSource = IdAttributeSource,
-				Level1 = Level1.ConvertToLevelItem(),
-				Level2 = Level2.ConvertToLevelItem(),
-				Level3 = Level3.ConvertToLevelItem(),
-				Level4 = Level4.ConvertToLevelItem(),
-				Level5 = Level5.ConvertToLevelItem(),
-				Level6 = Level6.ConvertToLevelItem(),
-				Level7 = Level7.ConvertToLevelItem(),
-				Level8 = Level8.ConvertToLevelItem(),
-				Level9 = Level9.ConvertToLevelItem(),
+				Level1 = IdAttributeSource.ConvertToLevelItem(),
+				Level2 = IdAttributeForSelectionBetween2.ConvertToLevelItem(),
+				Level3 = IdAttributeForSelectionBetween3.ConvertToLevelItem(),
 				SelectAllObject = SelectAllObject,
 				DateActual = DataActual,
 				TaskFilter = TaskFilter ?? new List<long>(),
@@ -168,5 +138,42 @@ namespace KadOzenka.Web.Models.GbuObject
 			}
 
 		}
+
+		public class UiFilters
+		{
+			public FilteringType Type { get; set; }
+			public DateFilter DateFilter { get; set; }
+			public StringFilter StringFilter { get; set; }
+			public NumberFilter NumberFilter { get; set; }
+			public ReferenceFilter ReferenceFilter { get; set; }
+		}
+
+		public class DateFilter
+		{
+			public FilteringTypeDate FilteringType { get; set; }
+			public DateTime? Value { get; set; }
+			public DateTime? Value2 { get; set; }
+		}
+
+		public class StringFilter
+		{
+			public FilteringTypeString FilteringType { get; set; }
+			public string Value { get; set; }
+
+		}
+
+		public class NumberFilter
+		{
+			public FilteringTypeNumber FilteringType { get; set; }
+			public decimal? Value { get; set; }
+			public decimal? Value2 { get; set; }
+		}
+
+		public class ReferenceFilter
+		{
+			public FilteringTypeReference FilteringType { get; set; }
+			public long? Value { get; set; }
+		}
+
 	}
 }

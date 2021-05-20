@@ -1,0 +1,42 @@
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.GbuObject.GroupingObjectFinalize.UiFilters
+
+<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_filterTypeContainer")">
+    <div class="col-sm-3">
+        @Html.KendoDropDownListEnumFor(m=>m.Type)
+    </div>
+</div>
+
+
+<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_stringFilterContainer")">
+    <div class="col-sm-3">
+        @Html.KendoDropDownListEnumFor(m=>m.StringFilter.FilteringType)
+    </div>
+    <div class="col-sm-3" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_stringFilterValueContainer")">
+        @Html.KendoTextBoxFor(m=>m.StringFilter.Value, isReadonly:false)
+    </div>
+</div>
+
+<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_numberFilterContainer")">
+    <div class="col-sm-3">
+        @Html.KendoDropDownListEnumFor(m=>m.NumberFilter.FilteringType)
+    </div>
+    <div id="@(ViewData.TemplateInfo.HtmlFieldPrefix + "_numberFilterValueContainer")" class="col-sm-3">
+        @Html.Kendo().NumericTextBoxFor(m => m.NumberFilter.Value)
+    </div>
+    <div id="@(ViewData.TemplateInfo.HtmlFieldPrefix + "_numberFilterValue2Container")" class="col-sm-3" hidden>
+        @Html.Kendo().NumericTextBoxFor(m => m.NumberFilter.Value2)
+    </div>
+</div>
+
+<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_dateFilterContainer")">
+    <div class="col-sm-3">
+        @Html.KendoDropDownListEnumFor(m=>m.DateFilter.FilteringType)
+    </div>
+    <div id="@(ViewData.TemplateInfo.HtmlFieldPrefix + "_dateFilterValueContainer")" class="col-sm-3">
+        @Html.KendoDatePickerFor(m => m.DateFilter.Value, isReadonly: false)
+    </div>
+    <div id="@(ViewData.TemplateInfo.HtmlFieldPrefix + "_dateFilterValue2Container")" class="col-sm-3" hidden>
+        @Html.KendoDatePickerFor(m => m.DateFilter.Value2, isReadonly: false)
+    </div>
+</div>

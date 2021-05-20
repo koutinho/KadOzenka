@@ -252,6 +252,13 @@ namespace KadOzenka.Web.Controllers
 			return View(new GroupingObjectFinalize());
 		}
 
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
+		public ActionResult GroupingObjectFinalize(GroupingObjectFinalize model)
+		{
+			return GroupingObjectFinalize();
+		}
+
 		public List<LevelItem> GetCodJobParam(long? codJobId)
 		{
 			if (codJobId == 0 || codJobId == null)

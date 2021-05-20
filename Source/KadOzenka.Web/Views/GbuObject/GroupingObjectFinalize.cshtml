@@ -48,211 +48,173 @@
 @using (Html.BeginForm("GroupingObjectFinalize", "GbuObject", FormMethod.Post))
 {
     <div class="form-horizontal col-sm-12">
-        @Html.RenderHelpButton()
-        @* <div class="form-group"> *@
-        @*     <div class="col-sm-2"> *@
-        @*         @Html.CustomLabelFor(m => m.IdCodJob) *@
-        @*     </div> *@
-        @*     <div class="col-sm-10"> *@
-        @*         @Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"]) *@
-        @*     </div> *@
-        @* </div> *@
-        <fieldset class="wrap-level">
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.SelectAllObject))
-                        Все объекты
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.IsDataActualUsed).Enable(!Model.SelectAllObject))
-                        Дата актуализации
-                    </label>
-                </div>
-                <div class="col-sm-4">
-                    @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.IsTaskFilterUsed).Enable(!Model.SelectAllObject))
-                        Задания на оценку
-                    </label>
-                </div>
-                <div class="col-sm-10">
-                    @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Filter("contains")
-                        .Enable(Model.IsTaskFilterUsed)
-                        .DataSource(source =>
-                        {
-                            source.Read(read => { read.Action("GetTasksData", "GbuObject"); })
-                                .ServerFiltering(false);
-                        }))
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.ObjectChangeStatus)
-                </div>
-                <div class="col-sm-10">
-                    @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
-                        .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
-                        .Filter(FilterType.Contains))
-                </div>
-            </div>
-        </fieldset>
-        @* <fieldset id="level1cod" class="wrap-level"> *@
-        @*     <div class="form-group"> *@
-        @*         $1$ <div class="col-sm-2"> #1# *@
-        @*         $1$     <label> #1# *@
-        @*         $1$         @(Html.Kendo().CheckBoxFor(m => m.Level1.SkipDefis)) #1# *@
-        @*         $1$         Игнорировать "-" #1# *@
-        @*         $1$     </label> #1# *@
-        @*         $1$ </div> #1# *@
-        @* *@
-        @*         $1$ @Html.HiddenFor(m=>m.Level1.CodValueId) #1# *@
-        @*         $1$ @Html.HiddenFor(m=>m.Level1.CodValueName) #1# *@
-        @*     </div> *@
-        @* </fieldset> *@
-        <fieldset id="level2cod" class="wrap-level">
-            <legend>Условие 1</legend>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Преобразовываемая характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level1.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
-                </div>
-            </div>
-            @* <div class="col-sm-2"> *@
-            @*     <label> *@
-            @*         @(Html.Kendo().CheckBoxFor(m => m.Level2.SkipDefis)) *@
-            @*         Игнорировать "-" *@
-            @*     </label> *@
-            @* </div> *@
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level2.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Количество интервалов")
-                </div>
-                <div class="col-sm-1">
-                    @(Html.Kendo().DropDownList()
-                        .Name("Intervals")
-                        .HtmlAttributes(new { style = "width:100%" })
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Items(i =>
-                        {
-                            i.Add().Text("2").Value("2");
-                            i.Add().Text("3").Value("3");
-                        })
-                        )
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("1. Если значение")
-                </div>
-                <div class="col-sm-2">
-                    @(Html.Kendo().DropDownList()
-                        .Name("ComparisonType")
-                        .HtmlAttributes(new { style = "width:100%" })
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Items(i =>
-                        {
-                            i.Add().Text("Равно").Value("Equal");
-                            i.Add().Text("Не равно").Value("NotEqual");
-                            i.Add().Text("Содержит").Value("Contains");
-                            i.Add().Text("Не содержит").Value("NotContains");
-                            i.Add().Text("Начинается на").Value("StartsWith");
-                            i.Add().Text("Заканчивается на").Value("EndsWith");
-                            i.Add().Text("Больше").Value("Greater");
-                            i.Add().Text("Больше или равно").Value("GreaterOrEqual");
-                            i.Add().Text("Меньше").Value("Less");
-                            i.Add().Text("Меньше или равно").Value("LessOrEqual");
-                        }))
-                </div>
-                <div class="col-sm-2">
-                    @Html.Kendo().TextBox().Name("ValueFor1")
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("2. Если значение")
-                </div>
-                <div class="col-sm-2">
-                    @(Html.Kendo().DropDownList()
-                        .Name("ComparisonType2")
-                        .HtmlAttributes(new { style = "width:100%" })
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Items(i =>
-                        {
-                            i.Add().Text("Равно").Value("Equal");
-                            i.Add().Text("Не равно").Value("NotEqual");
-                            i.Add().Text("Содержит").Value("Contains");
-                            i.Add().Text("Не содержит").Value("NotContains");
-                            i.Add().Text("Начинается на").Value("StartsWith");
-                            i.Add().Text("Заканчивается на").Value("EndsWith");
-                            i.Add().Text("Больше").Value("Greater");
-                            i.Add().Text("Больше или равно").Value("GreaterOrEqual");
-                            i.Add().Text("Меньше").Value("Less");
-                            i.Add().Text("Меньше или равно").Value("LessOrEqual");
-                        }))
-                </div>
-                <div class="col-sm-2">
-                    @Html.Kendo().TextBox().Name("ValueFor2")
-                </div>
-            </div>
-        </fieldset>
-        <div class="form-group"></div>
-        @(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
-        {
-            IdAttributeResult = Model.IdAttributeResult,
-            IsNewAttribute = Model.IsNewAttribute,
-            NameNewAttribute = Model.NameNewAttribute,
-            RegistryId = Model.RegistryId,
-            TypeNewAttribute = Model.TypeNewAttribute,
-            PossibleAttributes = (List<DropDownTreeItemModel>) ViewBag.StringTreeAttributes
-        }))
+    @Html.RenderHelpButton()
+    @* <div class="form-group"> *@
+    @*     <div class="col-sm-2"> *@
+    @*         @Html.CustomLabelFor(m => m.IdCodJob) *@
+    @*     </div> *@
+    @*     <div class="col-sm-10"> *@
+    @*         @Html.KendoDropDownListWithAutocompleteFor(m => m.IdCodJob, (IEnumerable) ViewData["CodJob"]) *@
+    @*     </div> *@
+    @* </div> *@
+    <fieldset class="wrap-level">
         <div class="form-group">
-            <div class="col-sm-7">
-                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-                {
-                    GetTemplatesActionName = nameof(TemplateController.GetTemplates),
-                    Parameters = "formStorageType=" + (int) DataFormStorege.Normalisation,
-                    SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObject)
-                }))
-            </div>
-
-            <div class="col-sm-1 col-sm-offset-1">
-                <button style="float: right" id="execute" class="k-button" type="button" disabled>Выполнить</button>
-            </div>
-            <div class="col-sm-3">
-                <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right">
-                    <span>Перейти к процессу</span>
-                </a>
+            <div class="col-sm-12">
+                <label>
+                    @(Html.Kendo().CheckBoxFor(m => m.SelectAllObject))
+                    Все объекты
+                </label>
             </div>
         </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label>
+                    @(Html.Kendo().CheckBoxFor(m => m.IsDataActualUsed).Enable(!Model.SelectAllObject))
+                    Дата актуализации
+                </label>
+            </div>
+            <div class="col-sm-4">
+                @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                <label>
+                    @(Html.Kendo().CheckBoxFor(m => m.IsTaskFilterUsed).Enable(!Model.SelectAllObject))
+                    Задания на оценку
+                </label>
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .Enable(Model.IsTaskFilterUsed)
+                    .DataSource(source =>
+                    {
+                        source.Read(read => { read.Action("GetTasksData", "GbuObject"); })
+                            .ServerFiltering(false);
+                    }))
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.ObjectChangeStatus)
+            </div>
+            <div class="col-sm-10">
+                @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
+                    .Filter(FilterType.Contains))
+            </div>
+        </div>
+    </fieldset>
+    <fieldset class="wrap-level" style="margin-top: 20px">
+        <div class="form-group" style="margin-top: 10px">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Преобразовываемая характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeSource.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
+            </div>
+        </div>
+    </fieldset>
+    <fieldset id="level2cod" class="wrap-level">
+        <legend>Условие для 2 кодов</legend>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween2.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("1. Если значение")
+            </div>
+            <div class="col-sm-10">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter1ForSelectionBetween2);}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("2. Если значение")
+            </div>
+            <div class="col-sm-10">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter2ForSelectionBetween2);}
+            </div>
+        </div>
+
+    </fieldset>
+    <fieldset id="level3cod" class="wrap-level">
+        <legend>Условие для 3 кодов</legend>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("Характеристика")
+            </div>
+            <div class="col-sm-10">
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween3.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("1. Если значение")
+            </div>
+            <div class="col-sm-10">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter1ForSelectionBetween3);}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("2. Если значение")
+            </div>
+            <div class="col-sm-10">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter2ForSelectionBetween3);}
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabel("3. Если значение")
+            </div>
+            <div class="col-sm-10">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter3ForSelectionBetween3);}
+            </div>
+        </div>
+    </fieldset>
+    <div class="form-group"></div>
+    @(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
+    {
+        IdAttributeResult = Model.IdAttributeResult,
+        IsNewAttribute = Model.IsNewAttribute,
+        NameNewAttribute = Model.NameNewAttribute,
+        RegistryId = Model.RegistryId,
+        TypeNewAttribute = Model.TypeNewAttribute,
+        PossibleAttributes = (List<DropDownTreeItemModel>) ViewBag.StringTreeAttributes
+    }))
+    <div class="form-group">
+        <div class="col-sm-7">
+            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int) DataFormStorege.Normalisation,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObject)
+            }))
+        </div>
+
+        <div class="col-sm-1 col-sm-offset-1">
+            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+        </div>
+        <div class="col-sm-3">
+            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right">
+                <span>Перейти к процессу</span>
+            </a>
+        </div>
+    </div>
     </div>
 }
 
+<script src="~/js/custom-filters.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
 
@@ -484,23 +446,12 @@
                 changeTaskFilterAvailability(this.checked);
             });
 
-        $('#test-filter').kendoFilterMenu({
-              dataSource: dataSource,
-              expressionPreview: true,
-              applyButton: true,
-              fields: [
-                  { name: "name", type: "string", label: "Name" },
-                  { name: "price", type: "number", label: "Price" },
-                  { name: "description", type: "string", label: "Description" }
-              ],
-              expression: {
-                  logic: "or",
-                  filters: [
-                      { field: "price", value: 5, operator: "gte" },
-                      { field: "name", value: "salad", operator: "contains" }
-                  ]
-              }
-          }).data("kendoFilter");
+        bindUnusedFieldHider('Filter1ForSelectionBetween2');
+        bindUnusedFieldHider('Filter2ForSelectionBetween2');
+        bindUnusedFieldHider('Filter1ForSelectionBetween3');
+        bindUnusedFieldHider('Filter2ForSelectionBetween3');
+        bindUnusedFieldHider('Filter3ForSelectionBetween3');
+
         templateStorage.init(@((int) DataFormStorege.Normalisation), fillForm);
 
 
