@@ -579,3 +579,56 @@ VALUES (12096, 'Тип канализации', 1, 'Core.RefLib.Executors.Refere
 ]');
 
 
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12097, 'Локация водоснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'WaterLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12098, 'Тип водоснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'WaterType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Автономная",
+		"Name": "Autonomous"
+	},
+	{
+		"Id": 2,
+		"Value": "Центральная",
+		"Name": "Central"
+	},
+	{
+		"Id": 3,
+		"Value": "Водонапорная станция",
+		"Name": "PumpingStation"
+	},
+	{
+		"Id": 4,
+		"Value": "Водозаборный узел",
+		"Name": "WaterIntakeFacility"
+	},
+	{
+		"Id": 5,
+		"Value": "Водонапорная башня",
+		"Name": "WaterTower"
+	}
+]');
+

@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Core.Shared.Extensions;
-using MarketPlaceBusiness;
 using MarketPlaceBusiness.Dto;
-using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -139,6 +136,18 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Локация канализации")]
 		public string DrainageLocationType { get; set; }
 
+		[DisplayName("Тип водоснабжения")]
+		public string WaterType { get; set; }
+
+		[DisplayName("Объём водоснабжения, м³/сутки")]
+		public long? WaterCapacity { get; set; }
+
+		[DisplayName("Возможно подключить водоснабжение")]
+		public bool? PossibilityToConnectWater { get; set; }
+
+		[DisplayName("Локация водоснабжения")]
+		public string WaterLocationType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -188,6 +197,10 @@ namespace KadOzenka.Web.Models.MarketObject
 				PossibilityToConnectDrainage = entity.PossibilityToConnectDrainage,
 				DrainageCapacity = entity.DrainageCapacity,
 				DrainageType = entity.DrainageType,
+				WaterLocationType = entity.WaterLocationType,
+				PossibilityToConnectWater = entity.PossibilityToConnectWater,
+				WaterCapacity = entity.WaterCapacity,
+				WaterType = entity.WaterType
             };
 			if (priceHistory?.Count > 0)
 			{

@@ -103,3 +103,18 @@ alter table market_core_object drop column drainage_type;
 alter table market_core_object drop column drainage_type_code;
 delete from core_register_attribute where id=10010600;
 
+alter table market_core_object drop column water_location;
+alter table market_core_object drop column water_location_code;
+delete from core_register_attribute where id=10010700;
+
+alter table market_core_object drop column possibility_to_connect_water;
+delete from core_register_attribute where id=10010800;
+
+alter table market_core_object drop column water_capacity;
+delete from core_register_attribute where id=10010900;
+
+alter table market_core_object drop column water_type;
+alter table market_core_object drop column water_type_code;
+delete from core_register_attribute where id=10011000;
+
+

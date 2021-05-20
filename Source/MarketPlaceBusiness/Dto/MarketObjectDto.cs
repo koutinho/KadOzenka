@@ -255,5 +255,17 @@ namespace MarketPlaceBusiness.Dto
 		public string DrainageType { get; set; }
 
 		public DrainageType DrainageType_Code { get; set; }
+
+		public string WaterLocationType { get; set; }
+
+		public WaterLocationType WaterLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectWater { get; set; }
+
+		public long? WaterCapacity { get; set; }
+
+		public string WaterType { get; set; }
+
+		public WaterType WaterType_Code { get; set; }
 	}
 }

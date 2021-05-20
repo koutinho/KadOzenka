@@ -7956,3 +7956,88 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация водоснабжения (12097)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12097)]
+    public enum WaterLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип водоснабжения (12098)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12098)]
+    public enum WaterType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Автономная (1)
+		/// </summary>
+		[Description("Автономная")]
+        [EnumCode("1")]
+        [ShortTitle("Автономная")]
+        Autonomous = 1,
+		/// <summary>
+		/// Центральная (2)
+		/// </summary>
+		[Description("Центральная")]
+        [EnumCode("2")]
+        [ShortTitle("Центральная")]
+        Central = 2,
+		/// <summary>
+		/// Водонапорная станция (3)
+		/// </summary>
+		[Description("Водонапорная станция")]
+        [EnumCode("3")]
+        [ShortTitle("Водонапорная станция")]
+        PumpingStation = 3,
+		/// <summary>
+		/// Водозаборный узел (4)
+		/// </summary>
+		[Description("Водозаборный узел")]
+        [EnumCode("4")]
+        [ShortTitle("Водозаборный узел")]
+        WaterIntakeFacility = 4,
+		/// <summary>
+		/// Водонапорная башня (5)
+		/// </summary>
+		[Description("Водонапорная башня")]
+        [EnumCode("5")]
+        [ShortTitle("Водонапорная башня")]
+        WaterTower = 5,
+    }
+}
+

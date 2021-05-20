@@ -1497,6 +1497,156 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _waterlocationtype;
+        /// <summary>
+        /// 10010700 Тип локации водоснабжения (water_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010700)]
+        public string WaterLocationType
+        {
+            get
+            {
+                CheckPropertyInited("WaterLocationType");
+                return _waterlocationtype;
+            }
+            set
+            {
+                _waterlocationtype = value;
+                NotifyPropertyChanged("WaterLocationType");
+            }
+        }
+
+
+        private WaterLocationType _waterlocationtype_Code;
+        /// <summary>
+        /// 10010700 Тип локации водоснабжения (справочный код) (water_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010700)]
+        public WaterLocationType WaterLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("WaterLocationType_Code");
+                return this._waterlocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_waterlocationtype))
+                    {
+                         _waterlocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _waterlocationtype = descr;
+                }
+
+                this._waterlocationtype_Code = value;
+                NotifyPropertyChanged("WaterLocationType");
+                NotifyPropertyChanged("WaterLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectwater;
+        /// <summary>
+        /// 10010800 Возможность подключения воды (possibility_to_connect_water)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010800)]
+        public bool? PossibilityToConnectWater
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectWater");
+                return _possibilitytoconnectwater;
+            }
+            set
+            {
+                _possibilitytoconnectwater = value;
+                NotifyPropertyChanged("PossibilityToConnectWater");
+            }
+        }
+
+
+        private long? _watercapacity;
+        /// <summary>
+        /// 10010900 Объем водоснабжения (water_capacity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010900)]
+        public long? WaterCapacity
+        {
+            get
+            {
+                CheckPropertyInited("WaterCapacity");
+                return _watercapacity;
+            }
+            set
+            {
+                _watercapacity = value;
+                NotifyPropertyChanged("WaterCapacity");
+            }
+        }
+
+
+        private string _watertype;
+        /// <summary>
+        /// 10011000 Тип водоснабжения (water_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10011000)]
+        public string WaterType
+        {
+            get
+            {
+                CheckPropertyInited("WaterType");
+                return _watertype;
+            }
+            set
+            {
+                _watertype = value;
+                NotifyPropertyChanged("WaterType");
+            }
+        }
+
+
+        private WaterType _watertype_Code;
+        /// <summary>
+        /// 10011000 Тип водоснабжения (справочный код) (water_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10011000)]
+        public WaterType WaterType_Code
+        {
+            get
+            {
+                CheckPropertyInited("WaterType_Code");
+                return this._watertype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_watertype))
+                    {
+                         _watertype = descr;
+                    }
+                }
+                else
+                {
+                     _watertype = descr;
+                }
+
+                this._watertype_Code = value;
+                NotifyPropertyChanged("WaterType");
+                NotifyPropertyChanged("WaterType_Code");
+            }
+        }
+
     }
 }
 

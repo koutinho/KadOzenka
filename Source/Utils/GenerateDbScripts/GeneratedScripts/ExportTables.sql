@@ -68424,6 +68424,60 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_location_type')) then
+        execute 'alter table market_core_object add "water_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_location_type_code')) then
+        execute 'alter table market_core_object add "water_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_water')) then
+        execute 'alter table market_core_object add "possibility_to_connect_water" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_capacity')) then
+        execute 'alter table market_core_object add "water_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_type')) then
+        execute 'alter table market_core_object add "water_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_type_code')) then
+        execute 'alter table market_core_object add "water_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -69008,6 +69062,60 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_type_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "drainage_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_water')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_water" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_capacity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_type_code" BIGINT';
     end if;
 end $$;
 

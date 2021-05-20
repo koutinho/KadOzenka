@@ -558,3 +558,9 @@ delete from core_reference where referenceid=12095;
 
 --Справочник "Тип канализации"
 delete from core_reference where referenceid=12096;
+
+--Справочник "Локация водоснабжения"
+delete from core_reference where referenceid=12097;
+
+--Справочник "Тип водоснабжения"
+delete from core_reference where referenceid=12098;

@@ -69,7 +69,12 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.DrainageCapacity, SetPreCondition(y => y.DrainageCapacity))
 				.ForMember(m => m.DrainageType, SetPreCondition(y => y.DrainageType))
 				.ForMember(m => m.DrainageType_Code, SetPreCondition(y => y.DrainageType_Code))
-				;
+				.ForMember(m => m.WaterLocationType, SetPreCondition(y => y.WaterLocationType))
+				.ForMember(m => m.WaterLocationType_Code, SetPreCondition(y => y.WaterLocationType_Code))
+				.ForMember(m => m.PossibilityToConnectWater, SetPreCondition(y => y.PossibilityToConnectWater))
+				.ForMember(m => m.WaterCapacity, SetPreCondition(y => y.WaterCapacity))
+				.ForMember(m => m.WaterType, SetPreCondition(y => y.WaterType))
+				.ForMember(m => m.WaterType_Code, SetPreCondition(y => y.WaterType_Code));
 		}
 
 
