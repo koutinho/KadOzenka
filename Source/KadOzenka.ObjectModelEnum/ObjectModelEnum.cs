@@ -7821,3 +7821,74 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация газоснабжения (12093)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12093)]
+    public enum GasLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Давление газа (12094)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12094)]
+    public enum GasPressureType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Высокое (1)
+		/// </summary>
+		[Description("Высокое")]
+        [EnumCode("1")]
+        [ShortTitle("Высокое")]
+        High = 1,
+		/// <summary>
+		/// Среднее (1)
+		/// </summary>
+		[Description("Среднее")]
+        [EnumCode("1")]
+        [ShortTitle("Среднее")]
+        Middle = 1,
+		/// <summary>
+		/// Низкое (2)
+		/// </summary>
+		[Description("Низкое")]
+        [EnumCode("2")]
+        [ShortTitle("Низкое")]
+        Low = 2,
+    }
+}
+

@@ -546,3 +546,9 @@ delete from core_reference where referenceid=12091;
 
 --Справочник "Локация электроснабжения"
 delete from core_reference where referenceid=12092;
+
+--Справочник "Локация газоснабжения"
+delete from core_reference where referenceid=12093;
+
+--Справочник "Давление газа"
+delete from core_reference where referenceid=12094;

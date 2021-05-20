@@ -266,6 +266,32 @@
                         @Html.KendoTextBoxFor(x => x.ElectricityLocationType, isReadonly: true)
                     </div>
                 </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.GasCapacity, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoNumericTextBoxFor(x => x.GasCapacity, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.PossibilityToConnectGas, true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.KendoCheckBoxFor(x => x.PossibilityToConnectGas, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.GasLocationType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.GasLocationType, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.GasPressureType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.GasPressureType, isReadonly: true)
+                    </div>
+                </div>
                 </div>
             </div>
         </li>

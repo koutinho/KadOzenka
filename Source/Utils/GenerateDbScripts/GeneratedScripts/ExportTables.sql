@@ -68316,6 +68316,60 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_location_type')) then
+        execute 'alter table market_core_object add "gas_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_location_type_code')) then
+        execute 'alter table market_core_object add "gas_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_gas')) then
+        execute 'alter table market_core_object add "possibility_to_connect_gas" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_capacity')) then
+        execute 'alter table market_core_object add "gas_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_pressure_type')) then
+        execute 'alter table market_core_object add "gas_pressure_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_pressure_type_code')) then
+        execute 'alter table market_core_object add "gas_pressure_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68792,6 +68846,60 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'electricity_power')) then
         execute 'alter table MARKET_CORE_OBJECT add "electricity_power" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_gas')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_gas" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_capacity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_pressure_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_pressure_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_pressure_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_pressure_type_code" BIGINT';
     end if;
 end $$;
 

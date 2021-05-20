@@ -57,6 +57,12 @@ namespace MarketPlaceBusiness.Dto.AutoMapper
 				.ForMember(m => m.ElectricityLocationType_Code, SetPreCondition(y => y.ElectricityLocationType_Code))
 				.ForMember(m => m.PossibilityToConnectElectricity, SetPreCondition(y => y.PossibilityToConnectElectricity))
 				.ForMember(m => m.ElectricityPower, SetPreCondition(y => y.ElectricityPower))
+				.ForMember(m => m.GasLocationType, SetPreCondition(y => y.GasLocationType))
+				.ForMember(m => m.GasLocationType_Code, SetPreCondition(y => y.GasLocationType_Code))
+				.ForMember(m => m.PossibilityToConnectGas, SetPreCondition(y => y.PossibilityToConnectGas))
+				.ForMember(m => m.GasCapacity, SetPreCondition(y => y.GasCapacity))
+				.ForMember(m => m.GasPressureType, SetPreCondition(y => y.GasPressureType))
+				.ForMember(m => m.GasPressureType_Code, SetPreCondition(y => y.GasPressureType_Code))
 				;
 		}
 

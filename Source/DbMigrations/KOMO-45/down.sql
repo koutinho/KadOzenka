@@ -65,7 +65,6 @@ alter table market_core_object drop column parcel_type;
 alter table market_core_object drop column parcel_type_code;
 delete from core_register_attribute where id=10009500;
 
-
 alter table market_core_object drop column electricity_location_type;
 alter table market_core_object drop column electricity_location_type_code;
 delete from core_register_attribute where id=10009600;
@@ -75,3 +74,17 @@ delete from core_register_attribute where id=10009700;
 
 alter table market_core_object drop column electricity_power;
 delete from core_register_attribute where id=10009800;
+
+alter table market_core_object drop column gas_location_type;
+alter table market_core_object drop column gas_location_type_code;
+delete from core_register_attribute where id=10009900;
+
+alter table market_core_object drop column possibility_to_connect_gas;
+delete from core_register_attribute where id=10010000;
+
+alter table market_core_object drop column gas_capacity;
+delete from core_register_attribute where id=10010100;
+
+alter table market_core_object drop column gas_pressure_type;
+alter table market_core_object drop column gas_pressure_type_code;
+delete from core_register_attribute where id=10010200;

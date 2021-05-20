@@ -231,5 +231,17 @@ namespace MarketPlaceBusiness.Dto
 		public bool? PossibilityToConnectElectricity { get; set; }
 
 		public long? ElectricityPower { get; set; }
+
+		public string GasLocationType { get; set; }
+
+		public GasLocationType GasLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectGas { get; set; }
+
+		public long? GasCapacity { get; set; }
+
+		public string GasPressureType { get; set; }
+
+		public GasPressureType GasPressureType_Code { get; set; }
 	}
 }

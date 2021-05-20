@@ -106,7 +106,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Единица измерения площади участка")]
 		public string ParcelAreaUnitType { get; set; }
 
-		[DisplayName("Мощность электроснабжения")]
+		[DisplayName("Мощность электроснабжения, кВТ")]
 		public long? ElectricityPower { get; set; }
 
 		[DisplayName("Возможность подключения электроснабжения")]
@@ -114,6 +114,18 @@ namespace KadOzenka.Web.Models.MarketObject
 
 		[DisplayName("Локация электроснабжения")]
 		public string ElectricityLocationType { get; set; }
+
+		[DisplayName("Давление газа")]
+		public string GasPressureType { get; set; }
+
+		[DisplayName("Емкость газоснабжения, м³/час")]
+		public long? GasCapacity { get; set; }
+
+		[DisplayName("Возможность подключения газа")]
+		public bool? PossibilityToConnectGas { get; set; }
+
+		[DisplayName("Локация газоснабжения")]
+		public string GasLocationType { get; set; }
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -155,6 +167,10 @@ namespace KadOzenka.Web.Models.MarketObject
 				ElectricityLocationType = entity.ElectricityLocationType,
 				PossibilityToConnectElectricity = entity.PossibilityToConnectElectricity,
 				ElectricityPower = entity.ElectricityPower,
+				GasLocationType = entity.GasLocationType,
+				PossibilityToConnectGas = entity.PossibilityToConnectGas,
+				GasCapacity = entity.GasCapacity,
+				GasPressureType = entity.GasPressureType,
             };
 			if (priceHistory?.Count > 0)
 			{
@@ -190,6 +206,7 @@ namespace KadOzenka.Web.Models.MarketObject
 			}
 			return dto;
 		}
+
 
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{

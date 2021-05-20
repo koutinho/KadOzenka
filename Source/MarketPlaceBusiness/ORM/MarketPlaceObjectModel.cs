@@ -1197,6 +1197,156 @@ namespace ObjectModel.Market
             }
         }
 
+
+        private string _gaslocationtype;
+        /// <summary>
+        /// 10009900 Локация газоснабжения (gas_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009900)]
+        public string GasLocationType
+        {
+            get
+            {
+                CheckPropertyInited("GasLocationType");
+                return _gaslocationtype;
+            }
+            set
+            {
+                _gaslocationtype = value;
+                NotifyPropertyChanged("GasLocationType");
+            }
+        }
+
+
+        private GasLocationType _gaslocationtype_Code;
+        /// <summary>
+        /// 10009900 Локация газоснабжения (справочный код) (gas_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009900)]
+        public GasLocationType GasLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("GasLocationType_Code");
+                return this._gaslocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_gaslocationtype))
+                    {
+                         _gaslocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _gaslocationtype = descr;
+                }
+
+                this._gaslocationtype_Code = value;
+                NotifyPropertyChanged("GasLocationType");
+                NotifyPropertyChanged("GasLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectgas;
+        /// <summary>
+        /// 10010000 Возможность подключения газа (possibility_to_connect_gas)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010000)]
+        public bool? PossibilityToConnectGas
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectGas");
+                return _possibilitytoconnectgas;
+            }
+            set
+            {
+                _possibilitytoconnectgas = value;
+                NotifyPropertyChanged("PossibilityToConnectGas");
+            }
+        }
+
+
+        private long? _gascapacity;
+        /// <summary>
+        /// 10010100 Емкость газа (gas_capacity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010100)]
+        public long? GasCapacity
+        {
+            get
+            {
+                CheckPropertyInited("GasCapacity");
+                return _gascapacity;
+            }
+            set
+            {
+                _gascapacity = value;
+                NotifyPropertyChanged("GasCapacity");
+            }
+        }
+
+
+        private string _gaspressuretype;
+        /// <summary>
+        /// 10010200 Давление газа (gas_pressure_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010200)]
+        public string GasPressureType
+        {
+            get
+            {
+                CheckPropertyInited("GasPressureType");
+                return _gaspressuretype;
+            }
+            set
+            {
+                _gaspressuretype = value;
+                NotifyPropertyChanged("GasPressureType");
+            }
+        }
+
+
+        private GasPressureType _gaspressuretype_Code;
+        /// <summary>
+        /// 10010200 Давление газа (справочный код) (gas_pressure_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010200)]
+        public GasPressureType GasPressureType_Code
+        {
+            get
+            {
+                CheckPropertyInited("GasPressureType_Code");
+                return this._gaspressuretype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_gaspressuretype))
+                    {
+                         _gaspressuretype = descr;
+                    }
+                }
+                else
+                {
+                     _gaspressuretype = descr;
+                }
+
+                this._gaspressuretype_Code = value;
+                NotifyPropertyChanged("GasPressureType");
+                NotifyPropertyChanged("GasPressureType_Code");
+            }
+        }
+
     }
 }
 

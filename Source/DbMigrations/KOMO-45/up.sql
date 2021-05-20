@@ -104,3 +104,21 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 alter table market_core_object add "electricity_power" BIGINT;
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10009800, 'Мощность электричества, кВТ', 100, 1, null, null, 'electricity_power', null, null, 0, null, null, 'ElectricityPower', 1, null, null, null, 0, 1, '2021-05-19 16:37:55.556421', 0);
+
+alter table market_core_object add "gas_location_type" VARCHAR(255);
+alter table market_core_object add "gas_location_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10009900, 'Локация газоснабжения', 100, 4, NULL, 12093, 'gas_location_type', 'gas_location_type_code', NULL, 0, NULL, NULL, 'GasLocationType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 09:15:14', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "possibility_to_connect_gas" SMALLINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010000, 'Возможность подключения газа', 100, 3, NULL, NULL, 'possibility_to_connect_gas', NULL, NULL, 0, NULL, NULL, 'PossibilityToConnectGas', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 09:16:30', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "gas_capacity" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010100, 'Емкость газа', 100, 1, NULL, NULL, 'gas_capacity', NULL, NULL, 0, NULL, NULL, 'GasCapacity', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 09:17:15', 'YYYY.MM.DD HH24:MI:SS'), 0);
+
+alter table market_core_object add "gas_pressure_type" VARCHAR(255);
+alter table market_core_object add "gas_pressure_type_code" BIGINT;
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(10010200, 'Давление газа', 100, 4, NULL, 12094, 'gas_pressure_type', 'gas_pressure_type_code', NULL, 0, NULL, NULL, 'GasPressureType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 09:18:43', 'YYYY.MM.DD HH24:MI:SS'), 0);
