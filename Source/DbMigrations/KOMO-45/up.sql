@@ -32,7 +32,6 @@ alter table market_core_object add "flat_type" VARCHAR(255);
 INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
 VALUES (10008500, 'Тип квартиры', 100, 4, null, null, 'flat_type', null, null, 0, null, null, 'FlatType', 1, null, null, null, 0, 1, '2021-05-18 13:01:50.880357', 0);
 
-
 alter table market_core_object add deal_type VARCHAR(50);
 alter table market_core_object add deal_type_code BIGINT;
 update market_core_object set deal_type='Значение отсутствует', deal_type_code=0;
@@ -90,7 +89,6 @@ alter table market_core_object add "parcel_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") 
 values (10009500, 'Тип участка', 100, 4, NULL, 12090, 'parcel_type', 'parcel_type_code', NULL, 0, NULL, NULL, 'ParcelType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.19 14:57:07', 'YYYY.MM.DD HH24:MI:SS'), 0)
 
-
 alter table market_core_object add "electricity_location_type" VARCHAR(255);
 alter table market_core_object add "electricity_location_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
@@ -140,9 +138,6 @@ alter table market_core_object add "drainage_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
 (10010600, 'Тип канализации', 100, 4, NULL, 12096, 'drainage_type', 'drainage_type_code', NULL, 0, NULL, NULL, 'DrainageType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 10:05:33', 'YYYY.MM.DD HH24:MI:SS'), 0);
 
-
-
-
 alter table market_core_object add "water_location_type" VARCHAR(255);
 alter table market_core_object add "water_location_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
@@ -161,3 +156,11 @@ alter table market_core_object add "water_type_code" BIGINT;
 insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
 (10011000, 'Тип водоснабжения', 100, 4, NULL, 12098, 'water_type', 'water_type_code', NULL, 0, NULL, NULL, 'WaterType', 1, NULL, NULL, NULL, 0, 1, TO_TIMESTAMP('2021.05.20 11:17:54', 'YYYY.MM.DD HH24:MI:SS'), 0);
 
+--Устанавливаем ограничения на обязательные поля
+update core_register_attribute set is_nullable=0 where id in (10007700, 10004300, 10002700, 10003100);
+update market_core_object set PROPERTY_TYPETS_CIPJS='Значение отсутствует', PROPERTY_TYPETS_CIPJS_CODE='0', PRICE=0, AREA=0, ADDRESS='Значение отсутствует';
+ALTER TABLE market_core_object ALTER COLUMN PROPERTY_TYPETS_CIPJS SET NOT NULL;
+ALTER TABLE market_core_object ALTER COLUMN PROPERTY_TYPETS_CIPJS_CODE SET NOT NULL;
+ALTER TABLE market_core_object ALTER COLUMN AREA SET NOT NULL;
+ALTER TABLE market_core_object ALTER COLUMN PRICE SET NOT NULL;
+ALTER TABLE market_core_object ALTER COLUMN ADDRESS SET NOT NULL;

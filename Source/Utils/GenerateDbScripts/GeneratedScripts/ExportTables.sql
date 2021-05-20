@@ -67885,7 +67885,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'price')) then
-        execute 'alter table market_core_object add "price" NUMERIC';
+        execute 'alter table market_core_object add "price" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -67894,7 +67894,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'address')) then
-        execute 'alter table market_core_object add "address" VARCHAR(2000)';
+        execute 'alter table market_core_object add "address" VARCHAR(2000) NOT NULL';
     end if;
 end $$;
 
@@ -67912,7 +67912,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'area')) then
-        execute 'alter table market_core_object add "area" NUMERIC';
+        execute 'alter table market_core_object add "area" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -67984,7 +67984,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs')) then
-        execute 'alter table market_core_object add "property_typets_cipjs" VARCHAR(255)';
+        execute 'alter table market_core_object add "property_typets_cipjs" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -67993,7 +67993,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs_code')) then
-        execute 'alter table market_core_object add "property_typets_cipjs_code" BIGINT';
+        execute 'alter table market_core_object add "property_typets_cipjs_code" BIGINT NOT NULL';
     end if;
 end $$;
 
@@ -68530,7 +68530,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price" NUMERIC';
+        execute 'alter table MARKET_CORE_OBJECT add "price" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -68539,7 +68539,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'address')) then
-        execute 'alter table MARKET_CORE_OBJECT add "address" VARCHAR(2000)';
+        execute 'alter table MARKET_CORE_OBJECT add "address" VARCHAR(2000) NOT NULL';
     end if;
 end $$;
 
@@ -68557,7 +68557,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'area')) then
-        execute 'alter table MARKET_CORE_OBJECT add "area" NUMERIC';
+        execute 'alter table MARKET_CORE_OBJECT add "area" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -68629,7 +68629,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_typets_cipjs')) then
-        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs" VARCHAR(255)';
+        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -68638,7 +68638,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_typets_cipjs_code')) then
-        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs_code" BIGINT';
+        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs_code" BIGINT NOT NULL';
     end if;
 end $$;
 

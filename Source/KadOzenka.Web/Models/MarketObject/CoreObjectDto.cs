@@ -242,7 +242,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		{
 			decimal? result;
 			
-			if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+			if (entity.Area != 0)
 				result = entity.Price / entity.Area;
 
 			else

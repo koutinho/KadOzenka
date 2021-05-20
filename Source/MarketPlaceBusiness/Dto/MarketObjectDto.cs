@@ -20,7 +20,7 @@ namespace MarketPlaceBusiness.Dto
 		/// <summary>
 		/// 10002700 Цена сделки/предложения (PRICE)
 		/// </summary>
-		public decimal? Price { get; set; }
+		public decimal Price { get; set; }
 
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace MarketPlaceBusiness.Dto
 		/// <summary>
 		/// 10004300 Общая площадь (AREA)
 		/// </summary>
-		public decimal? Area { get; set; }
+		public decimal Area { get; set; }
 
 		/// <summary>
 		/// 10004700 Год постройки (BUILDING_YEAR)

@@ -88,12 +88,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _price;
+        private decimal _price;
         /// <summary>
         /// 10002700 Стоимость (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
-        public decimal? Price
+        public decimal Price
         {
             get
             {
@@ -223,12 +223,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _area;
+        private decimal _area;
         /// <summary>
         /// 10004300 Общая площадь (AREA)
         /// </summary>
         [RegisterAttribute(AttributeID = 10004300)]
-        public decimal? Area
+        public decimal Area
         {
             get
             {
