@@ -7,6 +7,7 @@ namespace KadOzenka.Dal.Enum
     {
         None,
         String,
+        Boolean,
         Number,
         Date,
         Reference
@@ -81,17 +82,17 @@ namespace KadOzenka.Dal.Enum
         [Display(Name = "Больше или равно")]
         GreaterOrEqual,
 
-        [Display(Name = "Пусто")]
-        IsNull,
-
-        [Display(Name = "Не пусто")]
-        IsNotNull,
-
         [Display(Name = "В диапазоне")]
         InRange,
 
         [Display(Name = "В диапазоне (включая границы)")]
-        InRangeIncludingBoundaries
+        InRangeIncludingBoundaries,
+
+        [Display(Name = "Пусто")]
+        IsNull,
+
+        [Display(Name = "Не пусто")]
+        IsNotNull
     }
     public enum FilteringTypeReference
     {
@@ -107,6 +108,22 @@ namespace KadOzenka.Dal.Enum
         [Display(Name = "Не пусто")]
         IsNotNull
     }
+
+    public enum FilteringTypeBool
+    {
+        [Display(Name = "Равно")]
+        Equal,
+
+        [Display(Name = "Не равно")]
+        NotEqual,
+
+        [Display(Name = "Пусто")]
+        IsNull,
+
+        [Display(Name = "Не пусто")]
+        IsNotNull
+    }
+
     public enum FilteringTypeDate
     {
         [Display(Name = "Раньше")]

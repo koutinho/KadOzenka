@@ -246,7 +246,14 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.TreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType>
+				{ RegisterAttributeType.STRING,
+					RegisterAttributeType.DATE,
+					RegisterAttributeType.DECIMAL,
+					RegisterAttributeType.BOOLEAN,
+					// Нет референсов + нет их обработки
+					//RegisterAttributeType.REFERENCE
+				});
 			ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
 
 			return View(new GroupingObjectFinalize());
@@ -259,12 +266,20 @@ namespace KadOzenka.Web.Controllers
 			return GroupingObjectFinalize();
 		}
 
+		[HttpGet]
 		public List<LevelItem> GetCodJobParam(long? codJobId)
 		{
 			if (codJobId == 0 || codJobId == null)
 				return new List<LevelItem>();
 			return _dictionaryService.GetSelectCodJobInfo(codJobId.Value);
 		}
+
+		[HttpGet]
+		public IActionResult GetRegisterAttribute(long attributeId)
+		{
+			return Json(RegisterCache.GetAttributeData(attributeId));
+		}
+
 		#endregion
 
 		#region Harmonization
@@ -469,7 +484,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-		
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_INHERITANCE)]
 		public ActionResult Inheritance()

@@ -1,7 +1,7 @@
 ﻿@using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.GbuObject.GroupingObjectFinalize.UiFilters
 
-<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_filterTypeContainer")">
+<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_filterTypeContainer")" hidden>
     <div class="col-sm-3">
         @Html.KendoDropDownListEnumFor(m=>m.Type)
     </div>
@@ -38,5 +38,14 @@
     </div>
     <div id="@(ViewData.TemplateInfo.HtmlFieldPrefix + "_dateFilterValue2Container")" class="col-sm-3" hidden>
         @Html.KendoDatePickerFor(m => m.DateFilter.Value2, isReadonly: false)
+    </div>
+</div>
+
+<div class="col-sm-10" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_boolFilterContainer")">
+    <div class="col-sm-3">
+        @Html.KendoDropDownListEnumFor(m=>m.BoolFilter.FilteringType)
+    </div>
+    <div class="col-sm-3" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_BoolFilterValueContainer")">
+        @Html.KendoCheckBoxFor(m=>m.BoolFilter.Value, isReadonly:false)
     </div>
 </div>

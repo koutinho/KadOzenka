@@ -129,23 +129,24 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("1. Если значение")
+        <div id="condition-group-2">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("1. Если значение")
+                </div>
+                <div class="col-sm-10">
+                    @{ await Html.RenderPartialFor("UiFilters", m => m.Filter1ForSelectionBetween2);}
+                </div>
             </div>
-            <div class="col-sm-10">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter1ForSelectionBetween2);}
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("2. Если значение")
+                </div>
+                <div class="col-sm-10">
+                    @{ await Html.RenderPartialFor("UiFilters", m => m.Filter2ForSelectionBetween2);}
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("2. Если значение")
-            </div>
-            <div class="col-sm-10">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter2ForSelectionBetween2);}
-            </div>
-        </div>
-
     </fieldset>
     <fieldset id="level3cod" class="wrap-level">
         <legend>Условие для 3 кодов</legend>
@@ -157,28 +158,30 @@
                 @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween3.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("1. Если значение")
+        <div id="condition-group-3">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("1. Если значение")
+                </div>
+                <div class="col-sm-10">
+                    @{ await Html.RenderPartialFor("UiFilters", m => m.Filter1ForSelectionBetween3);}
+                </div>
             </div>
-            <div class="col-sm-10">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter1ForSelectionBetween3);}
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("2. Если значение")
+                </div>
+                <div class="col-sm-10">
+                    @{ await Html.RenderPartialFor("UiFilters", m => m.Filter2ForSelectionBetween3);}
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("2. Если значение")
-            </div>
-            <div class="col-sm-10">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter2ForSelectionBetween3);}
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("3. Если значение")
-            </div>
-            <div class="col-sm-10">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.Filter3ForSelectionBetween3);}
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("3. Если значение")
+                </div>
+                <div class="col-sm-10">
+                    @{ await Html.RenderPartialFor("UiFilters", m => m.Filter3ForSelectionBetween3);}
+                </div>
             </div>
         </div>
     </fieldset>
@@ -451,6 +454,8 @@
         bindUnusedFieldHider('Filter1ForSelectionBetween3');
         bindUnusedFieldHider('Filter2ForSelectionBetween3');
         bindUnusedFieldHider('Filter3ForSelectionBetween3');
+        bindAttributeSelectorEvents('#IdAttributeForSelectionBetween2_IdFactor');
+        bindAttributeSelectorEvents('#IdAttributeForSelectionBetween3_IdFactor');
 
         templateStorage.init(@((int) DataFormStorege.Normalisation), fillForm);
 

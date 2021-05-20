@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using Core.Register;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Dto;
+using Kendo.Mvc.UI;
 using ObjectModel.Gbu.GroupingAlgoritm;
 
 namespace KadOzenka.Web.Models.GbuObject
@@ -145,6 +146,7 @@ namespace KadOzenka.Web.Models.GbuObject
 			public DateFilter DateFilter { get; set; }
 			public StringFilter StringFilter { get; set; }
 			public NumberFilter NumberFilter { get; set; }
+			public BoolFilter BoolFilter { get; set; }
 			public ReferenceFilter ReferenceFilter { get; set; }
 		}
 
@@ -175,5 +177,10 @@ namespace KadOzenka.Web.Models.GbuObject
 			public long? Value { get; set; }
 		}
 
+		public class BoolFilter
+		{
+			public FilteringTypeBool FilteringType { get; set; }
+			public bool? Value { get; set; }
+		}
 	}
 }
