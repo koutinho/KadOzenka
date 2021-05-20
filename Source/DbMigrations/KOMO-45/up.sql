@@ -158,7 +158,7 @@ insert into core_register_attribute ("id", "name", "registerid", "type", "parent
 
 --Устанавливаем ограничения на обязательные поля
 update core_register_attribute set is_nullable=0 where id in (10007700, 10004300, 10002700, 10003100);
-update market_core_object set PROPERTY_TYPETS_CIPJS='Значение отсутствует', PROPERTY_TYPETS_CIPJS_CODE='0', PRICE=0, AREA=0, ADDRESS='Значение отсутствует';
+update market_core_object set PROPERTY_TYPETS_CIPJS='Значение отсутствует', PROPERTY_TYPETS_CIPJS_CODE='0', PRICE=-1, AREA=-1, ADDRESS='Значение отсутствует';
 ALTER TABLE market_core_object ALTER COLUMN PROPERTY_TYPETS_CIPJS SET NOT NULL;
 ALTER TABLE market_core_object ALTER COLUMN PROPERTY_TYPETS_CIPJS_CODE SET NOT NULL;
 ALTER TABLE market_core_object ALTER COLUMN AREA SET NOT NULL;
