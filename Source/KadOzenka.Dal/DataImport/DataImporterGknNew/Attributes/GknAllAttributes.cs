@@ -2119,7 +2119,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToUncompleted(uncompletedSection.DegreeReadinessAttributeIdValue, 
 				current => ((xmlObjectUncomplited)current).DegreeReadiness,
-				(o, v) => o.DegreeReadiness = v?.ParseToLongNullable());
+				(o, v) => o.DegreeReadiness = CastToLong(uncompletedSection.DegreeReadinessAttributeIdValue, v));
 
 			AddAttributeToUncompleted(uncompletedSection.FacilityCadastralNumberAttributeIdValue, 
 				current => ((xmlObjectUncomplited)current).FacilityCadastralNumber,
@@ -2299,6 +2299,17 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			if (!double.TryParse(value.ToString().Replace(',', '.'), NumberStyles.Any,
 				CultureInfo.InvariantCulture, out var result))
+				throw new CastingToAttributeTypeException(attributeId, value);
+
+			return result;
+		}
+
+		private long? CastToLong(long? attributeId, object value)
+		{
+			if (value == null)
+				return null;
+
+			if (!long.TryParse(value.ToString(), out var result))
 				throw new CastingToAttributeTypeException(attributeId, value);
 
 			return result;
