@@ -1,37 +1,45 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Web.Controllers;
+using Core.Register.RegisterEntities;
+using Core.Shared.Extensions;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using NUnit.Framework;
 
 namespace KadOzenka.Web.Tests.Tours
 {
 	public class AttributesTests : BaseTourTests
 	{
-		[Ignore("Продумать подстановку атрибутов")]
 		[Test]
 		public void Can_Get_View_With_Attributes_Settings()
 		{
-			//var gbuAttributes = new List<KoBaseController.GbuAttributesTreeDto>
-			//{
-			//	new KoBaseController.GbuAttributesTreeDto
-			//	{
-			//		Text = RandomGenerator.GetRandomString(),
-			//		Value = RandomGenerator.GetRandomString(),
-			//		Items = new List<SelectListItem>()
-			//	}
-			//};
-			////GbuObjectService.Setup(x => x.GetGbuAttributesTree()).Returns(gbuAttributes);
+			var registerId = RandomGenerator.GenerateRandomInteger();
+			var attributeName = RandomGenerator.GetRandomString();
+			var gbuRegistersIds = new List<long> { registerId };
+			var registers = new Dictionary<int, RegisterData>
+			{
+				{
+					registerId, new RegisterData {Id = registerId}
+				}
+			};
+			var registerAttributes = new Dictionary<long, RegisterAttribute>
+			{
+				{
+					registers.First().Key, new RegisterAttribute { RegisterId = registers.First().Key, Name = attributeName}
+				}
+			};
+			
+			GbuObjectService.Setup(x => x.GetGbuRegistersIds()).Returns(gbuRegistersIds);
+			RegisterCacheWrapper.Setup(x => x.GetRegistersCache()).Returns(registers);
+			RegisterCacheWrapper.Setup(x => x.GetRegisterAttributesCache()).Returns(registerAttributes);
 
-			//var result = TourController.TourAttributeSettings();
-			//var view = result as ViewResult;
-			//var attributes = (view?.ViewData["TreeAttributes"] as IEnumerable<DropDownTreeItemModel>)?.ToList();
+			var result = TourController.TourAttributeSettings();
+			var view = result as ViewResult;
+			var attributes = (view?.ViewData["TreeAttributes"] as IEnumerable<DropDownTreeItemModel>)?.ToList();
 
-			//Assert.IsNotNull(attributes);
-			//Assert.That(attributes.Count, Is.EqualTo(gbuAttributes.Count));
+			Assert.IsNotNull(attributes);
+			Assert.That(attributes.Count, Is.EqualTo(registerAttributes.Count));
+			Assert.That(attributes.SelectMany(x => x.Items).Select(x => x.Text).Contains(attributeName), string.Join(";\n", attributes.Select(x => x.Text)));
 		}
 	}
 }

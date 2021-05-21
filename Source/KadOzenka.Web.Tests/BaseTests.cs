@@ -1,4 +1,5 @@
-﻿using Core.UI.Registers.Controllers;
+﻿using System;
+using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
@@ -36,6 +37,7 @@ namespace KadOzenka.Web.Tests
 		protected Mock<IObjectsCharacteristicsService> ObjectsCharacteristicsService { get; set; }
 		protected Mock<IObjectsCharacteristicsSourceService> ObjectsCharacteristicsSourceService { get; set; }
 		protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
+		protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
 
 
 		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
@@ -51,6 +53,7 @@ namespace KadOzenka.Web.Tests
 			ObjectsCharacteristicsService = new Mock<IObjectsCharacteristicsService>();
 			ObjectsCharacteristicsSourceService = new Mock<IObjectsCharacteristicsSourceService>();
 			RegisterAttributeService = new Mock<IRegisterAttributeService>();
+			RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
 
 			ConfigureServices();
 		}
@@ -130,6 +133,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IObjectsCharacteristicsSourceService),
 				sp => ObjectsCharacteristicsSourceService.Object);
 			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
+			container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
 
 			AddServicesToContainer(container);
 

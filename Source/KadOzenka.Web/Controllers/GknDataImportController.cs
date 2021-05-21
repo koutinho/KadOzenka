@@ -9,10 +9,12 @@ using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.Documents;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Task;
@@ -32,7 +34,9 @@ namespace KadOzenka.Web.Controllers
 		public TaskService TaskService { get; set; }
 		public DocumentService DocumentService { get; set; }
 
-		public GknDataImportController(TaskService taskService)
+		public GknDataImportController(TaskService taskService, IRegisterCacheWrapper registerCacheWrapper, 
+			IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 			TaskService = taskService;
             DocumentService = new DocumentService();

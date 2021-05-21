@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Register.Enums;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Web.Attributes;
 using ObjectModel.SRD;
@@ -18,8 +20,10 @@ namespace KadOzenka.Web.Controllers
 	{
         public GroupService GroupService { get; set; }
 
-        public UnitController(GroupService groupService)
-        {
+        public UnitController(GroupService groupService, IRegisterCacheWrapper registerCacheWrapper,
+	        IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
+		{
             GroupService = groupService;
         }
 

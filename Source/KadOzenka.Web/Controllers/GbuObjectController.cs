@@ -36,22 +36,20 @@ namespace KadOzenka.Web.Controllers
 	{
 		#region Initialization
 
-		private readonly GbuObjectService _service;
 		private readonly CodDictionaryService _dictionaryService;
 		private readonly TaskService _taskService;
 	    private TourFactorService _tourFactorService;
-	    private TemplateService _templateService;
 
-        public GbuObjectController(GbuObjectService service, CodDictionaryService dictService, TaskService taskService, TourFactorService tourFactorService, TemplateService templateService)
-		{
-			_service = service;
-			_dictionaryService = dictService;
-			_taskService = taskService;
+	    public GbuObjectController(IGbuObjectService service, CodDictionaryService dictService, TaskService taskService,
+		    TourFactorService tourFactorService, IRegisterCacheWrapper registerCacheWrapper)
+		    : base(service, registerCacheWrapper)
+	    {
+		    _dictionaryService = dictService;
+		    _taskService = taskService;
 		    _tourFactorService = tourFactorService;
-            _templateService = templateService;
-        }
+	    }
 
-		#endregion
+	    #endregion
 
 		#region Object Card
 
@@ -64,7 +62,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult TreeList(long objectId, string parentNodeId, long nodeLevel)
 		{
-			List<AllDataTreeDto> treeList = _service.GetAllDataTree(objectId, parentNodeId, nodeLevel);
+			List<AllDataTreeDto> treeList = GbuObjectService.GetAllDataTree(objectId, parentNodeId, nodeLevel);
 
 			return Content(JsonConvert.SerializeObject(treeList), "application/json");
 		}
@@ -86,7 +84,7 @@ namespace KadOzenka.Web.Controllers
 				attributes = new List<long> { attributeId.Value };
 			}
 
-			var sttributesValues = _service.GetAllAttributes(objectId, sources, attributes);
+			var sttributesValues = GbuObjectService.GetAllAttributes(objectId, sources, attributes);
 
 			return View(sttributesValues);
 		}
@@ -122,8 +120,8 @@ namespace KadOzenka.Web.Controllers
 	                x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id && x.Id != 1).ToList();
 	            foreach (var source in getSources)
 	            {
-	                var objAttributes = _service
-	                    .GetAllAttributes(obj.Id, new List<long> { source.Id }, null, date)
+	                var objAttributes = GbuObjectService
+						.GetAllAttributes(obj.Id, new List<long> { source.Id }, null, date)
 	                    .ToList();
 	                if (objAttributes.Count > 0)
 	                {
@@ -138,8 +136,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GetAttributeHistory(long objectId, long registerId, long attrId)
 	    {
-	        var attributeValues = _service
-	            .GetAllAttributes(objectId, new List<long> { registerId }, new List<long> { attrId })
+	        var attributeValues = GbuObjectService
+				.GetAllAttributes(objectId, new List<long> { registerId }, new List<long> { attrId })
 	            .OrderByDescending(x => x.Id)
 	            .ToList();
 	        var model = new List<AttributeHistoryRecordDto>();
@@ -200,7 +198,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (model.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -283,7 +281,7 @@ namespace KadOzenka.Web.Controllers
 
             if (viewModel.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -388,7 +386,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (viewModel.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -568,7 +566,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
 		{
-			return RegisterCache.Registers.Values.Where(x => _service.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
+			return RegisterCache.Registers.Values.Where(x => GbuObjectService.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
 		#endregion

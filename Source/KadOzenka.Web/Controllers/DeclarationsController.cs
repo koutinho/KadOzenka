@@ -16,6 +16,7 @@ using ObjectModel.Directory.Declarations;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
+using KadOzenka.Dal.CommonFunctions;
 using Newtonsoft.Json;
 using ObjectModel.Core.Reports;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,7 @@ using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Declarations;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using ObjectModel.Core.Shared;
 using ObjectModel.SPD;
@@ -33,11 +35,14 @@ namespace KadOzenka.Web.Controllers
     {
 	    private NotificationService _notificationService;
 		private DeclarationService _declarationService;
-		public DeclarationsController()
+
+		public DeclarationsController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 			_notificationService = new NotificationService();
 			_declarationService = new DeclarationService();
 		}
+
 
 		#region Declarations
 

@@ -66,7 +66,9 @@ namespace KadOzenka.Web.Controllers
         public TemplateService TemplateService { get; set; }
         public FactorSettingsService FactorSettingsService { get; set; }
 
-        public TaskController(TemplateService templateService)
+        public TaskController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
+	        IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
             TaskService = new TaskService();
             DataImporterService = new DataImporterService();
