@@ -1,6 +1,8 @@
-﻿using Core.Shared.Extensions;
+﻿using System;
+using Core.Shared.Extensions;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
@@ -29,7 +31,7 @@ namespace KadOzenka.Web.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSourc
 		public void CanNot_Add_Source_If_Model_State_Is_Invalid()
 		{
 			var controller = ObjectsCharacteristicsController;
-			var method = new ControllerMethod<SourceModel>(controller.EditSource);
+			var method = new Func<SourceModel, IActionResult>(controller.EditSource);
 
 			CheckMethodValidateModelState(controller, method);
 		}

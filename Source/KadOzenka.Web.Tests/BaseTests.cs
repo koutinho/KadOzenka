@@ -40,7 +40,7 @@ namespace KadOzenka.Web.Tests
 		protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
 
 
-		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
+		//protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
 
 
 		[OneTimeSetUp]
@@ -64,7 +64,7 @@ namespace KadOzenka.Web.Tests
 		}
 
 		protected void CheckMethodValidateModelState<TMethodInputParameterType>(BaseController controller,
-			ControllerMethod<TMethodInputParameterType> method) where TMethodInputParameterType : class, new()
+			Func<TMethodInputParameterType, IActionResult> method) where TMethodInputParameterType : class, new()
 		{
 			controller.ModelState.AddModelError(RandomGenerator.GetRandomString(), RandomGenerator.GetRandomString());
 
