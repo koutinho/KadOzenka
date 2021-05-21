@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Core.Shared.Extensions;
-using MarketPlaceBusiness;
 using MarketPlaceBusiness.Dto;
-using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -106,6 +103,51 @@ namespace KadOzenka.Web.Models.MarketObject
 		[DisplayName("Единица измерения площади участка")]
 		public string ParcelAreaUnitType { get; set; }
 
+		[DisplayName("Мощность электроснабжения, кВТ")]
+		public long? ElectricityPower { get; set; }
+
+		[DisplayName("Возможность подключения электроснабжения")]
+		public bool? PossibilityToConnectElectricity { get; set; }
+
+		[DisplayName("Локация электроснабжения")]
+		public string ElectricityLocationType { get; set; }
+
+		[DisplayName("Давление газа")]
+		public string GasPressureType { get; set; }
+
+		[DisplayName("Емкость газоснабжения, м³/час")]
+		public long? GasCapacity { get; set; }
+
+		[DisplayName("Возможность подключения газа")]
+		public bool? PossibilityToConnectGas { get; set; }
+
+		[DisplayName("Локация газоснабжения")]
+		public string GasLocationType { get; set; }
+
+		[DisplayName("Тип канализации")]
+		public string DrainageType { get; set; }
+
+		[DisplayName("Объём канализации, м³/сутки")]
+		public long? DrainageCapacity { get; set; }
+
+		[DisplayName("Возможность подключения канализации")]
+		public bool? PossibilityToConnectDrainage { get; set; }
+
+		[DisplayName("Локация канализации")]
+		public string DrainageLocationType { get; set; }
+
+		[DisplayName("Тип водоснабжения")]
+		public string WaterType { get; set; }
+
+		[DisplayName("Объём водоснабжения, м³/сутки")]
+		public long? WaterCapacity { get; set; }
+
+		[DisplayName("Возможно подключить водоснабжение")]
+		public bool? PossibilityToConnectWater { get; set; }
+
+		[DisplayName("Локация водоснабжения")]
+		public string WaterLocationType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -144,6 +186,21 @@ namespace KadOzenka.Web.Models.MarketObject
 				ParcelAreaUnitType = entity.ParcelAreaUnitType,
 				ParcelType = entity.ParcelType,
 				ParcelStatus = entity.ParcelStatus,
+				ElectricityLocationType = entity.ElectricityLocationType,
+				PossibilityToConnectElectricity = entity.PossibilityToConnectElectricity,
+				ElectricityPower = entity.ElectricityPower,
+				GasLocationType = entity.GasLocationType,
+				PossibilityToConnectGas = entity.PossibilityToConnectGas,
+				GasCapacity = entity.GasCapacity,
+				GasPressureType = entity.GasPressureType,
+				DrainageLocationType = entity.DrainageLocationType,
+				PossibilityToConnectDrainage = entity.PossibilityToConnectDrainage,
+				DrainageCapacity = entity.DrainageCapacity,
+				DrainageType = entity.DrainageType,
+				WaterLocationType = entity.WaterLocationType,
+				PossibilityToConnectWater = entity.PossibilityToConnectWater,
+				WaterCapacity = entity.WaterCapacity,
+				WaterType = entity.WaterType
             };
 			if (priceHistory?.Count > 0)
 			{
@@ -185,7 +242,7 @@ namespace KadOzenka.Web.Models.MarketObject
 		{
 			decimal? result;
 			
-			if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+			if (entity.Area != 0)
 				result = entity.Price / entity.Area;
 
 			else

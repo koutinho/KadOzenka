@@ -478,3 +478,157 @@ VALUES (12091, 'Статус земли', 1, 'Core.RefLib.Executors.ReferenceExe
 	}
 ]');
 
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12092, 'Локация электроснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'ElectricityLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12093, 'Локация газоснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'GasLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12094, 'Давление газа', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'GasPressureType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Высокое",
+		"Name": "High"
+	},
+	{
+		"Id": 2,
+		"Value": "Среднее",
+		"Name": "Middle"
+	},
+	{
+		"Id": 3,
+		"Value": "Низкое",
+		"Name": "Low"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12095, 'Локация канализации', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'DrainageLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12096, 'Тип канализации', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'DrainageType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Автономная",
+		"Name": "Autonomous"
+	},
+	{
+		"Id": 2,
+		"Value": "Центральная",
+		"Name": "Central"
+	}
+]');
+
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12097, 'Локация водоснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'WaterLocationType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "По границе участка",
+		"Name": "Border"
+	},
+	{
+		"Id": 2,
+		"Value": "На участке",
+		"Name": "Location"
+	}
+]');
+
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
+VALUES (12098, 'Тип водоснабжения', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'WaterType', null, '[
+    {
+		"Id": 0,
+		"Value": "Значение отсутствует",
+		"Name": "None"
+	},
+	{
+		"Id": 1,
+		"Value": "Автономная",
+		"Name": "Autonomous"
+	},
+	{
+		"Id": 2,
+		"Value": "Центральная",
+		"Name": "Central"
+	},
+	{
+		"Id": 3,
+		"Value": "Водонапорная станция",
+		"Name": "PumpingStation"
+	},
+	{
+		"Id": 4,
+		"Value": "Водозаборный узел",
+		"Name": "WaterIntakeFacility"
+	},
+	{
+		"Id": 5,
+		"Value": "Водонапорная башня",
+		"Name": "WaterTower"
+	}
+]');
+
