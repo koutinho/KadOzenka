@@ -18,6 +18,7 @@ using System;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper.Configuration;
@@ -55,6 +56,9 @@ using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.OpenApi.Models;
 using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
@@ -170,9 +174,13 @@ namespace CIPJS
                         opts.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser()
                             .Build()));
                         opts.Filters.Add(new MasterPageHeaderAttribute());
+                        opts.Conventions.Add(new WhitelistControllersConvention());
                     })
                     .AddJsonOptions(options =>
                         options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+                services.AddSwaggerGen();
+
                 services.Configure<FormOptions>(x =>
                 {
                     x.ValueLengthLimit = int.MaxValue;
@@ -196,6 +204,8 @@ namespace CIPJS
                 services.AddDataProtection()
                     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
                     .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
+
+              
 
                 var cultureInfo = new CultureInfo("ru-RU");
                 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
@@ -249,6 +259,12 @@ namespace CIPJS
                 routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
             });
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+	            c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
                 app.UseMvc(routes =>
                 {
                     routes.MapRoute(
@@ -280,11 +296,20 @@ namespace CIPJS
                     else await next();
                 });
 
+               
+
                 HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
                 HttpContextHelper.WebRootPath = env.ContentRootPath;
                 LogContext.PushProperty("EnvironmentName", env.EnvironmentName);
                 LogContext.PushProperty("WebRootPath", env.WebRootPath);
             }
         }
+    }
+    public class WhitelistControllersConvention : IActionModelConvention
+    {
+	    public void Apply(ActionModel action)
+	    {
+		    action.ApiExplorer.IsVisible = action.Controller.Attributes.OfType<ApiControllerAttribute>().Any();
+	    }
     }
 }
