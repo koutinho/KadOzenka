@@ -2280,7 +2280,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			return element;
 		}
 
-		private DateTime? CastToDateTime(long? attributeId, object value)
+		public static DateTime? CastToDateTime(long? attributeId, object value)
 		{
 			if (value == null)
 				return null;
@@ -2292,7 +2292,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			return new DateTime?();
 		}
 
-		private double? CastToDouble(long? attributeId, object value)
+		public static double? CastToDouble(long? attributeId, object value)
 		{
 			if (value == null)
 				return null;
@@ -2304,7 +2304,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			return result;
 		}
 
-		private long? CastToLong(long? attributeId, object value)
+		public static long? CastToLong(long? attributeId, object value)
 		{
 			if (value == null)
 				return null;

@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Transactions;
 using Core.ErrorManagment;
+using Core.Register;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
-using KadOzenka.Dal.DataExport;
+using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
+using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.KO;
@@ -225,6 +229,8 @@ namespace KadOzenka.Web.Controllers
 				if(dto.ExcelFile == null)
 					return;
 
+				ValidateExcelFileColumnsTypes(dto);
+
 				using (var stream = dto.ExcelFile.OpenReadStream())
 				{
 					var attributes = dto.ExcelColumnsMapping.Select(x => new ColumnToAttributeMapping
@@ -235,6 +241,60 @@ namespace KadOzenka.Web.Controllers
 
 					DataImporterGknLongProcess.AddImportToQueue(dto.ExcelFile.FileName, stream, taskId, attributes);
 				}
+			}
+		}
+
+		private void ValidateExcelFileColumnsTypes(TaskCreationModel dto)
+		{
+			var cachedMappedAttributes = dto.ExcelColumnsMapping.Select(x => RegisterCache.GetAttributeData(x.AttributeId)).ToList();
+
+			using (var stream = dto.ExcelFile.OpenReadStream())
+			{
+				var errors = new StringBuilder();
+				var columnsWithErrorIndexes = new List<int>();
+				var excelFile = ExcelFile.Load(stream, LoadOptions.XlsxDefault);
+
+				excelFile.Worksheets[0].Rows.Skip(1).Take(10).ForEach(row =>
+				{
+					dto.ExcelColumnsMapping.ForEach(mapping =>
+					{
+						var columnIndex = mapping.ColumnIndex;
+						var mappedAttribute = cachedMappedAttributes.First(x => x.Id == mapping.AttributeId);
+						var valueFromFile = row.Cells[columnIndex].Value;
+						try
+						{
+							switch (mappedAttribute.Type)
+							{
+								case RegisterAttributeType.INTEGER:
+									GknAllAttributes.CastToLong(mappedAttribute.Id, valueFromFile);
+									break;
+								case RegisterAttributeType.DECIMAL:
+									GknAllAttributes.CastToDouble(mappedAttribute.Id, valueFromFile);
+									break;
+								case RegisterAttributeType.DATE:
+									GknAllAttributes.CastToDateTime(mappedAttribute.Id, valueFromFile);
+									break;
+							}
+						}
+						catch (CastingToAttributeTypeException e)
+						{
+							//если ошибка была в определенной колонке в одной строке, скорей всего, 
+							//она повторится в других строках, поэтому показываем юзеру только одну ошибку такого типа
+							if (!columnsWithErrorIndexes.Contains(columnIndex))
+							{
+								columnsWithErrorIndexes.Add(columnIndex);
+								var localizationInfo = $"Строка №{row.Index + 1}, колонка {columnIndex + 1}";
+								errors.Append($"{e.Message} ({localizationInfo})").Append("<br/>");
+							}
+						}
+					});
+				});
+
+				if (errors.Length == 0) 
+					return;
+
+				errors.Insert(0, "Не соответствие типов для:<br/>");
+				throw new InvalidCastException(errors.ToString());
 			}
 		}
 
