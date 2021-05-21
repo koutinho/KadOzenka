@@ -74,7 +74,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			#region Cadastral Cost Block
 
 			AddAttributeToGeneral(generalSection.CadastralCostValueAttributeIdValue,
-				current => current.CadastralCost?.Value, (o, v) => o.CadastralCost.Value = v?.ParseToDouble());
+				current => current.CadastralCost?.Value,
+				(o, v) => o.CadastralCost.Value = CastToDouble(generalSection.CadastralCostValueAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostDateValuationAttributeIdValue,
 				current => current.CadastralCost?.DateValuation,
@@ -227,11 +228,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				current => xmlCodeName.GetNames(((xmlObjectParcel) current).InnerCadastralNumbers),
 				(o, v) => o.InnerCadastralNumbers = new List<string> {v?.ToString()});
 
-			AddAttributeToParcel(parcelSection.AreaAttributeIdValue, 
-				current => ((xmlObjectParcel)current).Area, (o, v) => o.Area = v?.ParseToDouble());
-			
-			AddAttributeToParcel(parcelSection.AreaInaccuracyAttributeIdValue, 
-				current => ((xmlObjectParcel)current).AreaInaccuracy, (o, v) => o.AreaInaccuracy = v?.ParseToDouble());
+			AddAttributeToParcel(parcelSection.AreaAttributeIdValue,
+				current => ((xmlObjectParcel) current).Area,
+				(o, v) => o.Area = CastToDouble(parcelSection.AreaAttributeIdValue, v));
+
+			AddAttributeToParcel(parcelSection.AreaInaccuracyAttributeIdValue,
+				current => ((xmlObjectParcel) current).AreaInaccuracy,
+				(o, v) => o.AreaInaccuracy = CastToDouble(parcelSection.AreaInaccuracyAttributeIdValue, v));
 
 			AddAttributeToParcel(parcelSection.CategoryAttributeIdValue, 
 				current => ((xmlObjectParcel)current).Category?.Name, (o, v) => o.Category.Name = v?.ToString());
@@ -382,7 +385,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
-							element.Area = v?.ParseToDouble();
+							element.Area = CastToDouble(subParcel.AreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
@@ -391,7 +394,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
-							element.AreaInaccuracy = v?.ParseToDouble();
+							element.AreaInaccuracy = CastToDouble(subParcel.AreaInaccuracyAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
@@ -747,7 +750,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
-							element.IdentifiedViolations.Area = v?.ParseToDouble();
+							element.IdentifiedViolations.Area =
+								CastToDouble(supervisionEvent.IdentifiedViolationsAreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
@@ -1103,7 +1107,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToBuilding(buildingSection.AreaAttributeIdValue, 
 				current => ((xmlObjectBuild)current).Area,
-				(o, v) => o.Area = v?.ParseToDouble());
+				(o, v) => o.Area = CastToDouble(buildingSection.AreaAttributeIdValue, v));
 
 			AddAttributeToBuilding(buildingSection.ObjectPermittedUsesAttributeIdValue, 
 				current => xmlCodeName.GetNames(((xmlObjectBuild)current).ObjectPermittedUses),
@@ -1124,7 +1128,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitFlatSubBuilding(o, iCounter);
-							element.Area = v?.ParseToDouble();
+							element.Area = CastToDouble(subBuilding.AreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectBuild) current).SubBuildings.Count >= iCounter + 1);
 
@@ -1764,7 +1768,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToFlat(flatSection.AreaAttributeIdValue, 
 				current => ((xmlObjectFlat)current).Area,
-				(o, v) => o.Area = v?.ParseToDouble());
+				(o, v) => o.Area = CastToDouble(flatSection.AreaAttributeIdValue, v));
 
 			AddAttributeToFlat(flatSection.PositionNumberOnPlanAttributeIdValue, 
 				current => ((xmlObjectFlat)current).Position?.NumberOnPlan,
@@ -1841,7 +1845,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubFlat(o, iCounter);
-							element.Area = v?.ParseToDouble();
+							element.Area = CastToDouble(subFlat.AreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1);
 
@@ -2184,7 +2188,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToCarPlace(carPlaceSection.AreaAttributeIdValue, 
 				current => ((xmlObjectCarPlace)current).Area,
-				(o, v) => o.Area = v?.ParseToDouble());
+				(o, v) => o.Area = CastToDouble(carPlaceSection.AreaAttributeIdValue, v));
 
 			AddAttributeToCarPlace(carPlaceSection.PositionInObject?.NumberAttributeIdValue,
 				current => ((xmlObjectCarPlace)current).PositionInObject?.Number,
@@ -2286,6 +2290,18 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				throw new CastingToAttributeTypeException(attributeId, value);
 
 			return new DateTime?();
+		}
+
+		private double? CastToDouble(long? attributeId, object value)
+		{
+			if (value == null)
+				return null;
+
+			if (!double.TryParse(value.ToString().Replace(',', '.'), NumberStyles.Any,
+				CultureInfo.InvariantCulture, out var result))
+				throw new CastingToAttributeTypeException(attributeId, value);
+
+			return result;
 		}
 
 		#endregion
