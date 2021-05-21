@@ -14,9 +14,9 @@ namespace KadOzenka.Dal.XmlParser
 		                                 !string.IsNullOrWhiteSpace(TypeConvertingError);
 
 
-		public void AddNotProcessedAttribute(string attributeName, int rowIndex, int columnIndex)
+		public void AddNotProcessedAttribute(string message, int rowIndex, int columnIndex)
 		{
-			NotProcessedAttributeNames = ConcatMessages(NotProcessedAttributeNames, attributeName, rowIndex, columnIndex);
+			NotProcessedAttributeNames = ConcatMessages(NotProcessedAttributeNames, message, rowIndex, columnIndex);
 		}
 
 		public void AddError(string message, int rowIndex)

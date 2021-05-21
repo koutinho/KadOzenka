@@ -1807,7 +1807,8 @@ namespace KadOzenka.Dal.XmlParser
 		            var attributeData = RegisterCache.GetAttributeData(map.AttributeId);
 		            if (attributeData.RegisterId != OMUnit.GetRegisterId())
 		            {
-                        reportInfo.AddNotProcessedAttribute(attributeData.Name, row.Index, map.ColumnIndex);
+			            var message = $"{attributeData.Name} ({objectType.GetEnumDescription()})";
+                        reportInfo.AddNotProcessedAttribute(message, row.Index, map.ColumnIndex);
 		            }
 	            }
 	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
