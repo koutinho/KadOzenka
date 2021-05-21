@@ -12,6 +12,7 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
+using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
@@ -1308,7 +1309,7 @@ namespace KadOzenka.Dal.XmlParser
 	        }
             catch (Exception ex)
             {
-	            Serilog.Log.Error(ex, $"Ошибка при обработке объекта '{kn}' из xml-файла");
+	            Serilog.Log.Error(ex, "Ошибка при обработке объекта '{kn}' из xml-файла", kn);
 
 	            var reportRow = _gbuReportService.GetCurrentRow();
 	            _gbuReportService.AddValue(kn, BaseImporter.CadastralNumberColumnIndex, reportRow);
@@ -1694,10 +1695,7 @@ namespace KadOzenka.Dal.XmlParser
 	        mainWorkSheet.Rows.ForEach(row =>
 	        {
 		        string cadastralNumber = null;
-                var reportInfo = new ReportInfo
-	            {
-		            RowIndex = row.Index
-	            };
+                var reportInfo = new ReportInfo();
 	            try
 		        {
 			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
@@ -1713,11 +1711,12 @@ namespace KadOzenka.Dal.XmlParser
                     var obj = MapExcelRowToObject(row, reportInfo, cadastralNumber, square, assessmentDate, typeEnum,
 	                    columnsMapping, importedAttributes);
 			        objects.Add(obj);
-		        }
-		        catch (Exception ex)
-		        {
-			        Serilog.Log.Error(ex, $"Ошибка при обработке {row.Index + 1} строки excel-файла. Объект '{cadastralNumber}'.");
-                    reportInfo.Error = ex.Message;
+                }
+                catch (Exception ex)
+                {
+	                Serilog.Log.Error(ex, "Ошибка при обработке {rowIndex} строки excel-файла. Объект '{CadastralNumber}'.",
+		                row.Index + 1, cadastralNumber);
+                    reportInfo.AddError(ex.Message, row.Index);
 		        }
 
                 if (reportInfo.MustWriteToReport)
@@ -1808,15 +1807,22 @@ namespace KadOzenka.Dal.XmlParser
 		            var attributeData = RegisterCache.GetAttributeData(map.AttributeId);
 		            if (attributeData.RegisterId != OMUnit.GetRegisterId())
 		            {
-			            reportInfo.NotProcessedAttributeNames = 
-				            !string.IsNullOrWhiteSpace(reportInfo.NotProcessedAttributeNames) 
-					            ? $"{reportInfo.NotProcessedAttributeNames};{Environment.NewLine}{attributeData.Name};" 
-					            : $"{attributeData.Name}";
-			            reportInfo.ColumnIndex = map.ColumnIndex;
+                        reportInfo.AddNotProcessedAttribute(attributeData.Name, row.Index, map.ColumnIndex);
 		            }
 	            }
 	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
-	            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+	            try
+	            {
+		            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+	            }
+	            catch (CastingToAttributeTypeException e)
+	            {
+		            Serilog.Log.Error(e,
+			            "Ошибка преобразования типов при обработке {RowIndex} строки excel-файла. Объект '{CadastralNumber}'.",
+			            row.Index + 1, cadastralNumber);
+
+                    reportInfo.AddTypeConvertingError(e.Message, row.Index, map.ColumnIndex);
+                }
             });
 
             return obj;
@@ -1868,40 +1874,18 @@ namespace KadOzenka.Dal.XmlParser
 	        }
         }
 
-        private class ReportInfo
-        {
-	        public int RowIndex { get; set; }
-	        public int ColumnIndex { get; set; }
-	        public string CadastralNumber { get; set; }
-	        public string Error { get; set; }
-	        public string NotProcessedAttributeNames { get; set; }
-	        public bool MustWriteToReport => !string.IsNullOrWhiteSpace(Error) || !string.IsNullOrWhiteSpace(NotProcessedAttributeNames);
-
-	        public ReportInfo()
-	        {
-                //не всегда можно узнать, в какой колонке произошла ошибка
-		        ColumnIndex = -1;
-	        }
-        }
-
         #endregion
 
         #endregion
 
         private void LogInfoToReport(ReportInfo reportInfo)
         {
-	        var comment = $"Строка в файле - {reportInfo.RowIndex + 1}";
-	        if (reportInfo.ColumnIndex != -1)
-	        {
-		        comment += $", колонка - {reportInfo.ColumnIndex + 1}";
-	        }
-
 	        var reportRow = _gbuReportService.GetCurrentRow();
 
             _gbuReportService.AddValue(reportInfo.CadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
-	        _gbuReportService.AddValue(reportInfo.Error, BaseImporter.ErrorMessageColumnIndex, reportRow);
 	        _gbuReportService.AddValue(reportInfo.NotProcessedAttributeNames, BaseImporter.NotProcessedAttributesColumnIndex, reportRow);
-	        _gbuReportService.AddValue(comment, BaseImporter.CommentColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.TypeConvertingError, BaseImporter.TypeConvertingErrorColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.Error, BaseImporter.ErrorMessageColumnIndex, reportRow);
         }
     }
 }

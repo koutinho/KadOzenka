@@ -20,9 +20,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 		private DataImporterGknLongProcessProgressLogger DataImporterGknLongProcessProgressLogger { get; }
 		private GbuReportService GbuReportService { get; set; }
 		public const int CadastralNumberColumnIndex = 0;
-		public const int ErrorMessageColumnIndex = 1;
-		public const int NotProcessedAttributesColumnIndex = 2;
-		public const int CommentColumnIndex = 3;
+		public const int NotProcessedAttributesColumnIndex = 1;
+		public const int TypeConvertingErrorColumnIndex = 2;
+		public const int ErrorMessageColumnIndex = 3;
 
 
 		protected BaseImporter(DataImporterGknLongProcessProgressLogger dataImporterGknLongProcessProgressLogger, ILogger logger)
@@ -96,20 +96,19 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 				},
 				new()
 				{
-					Header = "Ошибка",
-					Index = ErrorMessageColumnIndex,
-					Width = 8
-				},
-				new()
-				{
 					Header = "Несохраненные атрибуты (не соответствуют типу ОН)",
 					Index = NotProcessedAttributesColumnIndex,
 					Width = 8
 				},
 				new()
 				{
-					Header = "Комментарий к ошибке",
-					Index = CommentColumnIndex,
+					Header = "Несоответствия типа атрибута значению из файла",
+					Index = TypeConvertingErrorColumnIndex,
+					Width = 8
+				},new()
+				{
+					Header = "Ошибка",
+					Index = ErrorMessageColumnIndex,
 					Width = 8
 				}
 			};
