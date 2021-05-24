@@ -54,6 +54,7 @@ using KadOzenka.Web.SignalR.AnalogCheck;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -168,7 +169,13 @@ namespace CIPJS
                 });
                 services.AddKendo();
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                    .AddCookie(options => { options.LoginPath = new PathString("/Account/Login"); });
+	                .AddCookie(options =>
+	                {
+		                options.LoginPath = new PathString("/Account/Login");
+		                options.Events = new MyCookieAuthenticationEvents();
+	                });
+
+
                 services.AddMvc(opts =>
                     {
                         opts.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser()
@@ -179,7 +186,10 @@ namespace CIPJS
                     .AddJsonOptions(options =>
                         options.SerializerSettings.ContractResolver = new DefaultContractResolver());
 
-                services.AddSwaggerGen();
+                services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "KadOzenka Api"
+                }));
 
                 services.Configure<FormOptions>(x =>
                 {
@@ -311,5 +321,20 @@ namespace CIPJS
 	    {
 		    action.ApiExplorer.IsVisible = action.Controller.Attributes.OfType<ApiControllerAttribute>().Any();
 	    }
+    }
+
+    public class MyCookieAuthenticationEvents : CookieAuthenticationEvents
+    {
+	    public override Task RedirectToLogin(RedirectContext<CookieAuthenticationOptions> redirectContext)
+	    {
+		    //get HttpContext
+		    var path = redirectContext.HttpContext.Request.Path;
+		    if (path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase))
+		    {
+			    redirectContext.RedirectUri = "/api/auth/NotAuthorize";
+		    }
+		    return base.RedirectToLogin(redirectContext);
+	    }
+
     }
 }
