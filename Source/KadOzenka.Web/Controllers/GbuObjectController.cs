@@ -268,7 +268,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (model.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -282,14 +282,14 @@ namespace KadOzenka.Web.Controllers
 			{
 				var settings = model.CovertToGroupingSettings();
 				////TODO код для отладки
-				new SetPriorityGroupFinalProcess().StartProcess(new OMProcessType(), new OMQueue
-				{
-					Status_Code = Status.Added,
-					UserId = SRDSession.GetCurrentUserId(),
-					Parameters = settings.SerializeToXml()
-				}, new CancellationToken());
-				queueId = 0;
-				//queueId = SetPriorityGroupFinalProcess.AddProcessToQueue(settings);
+				// new SetPriorityGroupFinalProcess().StartProcess(new OMProcessType(), new OMQueue
+				// {
+				// 	Status_Code = Status.Added,
+				// 	UserId = SRDSession.GetCurrentUserId(),
+				// 	Parameters = settings.SerializeToXml()
+				// }, new CancellationToken());
+				//queueId = 0;
+				queueId = SetPriorityGroupFinalProcess.AddProcessToQueue(settings);
 			}
 			catch (Exception e)
 			{
