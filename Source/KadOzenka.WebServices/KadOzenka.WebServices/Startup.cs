@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Diagnostics;
 using Core.ErrorManagment;
+using Newtonsoft.Json.Serialization;
 using KadOzenka.WebServices.Services.Rsm;
 
 namespace KadOzenka.WebServices
@@ -38,7 +39,7 @@ namespace KadOzenka.WebServices
 		{
 			//если подключим платформу, нужно раскомментить, чтобы сваггер сгененрировал файл для контроллеров только из этого проекта
 			services.AddMvc()//(c => c.Conventions.Add(new ApiExplorerSpecialConvention()))
-				.AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
+				.AddNewtonsoftJson(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
 				.SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
 			services.AddSwaggerGen(c => {
@@ -72,14 +73,13 @@ namespace KadOzenka.WebServices
 			{
 				app.UseDeveloperExceptionPage();
 			}
-
-			app.UseMvc(routes =>
+			app.UseRouting();
+			app.UseEndpoints(endpoints =>
 			{
-				routes.MapRoute(
+				endpoints.MapControllerRoute(
 					name: "default",
-					template: "{controller=Home}/{action=Index}/{id?}");
+					pattern: "{controller=Home}/{action=Index}/{id?}");
 			});
-
 			app.UseSwagger();
 
 			app.UseSwaggerUI(c =>

@@ -18,12 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
     <ProjectReference Include="..\KadOzenka.Web\KadOzenka.Web.csproj" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Kendo.Mvc">
-      <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
-    </Reference>
+	  <Reference Include="Kendo.Mvc">
+		  <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
+	  </Reference>
   </ItemGroup>
 
 </Project>
