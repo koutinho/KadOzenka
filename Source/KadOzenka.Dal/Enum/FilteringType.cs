@@ -14,140 +14,146 @@ namespace KadOzenka.Dal.Enum
     }
     public enum FilteringTypeString
     {
-        [Display(Name = "Равно")]
+        //[Display(Name = "Равно")]
         Equal,
 
-        [Display(Name = "Равно (без учета регистра)")]
+        //[Display(Name = "Равно (без учета регистра)")]
         EqualIgnoreCase,
 
-        [Display(Name = "Не равно")]
+        //[Display(Name = "Не равно")]
         NotEqual,
 
-        [Display(Name = "Не равно (без учета регистра)")]
+        //[Display(Name = "Не равно (без учета регистра)")]
         NotEqualIgnoreCase,
 
-        [Display(Name = "Начинается c")]
+        //[Display(Name = "Начинается c")]
         BeginsFrom,
 
-        [Display(Name = "Начинается c (без учета регистра)")]
+        //[Display(Name = "Начинается c (без учета регистра)")]
         BeginsFromIgnoreCase,
 
-        [Display(Name = "Не начинается c")]
+        //[Display(Name = "Не начинается c")]
         NotBeginsFrom,
 
-        [Display(Name = "Не начинается c (без учета регистра)")]
+        //[Display(Name = "Не начинается c (без учета регистра)")]
         NotBeginsFromIgnoreCase,
 
-        [Display(Name = "Заканчивается на")]
+        //[Display(Name = "Заканчивается на")]
         EndsWith,
 
-        [Display(Name = "Не заканчивается на")]
+        //[Display(Name = "Заканчивается на (без учета регистра)")]
+        EndsWithIgnoreCase,
+
+        //[Display(Name = "Не заканчивается на")]
         NotEndsWith,
 
-        [Display(Name = "Содержит")]
+        //[Display(Name = "Не заканчивается на (без учета регистра)")]
+        NotEndsWithIgnoreCase,
+
+        //[Display(Name = "Содержит")]
         Contains,
 
-        [Display(Name = "Содержит (без учета регистра)")]
+        //[Display(Name = "Содержит (без учета регистра)")]
         ContainsIgnoreCase,
 
-        [Display(Name = "Не содержит")]
+        //[Display(Name = "Не содержит")]
         NotContains,
 
-        [Display(Name = "Не содержит (без учета регистра)")]
+        //[Display(Name = "Не содержит (без учета регистра)")]
         NotContainsIgnoreCase,
 
-        [Display(Name = "Пусто")]
+        //[Display(Name = "Пусто")]
         IsNull,
 
-        [Display(Name = "Не пусто")]
+        //[Display(Name = "Не пусто")]
         IsNotNull
     }
     public enum FilteringTypeNumber
     {
-        [Display(Name = "Равно")]
+        //[Display(Name = "Равно")]
         Equal,
 
-        [Display(Name = "Не равно")]
+        //[Display(Name = "Не равно")]
         NotEqual,
 
-        [Display(Name = "Меньше")]
+        //[Display(Name = "Меньше")]
         Less,
 
-        [Display(Name = "Меньше или равно")]
+        //[Display(Name = "Меньше или равно")]
         LessOrEqual,
 
-        [Display(Name = "Больше")]
+        //[Display(Name = "Больше")]
         Greater,
 
-        [Display(Name = "Больше или равно")]
+        //[Display(Name = "Больше или равно")]
         GreaterOrEqual,
 
-        [Display(Name = "В диапазоне")]
+        //[Display(Name = "В диапазоне")]
         InRange,
 
-        [Display(Name = "В диапазоне (включая границы)")]
+        //[Display(Name = "В диапазоне (включая границы)")]
         InRangeIncludingBoundaries,
 
-        [Display(Name = "Пусто")]
+        //[Display(Name = "Пусто")]
         IsNull,
 
-        [Display(Name = "Не пусто")]
+        //[Display(Name = "Не пусто")]
         IsNotNull
     }
     public enum FilteringTypeReference
     {
-        [Display(Name = "Равно")]
+        //[Display(Name = "Равно")]
         Equal,
 
-        [Display(Name = "Не равно")]
+        //[Display(Name = "Не равно")]
         NotEqual,
 
-        [Display(Name = "Пусто")]
+        //[Display(Name = "Пусто")]
         IsNull,
 
-        [Display(Name = "Не пусто")]
+        //[Display(Name = "Не пусто")]
         IsNotNull
     }
 
     public enum FilteringTypeBool
     {
-        [Display(Name = "Равно")]
+        //[Display(Name = "Равно")]
         Equal,
 
-        [Display(Name = "Не равно")]
+        //[Display(Name = "Не равно")]
         NotEqual,
 
-        [Display(Name = "Пусто")]
+        //[Display(Name = "Пусто")]
         IsNull,
 
-        [Display(Name = "Не пусто")]
+        //[Display(Name = "Не пусто")]
         IsNotNull
     }
 
     public enum FilteringTypeDate
     {
-        [Display(Name = "Раньше")]
+        //[Display(Name = "Раньше")]
         Before,
 
-        [Display(Name = "Раньше (включительно)")]
+        //[Display(Name = "Раньше (включительно)")]
         BeforeIncludingBoundary,
 
-        [Display(Name = "Позже")]
+        //[Display(Name = "Позже")]
         After,
 
-        [Display(Name = "Позже (включительно)")]
+        //[Display(Name = "Позже (включительно)")]
         AfterIncludingBoundary,
 
-        [Display(Name = "В диапазоне")]
+        //[Display(Name = "В диапазоне")]
         InRange,
 
-        [Display(Name = "В диапазоне (включительно)")]
+        //[Display(Name = "В диапазоне (включительно)")]
         InRangeIncludingBoundaries,
 
-        [Display(Name = "Пусто")]
+        //[Display(Name = "Пусто")]
         IsNull,
 
-        [Display(Name = "Не пусто")]
+        //[Display(Name = "Не пусто")]
         IsNotNull
     }
 }

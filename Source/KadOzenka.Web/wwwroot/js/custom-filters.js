@@ -84,6 +84,8 @@ function onStringFilterChange(prefix) {
     switch (stringFilterTypeValue) {
         case "Пусто":
         case "Не пусто":
+        case "IsNull":
+        case "IsNotNull":
             $(stringFilterValueContainer).hide();
             break;
         default:
@@ -125,13 +127,17 @@ function onNumberFilterChange(prefix) {
     let numberFilterValue2Container = '#' + prefix + '_numberFilterValue2Container';
     switch (numberFilterTypeValue) {
         case "Пусто":
-        case "Не пусто": {
+        case "Не пусто":
+        case "Equal":
+        case "NotEqual": {
             $(numberFilterValueContainer).hide();
             $(numberFilterValue2Container).hide();
         }
             break;
         case "В диапазоне":
-        case "В диапазоне (включая границы)": {
+        case "В диапазоне (включая границы)":
+        case "InRange":
+        case "InRangeIncludingBoundaries": {
             $(numberFilterValueContainer).show();
             $(numberFilterValue2Container).show();
         }
@@ -167,7 +173,9 @@ function onBoolFilterChange(prefix){
     let boolFilterValueContainer = '#' + prefix + '_referenceFilterValueContainer';
     switch (boolFilterTypeValue) {
         case "Пусто":
-        case "Не пусто": {
+        case "Не пусто":
+        case "Equal":
+        case "NotEqual":{
             $(boolFilterValueContainer).hide();
         }
             break;
@@ -210,8 +218,8 @@ function bindAttributeSelectorEvents(field){
 
 function getAttributeInfo(e){
     let attributeId = e?.sender?.value();
-    let container = e.sender.element.parents('fieldset');
-    let typeSelectors = e.sender.element.parents('fieldset').find("[id$='_Type']");
+    let container = e.sender.element.parents('fieldset').first();
+    let typeSelectors = e.sender.element.parents('fieldset').find("[id$='_Type']").toArray();
     if (attributeId) {
         kendo.ui.progress($(container), true);
         return $.ajax({
@@ -245,13 +253,13 @@ function getAttributeInfo(e){
                                 break;
                         }
                     }
-                    typeSelectors.toArray().forEach(x=>$(x).data('kendoDropDownList').value(convertedType));
-                    typeSelectors.toArray().forEach(x=>$(x).trigger('change'));
+                    typeSelectors.forEach(x=>$(x).data('kendoDropDownList').value(convertedType));
+                    typeSelectors.forEach(x=>$(x).trigger('change'));
                 }
                 kendo.ui.progress($(container), false);
             },
             error: function (request) {
-
+                kendo.ui.progress($(container), false);
             },
             always: function (){
                 kendo.ui.progress($(container), false);

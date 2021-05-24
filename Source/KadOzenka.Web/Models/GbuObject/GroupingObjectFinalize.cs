@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Core.Register;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Dto;
-using Kendo.Mvc.UI;
-using ObjectModel.Gbu.GroupingAlgoritm;
+using KadOzenka.Dal.Models.Filters;
 
 namespace KadOzenka.Web.Models.GbuObject
 {
@@ -34,7 +32,7 @@ namespace KadOzenka.Web.Models.GbuObject
 		public DateTime? DataActual { get; set; }
 
 		/// <summary>
-		/// Настройки 1 уровня группировки
+		/// Преобразовываемый атрибут
 		/// </summary>
 		public LevelItemGroup IdAttributeSource { get; set; }
 
@@ -43,16 +41,16 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// </summary>
 		public LevelItemGroup IdAttributeForSelectionBetween2 { get; set; }
 
-		public UiFilters Filter1ForSelectionBetween2 { get; set; }
-		public UiFilters Filter2ForSelectionBetween2 { get; set; }
+		public Filters Filter1ForSelectionBetween2 { get; set; }
+		public Filters Filter2ForSelectionBetween2 { get; set; }
 
 		/// <summary>
 		/// Настройки 3 уровня группировки
 		/// </summary>
 		public LevelItemGroup IdAttributeForSelectionBetween3 { get; set; }
-		public UiFilters Filter1ForSelectionBetween3 { get; set; }
-		public UiFilters Filter2ForSelectionBetween3 { get; set; }
-		public UiFilters Filter3ForSelectionBetween3 { get; set; }
+		public Filters Filter1ForSelectionBetween3 { get; set; }
+		public Filters Filter2ForSelectionBetween3 { get; set; }
+		public Filters Filter3ForSelectionBetween3 { get; set; }
 
 
 
@@ -61,24 +59,30 @@ namespace KadOzenka.Web.Models.GbuObject
 	        IdAttributeSource = new LevelItemGroup();
 	        IdAttributeForSelectionBetween2 = new LevelItemGroup();
 	        IdAttributeForSelectionBetween3 = new LevelItemGroup();
-	        Filter1ForSelectionBetween2 = new UiFilters();
-	        Filter2ForSelectionBetween2 = new UiFilters();
-	        Filter1ForSelectionBetween3 = new UiFilters();
-	        Filter2ForSelectionBetween3 = new UiFilters();
-	        Filter3ForSelectionBetween3 = new UiFilters();
+	        Filter1ForSelectionBetween2 = new Filters();
+	        Filter2ForSelectionBetween2 = new Filters();
+	        Filter1ForSelectionBetween3 = new Filters();
+	        Filter2ForSelectionBetween3 = new Filters();
+	        Filter3ForSelectionBetween3 = new Filters();
         }
 
 
-        public GroupingSettings CovertToGroupingSettings()
+        public GroupingSettingsFinal CovertToGroupingSettings()
 		{
-			return new GroupingSettings
+			return new GroupingSettingsFinal
 			{
-				//IdAttributeDocument = IdAttributeDocument,
 				IdAttributeResult = IdAttributeResult,
-				//IdAttributeSource = IdAttributeSource,
-				Level1 = IdAttributeSource.ConvertToLevelItem(),
-				Level2 = IdAttributeForSelectionBetween2.ConvertToLevelItem(),
-				Level3 = IdAttributeForSelectionBetween3.ConvertToLevelItem(),
+				IdAttributeSource = IdAttributeSource.IdFactor,
+
+				IdAttributeFor2Selections = IdAttributeForSelectionBetween2.IdFactor,
+				Filter1ForSelectionBetween2 = Filter1ForSelectionBetween2,
+				Filter2ForSelectionBetween2 = Filter2ForSelectionBetween2,
+
+				IdAttributeFor3Selections = IdAttributeForSelectionBetween3.IdFactor,
+				Filter1ForSelectionBetween3 = Filter1ForSelectionBetween3,
+				Filter2ForSelectionBetween3 = Filter2ForSelectionBetween3,
+				Filter3ForSelectionBetween3 = Filter3ForSelectionBetween3,
+
 				SelectAllObject = SelectAllObject,
 				DateActual = DataActual,
 				TaskFilter = TaskFilter ?? new List<long>(),
@@ -140,47 +144,6 @@ namespace KadOzenka.Web.Models.GbuObject
 
 		}
 
-		public class UiFilters
-		{
-			public FilteringType Type { get; set; }
-			public DateFilter DateFilter { get; set; }
-			public StringFilter StringFilter { get; set; }
-			public NumberFilter NumberFilter { get; set; }
-			public BoolFilter BoolFilter { get; set; }
-			public ReferenceFilter ReferenceFilter { get; set; }
-		}
 
-		public class DateFilter
-		{
-			public FilteringTypeDate FilteringType { get; set; }
-			public DateTime? Value { get; set; }
-			public DateTime? Value2 { get; set; }
-		}
-
-		public class StringFilter
-		{
-			public FilteringTypeString FilteringType { get; set; }
-			public string Value { get; set; }
-
-		}
-
-		public class NumberFilter
-		{
-			public FilteringTypeNumber FilteringType { get; set; }
-			public decimal? Value { get; set; }
-			public decimal? Value2 { get; set; }
-		}
-
-		public class ReferenceFilter
-		{
-			public FilteringTypeReference FilteringType { get; set; }
-			public long? Value { get; set; }
-		}
-
-		public class BoolFilter
-		{
-			public FilteringTypeBool FilteringType { get; set; }
-			public bool? Value { get; set; }
-		}
 	}
 }

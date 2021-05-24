@@ -263,7 +263,47 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
 		public ActionResult GroupingObjectFinalize(GroupingObjectFinalize model)
 		{
-			return GroupingObjectFinalize();
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			if (model.IsNewAttribute)
+			{
+				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				if (idAttr == 0)
+				{
+					return SendErrorMessage("Не корректные данные для создания нового атрибута");
+				}
+
+				model.IdAttributeResult = idAttr;
+			}
+
+			long queueId;
+			try
+			{
+				var settings = model.CovertToGroupingSettings();
+				////TODO код для отладки
+				new SetPriorityGroupFinalProcess().StartProcess(new OMProcessType(), new OMQueue
+				{
+					Status_Code = Status.Added,
+					UserId = SRDSession.GetCurrentUserId(),
+					Parameters = settings.SerializeToXml()
+				}, new CancellationToken());
+				queueId = 0;
+				//queueId = SetPriorityGroupFinalProcess.AddProcessToQueue(settings);
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
+			}
+
+			return Json(new
+			{
+				success = true,
+				idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null,
+				QueueId = queueId
+			});
 		}
 
 		[HttpGet]
