@@ -14,6 +14,7 @@ using Core.Main.FileStorages;
 using System.IO;
 using Core.Register;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Web.Attributes;
 
 namespace KadOzenka.Web.Controllers
@@ -21,10 +22,12 @@ namespace KadOzenka.Web.Controllers
     public class KoBaseController : BaseController
 	{
         protected IGbuObjectService GbuObjectService { get; set; }
+        public IRegisterCacheWrapper RegisterCacheWrapper { get; set; }
 
-        public KoBaseController()
+		public KoBaseController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
         {
-	        GbuObjectService = new GbuObjectService();
+	        GbuObjectService = gbuObjectService;
+	        RegisterCacheWrapper = registerCacheWrapper;
         }
 
 
@@ -141,7 +144,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var gbuRegisterIds = GbuObjectService.GetGbuRegistersIds();
 
-	        return RegisterCache.Registers.Values.Where(x => gbuRegisterIds.Contains(x.Id))
+			return RegisterCacheWrapper.GetRegistersCache().Values.Where(x => gbuRegisterIds.Contains(x.Id))
 		        .Select(register =>
 		        {
 			        Func<RegisterAttribute, bool> attributeSearchExpression;
@@ -161,7 +164,7 @@ namespace KadOzenka.Web.Controllers
 			        {
 				        Value = Guid.NewGuid().ToString(),
 				        Text = register.Description,
-				        Items = RegisterCache.RegisterAttributes.Values
+				        Items = RegisterCacheWrapper.GetRegisterAttributesCache().Values
 					        .Where(attributeSearchExpression)
 					        .Select(attribute => new DropDownTreeItemModel
 					        {

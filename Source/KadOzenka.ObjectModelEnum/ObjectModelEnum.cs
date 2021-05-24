@@ -25,4759 +25,6 @@ namespace ObjectModel.Directory
         [EnumCode("1")]
         [ShortTitle("")]
         Cian = 1,
-		/// <summary>
-		/// Авито (2)
-		/// </summary>
-		[Description("Авито")]
-        [EnumCode("2")]
-        [ShortTitle("")]
-        Avito = 2,
-		/// <summary>
-		/// Яндекс недвижимость (3)
-		/// </summary>
-		[Description("Яндекс недвижимость")]
-        [EnumCode("3")]
-        [ShortTitle("")]
-        YandexProterty = 3,
-		/// <summary>
-		/// Росреестр (737)
-		/// </summary>
-		[Description("Росреестр")]
-        [EnumCode("4")]
-        [ShortTitle("")]
-        Rosreestr = 737,
-		/// <summary>
-		/// МРИЭЛТОР (1514)
-		/// </summary>
-		[Description("МРИЭЛТОР")]
-        [EnumCode("5")]
-        [ShortTitle("")]
-        MRIELTOR = 1514,
-		/// <summary>
-		/// cian.ru (1515)
-		/// </summary>
-		[Description("cian.ru")]
-        [EnumCode("6")]
-        [ShortTitle("")]
-        cianRu = 1515,
-		/// <summary>
-		/// AVITO.ru (1516)
-		/// </summary>
-		[Description("AVITO.ru")]
-        [EnumCode("7")]
-        [ShortTitle("")]
-        AVITORu = 1516,
-		/// <summary>
-		/// WinNER (белая зона) (1517)
-		/// </summary>
-		[Description("WinNER (белая зона)")]
-        [EnumCode("8")]
-        [ShortTitle("")]
-        WinNERBelayaZona = 1517,
-		/// <summary>
-		/// ЕГСН (1518)
-		/// </summary>
-		[Description("ЕГСН")]
-        [EnumCode("9")]
-        [ShortTitle("")]
-        EGSN = 1518,
-		/// <summary>
-		/// Прочие (1519)
-		/// </summary>
-		[Description("Прочие")]
-        [EnumCode("10")]
-        [ShortTitle("")]
-        Prochie = 1519,
-		/// <summary>
-		/// Sob.ru (1520)
-		/// </summary>
-		[Description("Sob.ru")]
-        [EnumCode("11")]
-        [ShortTitle("")]
-        SobRu = 1520,
-		/// <summary>
-		/// DucatGroup (1521)
-		/// </summary>
-		[Description("DucatGroup")]
-        [EnumCode("12")]
-        [ShortTitle("")]
-        DucatGroup = 1521,
-		/// <summary>
-		/// Яндекс (1522)
-		/// </summary>
-		[Description("Яндекс")]
-        [EnumCode("13")]
-        [ShortTitle("")]
-        Yandeks = 1522,
-		/// <summary>
-		/// ТВОЯ КВАРТИРА (1523)
-		/// </summary>
-		[Description("ТВОЯ КВАРТИРА")]
-        [EnumCode("14")]
-        [ShortTitle("")]
-        TVOYaKVARTIRA = 1523,
-		/// <summary>
-		/// Привлекательные (1524)
-		/// </summary>
-		[Description("Привлекательные")]
-        [EnumCode("15")]
-        [ShortTitle("")]
-        Privlekateljnie = 1524,
-		/// <summary>
-		/// EST-A-TET (1525)
-		/// </summary>
-		[Description("EST-A-TET")]
-        [EnumCode("16")]
-        [ShortTitle("")]
-        ESTATET = 1525,
-		/// <summary>
-		/// МГСН (1526)
-		/// </summary>
-		[Description("МГСН")]
-        [EnumCode("17")]
-        [ShortTitle("")]
-        MGSN = 1526,
-		/// <summary>
-		/// Подмосковные вечера (1527)
-		/// </summary>
-		[Description("Подмосковные вечера")]
-        [EnumCode("18")]
-        [ShortTitle("")]
-        PodmoskovnieVechera = 1527,
-		/// <summary>
-		/// ОМР (1528)
-		/// </summary>
-		[Description("ОМР")]
-        [EnumCode("19")]
-        [ShortTitle("")]
-        OMR = 1528,
-		/// <summary>
-		/// МИЭЛЬ офис Мытищи-Юг (1529)
-		/// </summary>
-		[Description("МИЭЛЬ офис Мытищи-Юг")]
-        [EnumCode("20")]
-        [ShortTitle("")]
-        MIELJOfisMitischiYug = 1529,
-		/// <summary>
-		/// Мой Дом (1530)
-		/// </summary>
-		[Description("Мой Дом")]
-        [EnumCode("21")]
-        [ShortTitle("")]
-        MojDom = 1530,
-		/// <summary>
-		/// Городское бюро недвижимости (1531)
-		/// </summary>
-		[Description("Городское бюро недвижимости")]
-        [EnumCode("22")]
-        [ShortTitle("")]
-        GorodskoeByuroNedvizhimosti = 1531,
-		/// <summary>
-		/// ТвинСервис (1532)
-		/// </summary>
-		[Description("ТвинСервис")]
-        [EnumCode("23")]
-        [ShortTitle("")]
-        TvinServis = 1532,
-		/// <summary>
-		/// Позитив ВТ (1533)
-		/// </summary>
-		[Description("Позитив ВТ")]
-        [EnumCode("24")]
-        [ShortTitle("")]
-        PozitivVT = 1533,
-		/// <summary>
-		/// Арбат Недвижимость (1534)
-		/// </summary>
-		[Description("Арбат Недвижимость")]
-        [EnumCode("25")]
-        [ShortTitle("")]
-        ArbatNedvizhimostj = 1534,
-		/// <summary>
-		/// Независимые агенты (1535)
-		/// </summary>
-		[Description("Независимые агенты")]
-        [EnumCode("26")]
-        [ShortTitle("")]
-        NezavisimieAgenti = 1535,
-		/// <summary>
-		/// Резидент (1536)
-		/// </summary>
-		[Description("Резидент")]
-        [EnumCode("27")]
-        [ShortTitle("")]
-        Rezident = 1536,
-		/// <summary>
-		/// МИЭЛЬ – Северо-Запад (1537)
-		/// </summary>
-		[Description("МИЭЛЬ – Северо-Запад")]
-        [EnumCode("28")]
-        [ShortTitle("")]
-        MIELJSeveroZapad = 1537,
-		/// <summary>
-		/// ОСТОЖЕНКА (1538)
-		/// </summary>
-		[Description("ОСТОЖЕНКА")]
-        [EnumCode("29")]
-        [ShortTitle("")]
-        OSTOZhENKA = 1538,
-		/// <summary>
-		/// Московский дом (1539)
-		/// </summary>
-		[Description("Московский дом")]
-        [EnumCode("30")]
-        [ShortTitle("")]
-        MoskovskijDom = 1539,
-		/// <summary>
-		/// Вера (1540)
-		/// </summary>
-		[Description("Вера")]
-        [EnumCode("31")]
-        [ShortTitle("")]
-        Vera = 1540,
-		/// <summary>
-		/// Руки (1541)
-		/// </summary>
-		[Description("Руки")]
-        [EnumCode("32")]
-        [ShortTitle("")]
-        Ruki = 1541,
-		/// <summary>
-		/// ДИПЛОМАТ (1542)
-		/// </summary>
-		[Description("ДИПЛОМАТ")]
-        [EnumCode("33")]
-        [ShortTitle("")]
-        DIPLOMAT = 1542,
-		/// <summary>
-		/// ГорЖилФонд (1543)
-		/// </summary>
-		[Description("ГорЖилФонд")]
-        [EnumCode("34")]
-        [ShortTitle("")]
-        GorZhilFond = 1543,
-		/// <summary>
-		/// РЕСПЕКТ (1544)
-		/// </summary>
-		[Description("РЕСПЕКТ")]
-        [EnumCode("35")]
-        [ShortTitle("")]
-        RESPEKT = 1544,
-		/// <summary>
-		/// МаксИнвест (1545)
-		/// </summary>
-		[Description("МаксИнвест")]
-        [EnumCode("36")]
-        [ShortTitle("")]
-        MaksInvest = 1545,
-		/// <summary>
-		/// Офис на Петровке (1546)
-		/// </summary>
-		[Description("Офис на Петровке")]
-        [EnumCode("37")]
-        [ShortTitle("")]
-        OfisNaPetrovke = 1546,
-		/// <summary>
-		/// Квадратный Метр (1547)
-		/// </summary>
-		[Description("Квадратный Метр")]
-        [EnumCode("38")]
-        [ShortTitle("")]
-        KvadratnijMetr = 1547,
-		/// <summary>
-		/// ПрофРиэлт (1548)
-		/// </summary>
-		[Description("ПрофРиэлт")]
-        [EnumCode("39")]
-        [ShortTitle("")]
-        ProfRielt = 1548,
-		/// <summary>
-		/// ЮСИН (1549)
-		/// </summary>
-		[Description("ЮСИН")]
-        [EnumCode("40")]
-        [ShortTitle("")]
-        YuSIN = 1549,
-		/// <summary>
-		/// Электронный риелтор (1550)
-		/// </summary>
-		[Description("Электронный риелтор")]
-        [EnumCode("41")]
-        [ShortTitle("")]
-        ElektronnijRieltor = 1550,
-		/// <summary>
-		/// Apple Real Estate (1551)
-		/// </summary>
-		[Description("Apple Real Estate")]
-        [EnumCode("42")]
-        [ShortTitle("")]
-        AppleRealEstate = 1551,
-		/// <summary>
-		/// ЧР Манаев Дмитрий (1552)
-		/// </summary>
-		[Description("ЧР Манаев Дмитрий")]
-        [EnumCode("43")]
-        [ShortTitle("")]
-        ChRManaevDmitrij = 1552,
-		/// <summary>
-		/// МаниТайм (1553)
-		/// </summary>
-		[Description("МаниТайм")]
-        [EnumCode("44")]
-        [ShortTitle("")]
-        ManiTajm = 1553,
-		/// <summary>
-		/// ОГРК (1554)
-		/// </summary>
-		[Description("ОГРК")]
-        [EnumCode("45")]
-        [ShortTitle("")]
-        OGRK = 1554,
-		/// <summary>
-		/// НОРТА-недвижимость (1555)
-		/// </summary>
-		[Description("НОРТА-недвижимость")]
-        [EnumCode("46")]
-        [ShortTitle("")]
-        NORTANedvizhimostj = 1555,
-		/// <summary>
-		/// Penny Lane Realty (1556)
-		/// </summary>
-		[Description("Penny Lane Realty")]
-        [EnumCode("47")]
-        [ShortTitle("")]
-        PennyLaneRealty = 1556,
-		/// <summary>
-		/// ПРОСТОР (1557)
-		/// </summary>
-		[Description("ПРОСТОР")]
-        [EnumCode("48")]
-        [ShortTitle("")]
-        PROSTOR = 1557,
-		/// <summary>
-		/// МИЦ-недвижимость (1558)
-		/// </summary>
-		[Description("МИЦ-недвижимость")]
-        [EnumCode("49")]
-        [ShortTitle("")]
-        MICNedvizhimostj = 1558,
-		/// <summary>
-		/// Династия-Недвижимость (1559)
-		/// </summary>
-		[Description("Династия-Недвижимость")]
-        [EnumCode("50")]
-        [ShortTitle("")]
-        DinastiyaNedvizhimostj = 1559,
-		/// <summary>
-		/// Капиталъ Недвижимость (1560)
-		/// </summary>
-		[Description("Капиталъ Недвижимость")]
-        [EnumCode("51")]
-        [ShortTitle("")]
-        KapitaljNedvizhimostj = 1560,
-		/// <summary>
-		/// Кутузовский проспект (1561)
-		/// </summary>
-		[Description("Кутузовский проспект")]
-        [EnumCode("52")]
-        [ShortTitle("")]
-        KutuzovskijProspekt = 1561,
-		/// <summary>
-		/// Престиж Инвест (1562)
-		/// </summary>
-		[Description("Престиж Инвест")]
-        [EnumCode("53")]
-        [ShortTitle("")]
-        PrestizhInvest = 1562,
-		/// <summary>
-		/// ХИРШ (1563)
-		/// </summary>
-		[Description("ХИРШ")]
-        [EnumCode("54")]
-        [ShortTitle("")]
-        HIRSh = 1563,
-		/// <summary>
-		/// ЭкоИнвестСтрой (1564)
-		/// </summary>
-		[Description("ЭкоИнвестСтрой")]
-        [EnumCode("55")]
-        [ShortTitle("")]
-        EkoInvestStroj = 1564,
-		/// <summary>
-		/// Покупатель (1565)
-		/// </summary>
-		[Description("Покупатель")]
-        [EnumCode("56")]
-        [ShortTitle("")]
-        Pokupatelj = 1565,
-		/// <summary>
-		/// KINS Group (1566)
-		/// </summary>
-		[Description("KINS Group")]
-        [EnumCode("57")]
-        [ShortTitle("")]
-        KINSGroup = 1566,
-		/// <summary>
-		/// Dwell (1567)
-		/// </summary>
-		[Description("Dwell")]
-        [EnumCode("58")]
-        [ShortTitle("")]
-        Dwell = 1567,
-		/// <summary>
-		/// МРБК (1568)
-		/// </summary>
-		[Description("МРБК")]
-        [EnumCode("59")]
-        [ShortTitle("")]
-        MRBK = 1568,
-		/// <summary>
-		/// Грейт Реалити (1569)
-		/// </summary>
-		[Description("Грейт Реалити")]
-        [EnumCode("60")]
-        [ShortTitle("")]
-        GrejtRealiti = 1569,
-		/// <summary>
-		/// БЕСТ-Недвижимость на Новослободской (1570)
-		/// </summary>
-		[Description("БЕСТ-Недвижимость на Новослободской")]
-        [EnumCode("61")]
-        [ShortTitle("")]
-        BESTNedvizhimostjNaNovoslobodskoj = 1570,
-		/// <summary>
-		/// Мегаполис-Сервис (1571)
-		/// </summary>
-		[Description("Мегаполис-Сервис")]
-        [EnumCode("62")]
-        [ShortTitle("")]
-        MegapolisServis = 1571,
-		/// <summary>
-		/// ФАБС (1572)
-		/// </summary>
-		[Description("ФАБС")]
-        [EnumCode("63")]
-        [ShortTitle("")]
-        FABS = 1572,
-		/// <summary>
-		/// МАЯК (1573)
-		/// </summary>
-		[Description("МАЯК")]
-        [EnumCode("64")]
-        [ShortTitle("")]
-        MAYaK = 1573,
-		/// <summary>
-		/// Миэль (1574)
-		/// </summary>
-		[Description("Миэль")]
-        [EnumCode("65")]
-        [ShortTitle("")]
-        Mielj = 1574,
-		/// <summary>
-		/// ЧР Канель Григорий (1575)
-		/// </summary>
-		[Description("ЧР Канель Григорий")]
-        [EnumCode("66")]
-        [ShortTitle("")]
-        ChRKaneljGrigorij = 1575,
-		/// <summary>
-		/// АРТ (1576)
-		/// </summary>
-		[Description("АРТ")]
-        [EnumCode("67")]
-        [ShortTitle("")]
-        ART = 1576,
-		/// <summary>
-		/// ПЕРЕСВЕТ-НЕДВИЖИМОСТЬ (1577)
-		/// </summary>
-		[Description("ПЕРЕСВЕТ-НЕДВИЖИМОСТЬ")]
-        [EnumCode("68")]
-        [ShortTitle("")]
-        PERESVETNEDVIZhIMOSTJ = 1577,
-		/// <summary>
-		/// Мегаполис ЭСТЕЙТ (1578)
-		/// </summary>
-		[Description("Мегаполис ЭСТЕЙТ")]
-        [EnumCode("69")]
-        [ShortTitle("")]
-        MegapolisESTEJT = 1578,
-		/// <summary>
-		/// Корал Групп (1579)
-		/// </summary>
-		[Description("Корал Групп")]
-        [EnumCode("70")]
-        [ShortTitle("")]
-        KoralGrupp = 1579,
-		/// <summary>
-		/// Риэлторы Москва (1580)
-		/// </summary>
-		[Description("Риэлторы Москва")]
-        [EnumCode("71")]
-        [ShortTitle("")]
-        RieltoriMoskva = 1580,
-		/// <summary>
-		/// Азбука Жилья (1581)
-		/// </summary>
-		[Description("Азбука Жилья")]
-        [EnumCode("72")]
-        [ShortTitle("")]
-        AzbukaZhiljya = 1581,
-		/// <summary>
-		/// Этаж (1582)
-		/// </summary>
-		[Description("Этаж")]
-        [EnumCode("73")]
-        [ShortTitle("")]
-        Etazh = 1582,
-		/// <summary>
-		/// Олимп (1583)
-		/// </summary>
-		[Description("Олимп")]
-        [EnumCode("74")]
-        [ShortTitle("")]
-        Olimp = 1583,
-		/// <summary>
-		/// ЧР Нечаев Александр (1584)
-		/// </summary>
-		[Description("ЧР Нечаев Александр")]
-        [EnumCode("75")]
-        [ShortTitle("")]
-        ChRNechaevAleksandr = 1584,
-		/// <summary>
-		/// ТРИУМФАЛЬНАЯ АРКА (1585)
-		/// </summary>
-		[Description("ТРИУМФАЛЬНАЯ АРКА")]
-        [EnumCode("76")]
-        [ShortTitle("")]
-        TRIUMFALJNAYaARKA = 1585,
-		/// <summary>
-		/// МИЭЛЬ-Усиевича (1586)
-		/// </summary>
-		[Description("МИЭЛЬ-Усиевича")]
-        [EnumCode("77")]
-        [ShortTitle("")]
-        MIELJUsievicha = 1586,
-		/// <summary>
-		/// ООО "МАКС-НЕДВИЖИМОСТЬ" (1587)
-		/// </summary>
-		[Description("ООО \"МАКС-НЕДВИЖИМОСТЬ\"")]
-        [EnumCode("78")]
-        [ShortTitle("")]
-        OOOMAKSNEDVIZhIMOSTJ = 1587,
-		/// <summary>
-		/// ЮГО-ЗАПАД CITY (1588)
-		/// </summary>
-		[Description("ЮГО-ЗАПАД CITY")]
-        [EnumCode("79")]
-        [ShortTitle("")]
-        YuGOZAPADCITY = 1588,
-		/// <summary>
-		/// Welhome (1589)
-		/// </summary>
-		[Description("Welhome")]
-        [EnumCode("80")]
-        [ShortTitle("")]
-        Welhome = 1589,
-		/// <summary>
-		/// WinNER (зелёная зона) (1590)
-		/// </summary>
-		[Description("WinNER (зелёная зона)")]
-        [EnumCode("81")]
-        [ShortTitle("")]
-        WinNERZelyonayaZona = 1590,
-		/// <summary>
-		/// Дорогой Город (1591)
-		/// </summary>
-		[Description("Дорогой Город")]
-        [EnumCode("82")]
-        [ShortTitle("")]
-        DorogojGorod = 1591,
-		/// <summary>
-		/// Контакт-Недвижимость (1592)
-		/// </summary>
-		[Description("Контакт-Недвижимость")]
-        [EnumCode("83")]
-        [ShortTitle("")]
-        KontaktNedvizhimostj = 1592,
-		/// <summary>
-		/// ГРИВНА (1593)
-		/// </summary>
-		[Description("ГРИВНА")]
-        [EnumCode("84")]
-        [ShortTitle("")]
-        GRIVNA = 1593,
-		/// <summary>
-		/// БЕСТ-Недвижимость на Баррикадной (1594)
-		/// </summary>
-		[Description("БЕСТ-Недвижимость на Баррикадной")]
-        [EnumCode("85")]
-        [ShortTitle("")]
-        BESTNedvizhimostjNaBarrikadnoj = 1594,
-		/// <summary>
-		/// TVK REALTY (1595)
-		/// </summary>
-		[Description("TVK REALTY")]
-        [EnumCode("86")]
-        [ShortTitle("")]
-        TVKREALTY = 1595,
-		/// <summary>
-		/// МГСН - Проспект Мира (1596)
-		/// </summary>
-		[Description("МГСН - Проспект Мира")]
-        [EnumCode("87")]
-        [ShortTitle("")]
-        MGSNProspektMira = 1596,
-		/// <summary>
-		/// Фаворит недвижимость (1597)
-		/// </summary>
-		[Description("Фаворит недвижимость")]
-        [EnumCode("88")]
-        [ShortTitle("")]
-        FavoritNedvizhimostj = 1597,
-		/// <summary>
-		/// Кремлёвские Ключи (1598)
-		/// </summary>
-		[Description("Кремлёвские Ключи")]
-        [EnumCode("89")]
-        [ShortTitle("")]
-        KremlyovskieKlyuchi = 1598,
-		/// <summary>
-		/// НВС (1599)
-		/// </summary>
-		[Description("НВС")]
-        [EnumCode("90")]
-        [ShortTitle("")]
-        NVS = 1599,
-		/// <summary>
-		/// Ваш партнер (1600)
-		/// </summary>
-		[Description("Ваш партнер")]
-        [EnumCode("91")]
-        [ShortTitle("")]
-        VashPartner = 1600,
-		/// <summary>
-		/// ЧР Филиппова Лилия (1601)
-		/// </summary>
-		[Description("ЧР Филиппова Лилия")]
-        [EnumCode("92")]
-        [ShortTitle("")]
-        ChRFilippovaLiliya = 1601,
-		/// <summary>
-		/// Миэль на Киевской (1602)
-		/// </summary>
-		[Description("Миэль на Киевской")]
-        [EnumCode("93")]
-        [ShortTitle("")]
-        MieljNaKievskoj = 1602,
-		/// <summary>
-		/// Dream Realty (1603)
-		/// </summary>
-		[Description("Dream Realty")]
-        [EnumCode("94")]
-        [ShortTitle("")]
-        DreamRealty = 1603,
-		/// <summary>
-		/// Realtor1 (1604)
-		/// </summary>
-		[Description("Realtor1")]
-        [EnumCode("95")]
-        [ShortTitle("")]
-        Realtor1 = 1604,
-		/// <summary>
-		/// Универсальные риэлторы (1605)
-		/// </summary>
-		[Description("Универсальные риэлторы")]
-        [EnumCode("96")]
-        [ShortTitle("")]
-        UniversaljnieRieltori = 1605,
-		/// <summary>
-		/// Родные Пенаты (1606)
-		/// </summary>
-		[Description("Родные Пенаты")]
-        [EnumCode("97")]
-        [ShortTitle("")]
-        RodniePenati = 1606,
-		/// <summary>
-		/// Моя Столица (1607)
-		/// </summary>
-		[Description("Моя Столица")]
-        [EnumCode("98")]
-        [ShortTitle("")]
-        MoyaStolica = 1607,
-		/// <summary>
-		/// Диамантъ (1608)
-		/// </summary>
-		[Description("Диамантъ")]
-        [EnumCode("99")]
-        [ShortTitle("")]
-        Diamantj = 1608,
-		/// <summary>
-		/// Риэлти-Плаза (1609)
-		/// </summary>
-		[Description("Риэлти-Плаза")]
-        [EnumCode("100")]
-        [ShortTitle("")]
-        RieltiPlaza = 1609,
-		/// <summary>
-		/// Профессиональные Риэлторы (1610)
-		/// </summary>
-		[Description("Профессиональные Риэлторы")]
-        [EnumCode("101")]
-        [ShortTitle("")]
-        ProfessionaljnieRieltori = 1610,
-		/// <summary>
-		/// Миэль Офис Сущевский (1611)
-		/// </summary>
-		[Description("Миэль Офис Сущевский")]
-        [EnumCode("102")]
-        [ShortTitle("")]
-        MieljOfisSuschevskij = 1611,
-		/// <summary>
-		/// Зарядье (1612)
-		/// </summary>
-		[Description("Зарядье")]
-        [EnumCode("103")]
-        [ShortTitle("")]
-        Zaryadje = 1612,
-		/// <summary>
-		/// Московские Огни (1613)
-		/// </summary>
-		[Description("Московские Огни")]
-        [EnumCode("104")]
-        [ShortTitle("")]
-        MoskovskieOgni = 1613,
-		/// <summary>
-		/// Партнерская Группа (1614)
-		/// </summary>
-		[Description("Партнерская Группа")]
-        [EnumCode("105")]
-        [ShortTitle("")]
-        PartnerskayaGruppa = 1614,
-		/// <summary>
-		/// ОКТАВА-НЕДВИЖИМОСТЬ (1615)
-		/// </summary>
-		[Description("ОКТАВА-НЕДВИЖИМОСТЬ")]
-        [EnumCode("106")]
-        [ShortTitle("")]
-        OKTAVANEDVIZhIMOSTJ = 1615,
-		/// <summary>
-		/// БЕСТ-Недвижимость офис ЦЗН (1616)
-		/// </summary>
-		[Description("БЕСТ-Недвижимость офис ЦЗН")]
-        [EnumCode("107")]
-        [ShortTitle("")]
-        BESTNedvizhimostjOfisCZN = 1616,
-		/// <summary>
-		/// МЕЛ (1617)
-		/// </summary>
-		[Description("МЕЛ")]
-        [EnumCode("108")]
-        [ShortTitle("")]
-        MEL = 1617,
-		/// <summary>
-		/// ЮБН (1618)
-		/// </summary>
-		[Description("ЮБН")]
-        [EnumCode("109")]
-        [ShortTitle("")]
-        YuBN = 1618,
-		/// <summary>
-		/// ЧР Мешкова Наталья (1619)
-		/// </summary>
-		[Description("ЧР Мешкова Наталья")]
-        [EnumCode("110")]
-        [ShortTitle("")]
-        ChRMeshkovaNataljya = 1619,
-		/// <summary>
-		/// Квартирный вопрос (1620)
-		/// </summary>
-		[Description("Квартирный вопрос")]
-        [EnumCode("111")]
-        [ShortTitle("")]
-        KvartirnijVopros = 1620,
-		/// <summary>
-		/// Дом.ру (1621)
-		/// </summary>
-		[Description("Дом.ру")]
-        [EnumCode("112")]
-        [ShortTitle("")]
-        DomRu = 1621,
-		/// <summary>
-		/// ЧР Жукова Светлана Валентиновна (1622)
-		/// </summary>
-		[Description("ЧР Жукова Светлана Валентиновна")]
-        [EnumCode("113")]
-        [ShortTitle("")]
-        ChRZhukovaSvetlanaValentinovna = 1622,
-		/// <summary>
-		/// ОМЕГА-ЭСТЕЙТ (1623)
-		/// </summary>
-		[Description("ОМЕГА-ЭСТЕЙТ")]
-        [EnumCode("114")]
-        [ShortTitle("")]
-        OMEGAESTEJT = 1623,
-		/// <summary>
-		/// КВАРТАЛ 3А (1624)
-		/// </summary>
-		[Description("КВАРТАЛ 3А")]
-        [EnumCode("115")]
-        [ShortTitle("")]
-        KVARTAL3A = 1624,
-		/// <summary>
-		/// Партнеры и К (1625)
-		/// </summary>
-		[Description("Партнеры и К")]
-        [EnumCode("116")]
-        [ShortTitle("")]
-        PartneriIK = 1625,
-		/// <summary>
-		/// Хороший дом (1626)
-		/// </summary>
-		[Description("Хороший дом")]
-        [EnumCode("117")]
-        [ShortTitle("")]
-        HoroshijDom = 1626,
-		/// <summary>
-		/// Панорама Города (1627)
-		/// </summary>
-		[Description("Панорама Города")]
-        [EnumCode("118")]
-        [ShortTitle("")]
-        PanoramaGoroda = 1627,
-		/// <summary>
-		/// ЧР Райко Наталья (1628)
-		/// </summary>
-		[Description("ЧР Райко Наталья")]
-        [EnumCode("119")]
-        [ShortTitle("")]
-        ChRRajkoNataljya = 1628,
-		/// <summary>
-		/// Финанс-Недвижимость (1629)
-		/// </summary>
-		[Description("Финанс-Недвижимость")]
-        [EnumCode("120")]
-        [ShortTitle("")]
-        FinansNedvizhimostj = 1629,
-		/// <summary>
-		/// Три желания (1630)
-		/// </summary>
-		[Description("Три желания")]
-        [EnumCode("121")]
-        [ShortTitle("")]
-        TriZhelaniya = 1630,
-		/// <summary>
-		/// Agent Эстейт (1631)
-		/// </summary>
-		[Description("Agent Эстейт")]
-        [EnumCode("122")]
-        [ShortTitle("")]
-        AgentEstejt = 1631,
-		/// <summary>
-		/// Огни города (1632)
-		/// </summary>
-		[Description("Огни города")]
-        [EnumCode("123")]
-        [ShortTitle("")]
-        OgniGoroda = 1632,
-		/// <summary>
-		/// ЧР Королёва Оксана (1633)
-		/// </summary>
-		[Description("ЧР Королёва Оксана")]
-        [EnumCode("124")]
-        [ShortTitle("")]
-        ChRKorolyovaOksana = 1633,
-		/// <summary>
-		/// ОЛЛФЛЭТ (1634)
-		/// </summary>
-		[Description("ОЛЛФЛЭТ")]
-        [EnumCode("125")]
-        [ShortTitle("")]
-        OLLFLET = 1634,
-		/// <summary>
-		/// EstateLiga (1635)
-		/// </summary>
-		[Description("EstateLiga")]
-        [EnumCode("126")]
-        [ShortTitle("")]
-        EstateLiga = 1635,
-		/// <summary>
-		/// Арсенал Холдинг (1636)
-		/// </summary>
-		[Description("Арсенал Холдинг")]
-        [EnumCode("127")]
-        [ShortTitle("")]
-        ArsenalHolding = 1636,
-		/// <summary>
-		/// Белый Городъ (1637)
-		/// </summary>
-		[Description("Белый Городъ")]
-        [EnumCode("128")]
-        [ShortTitle("")]
-        BelijGorodj = 1637,
-		/// <summary>
-		/// Гранд Плюс (1638)
-		/// </summary>
-		[Description("Гранд Плюс")]
-        [EnumCode("129")]
-        [ShortTitle("")]
-        GrandPlyus = 1638,
-		/// <summary>
-		/// Городская Служба Недвижимости (1639)
-		/// </summary>
-		[Description("Городская Служба Недвижимости")]
-        [EnumCode("130")]
-        [ShortTitle("")]
-        GorodskayaSluzhbaNedvizhimosti = 1639,
-		/// <summary>
-		/// Статус (1640)
-		/// </summary>
-		[Description("Статус")]
-        [EnumCode("131")]
-        [ShortTitle("")]
-        Status = 1640,
-		/// <summary>
-		/// МСК Недвижимость (1641)
-		/// </summary>
-		[Description("МСК Недвижимость")]
-        [EnumCode("132")]
-        [ShortTitle("")]
-        MSKNedvizhimostj = 1641,
-		/// <summary>
-		/// i-Realty (1642)
-		/// </summary>
-		[Description("i-Realty")]
-        [EnumCode("133")]
-        [ShortTitle("")]
-        iRealty = 1642,
-		/// <summary>
-		/// СЕЛЕНА (1643)
-		/// </summary>
-		[Description("СЕЛЕНА")]
-        [EnumCode("134")]
-        [ShortTitle("")]
-        SELENA = 1643,
-		/// <summary>
-		/// HOME SPIRIT (1644)
-		/// </summary>
-		[Description("HOME SPIRIT")]
-        [EnumCode("135")]
-        [ShortTitle("")]
-        HOMESPIRIT = 1644,
-		/// <summary>
-		/// ЧР Иванов Антон (1645)
-		/// </summary>
-		[Description("ЧР Иванов Антон")]
-        [EnumCode("136")]
-        [ShortTitle("")]
-        ChRIvanovAnton = 1645,
-		/// <summary>
-		/// Миэль-Пречистенка (1646)
-		/// </summary>
-		[Description("Миэль-Пречистенка")]
-        [EnumCode("137")]
-        [ShortTitle("")]
-        MieljPrechistenka = 1646,
-		/// <summary>
-		/// Миэль на Маяковской (1647)
-		/// </summary>
-		[Description("Миэль на Маяковской")]
-        [EnumCode("138")]
-        [ShortTitle("")]
-        MieljNaMayakovskoj = 1647,
-		/// <summary>
-		/// ПрофСервис (1648)
-		/// </summary>
-		[Description("ПрофСервис")]
-        [EnumCode("139")]
-        [ShortTitle("")]
-        ProfServis = 1648,
-		/// <summary>
-		/// ИП Ожерельева (1649)
-		/// </summary>
-		[Description("ИП Ожерельева")]
-        [EnumCode("140")]
-        [ShortTitle("")]
-        IPOzhereljeva = 1649,
-		/// <summary>
-		/// КОНСУЛЬТАНТ (1650)
-		/// </summary>
-		[Description("КОНСУЛЬТАНТ")]
-        [EnumCode("141")]
-        [ShortTitle("")]
-        KONSULJTANT = 1650,
-		/// <summary>
-		/// ЖИЛКОМ (1651)
-		/// </summary>
-		[Description("ЖИЛКОМ")]
-        [EnumCode("142")]
-        [ShortTitle("")]
-        ZhILKOM = 1651,
-		/// <summary>
-		/// ФАВОРИТ групп (1652)
-		/// </summary>
-		[Description("ФАВОРИТ групп")]
-        [EnumCode("143")]
-        [ShortTitle("")]
-        FAVORITGrupp = 1652,
-		/// <summary>
-		/// Вертикаль (1653)
-		/// </summary>
-		[Description("Вертикаль")]
-        [EnumCode("144")]
-        [ShortTitle("")]
-        Vertikalj = 1653,
-		/// <summary>
-		/// Миэль на Баррикадной (1654)
-		/// </summary>
-		[Description("Миэль на Баррикадной")]
-        [EnumCode("145")]
-        [ShortTitle("")]
-        MieljNaBarrikadnoj = 1654,
-		/// <summary>
-		/// Группа компаний Столица (1655)
-		/// </summary>
-		[Description("Группа компаний Столица")]
-        [EnumCode("146")]
-        [ShortTitle("")]
-        GruppaKompanijStolica = 1655,
-		/// <summary>
-		/// CENTURY 21 Панорама Риэлти (1656)
-		/// </summary>
-		[Description("CENTURY 21 Панорама Риэлти")]
-        [EnumCode("147")]
-        [ShortTitle("")]
-        CENTURY21PanoramaRielti = 1656,
-		/// <summary>
-		/// МАН (1657)
-		/// </summary>
-		[Description("МАН")]
-        [EnumCode("148")]
-        [ShortTitle("")]
-        MAN = 1657,
-		/// <summary>
-		/// ЧР Лупичева Юлия (1658)
-		/// </summary>
-		[Description("ЧР Лупичева Юлия")]
-        [EnumCode("149")]
-        [ShortTitle("")]
-        ChRLupichevaYuliya = 1658,
-		/// <summary>
-		/// КредитПлюс (1659)
-		/// </summary>
-		[Description("КредитПлюс")]
-        [EnumCode("150")]
-        [ShortTitle("")]
-        KreditPlyus = 1659,
-		/// <summary>
-		/// РИЗОЛИТ (1660)
-		/// </summary>
-		[Description("РИЗОЛИТ")]
-        [EnumCode("151")]
-        [ShortTitle("")]
-        RIZOLIT = 1660,
-		/// <summary>
-		/// СРД (1661)
-		/// </summary>
-		[Description("СРД")]
-        [EnumCode("152")]
-        [ShortTitle("")]
-        SRD = 1661,
-		/// <summary>
-		/// Апекс Недвижимость (1662)
-		/// </summary>
-		[Description("Апекс Недвижимость")]
-        [EnumCode("153")]
-        [ShortTitle("")]
-        ApeksNedvizhimostj = 1662,
-		/// <summary>
-		/// Первая риэлторская компания (1663)
-		/// </summary>
-		[Description("Первая риэлторская компания")]
-        [EnumCode("154")]
-        [ShortTitle("")]
-        PervayaRieltorskayaKompaniya = 1663,
-		/// <summary>
-		/// ЗАМОСКВОРЕЧЬЕ РИЭЛТИ (1664)
-		/// </summary>
-		[Description("ЗАМОСКВОРЕЧЬЕ РИЭЛТИ")]
-        [EnumCode("155")]
-        [ShortTitle("")]
-        ZAMOSKVOREChJERIELTI = 1664,
-		/// <summary>
-		/// Комфорт-5 (1665)
-		/// </summary>
-		[Description("Комфорт-5")]
-        [EnumCode("156")]
-        [ShortTitle("")]
-        Komfort5 = 1665,
-		/// <summary>
-		/// Наша Держава (1666)
-		/// </summary>
-		[Description("Наша Держава")]
-        [EnumCode("157")]
-        [ShortTitle("")]
-        NashaDerzhava = 1666,
-		/// <summary>
-		/// ЧР Михайлов Андрей (1667)
-		/// </summary>
-		[Description("ЧР Михайлов Андрей")]
-        [EnumCode("158")]
-        [ShortTitle("")]
-        ChRMihajlovAndrej = 1667,
-		/// <summary>
-		/// Квартирант (1668)
-		/// </summary>
-		[Description("Квартирант")]
-        [EnumCode("159")]
-        [ShortTitle("")]
-        Kvartirant = 1668,
-		/// <summary>
-		/// ДомЭль (1669)
-		/// </summary>
-		[Description("ДомЭль")]
-        [EnumCode("160")]
-        [ShortTitle("")]
-        DomElj = 1669,
-		/// <summary>
-		/// Арманд Риэлти (1670)
-		/// </summary>
-		[Description("Арманд Риэлти")]
-        [EnumCode("161")]
-        [ShortTitle("")]
-        ArmandRielti = 1670,
-		/// <summary>
-		/// ЧР Круглов Роман (1671)
-		/// </summary>
-		[Description("ЧР Круглов Роман")]
-        [EnumCode("162")]
-        [ShortTitle("")]
-        ChRKruglovRoman = 1671,
-		/// <summary>
-		/// Eurodoma (1672)
-		/// </summary>
-		[Description("Eurodoma")]
-        [EnumCode("163")]
-        [ShortTitle("")]
-        Eurodoma = 1672,
-		/// <summary>
-		/// Savills (1673)
-		/// </summary>
-		[Description("Savills")]
-        [EnumCode("164")]
-        [ShortTitle("")]
-        Savills = 1673,
-		/// <summary>
-		/// Лювикол (1674)
-		/// </summary>
-		[Description("Лювикол")]
-        [EnumCode("165")]
-        [ShortTitle("")]
-        Lyuvikol = 1674,
-		/// <summary>
-		/// ЧР Митасова Марина (1675)
-		/// </summary>
-		[Description("ЧР Митасова Марина")]
-        [EnumCode("166")]
-        [ShortTitle("")]
-        ChRMitasovaMarina = 1675,
-		/// <summary>
-		/// Планета Недвижимости (1676)
-		/// </summary>
-		[Description("Планета Недвижимости")]
-        [EnumCode("167")]
-        [ShortTitle("")]
-        PlanetaNedvizhimosti = 1676,
-		/// <summary>
-		/// ЧР Лункин Вадим (1677)
-		/// </summary>
-		[Description("ЧР Лункин Вадим")]
-        [EnumCode("168")]
-        [ShortTitle("")]
-        ChRLunkinVadim = 1677,
-		/// <summary>
-		/// Центральное (1678)
-		/// </summary>
-		[Description("Центральное")]
-        [EnumCode("169")]
-        [ShortTitle("")]
-        Centraljnoe = 1678,
-		/// <summary>
-		/// ХАМОВНИКИ (1679)
-		/// </summary>
-		[Description("ХАМОВНИКИ")]
-        [EnumCode("170")]
-        [ShortTitle("")]
-        HAMOVNIKI = 1679,
-		/// <summary>
-		/// Knight Frank (1680)
-		/// </summary>
-		[Description("Knight Frank")]
-        [EnumCode("171")]
-        [ShortTitle("")]
-        KnightFrank = 1680,
-		/// <summary>
-		/// ЧР Бурдонская Светлана (1681)
-		/// </summary>
-		[Description("ЧР Бурдонская Светлана")]
-        [EnumCode("172")]
-        [ShortTitle("")]
-        ChRBurdonskayaSvetlana = 1681,
-		/// <summary>
-		/// Деловой центр жилья (1682)
-		/// </summary>
-		[Description("Деловой центр жилья")]
-        [EnumCode("173")]
-        [ShortTitle("")]
-        DelovojCentrZhiljya = 1682,
-		/// <summary>
-		/// Сообщество риэлторов (1683)
-		/// </summary>
-		[Description("Сообщество риэлторов")]
-        [EnumCode("174")]
-        [ShortTitle("")]
-        SoobschestvoRieltorov = 1683,
-		/// <summary>
-		/// Тихонова Марина Алексеевна (1684)
-		/// </summary>
-		[Description("Тихонова Марина Алексеевна")]
-        [EnumCode("175")]
-        [ShortTitle("")]
-        TihonovaMarinaAlekseevna = 1684,
-		/// <summary>
-		/// ГБН (1685)
-		/// </summary>
-		[Description("ГБН")]
-        [EnumCode("176")]
-        [ShortTitle("")]
-        GBN = 1685,
-		/// <summary>
-		/// КРАММ (1686)
-		/// </summary>
-		[Description("КРАММ")]
-        [EnumCode("177")]
-        [ShortTitle("")]
-        KRAMM = 1686,
-		/// <summary>
-		/// ЧР Шмелев Александр (1687)
-		/// </summary>
-		[Description("ЧР Шмелев Александр")]
-        [EnumCode("178")]
-        [ShortTitle("")]
-        ChRShmelevAleksandr = 1687,
-		/// <summary>
-		/// АКРУС (1688)
-		/// </summary>
-		[Description("АКРУС")]
-        [EnumCode("179")]
-        [ShortTitle("")]
-        AKRUS = 1688,
-		/// <summary>
-		/// МГСН-отделение Тверское (1689)
-		/// </summary>
-		[Description("МГСН-отделение Тверское")]
-        [EnumCode("180")]
-        [ShortTitle("")]
-        MGSNOtdelenieTverskoe = 1689,
-		/// <summary>
-		/// Районный Центр Недвижимости (1690)
-		/// </summary>
-		[Description("Районный Центр Недвижимости")]
-        [EnumCode("181")]
-        [ShortTitle("")]
-        RajonnijCentrNedvizhimosti = 1690,
-		/// <summary>
-		/// Мои Столицы (1691)
-		/// </summary>
-		[Description("Мои Столицы")]
-        [EnumCode("182")]
-        [ShortTitle("")]
-        MoiStolici = 1691,
-		/// <summary>
-		/// ПРАВОВЫЕ ГАРАНТИИ (1692)
-		/// </summary>
-		[Description("ПРАВОВЫЕ ГАРАНТИИ")]
-        [EnumCode("183")]
-        [ShortTitle("")]
-        PRAVOVIEGARANTII = 1692,
-		/// <summary>
-		/// Южный Дом (1693)
-		/// </summary>
-		[Description("Южный Дом")]
-        [EnumCode("184")]
-        [ShortTitle("")]
-        YuzhnijDom = 1693,
-		/// <summary>
-		/// СВРК-Недвижимость (1694)
-		/// </summary>
-		[Description("СВРК-Недвижимость")]
-        [EnumCode("185")]
-        [ShortTitle("")]
-        SVRKNedvizhimostj = 1694,
-		/// <summary>
-		/// ЧР Кусакина Лариса Ильинична (1695)
-		/// </summary>
-		[Description("ЧР Кусакина Лариса Ильинична")]
-        [EnumCode("186")]
-        [ShortTitle("")]
-        ChRKusakinaLarisaIljinichna = 1695,
-		/// <summary>
-		/// ГДН (1696)
-		/// </summary>
-		[Description("ГДН")]
-        [EnumCode("187")]
-        [ShortTitle("")]
-        GDN = 1696,
-		/// <summary>
-		/// МИЭЛЬ на Домодедовской (1697)
-		/// </summary>
-		[Description("МИЭЛЬ на Домодедовской")]
-        [EnumCode("188")]
-        [ShortTitle("")]
-        MIELJNaDomodedovskoj = 1697,
-		/// <summary>
-		/// ЮрБизнес-Недвижимость (1698)
-		/// </summary>
-		[Description("ЮрБизнес-Недвижимость")]
-        [EnumCode("189")]
-        [ShortTitle("")]
-        YurBiznesNedvizhimostj = 1698,
-		/// <summary>
-		/// МОСИНТЕЛСЕРВИС (1699)
-		/// </summary>
-		[Description("МОСИНТЕЛСЕРВИС")]
-        [EnumCode("190")]
-        [ShortTitle("")]
-        MOSINTELSERVIS = 1699,
-		/// <summary>
-		/// Миэль Волжский (1700)
-		/// </summary>
-		[Description("Миэль Волжский")]
-        [EnumCode("191")]
-        [ShortTitle("")]
-        MieljVolzhskij = 1700,
-		/// <summary>
-		/// ЧР Мишенин Андрей Борисович (1701)
-		/// </summary>
-		[Description("ЧР Мишенин Андрей Борисович")]
-        [EnumCode("192")]
-        [ShortTitle("")]
-        ChRMisheninAndrejBorisovich = 1701,
-		/// <summary>
-		/// ЖИЛОН (1702)
-		/// </summary>
-		[Description("ЖИЛОН")]
-        [EnumCode("193")]
-        [ShortTitle("")]
-        ZhILON = 1702,
-		/// <summary>
-		/// Недвижимость России (1703)
-		/// </summary>
-		[Description("Недвижимость России")]
-        [EnumCode("194")]
-        [ShortTitle("")]
-        NedvizhimostjRossii = 1703,
-		/// <summary>
-		/// ЧР Базаров Андрей Михайлович (1704)
-		/// </summary>
-		[Description("ЧР Базаров Андрей Михайлович")]
-        [EnumCode("195")]
-        [ShortTitle("")]
-        ChRBazarovAndrejMihajlovich = 1704,
-		/// <summary>
-		/// МИК инвест (1705)
-		/// </summary>
-		[Description("МИК инвест")]
-        [EnumCode("196")]
-        [ShortTitle("")]
-        MIKInvest = 1705,
-		/// <summary>
-		/// МИЭЛЬ (1706)
-		/// </summary>
-		[Description("МИЭЛЬ")]
-        [EnumCode("197")]
-        [ShortTitle("")]
-        MIELJ = 1706,
-		/// <summary>
-		/// Недвижимость и аукцион (1707)
-		/// </summary>
-		[Description("Недвижимость и аукцион")]
-        [EnumCode("198")]
-        [ShortTitle("")]
-        NedvizhimostjIAukcion = 1707,
-		/// <summary>
-		/// Demetra-development (1708)
-		/// </summary>
-		[Description("Demetra-development")]
-        [EnumCode("199")]
-        [ShortTitle("")]
-        DemetraDevelopment = 1708,
-		/// <summary>
-		/// ЧР Гриценко Анна (1709)
-		/// </summary>
-		[Description("ЧР Гриценко Анна")]
-        [EnumCode("200")]
-        [ShortTitle("")]
-        ChRGricenkoAnna = 1709,
-		/// <summary>
-		/// ЧР Уварова Валерия Александровна (1710)
-		/// </summary>
-		[Description("ЧР Уварова Валерия Александровна")]
-        [EnumCode("201")]
-        [ShortTitle("")]
-        ChRUvarovaValeriyaAleksandrovna = 1710,
-		/// <summary>
-		/// Квартирное Бюро Контур (1711)
-		/// </summary>
-		[Description("Квартирное Бюро Контур")]
-        [EnumCode("202")]
-        [ShortTitle("")]
-        KvartirnoeByuroKontur = 1711,
-		/// <summary>
-		/// ЧР Кравчук Кирилл (1712)
-		/// </summary>
-		[Description("ЧР Кравчук Кирилл")]
-        [EnumCode("203")]
-        [ShortTitle("")]
-        ChRKravchukKirill = 1712,
-		/// <summary>
-		/// Каталог Недвижимости (1713)
-		/// </summary>
-		[Description("Каталог Недвижимости")]
-        [EnumCode("204")]
-        [ShortTitle("")]
-        KatalogNedvizhimosti = 1713,
-		/// <summary>
-		/// ЧР Клюева Ольга Юрьевна (1714)
-		/// </summary>
-		[Description("ЧР Клюева Ольга Юрьевна")]
-        [EnumCode("205")]
-        [ShortTitle("")]
-        ChRKlyuevaOljgaYurjevna = 1714,
-		/// <summary>
-		/// Мира (1715)
-		/// </summary>
-		[Description("Мира")]
-        [EnumCode("206")]
-        [ShortTitle("")]
-        Mira = 1715,
-		/// <summary>
-		/// Kors (1716)
-		/// </summary>
-		[Description("Kors")]
-        [EnumCode("207")]
-        [ShortTitle("")]
-        Kors = 1716,
-		/// <summary>
-		/// Дмитриева Наталья Вадимовна (1717)
-		/// </summary>
-		[Description("Дмитриева Наталья Вадимовна")]
-        [EnumCode("208")]
-        [ShortTitle("")]
-        DmitrievaNataljyaVadimovna = 1717,
-		/// <summary>
-		/// Ковчег (1718)
-		/// </summary>
-		[Description("Ковчег")]
-        [EnumCode("209")]
-        [ShortTitle("")]
-        Kovcheg = 1718,
-		/// <summary>
-		/// Дрим Хаус (1719)
-		/// </summary>
-		[Description("Дрим Хаус")]
-        [EnumCode("210")]
-        [ShortTitle("")]
-        DrimHaus = 1719,
-		/// <summary>
-		/// ЧР Карпова Мира (1720)
-		/// </summary>
-		[Description("ЧР Карпова Мира")]
-        [EnumCode("211")]
-        [ShortTitle("")]
-        ChRKarpovaMira = 1720,
-		/// <summary>
-		/// РЕКОМ (1721)
-		/// </summary>
-		[Description("РЕКОМ")]
-        [EnumCode("212")]
-        [ShortTitle("")]
-        REKOM = 1721,
-		/// <summary>
-		/// АГРО-ВИД (1722)
-		/// </summary>
-		[Description("АГРО-ВИД")]
-        [EnumCode("213")]
-        [ShortTitle("")]
-        AGROVID = 1722,
-		/// <summary>
-		/// ЧЕТЫРЕ УГЛА (1723)
-		/// </summary>
-		[Description("ЧЕТЫРЕ УГЛА")]
-        [EnumCode("214")]
-        [ShortTitle("")]
-        ChETIREUGLA = 1723,
-		/// <summary>
-		/// ЧР Мельников Владимир (1724)
-		/// </summary>
-		[Description("ЧР Мельников Владимир")]
-        [EnumCode("215")]
-        [ShortTitle("")]
-        ChRMeljnikovVladimir = 1724,
-		/// <summary>
-		/// Офис Строгинская пойма (1725)
-		/// </summary>
-		[Description("Офис Строгинская пойма")]
-        [EnumCode("216")]
-        [ShortTitle("")]
-        OfisStroginskayaPojma = 1725,
-		/// <summary>
-		/// ЧР Бурковская Ульяна (1726)
-		/// </summary>
-		[Description("ЧР Бурковская Ульяна")]
-        [EnumCode("217")]
-        [ShortTitle("")]
-        ChRBurkovskayaUljyana = 1726,
-		/// <summary>
-		/// МИЭЛЬ Офис на Кантемировской (1727)
-		/// </summary>
-		[Description("МИЭЛЬ Офис на Кантемировской")]
-        [EnumCode("218")]
-        [ShortTitle("")]
-        MIELJOfisNaKantemirovskoj = 1727,
-		/// <summary>
-		/// ЧР Колобов Валерий (1728)
-		/// </summary>
-		[Description("ЧР Колобов Валерий")]
-        [EnumCode("219")]
-        [ShortTitle("")]
-        ChRKolobovValerij = 1728,
-		/// <summary>
-		/// Путеводная звезда (1729)
-		/// </summary>
-		[Description("Путеводная звезда")]
-        [EnumCode("220")]
-        [ShortTitle("")]
-        PutevodnayaZvezda = 1729,
-		/// <summary>
-		/// Соседи (1730)
-		/// </summary>
-		[Description("Соседи")]
-        [EnumCode("221")]
-        [ShortTitle("")]
-        Sosedi = 1730,
-		/// <summary>
-		/// ЭЛКОМ (1731)
-		/// </summary>
-		[Description("ЭЛКОМ")]
-        [EnumCode("222")]
-        [ShortTitle("")]
-        ELKOM = 1731,
-		/// <summary>
-		/// Недвижимость life (1732)
-		/// </summary>
-		[Description("Недвижимость life")]
-        [EnumCode("223")]
-        [ShortTitle("")]
-        NedvizhimostjLife = 1732,
-		/// <summary>
-		/// Триумф Градъ (1733)
-		/// </summary>
-		[Description("Триумф Градъ")]
-        [EnumCode("224")]
-        [ShortTitle("")]
-        TriumfGradj = 1733,
-		/// <summary>
-		/// ЧР Потапов Игорь (1734)
-		/// </summary>
-		[Description("ЧР Потапов Игорь")]
-        [EnumCode("225")]
-        [ShortTitle("")]
-        ChRPotapovIgorj = 1734,
-		/// <summary>
-		/// РЕДОМ (1735)
-		/// </summary>
-		[Description("РЕДОМ")]
-        [EnumCode("226")]
-        [ShortTitle("")]
-        REDOM = 1735,
-		/// <summary>
-		/// НОР (1736)
-		/// </summary>
-		[Description("НОР")]
-        [EnumCode("227")]
-        [ShortTitle("")]
-        NOR = 1736,
-		/// <summary>
-		/// ЧР Шаньшин Василий Васильевич (1737)
-		/// </summary>
-		[Description("ЧР Шаньшин Василий Васильевич")]
-        [EnumCode("228")]
-        [ShortTitle("")]
-        ChRShanjshinVasilijVasiljevich = 1737,
-		/// <summary>
-		/// AT HOME - недвижимость (1738)
-		/// </summary>
-		[Description("AT HOME - недвижимость")]
-        [EnumCode("229")]
-        [ShortTitle("")]
-        ATHOMENedvizhimostj = 1738,
-		/// <summary>
-		/// ЧР Ставенов Леонид (1739)
-		/// </summary>
-		[Description("ЧР Ставенов Леонид")]
-        [EnumCode("230")]
-        [ShortTitle("")]
-        ChRStavenovLeonid = 1739,
-		/// <summary>
-		/// География Недвижимости (1740)
-		/// </summary>
-		[Description("География Недвижимости")]
-        [EnumCode("231")]
-        [ShortTitle("")]
-        GeografiyaNedvizhimosti = 1740,
-		/// <summary>
-		/// МИЭЛЬ ЛОБНЯ (1741)
-		/// </summary>
-		[Description("МИЭЛЬ ЛОБНЯ")]
-        [EnumCode("232")]
-        [ShortTitle("")]
-        MIELJLOBNYa = 1741,
-		/// <summary>
-		/// Эпоха Процветания (1742)
-		/// </summary>
-		[Description("Эпоха Процветания")]
-        [EnumCode("233")]
-        [ShortTitle("")]
-        EpohaProcvetaniya = 1742,
-		/// <summary>
-		/// CENTURY 21 Еврогруп недвижимость (1743)
-		/// </summary>
-		[Description("CENTURY 21 Еврогруп недвижимость")]
-        [EnumCode("234")]
-        [ShortTitle("")]
-        CENTURY21EvrogrupNedvizhimostj = 1743,
-		/// <summary>
-		/// Ареал-Риэлт (1744)
-		/// </summary>
-		[Description("Ареал-Риэлт")]
-        [EnumCode("235")]
-        [ShortTitle("")]
-        ArealRielt = 1744,
-		/// <summary>
-		/// Ваш-Метр (1745)
-		/// </summary>
-		[Description("Ваш-Метр")]
-        [EnumCode("236")]
-        [ShortTitle("")]
-        VashMetr = 1745,
-		/// <summary>
-		/// ЧР Назаров Альберт (1746)
-		/// </summary>
-		[Description("ЧР Назаров Альберт")]
-        [EnumCode("237")]
-        [ShortTitle("")]
-        ChRNazarovAljbert = 1746,
-		/// <summary>
-		/// ЧР Санькова Марина (1747)
-		/// </summary>
-		[Description("ЧР Санькова Марина")]
-        [EnumCode("238")]
-        [ShortTitle("")]
-        ChRSanjkovaMarina = 1747,
-		/// <summary>
-		/// Миэль Офис на Якиманке (1748)
-		/// </summary>
-		[Description("Миэль Офис на Якиманке")]
-        [EnumCode("239")]
-        [ShortTitle("")]
-        MieljOfisNaYakimanke = 1748,
-		/// <summary>
-		/// БЕСТ Северо-Запад (1749)
-		/// </summary>
-		[Description("БЕСТ Северо-Запад")]
-        [EnumCode("240")]
-        [ShortTitle("")]
-        BESTSeveroZapad = 1749,
-		/// <summary>
-		/// Компания БЛАГОВЕСТ (1750)
-		/// </summary>
-		[Description("Компания БЛАГОВЕСТ")]
-        [EnumCode("241")]
-        [ShortTitle("")]
-        KompaniyaBLAGOVEST = 1750,
-		/// <summary>
-		/// Бест Недвижимость (1751)
-		/// </summary>
-		[Description("Бест Недвижимость")]
-        [EnumCode("242")]
-        [ShortTitle("")]
-        BestNedvizhimostj = 1751,
-		/// <summary>
-		/// ПИЛИГРИМ (1752)
-		/// </summary>
-		[Description("ПИЛИГРИМ")]
-        [EnumCode("243")]
-        [ShortTitle("")]
-        PILIGRIM = 1752,
-		/// <summary>
-		/// Три звезды лтд (1753)
-		/// </summary>
-		[Description("Три звезды лтд")]
-        [EnumCode("244")]
-        [ShortTitle("")]
-        TriZvezdiLtd = 1753,
-		/// <summary>
-		/// ЧР Дмитрий Фролов (1754)
-		/// </summary>
-		[Description("ЧР Дмитрий Фролов")]
-        [EnumCode("245")]
-        [ShortTitle("")]
-        ChRDmitrijFrolov = 1754,
-		/// <summary>
-		/// ГЛОБУС-Недвижимость (1755)
-		/// </summary>
-		[Description("ГЛОБУС-Недвижимость")]
-        [EnumCode("246")]
-        [ShortTitle("")]
-        GLOBUSNedvizhimostj = 1755,
-		/// <summary>
-		/// ДОМИНЕЛЬ (1756)
-		/// </summary>
-		[Description("ДОМИНЕЛЬ")]
-        [EnumCode("247")]
-        [ShortTitle("")]
-        DOMINELJ = 1756,
-		/// <summary>
-		/// ЧР Мальцева Ольга (1757)
-		/// </summary>
-		[Description("ЧР Мальцева Ольга")]
-        [EnumCode("248")]
-        [ShortTitle("")]
-        ChRMaljcevaOljga = 1757,
-		/// <summary>
-		/// НЕЗАВИСИМЫЙ РИЕЛТОР (1758)
-		/// </summary>
-		[Description("НЕЗАВИСИМЫЙ РИЕЛТОР")]
-        [EnumCode("249")]
-        [ShortTitle("")]
-        NEZAVISIMIJRIELTOR = 1758,
-		/// <summary>
-		/// ГОродской СТандарт (1759)
-		/// </summary>
-		[Description("ГОродской СТандарт")]
-        [EnumCode("250")]
-        [ShortTitle("")]
-        GOrodskojSTandart = 1759,
-		/// <summary>
-		/// Эконом-Партнер (1760)
-		/// </summary>
-		[Description("Эконом-Партнер")]
-        [EnumCode("251")]
-        [ShortTitle("")]
-        EkonomPartner = 1760,
-		/// <summary>
-		/// WinNER Lite (1761)
-		/// </summary>
-		[Description("WinNER Lite")]
-        [EnumCode("252")]
-        [ShortTitle("")]
-        WinNERLite = 1761,
-		/// <summary>
-		/// Семейные Инвестиции (1762)
-		/// </summary>
-		[Description("Семейные Инвестиции")]
-        [EnumCode("253")]
-        [ShortTitle("")]
-        SemejnieInvesticii = 1762,
-		/// <summary>
-		/// ЧР Бадер Лариса (1763)
-		/// </summary>
-		[Description("ЧР Бадер Лариса")]
-        [EnumCode("254")]
-        [ShortTitle("")]
-        ChRBaderLarisa = 1763,
-		/// <summary>
-		/// ОК-Риэлти (1764)
-		/// </summary>
-		[Description("ОК-Риэлти")]
-        [EnumCode("255")]
-        [ShortTitle("")]
-        OKRielti = 1764,
-		/// <summary>
-		/// АС Недвижимость (1765)
-		/// </summary>
-		[Description("АС Недвижимость")]
-        [EnumCode("256")]
-        [ShortTitle("")]
-        ASNedvizhimostj = 1765,
-		/// <summary>
-		/// Activ Realty (1766)
-		/// </summary>
-		[Description("Activ Realty")]
-        [EnumCode("257")]
-        [ShortTitle("")]
-        ActivRealty = 1766,
-		/// <summary>
-		/// СТМ-Недвижимость (1767)
-		/// </summary>
-		[Description("СТМ-Недвижимость")]
-        [EnumCode("258")]
-        [ShortTitle("")]
-        STMNedvizhimostj = 1767,
-		/// <summary>
-		/// БЕСТ на Алтуфьевском (1768)
-		/// </summary>
-		[Description("БЕСТ на Алтуфьевском")]
-        [EnumCode("259")]
-        [ShortTitle("")]
-        BESTNaAltufjevskom = 1768,
-		/// <summary>
-		/// Д-Эстейт (1769)
-		/// </summary>
-		[Description("Д-Эстейт")]
-        [EnumCode("260")]
-        [ShortTitle("")]
-        DEstejt = 1769,
-		/// <summary>
-		/// ПрофиРиелтор (1770)
-		/// </summary>
-		[Description("ПрофиРиелтор")]
-        [EnumCode("261")]
-        [ShortTitle("")]
-        ProfiRieltor = 1770,
-		/// <summary>
-		/// Клевиль (1771)
-		/// </summary>
-		[Description("Клевиль")]
-        [EnumCode("262")]
-        [ShortTitle("")]
-        Klevilj = 1771,
-		/// <summary>
-		/// СВРК (1772)
-		/// </summary>
-		[Description("СВРК")]
-        [EnumCode("263")]
-        [ShortTitle("")]
-        SVRK = 1772,
-		/// <summary>
-		/// ЧР Шудря Владимир (1773)
-		/// </summary>
-		[Description("ЧР Шудря Владимир")]
-        [EnumCode("264")]
-        [ShortTitle("")]
-        ChRShudryaVladimir = 1773,
-		/// <summary>
-		/// Мэрри Лэйн Групп (1774)
-		/// </summary>
-		[Description("Мэрри Лэйн Групп")]
-        [EnumCode("265")]
-        [ShortTitle("")]
-        MerriLejnGrupp = 1774,
-		/// <summary>
-		/// ЧР  Саркисян Артур Сергеевич (1775)
-		/// </summary>
-		[Description("ЧР  Саркисян Артур Сергеевич")]
-        [EnumCode("266")]
-        [ShortTitle("")]
-        ChRSarkisyanArturSergeevich = 1775,
-		/// <summary>
-		/// Фортуна (1776)
-		/// </summary>
-		[Description("Фортуна")]
-        [EnumCode("267")]
-        [ShortTitle("")]
-        Fortuna = 1776,
-		/// <summary>
-		/// СЕАЛ - семейный альянс (1777)
-		/// </summary>
-		[Description("СЕАЛ - семейный альянс")]
-        [EnumCode("268")]
-        [ShortTitle("")]
-        SEALSemejnijAljyans = 1777,
-		/// <summary>
-		/// НОРА-недвижимость (1778)
-		/// </summary>
-		[Description("НОРА-недвижимость")]
-        [EnumCode("269")]
-        [ShortTitle("")]
-        NORANedvizhimostj = 1778,
-		/// <summary>
-		/// МиРН (1779)
-		/// </summary>
-		[Description("МиРН")]
-        [EnumCode("270")]
-        [ShortTitle("")]
-        MiRN = 1779,
-		/// <summary>
-		/// БЕСТ - Красные ворота (1780)
-		/// </summary>
-		[Description("БЕСТ - Красные ворота")]
-        [EnumCode("271")]
-        [ShortTitle("")]
-        BESTKrasnieVorota = 1780,
-		/// <summary>
-		/// ЧР Ерхова Лариса (1781)
-		/// </summary>
-		[Description("ЧР Ерхова Лариса")]
-        [EnumCode("272")]
-        [ShortTitle("")]
-        ChRErhovaLarisa = 1781,
-		/// <summary>
-		/// Адеар (1782)
-		/// </summary>
-		[Description("Адеар")]
-        [EnumCode("273")]
-        [ShortTitle("")]
-        Adear = 1782,
-		/// <summary>
-		/// ЧР Головко Елена (1783)
-		/// </summary>
-		[Description("ЧР Головко Елена")]
-        [EnumCode("274")]
-        [ShortTitle("")]
-        ChRGolovkoElena = 1783,
-		/// <summary>
-		/// МОСПРИВАТИЗАЦИЯ (1784)
-		/// </summary>
-		[Description("МОСПРИВАТИЗАЦИЯ")]
-        [EnumCode("275")]
-        [ShortTitle("")]
-        MOSPRIVATIZACIYa = 1784,
-		/// <summary>
-		/// Радин Максим (1785)
-		/// </summary>
-		[Description("Радин Максим")]
-        [EnumCode("276")]
-        [ShortTitle("")]
-        RadinMaksim = 1785,
-		/// <summary>
-		/// АДРЕСЪ-НЕДВИЖИМОСТЬ (1786)
-		/// </summary>
-		[Description("АДРЕСЪ-НЕДВИЖИМОСТЬ")]
-        [EnumCode("277")]
-        [ShortTitle("")]
-        ADRESJNEDVIZhIMOSTJ = 1786,
-		/// <summary>
-		/// АССА (1787)
-		/// </summary>
-		[Description("АССА")]
-        [EnumCode("278")]
-        [ShortTitle("")]
-        ASSA = 1787,
-		/// <summary>
-		/// АКСИОМА (1788)
-		/// </summary>
-		[Description("АКСИОМА")]
-        [EnumCode("279")]
-        [ShortTitle("")]
-        AKSIOMA = 1788,
-		/// <summary>
-		/// ЦДН (1789)
-		/// </summary>
-		[Description("ЦДН")]
-        [EnumCode("280")]
-        [ShortTitle("")]
-        CDN = 1789,
-		/// <summary>
-		/// Profyrealtor.ru (1790)
-		/// </summary>
-		[Description("Profyrealtor.ru")]
-        [EnumCode("281")]
-        [ShortTitle("")]
-        ProfyrealtorRu = 1790,
-		/// <summary>
-		/// ЧР Круглова Ольга (1791)
-		/// </summary>
-		[Description("ЧР Круглова Ольга")]
-        [EnumCode("282")]
-        [ShortTitle("")]
-        ChRKruglovaOljga = 1791,
-		/// <summary>
-		/// Консинго (1792)
-		/// </summary>
-		[Description("Консинго")]
-        [EnumCode("283")]
-        [ShortTitle("")]
-        Konsingo = 1792,
-		/// <summary>
-		/// ЧР Панюшкина Светлана (1793)
-		/// </summary>
-		[Description("ЧР Панюшкина Светлана")]
-        [EnumCode("284")]
-        [ShortTitle("")]
-        ChRPanyushkinaSvetlana = 1793,
-		/// <summary>
-		/// АКСИОС (1794)
-		/// </summary>
-		[Description("АКСИОС")]
-        [EnumCode("285")]
-        [ShortTitle("")]
-        AKSIOS = 1794,
-		/// <summary>
-		/// ЧР Макарова Светлана Викторовна (1795)
-		/// </summary>
-		[Description("ЧР Макарова Светлана Викторовна")]
-        [EnumCode("286")]
-        [ShortTitle("")]
-        ChRMakarovaSvetlanaViktorovna = 1795,
-		/// <summary>
-		/// ЧР Тихонова Елена (1796)
-		/// </summary>
-		[Description("ЧР Тихонова Елена")]
-        [EnumCode("287")]
-        [ShortTitle("")]
-        ChRTihonovaElena = 1796,
-		/// <summary>
-		/// Левченко-реалти (1797)
-		/// </summary>
-		[Description("Левченко-реалти")]
-        [EnumCode("288")]
-        [ShortTitle("")]
-        LevchenkoRealti = 1797,
-		/// <summary>
-		/// Шоколад (1798)
-		/// </summary>
-		[Description("Шоколад")]
-        [EnumCode("289")]
-        [ShortTitle("")]
-        Shokolad = 1798,
-		/// <summary>
-		/// МРЦ (1799)
-		/// </summary>
-		[Description("МРЦ")]
-        [EnumCode("290")]
-        [ShortTitle("")]
-        MRC = 1799,
-		/// <summary>
-		/// Новоселье (1800)
-		/// </summary>
-		[Description("Новоселье")]
-        [EnumCode("291")]
-        [ShortTitle("")]
-        Novoselje = 1800,
-		/// <summary>
-		/// Семейный Дом (1801)
-		/// </summary>
-		[Description("Семейный Дом")]
-        [EnumCode("292")]
-        [ShortTitle("")]
-        SemejnijDom = 1801,
-		/// <summary>
-		/// БИФАЙТЕР Риэлти (1802)
-		/// </summary>
-		[Description("БИФАЙТЕР Риэлти")]
-        [EnumCode("293")]
-        [ShortTitle("")]
-        BIFAJTERRielti = 1802,
-		/// <summary>
-		/// Сила мыслей и действий (1803)
-		/// </summary>
-		[Description("Сила мыслей и действий")]
-        [EnumCode("294")]
-        [ShortTitle("")]
-        SilaMislejIDejstvij = 1803,
-		/// <summary>
-		/// Корпорация недвижимости (1804)
-		/// </summary>
-		[Description("Корпорация недвижимости")]
-        [EnumCode("295")]
-        [ShortTitle("")]
-        KorporaciyaNedvizhimosti = 1804,
-		/// <summary>
-		/// Капитал Инвест (1805)
-		/// </summary>
-		[Description("Капитал Инвест")]
-        [EnumCode("296")]
-        [ShortTitle("")]
-        KapitalInvest = 1805,
-		/// <summary>
-		/// ЧР Тихменева Людмила Евгеньевна (1806)
-		/// </summary>
-		[Description("ЧР Тихменева Людмила Евгеньевна")]
-        [EnumCode("297")]
-        [ShortTitle("")]
-        ChRTihmenevaLyudmilaEvgenjevna = 1806,
-		/// <summary>
-		/// ЧР Кудрявцев Александр (1807)
-		/// </summary>
-		[Description("ЧР Кудрявцев Александр")]
-        [EnumCode("298")]
-        [ShortTitle("")]
-        ChRKudryavcevAleksandr = 1807,
-		/// <summary>
-		/// ЧР Панина Татьяна (1808)
-		/// </summary>
-		[Description("ЧР Панина Татьяна")]
-        [EnumCode("299")]
-        [ShortTitle("")]
-        ChRPaninaTatjyana = 1808,
-		/// <summary>
-		/// Недвижимость на Ленинском (1809)
-		/// </summary>
-		[Description("Недвижимость на Ленинском")]
-        [EnumCode("300")]
-        [ShortTitle("")]
-        NedvizhimostjNaLeninskom = 1809,
-		/// <summary>
-		/// Северный округ (1810)
-		/// </summary>
-		[Description("Северный округ")]
-        [EnumCode("301")]
-        [ShortTitle("")]
-        SevernijOkrug = 1810,
-		/// <summary>
-		/// ЧР Агафонова Елена (1811)
-		/// </summary>
-		[Description("ЧР Агафонова Елена")]
-        [EnumCode("302")]
-        [ShortTitle("")]
-        ChRAgafonovaElena = 1811,
-		/// <summary>
-		/// СЕДЬМОЕ НЕБО (1812)
-		/// </summary>
-		[Description("СЕДЬМОЕ НЕБО")]
-        [EnumCode("303")]
-        [ShortTitle("")]
-        SEDJMOENEBO = 1812,
-		/// <summary>
-		/// DEVA-Недвижимость (1813)
-		/// </summary>
-		[Description("DEVA-Недвижимость")]
-        [EnumCode("304")]
-        [ShortTitle("")]
-        DEVANedvizhimostj = 1813,
-		/// <summary>
-		/// Русский Дом (1814)
-		/// </summary>
-		[Description("Русский Дом")]
-        [EnumCode("305")]
-        [ShortTitle("")]
-        RusskijDom = 1814,
-		/// <summary>
-		/// Альфа-недвижимость (1815)
-		/// </summary>
-		[Description("Альфа-недвижимость")]
-        [EnumCode("306")]
-        [ShortTitle("")]
-        AljfaNedvizhimostj = 1815,
-		/// <summary>
-		/// Мобильный Агент (1816)
-		/// </summary>
-		[Description("Мобильный Агент")]
-        [EnumCode("307")]
-        [ShortTitle("")]
-        MobiljnijAgent = 1816,
-		/// <summary>
-		/// TOWERS (1817)
-		/// </summary>
-		[Description("TOWERS")]
-        [EnumCode("308")]
-        [ShortTitle("")]
-        TOWERS = 1817,
-		/// <summary>
-		/// МИР (1818)
-		/// </summary>
-		[Description("МИР")]
-        [EnumCode("309")]
-        [ShortTitle("")]
-        MIR = 1818,
-		/// <summary>
-		/// КРЕДО (1819)
-		/// </summary>
-		[Description("КРЕДО")]
-        [EnumCode("310")]
-        [ShortTitle("")]
-        KREDO = 1819,
-		/// <summary>
-		/// ЧР Доллен Леонид (1820)
-		/// </summary>
-		[Description("ЧР Доллен Леонид")]
-        [EnumCode("311")]
-        [ShortTitle("")]
-        ChRDollenLeonid = 1820,
-		/// <summary>
-		/// Недвижимость.ру (1821)
-		/// </summary>
-		[Description("Недвижимость.ру")]
-        [EnumCode("312")]
-        [ShortTitle("")]
-        NedvizhimostjRu = 1821,
-		/// <summary>
-		/// Дом (1822)
-		/// </summary>
-		[Description("Дом")]
-        [EnumCode("313")]
-        [ShortTitle("")]
-        Dom = 1822,
-		/// <summary>
-		/// ЗИП РИЭЛТИ (1823)
-		/// </summary>
-		[Description("ЗИП РИЭЛТИ")]
-        [EnumCode("314")]
-        [ShortTitle("")]
-        ZIPRIELTI = 1823,
-		/// <summary>
-		/// СДВ Групп (1824)
-		/// </summary>
-		[Description("СДВ Групп")]
-        [EnumCode("315")]
-        [ShortTitle("")]
-        SDVGrupp = 1824,
-		/// <summary>
-		/// Верона (1825)
-		/// </summary>
-		[Description("Верона")]
-        [EnumCode("316")]
-        [ShortTitle("")]
-        Verona = 1825,
-		/// <summary>
-		/// Риэлтор (1826)
-		/// </summary>
-		[Description("Риэлтор")]
-        [EnumCode("317")]
-        [ShortTitle("")]
-        Rieltor = 1826,
-		/// <summary>
-		/// Васильевъ и Партнеры (1827)
-		/// </summary>
-		[Description("Васильевъ и Партнеры")]
-        [EnumCode("318")]
-        [ShortTitle("")]
-        VasiljevjIPartneri = 1827,
-		/// <summary>
-		/// Бутовское (1828)
-		/// </summary>
-		[Description("Бутовское")]
-        [EnumCode("319")]
-        [ShortTitle("")]
-        Butovskoe = 1828,
-		/// <summary>
-		/// Старый Город (1829)
-		/// </summary>
-		[Description("Старый Город")]
-        [EnumCode("320")]
-        [ShortTitle("")]
-        StarijGorod = 1829,
-		/// <summary>
-		/// ЧР Михайлова Карина (1830)
-		/// </summary>
-		[Description("ЧР Михайлова Карина")]
-        [EnumCode("321")]
-        [ShortTitle("")]
-        ChRMihajlovaKarina = 1830,
-		/// <summary>
-		/// Диалог Риэлт (1831)
-		/// </summary>
-		[Description("Диалог Риэлт")]
-        [EnumCode("322")]
-        [ShortTitle("")]
-        DialogRielt = 1831,
-		/// <summary>
-		/// Успешный Риэлтор (1832)
-		/// </summary>
-		[Description("Успешный Риэлтор")]
-        [EnumCode("323")]
-        [ShortTitle("")]
-        UspeshnijRieltor = 1832,
-		/// <summary>
-		/// Эстейт Риэлти (1833)
-		/// </summary>
-		[Description("Эстейт Риэлти")]
-        [EnumCode("324")]
-        [ShortTitle("")]
-        EstejtRielti = 1833,
-		/// <summary>
-		/// Bel Air Estate (1834)
-		/// </summary>
-		[Description("Bel Air Estate")]
-        [EnumCode("325")]
-        [ShortTitle("")]
-        BelAirEstate = 1834,
-		/// <summary>
-		/// ТВОЙ ГОРОД (1835)
-		/// </summary>
-		[Description("ТВОЙ ГОРОД")]
-        [EnumCode("326")]
-        [ShortTitle("")]
-        TVOJGOROD = 1835,
-		/// <summary>
-		/// Небоскреб (1836)
-		/// </summary>
-		[Description("Небоскреб")]
-        [EnumCode("327")]
-        [ShortTitle("")]
-        Neboskreb = 1836,
-		/// <summary>
-		/// ЧР Якушева Марина (1837)
-		/// </summary>
-		[Description("ЧР Якушева Марина")]
-        [EnumCode("328")]
-        [ShortTitle("")]
-        ChRYakushevaMarina = 1837,
-		/// <summary>
-		/// Недвижимость Москвы (1838)
-		/// </summary>
-		[Description("Недвижимость Москвы")]
-        [EnumCode("329")]
-        [ShortTitle("")]
-        NedvizhimostjMoskvi = 1838,
-		/// <summary>
-		/// Покров (1839)
-		/// </summary>
-		[Description("Покров")]
-        [EnumCode("330")]
-        [ShortTitle("")]
-        Pokrov = 1839,
-		/// <summary>
-		/// ЧР Шелуханов Владимир (1840)
-		/// </summary>
-		[Description("ЧР Шелуханов Владимир")]
-        [EnumCode("331")]
-        [ShortTitle("")]
-        ChRSheluhanovVladimir = 1840,
-		/// <summary>
-		/// Объединенная Группа Риэлторов (1841)
-		/// </summary>
-		[Description("Объединенная Группа Риэлторов")]
-        [EnumCode("332")]
-        [ShortTitle("")]
-        ObjedinennayaGruppaRieltorov = 1841,
-		/// <summary>
-		/// Александр Недвижимость (1842)
-		/// </summary>
-		[Description("Александр Недвижимость")]
-        [EnumCode("333")]
-        [ShortTitle("")]
-        AleksandrNedvizhimostj = 1842,
-		/// <summary>
-		/// ЧР Соколова Марина (1843)
-		/// </summary>
-		[Description("ЧР Соколова Марина")]
-        [EnumCode("334")]
-        [ShortTitle("")]
-        ChRSokolovaMarina = 1843,
-		/// <summary>
-		/// Дом ЭСТЕЙТ (1844)
-		/// </summary>
-		[Description("Дом ЭСТЕЙТ")]
-        [EnumCode("335")]
-        [ShortTitle("")]
-        DomESTEJT = 1844,
-		/// <summary>
-		/// Зеленый город (1845)
-		/// </summary>
-		[Description("Зеленый город")]
-        [EnumCode("336")]
-        [ShortTitle("")]
-        ZelenijGorod = 1845,
-		/// <summary>
-		/// Проспект-М (1846)
-		/// </summary>
-		[Description("Проспект-М")]
-        [EnumCode("337")]
-        [ShortTitle("")]
-        ProspektM = 1846,
-		/// <summary>
-		/// Байлар» (1847)
-		/// </summary>
-		[Description("Байлар»")]
-        [EnumCode("338")]
-        [ShortTitle("")]
-        Bajlar = 1847,
-		/// <summary>
-		/// САВЕРА (1848)
-		/// </summary>
-		[Description("САВЕРА")]
-        [EnumCode("339")]
-        [ShortTitle("")]
-        SAVERA = 1848,
-		/// <summary>
-		/// ЧР Галковская Илона Юрьевна (1849)
-		/// </summary>
-		[Description("ЧР Галковская Илона Юрьевна")]
-        [EnumCode("340")]
-        [ShortTitle("")]
-        ChRGalkovskayaIlonaYurjevna = 1849,
-		/// <summary>
-		/// Квартирный Эксперт (1850)
-		/// </summary>
-		[Description("Квартирный Эксперт")]
-        [EnumCode("341")]
-        [ShortTitle("")]
-        KvartirnijEkspert = 1850,
-		/// <summary>
-		/// Палько риэлти (1851)
-		/// </summary>
-		[Description("Палько риэлти")]
-        [EnumCode("342")]
-        [ShortTitle("")]
-        PaljkoRielti = 1851,
-		/// <summary>
-		/// Агентство Своя Квартира (1852)
-		/// </summary>
-		[Description("Агентство Своя Квартира")]
-        [EnumCode("343")]
-        [ShortTitle("")]
-        AgentstvoSvoyaKvartira = 1852,
-		/// <summary>
-		/// Регион МСК (1853)
-		/// </summary>
-		[Description("Регион МСК")]
-        [EnumCode("344")]
-        [ShortTitle("")]
-        RegionMSK = 1853,
-		/// <summary>
-		/// Мастер-риэлти (1854)
-		/// </summary>
-		[Description("Мастер-риэлти")]
-        [EnumCode("345")]
-        [ShortTitle("")]
-        MasterRielti = 1854,
-		/// <summary>
-		/// ЧР Елфимова Манана (1855)
-		/// </summary>
-		[Description("ЧР Елфимова Манана")]
-        [EnumCode("346")]
-        [ShortTitle("")]
-        ChRElfimovaManana = 1855,
-		/// <summary>
-		/// CALDO (1856)
-		/// </summary>
-		[Description("CALDO")]
-        [EnumCode("347")]
-        [ShortTitle("")]
-        CALDO = 1856,
-		/// <summary>
-		/// ЧР Игнатченко Людмила (1857)
-		/// </summary>
-		[Description("ЧР Игнатченко Людмила")]
-        [EnumCode("348")]
-        [ShortTitle("")]
-        ChRIgnatchenkoLyudmila = 1857,
-		/// <summary>
-		/// ЧР Гусакова Мария Михайловна (1858)
-		/// </summary>
-		[Description("ЧР Гусакова Мария Михайловна")]
-        [EnumCode("349")]
-        [ShortTitle("")]
-        ChRGusakovaMariyaMihajlovna = 1858,
-		/// <summary>
-		/// REALTY-MOS (1859)
-		/// </summary>
-		[Description("REALTY-MOS")]
-        [EnumCode("350")]
-        [ShortTitle("")]
-        REALTYMOS = 1859,
-		/// <summary>
-		/// ЧР Коршунова Валентина Алексеевна (1860)
-		/// </summary>
-		[Description("ЧР Коршунова Валентина Алексеевна")]
-        [EnumCode("351")]
-        [ShortTitle("")]
-        ChRKorshunovaValentinaAlekseevna = 1860,
-		/// <summary>
-		/// Р.О.С. - МОНОЛИТ- ГЕО (1861)
-		/// </summary>
-		[Description("Р.О.С. - МОНОЛИТ- ГЕО")]
-        [EnumCode("352")]
-        [ShortTitle("")]
-        ROSMONOLITGEO = 1861,
-		/// <summary>
-		/// Климова и Партнеры (1862)
-		/// </summary>
-		[Description("Климова и Партнеры")]
-        [EnumCode("353")]
-        [ShortTitle("")]
-        KlimovaIPartneri = 1862,
-		/// <summary>
-		/// ЧР Коротеева Елена (1863)
-		/// </summary>
-		[Description("ЧР Коротеева Елена")]
-        [EnumCode("354")]
-        [ShortTitle("")]
-        ChRKoroteevaElena = 1863,
-		/// <summary>
-		/// Нью Сити (1864)
-		/// </summary>
-		[Description("Нью Сити")]
-        [EnumCode("355")]
-        [ShortTitle("")]
-        NjyuSiti = 1864,
-		/// <summary>
-		/// Солнечная Вилла (1865)
-		/// </summary>
-		[Description("Солнечная Вилла")]
-        [EnumCode("356")]
-        [ShortTitle("")]
-        SolnechnayaVilla = 1865,
-		/// <summary>
-		/// Жилищная стратегия (1866)
-		/// </summary>
-		[Description("Жилищная стратегия")]
-        [EnumCode("357")]
-        [ShortTitle("")]
-        ZhilischnayaStrategiya = 1866,
-		/// <summary>
-		/// БЕСТ-Недвижимость на Тульской (1867)
-		/// </summary>
-		[Description("БЕСТ-Недвижимость на Тульской")]
-        [EnumCode("358")]
-        [ShortTitle("")]
-        BESTNedvizhimostjNaTuljskoj = 1867,
-		/// <summary>
-		/// ЧР Довгань Игорь (1868)
-		/// </summary>
-		[Description("ЧР Довгань Игорь")]
-        [EnumCode("359")]
-        [ShortTitle("")]
-        ChRDovganjIgorj = 1868,
-		/// <summary>
-		/// Имобиле (1869)
-		/// </summary>
-		[Description("Имобиле")]
-        [EnumCode("360")]
-        [ShortTitle("")]
-        Imobile = 1869,
-		/// <summary>
-		/// ЧР Дубровкина Галина (1870)
-		/// </summary>
-		[Description("ЧР Дубровкина Галина")]
-        [EnumCode("361")]
-        [ShortTitle("")]
-        ChRDubrovkinaGalina = 1870,
-		/// <summary>
-		/// ЧР Назарова Наталья (1871)
-		/// </summary>
-		[Description("ЧР Назарова Наталья")]
-        [EnumCode("362")]
-        [ShortTitle("")]
-        ChRNazarovaNataljya = 1871,
-		/// <summary>
-		/// Инвест право (1872)
-		/// </summary>
-		[Description("Инвест право")]
-        [EnumCode("363")]
-        [ShortTitle("")]
-        InvestPravo = 1872,
-		/// <summary>
-		/// БЕСТ Недвижимость на Проспекте Мира (1873)
-		/// </summary>
-		[Description("БЕСТ Недвижимость на Проспекте Мира")]
-        [EnumCode("364")]
-        [ShortTitle("")]
-        BESTNedvizhimostjNaProspekteMira = 1873,
-		/// <summary>
-		/// Святоград (1874)
-		/// </summary>
-		[Description("Святоград")]
-        [EnumCode("365")]
-        [ShortTitle("")]
-        Svyatograd = 1874,
-		/// <summary>
-		/// МИЭЛЬ Цветной бульвар (1875)
-		/// </summary>
-		[Description("МИЭЛЬ Цветной бульвар")]
-        [EnumCode("366")]
-        [ShortTitle("")]
-        MIELJCvetnojBuljvar = 1875,
-		/// <summary>
-		/// МК-ГРАД (1876)
-		/// </summary>
-		[Description("МК-ГРАД")]
-        [EnumCode("367")]
-        [ShortTitle("")]
-        MKGRAD = 1876,
-		/// <summary>
-		/// ЧР Соломанин Михаил (1877)
-		/// </summary>
-		[Description("ЧР Соломанин Михаил")]
-        [EnumCode("368")]
-        [ShortTitle("")]
-        ChRSolomaninMihail = 1877,
-		/// <summary>
-		/// Дельта-М+ (1878)
-		/// </summary>
-		[Description("Дельта-М+")]
-        [EnumCode("369")]
-        [ShortTitle("")]
-        DeljtaMPlus = 1878,
-		/// <summary>
-		/// РИЭЛТИ-ГОРОД (1879)
-		/// </summary>
-		[Description("РИЭЛТИ-ГОРОД")]
-        [EnumCode("370")]
-        [ShortTitle("")]
-        RIELTIGOROD = 1879,
-		/// <summary>
-		/// Загородная недвижимость (1880)
-		/// </summary>
-		[Description("Загородная недвижимость")]
-        [EnumCode("371")]
-        [ShortTitle("")]
-        ZagorodnayaNedvizhimostj = 1880,
-		/// <summary>
-		/// Жилищная перспектива (1881)
-		/// </summary>
-		[Description("Жилищная перспектива")]
-        [EnumCode("372")]
-        [ShortTitle("")]
-        ZhilischnayaPerspektiva = 1881,
-		/// <summary>
-		/// ЧР Кораблева Регина (1882)
-		/// </summary>
-		[Description("ЧР Кораблева Регина")]
-        [EnumCode("373")]
-        [ShortTitle("")]
-        ChRKorablevaRegina = 1882,
-		/// <summary>
-		/// ЧР Шварц Марина (1883)
-		/// </summary>
-		[Description("ЧР Шварц Марина")]
-        [EnumCode("374")]
-        [ShortTitle("")]
-        ChRShvarcMarina = 1883,
-		/// <summary>
-		/// ЧР Куклина Татьяна (1884)
-		/// </summary>
-		[Description("ЧР Куклина Татьяна")]
-        [EnumCode("375")]
-        [ShortTitle("")]
-        ChRKuklinaTatjyana = 1884,
-		/// <summary>
-		/// КЛЮЧ (1885)
-		/// </summary>
-		[Description("КЛЮЧ")]
-        [EnumCode("376")]
-        [ShortTitle("")]
-        KLYuCh = 1885,
-		/// <summary>
-		/// ЧР Бузько Юрий (1886)
-		/// </summary>
-		[Description("ЧР Бузько Юрий")]
-        [EnumCode("377")]
-        [ShortTitle("")]
-        ChRBuzjkoYurij = 1886,
-		/// <summary>
-		/// СЛУЖБА 925 (1887)
-		/// </summary>
-		[Description("СЛУЖБА 925")]
-        [EnumCode("378")]
-        [ShortTitle("")]
-        SLUZhBA925 = 1887,
-		/// <summary>
-		/// Жилищный Эксперт (1888)
-		/// </summary>
-		[Description("Жилищный Эксперт")]
-        [EnumCode("379")]
-        [ShortTitle("")]
-        ZhilischnijEkspert = 1888,
-		/// <summary>
-		/// ЧР Таранцева Наталия (1889)
-		/// </summary>
-		[Description("ЧР Таранцева Наталия")]
-        [EnumCode("380")]
-        [ShortTitle("")]
-        ChRTarancevaNataliya = 1889,
-		/// <summary>
-		/// Ваш Город (1890)
-		/// </summary>
-		[Description("Ваш Город")]
-        [EnumCode("381")]
-        [ShortTitle("")]
-        VashGorod = 1890,
-		/// <summary>
-		/// ЧР Снегирева Наталия (1891)
-		/// </summary>
-		[Description("ЧР Снегирева Наталия")]
-        [EnumCode("382")]
-        [ShortTitle("")]
-        ChRSnegirevaNataliya = 1891,
-		/// <summary>
-		/// ФРИДОМ (1892)
-		/// </summary>
-		[Description("ФРИДОМ")]
-        [EnumCode("383")]
-        [ShortTitle("")]
-        FRIDOM = 1892,
-		/// <summary>
-		/// НОВЫЕ ВРЕМЕНА (1893)
-		/// </summary>
-		[Description("НОВЫЕ ВРЕМЕНА")]
-        [EnumCode("384")]
-        [ShortTitle("")]
-        NOVIEVREMENA = 1893,
-		/// <summary>
-		/// ЧР Гаврилов Игорь (1894)
-		/// </summary>
-		[Description("ЧР Гаврилов Игорь")]
-        [EnumCode("385")]
-        [ShortTitle("")]
-        ChRGavrilovIgorj = 1894,
-		/// <summary>
-		/// НедвижимостьРФ (1895)
-		/// </summary>
-		[Description("НедвижимостьРФ")]
-        [EnumCode("386")]
-        [ShortTitle("")]
-        NedvizhimostjRF = 1895,
-		/// <summary>
-		/// Златые купола (1896)
-		/// </summary>
-		[Description("Златые купола")]
-        [EnumCode("387")]
-        [ShortTitle("")]
-        ZlatieKupola = 1896,
-		/// <summary>
-		/// Седов и партнеры (1897)
-		/// </summary>
-		[Description("Седов и партнеры")]
-        [EnumCode("388")]
-        [ShortTitle("")]
-        SedovIPartneri = 1897,
-		/// <summary>
-		/// МРЦЖ (1898)
-		/// </summary>
-		[Description("МРЦЖ")]
-        [EnumCode("389")]
-        [ShortTitle("")]
-        MRCZh = 1898,
-		/// <summary>
-		/// А-ЛЕВЕЛ риэлти (1899)
-		/// </summary>
-		[Description("А-ЛЕВЕЛ риэлти")]
-        [EnumCode("390")]
-        [ShortTitle("")]
-        ALEVELRielti = 1899,
-		/// <summary>
-		/// Лидер-профи (1900)
-		/// </summary>
-		[Description("Лидер-профи")]
-        [EnumCode("391")]
-        [ShortTitle("")]
-        LiderProfi = 1900,
-		/// <summary>
-		/// Диалог-сервис (1901)
-		/// </summary>
-		[Description("Диалог-сервис")]
-        [EnumCode("392")]
-        [ShortTitle("")]
-        DialogServis = 1901,
-		/// <summary>
-		/// Ньютерра (1902)
-		/// </summary>
-		[Description("Ньютерра")]
-        [EnumCode("393")]
-        [ShortTitle("")]
-        Njyuterra = 1902,
-		/// <summary>
-		/// ЧР Трембицкий Владимир Павлович (1903)
-		/// </summary>
-		[Description("ЧР Трембицкий Владимир Павлович")]
-        [EnumCode("394")]
-        [ShortTitle("")]
-        ChRTrembickijVladimirPavlovich = 1903,
-		/// <summary>
-		/// Centre Capital (1904)
-		/// </summary>
-		[Description("Centre Capital")]
-        [EnumCode("395")]
-        [ShortTitle("")]
-        CentreCapital = 1904,
-		/// <summary>
-		/// Ваш риэлтор (1905)
-		/// </summary>
-		[Description("Ваш риэлтор")]
-        [EnumCode("396")]
-        [ShortTitle("")]
-        VashRieltor = 1905,
-		/// <summary>
-		/// ЧР Чистяков Александр (1906)
-		/// </summary>
-		[Description("ЧР Чистяков Александр")]
-        [EnumCode("397")]
-        [ShortTitle("")]
-        ChRChistyakovAleksandr = 1906,
-		/// <summary>
-		/// Партнер Эстейт (1907)
-		/// </summary>
-		[Description("Партнер Эстейт")]
-        [EnumCode("398")]
-        [ShortTitle("")]
-        PartnerEstejt = 1907,
-		/// <summary>
-		/// Правовой центр жилья - эстейт (1908)
-		/// </summary>
-		[Description("Правовой центр жилья - эстейт")]
-        [EnumCode("399")]
-        [ShortTitle("")]
-        PravovojCentrZhiljyaEstejt = 1908,
-		/// <summary>
-		/// МИЭЛЬ на Кутузовском (1909)
-		/// </summary>
-		[Description("МИЭЛЬ на Кутузовском")]
-        [EnumCode("400")]
-        [ShortTitle("")]
-        MIELJNaKutuzovskom = 1909,
-		/// <summary>
-		/// ЛЕМАН (1910)
-		/// </summary>
-		[Description("ЛЕМАН")]
-        [EnumCode("401")]
-        [ShortTitle("")]
-        LEMAN = 1910,
-		/// <summary>
-		/// Капитал-Недвижимость (1911)
-		/// </summary>
-		[Description("Капитал-Недвижимость")]
-        [EnumCode("402")]
-        [ShortTitle("")]
-        KapitalNedvizhimostjDefis = 1911,
-		/// <summary>
-		/// ЧР Вержаковская Татьяна (1912)
-		/// </summary>
-		[Description("ЧР Вержаковская Татьяна")]
-        [EnumCode("403")]
-        [ShortTitle("")]
-        ChRVerzhakovskayaTatjyana = 1912,
-		/// <summary>
-		/// Скорая Жилищная Помощь (1913)
-		/// </summary>
-		[Description("Скорая Жилищная Помощь")]
-        [EnumCode("404")]
-        [ShortTitle("")]
-        SkorayaZhilischnayaPomoschj = 1913,
-		/// <summary>
-		/// ЖилСтройСервис (1914)
-		/// </summary>
-		[Description("ЖилСтройСервис")]
-        [EnumCode("405")]
-        [ShortTitle("")]
-        ZhilStrojServis = 1914,
-		/// <summary>
-		/// Офис на Третьяковской (1915)
-		/// </summary>
-		[Description("Офис на Третьяковской")]
-        [EnumCode("406")]
-        [ShortTitle("")]
-        OfisNaTretjyakovskoj = 1915,
-		/// <summary>
-		/// VT property (1916)
-		/// </summary>
-		[Description("VT property")]
-        [EnumCode("407")]
-        [ShortTitle("")]
-        VTProperty = 1916,
-		/// <summary>
-		/// ПрофГруппРиэлти (1917)
-		/// </summary>
-		[Description("ПрофГруппРиэлти")]
-        [EnumCode("408")]
-        [ShortTitle("")]
-        ProfGruppRielti = 1917,
-		/// <summary>
-		/// АДВЕКС (1918)
-		/// </summary>
-		[Description("АДВЕКС")]
-        [EnumCode("409")]
-        [ShortTitle("")]
-        ADVEKS = 1918,
-		/// <summary>
-		/// Правовой Центр Гарантия (1919)
-		/// </summary>
-		[Description("Правовой Центр Гарантия")]
-        [EnumCode("410")]
-        [ShortTitle("")]
-        PravovojCentrGarantiya = 1919,
-		/// <summary>
-		/// Центр Недвижимости в Марьино (1920)
-		/// </summary>
-		[Description("Центр Недвижимости в Марьино")]
-        [EnumCode("411")]
-        [ShortTitle("")]
-        CentrNedvizhimostiVMarjino = 1920,
-		/// <summary>
-		/// Веста (1921)
-		/// </summary>
-		[Description("Веста")]
-        [EnumCode("412")]
-        [ShortTitle("")]
-        Vesta = 1921,
-		/// <summary>
-		/// ЧР Козелец Виктор (1922)
-		/// </summary>
-		[Description("ЧР Козелец Виктор")]
-        [EnumCode("413")]
-        [ShortTitle("")]
-        ChRKozelecViktor = 1922,
-		/// <summary>
-		/// МегаСити (1923)
-		/// </summary>
-		[Description("МегаСити")]
-        [EnumCode("414")]
-        [ShortTitle("")]
-        MegaSiti = 1923,
-		/// <summary>
-		/// Жилцентр (1924)
-		/// </summary>
-		[Description("Жилцентр")]
-        [EnumCode("415")]
-        [ShortTitle("")]
-        Zhilcentr = 1924,
-		/// <summary>
-		/// ОБМЕН.РУ (1925)
-		/// </summary>
-		[Description("ОБМЕН.РУ")]
-        [EnumCode("416")]
-        [ShortTitle("")]
-        OBMENRU = 1925,
-		/// <summary>
-		/// Ареал Эстейт (1926)
-		/// </summary>
-		[Description("Ареал Эстейт")]
-        [EnumCode("417")]
-        [ShortTitle("")]
-        ArealEstejt = 1926,
-		/// <summary>
-		/// Ларт-Недвижимость (1927)
-		/// </summary>
-		[Description("Ларт-Недвижимость")]
-        [EnumCode("418")]
-        [ShortTitle("")]
-        LartNedvizhimostj = 1927,
-		/// <summary>
-		/// ССР-Недвижимость (1928)
-		/// </summary>
-		[Description("ССР-Недвижимость")]
-        [EnumCode("419")]
-        [ShortTitle("")]
-        SSRNedvizhimostj = 1928,
-		/// <summary>
-		/// ЧР Куликова Ольга Николаевна (1929)
-		/// </summary>
-		[Description("ЧР Куликова Ольга Николаевна")]
-        [EnumCode("420")]
-        [ShortTitle("")]
-        ChRKulikovaOljgaNikolaevna = 1929,
-		/// <summary>
-		/// Юго-Восток (1930)
-		/// </summary>
-		[Description("Юго-Восток")]
-        [EnumCode("421")]
-        [ShortTitle("")]
-        YugoVostok = 1930,
-		/// <summary>
-		/// ИнвеСТрой (1931)
-		/// </summary>
-		[Description("ИнвеСТрой")]
-        [EnumCode("422")]
-        [ShortTitle("")]
-        InveSTroj = 1931,
-		/// <summary>
-		/// ЧР Баринова Лариса Михайловна (1932)
-		/// </summary>
-		[Description("ЧР Баринова Лариса Михайловна")]
-        [EnumCode("423")]
-        [ShortTitle("")]
-        ChRBarinovaLarisaMihajlovna = 1932,
-		/// <summary>
-		/// Городская недвижимость (1933)
-		/// </summary>
-		[Description("Городская недвижимость")]
-        [EnumCode("424")]
-        [ShortTitle("")]
-        GorodskayaNedvizhimostj = 1933,
-		/// <summary>
-		/// Ismailov Estate (1934)
-		/// </summary>
-		[Description("Ismailov Estate")]
-        [EnumCode("425")]
-        [ShortTitle("")]
-        IsmailovEstate = 1934,
-		/// <summary>
-		/// Ла Терра (1935)
-		/// </summary>
-		[Description("Ла Терра")]
-        [EnumCode("426")]
-        [ShortTitle("")]
-        LaTerra = 1935,
-		/// <summary>
-		/// ПРАКТИК (1936)
-		/// </summary>
-		[Description("ПРАКТИК")]
-        [EnumCode("427")]
-        [ShortTitle("")]
-        PRAKTIK = 1936,
-		/// <summary>
-		/// HOME WAY (1937)
-		/// </summary>
-		[Description("HOME WAY")]
-        [EnumCode("428")]
-        [ShortTitle("")]
-        HOMEWAY = 1937,
-		/// <summary>
-		/// ТриЗА (1938)
-		/// </summary>
-		[Description("ТриЗА")]
-        [EnumCode("429")]
-        [ShortTitle("")]
-        TriZA = 1938,
-		/// <summary>
-		/// 1- ая Линия (1939)
-		/// </summary>
-		[Description("1- ая Линия")]
-        [EnumCode("430")]
-        [ShortTitle("")]
-        PervayaLiniya = 1939,
-		/// <summary>
-		/// Каменный пояс (1940)
-		/// </summary>
-		[Description("Каменный пояс")]
-        [EnumCode("431")]
-        [ShortTitle("")]
-        KamennijPoyas = 1940,
-		/// <summary>
-		/// ЧР Верле Елена Леонидовна (1941)
-		/// </summary>
-		[Description("ЧР Верле Елена Леонидовна")]
-        [EnumCode("432")]
-        [ShortTitle("")]
-        ChRVerleElenaLeonidovna = 1941,
-		/// <summary>
-		/// ЧР Родионова Марина Валерьевна (1942)
-		/// </summary>
-		[Description("ЧР Родионова Марина Валерьевна")]
-        [EnumCode("433")]
-        [ShortTitle("")]
-        ChRRodionovaMarinaValerjevna = 1942,
-		/// <summary>
-		/// МосТРИО (1943)
-		/// </summary>
-		[Description("МосТРИО")]
-        [EnumCode("434")]
-        [ShortTitle("")]
-        MosTRIO = 1943,
-		/// <summary>
-		/// Орлан Недвижимость (1944)
-		/// </summary>
-		[Description("Орлан Недвижимость")]
-        [EnumCode("435")]
-        [ShortTitle("")]
-        OrlanNedvizhimostj = 1944,
-		/// <summary>
-		/// На Привольной (1945)
-		/// </summary>
-		[Description("На Привольной")]
-        [EnumCode("436")]
-        [ShortTitle("")]
-        NaPrivoljnoj = 1945,
-		/// <summary>
-		/// ЧР Кононова Мария Ивановна (1946)
-		/// </summary>
-		[Description("ЧР Кононова Мария Ивановна")]
-        [EnumCode("437")]
-        [ShortTitle("")]
-        ChRKononovaMariyaIvanovna = 1946,
-		/// <summary>
-		/// Мест.Ком (1947)
-		/// </summary>
-		[Description("Мест.Ком")]
-        [EnumCode("438")]
-        [ShortTitle("")]
-        MestKom = 1947,
-		/// <summary>
-		/// Ассоциация Гильдия Риелторов (1948)
-		/// </summary>
-		[Description("Ассоциация Гильдия Риелторов")]
-        [EnumCode("439")]
-        [ShortTitle("")]
-        AssociaciyaGiljdiyaRieltorov = 1948,
-		/// <summary>
-		/// ИСК Запад (1949)
-		/// </summary>
-		[Description("ИСК Запад")]
-        [EnumCode("440")]
-        [ShortTitle("")]
-        ISKZapad = 1949,
-		/// <summary>
-		/// ЧР Титова Светлана (1950)
-		/// </summary>
-		[Description("ЧР Титова Светлана")]
-        [EnumCode("441")]
-        [ShortTitle("")]
-        ChRTitovaSvetlana = 1950,
-		/// <summary>
-		/// ЧР Сабуров Сергей Юрьевич (1951)
-		/// </summary>
-		[Description("ЧР Сабуров Сергей Юрьевич")]
-        [EnumCode("442")]
-        [ShortTitle("")]
-        ChRSaburovSergejYurjevich = 1951,
-		/// <summary>
-		/// ЧР Домановский Андрей Гергиевич (1952)
-		/// </summary>
-		[Description("ЧР Домановский Андрей Гергиевич")]
-        [EnumCode("443")]
-        [ShortTitle("")]
-        ChRDomanovskijAndrejGergievich = 1952,
-		/// <summary>
-		/// СТРОЙКОМ-КАПИТАЛ (1953)
-		/// </summary>
-		[Description("СТРОЙКОМ-КАПИТАЛ")]
-        [EnumCode("444")]
-        [ShortTitle("")]
-        STROJKOMKAPITAL = 1953,
-		/// <summary>
-		/// Трейд-ин Риэлти (1954)
-		/// </summary>
-		[Description("Трейд-ин Риэлти")]
-        [EnumCode("445")]
-        [ShortTitle("")]
-        TrejdInRielti = 1954,
-		/// <summary>
-		/// РИЭЛТ-ЦЕНТР (1955)
-		/// </summary>
-		[Description("РИЭЛТ-ЦЕНТР")]
-        [EnumCode("446")]
-        [ShortTitle("")]
-        RIELTCENTR = 1955,
-		/// <summary>
-		/// МЕЛИНА (1956)
-		/// </summary>
-		[Description("МЕЛИНА")]
-        [EnumCode("447")]
-        [ShortTitle("")]
-        MELINA = 1956,
-		/// <summary>
-		/// ТРИУМФ (1957)
-		/// </summary>
-		[Description("ТРИУМФ")]
-        [EnumCode("448")]
-        [ShortTitle("")]
-        TRIUMF = 1957,
-		/// <summary>
-		/// ЧР Рояк Виктория (1958)
-		/// </summary>
-		[Description("ЧР Рояк Виктория")]
-        [EnumCode("449")]
-        [ShortTitle("")]
-        ChRRoyakViktoriya = 1958,
-		/// <summary>
-		/// ЧР Магриева Полина (1959)
-		/// </summary>
-		[Description("ЧР Магриева Полина")]
-        [EnumCode("450")]
-        [ShortTitle("")]
-        ChRMagrievaPolina = 1959,
-		/// <summary>
-		/// АНТЕР-Недвижимость (1960)
-		/// </summary>
-		[Description("АНТЕР-Недвижимость")]
-        [EnumCode("451")]
-        [ShortTitle("")]
-        ANTERNedvizhimostj = 1960,
-		/// <summary>
-		/// Вашагент007 (1961)
-		/// </summary>
-		[Description("Вашагент007")]
-        [EnumCode("452")]
-        [ShortTitle("")]
-        Vashagent007 = 1961,
-		/// <summary>
-		/// Экспертный Центр Недвижимости (1962)
-		/// </summary>
-		[Description("Экспертный Центр Недвижимости")]
-        [EnumCode("453")]
-        [ShortTitle("")]
-        EkspertnijCentrNedvizhimosti = 1962,
-		/// <summary>
-		/// ГОРЖИЛСЕРВИС (1963)
-		/// </summary>
-		[Description("ГОРЖИЛСЕРВИС")]
-        [EnumCode("454")]
-        [ShortTitle("")]
-        GORZhILSERVIS = 1963,
-		/// <summary>
-		/// Группа частных риелторов (1964)
-		/// </summary>
-		[Description("Группа частных риелторов")]
-        [EnumCode("455")]
-        [ShortTitle("")]
-        GruppaChastnihRieltorov = 1964,
-		/// <summary>
-		/// Портал адвокатских и риэлторских услуг (1965)
-		/// </summary>
-		[Description("Портал адвокатских и риэлторских услуг")]
-        [EnumCode("456")]
-        [ShortTitle("")]
-        PortalAdvokatskihIRieltorskihUslug = 1965,
-		/// <summary>
-		/// КРОС-ИНФО (1966)
-		/// </summary>
-		[Description("КРОС-ИНФО")]
-        [EnumCode("457")]
-        [ShortTitle("")]
-        KROSINFO = 1966,
-		/// <summary>
-		/// КАПИТОЛИУМ (1967)
-		/// </summary>
-		[Description("КАПИТОЛИУМ")]
-        [EnumCode("458")]
-        [ShortTitle("")]
-        KAPITOLIUM = 1967,
-		/// <summary>
-		/// ЧР Ермолаева Елена (1968)
-		/// </summary>
-		[Description("ЧР Ермолаева Елена")]
-        [EnumCode("459")]
-        [ShortTitle("")]
-        ChRErmolaevaElena = 1968,
-		/// <summary>
-		/// БЕСТ-Новострой (1969)
-		/// </summary>
-		[Description("БЕСТ-Новострой")]
-        [EnumCode("460")]
-        [ShortTitle("")]
-        BESTNovostroj = 1969,
-		/// <summary>
-		/// Волкова Ольга (1970)
-		/// </summary>
-		[Description("Волкова Ольга")]
-        [EnumCode("461")]
-        [ShortTitle("")]
-        VolkovaOljga = 1970,
-		/// <summary>
-		/// ЧР Бадиев Тимур (1971)
-		/// </summary>
-		[Description("ЧР Бадиев Тимур")]
-        [EnumCode("462")]
-        [ShortTitle("")]
-        ChRBadievTimur = 1971,
-		/// <summary>
-		/// Миэль на Мичуринском (1972)
-		/// </summary>
-		[Description("Миэль на Мичуринском")]
-        [EnumCode("463")]
-        [ShortTitle("")]
-        MieljNaMichurinskom = 1972,
-		/// <summary>
-		/// Региональный жилищный центр (1973)
-		/// </summary>
-		[Description("Региональный жилищный центр")]
-        [EnumCode("464")]
-        [ShortTitle("")]
-        RegionaljnijZhilischnijCentr = 1973,
-		/// <summary>
-		/// Риэлти Групп (1974)
-		/// </summary>
-		[Description("Риэлти Групп")]
-        [EnumCode("465")]
-        [ShortTitle("")]
-        RieltiGrupp = 1974,
-		/// <summary>
-		/// Эксперты в недвижимости (1975)
-		/// </summary>
-		[Description("Эксперты в недвижимости")]
-        [EnumCode("466")]
-        [ShortTitle("")]
-        EkspertiVNedvizhimosti = 1975,
-		/// <summary>
-		/// ЧР Павликов Сергей (1976)
-		/// </summary>
-		[Description("ЧР Павликов Сергей")]
-        [EnumCode("467")]
-        [ShortTitle("")]
-        ChRPavlikovSergej = 1976,
-		/// <summary>
-		/// ЧР Дудковская Наталья (1977)
-		/// </summary>
-		[Description("ЧР Дудковская Наталья")]
-        [EnumCode("468")]
-        [ShortTitle("")]
-        ChRDudkovskayaNataljya = 1977,
-		/// <summary>
-		/// Офис в Марьино (1978)
-		/// </summary>
-		[Description("Офис в Марьино")]
-        [EnumCode("469")]
-        [ShortTitle("")]
-        OfisVMarjino = 1978,
-		/// <summary>
-		/// ЧР Семенова Ирина (1979)
-		/// </summary>
-		[Description("ЧР Семенова Ирина")]
-        [EnumCode("470")]
-        [ShortTitle("")]
-        ChRSemenovaIrina = 1979,
-		/// <summary>
-		/// ЧР Андрианова Марина (1980)
-		/// </summary>
-		[Description("ЧР Андрианова Марина")]
-        [EnumCode("471")]
-        [ShortTitle("")]
-        ChRAndrianovaMarina = 1980,
-		/// <summary>
-		/// Волен Выбор (1981)
-		/// </summary>
-		[Description("Волен Выбор")]
-        [EnumCode("472")]
-        [ShortTitle("")]
-        VolenVibor = 1981,
-		/// <summary>
-		/// Гильдия (1982)
-		/// </summary>
-		[Description("Гильдия")]
-        [EnumCode("473")]
-        [ShortTitle("")]
-        Giljdiya = 1982,
-		/// <summary>
-		/// Столичное бюро недвижимости (1983)
-		/// </summary>
-		[Description("Столичное бюро недвижимости")]
-        [EnumCode("474")]
-        [ShortTitle("")]
-        StolichnoeByuroNedvizhimosti = 1983,
-		/// <summary>
-		/// Собинбанк (1984)
-		/// </summary>
-		[Description("Собинбанк")]
-        [EnumCode("475")]
-        [ShortTitle("")]
-        Sobinbank = 1984,
-		/// <summary>
-		/// ЧР Ведерников Владимир (1985)
-		/// </summary>
-		[Description("ЧР Ведерников Владимир")]
-        [EnumCode("476")]
-        [ShortTitle("")]
-        ChRVedernikovVladimir = 1985,
-		/// <summary>
-		/// ЧР Сергеев Александр Сергеевич (1986)
-		/// </summary>
-		[Description("ЧР Сергеев Александр Сергеевич")]
-        [EnumCode("477")]
-        [ShortTitle("")]
-        ChRSergeevAleksandrSergeevich = 1986,
-		/// <summary>
-		/// ЧР Машницкий Андрей (1987)
-		/// </summary>
-		[Description("ЧР Машницкий Андрей")]
-        [EnumCode("478")]
-        [ShortTitle("")]
-        ChRMashnickijAndrej = 1987,
-		/// <summary>
-		/// Капитал недвижимость (1988)
-		/// </summary>
-		[Description("Капитал недвижимость")]
-        [EnumCode("479")]
-        [ShortTitle("")]
-        KapitalNedvizhimostj = 1988,
-		/// <summary>
-		/// Анатомия Недвижимости (1989)
-		/// </summary>
-		[Description("Анатомия Недвижимости")]
-        [EnumCode("480")]
-        [ShortTitle("")]
-        AnatomiyaNedvizhimosti = 1989,
-		/// <summary>
-		/// ЧР Кокина Виктория Евгеньевна (1990)
-		/// </summary>
-		[Description("ЧР Кокина Виктория Евгеньевна")]
-        [EnumCode("481")]
-        [ShortTitle("")]
-        ChRKokinaViktoriyaEvgenjevna = 1990,
-		/// <summary>
-		/// ЛИДЕРЛЭНД (1991)
-		/// </summary>
-		[Description("ЛИДЕРЛЭНД")]
-        [EnumCode("482")]
-        [ShortTitle("")]
-        LIDERLEND = 1991,
-		/// <summary>
-		/// ДОМУС (1992)
-		/// </summary>
-		[Description("ДОМУС")]
-        [EnumCode("483")]
-        [ShortTitle("")]
-        DOMUS = 1992,
-		/// <summary>
-		/// ЧР Королева Светлана (1993)
-		/// </summary>
-		[Description("ЧР Королева Светлана")]
-        [EnumCode("484")]
-        [ShortTitle("")]
-        ChRKorolevaSvetlana = 1993,
-		/// <summary>
-		/// КлючЪ (1994)
-		/// </summary>
-		[Description("КлючЪ")]
-        [EnumCode("485")]
-        [ShortTitle("")]
-        KlyuchJ = 1994,
-		/// <summary>
-		/// Пушкино (1995)
-		/// </summary>
-		[Description("Пушкино")]
-        [EnumCode("486")]
-        [ShortTitle("")]
-        Pushkino = 1995,
-		/// <summary>
-		/// Клер-Юнити (1996)
-		/// </summary>
-		[Description("Клер-Юнити")]
-        [EnumCode("487")]
-        [ShortTitle("")]
-        KlerYuniti = 1996,
-		/// <summary>
-		/// ЧР Комкова Ирина Викторовна (1997)
-		/// </summary>
-		[Description("ЧР Комкова Ирина Викторовна")]
-        [EnumCode("488")]
-        [ShortTitle("")]
-        ChRKomkovaIrinaViktorovna = 1997,
-		/// <summary>
-		/// Городок Б (1998)
-		/// </summary>
-		[Description("Городок Б")]
-        [EnumCode("489")]
-        [ShortTitle("")]
-        GorodokB = 1998,
-		/// <summary>
-		/// Перспектива (1999)
-		/// </summary>
-		[Description("Перспектива")]
-        [EnumCode("490")]
-        [ShortTitle("")]
-        Perspektiva = 1999,
-		/// <summary>
-		/// Сообщество Независимых Риэлторов (2000)
-		/// </summary>
-		[Description("Сообщество Независимых Риэлторов")]
-        [EnumCode("491")]
-        [ShortTitle("")]
-        SoobschestvoNezavisimihRieltorov = 2000,
-		/// <summary>
-		/// Diamant Estate (2001)
-		/// </summary>
-		[Description("Diamant Estate")]
-        [EnumCode("492")]
-        [ShortTitle("")]
-        DiamantEstate = 2001,
-		/// <summary>
-		/// ЧР Карань Надежда (2002)
-		/// </summary>
-		[Description("ЧР Карань Надежда")]
-        [EnumCode("493")]
-        [ShortTitle("")]
-        ChRKaranjNadezhda = 2002,
-		/// <summary>
-		/// НДВ-Недвижимость (2003)
-		/// </summary>
-		[Description("НДВ-Недвижимость")]
-        [EnumCode("494")]
-        [ShortTitle("")]
-        NDVNedvizhimostj = 2003,
-		/// <summary>
-		/// Миэль. Офис на Курской (2004)
-		/// </summary>
-		[Description("Миэль. Офис на Курской")]
-        [EnumCode("495")]
-        [ShortTitle("")]
-        MieljOfisNaKurskoj = 2004,
-		/// <summary>
-		/// БСН (2005)
-		/// </summary>
-		[Description("БСН")]
-        [EnumCode("496")]
-        [ShortTitle("")]
-        BSN = 2005,
-		/// <summary>
-		/// ЧР Македонский Александр (2006)
-		/// </summary>
-		[Description("ЧР Македонский Александр")]
-        [EnumCode("497")]
-        [ShortTitle("")]
-        ChRMakedonskijAleksandr = 2006,
-		/// <summary>
-		/// АРКАДА лтд (2007)
-		/// </summary>
-		[Description("АРКАДА лтд")]
-        [EnumCode("498")]
-        [ShortTitle("")]
-        ARKADALtd = 2007,
-		/// <summary>
-		/// Mosaic Realty (2008)
-		/// </summary>
-		[Description("Mosaic Realty")]
-        [EnumCode("499")]
-        [ShortTitle("")]
-        MosaicRealty = 2008,
-		/// <summary>
-		/// ЧР Глотов Павел (2009)
-		/// </summary>
-		[Description("ЧР Глотов Павел")]
-        [EnumCode("500")]
-        [ShortTitle("")]
-        ChRGlotovPavel = 2009,
-		/// <summary>
-		/// ГРАДЪ ПЛЮС (2010)
-		/// </summary>
-		[Description("ГРАДЪ ПЛЮС")]
-        [EnumCode("501")]
-        [ShortTitle("")]
-        GRADJPLYuS = 2010,
-		/// <summary>
-		/// Группа агентов (2011)
-		/// </summary>
-		[Description("Группа агентов")]
-        [EnumCode("502")]
-        [ShortTitle("")]
-        GruppaAgentov = 2011,
-		/// <summary>
-		/// horomy-info (2012)
-		/// </summary>
-		[Description("horomy-info")]
-        [EnumCode("503")]
-        [ShortTitle("")]
-        horomyInfo = 2012,
-		/// <summary>
-		/// Европейская недвижимость (2013)
-		/// </summary>
-		[Description("Европейская недвижимость")]
-        [EnumCode("504")]
-        [ShortTitle("")]
-        EvropejskayaNedvizhimostj = 2013,
-		/// <summary>
-		/// ЧР Золото Елена (2014)
-		/// </summary>
-		[Description("ЧР Золото Елена")]
-        [EnumCode("505")]
-        [ShortTitle("")]
-        ChRZolotoElena = 2014,
-		/// <summary>
-		/// Дирекция Заказчика (2015)
-		/// </summary>
-		[Description("Дирекция Заказчика")]
-        [EnumCode("506")]
-        [ShortTitle("")]
-        DirekciyaZakazchika = 2015,
-		/// <summary>
-		/// ЧР Носикова Галина (2016)
-		/// </summary>
-		[Description("ЧР Носикова Галина")]
-        [EnumCode("507")]
-        [ShortTitle("")]
-        ChRNosikovaGalina = 2016,
-		/// <summary>
-		/// Элит- Регистрация (2017)
-		/// </summary>
-		[Description("Элит- Регистрация")]
-        [EnumCode("508")]
-        [ShortTitle("")]
-        ElitRegistraciya = 2017,
-		/// <summary>
-		/// МаксГарантНедвижимость (2018)
-		/// </summary>
-		[Description("МаксГарантНедвижимость")]
-        [EnumCode("509")]
-        [ShortTitle("")]
-        MaksGarantNedvizhimostj = 2018,
-		/// <summary>
-		/// ЧР Белова Алена (2019)
-		/// </summary>
-		[Description("ЧР Белова Алена")]
-        [EnumCode("510")]
-        [ShortTitle("")]
-        ChRBelovaAlena = 2019,
-		/// <summary>
-		/// ЧР Володина Людмила (2020)
-		/// </summary>
-		[Description("ЧР Володина Людмила")]
-        [EnumCode("511")]
-        [ShortTitle("")]
-        ChRVolodinaLyudmila = 2020,
-		/// <summary>
-		/// Июника (2021)
-		/// </summary>
-		[Description("Июника")]
-        [EnumCode("512")]
-        [ShortTitle("")]
-        Iyunika = 2021,
-		/// <summary>
-		/// Ф НЕДВИЖИМОСТЬ (2022)
-		/// </summary>
-		[Description("Ф НЕДВИЖИМОСТЬ")]
-        [EnumCode("513")]
-        [ShortTitle("")]
-        FNEDVIZhIMOSTJ = 2022,
-		/// <summary>
-		/// МИЭЛЬ Офис на Университете (2023)
-		/// </summary>
-		[Description("МИЭЛЬ Офис на Университете")]
-        [EnumCode("514")]
-        [ShortTitle("")]
-        MIELJOfisNaUniversitete = 2023,
-		/// <summary>
-		/// Миэль Офис в Люберцах (2024)
-		/// </summary>
-		[Description("Миэль Офис в Люберцах")]
-        [EnumCode("515")]
-        [ShortTitle("")]
-        MieljOfisVLyubercah = 2024,
-		/// <summary>
-		/// Авангард М (2025)
-		/// </summary>
-		[Description("Авангард М")]
-        [EnumCode("516")]
-        [ShortTitle("")]
-        AvangardM = 2025,
-		/// <summary>
-		/// ЧР Шарапова Ольга (2026)
-		/// </summary>
-		[Description("ЧР Шарапова Ольга")]
-        [EnumCode("517")]
-        [ShortTitle("")]
-        ChRSharapovaOljga = 2026,
-		/// <summary>
-		/// Московская Недвижимость (2027)
-		/// </summary>
-		[Description("Московская Недвижимость")]
-        [EnumCode("518")]
-        [ShortTitle("")]
-        MoskovskayaNedvizhimostj = 2027,
-		/// <summary>
-		/// ЧР Андреев Александр (2028)
-		/// </summary>
-		[Description("ЧР Андреев Александр")]
-        [EnumCode("519")]
-        [ShortTitle("")]
-        ChRAndreevAleksandr = 2028,
-		/// <summary>
-		/// ЗелЖилСервис (2029)
-		/// </summary>
-		[Description("ЗелЖилСервис")]
-        [EnumCode("520")]
-        [ShortTitle("")]
-        ZelZhilServis = 2029,
-		/// <summary>
-		/// ЧР Никишкина Елена Анатольевна (2030)
-		/// </summary>
-		[Description("ЧР Никишкина Елена Анатольевна")]
-        [EnumCode("521")]
-        [ShortTitle("")]
-        ChRNikishkinaElenaAnatoljevna = 2030,
-		/// <summary>
-		/// ЧР Азарова Елена (2031)
-		/// </summary>
-		[Description("ЧР Азарова Елена")]
-        [EnumCode("522")]
-        [ShortTitle("")]
-        ChRAzarovaElena = 2031,
-		/// <summary>
-		/// ЧР Титов Константин (2032)
-		/// </summary>
-		[Description("ЧР Титов Константин")]
-        [EnumCode("523")]
-        [ShortTitle("")]
-        ChRTitovKonstantin = 2032,
-		/// <summary>
-		/// СЦН (2033)
-		/// </summary>
-		[Description("СЦН")]
-        [EnumCode("524")]
-        [ShortTitle("")]
-        SCN = 2033,
-		/// <summary>
-		/// ЧР Погорелов Егор (2034)
-		/// </summary>
-		[Description("ЧР Погорелов Егор")]
-        [EnumCode("525")]
-        [ShortTitle("")]
-        ChRPogorelovEgor = 2034,
-		/// <summary>
-		/// Гарант-Риэлти (2035)
-		/// </summary>
-		[Description("Гарант-Риэлти")]
-        [EnumCode("526")]
-        [ShortTitle("")]
-        GarantRielti = 2035,
-		/// <summary>
-		/// Реал-Партнер (2036)
-		/// </summary>
-		[Description("Реал-Партнер")]
-        [EnumCode("527")]
-        [ShortTitle("")]
-        RealPartner = 2036,
-		/// <summary>
-		/// KS-realty (2037)
-		/// </summary>
-		[Description("KS-realty")]
-        [EnumCode("528")]
-        [ShortTitle("")]
-        KSRealty = 2037,
-		/// <summary>
-		/// МЕЗОН (2038)
-		/// </summary>
-		[Description("МЕЗОН")]
-        [EnumCode("529")]
-        [ShortTitle("")]
-        MEZON = 2038,
-		/// <summary>
-		/// Офис Чертановский (2039)
-		/// </summary>
-		[Description("Офис Чертановский")]
-        [EnumCode("530")]
-        [ShortTitle("")]
-        OfisChertanovskij = 2039,
-		/// <summary>
-		/// НРЗ-Центр (2040)
-		/// </summary>
-		[Description("НРЗ-Центр")]
-        [EnumCode("531")]
-        [ShortTitle("")]
-        NRZCentr = 2040,
-		/// <summary>
-		/// Ключевой вопрос (2041)
-		/// </summary>
-		[Description("Ключевой вопрос")]
-        [EnumCode("532")]
-        [ShortTitle("")]
-        KlyuchevojVopros = 2041,
-		/// <summary>
-		/// terraproperty.ru (2042)
-		/// </summary>
-		[Description("terraproperty.ru")]
-        [EnumCode("533")]
-        [ShortTitle("")]
-        terrapropertyRu = 2042,
-		/// <summary>
-		/// СИГМА ИНВЕСТ (2043)
-		/// </summary>
-		[Description("СИГМА ИНВЕСТ")]
-        [EnumCode("534")]
-        [ShortTitle("")]
-        SIGMAINVEST = 2043,
-		/// <summary>
-		/// Бест Недвижимость на Цветном (2044)
-		/// </summary>
-		[Description("Бест Недвижимость на Цветном")]
-        [EnumCode("535")]
-        [ShortTitle("")]
-        BestNedvizhimostjNaCvetnom = 2044,
-		/// <summary>
-		/// Респект Недвижимость (2045)
-		/// </summary>
-		[Description("Респект Недвижимость")]
-        [EnumCode("536")]
-        [ShortTitle("")]
-        RespektNedvizhimostj = 2045,
-		/// <summary>
-		/// ЧР Изотова Елена (2046)
-		/// </summary>
-		[Description("ЧР Изотова Елена")]
-        [EnumCode("537")]
-        [ShortTitle("")]
-        ChRIzotovaElena = 2046,
-		/// <summary>
-		/// ЧР Пельтье Евгения (2047)
-		/// </summary>
-		[Description("ЧР Пельтье Евгения")]
-        [EnumCode("538")]
-        [ShortTitle("")]
-        ChRPeljtjeEvgeniya = 2047,
-		/// <summary>
-		/// Каскад (2048)
-		/// </summary>
-		[Description("Каскад")]
-        [EnumCode("539")]
-        [ShortTitle("")]
-        Kaskad = 2048,
-		/// <summary>
-		/// АСТЭК-М (2049)
-		/// </summary>
-		[Description("АСТЭК-М")]
-        [EnumCode("540")]
-        [ShortTitle("")]
-        ASTEKM = 2049,
-		/// <summary>
-		/// РИЭЛТОР.РУ (2050)
-		/// </summary>
-		[Description("РИЭЛТОР.РУ")]
-        [EnumCode("541")]
-        [ShortTitle("")]
-        RIELTORRU = 2050,
-		/// <summary>
-		/// Департамент недвижимости ВМГКА (2051)
-		/// </summary>
-		[Description("Департамент недвижимости ВМГКА")]
-        [EnumCode("542")]
-        [ShortTitle("")]
-        DepartamentNedvizhimostiVMGKA = 2051,
-		/// <summary>
-		/// NEW ARK (2052)
-		/// </summary>
-		[Description("NEW ARK")]
-        [EnumCode("543")]
-        [ShortTitle("")]
-        NEWARK = 2052,
-		/// <summary>
-		/// НГППР (2053)
-		/// </summary>
-		[Description("НГППР")]
-        [EnumCode("544")]
-        [ShortTitle("")]
-        NGPPR = 2053,
-		/// <summary>
-		/// Успех (2054)
-		/// </summary>
-		[Description("Успех")]
-        [EnumCode("545")]
-        [ShortTitle("")]
-        Uspeh = 2054,
-		/// <summary>
-		/// Радуга (2055)
-		/// </summary>
-		[Description("Радуга")]
-        [EnumCode("546")]
-        [ShortTitle("")]
-        Raduga = 2055,
-		/// <summary>
-		/// OLD SCHOOL REALTY (2056)
-		/// </summary>
-		[Description("OLD SCHOOL REALTY")]
-        [EnumCode("547")]
-        [ShortTitle("")]
-        OLDSCHOOLREALTY = 2056,
-		/// <summary>
-		/// ЧР Клещевникова Елена (2057)
-		/// </summary>
-		[Description("ЧР Клещевникова Елена")]
-        [EnumCode("548")]
-        [ShortTitle("")]
-        ChRKleschevnikovaElena = 2057,
-		/// <summary>
-		/// А.С.К (2058)
-		/// </summary>
-		[Description("А.С.К")]
-        [EnumCode("549")]
-        [ShortTitle("")]
-        ASK = 2058,
-		/// <summary>
-		/// АВГУСТ (2059)
-		/// </summary>
-		[Description("АВГУСТ")]
-        [EnumCode("550")]
-        [ShortTitle("")]
-        AVGUST = 2059,
-		/// <summary>
-		/// ЧР Бирюков Игорь (2060)
-		/// </summary>
-		[Description("ЧР Бирюков Игорь")]
-        [EnumCode("551")]
-        [ShortTitle("")]
-        ChRBiryukovIgorj = 2060,
-		/// <summary>
-		/// ДИАЛОГ ГАРАНТ (2061)
-		/// </summary>
-		[Description("ДИАЛОГ ГАРАНТ")]
-        [EnumCode("552")]
-        [ShortTitle("")]
-        DIALOGGARANT = 2061,
-		/// <summary>
-		/// ЧР Карабанова Наталия Александровна (2062)
-		/// </summary>
-		[Description("ЧР Карабанова Наталия Александровна")]
-        [EnumCode("553")]
-        [ShortTitle("")]
-        ChRKarabanovaNataliyaAleksandrovna = 2062,
-		/// <summary>
-		/// ЧР Гумиров Александр Михайлович (2063)
-		/// </summary>
-		[Description("ЧР Гумиров Александр Михайлович")]
-        [EnumCode("554")]
-        [ShortTitle("")]
-        ChRGumirovAleksandrMihajlovich = 2063,
-		/// <summary>
-		/// Мегаполис-м (2064)
-		/// </summary>
-		[Description("Мегаполис-м")]
-        [EnumCode("555")]
-        [ShortTitle("")]
-        MegapolisM = 2064,
-		/// <summary>
-		/// МИЭЛЬ Офис на Авиамоторной (2065)
-		/// </summary>
-		[Description("МИЭЛЬ Офис на Авиамоторной")]
-        [EnumCode("556")]
-        [ShortTitle("")]
-        MIELJOfisNaAviamotornoj = 2065,
-		/// <summary>
-		/// 50-й РЕГИОН (2066)
-		/// </summary>
-		[Description("50-й РЕГИОН")]
-        [EnumCode("557")]
-        [ShortTitle("")]
-        PyatidesyatiyJREGION = 2066,
-		/// <summary>
-		/// ДОМИУМ (2067)
-		/// </summary>
-		[Description("ДОМИУМ")]
-        [EnumCode("558")]
-        [ShortTitle("")]
-        DOMIUM = 2067,
-		/// <summary>
-		/// Арбатское (2068)
-		/// </summary>
-		[Description("Арбатское")]
-        [EnumCode("559")]
-        [ShortTitle("")]
-        Arbatskoe = 2068,
-		/// <summary>
-		/// Дом твоей мечты (2069)
-		/// </summary>
-		[Description("Дом твоей мечты")]
-        [EnumCode("560")]
-        [ShortTitle("")]
-        DomTvoejMechti = 2069,
-		/// <summary>
-		/// Аврора Эстейт (2070)
-		/// </summary>
-		[Description("Аврора Эстейт")]
-        [EnumCode("561")]
-        [ShortTitle("")]
-        AvroraEstejt = 2070,
-		/// <summary>
-		/// Лоцман (2071)
-		/// </summary>
-		[Description("Лоцман")]
-        [EnumCode("562")]
-        [ShortTitle("")]
-        Locman = 2071,
-		/// <summary>
-		/// CENTRE-OFF (2072)
-		/// </summary>
-		[Description("CENTRE-OFF")]
-        [EnumCode("563")]
-        [ShortTitle("")]
-        CENTREOFF = 2072,
-		/// <summary>
-		/// Релайт недвижимость (2073)
-		/// </summary>
-		[Description("Релайт недвижимость")]
-        [EnumCode("564")]
-        [ShortTitle("")]
-        RelajtNedvizhimostj = 2073,
-		/// <summary>
-		/// КВАРТИРНЫЙ МЭТР (2074)
-		/// </summary>
-		[Description("КВАРТИРНЫЙ МЭТР")]
-        [EnumCode("565")]
-        [ShortTitle("")]
-        KVARTIRNIJMETR = 2074,
-		/// <summary>
-		/// Brulin&Partners (2075)
-		/// </summary>
-		[Description("Brulin&Partners")]
-        [EnumCode("566")]
-        [ShortTitle("")]
-        BrulinAndPartners = 2075,
-		/// <summary>
-		/// Недвижимость Ипотека Плюс (2076)
-		/// </summary>
-		[Description("Недвижимость Ипотека Плюс")]
-        [EnumCode("567")]
-        [ShortTitle("")]
-        NedvizhimostjIpotekaPlyus = 2076,
-		/// <summary>
-		/// Рескор (2077)
-		/// </summary>
-		[Description("Рескор")]
-        [EnumCode("568")]
-        [ShortTitle("")]
-        Reskor = 2077,
-		/// <summary>
-		/// CENTURY21 Серебряный век (2078)
-		/// </summary>
-		[Description("CENTURY21 Серебряный век")]
-        [EnumCode("569")]
-        [ShortTitle("")]
-        CENTURY21SerebryanijVek = 2078,
-		/// <summary>
-		/// Калитаград (2079)
-		/// </summary>
-		[Description("Калитаград")]
-        [EnumCode("570")]
-        [ShortTitle("")]
-        Kalitagrad = 2079,
-		/// <summary>
-		/// МЖК-РИЭЛТ (2080)
-		/// </summary>
-		[Description("МЖК-РИЭЛТ")]
-        [EnumCode("571")]
-        [ShortTitle("")]
-        MZhKRIELT = 2080,
-		/// <summary>
-		/// МИЭЛЬ НОВОСТРОЙКИ (2081)
-		/// </summary>
-		[Description("МИЭЛЬ НОВОСТРОЙКИ")]
-        [EnumCode("572")]
-        [ShortTitle("")]
-        MIELJNOVOSTROJKI = 2081,
-		/// <summary>
-		/// ССР-Недвижимость Запад (2082)
-		/// </summary>
-		[Description("ССР-Недвижимость Запад")]
-        [EnumCode("573")]
-        [ShortTitle("")]
-        SSRNedvizhimostjZapad = 2082,
-		/// <summary>
-		/// ГОРОДЪ (2083)
-		/// </summary>
-		[Description("ГОРОДЪ")]
-        [EnumCode("574")]
-        [ShortTitle("")]
-        GORODJ = 2083,
-		/// <summary>
-		/// Миэль на Юго-Западной (2084)
-		/// </summary>
-		[Description("Миэль на Юго-Западной")]
-        [EnumCode("575")]
-        [ShortTitle("")]
-        MieljNaYugoZapadnoj = 2084,
-		/// <summary>
-		/// Кей Эстейт (2085)
-		/// </summary>
-		[Description("Кей Эстейт")]
-        [EnumCode("576")]
-        [ShortTitle("")]
-        KejEstejt = 2085,
-		/// <summary>
-		/// НАМОС НЕДВИЖИМОСТЬ (2086)
-		/// </summary>
-		[Description("НАМОС НЕДВИЖИМОСТЬ")]
-        [EnumCode("577")]
-        [ShortTitle("")]
-        NAMOSNEDVIZhIMOSTJ = 2086,
-		/// <summary>
-		/// Новые Черемушки (2087)
-		/// </summary>
-		[Description("Новые Черемушки")]
-        [EnumCode("578")]
-        [ShortTitle("")]
-        NovieCheremushki = 2087,
-		/// <summary>
-		/// Единая служба недвижимости (2088)
-		/// </summary>
-		[Description("Единая служба недвижимости")]
-        [EnumCode("579")]
-        [ShortTitle("")]
-        EdinayaSluzhbaNedvizhimosti = 2088,
-		/// <summary>
-		/// Кросби (2089)
-		/// </summary>
-		[Description("Кросби")]
-        [EnumCode("580")]
-        [ShortTitle("")]
-        Krosbi = 2089,
-		/// <summary>
-		/// Правовой центр недвижимости (2090)
-		/// </summary>
-		[Description("Правовой центр недвижимости")]
-        [EnumCode("581")]
-        [ShortTitle("")]
-        PravovojCentrNedvizhimosti = 2090,
-		/// <summary>
-		/// АБ Риэлти (2091)
-		/// </summary>
-		[Description("АБ Риэлти")]
-        [EnumCode("582")]
-        [ShortTitle("")]
-        ABRielti = 2091,
-		/// <summary>
-		/// ЧР Трофименко Татьяна (2092)
-		/// </summary>
-		[Description("ЧР Трофименко Татьяна")]
-        [EnumCode("583")]
-        [ShortTitle("")]
-        ChRTrofimenkoTatjyana = 2092,
-		/// <summary>
-		/// РЕГИОН (2093)
-		/// </summary>
-		[Description("РЕГИОН")]
-        [EnumCode("584")]
-        [ShortTitle("")]
-        REGION = 2093,
-		/// <summary>
-		/// Три звезды+ (2094)
-		/// </summary>
-		[Description("Три звезды+")]
-        [EnumCode("585")]
-        [ShortTitle("")]
-        TriZvezdiPlus = 2094,
-		/// <summary>
-		/// ПРОФЕССИОНАЛ (2095)
-		/// </summary>
-		[Description("ПРОФЕССИОНАЛ")]
-        [EnumCode("586")]
-        [ShortTitle("")]
-        PROFESSIONAL = 2095,
-		/// <summary>
-		/// ЭКО-недвижимость (2096)
-		/// </summary>
-		[Description("ЭКО-недвижимость")]
-        [EnumCode("587")]
-        [ShortTitle("")]
-        EKONedvizhimostj = 2096,
-		/// <summary>
-		/// Трио (2097)
-		/// </summary>
-		[Description("Трио")]
-        [EnumCode("588")]
-        [ShortTitle("")]
-        Trio = 2097,
-		/// <summary>
-		/// ЧР Волков Вадим (2098)
-		/// </summary>
-		[Description("ЧР Волков Вадим")]
-        [EnumCode("589")]
-        [ShortTitle("")]
-        ChRVolkovVadim = 2098,
-		/// <summary>
-		/// Миэль Офис на Новослободской (2099)
-		/// </summary>
-		[Description("Миэль Офис на Новослободской")]
-        [EnumCode("590")]
-        [ShortTitle("")]
-        MieljOfisNaNovoslobodskoj = 2099,
-		/// <summary>
-		/// Кентавр (2100)
-		/// </summary>
-		[Description("Кентавр")]
-        [EnumCode("591")]
-        [ShortTitle("")]
-        Kentavr = 2100,
-		/// <summary>
-		/// Городок (2101)
-		/// </summary>
-		[Description("Городок")]
-        [EnumCode("592")]
-        [ShortTitle("")]
-        Gorodok = 2101,
-		/// <summary>
-		/// Риэлтком-М (2102)
-		/// </summary>
-		[Description("Риэлтком-М")]
-        [EnumCode("593")]
-        [ShortTitle("")]
-        RieltkomM = 2102,
-		/// <summary>
-		/// Битиэль-недвижимость (2103)
-		/// </summary>
-		[Description("Битиэль-недвижимость")]
-        [EnumCode("594")]
-        [ShortTitle("")]
-        BitieljNedvizhimostj = 2103,
-		/// <summary>
-		/// ЧР Замогильнова Ольга Анатольевна (2104)
-		/// </summary>
-		[Description("ЧР Замогильнова Ольга Анатольевна")]
-        [EnumCode("595")]
-        [ShortTitle("")]
-        ChRZamogiljnovaOljgaAnatoljevna = 2104,
-		/// <summary>
-		/// ЧР Коптелова Нина (2105)
-		/// </summary>
-		[Description("ЧР Коптелова Нина")]
-        [EnumCode("596")]
-        [ShortTitle("")]
-        ChRKoptelovaNina = 2105,
-		/// <summary>
-		/// Гильдия на Полежаевской (2106)
-		/// </summary>
-		[Description("Гильдия на Полежаевской")]
-        [EnumCode("597")]
-        [ShortTitle("")]
-        GiljdiyaNaPolezhaevskoj = 2106,
-		/// <summary>
-		/// Ярмарка Недвижимости (2107)
-		/// </summary>
-		[Description("Ярмарка Недвижимости")]
-        [EnumCode("598")]
-        [ShortTitle("")]
-        YarmarkaNedvizhimostiNext = 2107,
-		/// <summary>
-		/// МОСКОВСКИЙ РИЭЛТОР (2108)
-		/// </summary>
-		[Description("МОСКОВСКИЙ РИЭЛТОР")]
-        [EnumCode("599")]
-        [ShortTitle("")]
-        MOSKOVSKIJRIELTOR = 2108,
-		/// <summary>
-		/// Деловой мир (2109)
-		/// </summary>
-		[Description("Деловой мир")]
-        [EnumCode("600")]
-        [ShortTitle("")]
-        DelovojMir = 2109,
-		/// <summary>
-		/// ФОРУМ (2110)
-		/// </summary>
-		[Description("ФОРУМ")]
-        [EnumCode("601")]
-        [ShortTitle("")]
-        FORUM = 2110,
-		/// <summary>
-		/// МДН (2111)
-		/// </summary>
-		[Description("МДН")]
-        [EnumCode("602")]
-        [ShortTitle("")]
-        MDN = 2111,
-		/// <summary>
-		/// MBSI (2112)
-		/// </summary>
-		[Description("MBSI")]
-        [EnumCode("603")]
-        [ShortTitle("")]
-        MBSI = 2112,
-		/// <summary>
-		/// ЧР Жаркова Анжелла Михайловна (2113)
-		/// </summary>
-		[Description("ЧР Жаркова Анжелла Михайловна")]
-        [EnumCode("604")]
-        [ShortTitle("")]
-        ChRZharkovaAnzhellaMihajlovna = 2113,
-		/// <summary>
-		/// Арбат Гарант (2114)
-		/// </summary>
-		[Description("Арбат Гарант")]
-        [EnumCode("605")]
-        [ShortTitle("")]
-        ArbatGarant = 2114,
-		/// <summary>
-		/// Диос-Недвижимость (2115)
-		/// </summary>
-		[Description("Диос-Недвижимость")]
-        [EnumCode("606")]
-        [ShortTitle("")]
-        DiosNedvizhimostj = 2115,
-		/// <summary>
-		/// Диос- Недвижимость (2116)
-		/// </summary>
-		[Description("Диос- Недвижимость")]
-        [EnumCode("607")]
-        [ShortTitle("")]
-        DiosNedvizhimostjWrong = 2116,
-		/// <summary>
-		/// СОДЕЙСТВИЕ (2117)
-		/// </summary>
-		[Description("СОДЕЙСТВИЕ")]
-        [EnumCode("608")]
-        [ShortTitle("")]
-        SODEJSTVIE = 2117,
-		/// <summary>
-		/// НационалЪ (2118)
-		/// </summary>
-		[Description("НационалЪ")]
-        [EnumCode("609")]
-        [ShortTitle("")]
-        NacionalJ = 2118,
-		/// <summary>
-		/// Миэль. Офис В Переделкино (2119)
-		/// </summary>
-		[Description("Миэль. Офис В Переделкино")]
-        [EnumCode("610")]
-        [ShortTitle("")]
-        MieljOfisVPeredelkino = 2119,
-		/// <summary>
-		/// РОДНЫЕ СТЕНЫ (2120)
-		/// </summary>
-		[Description("РОДНЫЕ СТЕНЫ")]
-        [EnumCode("611")]
-        [ShortTitle("")]
-        RODNIESTENI = 2120,
-		/// <summary>
-		/// РИДА (2121)
-		/// </summary>
-		[Description("РИДА")]
-        [EnumCode("612")]
-        [ShortTitle("")]
-        RIDA = 2121,
-		/// <summary>
-		/// Держава (2122)
-		/// </summary>
-		[Description("Держава")]
-        [EnumCode("613")]
-        [ShortTitle("")]
-        Derzhava = 2122,
-		/// <summary>
-		/// ЧР Соина Ирина Владимировна (2123)
-		/// </summary>
-		[Description("ЧР Соина Ирина Владимировна")]
-        [EnumCode("614")]
-        [ShortTitle("")]
-        ChRSoinaIrinaVladimirovna = 2123,
-		/// <summary>
-		/// Ваш гид по недвижимости (2124)
-		/// </summary>
-		[Description("Ваш гид по недвижимости")]
-        [EnumCode("615")]
-        [ShortTitle("")]
-        VashGidPoNedvizhimosti = 2124,
-		/// <summary>
-		/// ХОРОШИЙ ГОД (2125)
-		/// </summary>
-		[Description("ХОРОШИЙ ГОД")]
-        [EnumCode("616")]
-        [ShortTitle("")]
-        HOROShIJGOD = 2125,
-		/// <summary>
-		/// ЧР Сапронова Татьяна (2126)
-		/// </summary>
-		[Description("ЧР Сапронова Татьяна")]
-        [EnumCode("617")]
-        [ShortTitle("")]
-        ChRSapronovaTatjyana = 2126,
-		/// <summary>
-		/// ЧР Майоров Алексей (2127)
-		/// </summary>
-		[Description("ЧР Майоров Алексей")]
-        [EnumCode("618")]
-        [ShortTitle("")]
-        ChRMajorovAleksej = 2127,
-		/// <summary>
-		/// ТД Недвижимости (2128)
-		/// </summary>
-		[Description("ТД Недвижимости")]
-        [EnumCode("619")]
-        [ShortTitle("")]
-        TDNedvizhimosti = 2128,
-		/// <summary>
-		/// МИЭЛЬ-КОРОЛЕВ (2129)
-		/// </summary>
-		[Description("МИЭЛЬ-КОРОЛЕВ")]
-        [EnumCode("620")]
-        [ShortTitle("")]
-        MIELJKOROLEV = 2129,
-		/// <summary>
-		/// ЧР Евстрат Юлия (2130)
-		/// </summary>
-		[Description("ЧР Евстрат Юлия")]
-        [EnumCode("621")]
-        [ShortTitle("")]
-        ChREvstratYuliya = 2130,
-		/// <summary>
-		/// ЧР Макарова Светлана (2131)
-		/// </summary>
-		[Description("ЧР Макарова Светлана")]
-        [EnumCode("622")]
-        [ShortTitle("")]
-        ChRMakarovaSvetlana = 2131,
-		/// <summary>
-		/// Трио-Риэлти (2132)
-		/// </summary>
-		[Description("Трио-Риэлти")]
-        [EnumCode("623")]
-        [ShortTitle("")]
-        TrioRielti = 2132,
-		/// <summary>
-		/// ЧР Смирнова Елена (2133)
-		/// </summary>
-		[Description("ЧР Смирнова Елена")]
-        [EnumCode("624")]
-        [ShortTitle("")]
-        ChRSmirnovaElena = 2133,
-		/// <summary>
-		/// ВОСТОК-РИЭЛТИ (2134)
-		/// </summary>
-		[Description("ВОСТОК-РИЭЛТИ")]
-        [EnumCode("625")]
-        [ShortTitle("")]
-        VOSTOKRIELTI = 2134,
-		/// <summary>
-		/// ЦИАН Якиманка (2135)
-		/// </summary>
-		[Description("ЦИАН Якиманка")]
-        [EnumCode("626")]
-        [ShortTitle("")]
-        CIANYakimanka = 2135,
-		/// <summary>
-		/// 5 Звезд НЕДВИЖИМОСТЬ (2136)
-		/// </summary>
-		[Description("5 Звезд НЕДВИЖИМОСТЬ")]
-        [EnumCode("627")]
-        [ShortTitle("")]
-        PyatZvezdNEDVIZhIMOSTJ = 2136,
-		/// <summary>
-		/// ДАР-МР (2137)
-		/// </summary>
-		[Description("ДАР-МР")]
-        [EnumCode("628")]
-        [ShortTitle("")]
-        DARMR = 2137,
-		/// <summary>
-		/// ЧР Болдин Валерий (2138)
-		/// </summary>
-		[Description("ЧР Болдин Валерий")]
-        [EnumCode("629")]
-        [ShortTitle("")]
-        ChRBoldinValerij = 2138,
-		/// <summary>
-		/// Ярмарка недвижимости (2139)
-		/// </summary>
-		[Description("Ярмарка недвижимости")]
-        [EnumCode("630")]
-        [ShortTitle("")]
-        YarmarkaNedvizhimosti = 2139,
-		/// <summary>
-		/// Гранд Сервис Недвижимость (2140)
-		/// </summary>
-		[Description("Гранд Сервис Недвижимость")]
-        [EnumCode("631")]
-        [ShortTitle("")]
-        GrandServisNedvizhimostj = 2140,
-		/// <summary>
-		/// Свой Дом (2141)
-		/// </summary>
-		[Description("Свой Дом")]
-        [EnumCode("632")]
-        [ShortTitle("")]
-        SvojDom = 2141,
-		/// <summary>
-		/// ГИЦ (2142)
-		/// </summary>
-		[Description("ГИЦ")]
-        [EnumCode("633")]
-        [ShortTitle("")]
-        GIC = 2142,
-		/// <summary>
-		/// САВВА (2143)
-		/// </summary>
-		[Description("САВВА")]
-        [EnumCode("634")]
-        [ShortTitle("")]
-        SAVVA = 2143,
-		/// <summary>
-		/// Группа Риэлторов (2144)
-		/// </summary>
-		[Description("Группа Риэлторов")]
-        [EnumCode("635")]
-        [ShortTitle("")]
-        GruppaRieltorov = 2144,
-		/// <summary>
-		/// РОНИКС (2145)
-		/// </summary>
-		[Description("РОНИКС")]
-        [EnumCode("636")]
-        [ShortTitle("")]
-        RONIKS = 2145,
-		/// <summary>
-		/// Галант (2146)
-		/// </summary>
-		[Description("Галант")]
-        [EnumCode("637")]
-        [ShortTitle("")]
-        Galant = 2146,
-		/// <summary>
-		/// Группа риелторов (2147)
-		/// </summary>
-		[Description("Группа риелторов")]
-        [EnumCode("638")]
-        [ShortTitle("")]
-        GruppaRieltorovNext = 2147,
-		/// <summary>
-		/// ЧР Сущева Наталья Ивановна (2148)
-		/// </summary>
-		[Description("ЧР Сущева Наталья Ивановна")]
-        [EnumCode("639")]
-        [ShortTitle("")]
-        ChRSuschevaNataljyaIvanovna = 2148,
-		/// <summary>
-		/// Золотой ключик (2149)
-		/// </summary>
-		[Description("Золотой ключик")]
-        [EnumCode("640")]
-        [ShortTitle("")]
-        ZolotojKlyuchik = 2149,
-		/// <summary>
-		/// Компания Содружество (2150)
-		/// </summary>
-		[Description("Компания Содружество")]
-        [EnumCode("641")]
-        [ShortTitle("")]
-        KompaniyaSodruzhestvo = 2150,
-		/// <summary>
-		/// ЭКЮ-недвижимость на Белорусской (2151)
-		/// </summary>
-		[Description("ЭКЮ-недвижимость на Белорусской")]
-        [EnumCode("642")]
-        [ShortTitle("")]
-        EKYuNedvizhimostjNaBelorusskoj = 2151,
-		/// <summary>
-		/// Молчанова и Ко (2152)
-		/// </summary>
-		[Description("Молчанова и Ко")]
-        [EnumCode("643")]
-        [ShortTitle("")]
-        MolchanovaIKo = 2152,
-		/// <summary>
-		/// ЧР Головина Татьяна (2153)
-		/// </summary>
-		[Description("ЧР Головина Татьяна")]
-        [EnumCode("644")]
-        [ShortTitle("")]
-        ChRGolovinaTatjyana = 2153,
-		/// <summary>
-		/// ЧР Усачев Иван (2154)
-		/// </summary>
-		[Description("ЧР Усачев Иван")]
-        [EnumCode("645")]
-        [ShortTitle("")]
-        ChRUsachevIvan = 2154,
-		/// <summary>
-		/// ФАВОРИТ (2155)
-		/// </summary>
-		[Description("ФАВОРИТ")]
-        [EnumCode("646")]
-        [ShortTitle("")]
-        FAVORIT = 2155,
-		/// <summary>
-		/// Аксима-недвижимость (2156)
-		/// </summary>
-		[Description("Аксима-недвижимость")]
-        [EnumCode("647")]
-        [ShortTitle("")]
-        AksimaNedvizhimostj = 2156,
-		/// <summary>
-		/// ЛЕОН (2157)
-		/// </summary>
-		[Description("ЛЕОН")]
-        [EnumCode("648")]
-        [ShortTitle("")]
-        LEON = 2157,
-		/// <summary>
-		/// Районный Риелтор (2158)
-		/// </summary>
-		[Description("Районный Риелтор")]
-        [EnumCode("649")]
-        [ShortTitle("")]
-        RajonnijRieltor = 2158,
-		/// <summary>
-		/// Глобус (2159)
-		/// </summary>
-		[Description("Глобус")]
-        [EnumCode("650")]
-        [ShortTitle("")]
-        Globus = 2159,
-		/// <summary>
-		/// ЧР Татьяна Романова (2160)
-		/// </summary>
-		[Description("ЧР Татьяна Романова")]
-        [EnumCode("651")]
-        [ShortTitle("")]
-        ChRTatjyanaRomanova = 2160,
-		/// <summary>
-		/// Bridgeford Capital (2161)
-		/// </summary>
-		[Description("Bridgeford Capital")]
-        [EnumCode("652")]
-        [ShortTitle("")]
-        BridgefordCapital = 2161,
-		/// <summary>
-		/// КАПИТАЛРЕНТ (2162)
-		/// </summary>
-		[Description("КАПИТАЛРЕНТ")]
-        [EnumCode("653")]
-        [ShortTitle("")]
-        KAPITALRENT = 2162,
-		/// <summary>
-		/// ЧР Бобкова Елена (2163)
-		/// </summary>
-		[Description("ЧР Бобкова Елена")]
-        [EnumCode("654")]
-        [ShortTitle("")]
-        ChRBobkovaElena = 2163,
-		/// <summary>
-		/// Ваш Партнер (2164)
-		/// </summary>
-		[Description("Ваш Партнер")]
-        [EnumCode("655")]
-        [ShortTitle("")]
-        VashPartnerNext = 2164,
-		/// <summary>
-		/// МИЭЛЬ Офис в Беляево (2165)
-		/// </summary>
-		[Description("МИЭЛЬ Офис в Беляево")]
-        [EnumCode("656")]
-        [ShortTitle("")]
-        MIELJOfisVBelyaevo = 2165,
-		/// <summary>
-		/// ЧР Левченко Сергей Юрьевич (2166)
-		/// </summary>
-		[Description("ЧР Левченко Сергей Юрьевич")]
-        [EnumCode("657")]
-        [ShortTitle("")]
-        ChRLevchenkoSergejYurjevich = 2166,
-		/// <summary>
-		/// МИЭЛЬ на Войковской (2167)
-		/// </summary>
-		[Description("МИЭЛЬ на Войковской")]
-        [EnumCode("658")]
-        [ShortTitle("")]
-        MIELJNaVojkovskoj = 2167,
-		/// <summary>
-		/// Балчуг Недвижимость  (2168)
-		/// </summary>
-		[Description("Балчуг Недвижимость ")]
-        [EnumCode("659")]
-        [ShortTitle("")]
-        BalchugNedvizhimostj = 2168,
-		/// <summary>
-		/// Арт-Недвижимость (2169)
-		/// </summary>
-		[Description("Арт-Недвижимость")]
-        [EnumCode("660")]
-        [ShortTitle("")]
-        ArtNedvizhimostj = 2169,
-		/// <summary>
-		/// Столичный бизнес (2170)
-		/// </summary>
-		[Description("Столичный бизнес")]
-        [EnumCode("661")]
-        [ShortTitle("")]
-        StolichnijBiznes = 2170,
-		/// <summary>
-		/// Тверской бульвар (2171)
-		/// </summary>
-		[Description("Тверской бульвар")]
-        [EnumCode("662")]
-        [ShortTitle("")]
-        TverskojBuljvar = 2171,
-		/// <summary>
-		/// Константа-К (2172)
-		/// </summary>
-		[Description("Константа-К")]
-        [EnumCode("663")]
-        [ShortTitle("")]
-        KonstantaK = 2172,
-		/// <summary>
-		/// Estate Capital (2173)
-		/// </summary>
-		[Description("Estate Capital")]
-        [EnumCode("664")]
-        [ShortTitle("")]
-        EstateCapital = 2173,
-		/// <summary>
-		/// MILES (2174)
-		/// </summary>
-		[Description("MILES")]
-        [EnumCode("665")]
-        [ShortTitle("")]
-        MILES = 2174,
-		/// <summary>
-		/// ШАНС (2175)
-		/// </summary>
-		[Description("ШАНС")]
-        [EnumCode("666")]
-        [ShortTitle("")]
-        ShANS = 2175,
-		/// <summary>
-		/// SPR Realty (2176)
-		/// </summary>
-		[Description("SPR Realty")]
-        [EnumCode("667")]
-        [ShortTitle("")]
-        SPRRealty = 2176,
-		/// <summary>
-		/// Самоцветы - Недвижимость (2177)
-		/// </summary>
-		[Description("Самоцветы - Недвижимость")]
-        [EnumCode("668")]
-        [ShortTitle("")]
-        SamocvetiNedvizhimostj = 2177,
-		/// <summary>
-		/// Major Недвижимость (2178)
-		/// </summary>
-		[Description("Major Недвижимость")]
-        [EnumCode("669")]
-        [ShortTitle("")]
-        MajorNedvizhimostj = 2178,
-		/// <summary>
-		/// ПРОФИ недвижимость (2179)
-		/// </summary>
-		[Description("ПРОФИ недвижимость")]
-        [EnumCode("670")]
-        [ShortTitle("")]
-        PROFINedvizhimostj = 2179,
-		/// <summary>
-		/// RealtyLider (2180)
-		/// </summary>
-		[Description("RealtyLider")]
-        [EnumCode("671")]
-        [ShortTitle("")]
-        RealtyLider = 2180,
-		/// <summary>
-		/// ИСК АДВА-ЭСТЕЙТ (2181)
-		/// </summary>
-		[Description("ИСК АДВА-ЭСТЕЙТ")]
-        [EnumCode("672")]
-        [ShortTitle("")]
-        ISKADVAESTEJT = 2181,
-		/// <summary>
-		/// ФЛЭТ и Ко (2182)
-		/// </summary>
-		[Description("ФЛЭТ и Ко")]
-        [EnumCode("673")]
-        [ShortTitle("")]
-        FLETIKo = 2182,
-		/// <summary>
-		/// ЮНИОНСТРОЙИНВЕСТ (2183)
-		/// </summary>
-		[Description("ЮНИОНСТРОЙИНВЕСТ")]
-        [EnumCode("674")]
-        [ShortTitle("")]
-        YuNIONSTROJINVEST = 2183,
-		/// <summary>
-		/// Авега (2184)
-		/// </summary>
-		[Description("Авега")]
-        [EnumCode("675")]
-        [ShortTitle("")]
-        Avega = 2184,
-		/// <summary>
-		/// Флексус (2185)
-		/// </summary>
-		[Description("Флексус")]
-        [EnumCode("676")]
-        [ShortTitle("")]
-        Fleksus = 2185,
-		/// <summary>
-		/// Москассзавод (2186)
-		/// </summary>
-		[Description("Москассзавод")]
-        [EnumCode("677")]
-        [ShortTitle("")]
-        Moskasszavod = 2186,
-		/// <summary>
-		/// Люкс Дом (2187)
-		/// </summary>
-		[Description("Люкс Дом")]
-        [EnumCode("678")]
-        [ShortTitle("")]
-        LyuksDom = 2187,
-		/// <summary>
-		/// Must Have (2188)
-		/// </summary>
-		[Description("Must Have")]
-        [EnumCode("679")]
-        [ShortTitle("")]
-        MustHave = 2188,
-		/// <summary>
-		/// Альфа 10 (2189)
-		/// </summary>
-		[Description("Альфа 10")]
-        [EnumCode("680")]
-        [ShortTitle("")]
-        Aljfa10 = 2189,
     }
 }
 
@@ -4993,105 +240,146 @@ namespace ObjectModel.Directory
     [ReferenceInfo(ReferenceId = 114)]
     public enum MarketSegment : long
     {
-        /// <summary>
-        /// Значение отсутствует
-        /// </summary>
-        [Description("Значение отсутствует")]
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
         [EnumCode("0")]
-        [ShortTitle("")]
+        [ShortTitle("Значение отсутствует")]
         None = 0,
-
 		/// <summary>
-		/// Апартаменты (744)
+		/// Квартира (1)
 		/// </summary>
-		[Description("Апартаменты")]
-        [EnumCode("104")]
-        [ShortTitle("")]
-        Appartment = 744,
-		/// <summary>
-		/// Гаражи (745)
-		/// </summary>
-		[Description("Гаражи")]
-        [EnumCode("2")]
-        [ShortTitle("")]
-        Parking = 745,
-		/// <summary>
-		/// Гостиницы (746)
-		/// </summary>
-		[Description("Гостиницы")]
-        [EnumCode("3")]
-        [ShortTitle("")]
-        Hotel = 746,
-		/// <summary>
-		/// ИЖС (747)
-		/// </summary>
-		[Description("ИЖС")]
-        [EnumCode("101")]
-        [ShortTitle("")]
-        IZHS = 747,
-		/// <summary>
-		/// Машиноместа (748)
-		/// </summary>
-		[Description("Машиноместа")]
+		[Description("Квартира")]
         [EnumCode("1")]
-        [ShortTitle("")]
-        CarParking = 748,
+        [ShortTitle("Квартира")]
+        Flat = 1,
 		/// <summary>
-		/// МЖС (749)
+		/// Койко-место (2)
 		/// </summary>
-		[Description("МЖС")]
-        [EnumCode("102")]
-        [ShortTitle("")]
-        MZHS = 749,
+		[Description("Койко-место")]
+        [EnumCode("2")]
+        [ShortTitle("Койко-место")]
+        Bed = 2,
 		/// <summary>
-		/// Офисы (750)
+		/// Комната (3)
 		/// </summary>
-		[Description("Офисы")]
-        [EnumCode("5")]
-        [ShortTitle("")]
-        Office = 750,
+		[Description("Комната")]
+        [EnumCode("3")]
+        [ShortTitle("Комната")]
+        Room = 3,
 		/// <summary>
-		/// Производство и склады (751)
+		/// Дом/дача (4)
 		/// </summary>
-		[Description("Производство и склады")]
+		[Description("Дом/дача")]
         [EnumCode("4")]
-        [ShortTitle("")]
-        Factory = 751,
+        [ShortTitle("Дом/дача")]
+        House = 4,
 		/// <summary>
-		/// Садоводческое, огородническое и дачное использование (752)
+		/// Коттедж (5)
 		/// </summary>
-		[Description("Садоводческое, огородническое и дачное использование")]
-        [EnumCode("106")]
-        [ShortTitle("")]
-        Garden = 752,
+		[Description("Коттедж")]
+        [EnumCode("5")]
+        [ShortTitle("Коттедж")]
+        Cottage = 5,
 		/// <summary>
-		/// Санатории (753)
+		/// Таунхаус (6)
 		/// </summary>
-		[Description("Санатории")]
-        [EnumCode("105")]
-        [ShortTitle("")]
-        Sanatorium = 753,
-		/// <summary>
-		/// Торговля (754)
-		/// </summary>
-		[Description("Торговля")]
+		[Description("Таунхаус")]
         [EnumCode("6")]
-        [ShortTitle("")]
-        Trading = 754,
+        [ShortTitle("Таунхаус")]
+        Townhouse = 6,
 		/// <summary>
-		/// Общепит (795)
+		/// Часть дома (7)
 		/// </summary>
-		[Description("Общепит")]
+		[Description("Часть дома")]
         [EnumCode("7")]
-        [ShortTitle("")]
-        PublicCatering = 795,
+        [ShortTitle("Часть дома")]
+        HouseShare = 7,
 		/// <summary>
-		/// Без сегмента (798)
+		/// Гараж (8)
 		/// </summary>
-		[Description("Без сегмента")]
+		[Description("Гараж")]
+        [EnumCode("8")]
+        [ShortTitle("Гараж")]
+        Garage = 8,
+		/// <summary>
+		/// Готовый бизнес (9)
+		/// </summary>
+		[Description("Готовый бизнес")]
         [EnumCode("9")]
-        [ShortTitle("")]
-        NoSegment = 798,
+        [ShortTitle("Готовый бизнес")]
+        Business = 9,
+		/// <summary>
+		/// Здание (10)
+		/// </summary>
+		[Description("Здание")]
+        [EnumCode("10")]
+        [ShortTitle("Здание")]
+        Building = 10,
+		/// <summary>
+		/// Коммерческая земля (11)
+		/// </summary>
+		[Description("Коммерческая земля")]
+        [EnumCode("11")]
+        [ShortTitle("Коммерческая земля")]
+        CommercialLand = 11,
+		/// <summary>
+		/// Офис (12)
+		/// </summary>
+		[Description("Офис")]
+        [EnumCode("12")]
+        [ShortTitle("Офис")]
+        Office = 12,
+		/// <summary>
+		/// Помещение свободного назначения (13)
+		/// </summary>
+		[Description("Помещение свободного назначения")]
+        [EnumCode("13")]
+        [ShortTitle("Помещение свободного назначения")]
+        FreeAppointmentObject = 13,
+		/// <summary>
+		/// Производство (14)
+		/// </summary>
+		[Description("Производство")]
+        [EnumCode("14")]
+        [ShortTitle("Производство")]
+        Industry = 14,
+		/// <summary>
+		/// Склад (15)
+		/// </summary>
+		[Description("Склад")]
+        [EnumCode("15")]
+        [ShortTitle("Склад")]
+        Warehouse = 15,
+		/// <summary>
+		/// Торговая площадь (16)
+		/// </summary>
+		[Description("Торговая площадь")]
+        [EnumCode("16")]
+        [ShortTitle("Торговая площадь")]
+        ShoppingArea = 16,
+		/// <summary>
+		/// Доля в квартире (17)
+		/// </summary>
+		[Description("Доля в квартире")]
+        [EnumCode("17")]
+        [ShortTitle("Доля в квартире")]
+        FlatShare = 17,
+		/// <summary>
+		/// Квартира в новостройке (17)
+		/// </summary>
+		[Description("Квартира в новостройке")]
+        [EnumCode("17")]
+        [ShortTitle("Квартира в новостройке")]
+        NewBuildingFlat = 17,
+		/// <summary>
+		/// Участок (18)
+		/// </summary>
+		[Description("Участок")]
+        [EnumCode("18")]
+        [ShortTitle("Участок")]
+        Land = 18,
     }
 }
 
@@ -8189,6 +3477,13 @@ namespace ObjectModel.Directory
         [EnumCode("5")]
         [ShortTitle("")]
         C = 902,
+		/// <summary>
+		/// B- (1000902)
+		/// </summary>
+		[Description("B-")]
+        [EnumCode("6")]
+        [ShortTitle("")]
+        Bminus = 1000902,
     }
 }
 
@@ -11851,14 +7146,13 @@ namespace ObjectModel.Directory.Common
         [EnumCode("9")]
         [ShortTitle("Выгрузка факторов единиц оценки по заданию на оценку")]
         ExportFactorsByTask = 9,
-
 		/// <summary>
-		/// Нормализация (1)
+		/// Финализация нормализации (10)
 		/// </summary>
 		[Description("Финализация нормализации")]
-		[EnumCode("10")]
-		[ShortTitle("Финализация нормализации")]
-		NormalisationFinal = 10,
+        [EnumCode("10")]
+        [ShortTitle("Финализация нормализации")]
+        NormalisationFinal = 10,
     }
 }
 
@@ -11938,6 +7232,812 @@ namespace ObjectModel.Directory.KO
         [EnumCode("3")]
         [ShortTitle("")]
         ftWall = 2193,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Линия застройки (12083)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12083)]
+    public enum HouseLineType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Первая (1)
+		/// </summary>
+		[Description("Первая")]
+        [EnumCode("1")]
+        [ShortTitle("Первая")]
+        First = 1,
+		/// <summary>
+		/// Вторая (2)
+		/// </summary>
+		[Description("Вторая")]
+        [EnumCode("2")]
+        [ShortTitle("Вторая")]
+        Second  = 2,
+		/// <summary>
+		/// Иная (3)
+		/// </summary>
+		[Description("Иная")]
+        [EnumCode("3")]
+        [ShortTitle("Иная")]
+        Other = 3,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Состояние отделки (12084)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12084)]
+    public enum FinishingCondition : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Требуется косметический ремонт (1)
+		/// </summary>
+		[Description("Требуется косметический ремонт")]
+        [EnumCode("1")]
+        [ShortTitle("Требуется косметический ремонт")]
+        CosmeticRepairsRequired = 1,
+		/// <summary>
+		/// Дизайнерский ремонт (2)
+		/// </summary>
+		[Description("Дизайнерский ремонт")]
+        [EnumCode("2")]
+        [ShortTitle("Дизайнерский ремонт")]
+        Design = 2,
+		/// <summary>
+		/// Под чистовую отделку (3)
+		/// </summary>
+		[Description("Под чистовую отделку")]
+        [EnumCode("3")]
+        [ShortTitle("Под чистовую отделку")]
+        Finishing = 3,
+		/// <summary>
+		/// Требуется капитальный ремонт (4)
+		/// </summary>
+		[Description("Требуется капитальный ремонт")]
+        [EnumCode("4")]
+        [ShortTitle("Требуется капитальный ремонт")]
+        MajorRepairsRequired = 4,
+		/// <summary>
+		/// Офисная отделка (5)
+		/// </summary>
+		[Description("Офисная отделка")]
+        [EnumCode("5")]
+        [ShortTitle("Офисная отделка")]
+        Office = 5,
+		/// <summary>
+		/// Типовой ремонт (6)
+		/// </summary>
+		[Description("Типовой ремонт")]
+        [EnumCode("6")]
+        [ShortTitle("Типовой ремонт")]
+        Typical = 6,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип дома (12085)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12085)]
+    public enum HouseType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Газобетонный блок (1)
+		/// </summary>
+		[Description("Газобетонный блок")]
+        [EnumCode("1")]
+        [ShortTitle("Газобетонный блок")]
+        AerocreteBlock = 1,
+		/// <summary>
+		/// Блочный (2)
+		/// </summary>
+		[Description("Блочный")]
+        [EnumCode("2")]
+        [ShortTitle("Блочный")]
+        Block = 2,
+		/// <summary>
+		/// Щитовой (3)
+		/// </summary>
+		[Description("Щитовой")]
+        [EnumCode("3")]
+        [ShortTitle("Щитовой")]
+        Boards = 3,
+		/// <summary>
+		/// Кирпичный (4)
+		/// </summary>
+		[Description("Кирпичный")]
+        [EnumCode("4")]
+        [ShortTitle("Кирпичный")]
+        Brick = 4,
+		/// <summary>
+		/// Пенобетонный блок (5)
+		/// </summary>
+		[Description("Пенобетонный блок")]
+        [EnumCode("5")]
+        [ShortTitle("Пенобетонный блок")]
+        FoamConcreteBlock = 5,
+		/// <summary>
+		/// Газосиликатный блок (6)
+		/// </summary>
+		[Description("Газосиликатный блок")]
+        [EnumCode("6")]
+        [ShortTitle("Газосиликатный блок")]
+        GasSilicateBlock = 6,
+		/// <summary>
+		/// Монолитный (7)
+		/// </summary>
+		[Description("Монолитный")]
+        [EnumCode("7")]
+        [ShortTitle("Монолитный")]
+        Monolith = 7,
+		/// <summary>
+		/// Монолитно-кирпичный (8)
+		/// </summary>
+		[Description("Монолитно-кирпичный")]
+        [EnumCode("8")]
+        [ShortTitle("Монолитно-кирпичный")]
+        MonolithBrick = 8,
+		/// <summary>
+		/// Старый фонд (9)
+		/// </summary>
+		[Description("Старый фонд")]
+        [EnumCode("9")]
+        [ShortTitle("Старый фонд")]
+        Old = 9,
+		/// <summary>
+		/// Панельный (10)
+		/// </summary>
+		[Description("Панельный")]
+        [EnumCode("10")]
+        [ShortTitle("Панельный")]
+        Panel  = 10,
+		/// <summary>
+		/// Сталинский (11)
+		/// </summary>
+		[Description("Сталинский")]
+        [EnumCode("11")]
+        [ShortTitle("Сталинский")]
+        Stalin = 11,
+		/// <summary>
+		/// Каркасный (12)
+		/// </summary>
+		[Description("Каркасный")]
+        [EnumCode("12")]
+        [ShortTitle("Каркасный")]
+        Wireframe = 12,
+		/// <summary>
+		/// Деревянный (13)
+		/// </summary>
+		[Description("Деревянный")]
+        [EnumCode("13")]
+        [ShortTitle("Деревянный")]
+        Wood = 13,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Планировка (12086)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12086)]
+    public enum Layout : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Кабинетная (1)
+		/// </summary>
+		[Description("Кабинетная")]
+        [EnumCode("1")]
+        [ShortTitle("Кабинетная")]
+        Cabinet = 1,
+		/// <summary>
+		/// Коридорная (2)
+		/// </summary>
+		[Description("Коридорная")]
+        [EnumCode("2")]
+        [ShortTitle("Коридорная")]
+        Corridorplan = 2,
+		/// <summary>
+		/// Смешанная (3)
+		/// </summary>
+		[Description("Смешанная")]
+        [EnumCode("3")]
+        [ShortTitle("Смешанная")]
+        Mixed = 3,
+		/// <summary>
+		/// Открытая (4)
+		/// </summary>
+		[Description("Открытая")]
+        [EnumCode("4")]
+        [ShortTitle("Открытая")]
+        OpenSpace = 4,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Вид разрешённого использования (12087)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12087)]
+    public enum PermittedUseType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Cельскохозяйственное использование (1)
+		/// </summary>
+		[Description("Cельскохозяйственное использование")]
+        [EnumCode("1")]
+        [ShortTitle("Cельскохозяйственное использование")]
+        Agricultural = 1,
+		/// <summary>
+		/// Деловое управление (2)
+		/// </summary>
+		[Description("Деловое управление")]
+        [EnumCode("2")]
+        [ShortTitle("Деловое управление")]
+        BusinessManagement = 2,
+		/// <summary>
+		/// Общее пользование территории (3)
+		/// </summary>
+		[Description("Общее пользование территории")]
+        [EnumCode("3")]
+        [ShortTitle("Общее пользование территории")]
+        CommonUseArea = 3,
+		/// <summary>
+		/// Высотная застройка (4)
+		/// </summary>
+		[Description("Высотная застройка")]
+        [EnumCode("4")]
+        [ShortTitle("Высотная застройка")]
+        HighriseBuildings = 4,
+		/// <summary>
+		/// Гостиничное обслуживание (5)
+		/// </summary>
+		[Description("Гостиничное обслуживание")]
+        [EnumCode("5")]
+        [ShortTitle("Гостиничное обслуживание")]
+        HotelAmenities = 5,
+		/// <summary>
+		/// Индивидуальное жилищное строительство (ИЖС) (6)
+		/// </summary>
+		[Description("Индивидуальное жилищное строительство (ИЖС)")]
+        [EnumCode("6")]
+        [ShortTitle("Индивидуальное жилищное строительство (ИЖС)")]
+        IndividualHousingConstruction = 6,
+		/// <summary>
+		/// Промышленность (7)
+		/// </summary>
+		[Description("Промышленность")]
+        [EnumCode("7")]
+        [ShortTitle("Промышленность")]
+        Industry = 7,
+		/// <summary>
+		/// Отдых (рекреация) (8)
+		/// </summary>
+		[Description("Отдых (рекреация)")]
+        [EnumCode("8")]
+        [ShortTitle("Отдых (рекреация)")]
+        Leisure = 8,
+		/// <summary>
+		/// Малоэтажное жилищное строительство (МЖС) (9)
+		/// </summary>
+		[Description("Малоэтажное жилищное строительство (МЖС)")]
+        [EnumCode("9")]
+        [ShortTitle("Малоэтажное жилищное строительство (МЖС)")]
+        LowriseHousing = 9,
+		/// <summary>
+		/// Общественное использование объектов капитального строительства (10)
+		/// </summary>
+		[Description("Общественное использование объектов капитального строительства")]
+        [EnumCode("10")]
+        [ShortTitle("Общественное использование объектов капитального строительства")]
+        PublicUseOfCapitalConstruction = 10,
+		/// <summary>
+		/// Обслуживание автотранспорта (11)
+		/// </summary>
+		[Description("Обслуживание автотранспорта")]
+        [EnumCode("11")]
+        [ShortTitle("Обслуживание автотранспорта")]
+        ServiceVehicles = 11,
+		/// <summary>
+		/// Торговые центры (12)
+		/// </summary>
+		[Description("Торговые центры")]
+        [EnumCode("12")]
+        [ShortTitle("Торговые центры")]
+        ShoppingCenters = 12,
+		/// <summary>
+		/// Склады (13)
+		/// </summary>
+		[Description("Склады")]
+        [EnumCode("13")]
+        [ShortTitle("Склады")]
+        Warehouses = 13,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Подъездные пути (12088)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12088)]
+    public enum DrivewayType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Асфальтированная дорога (1)
+		/// </summary>
+		[Description("Асфальтированная дорога")]
+        [EnumCode("1")]
+        [ShortTitle("Асфальтированная дорога")]
+        Asphalt = 1,
+		/// <summary>
+		/// Грунтовая дорога (2)
+		/// </summary>
+		[Description("Грунтовая дорога")]
+        [EnumCode("2")]
+        [ShortTitle("Грунтовая дорога")]
+        Ground = 2,
+		/// <summary>
+		/// Нет (3)
+		/// </summary>
+		[Description("Нет")]
+        [EnumCode("3")]
+        [ShortTitle("Нет")]
+        No = 3,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Единица измерения (12089)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12089)]
+    public enum ParcelAreaUnitType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Гектар (1)
+		/// </summary>
+		[Description("Гектар")]
+        [EnumCode("1")]
+        [ShortTitle("Гектар")]
+        Hectare = 1,
+		/// <summary>
+		/// Сотка (2)
+		/// </summary>
+		[Description("Сотка")]
+        [EnumCode("2")]
+        [ShortTitle("Сотка")]
+        Sotka = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип участка (12090)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12090)]
+    public enum ParcelType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// В собственности (1)
+		/// </summary>
+		[Description("В собственности")]
+        [EnumCode("1")]
+        [ShortTitle("В собственности")]
+        Owned = 1,
+		/// <summary>
+		/// В аренде (2)
+		/// </summary>
+		[Description("В аренде")]
+        [EnumCode("2")]
+        [ShortTitle("В аренде")]
+        Rent = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Статус земли (12091)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12091)]
+    public enum ParcelStatus : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Фермерское хозяйство (1)
+		/// </summary>
+		[Description("Фермерское хозяйство")]
+        [EnumCode("1")]
+        [ShortTitle("Фермерское хозяйство")]
+        Farm = 1,
+		/// <summary>
+		/// Садоводство (2)
+		/// </summary>
+		[Description("Садоводство")]
+        [EnumCode("2")]
+        [ShortTitle("Садоводство")]
+        Gardening = 2,
+		/// <summary>
+		/// Индивидуальное жилищное строительство (3)
+		/// </summary>
+		[Description("Индивидуальное жилищное строительство")]
+        [EnumCode("3")]
+        [ShortTitle("Индивидуальное жилищное строительство")]
+        IndividualHousingConstruction = 3,
+		/// <summary>
+		/// Земля промышленного назначения (4)
+		/// </summary>
+		[Description("Земля промышленного назначения")]
+        [EnumCode("4")]
+        [ShortTitle("Земля промышленного назначения")]
+        IndustrialLand = 4,
+		/// <summary>
+		/// Инвестпроект (5)
+		/// </summary>
+		[Description("Инвестпроект")]
+        [EnumCode("5")]
+        [ShortTitle("Инвестпроект")]
+        InvestmentProject = 5,
+		/// <summary>
+		/// Личное подсобное хозяйство (6)
+		/// </summary>
+		[Description("Личное подсобное хозяйство")]
+        [EnumCode("6")]
+        [ShortTitle("Личное подсобное хозяйство")]
+        PrivateFarm = 6,
+		/// <summary>
+		/// Дачное некоммерческое партнерство (7)
+		/// </summary>
+		[Description("Дачное некоммерческое партнерство")]
+        [EnumCode("7")]
+        [ShortTitle("Дачное некоммерческое партнерство")]
+        SuburbanNonProfitPartnership = 7,
+		/// <summary>
+		/// Участок сельскохозяйственного назначения (8)
+		/// </summary>
+		[Description("Участок сельскохозяйственного назначения")]
+        [EnumCode("8")]
+        [ShortTitle("Участок сельскохозяйственного назначения")]
+        ForAgriculturalPurposes = 8,
+		/// <summary>
+		/// Участок промышленности, транспорта, связи и иного не сельхоз. назначения (9)
+		/// </summary>
+		[Description("Участок промышленности, транспорта, связи и иного не сельхоз. назначения")]
+        [EnumCode("9")]
+        [ShortTitle("Участок промышленности, транспорта, связи и иного не сельхоз. назначения")]
+        IndustryTransportCommunications = 9,
+		/// <summary>
+		/// Поселений (10)
+		/// </summary>
+		[Description("Поселений")]
+        [EnumCode("10")]
+        [ShortTitle("Поселений")]
+        Settlements = 10,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация электроснабжения (12092)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12092)]
+    public enum ElectricityLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация газоснабжения (12093)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12093)]
+    public enum GasLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Давление газа (12094)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12094)]
+    public enum GasPressureType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Высокое (1)
+		/// </summary>
+		[Description("Высокое")]
+        [EnumCode("1")]
+        [ShortTitle("Высокое")]
+        High = 1,
+		/// <summary>
+		/// Среднее (2)
+		/// </summary>
+		[Description("Среднее")]
+        [EnumCode("2")]
+        [ShortTitle("Среднее")]
+        Middle = 2,
+		/// <summary>
+		/// Низкое (3)
+		/// </summary>
+		[Description("Низкое")]
+        [EnumCode("3")]
+        [ShortTitle("Низкое")]
+        Low = 3,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация канализации (12095)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12095)]
+    public enum DrainageLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип канализации (12096)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12096)]
+    public enum DrainageType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Автономная (1)
+		/// </summary>
+		[Description("Автономная")]
+        [EnumCode("1")]
+        [ShortTitle("Автономная")]
+        Autonomous = 1,
+		/// <summary>
+		/// Центральная (2)
+		/// </summary>
+		[Description("Центральная")]
+        [EnumCode("2")]
+        [ShortTitle("Центральная")]
+        Central = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация водоснабжения (12097)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12097)]
+    public enum WaterLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип водоснабжения (12098)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12098)]
+    public enum WaterType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Автономная (1)
+		/// </summary>
+		[Description("Автономная")]
+        [EnumCode("1")]
+        [ShortTitle("Автономная")]
+        Autonomous = 1,
+		/// <summary>
+		/// Центральная (2)
+		/// </summary>
+		[Description("Центральная")]
+        [EnumCode("2")]
+        [ShortTitle("Центральная")]
+        Central = 2,
+		/// <summary>
+		/// Водонапорная станция (3)
+		/// </summary>
+		[Description("Водонапорная станция")]
+        [EnumCode("3")]
+        [ShortTitle("Водонапорная станция")]
+        PumpingStation = 3,
+		/// <summary>
+		/// Водозаборный узел (4)
+		/// </summary>
+		[Description("Водозаборный узел")]
+        [EnumCode("4")]
+        [ShortTitle("Водозаборный узел")]
+        WaterIntakeFacility = 4,
+		/// <summary>
+		/// Водонапорная башня (5)
+		/// </summary>
+		[Description("Водонапорная башня")]
+        [EnumCode("5")]
+        [ShortTitle("Водонапорная башня")]
+        WaterTower = 5,
     }
 }
 

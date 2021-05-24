@@ -6,6 +6,7 @@ using Core.SessionManagment;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess;
@@ -52,7 +53,6 @@ namespace KadOzenka.Web.Controllers
 		private readonly StatisticalDataService _statisticalDataService;
 		private readonly TourService _tourService;
 		private GroupService GroupService { get; }
-		private IGbuObjectService GbuObjectService { get; }
 		private ILongProcessService LongProcessService { get; }
 		private readonly int dataPageSize = 30;
 		private readonly int dataCacheSize = 3000;
@@ -61,8 +61,9 @@ namespace KadOzenka.Web.Controllers
             DashboardWidgetService dashboardWidgetService, StatisticsReportsWidgetService statisticsReportsWidgetService,
             StatisticsReportsWidgetExportService statisticsReportsWidgetExportService, TourService tourService,
             StatisticalDataService statisticalDataService, ILongProcessService longProcessService, IGbuObjectService gbuObjectService,
-            GroupService groupService)
-        {
+            GroupService groupService, IRegisterCacheWrapper registerCacheWrapper)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
             _mapBuildingService = mapBuildingService;
             _dashboardWidgetService = dashboardWidgetService;
             _statisticsReportsWidgetService = statisticsReportsWidgetService;
@@ -70,7 +71,6 @@ namespace KadOzenka.Web.Controllers
             _tourService = tourService;
             _statisticalDataService = statisticalDataService;
             LongProcessService = longProcessService;
-            GbuObjectService = gbuObjectService;
             GroupService = groupService;
         }
 

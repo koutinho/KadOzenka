@@ -20,6 +20,12 @@
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Market" />
                         </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.DealType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.DealType, isReadonly: true)
+                        </div>
                     </div>
                     <div class="form-group">
                         <div class="col-sm-2">
@@ -35,6 +41,12 @@
                         </div>
                         <div class="col-sm-2">
                             <input class="k-textbox" readonly value="@Model.Area" />
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.AreaFrom, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoNumericTextBoxFor(x => x.AreaFrom, isReadonly: true)
                         </div>
                     </div>
                     <div class="form-group">
@@ -111,21 +123,227 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        @*<div class="col-sm-2">
-                            TODO KOMO-1: сделать через справочник
-                            <label class="control-label">Состояние отделки</label>
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.DownloadDate, true)
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" id="Renovation" value="@Model.Renovation" />
-                        </div>*@
-                        @* <div class="col-sm-2">
-                            TODO KOMO-1: сделать через справочник
-                            <label class="control-label">Линия застройки</label>
+                            @Html.KendoDatePickerFor(x => x.DownloadDate, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.ExternalAdvertisementId, true)
                         </div>
                         <div class="col-sm-2">
-                            <input class="k-textbox" id="BuildingLine" value="@Model.BuildingLine" />
-                        </div>*@
+                            @Html.KendoTextBoxFor(x => x.ExternalAdvertisementId, isReadonly: true)
+                        </div>
                     </div>
+               
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.AdvertisementDescription, true)
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.KendoTextBoxFor(x => x.AdvertisementDescription, isReadonly: true)
+                    </div>
+                </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Name, true)
+                        </div>
+                        <div class="col-sm-10">
+                            @Html.KendoTextBoxFor(x => x.Name, isReadonly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.FlatNumber, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoNumericTextBoxFor(x => x.FlatNumber, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.SectionNumber, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.SectionNumber, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.FlatType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.FlatType, isReadonly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.Developer, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.Developer, isReadonly: true)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.HouseLine, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.HouseLine, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.FinishingCondition, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.FinishingCondition, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.HouseType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.HouseType, isReadonly: true)
+                        </div>
+                    </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.Layout, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.Layout, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1 col-sm-offset-1">
+                        @Html.CustomLabelFor(x => x.PermittedUseType, true)
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.KendoTextBoxFor(x => x.PermittedUseType, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.DrivewayType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.DrivewayType, isReadonly: true)
+                    </div>
+                </div>
+                @if(Model.CIPJSTypeCode == PropertyTypesCIPJS.LandArea)
+                {
+                    <div class="form-group">
+                        <div class="col-sm-2">
+                            @Html.CustomLabelFor(x => x.ParcelStatus, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.ParcelStatus, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.ParcelType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.ParcelType, isReadonly: true)
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-1">
+                            @Html.CustomLabelFor(x => x.ParcelAreaUnitType, true)
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.KendoTextBoxFor(x => x.ParcelAreaUnitType, isReadonly: true)
+                        </div>
+                    </div>
+                }
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.ElectricityPower, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoNumericTextBoxFor(x => x.ElectricityPower, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1 col-sm-offset-1">
+                        @Html.CustomLabelFor(x => x.PossibilityToConnectElectricity, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoCheckBoxFor(x => x.PossibilityToConnectElectricity, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1 col-sm-offset-1">
+                        @Html.CustomLabelFor(x => x.ElectricityLocationType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.ElectricityLocationType, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.GasCapacity, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoNumericTextBoxFor(x => x.GasCapacity, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.PossibilityToConnectGas, true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.KendoCheckBoxFor(x => x.PossibilityToConnectGas, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.GasLocationType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.GasLocationType, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.GasPressureType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.GasPressureType, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.DrainageCapacity, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoNumericTextBoxFor(x => x.DrainageCapacity, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.PossibilityToConnectGas, true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.KendoCheckBoxFor(x => x.PossibilityToConnectGas, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.DrainageLocationType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.DrainageLocationType, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.DrainageType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.DrainageType, isReadonly: true)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.WaterCapacity, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoNumericTextBoxFor(x => x.WaterCapacity, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.PossibilityToConnectWater, true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.KendoCheckBoxFor(x => x.PossibilityToConnectWater, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.WaterLocationType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.WaterLocationType, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(x => x.WaterType, true)
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.KendoTextBoxFor(x => x.WaterType, isReadonly: true)
+                    </div>
+                </div>
                 </div>
             </div>
         </li>
@@ -143,8 +361,7 @@
                 </div>
             </li>
         }
-        @if (Model.MarketType != MarketTypes.Rosreestr /*&& Model.ProcessType == ProcessStep.InProcess*/)
-        {
+
             <li id="Section_ScreenShots" data-expand>
                 <span>Скриншоты</span>
                 <div>
@@ -175,7 +392,7 @@
                     </div>
                 </div>
             </li>
-        }
+
         <li id="Section_Reestr" data-expand>
             <span>Данные Росреестра</span>
             <div>

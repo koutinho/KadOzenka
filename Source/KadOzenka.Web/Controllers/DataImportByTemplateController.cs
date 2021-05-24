@@ -15,7 +15,9 @@ using System.IO;
 using System.Reflection;
 using Core.Register.Enums;
 using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport.DataImporterByTemplate;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Web.Attributes;
@@ -35,8 +37,10 @@ namespace KadOzenka.Web.Controllers
 	    public TaskService TaskService { get; set; }
         private ICodDictionaryService CodDictionaryService { get; }
 
-		public DataImportByTemplateController(TaskService taskService, ICodDictionaryService codDictionaryService)
-	    {
+		public DataImportByTemplateController(TaskService taskService, ICodDictionaryService codDictionaryService, 
+			IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
 	        TaskService = taskService;
             CodDictionaryService = codDictionaryService;
 		}

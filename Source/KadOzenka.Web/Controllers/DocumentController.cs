@@ -1,4 +1,6 @@
-﻿using KadOzenka.Dal.Documents;
+﻿using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Documents;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Models.Document;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Web.Attributes;
@@ -10,7 +12,9 @@ namespace KadOzenka.Web.Controllers
 	{
         public DocumentService DocumentService { get; set; }
 
-        public DocumentController(DocumentService documentService)
+        public DocumentController(DocumentService documentService, IRegisterCacheWrapper registerCacheWrapper,
+	        IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
             DocumentService = documentService;
         }

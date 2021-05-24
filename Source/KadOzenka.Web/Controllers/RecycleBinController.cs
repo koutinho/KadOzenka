@@ -2,6 +2,7 @@
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.RecycleBin;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Web.Attributes;
@@ -15,10 +16,13 @@ namespace KadOzenka.Web.Controllers
 	{
 		public IRecycleBinService RecycleBinService { get; }
 
-		public RecycleBinController(IRecycleBinService recycleBinService)
+		public RecycleBinController(IRecycleBinService recycleBinService, IRegisterCacheWrapper registerCacheWrapper,
+			IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 			RecycleBinService = recycleBinService;
 		}
+
 
 		[HttpGet]
 		[SRDFunction(Tag = "ADMIN")]

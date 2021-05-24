@@ -11,7 +11,7 @@ namespace MarketPlaceBusiness
 		public QSQuery<OMCoreObject> GetBaseQuery()
 		{
 			//return OMCoreObject.Where(x => x.Lng != null && x.Lat != null && x.Market_Code == MarketTypes.Rosreestr);
-			return OMCoreObject.Where(x => x.Market_Code == MarketTypes.Rosreestr);
+			return OMCoreObject.Where(x => true);
 		}
 
 		public void UpdateInfoFromCard(MarketObjectDto dto)

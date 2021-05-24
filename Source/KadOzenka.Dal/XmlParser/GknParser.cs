@@ -7,14 +7,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Core.Register;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
+using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -1306,7 +1309,7 @@ namespace KadOzenka.Dal.XmlParser
 	        }
             catch (Exception ex)
             {
-	            Serilog.Log.Error(ex, $"Ошибка при обработке объекта '{kn}' из xml-файла");
+	            Serilog.Log.Error(ex, "Ошибка при обработке объекта '{kn}' из xml-файла", kn);
 
 	            var reportRow = _gbuReportService.GetCurrentRow();
 	            _gbuReportService.AddValue(kn, BaseImporter.CadastralNumberColumnIndex, reportRow);
@@ -1665,7 +1668,7 @@ namespace KadOzenka.Dal.XmlParser
         //        {
         //         lock (_locker)
         //         {
-        //          LogErrorInExcel(row.Index, cadastralNumber, ex);
+        //          LogErrorInReport(row.Index, cadastralNumber, ex);
         //            }
         //        }
         //    });
@@ -1692,7 +1695,8 @@ namespace KadOzenka.Dal.XmlParser
 	        mainWorkSheet.Rows.ForEach(row =>
 	        {
 		        string cadastralNumber = null;
-		        try
+                var reportInfo = new ReportInfo();
+	            try
 		        {
 			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
 				        return;
@@ -1703,18 +1707,27 @@ namespace KadOzenka.Dal.XmlParser
                     var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
                     var typeEnum = GetObjectType(objectTypeDescriptions, typeFromFile);
 
-                    var obj = MapExcelRowToObject(row, cadastralNumber, square, assessmentDate, typeEnum,
+                    reportInfo.CadastralNumber = cadastralNumber;
+                    var obj = MapExcelRowToObject(row, reportInfo, cadastralNumber, square, assessmentDate, typeEnum,
 	                    columnsMapping, importedAttributes);
 			        objects.Add(obj);
+                }
+                catch (Exception ex)
+                {
+	                Serilog.Log.Error(ex, "Ошибка при обработке {rowIndex} строки excel-файла. Объект '{CadastralNumber}'.",
+		                row.Index + 1, cadastralNumber);
+                    reportInfo.AddError(ex.Message, row.Index);
 		        }
-		        catch (Exception ex)
-		        {
-			        LogErrorInExcel(row.Index, cadastralNumber, ex);
-		        }
+
+                if (reportInfo.MustWriteToReport)
+                {
+	                LogInfoToReport(reportInfo);
+                }
 	        });
 
 	        return objects;
         }
+
 
         #region Support Methods
 
@@ -1751,9 +1764,9 @@ namespace KadOzenka.Dal.XmlParser
             throw new Exception($"Указан неизвестный тип объекта '{typeFromFile}'");
         }
 
-        private xmlObject MapExcelRowToObject(ExcelRow row, string cadastralNumber, double? square,
-	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping,
-	        GknAllAttributes importedAttributes)
+        private xmlObject MapExcelRowToObject(ExcelRow row, ReportInfo reportInfo, string cadastralNumber,
+	        double? square, DateTime? assessmentDate, enTypeObject objectType, 
+	        List<ColumnToAttributeMapping> columnsMapping, GknAllAttributes importedAttributes)
         {
 	        ValidateExcelObjectRequiredColumns(cadastralNumber, square, assessmentDate);
 
@@ -1788,8 +1801,29 @@ namespace KadOzenka.Dal.XmlParser
             columnsMapping.ForEach(map =>
             {
 	            var attributeInfo = attributes.FirstOrDefault(x => x.AttributeId == map.AttributeId);
+	            //если атрибут не соответствует типу ОН (например, пытаемся записать Материал стен в ЗУ
+	            if (attributeInfo == null)
+	            {
+		            var attributeData = RegisterCache.GetAttributeData(map.AttributeId);
+		            if (attributeData.RegisterId != OMUnit.GetRegisterId())
+		            {
+			            var message = $"{attributeData.Name} ({objectType.GetEnumDescription()})";
+                        reportInfo.AddNotProcessedAttribute(message, row.Index, map.ColumnIndex);
+		            }
+	            }
 	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
-	            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+	            try
+	            {
+		            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+	            }
+	            catch (CastingToAttributeTypeException e)
+	            {
+		            Serilog.Log.Error(e,
+			            "Ошибка преобразования типов при обработке {RowIndex} строки excel-файла. Объект '{CadastralNumber}'.",
+			            row.Index + 1, cadastralNumber);
+
+                    reportInfo.AddTypeConvertingError(e.Message, row.Index, map.ColumnIndex);
+                }
             });
 
             return obj;
@@ -1845,15 +1879,14 @@ namespace KadOzenka.Dal.XmlParser
 
         #endregion
 
-        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex)
+        private void LogInfoToReport(ReportInfo reportInfo)
         {
-	        var realRowIndex = rowIndex + 1;
-	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла. Объект '{cadastralNumber}'.");
-
 	        var reportRow = _gbuReportService.GetCurrentRow();
-	        _gbuReportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
-	        _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
-	        _gbuReportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
+
+            _gbuReportService.AddValue(reportInfo.CadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.NotProcessedAttributeNames, BaseImporter.NotProcessedAttributesColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.TypeConvertingError, BaseImporter.TypeConvertingErrorColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.Error, BaseImporter.ErrorMessageColumnIndex, reportRow);
         }
     }
 }
