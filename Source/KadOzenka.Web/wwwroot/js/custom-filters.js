@@ -100,12 +100,16 @@ function onDateFilterChange(prefix) {
     let dateFilterValueContainer = '#' + prefix + '_dateFilterValueContainer';
     let dateFilterValue2Container = '#' + prefix + '_dateFilterValue2Container';
     switch (dateFilterTypeValue) {
+        case "IsNull":
+        case "IsNotNull":
         case "Пусто":
         case "Не пусто": {
             $(dateFilterValueContainer).hide();
             $(dateFilterValue2Container).hide();
         }
             break;
+        case "InRange":
+        case "InRangeIncludingBoundaries":
         case "В диапазоне":
         case "В диапазоне (включительно)": {
             $(dateFilterValueContainer).show();
