@@ -8,7 +8,8 @@
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
-    <Configurations>Debug;Release;QA;Demo;UAT;Local</Configurations>
+    <Configurations>Debug;Release;QA;Demo;UAT;Local;DebugPlatform</Configurations>
+	<RuntimeIdentifiers>win10-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <!--PackageReference-->
@@ -16,13 +17,15 @@
     <PackageReference Include="AutoMapper" Version="8.1.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="6.1.1" />
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
+
+    <PackageReference Include="Microsoft.DotNet.InternalAbstractions" Version="1.0.0" />
     <!--<PackageReference Include="Microsoft.AspNetCore.All" Version="2.1.5" />-->
     <!--<PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />-->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.2" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.726-beta.2" />
+    <PackageReference Include="Platform.Web" Version="1.0.726-beta.3" Condition="'$(Configuration)'!='DebugPlatform'" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -32,18 +35,16 @@
     <PackageReference Include="Serilog.Enrichers.Memory" Version="1.0.4" />
     <PackageReference Include="Serilog.Enrichers.Process" Version="2.0.1" />
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
-    <PackageReference Include="Serilog.Extensions.Hosting" Version="4.1.2" />
-    <PackageReference Include="Serilog.Settings.Configuration" Version="3.1.0" />
-    <PackageReference Include="Serilog.Sinks.PostgreSQL" Version="2.1.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
     <PackageReference Include="SerilogTimings" Version="2.3.0" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
   <!--DotNetCliToolReference-->
-  <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
+  <ItemGroup><!--<DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />-->
+  
+    <PackageReference Include="Telerik.UI.for.AspNet.Core.Trial" Version="2021.2.511" />
   </ItemGroup>
   <!--Reference-->
   <ItemGroup>
@@ -92,11 +93,15 @@
     <Reference Include="DevExpress.XtraReports.v20.1">
       <HintPath>..\_Dll\DevExpress.XtraReports.v20.1.dll</HintPath>
     </Reference>
-    <Reference Include="Kendo.Mvc">
-      <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>
+    <Reference Include="FastReport.Compat">
+      <HintPath>..\_Dll\Temp\FastReport.Compat.dll</HintPath>
     </Reference>
-    <Reference Include="Kendo.Mvc.resources">
+  
+    <!--<Reference Include="Kendo.Mvc.resources">
       <HintPath>..\_Dll\Kendo.Mvc.resources.dll</HintPath>
+    </Reference>-->
+    <Reference Include="Platform.Web" Condition="'$(Configuration)'=='DebugPlatform'">
+      <HintPath>..\..\..\Temp\PlatformNetCore\Source\Platform.Web\bin\Debug\net5.0\Platform.Web.dll</HintPath>
     </Reference>
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
   </ItemGroup>
@@ -121,6 +126,10 @@
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\SpdSettings.xml" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
+
+		<None Include="appsettings.Development.json" Condition="'$(Configuration)'=='DebugPlatform'">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Local.json" Condition="'$(Configuration)'=='Local'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Demo.json" Condition="'$(Configuration)'=='Demo'" />
