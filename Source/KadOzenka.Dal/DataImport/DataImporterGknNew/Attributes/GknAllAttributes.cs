@@ -2289,7 +2289,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			if (date == DateTime.MinValue || date == DateTime.MaxValue || date == default)
 				throw new CastingToAttributeTypeException(attributeId, value);
 
-			return new DateTime?();
+			return date;
 		}
 
 		public static double? CastToDouble(long? attributeId, object value)
