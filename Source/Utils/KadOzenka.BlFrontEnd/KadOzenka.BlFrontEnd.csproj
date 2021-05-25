@@ -263,6 +263,10 @@
     </None>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties _1_1_4_1_1_4_1_1_4_1_1_4_1_1_4_1_1_4_1nuget_4packages_4platform_1web_41_10_1628_4contentfiles_4any_4netcoreapp2_11_4appsettings_1json__JsonSchema="" />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>
