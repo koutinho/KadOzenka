@@ -75,6 +75,7 @@ namespace KadOzenka.Dal.GbuObject
 
         private void AddValueFactor(long objectId, long? idFactor, long? idDoc, DateTime date, string value)
         {
+            var otDate = GbuObjectService.GetNextOtFromAttributeIdPartition(objectId, idFactor.GetValueOrDefault(), date);
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -84,13 +85,12 @@ namespace KadOzenka.Dal.GbuObject
                 S = date,
                 ChangeUserId = SRDSession.Current.UserID,
                 ChangeDate = DateTime.Now,
-                Ot = date,
+                Ot = otDate,
                 StringValue = value,
             };
 
             attributeValue.Save();
         }
-
 
         string CleanUp(string x)
         {
