@@ -1,4 +1,5 @@
-﻿using KadOzenka.Web.Models.ObjectsCharacteristics;
+﻿using KadOzenka.Common.Tests;
+using KadOzenka.Web.Models.ObjectsCharacteristics;
 using Moq;
 using NUnit.Framework;
 

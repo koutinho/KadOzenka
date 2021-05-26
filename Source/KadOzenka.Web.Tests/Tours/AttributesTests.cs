@@ -2,6 +2,7 @@
 using System.Linq;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using KadOzenka.Common.Tests;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;

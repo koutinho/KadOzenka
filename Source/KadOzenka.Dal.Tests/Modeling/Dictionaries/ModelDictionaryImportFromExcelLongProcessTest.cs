@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Threading;
 using Core.Shared.Extensions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling;

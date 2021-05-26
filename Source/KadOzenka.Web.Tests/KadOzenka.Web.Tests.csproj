@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
     <ProjectReference Include="..\KadOzenka.Web\KadOzenka.Web.csproj" />
   </ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using System;
 using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.GbuObject;

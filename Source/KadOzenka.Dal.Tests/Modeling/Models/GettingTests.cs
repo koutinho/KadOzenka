@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
 using Moq;

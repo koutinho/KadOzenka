@@ -1,4 +1,5 @@
 ﻿using Core.Shared.Extensions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Web.Models.Tour;
 using Moq;
 using NUnit.Framework;

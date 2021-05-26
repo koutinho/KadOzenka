@@ -35,6 +35,8 @@
 /Source/KadOzenka.Dal.Tests/bin
 /Source/KadOzenka.Dal.IntegrationTests/obj
 /Source/KadOzenka.Dal.IntegrationTests/bin
+/Source/KadOzenka.Common.Tests/obj
+/Source/KadOzenka.Common.Tests/bin
 /Source/ImageProccessor/obj
 /Source/ImageProccessor/bin
 /Source/Utils/EP.SdkCore/obj

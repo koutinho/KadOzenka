@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Modeling.Dto;
+﻿using KadOzenka.Common.Tests;
+using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
 using Moq;
