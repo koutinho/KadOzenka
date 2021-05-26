@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishSc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.UnitTests", "KadOzenka.Dal.Tests\KadOzenka.Dal.UnitTests.csproj", "{5EBF6A1E-6A6C-4C22-926E-78CF14C64D54}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web.Tests", "KadOzenka.Web.Tests\KadOzenka.Web.Tests.csproj", "{8D4A0956-2547-4190-A95F-CCE130301EC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web.UnitTests", "KadOzenka.Web.Tests\KadOzenka.Web.UnitTests.csproj", "{8D4A0956-2547-4190-A95F-CCE130301EC7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbScripts", "DbScripts", "{172D0CC1-C8DC-4114-BEFF-4FCC02FAD0C3}"
 	ProjectSection(SolutionItems) = preProject
