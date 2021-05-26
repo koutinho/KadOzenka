@@ -167,7 +167,15 @@ namespace CIPJS
                     options.Cookie.Name = "CIPJS.Session";
                     options.IdleTimeout = TimeSpan.FromMinutes(60);
                 });
-                services.AddKendo();
+
+				services.AddCors(op =>
+				{
+					op.AddDefaultPolicy(builder =>
+					{
+						builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials();
+					});
+				});
+				services.AddKendo();
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 	                .AddCookie(options =>
 	                {
@@ -226,10 +234,11 @@ namespace CIPJS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            using (Operation.Time("Конфигурация pipeline http-запросов"))
+	        using (Operation.Time("Конфигурация pipeline http-запросов"))
             {
                 app.UseMiddleware<SerilogMiddleware>();
                 app.UseFastReport();
+                app.UseCors();
                 app.UseExceptionHandler(
                     builder =>
                     {
@@ -255,8 +264,9 @@ namespace CIPJS
 
                 app.UseSession();
                 app.UseAuthentication();
+    
 
-            app.UseSignalR(routes =>
+                app.UseSignalR(routes =>
             {
                 routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
                 routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
@@ -287,7 +297,7 @@ namespace CIPJS
                 });
                 app.UseSerilogRequestLogging();
                 app.UseWebSockets();
-
+    
                 app.Use(async (context, next) =>
                 {
                     if (context.WebSockets.IsWebSocketRequest)

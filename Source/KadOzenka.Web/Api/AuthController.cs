@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Api
 
 		[AllowAnonymous]
 		[SwaggerResponse(statusCode: 200, description: "OK")]
-		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(AuthResultDto), description: "Авторизация не удалась")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Авторизация не удалась")]
 		[Route("login")]
 		[HttpPost]
 		public async Task<ActionResult> Login(LoginDto model)
@@ -57,7 +57,16 @@ namespace KadOzenka.Web.Api
 		[HttpGet]
 		public IActionResult NotAuthorize()
 		{
-			return Unauthorized();
+			return Unauthorized(false);
+		}
+
+		[SwaggerResponse((int)HttpStatusCode.OK, "Authorized")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, "Not Authorize")]
+		[Route("CheckAuthorize")]
+		[HttpGet]
+		public IActionResult CheckAuthorize()
+		{
+			return Ok(true);
 		}
 
 	}
