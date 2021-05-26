@@ -10,17 +10,16 @@ COPY . .
 #RUN dotnet test -c Release --results-directory /testresults --logger "trx;LogFileName=test_results2.trx" /app/KadOzenka.Web.Tests/KadOzenka.Web.Tests.csproj
 
 # запуск Unit-тестов для DAL
-FROM build AS unitTestsFromDal
+FROM build AS unit_tests_dal
 WORKDIR /app/KadOzenka.Dal.Tests
-# можно запустить тесты во время сборки образа, но тогда буднт проблемы 
-# при внедрении в pipeline
-#RUN dotnet test --logger:trx
-CMD ["dotnet", "test", "--logger:trx"]
+# можно запустить тесты во время сборки образа, но тогда будут проблемы 
+# при внедрении в pipeline, т.е. не откуда будет вытащить результаты тестирования
+RUN dotnet test --logger:trx
+#CMD ["dotnet", "test", "--logger:trx"]
 
 # запуск Unit-тестов для WEB
-#FROM build AS unitTestsFromWeb
-#WORKDIR /app/KadOzenka.Web.Tests
-# можно запустить тесты во время сборки образа, но тогда буднт проблемы 
-# при внедрении в pipeline
-#RUN dotnet test --logger:trx
+# ERROR: падают из-за ошибки при копировании KadOzenka.Web.Config
+FROM unit_tests_dal AS unit_tests_web
+WORKDIR /app/KadOzenka.Web.Tests
+RUN dotnet test --logger:trx
 #CMD ["dotnet", "test", "--logger:trx"]
