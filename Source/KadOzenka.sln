@@ -45,7 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishSc
 		Utils\PublishScripts\release_build.ps1 = Utils\PublishScripts\release_build.ps1
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.Tests", "KadOzenka.Dal.Tests\KadOzenka.Dal.Tests.csproj", "{5EBF6A1E-6A6C-4C22-926E-78CF14C64D54}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.UnitTests", "KadOzenka.Dal.Tests\KadOzenka.Dal.UnitTests.csproj", "{5EBF6A1E-6A6C-4C22-926E-78CF14C64D54}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Web.Tests", "KadOzenka.Web.Tests\KadOzenka.Web.Tests.csproj", "{8D4A0956-2547-4190-A95F-CCE130301EC7}"
 EndProject
@@ -73,7 +73,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.ObjectModelEnum",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.IntegrationTests", "KadOzenka.Dal.IntegrationTests\KadOzenka.Dal.IntegrationTests.csproj", "{B57C7647-CF6A-476E-97D8-1C1DE1CA349F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KadOzenka.Common.Tests", "KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj", "{A7DC3A73-9386-4AC8-8D89-780D9981D1E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Common.Tests", "KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj", "{A7DC3A73-9386-4AC8-8D89-780D9981D1E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
