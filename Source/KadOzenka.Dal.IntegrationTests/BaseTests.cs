@@ -13,12 +13,18 @@ namespace KadOzenka.Dal.IntegrationTests
 {
 	public class BaseTests
 	{
-		public OMInstance Document { get; private set; }
-
+		public static OMInstance Document { get; private set; }
+		private static bool _initialized;
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
+			//костыль для вызова метода один раз перед запуском любых тестов
+			//nUnit позволяет определить OneTimeSetUp только для классов в одном namespace
+			if (_initialized) 
+				return;
+			_initialized = true;
+
 			//TODO создание БД
 
 			InitConfig();
