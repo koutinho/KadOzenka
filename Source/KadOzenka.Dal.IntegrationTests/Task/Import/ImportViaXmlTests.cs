@@ -1,12 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using KadOzenka.Common.Tests;
+using System.Threading;
+using Core.SRD;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.IntegrationTests.Task._Builders;
 using NUnit.Framework;
 using ObjectModel.Common;
-using ObjectModel.Core.TD;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.IntegrationTests.Task.Import
@@ -18,29 +20,19 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		{
 			var fileName = "one_building_success.xml";
 
-			var document = new OMInstance
-			{
-				Id = RandomGenerator.GenerateRandomInteger(),
-				CreateDate = DateTime.Now,
-				ApproveDate = RandomGenerator.GenerateRandomDate()
-			};
-			document.Save();
+			var task = new TaskBuilder().Document(Document.Id).Build();
 
-			var task = new OMTask
+			using (var stream = File.OpenRead($"{PathToFileFolder}{fileName}"))
 			{
-				Id = RandomGenerator.GenerateRandomInteger(),
-				CreationDate = DateTime.Now,
-				TourId = RandomGenerator.GenerateRandomInteger(),
-				NoteType_Code = KoNoteType.Day,
-				Status_Code = KoTaskStatus.InWork,
-				DocumentId = document.Id,
-				EstimationDate = RandomGenerator.GenerateRandomDate()
-			};
-			task.Save();
+				var import = DataImporterGknLongProcess.SaveImportDataLog(fileName, stream, task.Id);
 
-			using (var fs = File.OpenRead($"{PathToFileFolder}{fileName}"))
-			{
-				DataImporterGknLongProcess.AddImportToQueue(fileName, fs, task.Id);
+				new DataImporterGknLongProcess().StartProcess(new OMProcessType(),
+					new OMQueue
+					{
+						Status_Code = Status.Added,
+						UserId = SRDSession.GetCurrentUserId(),
+						ObjectId = import.Id
+					}, new CancellationTokenSource().Token);
 			}
 
 			var dataLog = OMImportDataLog.Where(x => x.ObjectId == task.Id).SelectAll().ExecuteFirstOrDefault();

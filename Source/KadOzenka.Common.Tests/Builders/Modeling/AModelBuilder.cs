@@ -12,7 +12,6 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 		{
 			_model = new OMModel
 			{
-				Id = RandomGenerator.GenerateRandomInteger(),
 				GroupId = RandomGenerator.GenerateRandomInteger(),
 				Name = RandomGenerator.GetRandomString(),
 				Description = RandomGenerator.GetRandomString(),

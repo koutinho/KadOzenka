@@ -6,12 +6,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using GemBox.Spreadsheet;
+using ObjectModel.Core.TD;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Dal.IntegrationTests
 {
 	public class BaseTests
 	{
+		public OMInstance Document { get; private set; }
+
+
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
@@ -20,6 +24,8 @@ namespace KadOzenka.Dal.IntegrationTests
 			InitConfig();
 
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+
+			Document = new Task._Builders.DocumentBuilder().Build();
 		}
 
 
