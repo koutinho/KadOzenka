@@ -202,12 +202,14 @@ namespace KadOzenka.Dal.XmlParser
 
         public xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
         {
-            string kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
-            DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
-            xmlObject obj = new xmlObject(typeobject, kn, dc, assessmentDate);
-
+	        string kn = string.Empty;
+	        xmlObject obj = null;
             try
-            {
+	        { 
+			    kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
+	            DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
+	            obj = new xmlObject(typeobject, kn, dc, assessmentDate);
+
 	            #region Импорт
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
             {

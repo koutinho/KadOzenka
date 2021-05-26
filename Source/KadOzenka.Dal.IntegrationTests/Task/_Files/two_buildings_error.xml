@@ -41,6 +41,18 @@
 					<CadastralNumber>50:08:0000000:84321</CadastralNumber>
 				</FlatsCadastralNumbers>
 			</Building>
+			<Building CadastralNumber="50:08:0000000:32056" DateCreated="ERROR_HEAR">
+				<CadastralBlock>50:08:0000000</CadastralBlock>
+				<Name>жилое строение (садовый дом)</Name>
+				<ObjectType>002001002000</ObjectType>
+				<AssignationBuilding>204002000000</AssignationBuilding>
+				<ElementsConstruct>
+					<Material Wall="061001005000"/>
+				</ElementsConstruct>
+				<ExploitationChar YearBuilt="1989"/>
+				<Floors Floors="1"/>
+				<Area>63.30</Area>
+			</Building>
 		</Buildings>
 	</Objects>
 </ListForRating>
