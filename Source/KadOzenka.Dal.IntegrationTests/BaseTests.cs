@@ -5,6 +5,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
+using GemBox.Spreadsheet;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Dal.IntegrationTests
@@ -17,6 +18,8 @@ namespace KadOzenka.Dal.IntegrationTests
 			//TODO создание БД
 
 			InitConfig();
+
+			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 		}
 
 

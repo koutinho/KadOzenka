@@ -32,6 +32,14 @@ namespace KadOzenka.Common.Tests
 			return (decimal) (integer / 2.3);
 		}
 
+		public static DateTime GenerateRandomDate()
+		{
+			var startDate = new DateTime(1995, 1, 1);
+			var daysToToday = (DateTime.Today - startDate).Days;
+
+			return startDate.AddDays(Random.Next(daysToToday));
+		}
+
 		public static List<T> CreateListWithRepeatedElements<T>(T element, int count)
 		{
 			var elements = new List<T>(count);
