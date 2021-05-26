@@ -2,6 +2,7 @@
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuObject;
 using KadOzenka.Web.Models.Task;
@@ -19,7 +20,9 @@ namespace KadOzenka.Web.Controllers
 		private TemplateService _templateService;
 		private const string TourSeparator = "$";
 
-		public TemplateController(TemplateService templateService)
+		public TemplateController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
+			IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 			_templateService = templateService;
 		}
@@ -86,12 +89,6 @@ namespace KadOzenka.Web.Controllers
 					return Json(new { data = JsonConvert.SerializeObject(hObj) });
 				}
 
-				if (storage != null && storage.FormType_Code == DataFormStorege.HarmonizationCOD)
-				{
-					var hcObj = storage.Data.DeserializeFromXml<HarmonizationCODViewModel>();
-					return Json(new { data = JsonConvert.SerializeObject(hcObj) });
-				}
-
 				if (storage != null && storage.FormType_Code == DataFormStorege.UnloadingFromDict)
 				{
 					var unObj = storage.Data.DeserializeFromXml<UnloadingFromDicViewModel>();
@@ -148,14 +145,6 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationViewModel viewModel, long? id = null)
 		{
 			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Harmonization, viewModel.SerializeToXml(), id);
-		}
-
-		[HttpPost]
-		[JsonExceptionHandler]
-		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateHarmonizationCODObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationCODViewModel viewModel, long? id = null)
-		{
-			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.HarmonizationCOD, viewModel.SerializeToXml(), id);
 		}
 
 		[HttpPost]

@@ -1,4 +1,6 @@
-﻿using KadOzenka.Web.Models.Modeling;
+﻿using System;
+using KadOzenka.Web.Models.Modeling;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
 namespace KadOzenka.Web.Tests.Modeling.Models
@@ -9,7 +11,7 @@ namespace KadOzenka.Web.Tests.Modeling.Models
 		public void CanNot_Update_Automatic_Model_If_Model_State_Is_Invalid()
 		{
 			var controller = ModelingController;
-			var method = new ControllerMethod<AutomaticModelingModel>(controller.AutomaticModelCard);
+			var method = new Func<AutomaticModelingModel, IActionResult>(controller.AutomaticModelCard);
 			
 			CheckMethodValidateModelState(controller, method);
 		}

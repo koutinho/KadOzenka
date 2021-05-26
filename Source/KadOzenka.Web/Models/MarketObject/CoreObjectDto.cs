@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Core.Shared.Extensions;
-using MarketPlaceBusiness;
 using MarketPlaceBusiness.Dto;
-using MarketPlaceBusiness.Interfaces;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -24,10 +21,6 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long Id { get; set; }
 		[DisplayName("Источник")]
 		public string Market { get; set; }
-		[DisplayName("Тип сделки")]
-		public string DealType { get; set; }
-        public DealType DealTypeCode { get; set; }
-		public DateTime? ParserTime { get; set; }
 		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
@@ -39,12 +32,9 @@ namespace KadOzenka.Web.Models.MarketObject
 		public decimal? Price { get; set; }
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
-		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
-		public decimal? Latitude { get; set; }
-		public decimal? Longitude { get; set; }
 		public MarketTypes MarketType { get; set; }
         public string CIPJSType { get; set; }
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
@@ -55,8 +45,109 @@ namespace KadOzenka.Web.Models.MarketObject
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
 		public QualityClass? QualityClassCode { get; set; }
-		//public string Renovation { get; set; }
-		//public string BuildingLine { get; set; }
+
+		[DisplayName("Дата загрузки")]
+		public DateTime? DownloadDate { get; set; }
+
+		[DisplayName("Внешний Id объявления")]
+		public string ExternalAdvertisementId { get; set; }
+
+		[DisplayName("Текст объявления")]
+		public string AdvertisementDescription { get; set; }
+
+		[DisplayName("Площадь от")]
+		public decimal? AreaFrom { get; set; }
+
+		[DisplayName("Название")]
+		public string Name { get; set; }
+
+		[DisplayName("Номер на площадке")]
+		public long? FlatNumber { get; set; }
+
+		[DisplayName("Номер секции")]
+		public string SectionNumber { get; set; }
+
+		[DisplayName("Тип квартиры")]
+		public string FlatType { get; set; }
+
+		[DisplayName("Тип сделки")]
+		public string DealType { get; set; }
+
+		[DisplayName("Линия застройки")]
+		public string HouseLine { get; set; }
+
+		[DisplayName("Застройщик")]
+		public string Developer { get; set; }
+
+		[DisplayName("Состояние отделки")]
+		public string FinishingCondition { get; set; }
+
+		[DisplayName("Тип дома")]
+		public string HouseType { get; set; }
+
+		[DisplayName("Планировка")]
+		public string Layout { get; set; }
+
+		[DisplayName("Вид разрешённого использования")]
+		public string PermittedUseType { get; set; }
+
+		[DisplayName("Подъездные пути")]
+		public string DrivewayType { get; set; }
+
+		[DisplayName("Статус земли")]
+		public string ParcelStatus { get; set; }
+
+		[DisplayName("Тип участка")]
+		public string ParcelType { get; set; }
+
+		[DisplayName("Единица измерения площади участка")]
+		public string ParcelAreaUnitType { get; set; }
+
+		[DisplayName("Мощность электроснабжения, кВТ")]
+		public long? ElectricityPower { get; set; }
+
+		[DisplayName("Возможность подключения электроснабжения")]
+		public bool? PossibilityToConnectElectricity { get; set; }
+
+		[DisplayName("Локация электроснабжения")]
+		public string ElectricityLocationType { get; set; }
+
+		[DisplayName("Давление газа")]
+		public string GasPressureType { get; set; }
+
+		[DisplayName("Емкость газоснабжения, м³/час")]
+		public long? GasCapacity { get; set; }
+
+		[DisplayName("Возможность подключения газа")]
+		public bool? PossibilityToConnectGas { get; set; }
+
+		[DisplayName("Локация газоснабжения")]
+		public string GasLocationType { get; set; }
+
+		[DisplayName("Тип канализации")]
+		public string DrainageType { get; set; }
+
+		[DisplayName("Объём канализации, м³/сутки")]
+		public long? DrainageCapacity { get; set; }
+
+		[DisplayName("Возможность подключения канализации")]
+		public bool? PossibilityToConnectDrainage { get; set; }
+
+		[DisplayName("Локация канализации")]
+		public string DrainageLocationType { get; set; }
+
+		[DisplayName("Тип водоснабжения")]
+		public string WaterType { get; set; }
+
+		[DisplayName("Объём водоснабжения, м³/сутки")]
+		public long? WaterCapacity { get; set; }
+
+		[DisplayName("Возможно подключить водоснабжение")]
+		public bool? PossibilityToConnectWater { get; set; }
+
+		[DisplayName("Локация водоснабжения")]
+		public string WaterLocationType { get; set; }
+
 
 		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
@@ -64,30 +155,53 @@ namespace KadOzenka.Web.Models.MarketObject
             {
                 Id = entity.Id,
                 Market = entity.Market,
-                DealType = entity.DealType,
-                DealTypeCode = entity.DealType_Code,
-                ParserTime = entity.ParserTime,
                 Address = entity.Address,
                 Area = entity.Area,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
-				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
-				Latitude = entity.Lat,
-				Longitude = entity.Lng,
 				MarketType = entity.Market_Code,
                 CIPJSType = entity.PropertyTypesCIPJS,
                 CIPJSTypeCode = entity.PropertyTypesCIPJS_Code,
                 MarketSegment = entity.PropertyMarketSegment,
                 MarketSegmentCode = entity.PropertyMarketSegment_Code,
-                PricePerSquareMeter =
-					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
-					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
-						? GetPricePerSquareMeter(entity) : (decimal?) null,
+                PricePerSquareMeter = GetPricePerSquareMeter(entity),
                 QualityClassCode = entity.QualityClass_Code,
-                //Renovation = entity.Renovation,
-                //BuildingLine = entity.BuildingLine
-			};
+                DownloadDate = entity.DownloadDate,
+                ExternalAdvertisementId = entity.ExternalAdvertisementId,
+                AdvertisementDescription = entity.AdvertisementDescription,
+                AreaFrom = entity.AreaFrom,
+                Name = entity.Name,
+                FlatNumber = entity.FlatNumber,
+				SectionNumber = entity.SectionNumber,
+				FlatType = entity.FlatType,
+				DealType = entity.DealType,
+				HouseLine = entity.HouseLine,
+				Developer = entity.Developer,
+				FinishingCondition = entity.FinishingCondition,
+				HouseType = entity.HouseType,
+				Layout = entity.Layout,
+				PermittedUseType = entity.PermittedUseType,
+				DrivewayType = entity.DrivewayType,
+				ParcelAreaUnitType = entity.ParcelAreaUnitType,
+				ParcelType = entity.ParcelType,
+				ParcelStatus = entity.ParcelStatus,
+				ElectricityLocationType = entity.ElectricityLocationType,
+				PossibilityToConnectElectricity = entity.PossibilityToConnectElectricity,
+				ElectricityPower = entity.ElectricityPower,
+				GasLocationType = entity.GasLocationType,
+				PossibilityToConnectGas = entity.PossibilityToConnectGas,
+				GasCapacity = entity.GasCapacity,
+				GasPressureType = entity.GasPressureType,
+				DrainageLocationType = entity.DrainageLocationType,
+				PossibilityToConnectDrainage = entity.PossibilityToConnectDrainage,
+				DrainageCapacity = entity.DrainageCapacity,
+				DrainageType = entity.DrainageType,
+				WaterLocationType = entity.WaterLocationType,
+				PossibilityToConnectWater = entity.PossibilityToConnectWater,
+				WaterCapacity = entity.WaterCapacity,
+				WaterType = entity.WaterType
+            };
 			if (priceHistory?.Count > 0)
 			{
 				dto.PriceHistories = priceHistory
@@ -123,11 +237,12 @@ namespace KadOzenka.Web.Models.MarketObject
 			return dto;
 		}
 
+
 		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
 			decimal? result;
 			
-			if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0)
+			if (entity.Area != 0)
 				result = entity.Price / entity.Area;
 
 			else

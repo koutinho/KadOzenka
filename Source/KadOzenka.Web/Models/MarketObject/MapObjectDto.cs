@@ -14,8 +14,8 @@ namespace KadOzenka.Web.Models.MarketObject
 			var dto = new MapObjectDto
 			{
 				Id = entity.Id,
-				Latitude = entity.Lat,
-				Longitude = entity.Lng
+				Latitude = null,
+				Longitude = null
 			};
 
 			return dto;

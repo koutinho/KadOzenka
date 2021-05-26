@@ -31,10 +31,12 @@ using ObjectModel.KO;
 using System.IO;
 using System.Threading;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
@@ -73,7 +75,9 @@ namespace KadOzenka.Web.Controllers
 	        IRegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
-	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService)
+	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
+	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelingService = modelingService;
             TourFactorService = tourFactorService;

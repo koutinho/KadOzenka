@@ -12,10 +12,6 @@ namespace MarketPlaceBusiness.Common
 		public static readonly QSColumn PrimaryKeyColumn = OMCoreObject.GetColumn(x => x.Id);
 		public static readonly QSColumn MarketSegmentCodeColumn = OMCoreObject.GetColumn(x => x.PropertyMarketSegment_Code);
 		public static readonly QSColumn AreaColumn = OMCoreObject.GetColumn(x => x.Area);
-		public static readonly QSColumn DealTypeCodeColumn = OMCoreObject.GetColumn(x => x.DealType_Code);
-		public static readonly QSColumn LngColumn = OMCoreObject.GetColumn(x => x.Lng);
-		public static readonly QSColumn LatColumn = OMCoreObject.GetColumn(x => x.Lat);
-		public static readonly QSColumn ParserTimeColumn = OMCoreObject.GetColumn(x => x.ParserTime);
 		public static readonly QSColumn CadastralNumberColumn = OMCoreObject.GetColumn(x => x.CadastralNumber);
 
 
@@ -25,7 +21,6 @@ namespace MarketPlaceBusiness.Common
 		
 		
 		public static readonly RegisterAttribute PropertyTypesCIPJSAttribute = OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS);
-		public static readonly RegisterAttribute DealTypeAttribute = OMCoreObject.GetAttributeData(x => x.DealType);
 		public static readonly RegisterAttribute PropertyMarketSegmentAttribute = OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment);
 		public static readonly RegisterAttribute MarketAttribute = OMCoreObject.GetAttributeData(x => x.Market);
 		public static readonly RegisterAttribute QualityClassCodeAttribute = OMCoreObject.GetAttributeData(x => x.QualityClass_Code);

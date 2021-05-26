@@ -36,22 +36,20 @@ namespace KadOzenka.Web.Controllers
 	{
 		#region Initialization
 
-		private readonly GbuObjectService _service;
 		private readonly CodDictionaryService _dictionaryService;
 		private readonly TaskService _taskService;
 	    private TourFactorService _tourFactorService;
-	    private TemplateService _templateService;
 
-        public GbuObjectController(GbuObjectService service, CodDictionaryService dictService, TaskService taskService, TourFactorService tourFactorService, TemplateService templateService)
-		{
-			_service = service;
-			_dictionaryService = dictService;
-			_taskService = taskService;
+	    public GbuObjectController(IGbuObjectService service, CodDictionaryService dictService, TaskService taskService,
+		    TourFactorService tourFactorService, IRegisterCacheWrapper registerCacheWrapper)
+		    : base(service, registerCacheWrapper)
+	    {
+		    _dictionaryService = dictService;
+		    _taskService = taskService;
 		    _tourFactorService = tourFactorService;
-            _templateService = templateService;
-        }
+	    }
 
-		#endregion
+	    #endregion
 
 		#region Object Card
 
@@ -64,7 +62,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult TreeList(long objectId, string parentNodeId, long nodeLevel)
 		{
-			List<AllDataTreeDto> treeList = _service.GetAllDataTree(objectId, parentNodeId, nodeLevel);
+			List<AllDataTreeDto> treeList = GbuObjectService.GetAllDataTree(objectId, parentNodeId, nodeLevel);
 
 			return Content(JsonConvert.SerializeObject(treeList), "application/json");
 		}
@@ -86,7 +84,7 @@ namespace KadOzenka.Web.Controllers
 				attributes = new List<long> { attributeId.Value };
 			}
 
-			var sttributesValues = _service.GetAllAttributes(objectId, sources, attributes);
+			var sttributesValues = GbuObjectService.GetAllAttributes(objectId, sources, attributes);
 
 			return View(sttributesValues);
 		}
@@ -122,8 +120,8 @@ namespace KadOzenka.Web.Controllers
 	                x.QuantTable == mainRegister.QuantTable && x.Id != mainRegister.Id && x.Id != 1).ToList();
 	            foreach (var source in getSources)
 	            {
-	                var objAttributes = _service
-	                    .GetAllAttributes(obj.Id, new List<long> { source.Id }, null, date)
+	                var objAttributes = GbuObjectService
+						.GetAllAttributes(obj.Id, new List<long> { source.Id }, null, date)
 	                    .ToList();
 	                if (objAttributes.Count > 0)
 	                {
@@ -138,8 +136,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public ActionResult GetAttributeHistory(long objectId, long registerId, long attrId)
 	    {
-	        var attributeValues = _service
-	            .GetAllAttributes(objectId, new List<long> { registerId }, new List<long> { attrId })
+	        var attributeValues = GbuObjectService
+				.GetAllAttributes(objectId, new List<long> { registerId }, new List<long> { attrId })
 	            .OrderByDescending(x => x.Id)
 	            .ToList();
 	        var model = new List<AttributeHistoryRecordDto>();
@@ -200,7 +198,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (model.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -246,18 +244,80 @@ namespace KadOzenka.Web.Controllers
 				Text = x.NameJob
 			}).AsEnumerable();
 
-			ViewBag.TreeAttributes = GetGbuAttributesTree();
+			ViewBag.TreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType>
+				{ RegisterAttributeType.STRING,
+					RegisterAttributeType.DATE,
+					RegisterAttributeType.DECIMAL,
+					RegisterAttributeType.BOOLEAN,
+					// Нет референсов + нет их обработки
+					//RegisterAttributeType.REFERENCE
+				});
 			ViewBag.StringTreeAttributes = GetGbuAttributesTree(new List<RegisterAttributeType> { RegisterAttributeType.STRING });
 
 			return View(new GroupingObjectFinalize());
 		}
 
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_GROUPING_OBJECT)]
+		public ActionResult GroupingObjectFinalize(GroupingObjectFinalize model)
+		{
+			if (!ModelState.IsValid)
+			{
+				return GenerateMessageNonValidModel();
+			}
+
+			if (model.IsNewAttribute)
+			{
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(model.NameNewAttribute, model.RegistryId.GetValueOrDefault(), model.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				if (idAttr == 0)
+				{
+					return SendErrorMessage("Не корректные данные для создания нового атрибута");
+				}
+
+				model.IdAttributeResult = idAttr;
+			}
+
+			long queueId;
+			try
+			{
+				var settings = model.CovertToGroupingSettings();
+				////TODO код для отладки
+				// new SetPriorityGroupFinalProcess().StartProcess(new OMProcessType(), new OMQueue
+				// {
+				// 	Status_Code = Status.Added,
+				// 	UserId = SRDSession.GetCurrentUserId(),
+				// 	Parameters = settings.SerializeToXml()
+				// }, new CancellationToken());
+				//queueId = 0;
+				queueId = SetPriorityGroupFinalProcess.AddProcessToQueue(settings);
+			}
+			catch (Exception e)
+			{
+				return SendErrorMessage(e.Message);
+			}
+
+			return Json(new
+			{
+				success = true,
+				idResultAttribute = model.IsNewAttribute ? model.IdAttributeResult : null,
+				QueueId = queueId
+			});
+		}
+
+		[HttpGet]
 		public List<LevelItem> GetCodJobParam(long? codJobId)
 		{
 			if (codJobId == 0 || codJobId == null)
 				return new List<LevelItem>();
 			return _dictionaryService.GetSelectCodJobInfo(codJobId.Value);
 		}
+
+		[HttpGet]
+		public IActionResult GetRegisterAttribute(long attributeId)
+		{
+			return Json(RegisterCache.GetAttributeData(attributeId));
+		}
+
 		#endregion
 
 		#region Harmonization
@@ -283,7 +343,7 @@ namespace KadOzenka.Web.Controllers
 
             if (viewModel.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -358,80 +418,6 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region HarmonizationCOD
-
-		[HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]
-		public ActionResult HarmonizationCOD()
-		{
-			ViewData["TreeAttributes"] = GetGbuAttributesTree();
-
-			ViewData["CodJobs"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
-			{
-				Text = x.NameJob,
-				Value = x.Id,
-			}).ToList();
-
-			ViewData["Documents"] = GetDocumentsForPartialView();
-
-			return View(new HarmonizationCODViewModel());
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_HARMONIZATION_COD)]
-		public ActionResult HarmonizationCOD(HarmonizationCODViewModel viewModel)
-		{
-			if (!ModelState.IsValid)
-			{
-				return GenerateMessageNonValidModel();
-			}
-
-			if (viewModel.IsNewAttribute)
-			{
-				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
-				if (idAttr == 0)
-				{
-					return SendErrorMessage("Не корректные данные для создания нового атрибута");
-				}
-
-				viewModel.IdAttributeResult = idAttr;
-			}
-
-            viewModel.Document.ProcessDocument();
-
-            long queueId;
-            try
-			{
-                ////TODO для тестирования (без процесса)
-                //new HarmonizationCOD(viewModel.ToHarmonizationCODSettings()).Run();
-                ////TODO для тестирования (с процессом)
-                //new HarmonizationCodProcess().StartProcess(new OMProcessType(), new OMQueue
-                //{
-                //    Status_Code = Status.Added,
-                //    UserId = SRDSession.GetCurrentUserId(),
-                //    Parameters = viewModel.ToHarmonizationCODSettings().SerializeToXml()
-                //}, new CancellationToken());
-                //queueId = 0;
-                queueId = HarmonizationCodProcess.AddProcessToQueue(viewModel.ToHarmonizationCODSettings());
-            }
-			catch (Exception e)
-			{
-				ErrorManager.LogError(e);
-				return BadRequest();
-			}
-
-		    return Json(new
-		    {
-		        Success =
-		            "Процедура Гармонизации по классификатору ЦОД успешно добавлена в очередь, по результатам операции будет отправлено сообщение",
-		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
-		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null,
-                QueueId = queueId
-            });
-		}
-
-        #endregion
-
         #region Unloading From Dict
 
         [HttpGet]
@@ -462,7 +448,7 @@ namespace KadOzenka.Web.Controllers
 
 			if (viewModel.IsNewAttribute)
 			{
-				int idAttr = _service.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
+				int idAttr = GbuObjectService.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
 				if (idAttr == 0)
 				{
 					return SendErrorMessage("Не корректные данные для создания нового атрибута");
@@ -536,7 +522,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		#endregion
-		
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_INHERITANCE)]
 		public ActionResult Inheritance()
@@ -642,7 +628,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
 		public IEnumerable<SelectListItem> GetAllGbuRegisters()
 		{
-			return RegisterCache.Registers.Values.Where(x => _service.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
+			return RegisterCache.Registers.Values.Where(x => GbuObjectService.GetGbuRegistersIds().Contains(x.Id)).Select(x => new SelectListItem(x.Description, x.Id.ToString()));
 		}
 
 		#endregion

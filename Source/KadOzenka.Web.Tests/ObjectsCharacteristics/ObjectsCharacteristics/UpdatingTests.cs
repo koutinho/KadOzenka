@@ -1,4 +1,5 @@
 ﻿using Core.Shared.Extensions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 using Moq;

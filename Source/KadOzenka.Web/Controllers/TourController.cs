@@ -52,16 +52,16 @@ namespace KadOzenka.Web.Controllers
         public ITourService TourService { get; set; }
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
-        public IGbuObjectService GbuObjectService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
         public GroupFactorService GroupFactorService { get; set; }
 
-        public TourController(ITourService tourService, IGbuObjectService gbuObjectService)
+        public TourController(ITourService tourService, IGbuObjectService gbuObjectService,
+	        IRegisterCacheWrapper registerCacheWrapper)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             TourService = tourService;
-            GbuObjectService = gbuObjectService;
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
         }

@@ -15,8 +15,10 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.SudLongProcesses;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +30,13 @@ namespace KadOzenka.Web.Controllers
 {
 	public class SudController : KoBaseController
 	{
+		public SudController(IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
+			
+		}
+
+
 		#region ObjectCard
 
 		[HttpGet]

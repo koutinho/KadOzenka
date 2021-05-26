@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Core.Register;
 using Core.Register.RegisterEntities;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.CodDictionary.Resources;
 using Moq;

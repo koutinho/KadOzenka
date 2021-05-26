@@ -83,16 +83,16 @@ namespace MarketPlaceBusiness
 		//		.ToList();
 		//}
 
-		public List<OMCoreObject> GetObjectsToAssignCoordinates()
-		{
-			return OMCoreObject
-				.Where(x => x.Lng == null && x.Lat == null)
-				//.Select(x => new {x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code})
-				.Select(x => new {x.Address, x.Lng, x.Lat})
-				.Execute()
-				.ToList()
-				.Take(1000)
-				.ToList();
-		}
+		//public List<OMCoreObject> GetObjectsToAssignCoordinates()
+		//{
+		//	return OMCoreObject
+		//		.Where(x => x.Lng == null && x.Lat == null)
+		//		//.Select(x => new {x.ProcessType_Code, x.Address, x.Lng, x.Lat, x.ExclusionStatus_Code})
+		//		.Select(x => new {x.Address, x.Lng, x.Lat})
+		//		.Execute()
+		//		.ToList()
+		//		.Take(1000)
+		//		.ToList();
+		//}
 	}
 }
