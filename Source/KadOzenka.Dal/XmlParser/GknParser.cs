@@ -45,6 +45,7 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictForestCategoryProtective = null;
         static xsdDictionary dictForestEncumbrances = null;
 
+        public int TotalObjectCounter { get; private set; }
         private readonly object _locker;
         private readonly GbuReportService _gbuReportService;
 
@@ -110,6 +111,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnBuilding in xnBuildings)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnBuilding, enTypeObject.toBuilding, assessmentDate));
                 }
             }
@@ -118,6 +120,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnConstructions)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnConstruction, enTypeObject.toConstruction, assessmentDate));
                 }
             }
@@ -126,6 +129,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnUnConstructions)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited, assessmentDate));
                 }
             }
@@ -134,6 +138,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnFlats)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnFlat, enTypeObject.toFlat, assessmentDate));
                 }
             }
@@ -142,6 +147,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnCarParkingSpaces)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnFlat, enTypeObject.toCarPlace, assessmentDate));
                 }
             }
@@ -150,6 +156,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnParcel in xnParcels)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnParcel, enTypeObject.toParcel, assessmentDate));
                 }
             }
@@ -202,12 +209,14 @@ namespace KadOzenka.Dal.XmlParser
 
         public xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
         {
-            string kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
-            DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
-            xmlObject obj = new xmlObject(typeobject, kn, dc, assessmentDate);
-
+	        string kn = string.Empty;
+	        xmlObject obj = null;
             try
-            {
+	        { 
+			    kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
+	            DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
+	            obj = new xmlObject(typeobject, kn, dc, assessmentDate);
+
 	            #region Импорт
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
             {
@@ -1701,9 +1710,13 @@ namespace KadOzenka.Dal.XmlParser
 			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
 				        return;
 
-			        cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
-			        var square = row.Cells[squareMapping.ColumnIndex].Value?.ParseToDouble();
-                    var assessmentDate = row.Cells[assessmentDateMapping.ColumnIndex].Value.ParseToDateTimeNullable();
+			        TotalObjectCounter++;
+                    cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
+                    var square = GknAllAttributes.CastToDouble(RequiredFieldsForExcelMapping.SquareAttributeId,
+	                    row.Cells[squareMapping.ColumnIndex].Value);
+			        var assessmentDate = GknAllAttributes.CastToDateTime(
+				        RequiredFieldsForExcelMapping.AssessmentDateAttributeId,
+				        row.Cells[assessmentDateMapping.ColumnIndex].Value);
                     var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
                     var typeEnum = GetObjectType(objectTypeDescriptions, typeFromFile);
 

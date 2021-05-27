@@ -2,6 +2,7 @@
 using System.Linq;
 using Core.Register;
 using Core.Shared.Extensions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 using Microsoft.AspNetCore.Mvc;

@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.DataImport
 			DataImporterGknLongProcessProgressLogger = new DataImporterGknLongProcessProgressLogger();
 		}
 
-		public static void AddImportToQueue(string templateFileName, Stream templateFile, long taskId,
+		public static OMImportDataLog SaveImportDataLog(string templateFileName, Stream templateFile, long taskId,
 			List<ColumnToAttributeMapping> columnsMapping = null)
 		{
 			var mainRegisterId = OMTask.GetRegisterId();
@@ -67,6 +67,14 @@ namespace KadOzenka.Dal.DataImport
 			import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
 			FileStorageManager.Save(templateFile, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 			import.Save();
+
+			return import;
+		}
+
+		public static void AddImportToQueue(string templateFileName, Stream templateFile, long taskId,
+			List<ColumnToAttributeMapping> columnsMapping = null)
+		{
+			var import = SaveImportDataLog(templateFileName, templateFile, taskId, columnsMapping);
 
 			////TODO код для отладки
 			//var cancelSource = new CancellationTokenSource();

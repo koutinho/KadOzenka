@@ -1,4 +1,5 @@
 ﻿using Core.Register;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
 using KadOzenka.Dal.ObjectsCharacteristics.Resources;

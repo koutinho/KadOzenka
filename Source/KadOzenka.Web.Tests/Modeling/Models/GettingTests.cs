@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KadOzenka.Common.Tests;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
 namespace KadOzenka.Web.Tests.Modeling.Models
