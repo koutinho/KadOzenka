@@ -24,11 +24,8 @@ namespace KadOzenka.Dal.Logger
 				{
 					if (token.IsCancellationRequested)
 					{
-						if (dataImporterGkn.AreCountersInitialized)
-						{
-							var totalNumberOfObjects = dataImporterGkn.GetTotalObjectCountInFile();
-							CollectStatistic(dataLog, totalNumberOfObjects, GetFileNumberOfImportedObjects(dataImporterGkn));
-						}
+						if(dataImporterGkn.AreCountersInitialized)
+							CollectStatistic(dataLog, GetFileTotalNumberOfObjects(dataImporterGkn), GetFileNumberOfImportedObjects(dataImporterGkn));
 
 						break;
 					}
@@ -68,7 +65,7 @@ namespace KadOzenka.Dal.Logger
 
 		private void CollectStatistic(OMImportDataLog dataLog, DataImporterGkn dataImporterGkn)
 		{
-			var totalNumberOfObjects = dataImporterGkn.GetTotalObjectCountInFile();
+			var totalNumberOfObjects = GetFileTotalNumberOfObjects(dataImporterGkn);
 			var numberOfImportedObjects = GetFileNumberOfImportedObjects(dataImporterGkn);
 			if (dataImporterGkn.AreCountersInitialized && (dataLog.TotalNumberOfObjects != totalNumberOfObjects ||
 				dataLog.NumberOfImportedObjects != numberOfImportedObjects))
@@ -89,6 +86,13 @@ namespace KadOzenka.Dal.Logger
 			return dataImporterGkn.CountImportBuildings + dataImporterGkn.CountImportParcels +
 				   dataImporterGkn.CountImportConstructions + dataImporterGkn.CountImportUncompliteds +
 				   dataImporterGkn.CountImportFlats + dataImporterGkn.CountImportCarPlaces;
+		}
+
+		private int GetFileTotalNumberOfObjects(DataImporterGkn dataImporterGkn)
+		{
+			return dataImporterGkn.CountXmlBuildings + dataImporterGkn.CountXmlParcels +
+				   dataImporterGkn.CountXmlConstructions + dataImporterGkn.CountXmlUncompliteds +
+				   dataImporterGkn.CountXmlFlats + dataImporterGkn.CountXmlCarPlaces;
 		}
 	}
 }

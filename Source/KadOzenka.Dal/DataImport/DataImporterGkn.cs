@@ -24,6 +24,31 @@ namespace KadOzenka.Dal.DataImport
         private Dictionary<long, List<long>> _updatedObjectsAttributes;
 
         /// <summary>
+        /// Колличество зданий в Xml
+        /// </summary>
+        public Int32 CountXmlBuildings { get; private set; }
+        /// <summary>
+        /// Колличество участков в Xml
+        /// </summary>
+        public Int32 CountXmlParcels { get; private set; }
+        /// <summary>
+        /// Колличество сооружений в Xml
+        /// </summary>
+        public Int32 CountXmlConstructions { get; private set; }
+        /// <summary>
+        /// Колличество объектов незавершенного строительства в Xml
+        /// </summary>
+        public Int32 CountXmlUncompliteds { get; private set; }
+        /// <summary>
+        /// Колличество помещений в Xml
+        /// </summary>
+        public Int32 CountXmlFlats { get; private set; }
+        /// <summary>
+        /// Колличество машиномест в Xml
+        /// </summary>
+        public Int32 CountXmlCarPlaces { get; private set; }
+
+        /// <summary>
         /// Колличество загруженных зданий из Xml
         /// </summary>
         public Int32 CountImportBuildings { get; private set; }
@@ -50,7 +75,7 @@ namespace KadOzenka.Dal.DataImport
 
         public bool AreCountersInitialized { get; private set; }
 
-        private GknAllAttributes AllGknAttributes { get; }
+        private GknAllAttributes AllGknAttributes { get; set; }
         private xmlImportGkn XmlImportGkn { get; }
         private GbuReportService GbuReportService { get; }
 
@@ -137,6 +162,12 @@ namespace KadOzenka.Dal.DataImport
 		        return;
 	        }
 
+	        CountXmlBuildings = GknItems.Buildings.Count;
+	        CountXmlParcels = GknItems.Parcels.Count;
+	        CountXmlConstructions = GknItems.Constructions.Count;
+	        CountXmlUncompliteds = GknItems.Uncompliteds.Count;
+	        CountXmlFlats = GknItems.Flats.Count;
+	        CountXmlCarPlaces = GknItems.CarPlaces.Count;
 	        CountImportBuildings = 0;
 	        CountImportParcels = 0;
 	        CountImportConstructions = 0;
@@ -145,12 +176,12 @@ namespace KadOzenka.Dal.DataImport
 	        CountImportCarPlaces = 0;
 	        AreCountersInitialized = true;
 	        Log.ForContext("TaskId", task.Id)
-		        .ForContext("BuildingsCount", XmlImportGkn.BuildingsCount)
-		        .ForContext("ParceslCount", XmlImportGkn.ParceslCount)
-		        .ForContext("ConstructionsCount", XmlImportGkn.ConstructionsCount)
-		        .ForContext("UncompletedCount", XmlImportGkn.UncompletedCount)
-		        .ForContext("FlatsCount", XmlImportGkn.FlatsCount)
-		        .ForContext("CarPlacesCount", XmlImportGkn.CarPlacesCount)
+		        .ForContext("CountXmlBuildings", CountXmlBuildings)
+		        .ForContext("CountXmlParcels", CountXmlParcels)
+		        .ForContext("CountXmlConstructions", CountXmlConstructions)
+		        .ForContext("CountXmlUncompliteds", CountXmlUncompliteds)
+		        .ForContext("CountXmlFlats", CountXmlFlats)
+		        .ForContext("CountXmlCarPlaces", CountXmlCarPlaces)
 		        .Debug("Получены данные для импорта из ГКН");
 
 	        var objectsImporters = new List<object>
@@ -245,13 +276,6 @@ namespace KadOzenka.Dal.DataImport
 		        }
 		        _updatedObjectsAttributes[idObject].Add(attributeId);
 	        }
-        }
-
-        public int GetTotalObjectCountInFile()
-        {
-	        return XmlImportGkn.BuildingsCount + XmlImportGkn.ParceslCount +
-	               XmlImportGkn.ConstructionsCount + XmlImportGkn.UncompletedCount +
-	               XmlImportGkn.FlatsCount + XmlImportGkn.CarPlacesCount;
         }
 
         public void IncreaseImportedBuildingsCount()
