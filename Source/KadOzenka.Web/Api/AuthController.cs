@@ -34,14 +34,19 @@ namespace KadOzenka.Web.Api
 					{
 						return BadRequest($"Истекло время действия пароля для пользователя: {userBase.Name}");
 					}
+					var claims = new List<Claim>
+					{
+						new Claim(ClaimsIdentity.DefaultNameClaimType, validatedUserName)
+					};
+					ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+					await HttpContextHelper.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
+					
+				}
+				else
+				{
+					return BadRequest(errorMessage);
 				}
 
-				var claims = new List<Claim>
-				{
-					new Claim(ClaimsIdentity.DefaultNameClaimType, validatedUserName)
-				};
-				ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
-				await HttpContextHelper.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
 			}
 			else
 			{
@@ -67,6 +72,19 @@ namespace KadOzenka.Web.Api
 		public IActionResult CheckAuthorize()
 		{
 			return Ok(true);
+		}
+
+
+		[SwaggerResponse((int)HttpStatusCode.OK, "LogOut")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, "Not Authorize")]
+		[Route("Logout")]
+		[HttpGet]
+		public IActionResult Logout()
+		{
+			HttpContextHelper.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+			SRDSession.Current.Close();
+
+			return Ok();
 		}
 
 	}

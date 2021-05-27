@@ -172,7 +172,7 @@ namespace CIPJS
 				{
 					op.AddDefaultPolicy(builder =>
 					{
-						builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().AllowCredentials();
+						builder.AllowAnyHeader().AllowAnyMethod().SetIsOriginAllowed(o => true).AllowCredentials();
 					});
 				});
 				services.AddKendo();
@@ -264,7 +264,6 @@ namespace CIPJS
 
                 app.UseSession();
                 app.UseAuthentication();
-    
 
                 app.UseSignalR(routes =>
             {

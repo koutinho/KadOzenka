@@ -1,3 +1,38 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '~@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$angular-Web-settings-primary: mat.define-palette(mat.$indigo-palette);
+$angular-Web-settings-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$angular-Web-settings-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$angular-Web-settings-theme: mat.define-light-theme((
+  color: (
+    primary: $angular-Web-settings-primary,
+    accent: $angular-Web-settings-accent,
+    warn: $angular-Web-settings-warn,
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($angular-Web-settings-theme);
+
 @import '~@angular/material/theming';
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -143,18 +178,18 @@ $mat-dark-theme-background: (
 // Theme Config
 
 body {
-  --primary-color: #cc33ca;
-  --primary-lighter-color: #f0c2ef;
-  --primary-darker-color: #b920b7;
+  --primary-color: #3363cc;
+  --primary-lighter-color: #3a54c7;
+  --primary-darker-color: #4e33ca;
   --text-primary-color: #{$light-primary-text};
   --text-primary-lighter-color: #{$dark-primary-text};
   --text-primary-darker-color: #{$light-primary-text};
 }   
 $mat-primary: (
-  main: #cc33ca,
-  lighter: #f0c2ef,
-  darker: #b920b7,
-  200: #cc33ca, // For slide toggle,
+  main: #333dcc,
+  lighter: #2f7cbb04,
+  darker: #203cb9,
+  200: #3363cc, // For slide toggle,
   contrast : (
     main: $light-primary-text,
     lighter: $dark-primary-text,
