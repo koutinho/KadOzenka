@@ -41,7 +41,7 @@
 					<CadastralNumber>50:08:0000000:84321</CadastralNumber>
 				</FlatsCadastralNumbers>
 			</Building>
-			<Building CadastralNumber="50:08:0000000:32056" DateCreated="ERROR_HEAR">
+			<Building CadastralNumber="50:08:0000000:32056" DateCreated="ERROR_HERE">
 				<CadastralBlock>50:08:0000000</CadastralBlock>
 				<Name>жилое строение (садовый дом)</Name>
 				<ObjectType>002001002000</ObjectType>
