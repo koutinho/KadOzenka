@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using Core.Register;
 using KadOzenka.Dal.DataExport;
@@ -44,6 +42,24 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictForestUse = null;
         static xsdDictionary dictForestCategoryProtective = null;
         static xsdDictionary dictForestEncumbrances = null;
+
+
+        #region Счетчки объектов в файле
+
+        public int BuildingsCount { get; private set; }
+
+        public int ParceslCount { get; private set; }
+
+        public int ConstructionsCount { get; private set; }
+
+        public int UncompletedCount { get; private set; }
+
+        public int FlatsCount { get; private set; }
+
+        public int CarPlacesCount { get; private set; }
+
+        #endregion
+
 
         private readonly object _locker;
         private readonly GbuReportService _gbuReportService;
@@ -110,6 +126,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnBuilding in xnBuildings)
                 {
+	                BuildingsCount++;
                     objs.Add(GetData(xnBuilding, enTypeObject.toBuilding, assessmentDate));
                 }
             }
@@ -118,6 +135,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnConstructions)
                 {
+	                ConstructionsCount++;
                     objs.Add(GetData(xnConstruction, enTypeObject.toConstruction, assessmentDate));
                 }
             }
@@ -126,6 +144,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnUnConstructions)
                 {
+	                UncompletedCount++;
                     objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited, assessmentDate));
                 }
             }
@@ -134,6 +153,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnFlats)
                 {
+	                FlatsCount++;
                     objs.Add(GetData(xnFlat, enTypeObject.toFlat, assessmentDate));
                 }
             }
@@ -142,6 +162,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnCarParkingSpaces)
                 {
+	                CarPlacesCount++;
                     objs.Add(GetData(xnFlat, enTypeObject.toCarPlace, assessmentDate));
                 }
             }
@@ -150,6 +171,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnParcel in xnParcels)
                 {
+	                ParceslCount++;
                     objs.Add(GetData(xnParcel, enTypeObject.toParcel, assessmentDate));
                 }
             }
