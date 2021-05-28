@@ -337,7 +337,10 @@ namespace KadOzenka.Dal.GbuObject
 			_curretExcelFile.Save(stream, SaveOptions.XlsxDefault);
 			stream.Seek(0, SeekOrigin.Begin);
 
-			return SaveReportGeneral(stream, _fileName, "xlsx");
+			var exportId = SaveReportGeneral(stream, _fileName, "xlsx");
+			_log.Debug("Закончено сохранение отчета через xlsx");
+
+			return exportId;
 		}
 
 		private long SaveReportZip()
@@ -346,10 +349,14 @@ namespace KadOzenka.Dal.GbuObject
 
 			var zipStream = CreateZipMemoryStream();
 
+			long exportId;
 			using (_log.TimeOperation("Сохранение zip-файла"))
 			{
-				return SaveReportGeneral(zipStream, _fileName, "zip");
+				exportId = SaveReportGeneral(zipStream, _fileName, "zip");
 			}
+			_log.Debug("Закончено сохранение отчета через zip");
+
+			return exportId;
 		}
 
 		private long SaveReportGeneral(Stream stream, string fileName, string fileExtension)
