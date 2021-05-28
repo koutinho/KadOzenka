@@ -16,15 +16,21 @@ namespace KadOzenka.Web.Models.Task
 
 		public static TaskDeleteModel ToModel(TaskDto dto, bool canTaskBeDeleted, bool isDuplicateProcessExists)
 		{
-			return new TaskDeleteModel
+			var model = new TaskDeleteModel
 			{
-				TaskId = dto.Id, 
-				TourYear = dto.Tour?.Year,
-				TaskName = TaskService.GetTemplateForTaskName(dto.EstimationDate, dto.IncomingDocument.CreationDate,
-					dto.IncomingDocument.RegNumber, dto.NoteType.GetEnumDescription()),
 				CanTaskBeDeleted = canTaskBeDeleted,
 				IsDuplicateProcessExists = isDuplicateProcessExists
 			};
+
+			if (dto == null)
+				return model;
+
+			model.TaskId = dto.Id;
+			model.TourYear = dto.Tour?.Year;
+			model.TaskName = TaskService.GetTemplateForTaskName(dto.EstimationDate, dto.IncomingDocument.CreationDate,
+				dto.IncomingDocument.RegNumber, dto.NoteType.GetEnumDescription());
+
+			return model;
 		}
 
 		public MoveTaskToRecycleBinLongProcessParams ToSettings()
