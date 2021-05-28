@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using IO.Swagger.Filters;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace IO.Swagger
@@ -36,22 +37,22 @@ namespace IO.Swagger
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-
-            services
-                .AddMvc(options =>
-                {
-                    options.InputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.JsonInputFormatter>();
-                    options.OutputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.JsonOutputFormatter>();
-                })
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                //.AddNewtonsoftJson(opts =>
-                //{
-                //    opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                //    opts.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
-                //})
+            services.AddMvc().AddNewtonsoftJson(opts =>
+            {
+                opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                opts.SerializerSettings.Converters.Add(new StringEnumConverter(new CamelCaseNamingStrategy()));
+            })
                 .AddXmlSerializerFormatters();
 
+
+            //services.
+                //.AddMvc(options =>
+                //{
+                //    options.InputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.JsonInputFormatter>();
+                //    options.OutputFormatters.RemoveType<Microsoft.AspNetCore.Mvc.Formatters.JsonOutputFormatter>();
+                //})
+                //.SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+              
 
             services
                 .AddSwaggerGen(c =>
