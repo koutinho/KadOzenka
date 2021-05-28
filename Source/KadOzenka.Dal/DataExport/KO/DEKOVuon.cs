@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using GemBox.Spreadsheet;
 using Ionic.Zip;
+using KadOzenka.Dal.Helpers;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -134,12 +135,12 @@ namespace KadOzenka.Dal.DataExport
                     DEKOUnit.AddXmlPackage(xmlFile, xnLandValuation, new List<OMUnit> { unit });
 
                     string file_name_common = estimation_date.ToString("dd_MM_yyyy");
-                    string fileName = file_name_common + "\\" + unit.CadastralNumber.Replace(":", "_") +
-                                      "\\COST_" + ConfigurationManager.AppSettings["ucSender"] +
+                    string fileName = PathCombiner.GetFullPath(file_name_common, unit.CadastralNumber.Replace(":", "_"),
+                                      "COST_" + ConfigurationManager.AppSettings["ucSender"] +
                                       "_" + estimation_date.ToString("ddMMyyyy") +
                                       "_" + DateTime.Now.ToString("ddMMyyyy") +
                                       "_" + ((int)unit.PropertyType_Code).ToString() +
-                                      "_" + unit.Id.ToString() + ".xml";
+                                      "_" + unit.Id.ToString() + ".xml");
                     MemoryStream stream = new MemoryStream();
                     xmlFile.Save(stream);
                     stream.Seek(0, SeekOrigin.Begin);
@@ -279,14 +280,11 @@ namespace KadOzenka.Dal.DataExport
                 }
                 #endregion
 
-                string fileName = "DOC" + "\\Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                string fileName = PathCombiner.GetFullPath("DOC", "Акт_об_определении_КС" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx");
                 MemoryStream stream = new MemoryStream();
                 excelAct.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
                 stream.Seek(0, SeekOrigin.Begin);
                 zipFile.AddEntry(fileName, stream);
-
-                //excelAct.Save("D:\\Temp\\KO_Vuon\\ActDeterminingCadastralCostVUON.xlsx");
-
             }
             #endregion
 
@@ -344,7 +342,7 @@ namespace KadOzenka.Dal.DataExport
                     DataExportCommon.AddRow(asheet, acurcount - acurindval, aobjvals, acurindval);
                 }
 
-                string fileName = "DOC" + "\\Акт_определения_КС_по_МУ_пункт_12_2" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx";
+                string fileName = PathCombiner.GetFullPath("DOC", "Акт_определения_КС_по_МУ_пункт_12_2" + DateTime.Now.ToString("ddMMyyyyhhmmss") + ".xlsx");
                 MemoryStream stream = new MemoryStream();
                 aexcell.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
                 stream.Seek(0, SeekOrigin.Begin);

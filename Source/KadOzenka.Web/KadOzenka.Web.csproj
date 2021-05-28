@@ -152,6 +152,7 @@
 			  <EnvironmentName>Local</EnvironmentName>
 			  <ASPNETCORE_ENVIRONMENT>Local</ASPNETCORE_ENVIRONMENT>
 			  <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+			  <LangVersion>9.0</LangVersion>
 		  </PropertyGroup>
 	  </When>
 	  <When Condition=" '$(Configuration)'=='Debug' ">
