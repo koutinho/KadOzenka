@@ -10,6 +10,10 @@ delete from core_register_relation where id=218;
 --Удаляем таблицы, связанные с экспресс-оценкой
 delete from core_register_attribute where registerid in (608, 609, 610, 611);
 delete from core_register where registerid in (608, 609, 610, 611);
+DROP TABLE IF EXISTS ES_TO_MARKET_CORE_OBJECT;
+DROP TABLE IF EXISTS ES_REFERENCE;
+DROP TABLE IF EXISTS ES_REFERENCE_ITEM;
+DROP TABLE IF EXISTS ES_SETTINGS_PARAMS;
 
 --Удаляем дашборд экспресс-оценки из стартовой страницы
 delete from dashboards_panel where id=1000041;
