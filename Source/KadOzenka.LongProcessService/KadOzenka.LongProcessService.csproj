@@ -113,6 +113,7 @@
     <PropertyGroup>
 		<PublishingTasksdll>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Web\Microsoft.Web.Publishing.Tasks.dll</PublishingTasksdll>
 		<PublishingTasksdll_buildServer>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VisualStudio\v16.0\Web\Microsoft.Web.Publishing.Tasks.dll</PublishingTasksdll_buildServer>
+		<UserSecretsId>d86ab7cb-862c-47ac-8f0d-097383849d8f</UserSecretsId>
 	</PropertyGroup>
 	<UsingTask TaskName="TransformXml" AssemblyFile="$(PublishingTasksdll)" Condition=" Exists(' $(PublishingTasksdll) ') " />
 	<UsingTask TaskName="TransformXml" AssemblyFile="$(PublishingTasksdll_buildServer)" Condition=" Exists(' $(PublishingTasksdll_buildServer) ') and !Exists(' $(PublishingTasksdll) ') " />
