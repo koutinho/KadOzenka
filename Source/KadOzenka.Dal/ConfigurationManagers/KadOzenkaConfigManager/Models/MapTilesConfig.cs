@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using Core.SRD;
+using KadOzenka.Dal.Helpers;
 using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models
@@ -47,26 +48,26 @@ namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models
 
 		public string GetMarketHeatMapInitialImageFileName(int currentZoom)
 		{
-			if (!Directory.Exists(
-				$"{MarketMapHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages"))
+			var directory = PathCombiner.GetFullPath(MarketMapHeatMapLayerFolder,
+				$"user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}", "InitialImages");
+			if (!Directory.Exists(directory))
 			{
-				Directory.CreateDirectory($"{MarketMapHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages");
+				Directory.CreateDirectory(directory);
 			}
 
-			return
-				$"{MarketMapHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages\\{currentZoom}.png";
+			return PathCombiner.GetFullPath(directory, $"{currentZoom}.png");
 		}
 
 		public string GetManagementDecisionSupportHeatMapInitialImageFileName(int currentZoom)
 		{
-			if (!Directory.Exists(
-				$"{ManagementDecisionSupportHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages"))
+			var directory = PathCombiner.GetFullPath(ManagementDecisionSupportHeatMapLayerFolder,
+				$"user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}", "InitialImages");
+			if (!Directory.Exists(directory))
 			{
-				Directory.CreateDirectory($"{ManagementDecisionSupportHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages");
+				Directory.CreateDirectory(directory);
 			}
 
-			return
-				$"{ManagementDecisionSupportHeatMapLayerFolder}\\user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}\\InitialImages\\{currentZoom}.png";
+			return PathCombiner.GetFullPath(directory, $"{currentZoom}.png");
 		}
 
 		private void InitPixelCoordinatesCache(int currentZoom)
@@ -87,8 +88,8 @@ namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models
 
 		private string GetPixelCoordinatesJsonFileName(int currentZoom)
 		{
-			return
-				$"{PixelCoordinatesJsonConfigFilesFolder}\\{PixelCoordinatesJsonConfigFilePrefix}_{currentZoom}.json";
+			return PathCombiner.GetFullPath(PixelCoordinatesJsonConfigFilesFolder,
+				$"{PixelCoordinatesJsonConfigFilePrefix}_{currentZoom}.json");
 		}
 	}
 }

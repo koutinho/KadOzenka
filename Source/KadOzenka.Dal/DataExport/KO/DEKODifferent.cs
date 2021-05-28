@@ -8,6 +8,7 @@ using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.Helpers;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -129,8 +130,6 @@ namespace KadOzenka.Dal.DataExport
                                + "." + _count_file.ToString().PadLeft(5, '0');
 
             long id =  SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable04);
-            
-            //excel_edit.Save(_dir_name + "\\" + file_name + ".xlsx"); //temp
             
             return new ResultKoUnloadSettings
             {
@@ -386,8 +385,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            string file_name =  "Task_" + _taskid + "\\Таблица 5. Метод УПКС"
-                                + " " + DataExportCommon.GetFullNumberGroup(_subgroup);
+            var file_name = PathCombiner.GetFullPath($"Task_{_taskid}", $"Таблица 5. Метод УПКС {DataExportCommon.GetFullNumberGroup(_subgroup)}");
             long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable05);
 
             return new ResultKoUnloadSettings
@@ -697,8 +695,6 @@ namespace KadOzenka.Dal.DataExport
                 start_rows += 3;
             }
 
-            //string path_name = _dir_name + "\\Table7";
-            //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name =  "Таблица 7. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым районам города Москвы"
                                 + "." + ((_is_parsel) ? "ЗУ" : "ОКС");
 
@@ -897,8 +893,6 @@ namespace KadOzenka.Dal.DataExport
                 start_rows += 3;
             }
 
-            // string path_name = _dir_name + "\\Table8";
-            // if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name ="Таблица 8. Обобщенные показатели результатов расчета кадастровой стоимости по кадастровым кварталам города Москвы"
                               + "." + ((_is_parsel) ? "ЗУ" : "ОКС");
 
@@ -1015,8 +1009,6 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            //string path_name = _dir_name + "\\Table9\\Task_" + _taskid.ToString();
-            //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = "Task_" + _taskid + "Таблица 9. Результаты определения КС"
                                + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0');
             //excel_edit.Save(file_name);
@@ -1169,8 +1161,6 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            //string path_name = _dir_name + "\\Table10\\Task_" + _taskid.ToString();
-            //if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = "Task_" + _taskid + "Таблица 10. Результаты ГКО"
                                + " " + _cad_num.Replace(":", "_") + "." + _count_file.ToString().PadLeft(5, '0');
             //excel_edit.Save(file_name);
@@ -1432,7 +1422,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(mainWorkSheet, start_rows - curindval, objvals, curindval);
             }
 
-            string path_name = _dir_name + "\\Table11\\Task_" + _taskid.ToString();
+            var path_name = PathCombiner.GetFullPath(_dir_name, "Table11", $"Task_{_taskid}");
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = "Task_" + _taskid + "Таблица 11. Сводные результаты по КР"
                                + " " + _cad_num.Replace(":", "_")

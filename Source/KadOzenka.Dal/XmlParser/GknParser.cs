@@ -14,6 +14,7 @@ using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Helpers;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Directory;
@@ -58,47 +59,47 @@ namespace KadOzenka.Dal.XmlParser
         public static void FillDictionary(string pathSchema)
         {
             if (dictAssignationBuild == null)
-                dictAssignationBuild = new xsdDictionary(pathSchema + "\\dAssBuilding_v02.xsd", "dAssBuilding");
+                dictAssignationBuild = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssBuilding_v02.xsd"), "dAssBuilding");
             if (dictWall == null)
-                dictWall = new xsdDictionary(pathSchema + "\\dWall_v02.xsd", "dWall");
+                dictWall = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dWall_v02.xsd"), "dWall");
             if (dictTypeParameter == null)
-                dictTypeParameter = new xsdDictionary(pathSchema + "\\dTypeParameter_v01.xsd", "dTypeParameter");
+                dictTypeParameter = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dTypeParameter_v01.xsd"), "dTypeParameter");
             if (dictAssignationFlat == null)
-                dictAssignationFlat = new xsdDictionary(pathSchema + "\\dAssFlat_v02.xsd", "dAssFlat");
+                dictAssignationFlat = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssFlat_v02.xsd"), "dAssFlat");
             if (dictAssignationFlatType == null)
-                dictAssignationFlatType = new xsdDictionary(pathSchema + "\\dAssFlatType_v01.xsd", "dAssFlatType");
+                dictAssignationFlatType = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssFlatType_v01.xsd"), "dAssFlatType");
             if (dictStrorey == null)
-                dictStrorey = new xsdDictionary(pathSchema + "\\dTypeStorey_v01.xsd", "dTypeStorey");
+                dictStrorey = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dTypeStorey_v01.xsd"), "dTypeStorey");
             if (dictCat == null)
-                dictCat = new xsdDictionary(pathSchema + "\\dCategories_v01.xsd", "dCategories");
+                dictCat = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dCategories_v01.xsd"), "dCategories");
             if (dictName == null)
-                dictName = new xsdDictionary(pathSchema + "\\dParcels_v02.xsd", "dParcels");
+                dictName = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dParcels_v02.xsd"), "dParcels");
             if (dictUtilizations == null)
-                dictUtilizations = new xsdDictionary(pathSchema + "\\dUtilizations_v01.xsd", "dUtilizations");
+                dictUtilizations = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dUtilizations_v01.xsd"), "dUtilizations");
             if (dictAllowedUse == null)
-                dictAllowedUse = new xsdDictionary(pathSchema + "\\dAllowedUse_v02.xsd", "dAllowedUse");
+                dictAllowedUse = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAllowedUse_v02.xsd"), "dAllowedUse");
             if (dictEncumbrance == null)
-                dictEncumbrance = new xsdDictionary(pathSchema + "\\dEncumbrances_v04.xsd", "dEncumbrances");
+                dictEncumbrance = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dEncumbrances_v04.xsd"), "dEncumbrances");
             if (dictAllDocuments == null)
-                dictAllDocuments = new xsdDictionary(pathSchema + "\\dAllDocuments_v05.xsd", "dAllDocuments");
+                dictAllDocuments = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAllDocuments_v05.xsd"), "dAllDocuments");
             if (dictInspection == null)
-                dictInspection = new xsdDictionary(pathSchema + "\\dInspection_v01.xsd", "dInspection");
+                dictInspection = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dInspection_v01.xsd"), "dInspection");
             if (dictFormEvents == null)
-                dictFormEvents = new xsdDictionary(pathSchema + "\\dFormEvents_v01.xsd", "dFormEvents");
+                dictFormEvents = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dFormEvents_v01.xsd"), "dFormEvents");
             if (dictRealty == null)
-                dictRealty = new xsdDictionary(pathSchema + "\\dRealty_v04.xsd", "dRealty");
+                dictRealty = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dRealty_v04.xsd"), "dRealty");
             if (dictCultural == null)
-                dictCultural = new xsdDictionary(pathSchema + "\\dCultural_v01.xsd", "dCultural");
+                dictCultural = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dCultural_v01.xsd"), "dCultural");
             if(dictSpecialTypeFlat == null)
-	            dictSpecialTypeFlat = new xsdDictionary(pathSchema + "\\dSpecialTypeFlat_v01.xsd", "dSpecialTypeFlat");
+	            dictSpecialTypeFlat = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dSpecialTypeFlat_v01.xsd"), "dSpecialTypeFlat");
             if(dictNaturalObjects == null)
-                dictNaturalObjects = new xsdDictionary(pathSchema + "\\dNaturalObjects_v01.xsd", "dNaturalObjects");
+                dictNaturalObjects = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dNaturalObjects_v01.xsd"), "dNaturalObjects");
             if(dictForestUse == null)
-	            dictForestUse = new xsdDictionary(pathSchema + "\\dForestUse_v01.xsd", "dForestUse");
+	            dictForestUse = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestUse_v01.xsd"), "dForestUse");
             if(dictForestCategoryProtective == null)
-	            dictForestCategoryProtective = new xsdDictionary(pathSchema + "\\dForestCategoryProtective_v01.xsd", "dForestCategoryProtective");
+	            dictForestCategoryProtective = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestCategoryProtective_v01.xsd"), "dForestCategoryProtective");
             if(dictForestEncumbrances == null)
-	            dictForestEncumbrances = new xsdDictionary(pathSchema + "\\dForestEncumbrances_v01.xsd", "dForestEncumbrances");
+	            dictForestEncumbrances = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestEncumbrances_v01.xsd"), "dForestEncumbrances");
         }
 
         public xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
