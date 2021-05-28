@@ -596,7 +596,7 @@ namespace ObjectModel.KO
 	            log.ForContext("UnitId", this.Id)
 		            .ForContext("PrevUnitId", lastUnit.Id)
 		            .Verbose("Найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
-                if (lastUnit.CadastralBlock == this.CadastralBlock)
+                //if (lastUnit.CadastralBlock == this.CadastralBlock)
                 {
                     List<ObjectModel.KO.OMFactorSettings> oldfactors = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftKvartal).SelectAll().Execute();
                     log.ForContext("UnitId", this.Id)
@@ -624,7 +624,6 @@ namespace ObjectModel.KO
 	                    .Verbose("Не найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
             }
         }
-
     }
 
     public partial class OMModel
