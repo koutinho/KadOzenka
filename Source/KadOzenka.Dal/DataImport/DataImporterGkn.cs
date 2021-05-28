@@ -23,30 +23,6 @@ namespace KadOzenka.Dal.DataImport
         private readonly object _locked;
         private Dictionary<long, List<long>> _updatedObjectsAttributes;
 
-        /// <summary>
-        /// Колличество зданий в Xml
-        /// </summary>
-        public Int32 CountXmlBuildings { get; private set; }
-        /// <summary>
-        /// Колличество участков в Xml
-        /// </summary>
-        public Int32 CountXmlParcels { get; private set; }
-        /// <summary>
-        /// Колличество сооружений в Xml
-        /// </summary>
-        public Int32 CountXmlConstructions { get; private set; }
-        /// <summary>
-        /// Колличество объектов незавершенного строительства в Xml
-        /// </summary>
-        public Int32 CountXmlUncompliteds { get; private set; }
-        /// <summary>
-        /// Колличество помещений в Xml
-        /// </summary>
-        public Int32 CountXmlFlats { get; private set; }
-        /// <summary>
-        /// Колличество машиномест в Xml
-        /// </summary>
-        public Int32 CountXmlCarPlaces { get; private set; }
 
         /// <summary>
         /// Колличество загруженных зданий из Xml
@@ -111,26 +87,26 @@ namespace KadOzenka.Dal.DataImport
 			}
 		}
 
-        /// <summary>
-        /// Импорт данных ГКН из Excel для Обращений
-        /// excelFile - файл Excel
-        /// pathSchema - путь к каталогу где хранится схема
-        /// task - ссылка на задание на оценку
-        /// </summary>
-        public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
-        {
-			xmlObjectList GknItems = null;
-			using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
-			{
-				xmlImportGkn.FillDictionary(pathSchema);
-				GknItems = XmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
-			}
+  //      /// <summary>
+  //      /// Импорт данных ГКН из Excel для Обращений
+  //      /// excelFile - файл Excel
+  //      /// pathSchema - путь к каталогу где хранится схема
+  //      /// task - ссылка на задание на оценку
+  //      /// </summary>
+  //      public void ImportGknPetitionFromExcel(ExcelFile excelFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
+  //      {
+		//	xmlObjectList GknItems = null;
+		//	using (Operation.Time("Импорт задания на оценку (Обращения): парсинг excel"))
+		//	{
+		//		xmlImportGkn.FillDictionary(pathSchema);
+		//		GknItems = XmlImportGkn.GetExcelObjectForPetition(excelFile, task.GetAssessmentDateForUnit());
+		//	}
 
-			using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
-			{
-				ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
-			}
-		}
+		//	using (Operation.Time("Импорт задания на оценку (Обращения): импорт распарсенных объектов"))
+		//	{
+		//		ImportDataGkn(task.CreationDate.Value, task, cancellationToken, GknItems);
+		//	}
+		//}
 
         /// <summary>
         /// Импорт данных ГКН из Excel для всех типов кроме Обращений
@@ -162,12 +138,6 @@ namespace KadOzenka.Dal.DataImport
 		        return;
 	        }
 
-	        CountXmlBuildings = GknItems.Buildings.Count;
-	        CountXmlParcels = GknItems.Parcels.Count;
-	        CountXmlConstructions = GknItems.Constructions.Count;
-	        CountXmlUncompliteds = GknItems.Uncompliteds.Count;
-	        CountXmlFlats = GknItems.Flats.Count;
-	        CountXmlCarPlaces = GknItems.CarPlaces.Count;
 	        CountImportBuildings = 0;
 	        CountImportParcels = 0;
 	        CountImportConstructions = 0;
@@ -176,12 +146,12 @@ namespace KadOzenka.Dal.DataImport
 	        CountImportCarPlaces = 0;
 	        AreCountersInitialized = true;
 	        Log.ForContext("TaskId", task.Id)
-		        .ForContext("CountXmlBuildings", CountXmlBuildings)
-		        .ForContext("CountXmlParcels", CountXmlParcels)
-		        .ForContext("CountXmlConstructions", CountXmlConstructions)
-		        .ForContext("CountXmlUncompliteds", CountXmlUncompliteds)
-		        .ForContext("CountXmlFlats", CountXmlFlats)
-		        .ForContext("CountXmlCarPlaces", CountXmlCarPlaces)
+		        .ForContext("CountXmlBuildings", GknItems.Buildings.Count)
+		        .ForContext("CountXmlParcels", GknItems.Parcels.Count)
+		        .ForContext("CountXmlConstructions", GknItems.Constructions.Count)
+		        .ForContext("CountXmlUncompliteds", GknItems.Uncompliteds.Count)
+		        .ForContext("CountXmlFlats", GknItems.Flats.Count)
+		        .ForContext("CountXmlCarPlaces", GknItems.CarPlaces.Count)
 		        .Debug("Получены данные для импорта из ГКН");
 
 	        var objectsImporters = new List<object>
@@ -276,6 +246,11 @@ namespace KadOzenka.Dal.DataImport
 		        }
 		        _updatedObjectsAttributes[idObject].Add(attributeId);
 	        }
+        }
+
+        public int GetTotalObjectsCount()
+        {
+	        return XmlImportGkn.TotalObjectCounter;
         }
 
         public void IncreaseImportedBuildingsCount()

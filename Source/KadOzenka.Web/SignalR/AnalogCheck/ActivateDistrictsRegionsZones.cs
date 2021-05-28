@@ -76,12 +76,16 @@ namespace KadOzenka.Web.SignalR.AnalogCheck
             await BroadcastCurrentWidgetState();
         }
 
-        public async Task InitializeDistrictsRegionsZonesCheck()
-        {
-            await LoadButton();
-            lock (_lockObject) { new DistrictsRegionsZonesJoiner(RefreshCurrentProgress, LockButton, SetCheckingHistory).ManageData(); }
-            await UnlockButton();
-        }
+        ///// <summary>
+        ///// Присвоить округа, районы, зоны
+        ///// </summary>
+        ///// <returns></returns>
+        //public async Task InitializeDistrictsRegionsZonesCheck()
+        //{
+        //    await LoadButton();
+        //    lock (_lockObject) { new DistrictsRegionsZonesJoiner(RefreshCurrentProgress, LockButton, SetCheckingHistory).ManageData(); }
+        //    await UnlockButton();
+        //}
 
         public async Task GetCurrentWidgetState() => await Clients.Caller.SendAsync("SetCurrentWidgetState", JsonConvert.SerializeObject(FormCurrentWidgetState()));
 

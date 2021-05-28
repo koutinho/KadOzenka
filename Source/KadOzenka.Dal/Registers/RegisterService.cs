@@ -20,6 +20,12 @@ namespace KadOzenka.Dal.Registers
             RegisterRepository = registerRepository;
         }
 
+        public RegisterService()
+        {
+            RecycleBinService = new RecycleBinService();
+            RegisterRepository = new RegisterRepository();
+        }
+
 
         public OMRegister GetRegister(long? registerId)
         {

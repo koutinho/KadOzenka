@@ -1,8 +1,9 @@
-﻿using Core.UI.Registers.Controllers;
+﻿using System;
+using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Documents;
-using KadOzenka.Dal.ExpressScore;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
@@ -12,7 +13,6 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
-using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.ScoreCommon;
@@ -38,9 +38,10 @@ namespace KadOzenka.Web.Tests
 		protected Mock<IObjectsCharacteristicsService> ObjectsCharacteristicsService { get; set; }
 		protected Mock<IObjectsCharacteristicsSourceService> ObjectsCharacteristicsSourceService { get; set; }
 		protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
+		protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
 
 
-		protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
+		//protected delegate IActionResult ControllerMethod<T>(T input) where T : class, new();
 
 
 		[OneTimeSetUp]
@@ -53,6 +54,7 @@ namespace KadOzenka.Web.Tests
 			ObjectsCharacteristicsService = new Mock<IObjectsCharacteristicsService>();
 			ObjectsCharacteristicsSourceService = new Mock<IObjectsCharacteristicsSourceService>();
 			RegisterAttributeService = new Mock<IRegisterAttributeService>();
+			RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
 
 			ConfigureServices();
 		}
@@ -63,7 +65,7 @@ namespace KadOzenka.Web.Tests
 		}
 
 		protected void CheckMethodValidateModelState<TMethodInputParameterType>(BaseController controller,
-			ControllerMethod<TMethodInputParameterType> method) where TMethodInputParameterType : class, new()
+			Func<TMethodInputParameterType, IActionResult> method) where TMethodInputParameterType : class, new()
 		{
 			controller.ModelState.AddModelError(RandomGenerator.GetRandomString(), RandomGenerator.GetRandomString());
 
@@ -98,9 +100,9 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient<TourFactorService>();
 			container.AddTransient<GbuLongProcessesService>();
 			container.AddSingleton<GbuCurrentLongProcessesListenerService>();
-			container.AddTransient<ScoreCommonService>();
-			container.AddTransient<ExpressScoreService>();
-			container.AddTransient<ExpressScoreReferenceService>();
+			//container.AddTransient<ScoreCommonService>();
+			//container.AddTransient<ExpressScoreService>();
+			//container.AddTransient<ExpressScoreReferenceService>();
 			container.AddTransient<ViewRenderService>();
 			container.AddTransient<ModelingService>();
 			container.AddTransient<MapBuildingService>();
@@ -114,7 +116,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient<DocumentService>();
 			container.AddTransient<ModelFactorsService>();
 			container.AddSingleton<KoUnloadResultsListenerService>();
-			container.AddSingleton<OutliersCheckingListenerService>();
+			//container.AddSingleton<OutliersCheckingListenerService>();
 			container.AddSingleton<DictionaryService>();
 			container.AddSingleton<EsHubService>();
 			container.AddSingleton<SignalRMessageService>();
@@ -132,6 +134,7 @@ namespace KadOzenka.Web.Tests
 			container.AddTransient(typeof(IObjectsCharacteristicsSourceService),
 				sp => ObjectsCharacteristicsSourceService.Object);
 			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
+			container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
 
 			AddServicesToContainer(container);
 

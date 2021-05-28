@@ -1,5 +1,6 @@
 ﻿using System;
 using Core.Register;
+using KadOzenka.Common.Tests;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;

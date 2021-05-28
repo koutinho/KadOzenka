@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Web.Models.DataUpload;
 using KadOzenka.Dal.DataExport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
+using MarketPlaceBusiness.Common;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -20,6 +23,12 @@ namespace KadOzenka.Web.Controllers
 	public class DataExportByTemplateController : KoBaseController
 	{
 		private readonly int _dataCountForBackgroundLoading = 1000;
+
+		public DataExportByTemplateController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
+
+		}
 
 		[HttpGet]
 		[SRDFunction(Tag = "")]
@@ -136,7 +145,7 @@ namespace KadOzenka.Web.Controllers
 
         private DataExporterByTemplate GetExporter(int mainRegisterId)
         {
-            if (mainRegisterId == OMCoreObject.GetRegisterId())
+            if (mainRegisterId == Consts.RegisterId)
                 return new DataExporterByTemplate();
 
             if (mainRegisterId == OMMainObject.GetRegisterId())

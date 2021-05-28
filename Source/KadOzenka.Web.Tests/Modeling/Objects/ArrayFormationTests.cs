@@ -1,4 +1,5 @@
 ﻿using System;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Web.Helpers;
 using NUnit.Framework;

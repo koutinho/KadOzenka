@@ -13,9 +13,13 @@ namespace KadOzenka.Web.Models.GbuObject
 	public class LevelItemGroup
 	{
 		/// <summary>
-		/// Признак использования классификатора ЦОД
+		/// Название значения
 		/// </summary>
-		public bool UseDictionary { get; set; }
+		public string CodValueName { get; set; }
+		/// <summary>
+		/// Идентификатор значения в справочнике
+		/// </summary>
+		public long? CodValueId { get; set; }
 		/// <summary>
 		/// Признак пропуска дефиса
 		/// </summary>
@@ -31,7 +35,8 @@ namespace KadOzenka.Web.Models.GbuObject
 			{
 				IdFactor = IdFactor,
 				SkipDefis = SkipDefis,
-				UseDictionary = UseDictionary
+				CodValueName = CodValueName,
+				CodValueId = CodValueId
 			};
 		}
 	}
@@ -41,8 +46,8 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// <summary>
 		/// Идентификатор задания ЦОД
 		/// </summary>
-		[Display(Name = "Справочник ЦОД")]
-		[Required(ErrorMessage = "Заполните справочник ЦОД")]
+		[Display(Name = "Справочник")]
+		[Required(ErrorMessage = "Заполните справочник")]
 		public int? IdCodJob { get; set; }
 
 		/// <summary>
@@ -113,23 +118,26 @@ namespace KadOzenka.Web.Models.GbuObject
 		public LevelItemGroup Level9 { get; set; }
 
 		/// <summary>
-		/// Настройки 10 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level10 { get; set; }
-
-		/// <summary>
-		/// Настройки 11 уровня группировки
-		/// </summary>
-		public LevelItemGroup Level11 { get; set; }
-
-		/// <summary>
 		/// Идентификатор атрибута, куда будут записаны источники 
 		/// </summary>
-		[Display(Name = "Источник")]
-		public int? IdAttributeSource { get; set; }
+		//[Display(Name = "Источник")]
+		//public int? IdAttributeSource { get; set; }
 
-	    [Display(Name = "Документ")]
-        public int? IdAttributeDocument { get; set; }
+	    // [Display(Name = "Документ")]
+     //    public int? IdAttributeDocument { get; set; }
+
+        public GroupingObject()
+        {
+	        Level1 = new LevelItemGroup();
+	        Level2 = new LevelItemGroup();
+	        Level3 = new LevelItemGroup();
+	        Level4 = new LevelItemGroup();
+	        Level5 = new LevelItemGroup();
+	        Level6 = new LevelItemGroup();
+	        Level7 = new LevelItemGroup();
+	        Level8 = new LevelItemGroup();
+	        Level9 = new LevelItemGroup();
+        }
 
 
         public GroupingSettings CovertToGroupingSettings()
@@ -137,12 +145,10 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GroupingSettings
 			{
 				IdCodJob = IdCodJob,
-				IdAttributeDocument = IdAttributeDocument,
+				//IdAttributeDocument = IdAttributeDocument,
 				IdAttributeResult = IdAttributeResult,
-				IdAttributeSource = IdAttributeSource,
+				//IdAttributeSource = IdAttributeSource,
 				Level1 = Level1.ConvertToLevelItem(),
-				Level10 = Level10.ConvertToLevelItem(),
-				Level11 = Level11.ConvertToLevelItem(),
 				Level2 = Level2.ConvertToLevelItem(),
 				Level3 = Level3.ConvertToLevelItem(),
 				Level4 = Level4.ConvertToLevelItem(),
@@ -162,14 +168,11 @@ namespace KadOzenka.Web.Models.GbuObject
 		{
 			if (!SelectAllObject && IsDataActualUsed)
 			{
-				if (IsDataActualUsed)
+				if (!DataActual.HasValue)
 				{
-					if (!DataActual.HasValue)
-					{
-						yield return
-							new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
-								memberNames: new[] {nameof(DataActual)});
-					}
+					yield return
+						new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
+							memberNames: new[] {nameof(DataActual)});
 				}
 			}
 

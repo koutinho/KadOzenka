@@ -34,33 +34,12 @@
 
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="MARKET.EXPORT_TO_EXCEL" />
 
-    <Button Caption="Присвоить округа, районы, зоны" NavigateURL="~/MarketObjects/ActivateProcess" WindowHeight="110" WindowWidth="700" Icon="fas fa-object-group" SRDFunctionTag="MARKET.ACTIVATE_PROCESS"/>
+    <!--<Button Caption="Присвоить округа, районы, зоны" NavigateURL="~/MarketObjects/ActivateProcess" WindowHeight="110" WindowWidth="700" Icon="fas fa-object-group" SRDFunctionTag="MARKET.ACTIVATE_PROCESS"/>-->
 
-    <Button Caption="Присвоить координаты" NavigateURL="~/MarketObjects/ActivateCoordinates" WindowHeight="110" WindowWidth="700" Icon="fas fa-crosshairs" SRDFunctionTag="MARKET.ACTIVATE_COORDINATES" />
+    <!--<Button Caption="Присвоить координаты" NavigateURL="~/MarketObjects/ActivateCoordinates" WindowHeight="110" WindowWidth="700" Icon="fas fa-crosshairs" SRDFunctionTag="MARKET.ACTIVATE_COORDINATES" />-->
     
     <Button Caption="Корреляция (моделирование)" NavigateURL="~/Modeling/Correlation" WindowHeight="700" WindowWidth="600" Icon="fas fa-chart-line" SRDFunctionTag="MARKET.CORRELATION" />
 
-    <Button Caption="Корректировка на дату" NavigateURL="~/MarketObjects/CorrectionByDateGeneralCoefficients" OpenInRadWindow="true" WindowHeight="550" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />
-
-    <Button Caption="Корректировка на комнатность" NavigateURL="~/MarketObjects/CorrectionByRoomGeneralCoefficients" OpenInRadWindow="true" WindowHeight="550" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />
-
-    <Button Caption="Корректировка на цоколь/подвал" NavigateURL="~/MarketObjects/CorrectionByStageGeneralHistory" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />
-
-    <Button Caption="Корректировка на первый этаж" NavigateURL="~/MarketObjects/CorrectionForFirstFloorGeneral" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-eye" />
-
-    <Button Caption="Корректировка на торг" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
-      <DropDownButtons>
-        <Button Caption="Выполнить Корректировку на торг" NavigateURL="~/MarketObjects/CorrectionByBargain" SRDFunctionTag="MARKET.CORRECTION.EDIT" OpenInRadWindow="true" WindowHeight="350" WindowWidth="1000" Icon="fas fa-wrench" />
-        <Button Caption="Отчет" NavigateURL="~/Report/Viewer" SRDFunctionTag="MARKET.CORRECTION.REPORT" OpenInRadWindow="true" Icon="fas fa-images">
-          <Parameters>
-            <Parameter Key="ReportTypeId" Value="1005" />
-          </Parameters>
-        </Button>
-      </DropDownButtons>
-    </Button>
-
-    <Button Caption="Настройка корректировок" NavigateURL="~/MarketObjects/CorrectionSettings" WindowHeight="400" WindowWidth="1000" SRDFunctionTag="MARKET.CORRECTION" Icon="fas fa-wrench" OpenInRadWindow="true"/>
-    
   </Buttons>
   
   <Tabs>

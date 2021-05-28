@@ -25,6 +25,9 @@ namespace KadOzenka.Dal.XmlParser
 
 		public void Add(xmlObject obj)
 		{
+			if(obj == null)
+				return;
+
 			lock (_myLock)
 			{
 				switch (obj.TypeObject)

@@ -144,20 +144,8 @@ namespace CIPJS.Controllers
             _service = service;
         }
 
-		[HttpGet]
-		public IActionResult ObjectCard(long id)
-		{
-			var analogItem = OMCoreObject
-				.Where()
-				.SetPackageSize(10)
-				//.SelectAll()
-				.ExecuteFirstOrDefault();
 
-			return Json(analogItem);
-		}
-
-
-		[HttpGet]
+        [HttpGet]
 		public IActionResult YandexAddress(long? id = null)
 		{
 			var analogItem = OMYandexAddress

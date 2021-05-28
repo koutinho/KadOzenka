@@ -12,6 +12,8 @@ namespace KadOzenka.Dal.Logger
 
 		public void StartLogProgress(OMImportDataLog dataLog, DataImporterGkn dataImporterGkn)
 		{
+			Serilog.Log.ForContext<DataImporterGknLongProcessProgressLogger>().Debug("Начало логирования прогресса");
+
 			if (_taskLogProgress != null)
 				StopLogProgress();
 
@@ -22,8 +24,11 @@ namespace KadOzenka.Dal.Logger
 				{
 					if (token.IsCancellationRequested)
 					{
-						if(dataImporterGkn.AreCountersInitialized)
-							CollectStatistic(dataLog, GetFileTotalNumberOfObjects(dataImporterGkn), GetFileNumberOfImportedObjects(dataImporterGkn));
+						if (dataImporterGkn.AreCountersInitialized)
+						{
+							var totalObjectsCount = dataImporterGkn.GetTotalObjectsCount();
+							CollectStatistic(dataLog, totalObjectsCount, GetFileNumberOfImportedObjects(dataImporterGkn));
+						}
 
 						break;
 					}
@@ -39,11 +44,19 @@ namespace KadOzenka.Dal.Logger
 			if (_taskLogProgress == null)
 				return;
 
-			_cancelSourceLogProcess.Cancel();
+			if(!_cancelSourceLogProcess.IsCancellationRequested)
+				_cancelSourceLogProcess.Cancel();
 
 			try
 			{
 				_taskLogProgress.Wait();
+			}
+			//падает, если задача была отменена раньше, чем стартовала
+			//такое может быть, если в файле мало данных
+			catch (TaskCanceledException exception)
+			{
+				Serilog.Log.ForContext<DataImporterGknLongProcessProgressLogger>()
+					.Error(exception, "Ошибка при отмене потока для логирования прогресса");
 			}
 			finally
 			{
@@ -55,7 +68,7 @@ namespace KadOzenka.Dal.Logger
 
 		private void CollectStatistic(OMImportDataLog dataLog, DataImporterGkn dataImporterGkn)
 		{
-			var totalNumberOfObjects = GetFileTotalNumberOfObjects(dataImporterGkn);
+			var totalNumberOfObjects = dataImporterGkn.GetTotalObjectsCount();
 			var numberOfImportedObjects = GetFileNumberOfImportedObjects(dataImporterGkn);
 			if (dataImporterGkn.AreCountersInitialized && (dataLog.TotalNumberOfObjects != totalNumberOfObjects ||
 				dataLog.NumberOfImportedObjects != numberOfImportedObjects))
@@ -76,13 +89,6 @@ namespace KadOzenka.Dal.Logger
 			return dataImporterGkn.CountImportBuildings + dataImporterGkn.CountImportParcels +
 				   dataImporterGkn.CountImportConstructions + dataImporterGkn.CountImportUncompliteds +
 				   dataImporterGkn.CountImportFlats + dataImporterGkn.CountImportCarPlaces;
-		}
-
-		private int GetFileTotalNumberOfObjects(DataImporterGkn dataImporterGkn)
-		{
-			return dataImporterGkn.CountXmlBuildings + dataImporterGkn.CountXmlParcels +
-				   dataImporterGkn.CountXmlConstructions + dataImporterGkn.CountXmlUncompliteds +
-				   dataImporterGkn.CountXmlFlats + dataImporterGkn.CountXmlCarPlaces;
 		}
 	}
 }

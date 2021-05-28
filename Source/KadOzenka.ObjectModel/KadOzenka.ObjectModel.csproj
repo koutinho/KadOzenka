@@ -13,7 +13,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Platform" Version="1.0.390" />
+    <PackageReference Include="Platform" Version="1.0.391" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using KadOzenka.Common.Tests;
 using KadOzenka.Web.Models.Tour;
+using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using ObjectModel.Directory;
 
@@ -30,7 +33,7 @@ namespace KadOzenka.Web.Tests.Tours
 			var model = new GroupSegmentSettingsModel
 			{
 				GroupId = RandomGenerator.GenerateRandomInteger(),
-				MarketSegment = MarketSegment.Appartment,
+				MarketSegment = MarketSegment.Bed,
 				TerritoryType = TerritoryType.None
 			};
 
@@ -45,7 +48,7 @@ namespace KadOzenka.Web.Tests.Tours
 		public void CanNot_Save_Relation_If_Model_State_Is_Invalid()
 		{
 			var controller = TourController;
-			var method = new ControllerMethod<GroupSegmentSettingsModel>(controller.GroupSegmentSettingsSubCard);
+			var method = new Func<GroupSegmentSettingsModel, IActionResult>(controller.GroupSegmentSettingsSubCard);
 
 			CheckMethodValidateModelState(controller, method);
 		}

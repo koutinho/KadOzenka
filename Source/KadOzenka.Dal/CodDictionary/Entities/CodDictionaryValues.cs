@@ -20,6 +20,12 @@ namespace KadOzenka.Dal.CodDictionary.Entities
         {
             return $"{Code}: {string.Join(',', Values.Select(x => x.Value))}";
         }
+
+        public string GetValueByAttributeId(long attributeId)
+        {
+            var res = Values.FirstOrDefault(x => x.AttributeId == attributeId)?.Value;
+            return res;
+        }
     }
 
     public class CodDictionaryValuePure

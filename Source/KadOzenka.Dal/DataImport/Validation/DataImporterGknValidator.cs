@@ -7,8 +7,11 @@ namespace KadOzenka.Dal.DataImport.Validation
 {
 	public static class DataImporterGknValidator
 	{
-		public static void ValidateExcelColumnsForNotPetition(IEnumerable<long> attributeIds)
+		public static void ValidateExcelColumnsForNotPetition(List<long> attributeIds)
 		{
+			if (attributeIds == null || attributeIds.Count == 0)
+				return;
+
 			var notSelectedRequiredAttributeIds = DataImporterGknNew.RequiredFieldsForExcelMapping.RequiredAttributeIds.Except(attributeIds).ToList();
 			if (notSelectedRequiredAttributeIds.Count != 0)
 			{

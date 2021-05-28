@@ -1,32 +1,19 @@
 ﻿using Platform.Shared;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.AddressChecker;
-using KadOzenka.Dal.DuplicateCleaner;
-using KadOzenka.Dal.KadNumberChecker;
 using Core.Register.LongProcessManagment;
 using KadOzenka.BlFrontEnd.DataExport;
-using KadOzenka.BlFrontEnd.ObjectReplicationExcel;
-using KadOzenka.Dal.RestAppParser;
-using KadOzenka.Dal.Selenium.PriceChecker;
 using KadOzenka.BlFrontEnd.ExportKO;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
 using KadOzenka.BlFrontEnd.ExportCommission;
 using KadOzenka.BlFrontEnd.SudTests;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Xml;
 using System.IO;
 using KadOzenka.Dal.XmlParser;
-using KadOzenka.BlFrontEnd.PostgresToMongo;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
 using KadOzenka.BlFrontEnd.DataImport;
-using KadOzenka.Dal.AvitoParsing;
-using KadOzenka.Dal.CadastralInfoFillingForMarketObjects;
-using KadOzenka.Dal.YandexParser;
 using KadOzenka.Dal.ExcelParser;
-using KadOzenka.Dal.DataImport;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
 using System.Threading;
@@ -41,9 +28,6 @@ using System.Data;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Main.FileStorages;
-using KadOzenka.BlFrontEnd.ExpressScore;
-using KadOzenka.Dal.AddingMissingDataFromGbuPart;
-using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -52,18 +36,14 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
-using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports.ResultComposition;
 using KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Support;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
-using KadOzenka.Dal.Selenium.FillingAdditionalFields;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Repositories;
-using KadOzenka.Dal.YandexParsing;
 using ObjectModel.Directory;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using ObjectModel.Common;
@@ -112,47 +92,21 @@ namespace KadOzenka.BlFrontEnd
 			});
 
 			/*Загрузка информации по сделкам росреестра из excel*/
-			consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
-			consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { ObjectReplicationExcelProcess.SetRRFDBCoordinatesByYandex(); });
+			//consoleHelper.AddCommand("1001", "Загрузка объектов росреестра из Excel", ObjectReplicationExcelProcess.UploadRosreestrObjectsToDatabase);
+			//consoleHelper.AddCommand("1002", "Присвоение координат объектам росреестра из базы данных", () => { new ObjectReplicationExcelProcess().SetRRFDBCoordinatesByYandex(); });
 
-            /*Загрузка информации по предложениям из ЦИАН-а через RestApp*/
-            consoleHelper.AddCommand("1101", "Запуск выгрузки объявлений объектов-аналогов из RestApp", () => {
-				string[] logins = ConfigurationManager.AppSettings["restAppLogins"].Split(','),
-						 tokens = ConfigurationManager.AppSettings["restAppTokens"].Split(',');
-				for (int i = 0; i < logins.Length; i++) new Data(logins[i], tokens[i]).Detect();
-			});
-            consoleHelper.AddCommand("1102", "Запуск выгрузки объявлений объектов-аналогов с сайта Яндекс-Недвижимость", () => { new YandexParser().FormMarketObjects(); });
-		    consoleHelper.AddCommand("194", "Запуск выгрузки объявлений объектов-аналогов с Avito", () => { new AvitoParsingService().ParseAllObjects(); });
+            //consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
+            //consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
 
-            consoleHelper.AddCommand("1103", "Присвоение адресов не обработанным объектам сторонних маркетов", () => { new Addresses().Detect(); });
-            consoleHelper.AddCommand("1104", "Присвоение кадастровых номеров объектам сторонних маркетов", () => { new KadNumbers().Detect(); });
+   //         consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
+			//{
+			//	new AddingMissingDataFromGbuPartProc().PerformProc(false);
+			//});
 
-            consoleHelper.AddCommand("11041", "Парсинг дополнительных данных для Циан", () =>
-	            {
-		            new CianFilling().FillAdditionalData(false);
-            });
-
-			consoleHelper.AddCommand("11042", "Парсинг дополнительных данных для Яндекс недвижимость", () =>
-            {
-	            new YandexFilling().FillAdditionalData(false);
-			});
-
-			consoleHelper.AddCommand("11044", "Получение дополнительных данных из ГБУ части", () =>
-			{
-				new AddingMissingDataFromGbuPartProc().PerformProc(false);
-			});
-
-			consoleHelper.AddCommand("1105", "Процедура обновления цен объектов-аналогов с ЦИАН-а", () => { new Cian().RefreshAllData(15000, true); });
-            consoleHelper.AddCommand("1106", "Процедура обновления цен объектов-аналогов с Яндекс недвижимость", () => { new Yandex().RefreshAllData(testBoot: true); });
-		    consoleHelper.AddCommand("194-2", "Процедура обновления цен объектов-аналогов с Avito", () => { new Avito().RefreshAllData(testBoot: false); });
-            consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
-
-			consoleHelper.AddCommand("1111", "", () => { new ParserProcess().StartProcess(null, null, new System.Threading.CancellationToken()); });
+            //consoleHelper.AddCommand("1107", "Процедура проверки данных на дублирование", () => { new Duplicates().Detect(); });
 
             /*Вспомогательные функции*/
-            consoleHelper.AddCommand("1108", "Присвоение кадастровых кварталов, районов и зон", () => { new Cian().SetCadastralNumbers(); });
-
-			consoleHelper.AddCommand("1109", "Сгенерировать перечисления (источник данных)", () => { new InsertGenerator().GenerateInsertData("INSERT INTO core_reference_item (itemid, referenceid, code, value, name) VALUES ({0}, {1}, {2}, '{3}', '{4}');", 1514, 5, 101); });
+            consoleHelper.AddCommand("1109", "Сгенерировать перечисления (источник данных)", () => { new InsertGenerator().GenerateInsertData("INSERT INTO core_reference_item (itemid, referenceid, code, value, name) VALUES ({0}, {1}, {2}, '{3}', '{4}');", 1514, 5, 101); });
 
 			consoleHelper.AddCommand("19", "Парсинг XML файла", () => { XMLToJSPolyLine.parseXMLMapGeoData(); });
             consoleHelper.AddCommand("21", "Парсинг excele файла", () => { FormRegionTable.parseExcelRegionsData(); });
@@ -161,22 +115,20 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("1901", "Генерация JSON файлов с пиксельными координатами", () => { new CoordinatesConverter().GenerateInitialCoordinates(); });
 			consoleHelper.AddCommand("1902", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
 
-			consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
+			//consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
 
 			consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
 			consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
-			consoleHelper.AddCommand("14", "Тест скриншот", () => { new Cian().Test(100); });
 
-			consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам",
-				() =>
-				{
-					ObjectReplicationExcelProcess.SetCadastralNumber(
-						ConfigurationManager.AppSettings["InitialAddressFile"],
-						ConfigurationManager.AppSettings["DefaultExceleValue"]);
-				});
-			consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { ObjectReplicationExcelProcess.FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
-			consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { ObjectReplicationExcelProcess.SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
-			consoleHelper.AddCommand("20", "Тест конвертации из Postgres в Mongo", () => { ConvertToMongo.Convert(20000); });
+			//consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам",
+			//	() =>
+			//	{
+			//		ObjectReplicationExcelProcess.SetCadastralNumber(
+			//			ConfigurationManager.AppSettings["InitialAddressFile"],
+			//			ConfigurationManager.AppSettings["DefaultExceleValue"]);
+			//	});
+			//consoleHelper.AddCommand("17", "Сформировать файл с выгрузкой адресов росреестра", () => { new ObjectReplicationExcelProcess().FormFile(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
+			//consoleHelper.AddCommand("18", "Присвоение координат объектам росреестра из файла", () => { new ObjectReplicationExcelProcess().SetRRCoordinatesByYandex(ConfigurationManager.AppSettings["GroupedAddressesFile"]); });
 
 			consoleHelper.AddCommand("30", "Тест получения значения атрибутов ГБУ", GbuTests.TestGetDataFromAllpri);
 
@@ -280,16 +232,17 @@ namespace KadOzenka.BlFrontEnd
 
             consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
 
-            consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
-            {
-                var filler = new MarketObjectsCadastralInfoFiller();
-                filler.PerformFillingCadastralQuarterProc();
-            });
-		    consoleHelper.AddCommand("161-2", "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
-		    {
-		        var filler = new MarketObjectsCadastralInfoFiller();
-		        filler.PerformFillingCadastralInfoByQuarterProc();
-		    });
+            //consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
+            //{
+	           // var filler = new MarketObjectsCadastralInfoFiller();
+	           // filler.PerformFillingCadastralQuarterProc();
+            //});
+            //consoleHelper.AddCommand("161-2",
+	           // "Привязка к объектам аналогам информации о зонах, округах и районах по кадастровому кварталу", () =>
+	           // {
+		          //  var filler = new MarketObjectsCadastralInfoFiller();
+		          //  filler.PerformFillingCadastralInfoByQuarterProc();
+	           // });
 
 			consoleHelper.AddCommand("900", "Test Configuration.GetFileStream", () =>
 			{
@@ -416,27 +369,8 @@ namespace KadOzenka.BlFrontEnd
 			//	() => new DataImporterCommon().StartProcess(null, 
 			//		new ObjectModel.Core.LongProcess.OMQueue { ObjectId = 41980095 }, 
 			//		new System.Threading.CancellationToken()));
-						
-			consoleHelper.AddCommand("5551", "Корректировка на этажность",
-				() => 
-				{
-					var q = ObjectModel.Core.LongProcess.OMQueue.Where(x => x.Id == 42661016).SelectAll().ExecuteFirstOrDefault();
-					new Dal.LongProcess.CorrectionByStageForMarketObjectsLongProcess().StartProcess(null,
-					 q,
-					 new System.Threading.CancellationToken());
-				});
 
-
-            consoleHelper.AddCommand("556", "Корректировка на дату", () =>
-            {
-                new CorrectionByDateForMarketObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
-                {
-                    Status_Code = Status.Added,
-                    UserId = SRDSession.GetCurrentUserId()
-                }, new CancellationToken());
-            });
-
-            consoleHelper.AddCommand("557", "Фоновая выгрузка отчетов/раскладок по кастомному пути (процесс из платформы)", () =>
+			consoleHelper.AddCommand("557", "Фоновая выгрузка отчетов/раскладок по кастомному пути (процесс из платформы)", () =>
             {
                 new BackgroundExporterLongProcess().StartProcess(new OMProcessType(), new OMQueue
                 {
@@ -445,7 +379,6 @@ namespace KadOzenka.BlFrontEnd
                 }, new CancellationToken());
             });
 
-			consoleHelper.AddCommand("559", "Проверка получения данных для грида результатов ЭО", TestServiceES.TestDataResultGrid);
             consoleHelper.AddCommand("558", "Перенос атрибутов", () =>
             {
 	            var queue = new OMQueue

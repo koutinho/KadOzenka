@@ -213,8 +213,8 @@ namespace KadOzenka.Dal.Gadgets
 
             data.Rows.Add("/RegistersView/GbuObjects", "Реестр объектов недвижимости", _moveToPageSymbol);
             data.Rows.Add("/GbuObject/Harmonization?useMasterPage=true", "Выполнить гармонизацию", _moveToPageSymbol);
-            data.Rows.Add("/GbuObject/HarmonizationCOD?useMasterPage=true", "Выполнить гармонизацию по классификатору ЦОД", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/GroupingObject?useMasterPage=true", "Выполнить нормализацию", _moveToPageSymbol);
+            data.Rows.Add("~/GbuObject/GroupingObjectFinalize?useMasterPage=true", "Финализировать нормализацию", _moveToPageSymbol);
             data.Rows.Add("~/GbuObject/Inheritance?useMasterPage=true", "Выполнить наследование", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/GbuCodJob", "Справочники ЦОД", _moveToPageSymbol);
             data.Rows.Add("/RegistersView/Documents", "Реестр документов", _moveToPageSymbol);
@@ -318,22 +318,22 @@ namespace KadOzenka.Dal.Gadgets
             return data;
         }
 
-        /// <summary>
-        /// Экспресс-оценка (карточка основного рабочего стола)
-        /// </summary>
-        /// <returns></returns>
-        public static DataTable ExpressEvaluation()
-        {
-            var data = new DataTable();
-            data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
+        ///// <summary>
+        ///// Экспресс-оценка (карточка основного рабочего стола)
+        ///// </summary>
+        ///// <returns></returns>
+        //public static DataTable ExpressEvaluation()
+        //{
+        //    var data = new DataTable();
+        //    data.Columns.AddRange(new[] { new DataColumn("LinkParam"), new DataColumn("Name"), new DataColumn("Value") });
 
-            data.Rows.Add("/ObjectCard?RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
-            data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
-            data.Rows.Add("/ObjectCard?RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
+        //    data.Rows.Add("/ObjectCard?RegisterViewId=EsEstimateObjectCard&isVertical=true&UseMasterPage=true", "Выполнить расчеты", _moveToPageSymbol);
+        //    data.Rows.Add("/RegistersView/EsReferences", "Справочники экспресс оценки", _moveToPageSymbol);
+        //    data.Rows.Add("/RegistersView/EsEstimates", "История расчетов экспресс оценки", _moveToPageSymbol);
+        //    data.Rows.Add("/ObjectCard?RegisterViewId=EsConstructorCard&isVertical=true&UseMasterPage=true", "Конструктор расчетов", _moveToPageSymbol);
 
-            return data;
-        }
+        //    return data;
+        //}
 
         /// <summary>
         /// Поддержка принятия управленческих решений (карточка основного рабочего стола)

@@ -3,27 +3,29 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Core.SRD;
-using ObjectModel.Gbu.GroupingAlgoritm;
-using ObjectModel.Directory;
-using ObjectModel.Core.TD;
 using System.Security.Principal;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using Core.Register;
 using Core.Shared.Extensions;
-using ExCSS.Model.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.CodDictionary;
+using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.GbuObject.Exceptions;
 using Microsoft.Extensions.Configuration;
-using Serilog;
 using Newtonsoft.Json;
+using ObjectModel.Core.TD;
+using ObjectModel.Directory;
+using ObjectModel.Gbu;
+using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
 {
@@ -42,427 +44,29 @@ namespace KadOzenka.Dal.GbuObject
 
     public class PriorityItem
     {
-	    private readonly ILogger Log;
+        private readonly ILogger _log;
 
         public PriorityItem(ILogger log)
         {
-	        Log = log;
+            _log = log;
         }
 
-        #region Коды из разных источников
-        private string Code_Source_01 = string.Empty;
-        private string Code_Source_02 = string.Empty;
-        private string Code_Source_03 = string.Empty;
-        private string Code_Source_04 = string.Empty;
-        private string Code_Source_05 = string.Empty;
-        private string Code_Source_06 = string.Empty;
-        private string Code_Source_07 = string.Empty;
-        private string Code_Source_08 = string.Empty;
-        private string Code_Source_09 = string.Empty;
-        private string Code_Source_10 = string.Empty;
-        private string Code_Source_11 = string.Empty;
-
-        private string Doc_Source_01 = string.Empty;
-        private string Doc_Source_02 = string.Empty;
-        private string Doc_Source_03 = string.Empty;
-        private string Doc_Source_04 = string.Empty;
-        private string Doc_Source_05 = string.Empty;
-        private string Doc_Source_06 = string.Empty;
-        private string Doc_Source_07 = string.Empty;
-        private string Doc_Source_08 = string.Empty;
-        private string Doc_Source_09 = string.Empty;
-        private string Doc_Source_10 = string.Empty;
-        private string Doc_Source_11 = string.Empty;
-
-        private long? Doc_Id_01 = null;
-        private long? Doc_Id_02 = null;
-        private long? Doc_Id_03 = null;
-        private long? Doc_Id_04 = null;
-        private long? Doc_Id_05 = null;
-        private long? Doc_Id_06 = null;
-        private long? Doc_Id_07 = null;
-        private long? Doc_Id_08 = null;
-        private long? Doc_Id_09 = null;
-        private long? Doc_Id_10 = null;
-        private long? Doc_Id_11 = null;
-        #endregion
-
-        #region Служебные операции
-        private bool CheckAllCode(out string code, out string source)
-        {
-            source = string.Empty;
-            bool res = true;
-            List<string> tmpList = new List<string>();
-            if (Code_Source_01 != string.Empty)
-            {
-                tmpList.Add(Code_Source_01);
-                if (source == string.Empty) source = "01";
-            }
-            if (Code_Source_02 != string.Empty)
-            {
-                tmpList.Add(Code_Source_02);
-                if (source == string.Empty) source = "02";
-            }
-            if (Code_Source_03 != string.Empty)
-            {
-                tmpList.Add(Code_Source_03);
-                if (source == string.Empty) source = "03";
-            }
-            if (Code_Source_04 != string.Empty)
-            {
-                tmpList.Add(Code_Source_04);
-                if (source == string.Empty) source = "04";
-            }
-            if (Code_Source_05 != string.Empty)
-            {
-                tmpList.Add(Code_Source_05);
-                if (source == string.Empty) source = "05";
-            }
-            if (Code_Source_06 != string.Empty)
-            {
-                tmpList.Add(Code_Source_06);
-                if (source == string.Empty) source = "06";
-            }
-            if (Code_Source_07 != string.Empty)
-            {
-                tmpList.Add(Code_Source_07);
-                if (source == string.Empty) source = "07";
-            }
-            if (Code_Source_08 != string.Empty)
-            {
-                tmpList.Add(Code_Source_08);
-                if (source == string.Empty) source = "08";
-            }
-            if (Code_Source_09 != string.Empty)
-            {
-                tmpList.Add(Code_Source_09);
-                if (source == string.Empty) source = "09";
-            }
-            if (Code_Source_10 != string.Empty)
-            {
-                tmpList.Add(Code_Source_10);
-                if (source == string.Empty) source = "10";
-            }
-            code = string.Empty;
-            if (tmpList.Count > 0) code = tmpList[0];
-            else
-                res = false;
-            foreach (string item in tmpList)
-            {
-                res &= (code == item);
-            }
-            return res;
-        }
-        private bool CheckNotEmptyCode()
-        {
-            bool res = false;
-            List<string> tmpList = new List<string>();
-            if (Code_Source_01 != string.Empty) tmpList.Add(Code_Source_01);
-            if (Code_Source_02 != string.Empty) tmpList.Add(Code_Source_02);
-            if (Code_Source_03 != string.Empty) tmpList.Add(Code_Source_03);
-            if (Code_Source_04 != string.Empty) tmpList.Add(Code_Source_04);
-            if (Code_Source_05 != string.Empty) tmpList.Add(Code_Source_05);
-            if (Code_Source_06 != string.Empty) tmpList.Add(Code_Source_06);
-            if (Code_Source_07 != string.Empty) tmpList.Add(Code_Source_07);
-            if (Code_Source_08 != string.Empty) tmpList.Add(Code_Source_08);
-            if (Code_Source_09 != string.Empty) tmpList.Add(Code_Source_09);
-            if (Code_Source_10 != string.Empty) tmpList.Add(Code_Source_10);
-            if (Code_Source_11 != string.Empty) tmpList.Add(Code_Source_11);
-            if (tmpList.Count > 0) res = true;
-            return res;
-        }
-        private bool Check2Code(string code1, string code2, out string code)
-        {
-            bool res = true;
-            List<string> tmpList = new List<string>();
-            if (code1 != string.Empty) tmpList.Add(code1);
-            if (code2 != string.Empty) tmpList.Add(code2);
-            code = string.Empty;
-            if (tmpList.Count > 0) code = tmpList[0]; else res = false;
-            foreach (string item in tmpList)
-            {
-                res &= (code == item);
-            }
-            return res;
-        }
-        private bool CheckAllOneCode()
-        {
-            bool res = true;
-            res &= (!Code_Source_01.Contains(";"));
-            res &= (!Code_Source_02.Contains(";"));
-            res &= (!Code_Source_03.Contains(";"));
-            res &= (!Code_Source_04.Contains(";"));
-            res &= (!Code_Source_05.Contains(";"));
-            res &= (!Code_Source_06.Contains(";"));
-            res &= (!Code_Source_07.Contains(";"));
-            res &= (!Code_Source_08.Contains(";"));
-            res &= (!Code_Source_09.Contains(";"));
-            res &= (!Code_Source_10.Contains(";"));
-            res &= (!Code_Source_11.Contains(";"));
-            return res;
-        }
-        private string GetMaxCodeValue(string items)
-        {
-            List<string> tmpList = new List<string>();
-            tmpList.AddRange(items.Split(';'));
-            return GetMaxCodeValue(tmpList);
-        }
-        private string GetMaxCodeValue(List<string> items)
-        {
-            string code = string.Empty;
-            //Выбрать из значений Списка 3 приоритетный Код по таблице
-            Dictionary<int, int> rangvalue = new Dictionary<int, int>();
-            Dictionary<int, string> codevalue = new Dictionary<int, string>();
-            int i = 1;
-            foreach (string tcode in items)
-            {
-                i++;
-                if (tcode != string.Empty) { rangvalue.Add(i, PriorityGrouping.PrioritetList.GetValueByCode(tcode)); codevalue.Add(i, tcode); }
-            }
-
-            int maxrang = -1;
-            int maxind = -1;
-
-            foreach (KeyValuePair<int, int> item in rangvalue)
-            {
-                if (item.Value > maxrang) { maxrang = item.Value; maxind = item.Key; }
-            }
-            if (maxrang >= 0) { if (!codevalue.TryGetValue(maxind, out code)) code = string.Empty; }
-            return code;
-        }
-        private string GetMaxCodeValue(List<PriorityGroupItem> items, out string source)
-        {
-            source = "00";
-            string code = string.Empty;
-            //Выбрать из значений Списка 3 приоритетный Код по таблице
-            Dictionary<int, int> rangvalue = new Dictionary<int, int>();
-            Dictionary<int, string> codevalue = new Dictionary<int, string>();
-            Dictionary<int, string> sourcevalue = new Dictionary<int, string>();
-            int i = 1;
-            foreach (PriorityGroupItem tcode in items)
-            {
-                i++;
-                if (tcode.Group != string.Empty) { rangvalue.Add(i, PriorityGrouping.PrioritetList.GetValueByCode(tcode.Group)); codevalue.Add(i, tcode.Group); sourcevalue.Add(i, tcode.Source); }
-            }
-
-            int maxrang = -1;
-            int maxind = -1;
-
-            foreach (KeyValuePair<int, int> item in rangvalue)
-            {
-                if (item.Value > maxrang) { maxrang = item.Value; maxind = item.Key; }
-            }
-            if (maxrang >= 0) { if (!(codevalue.TryGetValue(maxind, out code) && (sourcevalue.TryGetValue(maxind, out source)))) { code = string.Empty; source = "00"; } }
-
-            if (code != string.Empty)
-            {
-                source = string.Empty;
-                foreach (PriorityGroupItem item in items)
-                {
-                    if (item.Group == code)
-                        source += (item.Source + ";");
-                }
-                source = source.TrimEnd(';');
-            }
-
-            return code;
-        }
-        private bool CheckIn(List<PriorityGroupItem> l1, List<PriorityGroupItem> l2)
-        {
-            bool res = false;
-            foreach (PriorityGroupItem tcode in l1)
-            {
-                foreach (PriorityGroupItem pcode in l2)
-                {
-                    if (tcode.Group == pcode.Group)
-                    {
-                        res = true;
-                    }
-                }
-            }
-            return res;
-        }
-        private bool Get1234510(bool div, out string code, out string source)
-        {
-            source = "00";
-            code = string.Empty;
-
-            List<PriorityGroupItem> tmpList = new List<PriorityGroupItem>();
-            if (Code_Source_01 != string.Empty) tmpList.AddRange(PriorityGroupItem.GetItem(Code_Source_01.Split(';'), "01"));
-            if (Code_Source_02 != string.Empty) tmpList.AddRange(PriorityGroupItem.GetItem(Code_Source_02.Split(';'), "02"));
-            if (Code_Source_03 != string.Empty) tmpList.AddRange(PriorityGroupItem.GetItem(Code_Source_03.Split(';'), "03"));
-            if (Code_Source_04 != string.Empty) tmpList.AddRange(PriorityGroupItem.GetItem(Code_Source_04.Split(';'), "04"));
-            if (Code_Source_05 != string.Empty) tmpList.AddRange(PriorityGroupItem.GetItem(Code_Source_05.Split(';'), "05"));
-            if (Code_Source_10 != string.Empty) tmpList.AddRange(PriorityGroupItem.GetItem(Code_Source_10.Split(';'), "10"));
-            if (tmpList.Count == 0) return false;
-
-            List<PriorityGroupItem> tmpList1 = new List<PriorityGroupItem>();
-            if (Code_Source_03 != string.Empty) tmpList1.AddRange(PriorityGroupItem.GetItem(Code_Source_03.Split(';'), "03"));
-            if (Code_Source_04 != string.Empty) tmpList1.AddRange(PriorityGroupItem.GetItem(Code_Source_04.Split(';'), "04"));
-            List<PriorityGroupItem> tmpList2 = new List<PriorityGroupItem>();
-            if (Code_Source_01 != string.Empty) tmpList2.AddRange(PriorityGroupItem.GetItem(Code_Source_01.Split(';'), "01"));
-            if (Code_Source_02 != string.Empty) tmpList2.AddRange(PriorityGroupItem.GetItem(Code_Source_02.Split(';'), "02"));
-
-            bool useiskl = true;
-            if (Check2Code(Code_Source_03, Code_Source_04, out string tmpcode))//Значения Характеристик 3 и 4 идентичны ?
-            {
-                if (!CheckIn(tmpList1, tmpList2))//Хотя бы одно значение входит в перечень значений Списка 2?
-                    useiskl = false;
-            }
-            else
-            {
-                if (!CheckIn(tmpList1, tmpList2))//Значение из Характеристики 3 или Характеристики 4 совпали со значениями из Списка 2?
-                    useiskl = false;
-            }
-
-            if (useiskl)
-            {
-                //Сформировать из значений Характеристик 3 и 4, которые совпали со значениями Характеристик 1 и 2, Список 3 (с сохранением привязки к источникам значений)
-                List<PriorityGroupItem> tmpList3 = new List<PriorityGroupItem>();
-                foreach (PriorityGroupItem tcode in tmpList1)
-                {
-                    foreach (PriorityGroupItem pcode in tmpList2)
-                    {
-                        if (tcode.Group == pcode.Group)
-                        {
-                            if (!tmpList3.Contains(tcode)) tmpList3.Add(tcode);
-                            if (!tmpList3.Contains(pcode)) tmpList3.Add(pcode);
-                        }
-                    }
-                }
-                code = GetMaxCodeValue(tmpList3, out source);
-            }
-            else
-            {
-                //Выбрать наиболее приоритетный Код по таблице
-                List<PriorityGroupItem> tmpList3 = new List<PriorityGroupItem>();
-                if (Code_Source_01 != string.Empty)
-                    tmpList3.AddRange(PriorityGroupItem.GetItem(Code_Source_01.Split(';'), "01"));
-                if (Code_Source_02 != string.Empty)
-                    tmpList3.AddRange(PriorityGroupItem.GetItem(Code_Source_02.Split(';'), "02"));
-                if (Code_Source_03 != string.Empty)
-                    tmpList3.AddRange(PriorityGroupItem.GetItem(Code_Source_03.Split(';'), "03"));
-                if (Code_Source_04 != string.Empty)
-                    tmpList3.AddRange(PriorityGroupItem.GetItem(Code_Source_04.Split(';'), "04"));
-                if (Code_Source_05 != string.Empty)
-                    tmpList3.AddRange(PriorityGroupItem.GetItem(Code_Source_05.Split(';'), "05"));
-                if (Code_Source_10 != string.Empty)
-                    tmpList3.AddRange(PriorityGroupItem.GetItem(Code_Source_10.Split(';'), "10"));
-
-                code = GetMaxCodeValue(tmpList3, out source);
-            }
-            return true;
-        }
-        #endregion
-
-        #region Методы 
-        private string GetGroupCode(out string source)
-        {
-            source = "00";
-            if (CheckNotEmptyCode())
-            {
-                if (CheckAllOneCode())//везде по одному коду
-                {
-                    if (CheckAllCode(out string allonecode, out source))//коды одинаковые
-                    {
-                        return allonecode;
-                    }
-                    else//коды разные
-                    {
-                        if (Code_Source_09 != string.Empty)
-                        {
-                            source = "09";
-                            return Code_Source_09;
-                        }
-                        else
-                        if (Code_Source_07 != string.Empty)
-                        {
-                            source = "07";
-                            return Code_Source_07;
-                        }
-                        else
-                        if (Code_Source_08 != string.Empty)
-                        {
-                            source = "08";
-                            return Code_Source_08;
-                        }
-                        else
-                        if (Get1234510(false, out string code, out source)) return code;
-                        else
-                        if (Code_Source_06 != string.Empty)
-                        {
-                            source = "06";
-                            return Code_Source_06;
-                        }
-                        else
-                        if (Code_Source_11 != string.Empty)
-                        {
-                            source = "11";
-                            return Code_Source_11;
-                        }
-                        else
-                        {
-                            source = "00";
-                            return "14:000";
-                        }
-                    }
-                }
-                else //есть множественные коды
-                {
-                    if (CheckAllCode(out string allonecode, out source))//коды одинаковые
-                    {
-                        return GetMaxCodeValue(allonecode);
-                    }
-                    else//коды разные
-                    {
-                        if (Code_Source_09 != string.Empty)
-                        {
-                            source = "09";
-                            return GetMaxCodeValue(Code_Source_09);
-                        }
-                        else
-                        if (Code_Source_07 != string.Empty)
-                        {
-                            source = "07";
-                            return GetMaxCodeValue(Code_Source_07);
-                        }
-                        else
-                        if (Code_Source_08 != string.Empty)
-                        {
-                            source = "08";
-                            return GetMaxCodeValue(Code_Source_08);
-                        }
-                        else
-                        if (Get1234510(false, out string code, out source)) return code;
-                        else
-                        {
-                            source = "00";
-                            return "14:000";
-                        }
-                    }
-                }
-            }
-            else
-            {
-                source = "00";
-                return "14:000";
-            }
-        }
+        #region Методы
 
         private ValueItem GetValueFactor(List<GbuObjectAttribute> objectAttributes, long? idFactor)
         {
-	        var res = new ValueItem
+            var res = new ValueItem
             {
                 Value = string.Empty,
                 IdDocument = null,
                 AttributeName = string.Empty
             };
 
-	        var attribute = objectAttributes.FirstOrDefault(x => x.AttributeId == idFactor);
-	        if (attribute == null || string.IsNullOrWhiteSpace(attribute.GetValueInString())) 
-		        return res;
-	        
-	        res.Value = attribute.GetValueInString();
+            var attribute = objectAttributes.FirstOrDefault(x => x.AttributeId == idFactor);
+            if (attribute == null || string.IsNullOrWhiteSpace(attribute.GetValueInString()))
+                return res;
+
+            res.Value = attribute.GetValueInString();
             res.AttributeName = attribute.AttributeData.Name;
             res.IdDocument = attribute.ChangeDocId;
 
@@ -471,6 +75,7 @@ namespace KadOzenka.Dal.GbuObject
 
         private void AddValueFactor(long objectId, long? idFactor, long? idDoc, DateTime date, string value)
         {
+            var otDate = GbuObjectService.GetNextOtFromAttributeIdPartition(objectId, idFactor.GetValueOrDefault(), date);
             var attributeValue = new GbuObjectAttribute
             {
                 Id = -1,
@@ -480,185 +85,62 @@ namespace KadOzenka.Dal.GbuObject
                 S = date,
                 ChangeUserId = SRDSession.Current.UserID,
                 ChangeDate = DateTime.Now,
-                Ot = date,
+                Ot = otDate,
                 StringValue = value,
             };
 
             attributeValue.Save();
         }
 
-        private bool CompareDictToValue(OMCodDictionary dict, ValueItem val)
+        string CleanUp(string x)
         {
-            string CleanUp(string x)
-            {
-                // Оставляем только значимые символы в строках и убираем мусор из значения
-                return Regex
-                    .Replace(x,"\\s+","")
-                    .Replace("_x000D_","")
-                    .Replace("-","")
-                    .ToLower();
-            }
-
-            if (dict.Value.Contains("_x000D_") || val.Value.Contains("_x000D_"))
-            {
-                Log.ForContext("OMCodDictionary",dict,true)
-                    .ForContext("valueItem", val,true)
-                    .Verbose("_x000D_ при сопоставлении данных");
-            }
-
-            bool cleanUpResult = CleanUp(dict.Value) == CleanUp(val.Value);
-            return cleanUpResult;
+            if (x == null) return null;
+            // Оставляем только значимые символы в строках и убираем мусор из значения
+            return Regex
+                .Replace(x, "\\s+", "")
+                .Replace("_x000D_", "")
+                .Replace("-", "")
+                .ToLower();
         }
 
-        private void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list, GroupingItem item)
+        private void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list,
+            GroupingItem item)
         {
             var codId = list?[0].IdCodjob;
-            Log.ForContext("ValueLevel", valueLevel, true)
+            _log.ForContext("ValueLevel", valueLevel, true)
                 .ForContext("DataLevel", dataLevel, true)
-                .ForContext("DictionaryId",codId)
-                .Verbose("[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
+                .ForContext("DictionaryId", codId)
+                .Verbose(
+                    "[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
                     item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
         }
 
-        private ValueItem GetDataLevel(LevelItem level, ValueItem valueLevel, GroupingItem item, 
-	        List<OMCodDictionary> dictionary, ConcurrentDictionary<long, OMInstance> documents,
-	        ref string errorCODStr, ref bool errorCOD, ref string Code, ref string Source, ref long? docId,
-	        out DataLevel dataLevel)
+
+        public void SetPriorityGroup(GroupingSettings setting, List<DictRecord> dict,
+            List<long> allAttributeIds, GroupingItem inputItem, DateTime dateActual,
+            List<GbuObjectAttribute> objectAttributes, GbuReportService reportService)
         {
-            dataLevel =  new DataLevel();
-            if (level.IdFactor != null)
+            string ExtractValue(ValueItem item)
             {
-                dataLevel.FactorId = level.IdFactor.GetValueOrDefault();
-                if (level.UseDictionary)
-                {
-                    if (!((valueLevel.Value == string.Empty) || (valueLevel.Value == "-" && level.SkipDefis)))
-                    {
-                        var dictionaryRecord = dictionary.Find(x => CompareDictToValue(x,valueLevel));
-                        if (dictionaryRecord != null)
-                        {
-                            string code = dictionaryRecord.Code.Replace(" ", "");
-                            if (code != "0")
-                            {
-                                Code = code;
-                                dataLevel.Code = code;
-                                if (valueLevel.IdDocument != null)
-                                {
-	                                var doc = GetDocument(documents, valueLevel.IdDocument.Value);
-	                                if (doc != null)
-                                    {
-                                        Source = doc.Description;
-                                        docId = doc.Id;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            LogNotFoundDictionaryValues(valueLevel,dataLevel,dictionary,item);
-                            errorCOD = true;
-                            errorCODStr += item.CadastralNumber + ": " + valueLevel.AttributeName + ". Значение: " + valueLevel.Value + " отсутствует в классификаторе" + Environment.NewLine;
-                        }
-                    }
-                }
-                else
-                {
-                    Code = valueLevel.Value.Replace(" ", "");
-                    dataLevel.Code = Code;
-                    if (valueLevel.IdDocument != null)
-                    {
-	                    var doc = GetDocument(documents, valueLevel.IdDocument.Value);
-                        if (doc != null)
-                        {
-                            Source = doc.Description;
-                            docId = doc.Id;
-                        }
-                    }
-                }
+                if (item.AttributeName == "" && item.Value == "") return null;
+                return item.Value;
             }
-
-            return valueLevel;
-        }
-
-        private OMInstance GetDocument(ConcurrentDictionary<long, OMInstance> documents, long documentId)
-        {
-	        if(documents.ContainsKey(documentId))
-	        {
-		        return documents[documentId];
-	        }
-
-	        var document = OMInstance.Where(x => x.Id == documentId).Select(x => x.Description).ExecuteFirstOrDefault();
-	        documents.TryAdd(document.Id, document);
-	        Log.Debug("Документ с ИД {DocumentId} добавлен в словарь", document.Id);
-
-            return document;
-        }
-
-        public void SetPriorityGroup(GroupingSettings setting, List<OMCodDictionary> dictionaryItems,
-	        List<long> allAttributeIds, GroupingItem inputItem,  DateTime dateActual, List<GbuObjectAttribute> objectAttributes,
-	        GbuReportService reportService, Dictionary<long, long> dicColumns,
-	        ConcurrentDictionary<long, OMInstance> documents)
-        {
             GbuReportService.Row currentRow;
-            lock (PriorityGrouping.locked)
+            lock (PriorityGrouping.Locked)
             {
                 currentRow = reportService.GetCurrentRow();
                 PriorityGrouping.CurrentCount++;
                 reportService.AddValue(inputItem.CadastralNumber, PriorityGrouping.KnColumn, currentRow);
             }
 
-            Code_Source_01 = string.Empty;
-            Code_Source_02 = string.Empty;
-            Code_Source_03 = string.Empty;
-            Code_Source_04 = string.Empty;
-            Code_Source_05 = string.Empty;
-            Code_Source_06 = string.Empty;
-            Code_Source_07 = string.Empty;
-            Code_Source_08 = string.Empty;
-            Code_Source_09 = string.Empty;
-            Code_Source_10 = string.Empty;
-            Code_Source_11 = string.Empty;
-
-            Doc_Source_01 = string.Empty;
-            Doc_Source_02 = string.Empty;
-            Doc_Source_03 = string.Empty;
-            Doc_Source_04 = string.Empty;
-            Doc_Source_05 = string.Empty;
-            Doc_Source_06 = string.Empty;
-            Doc_Source_07 = string.Empty;
-            Doc_Source_08 = string.Empty;
-            Doc_Source_09 = string.Empty;
-            Doc_Source_10 = string.Empty;
-            Doc_Source_11 = string.Empty;
-
-            Doc_Id_01 = null;
-            Doc_Id_02 = null;
-            Doc_Id_03 = null;
-            Doc_Id_04 = null;
-            Doc_Id_05 = null;
-            Doc_Id_06 = null;
-            Doc_Id_07 = null;
-            Doc_Id_08 = null;
-            Doc_Id_09 = null;
-            Doc_Id_10 = null;
-            Doc_Id_11 = null;
-
             bool errorCOD = false;
             string errorCODStr = string.Empty;
-            ValueItem Level1 = new ValueItem();
-            ValueItem Level2 = new ValueItem();
-            ValueItem Level3 = new ValueItem();
-            ValueItem Level4 = new ValueItem();
-            ValueItem Level5 = new ValueItem();
-            ValueItem Level6 = new ValueItem();
-            ValueItem Level7 = new ValueItem();
-            ValueItem Level8 = new ValueItem();
-            ValueItem Level9 = new ValueItem();
-            ValueItem Level10 = new ValueItem();
-            ValueItem Level11 = new ValueItem();
+
             try
             {
-	            //по начальному порядку находим значение ГБУ-атрибутов всех уровней
-				var valueItems = new List<ValueItem>();
+
+                //по начальному порядку находим значение ГБУ-атрибутов всех уровней
+                var valueItems = new List<ValueItem>();
                 allAttributeIds.ForEach(x =>
                 {
                     ////TODO для тестирования
@@ -666,266 +148,113 @@ namespace KadOzenka.Dal.GbuObject
                     valueItems.Add(GetValueFactor(objectAttributes, x));
                 });
 
-                Level1 = GetDataLevel(setting.Level1, valueItems[0], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_01, ref Doc_Source_01, ref Doc_Id_01, out DataLevel dataLevel1);
-                Level2 = GetDataLevel(setting.Level2, valueItems[1], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_02, ref Doc_Source_02, ref Doc_Id_02, out DataLevel dataLevel2);
-                Level3 = GetDataLevel(setting.Level3, valueItems[2], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_03, ref Doc_Source_03, ref Doc_Id_03, out DataLevel dataLevel3);
-                Level4 = GetDataLevel(setting.Level4, valueItems[3], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_04, ref Doc_Source_04, ref Doc_Id_04, out DataLevel dataLevel4);
-                Level5 = GetDataLevel(setting.Level5, valueItems[4], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_05, ref Doc_Source_05, ref Doc_Id_05, out DataLevel dataLevel5);
-                Level6 = GetDataLevel(setting.Level6, valueItems[5], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_06, ref Doc_Source_06, ref Doc_Id_06, out DataLevel dataLevel6);
-                Level7 = GetDataLevel(setting.Level7, valueItems[6], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_07, ref Doc_Source_07, ref Doc_Id_07, out DataLevel dataLevel7);
-                Level8 = GetDataLevel(setting.Level8, valueItems[7], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_08, ref Doc_Source_08, ref Doc_Id_08, out DataLevel dataLevel8);
-                Level9 = GetDataLevel(setting.Level9, valueItems[8], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_09, ref Doc_Source_09, ref Doc_Id_09, out DataLevel dataLevel9);
-                Level10 = GetDataLevel(setting.Level10, valueItems[9], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_10, ref Doc_Source_10, ref Doc_Id_10, out DataLevel dataLevel10);
-                Level11 = GetDataLevel(setting.Level11, valueItems[10], inputItem, dictionaryItems, documents, ref errorCODStr, ref errorCOD, ref Code_Source_11, ref Doc_Source_11, ref Doc_Id_11, out DataLevel dataLevel11);
+                var record = new DictRecord
+                {
+                    Value1 = CleanUp(ExtractValue(valueItems[0])),
+                    Value2 = CleanUp(ExtractValue(valueItems[1])),
+                    Value3 = CleanUp(ExtractValue(valueItems[2])),
+                    Value4 = CleanUp(ExtractValue(valueItems[3])),
+                    Value5 = CleanUp(ExtractValue(valueItems[4])),
+                    Value6 = CleanUp(ExtractValue(valueItems[5])),
+                    Value7 = CleanUp(ExtractValue(valueItems[6])),
+                    Value8 = CleanUp(ExtractValue(valueItems[7])),
+                    Value9 = CleanUp(ExtractValue(valueItems[8])),
+                };
 
-                    lock (PriorityGrouping.locked)
+                //string resGroup = GetGroupCode(out string source);
+                string resGroup = dict.FirstOrDefault(x => x == record)?.Code ?? "14:000";
+
+
+                #region Результат
+
+                if (!errorCOD)
+                {
+                    if (setting.IdAttributeResult != null)
                     {
-                        var levelsData = new List<DataLevel>
+                        try
                         {
-                            dataLevel1, dataLevel2, dataLevel3, dataLevel4, dataLevel5, dataLevel6, dataLevel7, dataLevel8,
-                            dataLevel9, dataLevel10, dataLevel11
-                        };
-
-                        PriorityGrouping.AddInfoToReport(levelsData, currentRow, dicColumns, reportService);
-                    }
-              
-                    string resGroup = GetGroupCode(out string source);
-
-                    #region Результат
-                    if (!errorCOD)
-                    {
-                        if (setting.IdAttributeResult != null)
-                        {
-                            long? id_doc = null;
-                            if (source.Contains("09")) id_doc = Doc_Id_09;
-                            else
-                            if (source.Contains("07")) id_doc = Doc_Id_07;
-                            else
-                            if (source.Contains("08")) id_doc = Doc_Id_08;
-                            else
-                            if (source.Contains("01")) id_doc = Doc_Id_01;
-                            else
-                            if (source.Contains("04")) id_doc = Doc_Id_04;
-                            else
-                            if (source.Contains("03")) id_doc = Doc_Id_03;
-                            else
-                            if (source.Contains("05")) id_doc = Doc_Id_05;
-                            else
-                            if (source.Contains("06")) id_doc = Doc_Id_06;
-                            else
-                            if (source.Contains("02")) id_doc = Doc_Id_02;
-                            else
-                            if (source.Contains("10")) id_doc = Doc_Id_10;
-                            else
-                            if (source.Contains("11")) id_doc = Doc_Id_11;
-
-                            try
-                            {
-	                            AddValueFactor(inputItem.ObjectId, setting.IdAttributeResult, id_doc, dateActual, resGroup);
-							}
-                            catch (Exception e)
-                            {
-	                            throw new GroupingAttributeSavingException($"Ошибка при сохрании значения '{resGroup}' в Характеристику", e);
-                            }
-
-                            lock (PriorityGrouping.locked)
-                            {
-                                reportService.AddValue(GbuObjectService.GetAttributeNameById(setting.IdAttributeResult.GetValueOrDefault()), PriorityGrouping.ResultColumn, currentRow);
-                                reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
-                            }
-
-                            {
-                                string[] arrsource = source.Split(';');
-                                string strsource = string.Empty;
-                                foreach (string item in arrsource)
-                                {
-                                    if (item == "01")
-                                    {
-                                        strsource += (Level1.AttributeName + "; ");
-                                    }
-
-                                    if (item == "02")
-                                    {
-                                        strsource += (Level2.AttributeName + "; ");
-                                    }
-
-                                    if (item == "03")
-                                    {
-                                        strsource += (Level3.AttributeName + "; ");
-                                    }
-
-                                    if (item == "04")
-                                    {
-                                        strsource += (Level4.AttributeName + "; ");
-                                    }
-
-                                    if (item == "05")
-                                    {
-                                        strsource += (Level5.AttributeName + "; ");
-                                    }
-
-                                    if (item == "06")
-                                    {
-                                        strsource += (Level6.AttributeName + "; ");
-                                    }
-
-                                    if (item == "07")
-                                    {
-                                        strsource += (Level7.AttributeName + "; ");
-                                    }
-
-                                    if (item == "08")
-                                    {
-                                        strsource += (Level8.AttributeName + "; ");
-                                    }
-
-                                    if (item == "09")
-                                    {
-                                        strsource += (Level9.AttributeName + "; ");
-                                    }
-
-                                    if (item == "10")
-                                    {
-                                        strsource += (Level10.AttributeName + "; ");
-                                    }
-
-                                    if (item == "11")
-                                    {
-                                        strsource += (Level11.AttributeName + "; ");
-                                    }
-                                }
-
-                                strsource = strsource.Trim().TrimEnd(';');
-
-                                lock (PriorityGrouping.locked)
-                                {
-                                    reportService.AddValue(strsource, PriorityGrouping.SourceColumn, currentRow);
-                                }
-
-                                if (setting.IdAttributeSource != null)
-                                {
-	                                try
-                                    {
-										AddValueFactor(inputItem.ObjectId, setting.IdAttributeSource, null, dateActual, strsource);
-									}
-                                    catch (Exception e)
-                                    {
-	                                    throw new GroupingAttributeSavingException($"Ошибка при сохрании значения '{strsource}' в Источник", e);
-                                    }
-								}
-                            }
-                            if (setting.IdAttributeDocument != null)
-                            {
-                                string[] arrsource = source.Split(';');
-                                string strsource = string.Empty;
-                                foreach (string item in arrsource)
-                                {
-                                    if (item == "01")
-                                    {
-                                        strsource += (Doc_Source_01 + "; ");
-                                    }
-                                    if (item == "02")
-                                    {
-                                        strsource += (Doc_Source_02 + "; ");
-                                    }
-                                    if (item == "03")
-                                    {
-                                        strsource += (Doc_Source_03 + "; ");
-                                    }
-                                    if (item == "04")
-                                    {
-                                        strsource += (Doc_Source_04 + "; ");
-                                    }
-                                    if (item == "05")
-                                    {
-                                        strsource += (Doc_Source_05 + "; ");
-                                    }
-                                    if (item == "06")
-                                    {
-                                        strsource += (Doc_Source_06 + "; ");
-                                    }
-                                    if (item == "07")
-                                    {
-                                        strsource += (Doc_Source_07 + "; ");
-                                    }
-                                    if (item == "08")
-                                    {
-                                        strsource += (Doc_Source_08 + "; ");
-                                    }
-                                    if (item == "09")
-                                    {
-                                        strsource += (Doc_Source_09 + "; ");
-                                    }
-                                    if (item == "10")
-                                    {
-                                        strsource += (Doc_Source_10 + "; ");
-                                    }
-                                    if (item == "11")
-                                    {
-                                        strsource += (Doc_Source_11 + "; ");
-                                    }
-                                }
-                                strsource = strsource.Trim().TrimEnd(';');
-                                
-                                try
-                                {
-									AddValueFactor(inputItem.ObjectId, setting.IdAttributeDocument, null, dateActual, strsource);
-								}
-                                catch (Exception e)
-                                {
-	                                throw new GroupingAttributeSavingException($"Ошибка при сохрании значения '{strsource}' в Документ", e);
-                                }
-							}
-
-                            lock (PriorityGrouping.locked)
-                            {
-                                reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
-                            }
+                            //todo iddoc
+                            AddValueFactor(inputItem.ObjectId, setting.IdAttributeResult, 0, dateActual,
+                                resGroup);
                         }
-                    }
-                    else
-                    {
-                        lock (PriorityGrouping.locked)
+                        catch (Exception e)
+                        {
+                            throw new GroupingAttributeSavingException(
+                                $"Ошибка при сохрании значения '{resGroup}' в Характеристику", e);
+                        }
+
+                        lock (PriorityGrouping.Locked)
+                        {
+                            reportService.AddValue(
+                                GbuObjectService.GetAttributeNameById(setting.IdAttributeResult
+                                    .GetValueOrDefault()),
+                                PriorityGrouping.ResultColumn, currentRow);
+                            reportService.AddValue(resGroup, PriorityGrouping.ValueColumn, currentRow);
+                            AddValueItemsToReport(reportService, valueItems, currentRow,
+                                PriorityGrouping.ValueColumnOffset);
+                        }
+
+                        lock (PriorityGrouping.Locked)
                         {
                             reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
                         }
                     }
-                    #endregion
+                }
+                else
+                {
+                    lock (PriorityGrouping.Locked)
+                    {
+                        reportService.AddValue(errorCODStr, PriorityGrouping.ErrorColumn, currentRow);
+                    }
+                }
+
+                #endregion
             }
             catch (GroupingAttributeSavingException exception)
             {
-	            var message = exception.Message;
-	            LogException(message, inputItem, reportService, exception.InnerException, currentRow);
+                var message = exception.Message;
+                LogException(message, inputItem, reportService, exception.InnerException, currentRow);
             }
             catch (Exception ex)
             {
-	            var message = "В ходе обработки оъекта возникла ошибка";
-	            LogException(message, inputItem, reportService, ex, currentRow);
+                var message = "В ходе обработки оъекта возникла ошибка";
+                LogException(message, inputItem, reportService, ex, currentRow);
             }
 
             if (PriorityGrouping.CurrentCount % 1000 == 0)
             {
-	            Log.Debug("Обработан объект {CurrentCount} из {MaxCount}", PriorityGrouping.CurrentCount, PriorityGrouping.MaxCount);
+                _log.Debug("Обработан объект {CurrentCount} из {MaxCount}", PriorityGrouping.CurrentCount,
+                    PriorityGrouping.MaxCount);
             }
         }
 
-        private void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex, GbuReportService.Row currentRow)
+        private void AddValueItemsToReport(IGbuReportService reportService, List<ValueItem> list, GbuReportService.Row currRow, int columnOffset)
         {
-	        lock (PriorityGrouping.locked)
-	        {
-		        //var errorId = ErrorManager.LogError(ex);
-		        var fullMessage = $"{message}. {ex.Message}.";
-		        reportService.AddValue(fullMessage, PriorityGrouping.GeneralErrorColumn, currentRow);
-	        }
+            foreach (var item in list)
+            {
+                if (!(item.Value == "" && item.AttributeName == ""))
+                    reportService.AddValue(item.Value, columnOffset, currRow);
+                columnOffset++;
+            }
+        }
 
-	        Log.ForContext("Item", JsonConvert.SerializeObject(inputItem))
-		        .ForContext("HumanMessage", message)
-		        .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
+        private void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex,
+            GbuReportService.Row currentRow)
+        {
+            lock (PriorityGrouping.Locked)
+            {
+                //var errorId = ErrorManager.LogError(ex);
+                var fullMessage = $"{message}. {ex.Message}.";
+                reportService.AddValue(fullMessage, PriorityGrouping.GeneralErrorColumn, currentRow);
+            }
+
+            _log.ForContext("Item", JsonConvert.SerializeObject(inputItem))
+                .ForContext("HumanMessage", message)
+                .Error(ex, "Ошибка группировки по КН {CadastralNumber}", inputItem.CadastralNumber);
         }
 
         #endregion
     }
-
 
 
     public class PriorityGroupingItemsGetter : AItemsGetter<GroupingItem>
@@ -947,7 +276,9 @@ namespace KadOzenka.Dal.GbuObject
 
         private List<GroupingItem> GetUnits()
         {
-            return OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && Settings.TaskFilter.Contains((long)x.TaskId) && x.ObjectId != null)
+            return OMUnit.Where(x =>
+                    x.PropertyType_Code == PropertyTypes.Stead && Settings.TaskFilter.Contains((long) x.TaskId) &&
+                    x.ObjectId != null)
                 .Select(x => new
                 {
                     x.ObjectId,
@@ -966,7 +297,7 @@ namespace KadOzenka.Dal.GbuObject
 
         private List<GroupingItem> GetObjects()
         {
-            return ObjectModel.Gbu.OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead)
+            return OMMainObject.Where(x => x.ObjectType_Code == PropertyTypes.Stead)
                 .Select(x => x.CadastralNumber)
                 .Execute()
                 .Select(x => new GroupingItem
@@ -983,7 +314,13 @@ namespace KadOzenka.Dal.GbuObject
     /// </summary>
     public class PriorityGrouping
     {
-        private static readonly ILogger _log = Log.ForContext<PriorityGrouping>();
+        private static readonly ILogger Log = Serilog.Log.ForContext<PriorityGrouping>();
+        private static ICodDictionaryService _dictionaryService;
+
+        public PriorityGrouping(ICodDictionaryService dictionaryService)
+        {
+            _dictionaryService = dictionaryService;
+        }
 
         #region Номера колонок отчета
 
@@ -995,26 +332,28 @@ namespace KadOzenka.Dal.GbuObject
 
         public static int SourceColumn = 3;
 
-        public static int ErrorColumn = 4;
+        public static int ErrorColumn = 3;
 
-        public static int GeneralErrorColumn = 5;
+        public static int GeneralErrorColumn = 4;
 
+        public static int ValueColumnOffset = 5;
 
         #endregion
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
         /// </summary>
-        public static object locked;
+        public static object Locked;
 
         /// <summary>
         /// Общее число объектов
         /// </summary>
-        public static int MaxCount = 0;
+        public static int MaxCount;
+
         /// <summary>
         /// Индекс текущего объекта
         /// </summary>
-        public static int CurrentCount = 0;
+        public static int CurrentCount;
 
         /// <summary>
         /// Количество объектов прошедших процедуру
@@ -1024,14 +363,14 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Справочник приоритетов
         /// </summary>
-        public static PriorityGroupList PrioritetList = null;
+        public static PriorityGroupList PrioritetList;
 
         public static List<string> ErrorMessages;
 
         // TODO: заменить на SRDSession.SetThreadCurrentPrincipal после обновления платформы
         public static void SetThreadCurrentPrincipal(long userId)
         {
-            SRDUserBase userData = SRDCache.Users[(int)userId];
+            SRDUserBase userData = SRDCache.Users[(int) userId];
             GenericIdentity genericIdentity = new GenericIdentity(userData.Username);
             Thread.CurrentPrincipal = new GenericPrincipal(genericIdentity, new string[] { });
         }
@@ -1039,65 +378,70 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Выполнение операции группировки
         /// </summary>
-        public static string SetPriorityGroup(GroupingSettings setting, CancellationToken processCancellationToken)
+        public string SetPriorityGroup(GroupingSettings setting, CancellationToken processCancellationToken)
         {
-            _log.ForContext("InputParameters", setting).Debug("Старт нормализации. Входные параметры.");
+            Log.ForContext("InputParameters", setting).Debug("Старт нормализации. Входные параметры.");
             ValidateInputParameters(setting);
 
-            using var reportService =  new GbuReportService("Отчет нормализации");
+
+            using var reportService = new GbuReportService("Отчет нормализации");
             var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
-          
-            _log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}", dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
- 
+
+            Log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}",
+                dataHeaderAndColumnNumber.DictionaryColumns, dataHeaderAndColumnNumber.Headers);
+
             reportService.AddHeaders(dataHeaderAndColumnNumber.Headers);
             try
             {
-	            _log.Verbose("Применение стилей SetStyle");
-	            reportService.SetIndividualWidth(KnColumn, 4);
-	            reportService.SetIndividualWidth(ResultColumn, 6);
-	            reportService.SetIndividualWidth(ValueColumn, 3);
-	            reportService.SetIndividualWidth(SourceColumn, 6);
-	            reportService.SetIndividualWidth(ErrorColumn, 5);
-	            reportService.SetIndividualWidth(GeneralErrorColumn, 5);
+                Log.Verbose("Применение стилей SetStyle");
+                reportService.SetIndividualWidth(KnColumn, 4);
+                reportService.SetIndividualWidth(ResultColumn, 6);
+                reportService.SetIndividualWidth(ValueColumn, 3);
+                //reportService.SetIndividualWidth(SourceColumn, 6);
+                reportService.SetIndividualWidth(ErrorColumn, 5);
+                reportService.SetIndividualWidth(GeneralErrorColumn, 5);
 
-	            foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
-	            {
-		            reportService.SetIndividualWidth((int)dictionaryColumn.Value, 3);
-		            reportService.SetIndividualWidth((int)dictionaryColumn.Value + 1, 3);
-	            }
+                foreach (var dictionaryColumn in dataHeaderAndColumnNumber.DictionaryColumns)
+                {
+                    reportService.SetIndividualWidth((int) dictionaryColumn.Value, 3);
+                    //reportService.SetIndividualWidth((int) dictionaryColumn.Value + 1, 3);
+                }
             }
             catch (Exception ex)
             {
-	            _log.Error(ex, "Форматирование отчета завершилось с ошибкой");
-	            throw;
+                Log.Error(ex, "Форматирование отчета завершилось с ошибкой");
+                throw;
             }
 
-            long reportId = 0;
+            long reportId;
 
             ErrorMessages = new List<string>();
-            locked = new object();
+            Locked = new object();
             PrioritetList = new PriorityGroupList();
 
-            var itemsGetter = new PriorityGroupingItemsGetter(_log, setting) as AItemsGetter<GroupingItem>;
+            var itemsGetter = new PriorityGroupingItemsGetter(Log, setting) as AItemsGetter<GroupingItem>;
             var actualDate = setting.DateActual?.Date ?? DateTime.Now.Date;
-            itemsGetter = new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, _log, setting.ObjectChangeStatus, actualDate);
+            itemsGetter =
+                new GbuObjectStatusFilterDecorator<GroupingItem>(itemsGetter, Log, setting.ObjectChangeStatus,
+                    actualDate);
 
-            var dictionaryItems = GetDictionaryItems(setting);
-            
+            var dictionaryValues = _dictionaryService.GetDictionaryValuesByDictId(setting.IdCodJob.GetValueOrDefault());
+            //var dictionaryItems = GetDictionaryItems(setting);
+
             bool useTask = false;
             if (setting.TaskFilter != null) useTask = setting.TaskFilter.Count > 0;
 
-			////TODO для тестирования
-			//var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618, 11657698 };
-			//var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
-			var items = itemsGetter.GetItems();
-			MaxCount = items.Count;
+            ////TODO для тестирования
+            //var objectIdsForTesting = new List<long> { 11614530, 13445766, 13664618, 11657698 };
+            //var items = itemsGetter.GetItems().Where(x => objectIdsForTesting.Contains(x.ObjectId)).ToList();
+            var items = itemsGetter.GetItems();
+            MaxCount = items.Count;
             CurrentCount = 0;
-            _log.ForContext("useTask", useTask)
-	            .ForContext("Objs_0", JsonConvert.SerializeObject(items.ElementAtOrDefault(0)))
-	            .Debug(useTask
-			            ? "Нормализация по Заданиям на оценку. Всего {Count} единиц оценки"
-			            : "Нормализация по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
+            Log.ForContext("useTask", useTask)
+                .ForContext("Objs_0", JsonConvert.SerializeObject(items.ElementAtOrDefault(0)))
+                .Debug(useTask
+                    ? "Нормализация по Заданиям на оценку. Всего {Count} единиц оценки"
+                    : "Нормализация по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
 
             var allAttributeIds = GetAttributes(setting);
             var queryManager = new QueryManager();
@@ -1106,259 +450,298 @@ namespace KadOzenka.Dal.GbuObject
             //TODO если будут еще различия - вынести в интрефейс/класс
             if (useTask)
             {
-	            ProcessUnits(setting, dictionaryItems, items, allAttributeIds, gbuObjectService, reportService,
-		            dataHeaderAndColumnNumber, processCancellationToken);
+                ProcessUnits(setting, dictionaryValues, items, allAttributeIds, gbuObjectService, reportService,
+                    dataHeaderAndColumnNumber, processCancellationToken);
             }
             else
             {
-	            ProcessObjects(setting, dictionaryItems, items, allAttributeIds, actualDate, gbuObjectService, reportService,
-		            dataHeaderAndColumnNumber, processCancellationToken);
+                ProcessObjects(setting, dictionaryValues, items, allAttributeIds, actualDate, gbuObjectService,
+                    reportService,
+                    dataHeaderAndColumnNumber, processCancellationToken);
             }
 
-            _log.Debug("Закончена обработка всех элементов");
+            Log.Debug("Закончена обработка всех элементов");
             //попытка принудительно освободить память
             items = null;
             GC.Collect();
 
-            _log.Debug("Старт генерации отчета");
+            Log.Debug("Старт генерации отчета");
             reportId = reportService.SaveReport();
 
-            _log.Debug("Финиш нормализации");
+            Log.Debug("Финиш нормализации");
 
             return reportService.GetUrlToDownloadFile(reportId);
         }
 
         private static void ValidateInputParameters(GroupingSettings setting)
         {
-	        var message = new StringBuilder();
+            var message = new StringBuilder();
 
-	        CheckAttributeIsStringType(setting.IdAttributeResult, "Характеристика", ref message);
-	        CheckAttributeIsStringType(setting.IdAttributeSource, "Источник", ref message);
-	        CheckAttributeIsStringType(setting.IdAttributeDocument, "Документ", ref message);
+            CheckAttributeIsStringType(setting.IdAttributeResult, "Характеристика", ref message);
 
-	        if (message.Length <= 0) 
-		        return;
+            if (message.Length <= 0)
+                return;
 
-	        //убираем последную запятую
-	        message.Length--;
-	        throw new Exception($"Атрибут(ы): '{message}' должны быть типа строка.");
+            //убираем последную запятую
+            message.Length--;
+            throw new Exception($"Атрибут(ы): '{message}' должны быть типа строка.");
         }
 
         private static void CheckAttributeIsStringType(long? attributeId, string name, ref StringBuilder message)
         {
-	        var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == attributeId);
-	        if (attribute != null && attribute.Type != RegisterAttributeType.STRING)
-	        {
-		        message.Append($"{name} ({attribute.Name}),");
-	        }
+            var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == attributeId);
+            if (attribute != null && attribute.Type != RegisterAttributeType.STRING)
+            {
+                message.Append($"{name} ({attribute.Name}),");
+            }
         }
 
-        private static List<OMCodDictionary> GetDictionaryItems(GroupingSettings setting)
+        private static void ProcessUnits(GroupingSettings setting, List<CodDictionaryValue> dictionaryItems,
+            List<GroupingItem> units, List<long> allAttributeIds,
+            GbuObjectService gbuObjectService, GbuReportService reportService,
+            ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
         {
-	        var dictionaryItems = new List<OMCodDictionary>();
-	        if (setting.IdCodJob == null) 
-		        return dictionaryItems;
-
-	        dictionaryItems = OMCodDictionary.Where(x => x.IdCodjob == setting.IdCodJob).Select(x => new
-	        {
-		        x.IdCodjob,
-		        x.Value,
-		        x.Code
-	        }).Execute();
-
-	        _log.ForContext("CodDictionaryId", setting.IdCodJob).Debug("Найдено {Count} значений словаря", dictionaryItems.Count);
-
-	        return dictionaryItems;
-        }
-
-        private static void ProcessUnits(GroupingSettings setting, List<OMCodDictionary> dictionaryItems, 
-	        List<GroupingItem> units, List<long> allAttributeIds,
-	        GbuObjectService gbuObjectService, GbuReportService reportService, 
-	        ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
-		{
-			var config = GetProcessConfigFromSettings();
-			var localCancelTokenSource = new CancellationTokenSource();
-			var options = new ParallelOptions
-			{
-				CancellationToken = localCancelTokenSource.Token,
-				MaxDegreeOfParallelism = config.ThreadsCountForUnits
-			};
-
-			var documents = new ConcurrentDictionary<long, OMInstance>();
-			var unitsGroupedByCreationDate = units.GroupBy(x => x.CreationDate ?? DateTime.Now.Date).ToDictionary(k => k.Key, v => v.ToList());
-			Parallel.ForEach(unitsGroupedByCreationDate, options, groupedUnits =>
-			{
-				CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
-				
-				var localActualDate = groupedUnits.Key;
-				_log.Debug("Начата работа с группой, у которой дата актуальности = '{ActualDate}'. Всего групп: {GroupsCount}", localActualDate, unitsGroupedByCreationDate.Count);
-
-				//TODO если в группе будет много юнитов, сделать пагинацию внутри группы
-				//if (groupedUnits.Value.Count > config.PackageSize)
-				//{
-				//	_log.Debug("Количество ЕО в группе ({CurrentUnitsCount}) больше размера пакета ({PackageSize}), дополнительно отправляем их в пакеты",
-				//		groupedUnits.Value.Count, config.PackageSize);
-				//}
-
-				var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
-                _log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'", objectIds.Count, localActualDate.ToShortDateString());
-
-                var objectAttributes = gbuObjectService.GetAllAttributes(objectIds, null, allAttributeIds, localActualDate,
-	                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
-	                .GroupBy(x => x.ObjectId).ToList();
-                _log.Debug("Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'", objectAttributes.Count, localActualDate.ToShortDateString());
-
-                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, groupedUnits.Value,
-	                objectAttributes, allAttributeIds, true, localActualDate, reportService, dataHeaderAndColumnNumber,
-	                processCancellationToken, config));
-			});
-		}
-
-        private static void ProcessObjects(GroupingSettings setting, List<OMCodDictionary> dictionaryItems,
-	        List<GroupingItem> objects, List<long> allAttributeIds, DateTime actualDate,
-	        GbuObjectService gbuObjectService, GbuReportService reportService,
-	        ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
-        {
-	        var config = GetProcessConfigFromSettings();
+            var config = GetProcessConfigFromSettings();
             var localCancelTokenSource = new CancellationTokenSource();
-	        var options = new ParallelOptions
-	        {
-		        CancellationToken = localCancelTokenSource.Token,
-		        MaxDegreeOfParallelism = config.ThreadsCountForObjects
+            var options = new ParallelOptions
+            {
+                CancellationToken = localCancelTokenSource.Token,
+                MaxDegreeOfParallelism = config.ThreadsCountForUnits
+            };
+
+            var documents = new ConcurrentDictionary<long, OMInstance>();
+            var unitsGroupedByCreationDate = units.GroupBy(x => x.CreationDate ?? DateTime.Now.Date)
+                .ToDictionary(k => k.Key, v => v.ToList());
+            Parallel.ForEach(unitsGroupedByCreationDate, options, groupedUnits =>
+            {
+                CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
+
+                var localActualDate = groupedUnits.Key;
+                Log.Debug(
+                    "Начата работа с группой, у которой дата актуальности = '{ActualDate}'. Всего групп: {GroupsCount}",
+                    localActualDate, unitsGroupedByCreationDate.Count);
+
+                //TODO если в группе будет много юнитов, сделать пагинацию внутри группы
+                //if (groupedUnits.Value.Count > config.PackageSize)
+                //{
+                //	_log.Debug("Количество ЕО в группе ({CurrentUnitsCount}) больше размера пакета ({PackageSize}), дополнительно отправляем их в пакеты",
+                //		groupedUnits.Value.Count, config.PackageSize);
+                //}
+
+                var objectIds = groupedUnits.Value.Select(x => x.ObjectId).ToList();
+                Log.Debug("Отобрано {ObjectsCount} объектов группы, у которой дата актуальности = '{ActualDate}'",
+                    objectIds.Count, localActualDate.ToShortDateString());
+
+                var objectAttributes = gbuObjectService.GetAllAttributes(objectIds, null, allAttributeIds,
+                        localActualDate,
+                        attributesToDownload: new List<GbuColumnsToDownload>
+                            {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
+                    .GroupBy(x => x.ObjectId).ToList();
+                Log.Debug(
+                    "Найдено {AttributesCount} атрибутов для объектов группы, у которой дата актуальности = '{ActualDate}'",
+                    objectAttributes.Count, localActualDate.ToShortDateString());
+
+                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, groupedUnits.Value,
+                    objectAttributes, allAttributeIds, true, localActualDate, reportService,
+                    processCancellationToken, config));
+            });
+        }
+
+        private static void ProcessObjects(GroupingSettings setting, List<CodDictionaryValue> dictionaryItems,
+            List<GroupingItem> objects, List<long> allAttributeIds, DateTime actualDate,
+            GbuObjectService gbuObjectService, GbuReportService reportService,
+            ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
+        {
+            var config = GetProcessConfigFromSettings();
+            var localCancelTokenSource = new CancellationTokenSource();
+            var options = new ParallelOptions
+            {
+                CancellationToken = localCancelTokenSource.Token,
+                MaxDegreeOfParallelism = config.ThreadsCountForObjects
             };
 
             var packageSize = config.PackageSize;
-	        var numberOfPackages = MaxCount / packageSize + 1;
-	        var documents = new ConcurrentDictionary<long, OMInstance>();
-            Parallel.For(0, numberOfPackages, options, (i, s) =>
-	        {
-		        CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
+            var numberOfPackages = MaxCount / packageSize + 1;
+            var documents = new ConcurrentDictionary<long, OMInstance>();
+            Parallel.For(0, numberOfPackages, options, (i, _) =>
+            {
+                CheckCancellationToken(processCancellationToken, localCancelTokenSource, options);
 
-                _log.Debug("Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
+                Log.Debug("Начата работа с пакетом №{PackageNumber} из {MaxPackagesCount}", i, numberOfPackages);
 
                 var objectsPage = objects.Skip(i * packageSize).Take(packageSize).ToList();
-                _log.Debug("Отобрано {ObjectsCount} объектов для пакета №{PackageNumber} из {MaxPackagesCount}", objectsPage.Count, i, numberOfPackages);
+                Log.Debug("Отобрано {ObjectsCount} объектов для пакета №{PackageNumber} из {MaxPackagesCount}",
+                    objectsPage.Count, i, numberOfPackages);
 
-                var objectAttributes = gbuObjectService.GetAllAttributes(objectsPage.Select(x => x.ObjectId).ToList(), null, allAttributeIds, actualDate,
-		                attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
-	                .GroupBy(x => x.ObjectId).ToList();
-                _log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}", objectAttributes.Count, i, numberOfPackages);
+                var objectAttributes = gbuObjectService.GetAllAttributes(objectsPage.Select(x => x.ObjectId).ToList(),
+                        null, allAttributeIds, actualDate,
+                        attributesToDownload: new List<GbuColumnsToDownload>
+                            {GbuColumnsToDownload.Value, GbuColumnsToDownload.DocumentId})
+                    .GroupBy(x => x.ObjectId).ToList();
+                Log.Debug("Найдено {AttributesCount} атрибутов для пакета №{PackageNumber} из {MaxPackagesCount}",
+                    objectAttributes.Count, i, numberOfPackages);
 
-                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, documents, objectsPage,
-	                objectAttributes, allAttributeIds, false, actualDate, reportService, dataHeaderAndColumnNumber,
-	                processCancellationToken, config));
-	        });
+                ProcessItems(new ProcessItemInputParameters(setting, dictionaryItems, objectsPage,
+                    objectAttributes, allAttributeIds, false, actualDate, reportService,
+                    processCancellationToken, config));
+            });
+        }
+
+        private static DictRecord ConvertCodDictValueToRecord(CodDictionaryValue val, GroupingSettings settings)
+        {
+            return new()
+            {
+                Value1 = CleanUp(val.GetValueByAttributeId(settings.Level1.CodValueId.GetValueOrDefault())),
+                Value2 = CleanUp(val.GetValueByAttributeId(settings.Level2.CodValueId.GetValueOrDefault())),
+                Value3 = CleanUp(val.GetValueByAttributeId(settings.Level3.CodValueId.GetValueOrDefault())),
+                Value4 = CleanUp(val.GetValueByAttributeId(settings.Level4.CodValueId.GetValueOrDefault())),
+                Value5 = CleanUp(val.GetValueByAttributeId(settings.Level5.CodValueId.GetValueOrDefault())),
+                Value6 = CleanUp(val.GetValueByAttributeId(settings.Level6.CodValueId.GetValueOrDefault())),
+                Value7 = CleanUp(val.GetValueByAttributeId(settings.Level7.CodValueId.GetValueOrDefault())),
+                Value8 = CleanUp(val.GetValueByAttributeId(settings.Level8.CodValueId.GetValueOrDefault())),
+                Value9 = CleanUp(val.GetValueByAttributeId(settings.Level9.CodValueId.GetValueOrDefault())),
+                Code = val.Code
+            };
+        }
+
+        private static string CleanUp(string x)
+        {
+            if (x == null) return null;
+            // Оставляем только значимые символы в строках и убираем мусор из значения
+            return Regex
+                .Replace(x, "\\s+", "")
+                .Replace("_x000D_", "")
+                .Replace("-", "")
+                .ToLower();
         }
 
         private static void ProcessItems(ProcessItemInputParameters inputParameters)
         {
-	        var localCancelTokenSource = new CancellationTokenSource();
-	        var options = new ParallelOptions
-	        {
-		        CancellationToken = localCancelTokenSource.Token,
-		        MaxDegreeOfParallelism = inputParameters.ProcessConfig.ThreadsCountForItemsHandling
-	        };
+            var localCancelTokenSource = new CancellationTokenSource();
+            var options = new ParallelOptions
+            {
+                CancellationToken = localCancelTokenSource.Token,
+                MaxDegreeOfParallelism = inputParameters.ProcessConfig.ThreadsCountForItemsHandling
+            };
 
-	        var objectAttributesDictionary = inputParameters.ObjectAttributes.ToDictionary(k => k.Key, v => v.ToList());
-	        var defaultAttributes = inputParameters.AllAttributeIds.Select(x => new GbuObjectAttribute { AttributeId = x }).ToList();
-	        var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
-	        Parallel.ForEach(inputParameters.Items, options, item =>
-	        {
-		        CheckCancellationToken(inputParameters.ProcessCancellationToken, localCancelTokenSource, options);
+            var dict = inputParameters.DictionaryValues
+                .Select(x => ConvertCodDictValueToRecord(x, inputParameters.Setting)).ToList();
 
-		        //если работаем с единицами оценки, дата актуальности должна браться из них
-		        var localActualDate = inputParameters.UseTask
-			        ? item.CreationDate?.Date ?? DateTime.Now.Date
-			        : inputParameters.ActualDate;
+            var objectAttributesDictionary = inputParameters.ObjectAttributes.ToDictionary(k => k.Key, v => v.ToList());
+            var defaultAttributes = inputParameters.AllAttributeIds
+                .Select(x => new GbuObjectAttribute {AttributeId = x}).ToList();
+            var userId = SRDSession.GetCurrentUserId().GetValueOrDefault();
+            Parallel.ForEach(inputParameters.Items, options, item =>
+            {
+                CheckCancellationToken(inputParameters.ProcessCancellationToken, localCancelTokenSource, options);
 
-		        SetThreadCurrentPrincipal(userId);
+                //если работаем с единицами оценки, дата актуальности должна браться из них
+                var localActualDate = inputParameters.UseTask
+                    ? item.CreationDate?.Date ?? DateTime.Now.Date
+                    : inputParameters.ActualDate;
 
-		        var currentObjectAttributes = objectAttributesDictionary.TryGetValue(item.ObjectId, out var attributes)
-			        ? attributes
-			        : defaultAttributes;
+                SetThreadCurrentPrincipal(userId);
 
-		        new PriorityItem(_log).SetPriorityGroup(inputParameters.Setting, inputParameters.DictionaryItems, inputParameters.AllAttributeIds, item, localActualDate,
-			        currentObjectAttributes, inputParameters.ReportService, inputParameters.DataHeaderAndColumnNumber.DictionaryColumns, inputParameters.Documents);
-	        });
+                var currentObjectAttributes = objectAttributesDictionary.TryGetValue(item.ObjectId, out var attributes)
+                    ? attributes
+                    : defaultAttributes;
+
+                new PriorityItem(Log).SetPriorityGroup(inputParameters.Setting,
+                    dict,
+                    inputParameters.AllAttributeIds, item, localActualDate,
+                    currentObjectAttributes, inputParameters.ReportService);
+            });
         }
 
         private static ProcessConfig GetProcessConfigFromSettings()
         {
-	        var fileName = "appsettings.json";
-	        _log.Debug("Поиск настроек конфигурации из файла {FileName}", fileName);
+            var fileName = "appsettings.json";
+            Log.Debug("Поиск настроек конфигурации из файла {FileName}", fileName);
 
-	        var configuration = new ConfigurationBuilder()
-		        .AddJsonFile(path: fileName, optional: false, reloadOnChange: true)
-		        .Build();
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile(path: fileName, optional: false, reloadOnChange: true)
+                .Build();
 
-	        var config = new ProcessConfig();
-	        var sectionName = "MainOperations:Grouping";
-	        configuration.GetSection(sectionName).Bind(config);
-	        _log.ForContext("Configs", config, true).Debug("Полученные настройки конфигурации для секции {SectionName}", sectionName);
+            var config = new ProcessConfig();
+            var sectionName = "MainOperations:Grouping";
+            configuration.GetSection(sectionName).Bind(config);
+            Log.ForContext("Configs", config, true)
+                .Debug("Полученные настройки конфигурации для секции {SectionName}", sectionName);
 
-	        var packageSize = config.PackageSize == 0 ? 100000 : config.PackageSize;
-	        var threadsCountForObjects = config.ThreadsCountForObjects == 0 ? 20 : config.ThreadsCountForObjects;
-	        var threadsCountForUnits = config.ThreadsCountForUnits == 0 ? 20 : config.ThreadsCountForUnits;
-	        var threadsCountForItemsHandling = config.ThreadsCountForItemsHandling == 0 ? 20 : config.ThreadsCountForItemsHandling;
+            var packageSize = config.PackageSize == 0 ? 100000 : config.PackageSize;
+            var threadsCountForObjects = config.ThreadsCountForObjects == 0 ? 20 : config.ThreadsCountForObjects;
+            var threadsCountForUnits = config.ThreadsCountForUnits == 0 ? 20 : config.ThreadsCountForUnits;
+            var threadsCountForItemsHandling =
+                config.ThreadsCountForItemsHandling == 0 ? 20 : config.ThreadsCountForItemsHandling;
 
-	        config.PackageSize = packageSize;
-	        config.ThreadsCountForObjects = threadsCountForObjects;
-	        config.ThreadsCountForUnits = threadsCountForUnits;
-	        config.ThreadsCountForItemsHandling = threadsCountForItemsHandling;
+            config.PackageSize = packageSize;
+            config.ThreadsCountForObjects = threadsCountForObjects;
+            config.ThreadsCountForUnits = threadsCountForUnits;
+            config.ThreadsCountForItemsHandling = threadsCountForItemsHandling;
 
-	        _log.ForContext("ResultConfigs", config, true).Debug("Итоговые настройки конфигурации для секции {SectionName}", sectionName);
+            Log.ForContext("ResultConfigs", config, true)
+                .Debug("Итоговые настройки конфигурации для секции {SectionName}", sectionName);
 
-	        return config;
+            return config;
         }
 
         private static void CheckCancellationToken(CancellationToken processCancellationToken,
-	        CancellationTokenSource localCancellationToken, ParallelOptions options)
+            CancellationTokenSource localCancellationToken, ParallelOptions options)
         {
-	        if (!processCancellationToken.IsCancellationRequested)
-		        return;
+            if (!processCancellationToken.IsCancellationRequested)
+                return;
 
-	        localCancellationToken.Cancel();
-	        options.CancellationToken.ThrowIfCancellationRequested();
+            localCancellationToken.Cancel();
+            options.CancellationToken.ThrowIfCancellationRequested();
         }
 
         private static List<long> GetAttributes(GroupingSettings setting)
         {
-            return new List<long>
+            return new()
             {
-	            setting.Level1.IdFactor.GetValueOrDefault(), setting.Level2.IdFactor.GetValueOrDefault(),
-	            setting.Level3.IdFactor.GetValueOrDefault(), setting.Level4.IdFactor.GetValueOrDefault(),
-	            setting.Level5.IdFactor.GetValueOrDefault(), setting.Level6.IdFactor.GetValueOrDefault(),
-	            setting.Level7.IdFactor.GetValueOrDefault(), setting.Level8.IdFactor.GetValueOrDefault(),
-	            setting.Level9.IdFactor.GetValueOrDefault(), setting.Level10.IdFactor.GetValueOrDefault(),
-	            setting.Level11.IdFactor.GetValueOrDefault()
+                setting.Level1.IdFactor.GetValueOrDefault(), setting.Level2.IdFactor.GetValueOrDefault(),
+                setting.Level3.IdFactor.GetValueOrDefault(), setting.Level4.IdFactor.GetValueOrDefault(),
+                setting.Level5.IdFactor.GetValueOrDefault(), setting.Level6.IdFactor.GetValueOrDefault(),
+                setting.Level7.IdFactor.GetValueOrDefault(), setting.Level8.IdFactor.GetValueOrDefault(),
+                setting.Level9.IdFactor.GetValueOrDefault()
             };
         }
 
         public static ReportHeaderWithColumnDic GenerateReportHeaderWithColumnNumber(GroupingSettings setting)
         {
-            List<string> resHeaderList = new List<string>{ "КН", "Поле в которое вносилось значение", "Внесенное значение", "Источник внесенного значения", "Ошибка внесенного значения", "Ошибка" };
+            List<string> resHeaderList = new List<string>
+            {
+                "КН", "Поле в которое вносилось значение", "Внесенное значение",
+                //"Источник внесенного значения",
+                "Ошибка внесенного значения", "Ошибка"
+            };
             ReportHeaderWithColumnDic res = new ReportHeaderWithColumnDic();
 
             var dicColumns = new Dictionary<long, long>();
             int lastColumn = GeneralErrorColumn;
-            int levelTitle = 1;
             foreach (FieldInfo propertyInfo in typeof(GroupingSettings).GetFields(BindingFlags.Instance |
-                                                                                     BindingFlags.NonPublic |
-                                                                                     BindingFlags.Public))
+                                                                                  BindingFlags.NonPublic |
+                                                                                  BindingFlags.Public))
             {
                 if (propertyInfo.Name.IndexOf("Level", StringComparison.Ordinal) != -1)
                 {
-                    if (propertyInfo.GetValue(setting) is LevelItem && ((LevelItem)propertyInfo.GetValue(setting)).IdFactor != null)
+                    if (propertyInfo.GetValue(setting) is LevelItem &&
+                        ((LevelItem) propertyInfo.GetValue(setting)).IdFactor != null)
                     {
                         lastColumn++;
-                        var lItem = (LevelItem)propertyInfo.GetValue(setting);
-                        resHeaderList.AddRange(new List<string>{ GbuObjectService.GetAttributeNameById(lItem.IdFactor.GetValueOrDefault()), $"(Уровень - {levelTitle}) Источник информации" });
-                        
-                        Log.Verbose("Атрибут ОН. {FactorName}, Id {FactorID}", lItem.IdFactor.GetValueOrDefault(), lItem.IdFactor);
-                        
+                        var lItem = (LevelItem) propertyInfo.GetValue(setting);
+                        resHeaderList.AddRange(new List<string>
+                        {
+                            GbuObjectService.GetAttributeNameById(lItem.IdFactor.GetValueOrDefault()),
+                            //$"(Уровень - {levelTitle}) Источник информации"
+                        });
+
+                        Serilog.Log.Verbose("Атрибут ОН. {FactorName}, Id {FactorID}",
+                            lItem.IdFactor.GetValueOrDefault(),
+                            lItem.IdFactor);
+
                         dicColumns.Add(lItem.IdFactor.GetValueOrDefault(), lastColumn);
                         lastColumn++;
-                        levelTitle++;
                     }
                 }
             }
@@ -1368,9 +751,10 @@ namespace KadOzenka.Dal.GbuObject
             return res;
         }
 
-        public static void AddInfoToReport(List<DataLevel> dataLevels, GbuReportService.Row rowNumber, Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
+        public static void AddInfoToReport(List<DataLevel> dataLevels, GbuReportService.Row rowNumber,
+            Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
         {
-            lock (locked)
+            lock (Locked)
             {
                 foreach (var dataLevel in dataLevels)
                 {
@@ -1378,8 +762,8 @@ namespace KadOzenka.Dal.GbuObject
                     {
                         string registerName = GbuObjectService.GetRegisterNameByAttributeId(dataLevel.FactorId);
                         long column = dictionaryColumns.FirstOrDefault(x => x.Key == dataLevel.FactorId).Value;
-                        reportService.AddValue(dataLevel.Code, (int)column, rowNumber);
-                        reportService.AddValue(registerName, (int)column + 1, rowNumber);
+                        reportService.AddValue(dataLevel.Code, (int) column, rowNumber);
+                        reportService.AddValue(registerName, (int) column + 1, rowNumber);
                     }
                 }
             }
@@ -1396,46 +780,83 @@ namespace KadOzenka.Dal.GbuObject
 
     internal class ProcessConfig
     {
-	    public int PackageSize { get; set; }
-	    public int ThreadsCountForObjects { get; set; }
-	    public int ThreadsCountForUnits { get; set; }
-	    public int ThreadsCountForItemsHandling { get; set; }
+        public int PackageSize { get; set; }
+        public int ThreadsCountForObjects { get; set; }
+        public int ThreadsCountForUnits { get; set; }
+        public int ThreadsCountForItemsHandling { get; set; }
     }
 
     internal class ProcessItemInputParameters
     {
-	    public ProcessItemInputParameters(GroupingSettings setting, List<OMCodDictionary> dictionaryItems,
-		    ConcurrentDictionary<long, OMInstance> documents, List<GroupingItem> items,
-		    List<IGrouping<long, GbuObjectAttribute>> objectAttributes, List<long> allAttributeIds, bool useTask,
-		    DateTime actualDate, GbuReportService reportService, ReportHeaderWithColumnDic dataHeaderAndColumnNumber,
-		    CancellationToken processCancellationToken, ProcessConfig processConfig)
-	    {
-		    Setting = setting;
-		    DictionaryItems = dictionaryItems;
-		    Documents = documents;
-		    Items = items;
-		    ObjectAttributes = objectAttributes;
-		    AllAttributeIds = allAttributeIds;
-		    UseTask = useTask;
-		    ActualDate = actualDate;
-		    ReportService = reportService;
-		    DataHeaderAndColumnNumber = dataHeaderAndColumnNumber;
-		    ProcessCancellationToken = processCancellationToken;
-		    ProcessConfig = processConfig;
-	    }
+        public ProcessItemInputParameters(GroupingSettings setting, List<CodDictionaryValue> dictionaryValues, List<GroupingItem> items,
+            List<IGrouping<long, GbuObjectAttribute>> objectAttributes, List<long> allAttributeIds, bool useTask,
+            DateTime actualDate, GbuReportService reportService,
+            CancellationToken processCancellationToken, ProcessConfig processConfig)
+        {
+            Setting = setting;
+            DictionaryValues = dictionaryValues;
+            Items = items;
+            ObjectAttributes = objectAttributes;
+            AllAttributeIds = allAttributeIds;
+            UseTask = useTask;
+            ActualDate = actualDate;
+            ReportService = reportService;
+            ProcessCancellationToken = processCancellationToken;
+            ProcessConfig = processConfig;
+        }
 
-	    public GroupingSettings Setting { get; }
-	    public List<OMCodDictionary> DictionaryItems { get; }
-	    public ConcurrentDictionary<long, OMInstance> Documents { get; }
-	    public List<GroupingItem> Items { get; }
-	    public List<IGrouping<long, GbuObjectAttribute>> ObjectAttributes { get; }
-	    public List<long> AllAttributeIds { get; }
-	    public bool UseTask { get; }
-	    public DateTime ActualDate { get; }
-	    public GbuReportService ReportService { get; }
-	    public ReportHeaderWithColumnDic DataHeaderAndColumnNumber { get; }
-	    public CancellationToken ProcessCancellationToken { get; }
-	    public ProcessConfig ProcessConfig { get; }
+        public GroupingSettings Setting { get; }
+        public List<CodDictionaryValue> DictionaryValues { get; }
+        public List<GroupingItem> Items { get; }
+        public List<IGrouping<long, GbuObjectAttribute>> ObjectAttributes { get; }
+        public List<long> AllAttributeIds { get; }
+        public bool UseTask { get; }
+        public DateTime ActualDate { get; }
+        public GbuReportService ReportService { get; }
+        public CancellationToken ProcessCancellationToken { get; }
+        public ProcessConfig ProcessConfig { get; }
+    }
+
+    public record DictRecord
+    {
+        public string Value1 { get; init; }
+        public string Value2 { get; init; }
+        public string Value3 { get; init; }
+        public string Value4 { get; init; }
+        public string Value5 { get; init; }
+        public string Value6 { get; init; }
+        public string Value7 { get; init; }
+        public string Value8 { get; init; }
+        public string Value9 { get; init; }
+        public string Code { get; init; }
+
+        public virtual bool Equals(DictRecord dictRecord)
+        {
+            bool equal = true;
+            equal &= Value1 == dictRecord?.Value1;
+            equal &= Value2 == dictRecord?.Value2;
+            equal &= Value3 == dictRecord?.Value3;
+            equal &= Value4 == dictRecord?.Value4;
+            equal &= Value5 == dictRecord?.Value5;
+            equal &= Value6 == dictRecord?.Value6;
+            equal &= Value7 == dictRecord?.Value7;
+            equal &= Value8 == dictRecord?.Value8;
+            equal &= Value9 == dictRecord?.Value9;
+            return equal;
+        }
+
+        public override int GetHashCode()
+        {
+            return Value1.GetHashCode() +
+                   Value2.GetHashCode() +
+                   Value3.GetHashCode() +
+                   Value4.GetHashCode() +
+                   Value5.GetHashCode() +
+                   Value6.GetHashCode() +
+                   Value7.GetHashCode() +
+                   Value8.GetHashCode() +
+                   Value9.GetHashCode();
+        }
     }
 
     #endregion

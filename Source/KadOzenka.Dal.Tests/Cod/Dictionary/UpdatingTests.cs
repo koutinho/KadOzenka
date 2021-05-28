@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Castle.Components.DictionaryAdapter;
 using Core.Register;
 using Core.Register.RegisterEntities;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.CodDictionary.Resources;
 using KadOzenka.Dal.Registers;

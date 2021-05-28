@@ -31,10 +31,12 @@ using ObjectModel.KO;
 using System.IO;
 using System.Threading;
 using Core.Register.RegisterEntities;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
@@ -43,6 +45,7 @@ using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Helpers;
+using MarketPlaceBusiness;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
@@ -72,7 +75,9 @@ namespace KadOzenka.Web.Controllers
 	        IRegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
 	        ModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
-	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService)
+	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
+	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelingService = modelingService;
             TourFactorService = tourFactorService;
@@ -499,11 +504,11 @@ namespace KadOzenka.Web.Controllers
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var marketObjectAttributes = RegisterAttributeService
-                .GetActiveRegisterAttributes(OMCoreObject.GetRegisterId())
+                .GetActiveRegisterAttributes(MarketPlaceBusiness.Common.Consts.RegisterId)
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var tourAttributesTree = MapAttributes(tourAttributes.FirstOrDefault()?.RegisterId, tourAttributes);
-            var marketObjectsAttributesTree = MapAttributes(OMCoreObject.GetRegisterId(), marketObjectAttributes);
+            var marketObjectsAttributesTree = MapAttributes(MarketPlaceBusiness.Common.Consts.RegisterId, marketObjectAttributes);
 
             var fullTree = new List<DropDownTreeItemModel>
             {
@@ -1144,22 +1149,19 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_CORRELATION)]
         public JsonResult GetMarketObjectAttributes()
         {
-            var attribute = typeof(OMCoreObject).GetProperty(nameof(OMCoreObject.Price))
-                ?.GetCustomAttribute(typeof(RegisterAttributeAttribute));
-
-            var priceAttributeId = (attribute as RegisterAttributeAttribute)?.AttributeID;
-
-            var marketObjectAttributes = OMAttribute.Where(x =>
-                    x.RegisterId == OMCoreObject.GetRegisterId() && x.Id != priceAttributeId && x.Type == 2)
-                .Select(x => x.Id)
-                .Select(x => x.Name)
-                .OrderBy(x => x.Name)
-                .Execute()
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Name
-                });
+	        var marketObjectAttributes = OMAttribute.Where(x =>
+			        x.RegisterId == MarketPlaceBusiness.Common.Consts.RegisterId &&
+			        x.Id != MarketPlaceBusiness.Common.Consts.PriceAttributeId &&
+			        x.Type == (int) RegisterAttributeType.DECIMAL)
+		        .Select(x => x.Id)
+		        .Select(x => x.Name)
+		        .OrderBy(x => x.Name)
+		        .Execute()
+		        .Select(x => new
+		        {
+			        x.Id,
+			        x.Name
+		        });
 
             return new JsonResult(marketObjectAttributes);
         }

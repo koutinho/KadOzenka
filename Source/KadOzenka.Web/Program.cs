@@ -28,6 +28,7 @@ namespace CIPJS
            
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
+                .Enrich.WithProperty("Environment", ASPNETCORE_ENVIRONMENT)
                 //.Enrich.WithProperty("Version", typeof(Program).Assembly.Version)
                 .CreateLogger();
 

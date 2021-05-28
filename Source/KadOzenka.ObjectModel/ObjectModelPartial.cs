@@ -560,78 +560,6 @@ namespace ObjectModel.Gbu
     }
 }
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 100 Аналоги
-    /// </summary>
-    public partial class OMCoreObject
-    {
-
-
-        /// <summary>
-        /// Ссылка на (101 Адреса в яндек-формате)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMYandexAddress> YandexAddress { get; set; }
-
-        /// <summary>
-        /// Ссылка на (105 Таблица, содержащая ретроспективу цен по объектам)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMPriceHistory> PriceHistory { get; set; }
-
-        /// <summary>
-        /// Ссылка на (113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMPriceAfterCorrectionByRoomsHistory> PriceAfterCorrectionByRoomsHistory { get; set; }
-        public OMCoreObject()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            YandexAddress = new List<ObjectModel.Market.OMYandexAddress>();
-
-            PriceHistory = new List<ObjectModel.Market.OMPriceHistory>();
-
-            PriceAfterCorrectionByRoomsHistory = new List<ObjectModel.Market.OMPriceAfterCorrectionByRoomsHistory>();
-
-        }
-        public OMCoreObject(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 101 Адреса в яндек-формате
-    /// </summary>
-    public partial class OMYandexAddress
-    {
-
-        public OMYandexAddress()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMYandexAddress(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
 namespace ObjectModel.Gbu
 {
     /// <summary>
@@ -707,30 +635,6 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 105 Таблица, содержащая ретроспективу цен по объектам
-    /// </summary>
-    public partial class OMPriceHistory
-    {
-
-        public OMPriceHistory()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMPriceHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
     /// 106 Таблица, содержащая информацию о проведённых проверках на дублирование
     /// </summary>
     public partial class OMDuplicatesHistory
@@ -746,302 +650,6 @@ namespace ObjectModel.Market
 
         }
         public OMDuplicatesHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 107 Таблица, содержащая информацию о соответствии кад кварталов районам, округам и зонам 
-    /// </summary>
-    public partial class OMQuartalDictionary
-    {
-
-
-        /// <summary>
-        /// Ссылка на (201 Единица оценки)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMUnit> Unit { get; set; }
-        public OMQuartalDictionary()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            Unit = new List<ObjectModel.KO.OMUnit>();
-
-        }
-        public OMQuartalDictionary(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 108 Индексы для корректировки на дату
-    /// </summary>
-    public partial class OMIndexesForDateCorrection
-    {
-
-        public OMIndexesForDateCorrection()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMIndexesForDateCorrection(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 110 Временная таблица для проведения проверки механизма отбора дублей
-    /// </summary>
-    public partial class OMCoreObjectTest
-    {
-
-        public OMCoreObjectTest()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCoreObjectTest(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 111 Таблица, содержащая коэффициенты на квартиры по зданиям для корректировки на комнатность
-    /// </summary>
-    public partial class OMCoefficientsForCorrectionByRooms
-    {
-
-        public OMCoefficientsForCorrectionByRooms()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCoefficientsForCorrectionByRooms(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 112 Таблица, содержащая историю изменения цены после корректировки на этажность
-    /// </summary>
-    public partial class OMPriceCorrectionByStageHistory
-    {
-
-        public OMPriceCorrectionByStageHistory()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMPriceCorrectionByStageHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность
-    /// </summary>
-    public partial class OMPriceAfterCorrectionByRoomsHistory
-    {
-
-        public OMPriceAfterCorrectionByRoomsHistory()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMPriceAfterCorrectionByRoomsHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 114 Таблица, хранящая отношения цен первого этажа к верхним этажам
-    /// </summary>
-    public partial class OMCoefficientsForFirstFloorCorr
-    {
-
-        public OMCoefficientsForFirstFloorCorr()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCoefficientsForFirstFloorCorr(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 115 Таблица, хранящая историю цен первых этажей
-    /// </summary>
-    public partial class OMPriceForFirstFloorHistory
-    {
-
-        public OMPriceForFirstFloorHistory()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMPriceForFirstFloorHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 116 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на дату
-    /// </summary>
-    public partial class OMPriceAfterCorrectionByDateHistory
-    {
-
-        public OMPriceAfterCorrectionByDateHistory()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMPriceAfterCorrectionByDateHistory(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 117 Таблица, содержащая настройки для коэффициентов корректировок
-    /// </summary>
-    public partial class OMCorrectionSettings
-    {
-
-        public OMCorrectionSettings()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCorrectionSettings(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 118 Таблица, содержащая коэффициенты для проверки на выбросы
-    /// </summary>
-    public partial class OMCoefficientsOutliersChecking
-    {
-
-        public OMCoefficientsOutliersChecking()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCoefficientsOutliersChecking(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 119 Таблица, содержащая информацию о проведённых проверках на выбросы
-    /// </summary>
-    public partial class OMOutliersCheckingHistory
-    {
-
-        public OMOutliersCheckingHistory()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMOutliersCheckingHistory(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }
@@ -1184,12 +792,6 @@ namespace ObjectModel.Gbu
         public List<ObjectModel.Gbu.OMSource23> Source23 { get; set; }
 
         /// <summary>
-        /// Ссылка на (100 Аналоги)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.Market.OMCoreObject> CoreObject { get; set; }
-
-        /// <summary>
         /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
@@ -1249,8 +851,6 @@ namespace ObjectModel.Gbu
             Source22 = new List<ObjectModel.Gbu.OMSource22>();
 
             Source23 = new List<ObjectModel.Gbu.OMSource23>();
-
-            CoreObject = new List<ObjectModel.Market.OMCoreObject>();
 
             Unit = new List<ObjectModel.KO.OMUnit>();
 
@@ -2300,6 +1900,30 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 267 Реестр с файлами выгрузок результатов оценки
+    /// </summary>
+    public partial class OMUnloadResultFiles
+    {
+
+        public OMUnloadResultFiles()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMUnloadResultFiles(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
@@ -3254,110 +2878,6 @@ namespace ObjectModel.ES
 
         }
         public OMExpressScore(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 608 Связь экспресс оценки и объектов аналогов
-    /// </summary>
-    public partial class OMEsToMarketCoreObject
-    {
-
-        public OMEsToMarketCoreObject()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMEsToMarketCoreObject(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 609 Экспресс оценка. Справочники
-    /// </summary>
-    public partial class OMEsReference
-    {
-
-
-        /// <summary>
-        /// Ссылка на (610 Экспресс оценка. Значения справочников)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.ES.OMEsReferenceItem> EsReferenceItem { get; set; }
-        public OMEsReference()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            EsReferenceItem = new List<ObjectModel.ES.OMEsReferenceItem>();
-
-        }
-        public OMEsReference(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 610 Экспресс оценка. Значения справочников
-    /// </summary>
-    public partial class OMEsReferenceItem
-    {
-
-        public OMEsReferenceItem()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMEsReferenceItem(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Es
-{
-    /// <summary>
-    /// 611 Экспресс оценка. Настройка параметров
-    /// </summary>
-    public partial class OMSettingsParams
-    {
-
-        public OMSettingsParams()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMSettingsParams(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

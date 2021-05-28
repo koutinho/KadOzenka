@@ -6,12 +6,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Core.RefLib;
 using Core.Shared.Misc;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.UI.Fluent;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
@@ -401,6 +403,36 @@ namespace KadOzenka.Web.Helpers
 					</div>
 				</div>");
 			return html.Raw(str);
+		}
+
+		public static Task RenderPartialFor<TModel, TProperty>(this IHtmlHelper<TModel> helper, string partialViewName, Expression<Func<TModel, TProperty>> expression)
+		{
+			string name = ExpressionHelper.GetExpressionText(expression);
+			var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, helper.ViewData, helper.MetadataProvider);
+			object model = modelExplorer.Model;
+			var viewData = new ViewDataDictionary(helper.ViewData);
+			var htmlPrefix = viewData.TemplateInfo.HtmlFieldPrefix;
+			viewData.TemplateInfo.HtmlFieldPrefix += !Equals(htmlPrefix, string.Empty) ? $".{name}" : name;
+
+			return helper.RenderPartialAsync(partialViewName, model, viewData);
+		}
+
+		public static IHtmlContent KendoDropDownListEnumFor<TModel, TProperty>(this IHtmlHelper<TModel> helper,
+			Expression<Func<TModel, TProperty>> expression)
+		{
+			var values = Enum.GetValues(typeof(TProperty)) as TProperty[];
+			var selectList = helper.GetEnumSelectList(typeof(TProperty));
+
+			var selList = values.Zip(selectList, (x, y) => new SelectListItem
+			{
+				Value = x.ToString(),
+				Text = y.Text
+			});
+
+			return helper.Kendo().DropDownListFor(expression)
+				.DataTextField("Text")
+				.DataValueField("Value")
+				.BindTo(selList);
 		}
 	}
 }

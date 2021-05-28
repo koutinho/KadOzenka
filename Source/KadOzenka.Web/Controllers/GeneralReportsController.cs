@@ -2,6 +2,8 @@
 using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GeneralReports;
@@ -12,6 +14,13 @@ namespace KadOzenka.Web.Controllers
 {
 	public class GeneralReportsController : KoBaseController
 	{
+		public GeneralReportsController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
+
+		}
+
+
 		[HttpGet]
 		[SRDFunction(Tag = "")]
 		public IActionResult ReportFileCard(long reportId)

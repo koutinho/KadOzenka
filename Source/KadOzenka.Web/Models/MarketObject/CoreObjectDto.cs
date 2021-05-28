@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Core.Shared.Extensions;
+using MarketPlaceBusiness.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
@@ -21,43 +21,20 @@ namespace KadOzenka.Web.Models.MarketObject
 		public long Id { get; set; }
 		[DisplayName("Источник")]
 		public string Market { get; set; }
-		[DisplayName("Тип сделки")]
-		public string DealType { get; set; }
-        public DealType DealTypeCode { get; set; }
-		public DateTime? ParserTime { get; set; }
-        public DateTime? LastDateUpdate { get; set; }
-        [DisplayName("Адрес")]
+		[DisplayName("Адрес")]
 		public string Address { get; set; }
 		public string AddressShort { get; set; }
-		public string Metro { get; set; }
 		[DisplayName("Площадь")]
 		public decimal? Area { get; set; }
 		[DisplayName("Площадь")]
 		public string AreaStr { get; set; }
-		public string Description { get; set; }
 		[DisplayName("Цена")]
 		public decimal? Price { get; set; }
 		[DisplayName("Кадастровый номер")]
 		public string CadastralNumber { get; set; }
-		public string CadastralQuartal { get; set; }
-		public string District { get; set; }
-		public string BuildingCadastralNumber { get; set; }
-		public long? BuildingYear { get; set; }
-		public long? FloorsCount { get; set; }
 		public long? FloorNumber { get; set; }
-		public decimal? AreaKitchen { get; set; }
-		public decimal? AreaLiving { get; set; }
-		public long? Zone { get; set; }
-		public string Group { get; set; }
-		public string Subgroup { get; set; }
 		public List<PriceHistoryDto> PriceHistories { get; set; }
 		public bool IsRangePriceHistory { get; set; }
-		public string Url { get; set; }
-		public string Status { get; set; }
-		public ProcessStep StatusCode { get; set; }
-		public decimal? Latitude { get; set; }
-		public decimal? Longitude { get; set; }
-		public ProcessStep ProcessType { get; set; }
 		public MarketTypes MarketType { get; set; }
         public string CIPJSType { get; set; }
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
@@ -67,61 +44,167 @@ namespace KadOzenka.Web.Models.MarketObject
         public decimal? PricePerSquareMeter { get; set; }
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
-		public string EntranceType { get; set; }
 		public QualityClass? QualityClassCode { get; set; }
-		public string Renovation { get; set; }
-		public string BuildingLine { get; set; }
 
-		public static CoreObjectDto OMMap(OMCoreObject entity)
+		[DisplayName("Дата загрузки")]
+		public DateTime? DownloadDate { get; set; }
+
+		[DisplayName("Внешний Id объявления")]
+		public string ExternalAdvertisementId { get; set; }
+
+		[DisplayName("Текст объявления")]
+		public string AdvertisementDescription { get; set; }
+
+		[DisplayName("Площадь от")]
+		public decimal? AreaFrom { get; set; }
+
+		[DisplayName("Название")]
+		public string Name { get; set; }
+
+		[DisplayName("Номер на площадке")]
+		public long? FlatNumber { get; set; }
+
+		[DisplayName("Номер секции")]
+		public string SectionNumber { get; set; }
+
+		[DisplayName("Тип квартиры")]
+		public string FlatType { get; set; }
+
+		[DisplayName("Тип сделки")]
+		public string DealType { get; set; }
+
+		[DisplayName("Линия застройки")]
+		public string HouseLine { get; set; }
+
+		[DisplayName("Застройщик")]
+		public string Developer { get; set; }
+
+		[DisplayName("Состояние отделки")]
+		public string FinishingCondition { get; set; }
+
+		[DisplayName("Тип дома")]
+		public string HouseType { get; set; }
+
+		[DisplayName("Планировка")]
+		public string Layout { get; set; }
+
+		[DisplayName("Вид разрешённого использования")]
+		public string PermittedUseType { get; set; }
+
+		[DisplayName("Подъездные пути")]
+		public string DrivewayType { get; set; }
+
+		[DisplayName("Статус земли")]
+		public string ParcelStatus { get; set; }
+
+		[DisplayName("Тип участка")]
+		public string ParcelType { get; set; }
+
+		[DisplayName("Единица измерения площади участка")]
+		public string ParcelAreaUnitType { get; set; }
+
+		[DisplayName("Мощность электроснабжения, кВТ")]
+		public long? ElectricityPower { get; set; }
+
+		[DisplayName("Возможность подключения электроснабжения")]
+		public bool? PossibilityToConnectElectricity { get; set; }
+
+		[DisplayName("Локация электроснабжения")]
+		public string ElectricityLocationType { get; set; }
+
+		[DisplayName("Давление газа")]
+		public string GasPressureType { get; set; }
+
+		[DisplayName("Емкость газоснабжения, м³/час")]
+		public long? GasCapacity { get; set; }
+
+		[DisplayName("Возможность подключения газа")]
+		public bool? PossibilityToConnectGas { get; set; }
+
+		[DisplayName("Локация газоснабжения")]
+		public string GasLocationType { get; set; }
+
+		[DisplayName("Тип канализации")]
+		public string DrainageType { get; set; }
+
+		[DisplayName("Объём канализации, м³/сутки")]
+		public long? DrainageCapacity { get; set; }
+
+		[DisplayName("Возможность подключения канализации")]
+		public bool? PossibilityToConnectDrainage { get; set; }
+
+		[DisplayName("Локация канализации")]
+		public string DrainageLocationType { get; set; }
+
+		[DisplayName("Тип водоснабжения")]
+		public string WaterType { get; set; }
+
+		[DisplayName("Объём водоснабжения, м³/сутки")]
+		public long? WaterCapacity { get; set; }
+
+		[DisplayName("Возможно подключить водоснабжение")]
+		public bool? PossibilityToConnectWater { get; set; }
+
+		[DisplayName("Локация водоснабжения")]
+		public string WaterLocationType { get; set; }
+
+
+		public static CoreObjectDto OMMap(MarketObjectDto entity, List<OMPriceHistory> priceHistory)
 		{
             var dto = new CoreObjectDto
             {
                 Id = entity.Id,
                 Market = entity.Market,
-                DealType = entity.DealType,
-                DealTypeCode = entity.DealType_Code,
-                ParserTime = entity.ParserTime,
-                LastDateUpdate = entity.LastDateUpdate, // != null ? entity.LastDateUpdate : new DateTime(1970, 1, 1, 0, 0, 0, 1),
                 Address = entity.Address,
-				Metro = entity.Metro,
-				Area = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea ? entity.AreaLand * 100 : entity.Area,
-				Description = entity.Description,
+                Area = entity.Area,
 				Price = entity.Price,
 				CadastralNumber = entity.CadastralNumber,
-				CadastralQuartal = entity.CadastralQuartal,
-				District = entity.District,
-				BuildingCadastralNumber = entity.BuildingCadastralNumber,
-				BuildingYear = entity.BuildingYear,
-				FloorsCount = entity.FloorsCount,
 				FloorNumber = entity.FloorNumber,
-				AreaKitchen = entity.AreaKitchen,
-				AreaLiving = entity.AreaLiving,
-				Zone = entity.Zone,
-				Group = entity.Group,
-				Subgroup = entity.Subgroup,
-				Url = entity.Url,
-				Status = entity.ProcessType,
-				StatusCode = entity.ProcessType_Code,
-				Latitude = entity.Lat,
-				Longitude = entity.Lng,
-				ProcessType = entity.ProcessType_Code,
 				MarketType = entity.Market_Code,
                 CIPJSType = entity.PropertyTypesCIPJS,
                 CIPJSTypeCode = entity.PropertyTypesCIPJS_Code,
                 MarketSegment = entity.PropertyMarketSegment,
                 MarketSegmentCode = entity.PropertyMarketSegment_Code,
-                PricePerSquareMeter =
-					entity.DealType_Code != ObjectModel.Directory.DealType.RentDeal &&
-					entity.DealType_Code != ObjectModel.Directory.DealType.RentSuggestion
-						? GetPricePerSquareMeter(entity) : (decimal?) null,
-                EntranceType = entity.EntranceType,
+                PricePerSquareMeter = GetPricePerSquareMeter(entity),
                 QualityClassCode = entity.QualityClass_Code,
-                Renovation = entity.Renovation,
-				BuildingLine = entity.BuildingLine
-			};
-			if (entity.PriceHistory?.Count > 0)
+                DownloadDate = entity.DownloadDate,
+                ExternalAdvertisementId = entity.ExternalAdvertisementId,
+                AdvertisementDescription = entity.AdvertisementDescription,
+                AreaFrom = entity.AreaFrom,
+                Name = entity.Name,
+                FlatNumber = entity.FlatNumber,
+				SectionNumber = entity.SectionNumber,
+				FlatType = entity.FlatType,
+				DealType = entity.DealType,
+				HouseLine = entity.HouseLine,
+				Developer = entity.Developer,
+				FinishingCondition = entity.FinishingCondition,
+				HouseType = entity.HouseType,
+				Layout = entity.Layout,
+				PermittedUseType = entity.PermittedUseType,
+				DrivewayType = entity.DrivewayType,
+				ParcelAreaUnitType = entity.ParcelAreaUnitType,
+				ParcelType = entity.ParcelType,
+				ParcelStatus = entity.ParcelStatus,
+				ElectricityLocationType = entity.ElectricityLocationType,
+				PossibilityToConnectElectricity = entity.PossibilityToConnectElectricity,
+				ElectricityPower = entity.ElectricityPower,
+				GasLocationType = entity.GasLocationType,
+				PossibilityToConnectGas = entity.PossibilityToConnectGas,
+				GasCapacity = entity.GasCapacity,
+				GasPressureType = entity.GasPressureType,
+				DrainageLocationType = entity.DrainageLocationType,
+				PossibilityToConnectDrainage = entity.PossibilityToConnectDrainage,
+				DrainageCapacity = entity.DrainageCapacity,
+				DrainageType = entity.DrainageType,
+				WaterLocationType = entity.WaterLocationType,
+				PossibilityToConnectWater = entity.PossibilityToConnectWater,
+				WaterCapacity = entity.WaterCapacity,
+				WaterType = entity.WaterType
+            };
+			if (priceHistory?.Count > 0)
 			{
-				dto.PriceHistories = entity.PriceHistory
+				dto.PriceHistories = priceHistory
 					.OrderByDescending(x => x.ChangingDate)
 					.Select(x =>
 						new PriceHistoryDto
@@ -154,55 +237,17 @@ namespace KadOzenka.Web.Models.MarketObject
 			return dto;
 		}
 
-		public static CoreObjectDto MapToMiniCard(OMCoreObject entity)
-		{
-			string marketLogoUrl = null;
-			switch (entity.Market_Code)
-			{
-				case MarketTypes.Cian:
-					marketLogoUrl = "/MapIcons/CIANLogoTransparent.png";
-					break;
-				case MarketTypes.Avito:
-					marketLogoUrl = "/MapIcons/AvitoLogoOnly.png";
-					break;
-				case MarketTypes.YandexProterty:
-					marketLogoUrl = "/MapIcons/YandexLogoOnly.png";
-					break;
-				case MarketTypes.Rosreestr:
-					marketLogoUrl = "/MapIcons/rosreestrTransparent.png";
-					break;
-			}
 
-			var pricePerMeter = GetPricePerSquareMeter(entity);
-			return new CoreObjectDto
-			{
-				Id = entity.Id,
-				ImageUrl = entity.Images?.Split(',').ElementAtOrDefault(0),
-				Price = entity.Price,
-				PricePerSquareMeter = pricePerMeter == null 
-					? (decimal?) null 
-					: Math.Round(pricePerMeter.Value, 2),
-				AreaStr = entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea 
-					? entity.AreaLand?.ToString("n") + " сот."
-					: entity.Area?.ToString("n") + " м²",
-				AddressShort = !string.IsNullOrWhiteSpace(entity.Address) && entity.Address.Length > 31 
-					? $"{entity.Address.Substring(0, 28)}..."
-					: entity.Address,
-				Address = entity.Address,
-				CadastralNumber = entity.CadastralNumber,
-				MarketSegment = entity.PropertyMarketSegment,
-				DealType = entity.DealType,
-				Market = entity.Market_Code.GetEnumDescription(),
-				MarketLogoUrl = marketLogoUrl
-			};
-		}
-
-		private static decimal? GetPricePerSquareMeter(OMCoreObject entity)
+		private static decimal? GetPricePerSquareMeter(MarketObjectDto entity)
 		{
 			decimal? result;
-			if (entity.PropertyTypesCIPJS_Code == PropertyTypesCIPJS.LandArea && entity.Price.HasValue && entity.AreaLand.HasValue && entity.AreaLand != 0) result = entity.Price / (entity.AreaLand * 100);
-			else if (entity.Price.HasValue && entity.Area.HasValue && entity.Area != 0) result = entity.Price / entity.Area;
-			else result = (decimal?) null;
+			
+			if (entity.Area != 0)
+				result = entity.Price / entity.Area;
+
+			else
+				result = null;
+
 			return result;
 		}
 	}

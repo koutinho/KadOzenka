@@ -1,5 +1,6 @@
 ﻿using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Web.Attributes;
@@ -11,7 +12,9 @@ namespace KadOzenka.Web.Controllers
 	{
 		public IGbuReportService GbuReportService { get; set; }
 
-		public GbuOperationsReportsController(IGbuReportService gbuReportService)
+		public GbuOperationsReportsController(IGbuReportService gbuReportService, IRegisterCacheWrapper registerCacheWrapper,
+			IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 			GbuReportService = gbuReportService;
 		}

@@ -7,6 +7,7 @@ using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Modeling;
+using MarketPlaceBusiness.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 using ObjectModel.Market;
@@ -72,7 +73,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
                 var tableAlias = $"factorsTable{counter}";
                 //в качестве факторов модели могут быть факторы из таблиц с ценообразующими факторами тура и таблицы с аналогами
-                if (register.Id == OMCoreObject.GetRegisterId())
+                if (register.Id == Consts.RegisterId)
                 {
 	                tables.Append($" left join MARKET_CORE_OBJECT {tableAlias} on unit.cadastral_number = {tableAlias}.cadastral_number");
                 }

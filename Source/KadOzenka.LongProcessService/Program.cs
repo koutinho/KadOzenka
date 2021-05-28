@@ -21,17 +21,7 @@ namespace KadOzenka.LongProcessService
         static string ASPNETCORE_ENVIRONMENT;
         public static void Main(string[] args)
         {
-             #if DEBUG
-                ASPNETCORE_ENVIRONMENT = "Development";
-            #elif QA
-                ASPNETCORE_ENVIRONMENT = "QA";
-            #elif DEMO
-                ASPNETCORE_ENVIRONMENT = "Demo";
-            #elif RELEASE
-                ASPNETCORE_ENVIRONMENT = "Production";
-            #endif
-            
-            if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
+	        if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
             {
                 ASPNETCORE_ENVIRONMENT = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
             }
@@ -44,6 +34,7 @@ namespace KadOzenka.LongProcessService
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
+                .Enrich.WithProperty("Environment", ASPNETCORE_ENVIRONMENT)
                 .Enrich.FromLogContext()
                 .CreateLogger();
 

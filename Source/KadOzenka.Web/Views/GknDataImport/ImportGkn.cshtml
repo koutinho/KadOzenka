@@ -48,7 +48,6 @@
                             @Html.KendoEnumDropDownListFor(x => x.NoteType, itemIds: new List<long>
                             {
                                 (long)KoNoteType.Day,
-                                (long)KoNoteType.Petition,
                                 (long)KoNoteType.Year,
                                 (long)KoNoteType.Initial
                             }, isReadonly: false, withoutNull: true)
@@ -144,8 +143,7 @@
         $('[name="@nameof(Model.DocumentType)"]').on('change', setFileBlocksVisibility);
         setFileBlocksVisibility();
 
-        var generalAllowedFilesExtensions = ['.xml', '.zip', '.rar'];
-        var allowedFilesExtensionsForPetition = ['.xlsx', '.zip', '.rar'];
+        var generalAllowedFilesExtensions = ['.xml', '.xlsx', '.zip', '.rar'];
 
         var toolbar = $("#toolbar").kendoToolBar({
             items: [
@@ -159,13 +157,8 @@
                         var upload = $("#xmlFiles").data("kendoUpload");
                         var files = upload.getFiles();
                         $.each(files, (function (index, value) {
-                            if (isPetition()) {
-                                if ($.inArray(value.extension, allowedFilesExtensionsForPetition) === -1)
-                                    message += 'Загружены файлы недопустимого формата (разрешенные форматы для обращения: .xlsx, .zip, .rar)<br>';
-                            } else {
-                                if ($.inArray(value.extension, generalAllowedFilesExtensions) === -1)
-                                    message += 'Загружены файлы недопустимого формата (разрешенные форматы: .xml, .zip, .rar)<br>';
-                            }
+                            if ($.inArray(value.extension, generalAllowedFilesExtensions) === -1)
+                                message += 'Загружены файлы недопустимого формата (разрешенные форматы: .xml, .zip, .rar)<br>';
                         }));
 
                         if ($('[name="EstimationDate"]').data().kendoDatePicker.value() == null) {
@@ -173,9 +166,6 @@
                         }
                         if ($('[name="NoteType"]').val() == 0) {
                             message += 'Необходимо заполнить тип статьи<br>';
-                        }
-                        if (isImportViaExcel() && !getExcelFile()) {
-                            message += 'Не выбран Excel-файл';
                         }
                         if (message.length != 0) {
                             Common.ShowError(message);
@@ -285,9 +275,6 @@
             }
         }).data('kendoUpload');
 
-        $('[name="NoteType"]').data('kendoDropDownList').bind('dataBound', updateFilesBlock);
-        $('[name="NoteType"]').data('kendoDropDownList').bind('change', updateFilesBlock);
-
 
 
         //Блок для маппинга Excel файла
@@ -309,19 +296,6 @@
 
 
 
-    function updateFilesBlock() {
-        if (isPetition()) {
-            $("#filesBlockLabel").text("XLSX-файлы");
-        } else {
-            $("#filesBlockLabel").text("XML-файлы");
-        }
-    }
-
-    function isPetition() {
-        var noteType = $('[name="NoteType"]').val();
-        var petitionNoteType = '@KoNoteType.Petition.GetEnumCode()';
-        return noteType === petitionNoteType;
-    }
 
 
     function setFileBlocksVisibility() {
@@ -403,12 +377,12 @@
         var file = getExcelFile();
         formData.append("@nameof(Model.ExcelFile)", file);
         var listView = $("#listView").data('kendoListView');
-        var data = listView.dataSource.data();
+        var columnsMapping = listView.dataSource.data();
         var columnsPropertyName = "@nameof(Model.ExcelColumnsMapping)";
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < columnsMapping.length; i++) {
             var currentElement = `${columnsPropertyName}[${i}]`;
-            formData.append(`${currentElement}.ColumnIndex`, data[i].ColumnIndex);
-            formData.append(`${currentElement}.AttributeId`, data[i].AttributeId);
+            formData.append(`${currentElement}.ColumnIndex`, columnsMapping[i].ColumnIndex);
+            formData.append(`${currentElement}.AttributeId`, columnsMapping[i].AttributeId);
         }
         return formData;
     }

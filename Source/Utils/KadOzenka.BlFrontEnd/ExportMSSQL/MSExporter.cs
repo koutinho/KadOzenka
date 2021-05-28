@@ -2658,8 +2658,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             koNoteType = KoNoteType.Day;
                             break;
                         case 1:
-                            koNoteType = KoNoteType.Petition;
-                            break;
+	                        throw new Exception("Тип 'Обращение' не поддерживается. Обратитесь к Администратору.");
                         case 2:
                             koNoteType = KoNoteType.Year;
                             break;
@@ -2881,8 +2880,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             koNoteType = KoNoteType.Day;
                             break;
                         case 1:
-                            koNoteType = KoNoteType.Petition;
-                            break;
+	                        throw new Exception("Тип 'Обращение' не поддерживается. Обратитесь к Администратору.");
                         case 2:
                             koNoteType = KoNoteType.Year;
                             break;
@@ -3102,8 +3100,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             koNoteType = KoNoteType.Day;
                             break;
                         case 1:
-                            koNoteType = KoNoteType.Petition;
-                            break;
+	                        throw new Exception("Тип 'Обращение' не поддерживается. Обратитесь к Администратору.");
                         case 2:
                             koNoteType = KoNoteType.Year;
                             break;
@@ -3325,8 +3322,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             koNoteType = KoNoteType.Day;
                             break;
                         case 1:
-                            koNoteType = KoNoteType.Petition;
-                            break;
+	                        throw new Exception("Тип 'Обращение' не поддерживается. Обратитесь к Администратору.");
                         case 2:
                             koNoteType = KoNoteType.Year;
                             break;
@@ -3547,8 +3543,7 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
                             koNoteType = KoNoteType.Day;
                             break;
                         case 1:
-                            koNoteType = KoNoteType.Petition;
-                            break;
+	                        throw new Exception("Тип 'Обращение' не поддерживается. Обратитесь к Администратору.");
                         case 2:
                             koNoteType = KoNoteType.Year;
                             break;

@@ -15,6 +15,7 @@ using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using ObjectModel.Common;
 using ObjectModel.Core.Register;
+using ObjectModel.Gbu.GroupingAlgoritm;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.CodDictionary
@@ -50,6 +51,18 @@ namespace KadOzenka.Dal.CodDictionary
             RegisterAttributeRepository = registerAttributeRepository;
         }
 
+        public CodDictionaryService()
+        {
+            RegisterService = new RegisterService();
+            RegisterAttributeService = new RegisterAttributeService();
+            RegisterConfiguratorWrapper = new RegisterConfiguratorWrapper();
+            RecycleBinService = new RecycleBinService();
+            RegisterObjectWrapper = new RegisterObjectWrapper();
+            RegisterCacheWrapper = new RegisterCacheWrapper();
+            CodDictionaryRepository = new CodDictionaryRepository();
+            RegisterAttributeRepository = new RegisterAttributeRepository();
+        }
+
 
         #region Словарь
 
@@ -78,12 +91,14 @@ namespace KadOzenka.Dal.CodDictionary
             var valuesCount = codDictionary.Values?.Count ?? 0;
             if (valuesCount > CodDictionaryConsts.MaxValuesCount)
             {
-                yield return new ValidationResult($"{CodMessages.MaxValuesCountExceed} {CodDictionaryConsts.MaxValuesCount}");
+                yield return new ValidationResult(
+                    $"{CodMessages.MaxValuesCountExceed} {CodDictionaryConsts.MaxValuesCount}");
             }
 
             if (valuesCount < CodDictionaryConsts.MinValuesCount)
             {
-                yield return new ValidationResult($"{CodMessages.MinValuesCountExceed} {CodDictionaryConsts.MinValuesCount}");
+                yield return new ValidationResult(
+                    $"{CodMessages.MinValuesCountExceed} {CodDictionaryConsts.MinValuesCount}");
             }
 
             for (var i = 0; i < valuesCount; i++)
@@ -94,9 +109,11 @@ namespace KadOzenka.Dal.CodDictionary
                 }
             }
 
-            if (codDictionary.Values != null && codDictionary.Values.Any(x => x.Name == CodDictionaryConsts.CodeColumnName))
+            if (codDictionary.Values != null &&
+                codDictionary.Values.Any(x => x.Name == CodDictionaryConsts.CodeColumnName))
             {
-                yield return new ValidationResult($"{CodMessages.ForbiddenValueName} '{CodDictionaryConsts.CodeColumnName}'");
+                yield return new ValidationResult(
+                    $"{CodMessages.ForbiddenValueName} '{CodDictionaryConsts.CodeColumnName}'");
             }
         }
 
@@ -172,7 +189,7 @@ namespace KadOzenka.Dal.CodDictionary
 
 
         #region Support Methods
-        
+
         private void ValidateCodDictionaryInternal(CodDictionaryDto codDictionary)
         {
             var errors = ValidateCodDictionary(codDictionary).ToList();
@@ -198,7 +215,7 @@ namespace KadOzenka.Dal.CodDictionary
             var registerName = $"Gbu.CodDictionary{existedCodDictionariesCount}";
             var tableName = $"{tableNameTemplate}{existedCodDictionariesCount}";
 
-            var omRegister = RegisterService.CreateRegister(registerName, description, tableName, null, (long)StorageType.Type4);
+            var omRegister = RegisterService.CreateRegister(registerName, description, tableName);
 
             RegisterService.CreateIdColumnForRegister(omRegister.RegisterId);
             RegisterConfiguratorWrapper.CreateDbTableForRegister(omRegister.RegisterId);
@@ -213,7 +230,8 @@ namespace KadOzenka.Dal.CodDictionary
 
             columns.ForEach(x =>
             {
-                var attribute = RegisterAttributeService.CreateRegisterAttribute(x, registerId, RegisterAttributeType.STRING, true);
+                var attribute =
+                    RegisterAttributeService.CreateRegisterAttribute(x, registerId, RegisterAttributeType.STRING, true);
                 RegisterConfiguratorWrapper.CreateDbColumnForRegister(attribute, dbConfigurator);
             });
 
@@ -240,7 +258,8 @@ namespace KadOzenka.Dal.CodDictionary
         private void UpdateAttributes(CodDictionaryDto codDictionary, ref bool isCacheUpdatingNeeded)
         {
             var attributeIds = codDictionary.Values.Select(x => x.Id).ToList();
-            var attributes = RegisterAttributeRepository.GetEntitiesByCondition(x => attributeIds.Contains(x.Id), x => new {x.Name});
+            var attributes =
+                RegisterAttributeRepository.GetEntitiesByCondition(x => attributeIds.Contains(x.Id), x => new {x.Name});
             for (var i = 0; i < codDictionary.Values.Count; i++)
             {
                 var value = codDictionary.Values[i];
@@ -275,7 +294,7 @@ namespace KadOzenka.Dal.CodDictionary
             attributes.ForEach(attribute =>
             {
                 var currentValue = value.Values.FirstOrDefault(x => x.AttributeId == attribute.Id)?.Value;
-                RegisterObjectWrapper.SetAttributeValue(registerObject, (int)attribute.Id, currentValue);
+                RegisterObjectWrapper.SetAttributeValue(registerObject, (int) attribute.Id, currentValue);
             });
 
             RegisterObjectWrapper.SetAttributeValue(registerObject, (int) codeAttributeInfo.Id, value.Code);
@@ -296,12 +315,13 @@ namespace KadOzenka.Dal.CodDictionary
         {
             var attributes = GetDictionaryRegisterAttributes(registerId);
             var primaryKeyAttributeId =
-                RegisterCache.RegisterAttributes.First(x => x.Value.RegisterId == registerId && x.Value.IsPrimaryKey).Key;
-            var registerPrimaryKeyColumn = new QSColumnSimple((int)primaryKeyAttributeId);
+                RegisterCache.RegisterAttributes.First(x => x.Value.RegisterId == registerId && x.Value.IsPrimaryKey)
+                    .Key;
+            var registerPrimaryKeyColumn = new QSColumnSimple((int) primaryKeyAttributeId);
 
             var query = new QSQuery
             {
-                MainRegisterID = (int)registerId,
+                MainRegisterID = (int) registerId,
                 Condition = new QSConditionSimple
                 {
                     ConditionType = QSConditionType.In,
@@ -316,13 +336,19 @@ namespace KadOzenka.Dal.CodDictionary
         public List<CodDictionaryValue> GetDictionaryValues(long registerId)
         {
             var attributes = GetDictionaryRegisterAttributes(registerId);
-            
+
             var query = new QSQuery
             {
-                MainRegisterID = (int)registerId
+                MainRegisterID = (int) registerId
             };
 
             return GetDictionaryValuesInternal(attributes, query);
+        }
+
+        public List<CodDictionaryValue> GetDictionaryValuesByDictId(long codJobId)
+        {
+            var dict = CodDictionaryRepository.GetById(codJobId, null);
+            return GetDictionaryValues(dict.RegisterId);
         }
 
         public List<RegisterAttribute> GetDictionaryRegisterAttributes(long registerId, bool withCodeAttribute = true)
@@ -335,6 +361,7 @@ namespace KadOzenka.Dal.CodDictionary
                     {
                         codeCondition = x.Value.Name != CodDictionaryConsts.CodeColumnName;
                     }
+
                     return x.Value.RegisterId == registerId && !x.Value.IsPrimaryKey && codeCondition;
                 }).Select(x => x.Value).ToList();
         }
@@ -345,6 +372,7 @@ namespace KadOzenka.Dal.CodDictionary
             {
                 yield return new ValidationResult(CodMessages.NoValueCode);
             }
+
             if (dictionaryValue.Values.All(x => string.IsNullOrWhiteSpace(x.Value)))
             {
                 yield return new ValidationResult(CodMessages.AtLeastOneDictionaryValueNeeded);
@@ -353,6 +381,57 @@ namespace KadOzenka.Dal.CodDictionary
 
         #endregion
 
+        public List<CodJobInfo> GetAllCodJobInfo()
+        {
+            var codJobs = OMCodJob.Where(x => x).SelectAll().Execute();
+            var codRegisters = codJobs.Select(x => x.RegisterId).ToList();
+            var regIdColumn = OMAttribute.GetColumn(x => x.RegisterId);
+            var regColId = OMAttribute.GetColumnAttributeId(x => x.RegisterId);
+            var codJobAttributes = new QSQuery
+            {
+                MainRegisterID = OMAttribute.GetRegisterId(),
+                Columns = new List<QSColumn>
+                {
+                    regIdColumn,
+                    new QSColumnFunction(QSColumnFunctionType.Count, regIdColumn, "count")
+                },
+                GroupBy = new List<QSGroup>
+                {
+                    new QSGroup(regIdColumn)
+                },
+                Condition = new QSConditionSimple(regColId, QSColumnSimpleType.Value, QSConditionType.In, codRegisters)
+            }.ExecuteQuery<CodJobParamCount>();
+            OMAttribute.Where(x => codRegisters.Contains(x.RegisterId) && !x.IsDeleted)
+                .GroupBy(x => x.RegisterId).Select(x => x.RegisterId).Execute();
+
+            var res = codJobs.Join(codJobAttributes, x => x.RegisterId, y => y.CodJobRegId,
+                (x, y) => new CodJobInfo
+                    {Value = x.Id, Text = x.NameJob, RegisterId = x.RegisterId, ParamCount = y.ParamCount}).ToList();
+            return res;
+        }
+
+        public List<LevelItem> GetSelectCodJobInfo(long codJobId)
+        {
+            var codJob = CodDictionaryRepository.GetById(codJobId, null);
+            var codJobParams =
+                OMAttribute.Where(x => x.RegisterId == codJob.RegisterId && x.ValueField != "ID" && x.Name != "Код")
+                    .SelectAll().Execute().Select(x=> new LevelItem{ CodValueId = x.Id, CodValueName = x.Name}).ToList();
+            return codJobParams;
+        }
+
+        public class CodJobInfo
+        {
+            public long Value { get; set; }
+            public string Text { get; set; }
+            public long RegisterId { get; set; }
+            public long ParamCount { get; set; }
+        }
+
+        public class CodJobParamCount
+        {
+            public long CodJobRegId { get; set; }
+            public long ParamCount { get; set; }
+        }
 
         #region Support Methods
 

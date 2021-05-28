@@ -210,9 +210,6 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
                     case KoNoteType.Day:
                         koUnitStatus = KoUnitStatus.New;
                         break;
-                    case KoNoteType.Petition:
-                        koUnitStatus = KoUnitStatus.New;
-                        break;
                     case KoNoteType.Year:
                         koUnitStatus = KoUnitStatus.Annual;
                         break;
@@ -233,16 +230,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
                     var koUnit = SaveUnit(current, existedUnits, existedUnitCosts, koUnitStatus, GetNewtatusRepeatCalc(prev), ref gbuObject);
 
                     #region Анализ данных
-                    //Признак было ли по данному объекту обращение?
-                    bool prCheckObr = false;
                     //получить историю по объекту и узнать был ли он получен в рамках обращения (по типу входящего документа)
                     //надо перебрать все документы и узнать это
                     List<HistoryUnit> olds = HistoryUnit.GetPrevHistoryTour(koUnit.Id, prev, prevUnitTasks, Tour);
-                    foreach (HistoryUnit old in olds)
-                    {
-                        if (old.Task.NoteType_Code == KoNoteType.Petition && old.Unit.CreationDate < koUnit.CreationDate && koUnit.Id != old.Unit.Id)
-                            prCheckObr = true;
-                    }
                     OMUnit lastUnit = null;
                     if (olds.Count > 0) lastUnit = HistoryUnit.GetPrevUnit(olds).Unit;
                     if (lastUnit != null)
@@ -261,10 +251,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 	                        SetUnitChange(attributeChangeStatuse, koUnit.Id, prevAttrib, curAttrib, unitChangesDictionary);
                         }
 
-                        if (!prCheckObr)
-                        {
-	                        DoInheritanceFromPrevUnit(lastUnit, koUnit, unitChangesDictionary);
-                        }
+                        DoInheritanceFromPrevUnit(lastUnit, koUnit, unitChangesDictionary);
                         SetCODTasksFormingAttributesWithChecking(gbuObject.Id, unitChangesDictionary);
                     }
                     #endregion

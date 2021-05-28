@@ -19,6 +19,8 @@
 /Source/.vs
 /Source/KadOzenka.ObjectModel/bin
 /Source/KadOzenka.ObjectModel/obj
+/Source/KadOzenka.ObjectModelEnum/bin
+/Source/KadOzenka.ObjectModelEnum/obj
 /Source/KadOzenka.LongProcessService/obj
 /Source/KadOzenka.LongProcessService/bin
 /Source/KadOzenka.LongProcessService/ConfigCore
@@ -31,6 +33,10 @@
 /Source/KadOzenka.Dal/bin
 /Source/KadOzenka.Dal.Tests/obj
 /Source/KadOzenka.Dal.Tests/bin
+/Source/KadOzenka.Dal.IntegrationTests/obj
+/Source/KadOzenka.Dal.IntegrationTests/bin
+/Source/KadOzenka.Common.Tests/obj
+/Source/KadOzenka.Common.Tests/bin
 /Source/ImageProccessor/obj
 /Source/ImageProccessor/bin
 /Source/Utils/EP.SdkCore/obj
@@ -65,5 +71,6 @@
 /Source/Database/GeneratedScripts/*.*
 /Source/EmbeddedResource/bin
 /Source/EmbeddedResource/obj
-bin
+/Source/MarketPlaceBusiness/bin
+/Source/MarketPlaceBusiness/obj
 obj

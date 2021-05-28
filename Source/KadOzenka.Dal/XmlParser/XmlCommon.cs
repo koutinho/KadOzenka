@@ -5,6 +5,7 @@ using GemBox.Spreadsheet;
 using ObjectModel.Commission;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -198,11 +199,17 @@ namespace KadOzenka.Dal.XmlParser
     }
     public enum enTypeObject : int
     {
+	    [Description("Здание")]
         toBuilding = 1,
+        [Description("Сооружение")]
         toConstruction = 2,
+        [Description("Помещение")]
         toFlat = 3,
+        [Description("Машино-место")]
         toCarPlace = 4,
+        [Description("ОНС")]
         toUncomplited = 5,
+        [Description("Земельный участок")]
         toParcel = 6
     }
     public class xmlCodeName

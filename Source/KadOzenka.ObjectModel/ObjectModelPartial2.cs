@@ -420,78 +420,6 @@ namespace ObjectModel.Gbu
 }
 
 
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 100 Аналоги
-    /// </summary>
-    public partial class OMCoreObject
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 101 Адреса в яндек-формате
-    /// </summary>
-    public partial class OMYandexAddress
-    {
-        /// <summary>
-        /// Ссылка на (100 Аналоги)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Market.OMCoreObject ParentCoreObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 105 Таблица, содержащая ретроспективу цен по объектам
-    /// </summary>
-    public partial class OMPriceHistory
-    {
-        /// <summary>
-        /// Ссылка на (100 Аналоги)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Market.OMCoreObject ParentCoreObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.Market
-{
-    /// <summary>
-    /// 113 Таблица, содержащая ретроспективу цен по объектам с учетом корректировки на комнатность
-    /// </summary>
-    public partial class OMPriceAfterCorrectionByRoomsHistory
-    {
-        /// <summary>
-        /// Ссылка на (100 Аналоги)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Market.OMCoreObject ParentCoreObject { get; set; }
-
-    }
-}
-
-
 namespace ObjectModel.KO
 {
     /// <summary>
@@ -499,13 +427,6 @@ namespace ObjectModel.KO
     /// </summary>
     public partial class OMUnit
     {
-        /// <summary>
-        /// Ссылка на (107 Таблица, содержащая информацию о соответствии кад кварталов районам, округам и зонам )
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Market.OMQuartalDictionary ParentQuartalDictionary { get; set; }
-
         /// <summary>
         /// Ссылка на (200 Объекты недвижимости)
         /// </summary>
@@ -1290,24 +1211,6 @@ namespace ObjectModel.Declarations
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Declarations.OMHarParcel ParentHarParcel { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.ES
-{
-    /// <summary>
-    /// 610 Экспресс оценка. Значения справочников
-    /// </summary>
-    public partial class OMEsReferenceItem
-    {
-        /// <summary>
-        /// Ссылка на (609 Экспресс оценка. Справочники)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.ES.OMEsReference ParentEsReference { get; set; }
 
     }
 }

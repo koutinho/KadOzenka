@@ -15,31 +15,42 @@ using KadOzenka.Web.Models.MarketObject;
 using ObjectModel.Core.Shared;
 using KadOzenka.Dal.MapModeling;
 using System.Globalization;
+using AutoMapper;
 using KadOzenka.Web.Attributes;
+using MarketPlaceBusiness;
+using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Interfaces;
 using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers
 {
-
-    public class MapController : BaseController
+	public class MapController : BaseController
     {
         private readonly CoreUiService _coreUiService;
         private readonly RegistersService _registersService;
 
+        private IMarketObjectsForMapService MarketObjectService { get; }
+        private IMapper Mapper { get; }
         public string MarketObjectsRegisterViewId => "MarketObjects";
 
-        public MapController(CoreUiService coreUiService, RegistersService registersService)
+
+        public MapController(CoreUiService coreUiService, RegistersService registersService,
+	        IMarketObjectsForMapService marketObjectService, IMapper mapper)
         {
 	        _coreUiService = coreUiService;
-            _registersService = registersService;
+	        _registersService = registersService;
+	        MarketObjectService = marketObjectService;
+	        Mapper = mapper;
         }
+
 
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public ActionResult Index(long? objectId)
         {
 	        if (objectId.HasValue)
             {
-                var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+                var marketObject = MarketObjectService.GetMappedObjectById(objectId.Value);
                 return View(MapObjectDto.OMMap(marketObject));
             }
             return View(new MapObjectDto());
@@ -51,26 +62,16 @@ namespace KadOzenka.Web.Controllers
             string districts, string marketSource, string actualDate)
         {
             DateTime acD;
-            var query = OMCoreObject
-                .Where(x =>
-                    (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
-                    x.Lng != null && x.Lat != null &&
-                    (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+            var query = MarketObjectService.GetBaseQuery();
             if (objectId.HasValue) PrepareQueryByObject(query, objectId.Value);
             else PrepareQueryByUserFilter(query);
-            if (!districts.IsEmpty()) query.And(x => x.District == districts);
             if (!marketSource.IsEmpty()) query.And(x => x.Market == marketSource);
-            if (topLatitude.HasValue) query.And(x => x.Lat >= topLatitude.Value);
-            if (topLongitude.HasValue) query.And(x => x.Lng >= topLongitude.Value);
-            if (bottomLatitude.HasValue) query.And(x => x.Lat <= bottomLatitude.Value);
-            if (bottomLongitude.HasValue) query.And(x => x.Lng <= bottomLongitude.Value);
-            if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
             int size = query.ExecuteCount();
             if (mapZoom < minClusterZoom && size > maxObjectsCount) query.SetPackageSize(maxLoadedObjectsCount).OrderBy(x => x.Id);
             var point = new List<object>();
-            var analogItem = query.Select(x => new { x.Id, x.Lat, x.Lng, x.PropertyMarketSegment, x.DealType, x.PropertyTypesCIPJS }).Execute().ToList();
+            var analogItem = query.Select(x => new { x.Id, x.PropertyMarketSegment, x.PropertyTypesCIPJS }).Execute().ToList();
             analogItem.ForEach(x => point.Add(new {
-                points = new[] { x.Lat, x.Lng }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = FormDealType(x.DealType), propertyType = x.PropertyTypesCIPJS
+                points = new[] { 0, 0 }, id = x.Id, segment = FormSegment(x.PropertyMarketSegment), dealType = 0, propertyType = x.PropertyTypesCIPJS
             }));
             return Json(new { token = token, arr = point, allCount = size });
         }
@@ -80,27 +81,21 @@ namespace KadOzenka.Web.Controllers
         {
 	        DateTime acD;
             string[] colorsArray = colors.Split(",");
-            var query = OMCoreObject
-                .Where(x => (x.ProcessType_Code == ProcessStep.InProcess || x.ProcessType_Code == ProcessStep.Dealed) &&
-                             x.Lng != null &&
-                             x.Lat != null &&
-                             (x.LastDateUpdate != null || x.Market_Code == MarketTypes.Rosreestr));
+            var query = MarketObjectService.GetBaseQuery();
 
-            List<OMReferenceItem> allDistricts = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.District).ReferenceId).Select(x => x.Value).Execute().ToList();
-            List<OMReferenceItem> allRegions = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.Neighborhood).ReferenceId).Select(x => x.Value).Execute().ToList();
-            List<OMReferenceItem> allZones = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ZoneRegion).ReferenceId).Select(x => x.Value).Execute().ToList();
+            var allDistricts = new List<OMReferenceItem>();
+            List<OMReferenceItem> allRegions = new List<OMReferenceItem>();
+            List<OMReferenceItem> allZones = new List<OMReferenceItem>();
             List<string> allQuartals = OMQuartalDictionary.Where(x => true).Select(x => x.CadastralQuartal).Execute().Select(x => x.CadastralQuartal).ToList();
 
             PrepareQueryByUserFilter(query);
 
-            if (DateTime.TryParseExact(actualDate, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out acD)) query.And(x => x.ParserTime <= acD);
+            var DistrictsData = query.Select(x => new { x.PricePerMeter }).Execute().ToList();
 
-            List<OMCoreObject> DistrictsData = query.Select(x => new { x.PricePerMeter, x.District, x.District_Code, x.Neighborhood, x.Neighborhood_Code, x.ZoneRegion, x.CadastralQuartal }).Execute().ToList();
-
-            List<IGrouping<string, OMCoreObject>> districtList = DistrictsData.GroupBy(x => x.District).ToList();
-            List<IGrouping<string, OMCoreObject>> regionList = DistrictsData.GroupBy(x => x.Neighborhood).ToList();
-            List<IGrouping<string, OMCoreObject>> zoneList = DistrictsData.GroupBy(x => x.ZoneRegion).ToList();
-            List<IGrouping<string, OMCoreObject>> quartalList = DistrictsData.GroupBy(x => x.CadastralQuartal).ToList();
+            var districtList = new List<IGrouping<string, OMCoreObject>>();
+            var regionList = new List<IGrouping<string, OMCoreObject>>();
+            var zoneList = new List<IGrouping<string, OMCoreObject>>();
+            var quartalList = new List<IGrouping<string, OMCoreObject>>();
 
             (List<(string name, string color, string counter)> ColoredData, List<(string min, string max)> MinMaxData) districtsData = 
                 new MarketHeatMap().SetColors(new MarketHeatMap().GroupList(allDistricts, districtList), colorsArray);
@@ -133,39 +128,39 @@ namespace KadOzenka.Web.Controllers
             List<object> allData = new List<object>();
             if (ids.Count > 0)
             {
-                OMCoreObject.Where(x => ids.Contains(x.Id)).SelectAll().Execute().Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
+	            MarketObjectService.GetByIds(ids).Take(ids.Count <= 20 ? ids.Count : 20).ToList().ForEach(x => {
                     allData.Add(new
                     {
                         segment = FormSegment(x.PropertyMarketSegment),
-                        dealType = x.DealType,
+                        dealType = string.Empty,
                         propertyType = x.PropertyTypesCIPJS,
                         propertyTypeCode = x.PropertyTypesCIPJS_Code,
                         marketSegment = x.PropertyMarketSegment,
                         marketSegmentCode = x.PropertyMarketSegment_Code,
-                        status = x.ProcessType,
-                        statusCode = x.ProcessType_Code,
+                        status = string.Empty,
+                        statusCode = string.Empty,
                         source = x.Market,
                         price = x.Price,
                         area = x.Area,
-                        areaLand = x.AreaLand,
-                        roomsCount = x.RoomsCount,
-                        link = x.Url,
-                        metro = x.Metro,
+                        areaLand = (decimal?) null,
+                        roomsCount = (int?) null,
+                        link = string.Empty,
+                        metro = string.Empty,
                         address = x.Address,
-                        images = x.Images,
+                        images = string.Empty,
                         id = x.Id,
                         floorNumber = x.FloorNumber,
-                        floorCount = x.FloorsCount,
+                        floorCount = 0,
                         cadastralNumber = x.CadastralNumber,
-                        parserTime = x.ParserTime?.ToString("dd.MM.yyyy"),
-                        lastUpdateDate = x.LastDateUpdate?.ToString("dd.MM.yyyy"),
-                        lng = x.Lng,
-                        lat = x.Lat,
-                        entranceType = x.EntranceType,
+                        parserTime = (DateTime?)null,
+                        lastUpdateDate = (DateTime?)null,
+                        lng = 0,
+                        lat = 0,
+                        entranceType = string.Empty,
                         qualityClassCode = x.QualityClass_Code,
                         qualityClass = x.QualityClass,
-                        renovation = x.Renovation,
-                        buildingLine = x.BuildingLine
+                        renovation = string.Empty,
+                        buildingLine = string.Empty
                     });
                 });
             }
@@ -181,12 +176,11 @@ namespace KadOzenka.Web.Controllers
             long[] propertyTypes = null, dealTypes = null, marketSegments = null;
             if (filters != null)
             {
-                propertyTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
-                dealTypes = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
-                marketSegments = filters.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+                propertyTypes = filters.Where(x => x.ReferenceId == Consts.PropertyTypesCIPJSAttribute.ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
+                marketSegments = filters.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId).ToList().Select(x => x.ValueLongArrayCasted).FirstOrDefault();
             }
             var propertyTypeList =
-                OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId)
+                OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyTypesCIPJSAttribute.ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute()
                     .OrderBy(x => int.Parse(x.Code)).Select(x => new {
                         Id = x.ItemId,
@@ -196,7 +190,7 @@ namespace KadOzenka.Web.Controllers
                         Selected = propertyTypes == null ? false : propertyTypes.Contains(x.ItemId) ? true : false
                     });
             var commertialMarketSegmentList =
-                OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
+                OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) < 100)
                     .OrderBy(x => int.Parse(x.Code)).Select(x => new {
                         Id = x.ItemId, 
@@ -206,7 +200,7 @@ namespace KadOzenka.Web.Controllers
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
                     });
             var propertyMarketSegmentList =
-                OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId)
+                OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute().Where(x => int.Parse(x.Code) >= 100 && int.Parse(x.Code) < 200)
                     .OrderBy(x => int.Parse(x.Code)).Select(x => new {
                         Id = x.ItemId, 
@@ -215,25 +209,7 @@ namespace KadOzenka.Web.Controllers
                         Name = x.Name,
                         Selected = marketSegments == null ? false : marketSegments.Contains(x.ItemId) ? true : false
                     });
-            var dealTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId)
-                    .OrderBy(x => x.Value).SelectAll().Execute()
-                    .OrderBy(x => x.ItemId).Select(x => new {
-                        Id = x.ItemId, 
-                        Code = x.Code, 
-                        Value = x.Value, 
-                        Name = x.Name,
-                        Selected = dealTypes == null ? false : dealTypes.Contains(x.ItemId) ? true : false
-                    });
-            var districtTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.District).ReferenceId)
-                    .OrderBy(x => x.Value).SelectAll().Execute()
-                    .OrderBy(x => x.ItemId).Select(x => new { 
-                        Id = x.ItemId,
-                        Code = x.Code,
-                        Value = x.Value,
-                        Name = x.Name,
-                        Selected = false
-                    });
-            var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.Market).ReferenceId).And(x => x.ItemId <= (int) MarketTypes.Rosreestr)
+            var sourceTypeList = OMReferenceItem.Where(x => x.ReferenceId == Consts.MarketAttribute.ReferenceId)
                     .OrderBy(x => x.Value).SelectAll().Execute()
                     .OrderBy(x => x.ItemId).Select(x => new {
                         Id = x.ItemId,
@@ -248,55 +224,55 @@ namespace KadOzenka.Web.Controllers
                 {
                     typeControl = typeControl,
                     type = type,
-                    text = OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).Name,
+                    text = Consts.PropertyTypesCIPJSAttribute.Name,
                     propertyTypeList = propertyTypeList,
-                    referenceId = OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId,
-                    id = OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).Id
+                    referenceId = Consts.PropertyTypesCIPJSAttribute.ReferenceId,
+                    id = Consts.PropertyTypesCIPJSAttribute.Id
                 },
                 commertialMarketFilter = new
                 {
                     typeControl = typeControl,
                     type = type,
-                    text = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Name,
+                    text = Consts.PropertyMarketSegmentAttribute.Name,
                     commertialMarketSegmentList = commertialMarketSegmentList,
-                    referenceId = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId,
-                    id = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Id
+                    referenceId = Consts.PropertyMarketSegmentAttribute.ReferenceId,
+                    id = Consts.PropertyMarketSegmentAttribute.Id
                 },
                 propertyMarketFilter = new
                 {
                     typeControl = typeControl,
                     type = type,
-                    text = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Name,
+                    text = Consts.PropertyMarketSegmentAttribute.Name,
                     propertyMarketSegmentList = propertyMarketSegmentList,
-                    referenceId = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId,
-                    id = OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).Id,
+                    referenceId = Consts.PropertyMarketSegmentAttribute.ReferenceId,
+                    id = Consts.PropertyMarketSegmentAttribute.Id,
                 },
                 dealTypeFilter = new
                 {
-                    typeControl = typeControl,
+                    typeControl = string.Empty,
                     type = type,
-                    text = OMCoreObject.GetAttributeData(y => y.DealType).Name,
-                    dealTypeList = dealTypeList,
-                    referenceId = OMCoreObject.GetAttributeData(y => y.DealType).ReferenceId,
-                    id = OMCoreObject.GetAttributeData(y => y.DealType).Id
+                    text = string.Empty,
+                    dealTypeList = new List<OMReferenceItem>(),
+                    referenceId = 0,
+                    id = 0
                 },
                 districtTypeFilter = new
                 {
-                    typeControl = typeControl,
+                    typeControl = string.Empty,
                     type = type,
-                    text = OMCoreObject.GetAttributeData(y => y.District).Name,
-                    districtTypeList = districtTypeList,
-                    referenceId = OMCoreObject.GetAttributeData(y => y.District).ReferenceId,
-                    id = OMCoreObject.GetAttributeData(y => y.District).Id
+                    text = string.Empty,
+                    districtTypeList = new List<OMReferenceItem>(),
+                    referenceId = 0,
+                    id = 0
                 },
                 sourceTypeFilter = new
                 {
                     typeControl = typeControl,
                     type = type,
-                    text = OMCoreObject.GetAttributeData(y => y.Market).Name,
+                    text = Consts.MarketAttribute.Name,
                     sourceTypeList = sourceTypeList,
-                    referenceId = OMCoreObject.GetAttributeData(y => y.Market).ReferenceId,
-                    id = OMCoreObject.GetAttributeData(y => y.Market).Id
+                    referenceId = Consts.MarketAttribute.ReferenceId,
+                    id = Consts.MarketAttribute.Id
                 }
             });
         }
@@ -311,10 +287,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult GetAvaliableValues()
         {
-            List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyTypesCIPJS).ReferenceId).SelectAll().Execute();
-            List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.PropertyMarketSegment).ReferenceId).SelectAll().Execute();
-            List<OMReferenceItem> status = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.ProcessType_Code).ReferenceId).SelectAll().Execute();
-            List<OMReferenceItem> qualityClass = OMReferenceItem.Where(x => x.ReferenceId == OMCoreObject.GetAttributeData(y => y.QualityClass_Code).ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> CIPJSType = OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyTypesCIPJSAttribute.ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> MarketSegment = OMReferenceItem.Where(x => x.ReferenceId == Consts.PropertyMarketSegmentAttribute.ReferenceId).SelectAll().Execute();
+            List<OMReferenceItem> status = new List<OMReferenceItem>();
+            List<OMReferenceItem> qualityClass = OMReferenceItem.Where(x => x.ReferenceId == Consts.QualityClassCodeAttribute.ReferenceId).SelectAll().Execute();
             qualityClass.Add(new OMReferenceItem{ItemId = 0, Value = null});
 
             return Json(new 
@@ -329,32 +305,33 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult ChangeObject(MarketSaveObjectDto dto)
         {
-            OMCoreObject obj = OMCoreObject.Where(x => x.Id == dto.Id).SelectAll().ExecuteFirstOrDefault();
-            MarketSaveObjectDto.ToEntity(dto, ref obj);
-            obj.Save();
+	        var marketObjectDto = Mapper.Map<MarketSaveObjectDto, MarketObjectDto>(dto);
 
-            object result = OMCoreObject.Where(x => x.Id == dto.Id).SelectAll().Execute().Select(x => {
-                return new
-                {
-                    segment = FormSegment(x.PropertyMarketSegment),
-                    propertyType = x.PropertyTypesCIPJS,
-                    propertyTypeCode = x.PropertyTypesCIPJS_Code,
-                    marketSegment = x.PropertyMarketSegment,
-                    marketSegmentCode = x.PropertyMarketSegment_Code,
-                    status = x.ProcessType,
-                    statusCode = x.ProcessType_Code,
-                    id = x.Id,
-                    lng = x.Lng,
-                    lat = x.Lat,
-                    entranceType = x.EntranceType,
-                    qualityClassCode = x.QualityClass_Code,
-                    qualityClass = x.QualityClass,
-                    renovation = x.Renovation,
-                    buildingLine = x.BuildingLine,
-                    floorNumber = x.FloorNumber,
-                    floorCount = x.FloorsCount
-                };
-            }).FirstOrDefault();
+	        MarketObjectService.UpdateInfoFromCard(marketObjectDto);
+
+            object result = new
+            {
+	            segment = FormSegment(marketObjectDto.PropertyMarketSegment),
+	            propertyType = marketObjectDto.PropertyTypesCIPJS,
+	            propertyTypeCode = marketObjectDto.PropertyTypesCIPJS_Code,
+	            marketSegment = marketObjectDto.PropertyMarketSegment,
+	            marketSegmentCode = marketObjectDto.PropertyMarketSegment_Code,
+	            status = string.Empty,
+	            statusCode = string.Empty,
+	            id = marketObjectDto.Id,
+	            lng = 0,
+	            lat = 0,
+	            entranceType = string.Empty,
+	            qualityClassCode = marketObjectDto.QualityClass_Code,
+	            qualityClass = marketObjectDto.QualityClass,
+	            //TODO будет справочник
+                renovation = string.Empty,
+                //TODO будет справочник
+	            buildingLine = string.Empty,
+	            floorNumber = marketObjectDto.FloorNumber,
+	            floorCount = 0
+            };
+
             return Json(result);
         }
 
@@ -377,9 +354,9 @@ namespace KadOzenka.Web.Controllers
 
         private void PrepareQueryByObject(QSQuery<OMCoreObject> query, long objectId)
 	    {
-		    var marketObject = OMCoreObject.Where(x => x.Id == objectId).SelectAll().ExecuteFirstOrDefault();
+		    var marketObject = MarketObjectService.GetMappedObjectById(objectId);
             if (marketObject == null)throw new Exception($"Ошибка! Объекта аналога с идентификатором {objectId} не существует!");
-            query.And(x => x.DealType_Code == marketObject.DealType_Code && x.PropertyMarketSegment_Code == marketObject.PropertyMarketSegment_Code);
+            query.And(x => x.PropertyMarketSegment_Code == marketObject.PropertyMarketSegment_Code);
 	    }
 
 		private void PrepareQueryByUserFilter(QSQuery<OMCoreObject> query)
@@ -388,43 +365,29 @@ namespace KadOzenka.Web.Controllers
 			if (userFilter != null && !string.IsNullOrEmpty(userFilter.Condition))
 			{
 				var filters = JsonConvert.DeserializeObject<List<FilterModel>>(userFilter.Condition);
-                if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS).Id))
+                if (filters.Any(f => f.Id == Consts.PropertyTypesCIPJSAttribute.Id))
                 {
-                    var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyTypesCIPJS).Id);
+                    var filter = filters.First(f => f.Id == Consts.PropertyTypesCIPJSAttribute.Id);
                     if (filter.ValueLongArrayCasted != null)
                     {
                         var list = filter.ValueLongArrayCasted.Select(y => ((PropertyTypesCIPJS)y).GetEnumDescription()).ToList();
                         query.And(x => list.Contains(x.PropertyTypesCIPJS));
                     }
                 }
-                if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id))
+                if (filters.Any(f => f.Id == Consts.PropertyMarketSegmentAttribute.Id))
 				{
-					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.PropertyMarketSegment).Id);
+					var filter = filters.First(f => f.Id == Consts.PropertyMarketSegmentAttribute.Id);
 					if (filter.ValueLongArrayCasted != null)
 					{
 						var list = filter.ValueLongArrayCasted.Select(y => ((MarketSegment)y).GetEnumDescription()).ToList();
 						query.And(x => list.Contains(x.PropertyMarketSegment));
 					}
 				}
-				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id))
+                if (filters.Any(f => f.Id == Consts.PriceAttributeId))
 				{
-					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.DealType).Id);
-					if (filter.ValueLongArrayCasted != null)
-					{
-						var list = filter.ValueLongArrayCasted.Select(y => ((DealType)y).GetEnumDescription()).ToList();
-						query.And(x => list.Contains(x.DealType));
-					}
-				}
-				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id))
-				{
-					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Price).Id);
+					var filter = filters.First(f => f.Id == Consts.PriceAttributeId);
 					if (filter.From.HasValue) query.And(x => x.Price >= filter.From.Value);
 					if (filter.To.HasValue) query.And(x => x.Price <= filter.To.Value);
-				}
-				if (filters.Any(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id))
-				{
-					var filter = filters.First(f => f.Id == OMCoreObject.GetAttributeData(x => x.Metro).Id);
-					query.And(x => x.Metro.Contains(filter.ValueStringCasted));
 				}
 			}
 		}

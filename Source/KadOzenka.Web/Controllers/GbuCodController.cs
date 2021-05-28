@@ -3,6 +3,8 @@ using System.Linq;
 using Core.Register;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CodDictionary.Entities;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuCod;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +17,9 @@ namespace KadOzenka.Web.Controllers
 	{
 		private ICodDictionaryService CodDictionaryService { get; }
 
-		public GbuCodController(ICodDictionaryService codDictionaryService)
+		public GbuCodController(ICodDictionaryService codDictionaryService, IRegisterCacheWrapper registerCacheWrapper,
+			IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
         {
             CodDictionaryService = codDictionaryService;
         }
@@ -165,5 +169,5 @@ namespace KadOzenka.Web.Controllers
 		}
 
         #endregion
-    }
+	}
 }
