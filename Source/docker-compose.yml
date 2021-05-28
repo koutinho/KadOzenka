@@ -1,0 +1,44 @@
+version: '3.5'
+
+# если делать контейнер на каждый сервис тестирования, получится N больших контейнеров,
+# каждый из которых будет содержать тяжелый проект
+services:
+
+  full_application:
+    image: all_application
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+
+  unit_tests_all:
+    image: unit_tests_all
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+
+  unit_tests_dal:
+    image: unit_tests_dal
+    build:
+      context: .
+      dockerfile: Dockerfile      
+      target: unit_tests_dal
+    entrypoint:
+      - dotnet
+      - test
+      - --logger
+      - trx;
+     
+     
+  unit_tests_web:
+    image: unit_tests_web
+    build:
+      context: .
+      dockerfile: Dockerfile      
+      target: unit_tests_web
+    entrypoint:
+      - dotnet
+      - test
+      - --logger
+      - trx;

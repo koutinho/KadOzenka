@@ -6,7 +6,9 @@ using System.Transactions;
 using CIPJS.Models.Commission;
 using Core.ErrorManagment;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +19,13 @@ namespace KadOzenka.Web.Controllers
 {
 	public class CommissionController : KoBaseController
     {
+	    public CommissionController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
+		    : base(gbuObjectService, registerCacheWrapper)
+		{
+		    
+	    }
+
+
 		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.COMMISSION_EDIT_COMMISSION)]
 		public ActionResult EditCommission(long id)

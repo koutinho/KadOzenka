@@ -267,7 +267,7 @@ namespace CIPJS
                     endpoints.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
                     endpoints.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
                     endpoints.MapHub<EsHub>("/esCheckProgress");
-                    endpoints.MapHub<ActivateCoordinates>("/ActivateCoordinates");
+                    //endpoints.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                     endpoints.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                     endpoints.MapHub<UrgentMessageHub>("/coreMessageData");
                     endpoints.MapHub<NotificationMessageHub>("/coreMessagesList");

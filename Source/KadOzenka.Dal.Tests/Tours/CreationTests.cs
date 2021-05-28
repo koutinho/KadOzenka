@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Dal.Tours.Exceptions;
 using KadOzenka.Dal.Tours.Resources;

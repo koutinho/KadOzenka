@@ -218,3 +218,34 @@ ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_BARGAIN;
 delete from core_register_attribute where id = 10008900;
 ALTER TABLE market_core_object DROP COLUMN PRICE_AFTER_CORRECTION_BY_STAGE;
 
+delete from core_register_attribute where id = 10008000;
+
+delete from core_register_attribute where id = 10009005;
+ALTER TABLE market_core_object DROP COLUMN IS_OPERATING_COSTS_INCLUDED;
+
+delete from core_register_attribute where id = 10004200;
+ALTER TABLE market_core_object DROP COLUMN FLOORS_COUNT;
+
+delete from core_register_attribute where id = 10004000;
+ALTER TABLE market_core_object DROP COLUMN LNG;
+
+delete from core_register_attribute where id = 10003500;
+ALTER TABLE market_core_object DROP COLUMN LAT;
+
+delete from core_register_attribute where id = 10003600;
+ALTER TABLE market_core_object DROP COLUMN DEAL_TYPE;
+ALTER TABLE market_core_object DROP COLUMN DEAL_TYPE_CODE;
+
+delete from core_register_attribute where id = 10002800;
+ALTER TABLE market_core_object DROP COLUMN PARSER_TIME;
+
+delete from core_register_attribute where id = 10007100;
+ALTER TABLE market_core_object DROP COLUMN WALL_MATERIAL;
+ALTER TABLE market_core_object DROP COLUMN WALL_MATERIAL_CODE;
+
+
+update core_register_attribute set name='Адрес' where id=10003100;
+update core_register_attribute set name='Стоимость' where id=10002700;
+update core_register_attribute set name='Источник объявления' where id=10002300;
+update core_register_attribute set name='Этаж' where id=10004100;
+

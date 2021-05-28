@@ -11,6 +11,8 @@ using Core.Main.FileStorages;
 using Core.Register;
 using ObjectModel.Common;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
 
@@ -18,6 +20,12 @@ namespace KadOzenka.Web.Controllers
 {
 	public class DataExportController : KoBaseController
 	{
+		public DataExportController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
+			
+		}
+
 		[HttpGet]
 		[SRDFunction(Tag = "")]
 		public ActionResult DownloadExportTemplate(long exportId)

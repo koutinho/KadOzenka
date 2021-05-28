@@ -35,7 +35,7 @@ namespace ObjectModel.Market
 
         private string _market;
         /// <summary>
-        /// 10002300 Источник информации (MARKET)
+        /// 10002300 Источник объявления (MARKET)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public string Market
@@ -55,7 +55,7 @@ namespace ObjectModel.Market
 
         private MarketTypes _market_Code;
         /// <summary>
-        /// 10002300 Источник информации (справочный код) (MARKET_CODE)
+        /// 10002300 Источник объявления (справочный код) (MARKET_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002300)]
         public MarketTypes Market_Code
@@ -88,12 +88,12 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _price;
+        private decimal _price;
         /// <summary>
-        /// 10002700 Цена сделки/предложения (PRICE)
+        /// 10002700 Стоимость (PRICE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10002700)]
-        public decimal? Price
+        public decimal Price
         {
             get
             {
@@ -128,29 +128,9 @@ namespace ObjectModel.Market
         }
 
 
-        private DateTime? _parsertime;
-        /// <summary>
-        /// 10002800 Дата предложения (сделки) (PARSER_TIME)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10002800)]
-        public DateTime? ParserTime
-        {
-            get
-            {
-                CheckPropertyInited("ParserTime");
-                return _parsertime;
-            }
-            set
-            {
-                _parsertime = value;
-                NotifyPropertyChanged("ParserTime");
-            }
-        }
-
-
         private string _address;
         /// <summary>
-        /// 10003100 Адресный ориентир (ADDRESS)
+        /// 10003100 Адрес (ADDRESS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10003100)]
         public string Address
@@ -164,26 +144,6 @@ namespace ObjectModel.Market
             {
                 _address = value;
                 NotifyPropertyChanged("Address");
-            }
-        }
-
-
-        private decimal? _lat;
-        /// <summary>
-        /// 10003500 Широта (LAT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10003500)]
-        public decimal? Lat
-        {
-            get
-            {
-                CheckPropertyInited("Lat");
-                return _lat;
-            }
-            set
-            {
-                _lat = value;
-                NotifyPropertyChanged("Lat");
             }
         }
 
@@ -243,29 +203,9 @@ namespace ObjectModel.Market
         }
 
 
-        private decimal? _lng;
-        /// <summary>
-        /// 10004000 Долгота (LNG)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004000)]
-        public decimal? Lng
-        {
-            get
-            {
-                CheckPropertyInited("Lng");
-                return _lng;
-            }
-            set
-            {
-                _lng = value;
-                NotifyPropertyChanged("Lng");
-            }
-        }
-
-
         private long? _floornumber;
         /// <summary>
-        /// 10004100 Номер этажа (FLOOR_NUMBER)
+        /// 10004100 Этаж (FLOOR_NUMBER)
         /// </summary>
         [RegisterAttribute(AttributeID = 10004100)]
         public long? FloorNumber
@@ -283,32 +223,12 @@ namespace ObjectModel.Market
         }
 
 
-        private long? _floorscount;
-        /// <summary>
-        /// 10004200 Этажность (FLOORS_COUNT)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10004200)]
-        public long? FloorsCount
-        {
-            get
-            {
-                CheckPropertyInited("FloorsCount");
-                return _floorscount;
-            }
-            set
-            {
-                _floorscount = value;
-                NotifyPropertyChanged("FloorsCount");
-            }
-        }
-
-
-        private decimal? _area;
+        private decimal _area;
         /// <summary>
         /// 10004300 Общая площадь (AREA)
         /// </summary>
         [RegisterAttribute(AttributeID = 10004300)]
-        public decimal? Area
+        public decimal Area
         {
             get
             {
@@ -398,64 +318,9 @@ namespace ObjectModel.Market
         }
 
 
-        private string _wallmaterial;
-        /// <summary>
-        /// 10007100 Материал стен (WALL_MATERIAL)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007100)]
-        public string WallMaterial
-        {
-            get
-            {
-                CheckPropertyInited("WallMaterial");
-                return _wallmaterial;
-            }
-            set
-            {
-                _wallmaterial = value;
-                NotifyPropertyChanged("WallMaterial");
-            }
-        }
-
-
-        private WallMaterial _wallmaterial_Code;
-        /// <summary>
-        /// 10007100 Материал стен (справочный код) (WALL_MATERIAL_CODE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 10007100)]
-        public WallMaterial WallMaterial_Code
-        {
-            get
-            {
-                CheckPropertyInited("WallMaterial_Code");
-                return this._wallmaterial_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_wallmaterial))
-                    {
-                         _wallmaterial = descr;
-                    }
-                }
-                else
-                {
-                     _wallmaterial = descr;
-                }
-
-                this._wallmaterial_Code = value;
-                NotifyPropertyChanged("WallMaterial");
-                NotifyPropertyChanged("WallMaterial_Code");
-            }
-        }
-
-
         private string _qualityclass;
         /// <summary>
-        /// 10007200 Класс качества (QUALITY_CLASS)
+        /// 10007200 Класс строения (QUALITY_CLASS)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007200)]
         public string QualityClass
@@ -475,7 +340,7 @@ namespace ObjectModel.Market
 
         private QualityClass _qualityclass_Code;
         /// <summary>
-        /// 10007200 Класс качества (справочный код) (QUALITY_CLASS_CODE)
+        /// 10007200 Класс строения (справочный код) (QUALITY_CLASS_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 10007200)]
         public QualityClass QualityClass_Code
@@ -563,22 +428,1222 @@ namespace ObjectModel.Market
         }
 
 
-        private bool? _isoperatingcostsincluded;
+        private DateTime? _downloaddate;
         /// <summary>
-        /// 10009005 Эксплуатационные расходы включены (IS_OPERATING_COSTS_INCLUDED)
+        /// 10007800 Дата загрузки (download_date)
         /// </summary>
-        [RegisterAttribute(AttributeID = 10009005)]
-        public bool? IsOperatingCostsIncluded
+        [RegisterAttribute(AttributeID = 10007800)]
+        public DateTime? DownloadDate
         {
             get
             {
-                CheckPropertyInited("IsOperatingCostsIncluded");
-                return _isoperatingcostsincluded;
+                CheckPropertyInited("DownloadDate");
+                return _downloaddate;
             }
             set
             {
-                _isoperatingcostsincluded = value;
-                NotifyPropertyChanged("IsOperatingCostsIncluded");
+                _downloaddate = value;
+                NotifyPropertyChanged("DownloadDate");
+            }
+        }
+
+
+        private string _externaladvertisementid;
+        /// <summary>
+        /// 10007900 Внешний Id объявления (external_advertisement_id)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10007900)]
+        public string ExternalAdvertisementId
+        {
+            get
+            {
+                CheckPropertyInited("ExternalAdvertisementId");
+                return _externaladvertisementid;
+            }
+            set
+            {
+                _externaladvertisementid = value;
+                NotifyPropertyChanged("ExternalAdvertisementId");
+            }
+        }
+
+
+        private string _advertisementdescription;
+        /// <summary>
+        /// 10008000 Текст объявления (advertisement_description)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008000)]
+        public string AdvertisementDescription
+        {
+            get
+            {
+                CheckPropertyInited("AdvertisementDescription");
+                return _advertisementdescription;
+            }
+            set
+            {
+                _advertisementdescription = value;
+                NotifyPropertyChanged("AdvertisementDescription");
+            }
+        }
+
+
+        private decimal? _areafrom;
+        /// <summary>
+        /// 10008100 Площадь от (area_from)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008100)]
+        public decimal? AreaFrom
+        {
+            get
+            {
+                CheckPropertyInited("AreaFrom");
+                return _areafrom;
+            }
+            set
+            {
+                _areafrom = value;
+                NotifyPropertyChanged("AreaFrom");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 10008200 Название (name)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private long? _flatnumber;
+        /// <summary>
+        /// 10008300 Номер квартиры на площадке (flat_number)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008300)]
+        public long? FlatNumber
+        {
+            get
+            {
+                CheckPropertyInited("FlatNumber");
+                return _flatnumber;
+            }
+            set
+            {
+                _flatnumber = value;
+                NotifyPropertyChanged("FlatNumber");
+            }
+        }
+
+
+        private string _sectionnumber;
+        /// <summary>
+        /// 10008400 Номер секции (section_number)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008400)]
+        public string SectionNumber
+        {
+            get
+            {
+                CheckPropertyInited("SectionNumber");
+                return _sectionnumber;
+            }
+            set
+            {
+                _sectionnumber = value;
+                NotifyPropertyChanged("SectionNumber");
+            }
+        }
+
+
+        private string _flattype;
+        /// <summary>
+        /// 10008500 Тип квартиры (flat_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008500)]
+        public string FlatType
+        {
+            get
+            {
+                CheckPropertyInited("FlatType");
+                return _flattype;
+            }
+            set
+            {
+                _flattype = value;
+                NotifyPropertyChanged("FlatType");
+            }
+        }
+
+
+        private string _houseline;
+        /// <summary>
+        /// 10008600 Линия застройки домов (house_line)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008600)]
+        public string HouseLine
+        {
+            get
+            {
+                CheckPropertyInited("HouseLine");
+                return _houseline;
+            }
+            set
+            {
+                _houseline = value;
+                NotifyPropertyChanged("HouseLine");
+            }
+        }
+
+
+        private HouseLineType _houseline_Code;
+        /// <summary>
+        /// 10008600 Линия застройки домов (справочный код) (house_line_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008600)]
+        public HouseLineType HouseLine_Code
+        {
+            get
+            {
+                CheckPropertyInited("HouseLine_Code");
+                return this._houseline_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_houseline))
+                    {
+                         _houseline = descr;
+                    }
+                }
+                else
+                {
+                     _houseline = descr;
+                }
+
+                this._houseline_Code = value;
+                NotifyPropertyChanged("HouseLine");
+                NotifyPropertyChanged("HouseLine_Code");
+            }
+        }
+
+
+        private string _developer;
+        /// <summary>
+        /// 10008700 Застройщик (developer)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008700)]
+        public string Developer
+        {
+            get
+            {
+                CheckPropertyInited("Developer");
+                return _developer;
+            }
+            set
+            {
+                _developer = value;
+                NotifyPropertyChanged("Developer");
+            }
+        }
+
+
+        private string _finishingcondition;
+        /// <summary>
+        /// 10008800 Состояние отделки (finishing_condition)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008800)]
+        public string FinishingCondition
+        {
+            get
+            {
+                CheckPropertyInited("FinishingCondition");
+                return _finishingcondition;
+            }
+            set
+            {
+                _finishingcondition = value;
+                NotifyPropertyChanged("FinishingCondition");
+            }
+        }
+
+
+        private FinishingCondition _finishingcondition_Code;
+        /// <summary>
+        /// 10008800 Состояние отделки (справочный код) (finishing_condition_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008800)]
+        public FinishingCondition FinishingCondition_Code
+        {
+            get
+            {
+                CheckPropertyInited("FinishingCondition_Code");
+                return this._finishingcondition_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_finishingcondition))
+                    {
+                         _finishingcondition = descr;
+                    }
+                }
+                else
+                {
+                     _finishingcondition = descr;
+                }
+
+                this._finishingcondition_Code = value;
+                NotifyPropertyChanged("FinishingCondition");
+                NotifyPropertyChanged("FinishingCondition_Code");
+            }
+        }
+
+
+        private string _housetype;
+        /// <summary>
+        /// 10008900 Тип дома (house_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008900)]
+        public string HouseType
+        {
+            get
+            {
+                CheckPropertyInited("HouseType");
+                return _housetype;
+            }
+            set
+            {
+                _housetype = value;
+                NotifyPropertyChanged("HouseType");
+            }
+        }
+
+
+        private HouseType _housetype_Code;
+        /// <summary>
+        /// 10008900 Тип дома (справочный код) (house_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10008900)]
+        public HouseType HouseType_Code
+        {
+            get
+            {
+                CheckPropertyInited("HouseType_Code");
+                return this._housetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_housetype))
+                    {
+                         _housetype = descr;
+                    }
+                }
+                else
+                {
+                     _housetype = descr;
+                }
+
+                this._housetype_Code = value;
+                NotifyPropertyChanged("HouseType");
+                NotifyPropertyChanged("HouseType_Code");
+            }
+        }
+
+
+        private string _layout;
+        /// <summary>
+        /// 10009000 Планировка (layout)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009000)]
+        public string Layout
+        {
+            get
+            {
+                CheckPropertyInited("Layout");
+                return _layout;
+            }
+            set
+            {
+                _layout = value;
+                NotifyPropertyChanged("Layout");
+            }
+        }
+
+
+        private Layout _layout_Code;
+        /// <summary>
+        /// 10009000 Планировка (справочный код) (layout_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009000)]
+        public Layout Layout_Code
+        {
+            get
+            {
+                CheckPropertyInited("Layout_Code");
+                return this._layout_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_layout))
+                    {
+                         _layout = descr;
+                    }
+                }
+                else
+                {
+                     _layout = descr;
+                }
+
+                this._layout_Code = value;
+                NotifyPropertyChanged("Layout");
+                NotifyPropertyChanged("Layout_Code");
+            }
+        }
+
+
+        private string _permittedusetype;
+        /// <summary>
+        /// 10009100 Вид разрешённого использования (permitted_use_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009100)]
+        public string PermittedUseType
+        {
+            get
+            {
+                CheckPropertyInited("PermittedUseType");
+                return _permittedusetype;
+            }
+            set
+            {
+                _permittedusetype = value;
+                NotifyPropertyChanged("PermittedUseType");
+            }
+        }
+
+
+        private PermittedUseType _permittedusetype_Code;
+        /// <summary>
+        /// 10009100 Вид разрешённого использования (справочный код) (permitted_use_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009100)]
+        public PermittedUseType PermittedUseType_Code
+        {
+            get
+            {
+                CheckPropertyInited("PermittedUseType_Code");
+                return this._permittedusetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_permittedusetype))
+                    {
+                         _permittedusetype = descr;
+                    }
+                }
+                else
+                {
+                     _permittedusetype = descr;
+                }
+
+                this._permittedusetype_Code = value;
+                NotifyPropertyChanged("PermittedUseType");
+                NotifyPropertyChanged("PermittedUseType_Code");
+            }
+        }
+
+
+        private string _drivewaytype;
+        /// <summary>
+        /// 10009200 Подъездные пути (driveway_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009200)]
+        public string DrivewayType
+        {
+            get
+            {
+                CheckPropertyInited("DrivewayType");
+                return _drivewaytype;
+            }
+            set
+            {
+                _drivewaytype = value;
+                NotifyPropertyChanged("DrivewayType");
+            }
+        }
+
+
+        private DrivewayType _drivewaytype_Code;
+        /// <summary>
+        /// 10009200 Подъездные пути (справочный код) (driveway_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009200)]
+        public DrivewayType DrivewayType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DrivewayType_Code");
+                return this._drivewaytype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_drivewaytype))
+                    {
+                         _drivewaytype = descr;
+                    }
+                }
+                else
+                {
+                     _drivewaytype = descr;
+                }
+
+                this._drivewaytype_Code = value;
+                NotifyPropertyChanged("DrivewayType");
+                NotifyPropertyChanged("DrivewayType_Code");
+            }
+        }
+
+
+        private string _parcelareaunittype;
+        /// <summary>
+        /// 10009300 Единица измерения площади участка (parcel_area_unit_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009300)]
+        public string ParcelAreaUnitType
+        {
+            get
+            {
+                CheckPropertyInited("ParcelAreaUnitType");
+                return _parcelareaunittype;
+            }
+            set
+            {
+                _parcelareaunittype = value;
+                NotifyPropertyChanged("ParcelAreaUnitType");
+            }
+        }
+
+
+        private ParcelAreaUnitType _parcelareaunittype_Code;
+        /// <summary>
+        /// 10009300 Единица измерения площади участка (справочный код) (parcel_area_unit_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009300)]
+        public ParcelAreaUnitType ParcelAreaUnitType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParcelAreaUnitType_Code");
+                return this._parcelareaunittype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parcelareaunittype))
+                    {
+                         _parcelareaunittype = descr;
+                    }
+                }
+                else
+                {
+                     _parcelareaunittype = descr;
+                }
+
+                this._parcelareaunittype_Code = value;
+                NotifyPropertyChanged("ParcelAreaUnitType");
+                NotifyPropertyChanged("ParcelAreaUnitType_Code");
+            }
+        }
+
+
+        private string _parcelstatus;
+        /// <summary>
+        /// 10009400 Статус земли (parcel_status)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009400)]
+        public string ParcelStatus
+        {
+            get
+            {
+                CheckPropertyInited("ParcelStatus");
+                return _parcelstatus;
+            }
+            set
+            {
+                _parcelstatus = value;
+                NotifyPropertyChanged("ParcelStatus");
+            }
+        }
+
+
+        private ParcelStatus _parcelstatus_Code;
+        /// <summary>
+        /// 10009400 Статус земли (справочный код) (parcel_status_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009400)]
+        public ParcelStatus ParcelStatus_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParcelStatus_Code");
+                return this._parcelstatus_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parcelstatus))
+                    {
+                         _parcelstatus = descr;
+                    }
+                }
+                else
+                {
+                     _parcelstatus = descr;
+                }
+
+                this._parcelstatus_Code = value;
+                NotifyPropertyChanged("ParcelStatus");
+                NotifyPropertyChanged("ParcelStatus_Code");
+            }
+        }
+
+
+        private string _parceltype;
+        /// <summary>
+        /// 10009500 Тип участка (parcel_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009500)]
+        public string ParcelType
+        {
+            get
+            {
+                CheckPropertyInited("ParcelType");
+                return _parceltype;
+            }
+            set
+            {
+                _parceltype = value;
+                NotifyPropertyChanged("ParcelType");
+            }
+        }
+
+
+        private ParcelType _parceltype_Code;
+        /// <summary>
+        /// 10009500 Тип участка (справочный код) (parcel_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009500)]
+        public ParcelType ParcelType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ParcelType_Code");
+                return this._parceltype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_parceltype))
+                    {
+                         _parceltype = descr;
+                    }
+                }
+                else
+                {
+                     _parceltype = descr;
+                }
+
+                this._parceltype_Code = value;
+                NotifyPropertyChanged("ParcelType");
+                NotifyPropertyChanged("ParcelType_Code");
+            }
+        }
+
+
+        private string _electricitylocationtype;
+        /// <summary>
+        /// 10009600 Локация электроснабжения (electricity_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009600)]
+        public string ElectricityLocationType
+        {
+            get
+            {
+                CheckPropertyInited("ElectricityLocationType");
+                return _electricitylocationtype;
+            }
+            set
+            {
+                _electricitylocationtype = value;
+                NotifyPropertyChanged("ElectricityLocationType");
+            }
+        }
+
+
+        private ElectricityLocationType _electricitylocationtype_Code;
+        /// <summary>
+        /// 10009600 Локация электроснабжения (справочный код) (electricity_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009600)]
+        public ElectricityLocationType ElectricityLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("ElectricityLocationType_Code");
+                return this._electricitylocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_electricitylocationtype))
+                    {
+                         _electricitylocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _electricitylocationtype = descr;
+                }
+
+                this._electricitylocationtype_Code = value;
+                NotifyPropertyChanged("ElectricityLocationType");
+                NotifyPropertyChanged("ElectricityLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectelectricity;
+        /// <summary>
+        /// 10009700 Возможность подключения электичества (possibility_to_connect_electricity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009700)]
+        public bool? PossibilityToConnectElectricity
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectElectricity");
+                return _possibilitytoconnectelectricity;
+            }
+            set
+            {
+                _possibilitytoconnectelectricity = value;
+                NotifyPropertyChanged("PossibilityToConnectElectricity");
+            }
+        }
+
+
+        private long? _electricitypower;
+        /// <summary>
+        /// 10009800 Мощность электричества, кВТ (electricity_power)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009800)]
+        public long? ElectricityPower
+        {
+            get
+            {
+                CheckPropertyInited("ElectricityPower");
+                return _electricitypower;
+            }
+            set
+            {
+                _electricitypower = value;
+                NotifyPropertyChanged("ElectricityPower");
+            }
+        }
+
+
+        private string _gaslocationtype;
+        /// <summary>
+        /// 10009900 Локация газоснабжения (gas_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009900)]
+        public string GasLocationType
+        {
+            get
+            {
+                CheckPropertyInited("GasLocationType");
+                return _gaslocationtype;
+            }
+            set
+            {
+                _gaslocationtype = value;
+                NotifyPropertyChanged("GasLocationType");
+            }
+        }
+
+
+        private GasLocationType _gaslocationtype_Code;
+        /// <summary>
+        /// 10009900 Локация газоснабжения (справочный код) (gas_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10009900)]
+        public GasLocationType GasLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("GasLocationType_Code");
+                return this._gaslocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_gaslocationtype))
+                    {
+                         _gaslocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _gaslocationtype = descr;
+                }
+
+                this._gaslocationtype_Code = value;
+                NotifyPropertyChanged("GasLocationType");
+                NotifyPropertyChanged("GasLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectgas;
+        /// <summary>
+        /// 10010000 Возможность подключения газа (possibility_to_connect_gas)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010000)]
+        public bool? PossibilityToConnectGas
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectGas");
+                return _possibilitytoconnectgas;
+            }
+            set
+            {
+                _possibilitytoconnectgas = value;
+                NotifyPropertyChanged("PossibilityToConnectGas");
+            }
+        }
+
+
+        private long? _gascapacity;
+        /// <summary>
+        /// 10010100 Емкость газа (gas_capacity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010100)]
+        public long? GasCapacity
+        {
+            get
+            {
+                CheckPropertyInited("GasCapacity");
+                return _gascapacity;
+            }
+            set
+            {
+                _gascapacity = value;
+                NotifyPropertyChanged("GasCapacity");
+            }
+        }
+
+
+        private string _gaspressuretype;
+        /// <summary>
+        /// 10010200 Давление газа (gas_pressure_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010200)]
+        public string GasPressureType
+        {
+            get
+            {
+                CheckPropertyInited("GasPressureType");
+                return _gaspressuretype;
+            }
+            set
+            {
+                _gaspressuretype = value;
+                NotifyPropertyChanged("GasPressureType");
+            }
+        }
+
+
+        private GasPressureType _gaspressuretype_Code;
+        /// <summary>
+        /// 10010200 Давление газа (справочный код) (gas_pressure_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010200)]
+        public GasPressureType GasPressureType_Code
+        {
+            get
+            {
+                CheckPropertyInited("GasPressureType_Code");
+                return this._gaspressuretype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_gaspressuretype))
+                    {
+                         _gaspressuretype = descr;
+                    }
+                }
+                else
+                {
+                     _gaspressuretype = descr;
+                }
+
+                this._gaspressuretype_Code = value;
+                NotifyPropertyChanged("GasPressureType");
+                NotifyPropertyChanged("GasPressureType_Code");
+            }
+        }
+
+
+        private string _drainagelocationtype;
+        /// <summary>
+        /// 10010300 Локация канализации (drainage_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010300)]
+        public string DrainageLocationType
+        {
+            get
+            {
+                CheckPropertyInited("DrainageLocationType");
+                return _drainagelocationtype;
+            }
+            set
+            {
+                _drainagelocationtype = value;
+                NotifyPropertyChanged("DrainageLocationType");
+            }
+        }
+
+
+        private DrainageLocationType _drainagelocationtype_Code;
+        /// <summary>
+        /// 10010300 Локация канализации (справочный код) (drainage_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010300)]
+        public DrainageLocationType DrainageLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DrainageLocationType_Code");
+                return this._drainagelocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_drainagelocationtype))
+                    {
+                         _drainagelocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _drainagelocationtype = descr;
+                }
+
+                this._drainagelocationtype_Code = value;
+                NotifyPropertyChanged("DrainageLocationType");
+                NotifyPropertyChanged("DrainageLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectdrainage;
+        /// <summary>
+        /// 10010400 Возможность подключения канализации (possibility_to_connect_drainage)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010400)]
+        public bool? PossibilityToConnectDrainage
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectDrainage");
+                return _possibilitytoconnectdrainage;
+            }
+            set
+            {
+                _possibilitytoconnectdrainage = value;
+                NotifyPropertyChanged("PossibilityToConnectDrainage");
+            }
+        }
+
+
+        private long? _drainagecapacity;
+        /// <summary>
+        /// 10010500 Объем канализации (drainage_capacity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010500)]
+        public long? DrainageCapacity
+        {
+            get
+            {
+                CheckPropertyInited("DrainageCapacity");
+                return _drainagecapacity;
+            }
+            set
+            {
+                _drainagecapacity = value;
+                NotifyPropertyChanged("DrainageCapacity");
+            }
+        }
+
+
+        private string _drainagetype;
+        /// <summary>
+        /// 10010600 Тип канализации (drainage_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010600)]
+        public string DrainageType
+        {
+            get
+            {
+                CheckPropertyInited("DrainageType");
+                return _drainagetype;
+            }
+            set
+            {
+                _drainagetype = value;
+                NotifyPropertyChanged("DrainageType");
+            }
+        }
+
+
+        private DrainageType _drainagetype_Code;
+        /// <summary>
+        /// 10010600 Тип канализации (справочный код) (drainage_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010600)]
+        public DrainageType DrainageType_Code
+        {
+            get
+            {
+                CheckPropertyInited("DrainageType_Code");
+                return this._drainagetype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_drainagetype))
+                    {
+                         _drainagetype = descr;
+                    }
+                }
+                else
+                {
+                     _drainagetype = descr;
+                }
+
+                this._drainagetype_Code = value;
+                NotifyPropertyChanged("DrainageType");
+                NotifyPropertyChanged("DrainageType_Code");
+            }
+        }
+
+
+        private string _waterlocationtype;
+        /// <summary>
+        /// 10010700 Тип локации водоснабжения (water_location_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010700)]
+        public string WaterLocationType
+        {
+            get
+            {
+                CheckPropertyInited("WaterLocationType");
+                return _waterlocationtype;
+            }
+            set
+            {
+                _waterlocationtype = value;
+                NotifyPropertyChanged("WaterLocationType");
+            }
+        }
+
+
+        private WaterLocationType _waterlocationtype_Code;
+        /// <summary>
+        /// 10010700 Тип локации водоснабжения (справочный код) (water_location_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010700)]
+        public WaterLocationType WaterLocationType_Code
+        {
+            get
+            {
+                CheckPropertyInited("WaterLocationType_Code");
+                return this._waterlocationtype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_waterlocationtype))
+                    {
+                         _waterlocationtype = descr;
+                    }
+                }
+                else
+                {
+                     _waterlocationtype = descr;
+                }
+
+                this._waterlocationtype_Code = value;
+                NotifyPropertyChanged("WaterLocationType");
+                NotifyPropertyChanged("WaterLocationType_Code");
+            }
+        }
+
+
+        private bool? _possibilitytoconnectwater;
+        /// <summary>
+        /// 10010800 Возможность подключения воды (possibility_to_connect_water)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010800)]
+        public bool? PossibilityToConnectWater
+        {
+            get
+            {
+                CheckPropertyInited("PossibilityToConnectWater");
+                return _possibilitytoconnectwater;
+            }
+            set
+            {
+                _possibilitytoconnectwater = value;
+                NotifyPropertyChanged("PossibilityToConnectWater");
+            }
+        }
+
+
+        private long? _watercapacity;
+        /// <summary>
+        /// 10010900 Объем водоснабжения (water_capacity)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10010900)]
+        public long? WaterCapacity
+        {
+            get
+            {
+                CheckPropertyInited("WaterCapacity");
+                return _watercapacity;
+            }
+            set
+            {
+                _watercapacity = value;
+                NotifyPropertyChanged("WaterCapacity");
+            }
+        }
+
+
+        private string _watertype;
+        /// <summary>
+        /// 10011000 Тип водоснабжения (water_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10011000)]
+        public string WaterType
+        {
+            get
+            {
+                CheckPropertyInited("WaterType");
+                return _watertype;
+            }
+            set
+            {
+                _watertype = value;
+                NotifyPropertyChanged("WaterType");
+            }
+        }
+
+
+        private WaterType _watertype_Code;
+        /// <summary>
+        /// 10011000 Тип водоснабжения (справочный код) (water_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10011000)]
+        public WaterType WaterType_Code
+        {
+            get
+            {
+                CheckPropertyInited("WaterType_Code");
+                return this._watertype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_watertype))
+                    {
+                         _watertype = descr;
+                    }
+                }
+                else
+                {
+                     _watertype = descr;
+                }
+
+                this._watertype_Code = value;
+                NotifyPropertyChanged("WaterType");
+                NotifyPropertyChanged("WaterType_Code");
             }
         }
 

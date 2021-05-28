@@ -1,4 +1,6 @@
 ﻿using System;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using Microsoft.AspNetCore.Mvc;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.Registers;
@@ -17,7 +19,9 @@ namespace KadOzenka.Web.Controllers
         private IRegisterAttributeService RegisterAttributeService { get; }
 
         public ObjectsCharacteristicsController(IObjectsCharacteristicsService objectsCharacteristicsService, IObjectsCharacteristicsSourceService objectsCharacteristicsSourceService, 
-	        IRegisterAttributeService registerAttributeService)
+	        IRegisterAttributeService registerAttributeService, IRegisterCacheWrapper registerCacheWrapper,
+	        IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
             ObjectsCharacteristicsService = objectsCharacteristicsService;
             ObjectsCharacteristicsSourceService = objectsCharacteristicsSourceService;

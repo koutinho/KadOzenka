@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 //using Microsoft.AspNetCore.Mvc.ViewFeatures.Internal;
 using Microsoft.AspNetCore.Routing;
 using ObjectModel.Core.Shared;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace KadOzenka.Web.Helpers
 {
@@ -409,6 +411,29 @@ namespace KadOzenka.Web.Helpers
 			var expresionProvider = htmlHelper.ViewContext.HttpContext.RequestServices
 			.GetService(typeof(ModelExpressionProvider)) as ModelExpressionProvider;
 			return expresionProvider.GetExpressionText(expression);
+		}
+
+		public static Task RenderPartialFor<TModel, TProperty>(this IHtmlHelper<TModel> helper, string partialViewName, Expression<Func<TModel, TProperty>> expression)
+		{
+			var name = GetExpressionText(helper, expression);
+			var modelExpressionProvider = (ModelExpressionProvider)helper.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
+			var modelExplorer = modelExpressionProvider.CreateModelExpression(helper.ViewData, expression);
+			object model = modelExplorer.Model;
+			var viewData = new ViewDataDictionary(helper.ViewData);
+			var htmlPrefix = viewData.TemplateInfo.HtmlFieldPrefix;
+			viewData.TemplateInfo.HtmlFieldPrefix += !Equals(htmlPrefix, string.Empty) ? $".{name}" : name;
+
+			return helper.RenderPartialAsync(partialViewName, model, viewData);
+		}
+
+		public static IHtmlContent KendoDropDownListEnumFor<TModel, TProperty>(this IHtmlHelper<TModel> helper,
+			Expression<Func<TModel, TProperty>> expression)
+		{
+			var x = helper.GetEnumSelectList(typeof(TProperty));
+			return helper.Kendo().DropDownListFor(expression)
+				.DataTextField("Text")
+				.DataValueField("Text")
+				.BindTo(helper.GetEnumSelectList(typeof(TProperty)));
 		}
 	}
 }

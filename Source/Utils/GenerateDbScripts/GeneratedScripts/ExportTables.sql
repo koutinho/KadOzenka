@@ -55975,76 +55975,6 @@ end $$;
 
 DO $$
 begin
-	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_DICTIONARY')) then
-		execute 'create table KO_COD_DICTIONARY ("id" BIGINT NOT NULL)';
-	end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'id')) then
-        execute 'alter table KO_COD_DICTIONARY add "id" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'id_codjob')) then
-        execute 'alter table KO_COD_DICTIONARY add "id_codjob" BIGINT NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'value')) then
-        execute 'alter table KO_COD_DICTIONARY add "value" VARCHAR(4000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'code')) then
-        execute 'alter table KO_COD_DICTIONARY add "code" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'source')) then
-        execute 'alter table KO_COD_DICTIONARY add "source" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('KO_COD_DICTIONARY', 'expert')) then
-        execute 'alter table KO_COD_DICTIONARY add "expert" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-  if (not core_updstru_checkexistconstraint('reg_214_q_pk')) then
-    execute 'alter table KO_COD_DICTIONARY add constraint reg_214_q_pk primary key (id)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
 	if (not CORE_UPDSTRU_CheckExistTable('KO_COD_JOB')) then
 		execute 'create table KO_COD_JOB ("id" BIGINT NOT NULL)';
 	end if;
@@ -67955,16 +67885,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'price')) then
-        execute 'alter table market_core_object add "price" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'parser_time')) then
-        execute 'alter table market_core_object add "parser_time" TIMESTAMP';
+        execute 'alter table market_core_object add "price" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -67973,52 +67894,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'address')) then
-        execute 'alter table market_core_object add "address" VARCHAR(2000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'description')) then
-        execute 'alter table market_core_object add "description" VARCHAR(10000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'lat')) then
-        execute 'alter table market_core_object add "lat" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'lng')) then
-        execute 'alter table market_core_object add "lng" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'deal_type')) then
-        execute 'alter table market_core_object add "deal_type" VARCHAR(50) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'deal_type_code')) then
-        execute 'alter table market_core_object add "deal_type_code" BIGINT NOT NULL';
+        execute 'alter table market_core_object add "address" VARCHAR(2000) NOT NULL';
     end if;
 end $$;
 
@@ -68035,17 +67911,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'floors_count')) then
-        execute 'alter table market_core_object add "floors_count" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'area')) then
-        execute 'alter table market_core_object add "area" NUMERIC';
+        execute 'alter table market_core_object add "area" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -68080,24 +67947,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'process_type')) then
-        execute 'alter table market_core_object add "process_type" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'process_type_code')) then
-        execute 'alter table market_core_object add "process_type_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_market_segment')) then
         execute 'alter table market_core_object add "property_market_segment" VARCHAR(255)';
     end if;
@@ -68109,24 +67958,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_market_segment_code')) then
         execute 'alter table market_core_object add "property_market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'wall_material')) then
-        execute 'alter table market_core_object add "wall_material" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'wall_material_code')) then
-        execute 'alter table market_core_object add "wall_material_code" BIGINT';
     end if;
 end $$;
 
@@ -68153,7 +67984,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs')) then
-        execute 'alter table market_core_object add "property_typets_cipjs" VARCHAR(255)';
+        execute 'alter table market_core_object add "property_typets_cipjs" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -68162,97 +67993,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('market_core_object', 'property_typets_cipjs_code')) then
-        execute 'alter table market_core_object add "property_typets_cipjs_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_date')) then
-        execute 'alter table market_core_object add "price_after_correction_by_date" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_bargain')) then
-        execute 'alter table market_core_object add "price_after_correction_by_bargain" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_rooms')) then
-        execute 'alter table market_core_object add "price_after_correction_by_rooms" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_by_stage')) then
-        execute 'alter table market_core_object add "price_after_correction_by_stage" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'price_after_correction_for_first_floor')) then
-        execute 'alter table market_core_object add "price_after_correction_for_first_floor" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'phone_number')) then
-        execute 'alter table market_core_object add "phone_number" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'placement_type')) then
-        execute 'alter table market_core_object add "placement_type" VARCHAR(256)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'is_operating_costs_included')) then
-        execute 'alter table market_core_object add "is_operating_costs_included" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'entrance_type')) then
-        execute 'alter table market_core_object add "entrance_type" VARCHAR(256)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('market_core_object', 'renovation')) then
-        execute 'alter table market_core_object add "renovation" VARCHAR(256)';
+        execute 'alter table market_core_object add "property_typets_cipjs_code" BIGINT NOT NULL';
     end if;
 end $$;
 
@@ -68278,6 +68019,465 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'download_date')) then
+        execute 'alter table market_core_object add "download_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'external_advertisement_id')) then
+        execute 'alter table market_core_object add "external_advertisement_id" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'advertisement_description')) then
+        execute 'alter table market_core_object add "advertisement_description" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'area_from')) then
+        execute 'alter table market_core_object add "area_from" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'name')) then
+        execute 'alter table market_core_object add "name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'flat_number')) then
+        execute 'alter table market_core_object add "flat_number" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'section_number')) then
+        execute 'alter table market_core_object add "section_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'flat_type')) then
+        execute 'alter table market_core_object add "flat_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'deal_type')) then
+        execute 'alter table market_core_object add "deal_type" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'deal_type_code')) then
+        execute 'alter table market_core_object add "deal_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'house_line')) then
+        execute 'alter table market_core_object add "house_line" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'house_line_code')) then
+        execute 'alter table market_core_object add "house_line_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'developer')) then
+        execute 'alter table market_core_object add "developer" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'finishing_condition')) then
+        execute 'alter table market_core_object add "finishing_condition" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'finishing_condition_code')) then
+        execute 'alter table market_core_object add "finishing_condition_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'house_type')) then
+        execute 'alter table market_core_object add "house_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'house_type_code')) then
+        execute 'alter table market_core_object add "house_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'layout')) then
+        execute 'alter table market_core_object add "layout" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'layout_code')) then
+        execute 'alter table market_core_object add "layout_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'permitted_use_type')) then
+        execute 'alter table market_core_object add "permitted_use_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'permitted_use_type_code')) then
+        execute 'alter table market_core_object add "permitted_use_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'driveway_type')) then
+        execute 'alter table market_core_object add "driveway_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'driveway_type_code')) then
+        execute 'alter table market_core_object add "driveway_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_area_unit_type')) then
+        execute 'alter table market_core_object add "parcel_area_unit_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_area_unit_type_code')) then
+        execute 'alter table market_core_object add "parcel_area_unit_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_status')) then
+        execute 'alter table market_core_object add "parcel_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_status_code')) then
+        execute 'alter table market_core_object add "parcel_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_type')) then
+        execute 'alter table market_core_object add "parcel_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'parcel_type_code')) then
+        execute 'alter table market_core_object add "parcel_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'electricity_location_type')) then
+        execute 'alter table market_core_object add "electricity_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'electricity_location_type_code')) then
+        execute 'alter table market_core_object add "electricity_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_electricity')) then
+        execute 'alter table market_core_object add "possibility_to_connect_electricity" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'electricity_power')) then
+        execute 'alter table market_core_object add "electricity_power" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_location_type')) then
+        execute 'alter table market_core_object add "gas_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_location_type_code')) then
+        execute 'alter table market_core_object add "gas_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_gas')) then
+        execute 'alter table market_core_object add "possibility_to_connect_gas" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_capacity')) then
+        execute 'alter table market_core_object add "gas_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_pressure_type')) then
+        execute 'alter table market_core_object add "gas_pressure_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'gas_pressure_type_code')) then
+        execute 'alter table market_core_object add "gas_pressure_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_location_type')) then
+        execute 'alter table market_core_object add "drainage_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_location_type_code')) then
+        execute 'alter table market_core_object add "drainage_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_drainage')) then
+        execute 'alter table market_core_object add "possibility_to_connect_drainage" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_capacity')) then
+        execute 'alter table market_core_object add "drainage_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_type')) then
+        execute 'alter table market_core_object add "drainage_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'drainage_type_code')) then
+        execute 'alter table market_core_object add "drainage_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_location_type')) then
+        execute 'alter table market_core_object add "water_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_location_type_code')) then
+        execute 'alter table market_core_object add "water_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'possibility_to_connect_water')) then
+        execute 'alter table market_core_object add "possibility_to_connect_water" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_capacity')) then
+        execute 'alter table market_core_object add "water_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_type')) then
+        execute 'alter table market_core_object add "water_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('market_core_object', 'water_type_code')) then
+        execute 'alter table market_core_object add "water_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table market_core_object add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68288,22 +68488,6 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('cadastral_number_index')) then
 	execute 'CREATE  INDEX cadastral_number_index on market_core_object (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('deal_type_code_index')) then
-	execute 'CREATE  INDEX deal_type_code_index on market_core_object (deal_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('parser_time_index')) then
-	execute 'CREATE  INDEX parser_time_index on market_core_object (parser_time)';
   end if;
 end $$;
 --<DO>--
@@ -68346,16 +68530,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parser_time')) then
-        execute 'alter table MARKET_CORE_OBJECT add "parser_time" TIMESTAMP';
+        execute 'alter table MARKET_CORE_OBJECT add "price" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -68364,52 +68539,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'address')) then
-        execute 'alter table MARKET_CORE_OBJECT add "address" VARCHAR(2000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'description')) then
-        execute 'alter table MARKET_CORE_OBJECT add "description" VARCHAR(10000)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'lat')) then
-        execute 'alter table MARKET_CORE_OBJECT add "lat" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'lng')) then
-        execute 'alter table MARKET_CORE_OBJECT add "lng" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'deal_type')) then
-        execute 'alter table MARKET_CORE_OBJECT add "deal_type" VARCHAR(50) NOT NULL';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'deal_type_code')) then
-        execute 'alter table MARKET_CORE_OBJECT add "deal_type_code" BIGINT NOT NULL';
+        execute 'alter table MARKET_CORE_OBJECT add "address" VARCHAR(2000) NOT NULL';
     end if;
 end $$;
 
@@ -68426,17 +68556,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'floors_count')) then
-        execute 'alter table MARKET_CORE_OBJECT add "floors_count" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'area')) then
-        execute 'alter table MARKET_CORE_OBJECT add "area" NUMERIC';
+        execute 'alter table MARKET_CORE_OBJECT add "area" NUMERIC NOT NULL';
     end if;
 end $$;
 
@@ -68471,24 +68592,6 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'process_type')) then
-        execute 'alter table MARKET_CORE_OBJECT add "process_type" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'process_type_code')) then
-        execute 'alter table MARKET_CORE_OBJECT add "process_type_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_market_segment')) then
         execute 'alter table MARKET_CORE_OBJECT add "property_market_segment" VARCHAR(255)';
     end if;
@@ -68500,24 +68603,6 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_market_segment_code')) then
         execute 'alter table MARKET_CORE_OBJECT add "property_market_segment_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'wall_material')) then
-        execute 'alter table MARKET_CORE_OBJECT add "wall_material" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'wall_material_code')) then
-        execute 'alter table MARKET_CORE_OBJECT add "wall_material_code" BIGINT';
     end if;
 end $$;
 
@@ -68544,7 +68629,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_typets_cipjs')) then
-        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs" VARCHAR(255)';
+        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -68553,97 +68638,7 @@ end $$;
 DO $$
 begin
     if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'property_typets_cipjs_code')) then
-        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs_code" BIGINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_by_date')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_by_date" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_by_bargain')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_by_bargain" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_by_rooms')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_by_rooms" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_by_stage')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_by_stage" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'price_after_correction_for_first_floor')) then
-        execute 'alter table MARKET_CORE_OBJECT add "price_after_correction_for_first_floor" NUMERIC';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'phone_number')) then
-        execute 'alter table MARKET_CORE_OBJECT add "phone_number" VARCHAR(255)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'placement_type')) then
-        execute 'alter table MARKET_CORE_OBJECT add "placement_type" VARCHAR(256)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'is_operating_costs_included')) then
-        execute 'alter table MARKET_CORE_OBJECT add "is_operating_costs_included" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'entrance_type')) then
-        execute 'alter table MARKET_CORE_OBJECT add "entrance_type" VARCHAR(256)';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
-    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'renovation')) then
-        execute 'alter table MARKET_CORE_OBJECT add "renovation" VARCHAR(256)';
+        execute 'alter table MARKET_CORE_OBJECT add "property_typets_cipjs_code" BIGINT NOT NULL';
     end if;
 end $$;
 
@@ -68669,6 +68664,465 @@ end $$;
 
 DO $$
 begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'download_date')) then
+        execute 'alter table MARKET_CORE_OBJECT add "download_date" TIMESTAMP';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'external_advertisement_id')) then
+        execute 'alter table MARKET_CORE_OBJECT add "external_advertisement_id" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'advertisement_description')) then
+        execute 'alter table MARKET_CORE_OBJECT add "advertisement_description" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'area_from')) then
+        execute 'alter table MARKET_CORE_OBJECT add "area_from" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'name')) then
+        execute 'alter table MARKET_CORE_OBJECT add "name" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'flat_number')) then
+        execute 'alter table MARKET_CORE_OBJECT add "flat_number" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'section_number')) then
+        execute 'alter table MARKET_CORE_OBJECT add "section_number" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'flat_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "flat_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'deal_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "deal_type" VARCHAR(50) NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'deal_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "deal_type_code" BIGINT NOT NULL';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'house_line')) then
+        execute 'alter table MARKET_CORE_OBJECT add "house_line" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'house_line_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "house_line_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'developer')) then
+        execute 'alter table MARKET_CORE_OBJECT add "developer" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'finishing_condition')) then
+        execute 'alter table MARKET_CORE_OBJECT add "finishing_condition" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'finishing_condition_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "finishing_condition_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'house_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "house_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'house_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "house_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'layout')) then
+        execute 'alter table MARKET_CORE_OBJECT add "layout" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'layout_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "layout_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'permitted_use_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "permitted_use_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'permitted_use_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "permitted_use_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'driveway_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "driveway_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'driveway_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "driveway_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_area_unit_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_area_unit_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_area_unit_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_area_unit_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_status')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_status" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_status_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_status_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'parcel_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "parcel_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'electricity_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "electricity_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'electricity_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "electricity_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_electricity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_electricity" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'electricity_power')) then
+        execute 'alter table MARKET_CORE_OBJECT add "electricity_power" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_gas')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_gas" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_capacity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_pressure_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_pressure_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'gas_pressure_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "gas_pressure_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_drainage')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_drainage" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_capacity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'drainage_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "drainage_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_location_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_location_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_location_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_location_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'possibility_to_connect_water')) then
+        execute 'alter table MARKET_CORE_OBJECT add "possibility_to_connect_water" SMALLINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_capacity')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_capacity" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_type')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_type" VARCHAR(255)';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('MARKET_CORE_OBJECT', 'water_type_code')) then
+        execute 'alter table MARKET_CORE_OBJECT add "water_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
   if (not core_updstru_checkexistconstraint('market_core_object_pkey')) then
     execute 'alter table MARKET_CORE_OBJECT add constraint market_core_object_pkey primary key (id)';
   end if;
@@ -68679,22 +69133,6 @@ DO $$
 begin
   if (not CORE_UPDSTRU_CheckExistIndex('cadastral_number_index')) then
 	execute 'CREATE  INDEX cadastral_number_index on MARKET_CORE_OBJECT (cadastral_number)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('deal_type_code_index')) then
-	execute 'CREATE  INDEX deal_type_code_index on MARKET_CORE_OBJECT (deal_type_code)';
-  end if;
-end $$;
---<DO>--
-
-DO $$
-begin
-  if (not CORE_UPDSTRU_CheckExistIndex('parser_time_index')) then
-	execute 'CREATE  INDEX parser_time_index on MARKET_CORE_OBJECT (parser_time)';
   end if;
 end $$;
 --<DO>--

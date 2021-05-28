@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
 using Core.Register.RegisterEntities;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.LongProcess;
