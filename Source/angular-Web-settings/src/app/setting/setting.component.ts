@@ -11,7 +11,10 @@ export class SettingComponent implements OnInit {
 
   constructor(private api: ApiService, private route: Router) { }
 
+
+
   ngOnInit(): void {
+    this.api.settingApi.getSetting().subscribe(d => console.log(d));
   }
 
   logOut(){

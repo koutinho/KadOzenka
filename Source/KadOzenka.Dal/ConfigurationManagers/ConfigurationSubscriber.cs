@@ -22,6 +22,7 @@ namespace KadOzenka.Dal.ConfigurationManagers
 			_configManager = manger;
 
 			Log.ForContext("KoConfig", manger, true).Debug("Конфигурационный менеджер кад оценки заполнен");
+
 			ChangeToken.OnChange(config.GetReloadToken, InvokeChanged, config);
 
 			return builder;
