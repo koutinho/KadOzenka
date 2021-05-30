@@ -164,6 +164,8 @@
         <OutputPath>.\bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+		<EnvironmentName>Development</EnvironmentName>
+		<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
       </PropertyGroup>
 	  <ItemGroup>
 	    <None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json" />
