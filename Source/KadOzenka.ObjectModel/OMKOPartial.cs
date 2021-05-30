@@ -596,8 +596,8 @@ namespace ObjectModel.KO
 	            log.ForContext("UnitId", this.Id)
 		            .ForContext("PrevUnitId", lastUnit.Id)
 		            .Verbose("Найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
-                if (lastUnit.CadastralBlock == this.CadastralBlock)
-                {
+                //if (lastUnit.CadastralBlock == this.CadastralBlock)
+                //{
                     List<ObjectModel.KO.OMFactorSettings> oldfactors = ObjectModel.KO.OMFactorSettings.Where(x => x.Inheritance_Code == ObjectModel.Directory.KO.FactorInheritance.ftKvartal).SelectAll().Execute();
                     log.ForContext("UnitId", this.Id)
 	                    .ForContext("FactorIds", oldfactors.Select(x => x.FactorId).ToArray())
@@ -608,15 +608,17 @@ namespace ObjectModel.KO
                     {
                         InheritedKOFactor(oldfactor.FactorId.ParseToLong(), lastUnit, log);
                     }
-                }
-                else
-                {
-	                log.ForContext("UnitId", this.Id)
-		                .ForContext("UnitCadastralQuarter", this.CadastralBlock)
-                        .ForContext("PrevUnitId", lastUnit.Id)
-                        .ForContext("PrevUnitCadastralQuarter", lastUnit.CadastralBlock)
-		                .Verbose("Кадастровый квартал у предыдущей единицы оценки не совпадает с текущим для {UnitCadastralNumber}", this.CadastralNumber);
-				}
+                //}
+                //else
+                //{
+	               // log.ForContext("UnitId", this.Id)
+		              //  .ForContext("UnitCadastralQuarter", this.CadastralBlock)
+		              //  .ForContext("PrevUnitId", lastUnit.Id)
+		              //  .ForContext("PrevUnitCadastralQuarter", lastUnit.CadastralBlock)
+		              //  .Verbose(
+			             //   "Кадастровый квартал у предыдущей единицы оценки не совпадает с текущим для {UnitCadastralNumber}",
+			             //   this.CadastralNumber);
+                //}
             }
             else
             {
@@ -624,7 +626,6 @@ namespace ObjectModel.KO
 	                    .Verbose("Не найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
             }
         }
-
     }
 
     public partial class OMModel

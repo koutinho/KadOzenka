@@ -32,7 +32,7 @@
             <div class="form-group"></div>
             <div class="form-group">
                 <div class="col-sm-12">
-                    <label>Запрос на удаление задания на оценку '@Model.TaskName' уже существует</label>
+                    <label>Запрос на удаление задания на оценку уже существует</label>
                 </div>
             </div>
         </div>
@@ -43,7 +43,14 @@
             <div class="form-group"></div>
             <div class="form-group">
                 <div class="col-sm-12">
-                    <label>Задание на оценку '@Model.TaskName' не может быть удалено.</label>
+                    @if(Model.TaskId == 0)
+                    {
+                        <label>Задание на оценку не найдено (возможно, было удалено ранее). Обновите страницу.</label>
+                    }
+                    else
+                    {
+                        <label>Задание на оценку '@Model.TaskName' не может быть удалено.</label>   
+                    }
                 </div>
             </div>
         </div>

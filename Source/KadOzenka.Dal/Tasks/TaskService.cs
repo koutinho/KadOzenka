@@ -599,7 +599,8 @@ namespace KadOzenka.Dal.Tasks
         public bool CanTaskBeDeleted(long taskId)
         {
             var task = OMTask.Where(x => x.Id == taskId).Select(x => x.Status_Code).ExecuteFirstOrDefault();
-            return task.Status_Code != KoTaskStatus.InWork;
+
+            return task != null && task.Status_Code != KoTaskStatus.InWork;
         }
 
         public void DeleteTask(long taskId, int userId)
