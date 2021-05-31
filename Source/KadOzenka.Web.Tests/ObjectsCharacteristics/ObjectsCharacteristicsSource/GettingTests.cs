@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+﻿using KadOzenka.Common.Tests;
+using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;

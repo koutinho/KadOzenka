@@ -1,0 +1,321 @@
+﻿<style>
+    .right-offset {
+        margin-right: 5px
+    }
+    .right-offset17 {
+        margin-right: 17px
+    }
+    .right-offset47 {
+        margin-right: 47px
+    }
+    .left-offset {
+        margin-left: 5px
+    }
+    .rvs-main-content {
+        display: inline;
+    }
+    .rvs-tab-strip .k-dropdown-wrap.k-state-default {
+        margin-right: 0px
+    }
+    .rvs-ddl .k-textbox .k-icon {
+        margin: -8px -6px 0;
+    }
+    .rvs-btn-delete {
+        text-decoration: none;
+        font-size: 24px;
+        top: 5px;
+        left: -5px;
+        position: relative;
+        opacity: 0.5;
+    }
+    .rvs-control-button {
+        color: rgba(10, 17, 36, 0.6);
+        display: inline-block;
+        line-height: 22px;
+    }
+
+    .rvs-control-button.active:not(.disable),
+    .rvs-control-button:hover:not(.disable)
+    {
+        color: #6699FF;
+    }
+
+        .rvs-control-button .icon-arrow_down {
+            font-size: 20px;
+            top: 3px;
+            position: relative;
+            cursor: pointer
+        }
+    .rvs-btn-delete:hover {
+        text-decoration: none;
+        opacity: 1;
+    }
+    .rvs-control-data .form-group .rvs-button {
+        height: 34px;
+        width: 34px;
+        padding: 0;
+    }
+
+    .rvs-ddl-tree.rvs-add-menu .k-input.k-readonly {
+        color: rgb(10, 17, 37);
+    }
+    .rvs-ddl-tree.rvs-add-menu .k-dropdown-wrap.k-state-default {
+        background: #fff;
+        border: 1px solid #E5E8F0;
+        min-width: 82px;
+    }
+    .rvs-ddl-tree.rvs-add-menu .k-dropdown-wrap.k-state-default.k-state-hover,
+    .rvs-ddl-tree.rvs-add-menu .k-dropdown-wrap.k-state-default.k-state-focused {
+        background-color: #b5bdcb;
+        background-image: url(textures/highlight.png);
+        background-image: none,linear-gradient(to bottom,rgba(255,255,255,.2) 0,rgba(255,255,255,0) 100%);
+        background-position: 50% 50%;
+    }
+    .rvs-tab-strip-content {
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
+    }
+
+    ul.rvs-ddl-reference {
+        padding: 0;
+        list-style-type: none;
+    }
+        ul.rvs-ddl-reference li:nth-last-child(n+2) {
+            margin-bottom: 10px;
+        }
+    .k-datepicker.rvs-date .k-icon {
+        margin-left: -8px;
+    }
+    [id^=rvs-el-][id$=-list],
+    [id^=rvs-el-] > .k-list-scroller { 
+        height: auto !important;
+        max-height: 500px;
+    }
+</style>
+
+<script id="rvs-add-menu-template" type="text/html">
+    <input type="text" class="rvs-ddl-tree rvs-add-menu" data-init="initAddMenu" style="width: 80px;margin-right: 50px;" />
+</script> 
+
+<script id="rvs-button-template" type="text/html">
+    <span class="rvs-control-button">
+        <span class="rvs-control-button-text" style="cursor: pointer;">{{text}}</span>:&nbsp;<span class="rvs-control-button-text-value" style="font-weight:bold">{{textValue}}</span>
+        <span class="icon-arrow_down"></span>
+        <a class='icon-close_fill rvs-btn-delete' title='Удалить условие' href='#'></a>
+    </span>
+</script>
+
+<script id="rvs-number-integer-control-template" type="text/html">
+    <div class="rvs-control-data" data-width="420" data-height="350">
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-single" checked="checked" data-type="value" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset47">Значение</span>
+            <input type="text" class="k-textbox rvs-input-filter rvs-number only-int rvs-value" data-type-element="tb" style="width: 100px" />
+        </div>
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-range" data-type="range" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset">В диапазоне</span>
+            <span class="right-offset">от</span>
+            <input type="text" class="k-textbox rvs-input-filter rvs-from only-int" style="width: 100px" data-type-element="tb" />
+            <span class="left-offset right-offset">до</span>
+            <input type="text" class="k-textbox rvs-input-filter rvs-to only-int" style="width: 100px" data-type-element="tb" />
+        </div>
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-null" data-type="IsNull" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset" style="margin-top: 7px;display: inline-block;">Пусто</span>
+        </div>
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-not-null" data-type="IsNotNull" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset" style="margin-top: 7px;display: inline-block;">Не пусто</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+            <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+            <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+        </div>
+    </div>
+</script>
+
+<script id="rvs-number-decimal-control-template" type="text/html">
+    <div class="rvs-control-data" data-width="420" data-height="350">
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-single" checked="checked" data-type="value" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset47">Значение</span>
+            <input type="text" class="k-textbox rvs-input-filter rvs-number only-float rvs-value" data-type-element="tb" style="width: 100px" />
+        </div>
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-range" data-type="range" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset">В диапазоне</span>
+            <span class="right-offset">от</span>
+            <input type="text" class="k-textbox rvs-input-filter rvs-from only-float" style="width: 100px" data-type-element="tb" />
+            <span class="left-offset right-offset">до</span>
+            <input type="text" class="k-textbox rvs-input-filter rvs-to only-float" style="width: 100px" data-type-element="tb" />
+        </div>
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-null" data-type="IsNull" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset" style="margin-top: 7px;display: inline-block;">Пусто</span>
+        </div>
+        <div class="form-group">
+            <input type="radio" name="rvs-rb-number" class="k-radio rvs-not-null" data-type="IsNotNull" data-type-element="radio" data-init="initRadio">
+            <span class="right-offset" style="margin-top: 7px;display: inline-block;">Не пусто</span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+            <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+            <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+        </div>
+    </div>
+</script>
+
+<script id="rvs-date-control-template" type="text/html">
+    <div class="rvs-control-data" data-width="680" data-height="350">
+        <div class="rvs-tab-strip" data-init="initTabStrip" style="margin-bottom: 15px;">
+            <ul>
+                <li class="k-state-active">
+                    Календарь
+                </li>
+                <li>
+                    Функции
+                </li>                 
+            </ul>            
+            <div class="rvs-tab-strip-content rvs-value-content" style="padding: 0 20px 0 20px;">
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-single" checked="checked" data-type="value" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset47">Значение</span>
+                        <input type="text" class="k-textbox rvs-input-filter rvs-date rvs-value" data-type-element="dtp" data-init="initDateTimePicker" />
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-range" data-type="range" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset">В диапазоне</span>
+                        <span class="right-offset">от</span>
+                        <input type="text" class="k-textbox rvs-input-filter rvs-date rvs-from" data-type-element="dtp" data-init="initDateTimePicker" />
+                        <span class="left-offset right-offset">до</span>
+                        <input type="text" class="k-textbox rvs-input-filter rvs-date rvs-to" data-type-element="dtp" data-init="initDateTimePicker" />
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-day" data-type="day" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset17" style="margin-top: 7px;display: inline-block;">В течение дня</span>
+                        <input type="text" class="k-textbox rvs-input-filter rvs-date rvs-value" style="width:210px" data-type-element="dp" data-init="initDatePicker" />
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-null" data-type="IsNull" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset" style="margin-top: 7px;display: inline-block;">Пусто</span>
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-not-null" data-type="IsNotNull" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset" style="margin-top: 7px;display: inline-block;">Не пусто</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rvs-tab-strip-content rvs-function-content" style="padding: 0 20px 0 20px;">
+                <div class="form-horizontal col-sm-12">
+                    <div class="form-group"></div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-function-single" checked="checked" data-type="function-value" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset47">Значение</span>
+                        <input type="text" class="k-textbox rvs-ddl rvs-date rvs-value" style="width:210px" data-type-element="ddl" data-init="initDropDownFunctionList" />
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-function-range" data-type="function-range" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset">В диапазоне</span>
+                        <span class="right-offset">от</span>
+                        <input type="text" class="k-textbox rvs-ddl rvs-date rvs-from" style="width:210px" data-type-element="ddl" data-init="initDropDownFunctionList" />
+                        <span class="left-offset right-offset">до</span>
+                        <input type="text" class="k-textbox rvs-ddl rvs-date rvs-to" style="width:210px" data-type-element="ddl" data-init="initDropDownFunctionList" />
+                    </div>
+                    <div class="form-group">
+                        <input type="radio" name="rvs-rb-date" class="k-radio rvs-function-day" data-type="function-day" data-type-element="radio" data-init="initRadio">
+                        <span class="right-offset17" style="margin-top: 7px;display: inline-block;">В течение дня</span>
+                        <input type="text" class="k-textbox rvs-ddl rvs-date rvs-value" style="width:210px" data-type="not-null" data-type-element="ddl" data-init="initDropDownFunctionList" />
+                    </div>
+                </div>
+            </div>
+        </div> 
+        <div class="form-group" style="margin-bottom: 0;">
+            <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+            <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+            <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+        </div>
+    </div>
+</script>
+
+<script id="rvs-string-control-template" type="text/html">
+    <div class="rvs-control-data" data-width="435" data-height="300" data-after-init="initTooltip">
+        <div class="form-group">
+            <select class="k-input rvs-ddl rvs-condition" data-type-element="ddl" data-init="initDropDownConditionList" style="width:180px">
+                <option value="Equal">Равно</option>
+                <option value="NotEqual">Не равно</option>
+                <option value="BeginFromNonCaseSensitive">Начинается c</option>
+                <option value="EndTo">Заканчивается на</option>
+                <option value="ContainsNonCaseSensitive">Содержит</option>
+                <option value="NotContainsNonCaseSensitive">Не содержит</option>
+                @*<option value="Like">Похоже на</option>
+                <option value="NotLike">Не похоже на</option>*@
+                <option value="IsNull">Пусто</option>
+                <option value="IsNotNull">Не пусто</option>
+            </select>
+            <label>
+                <input type="text" class="form-control k-textbox rvs-string rvs-value" style="width: 200px;" data-type-element="tb"/>
+            </label>
+            <span class="k-icon k-i-question"></span>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+            <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+            <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+        </div>
+    </div>
+</script>
+
+<script id="rvs-boolean-control-template" type="text/html">
+    <div class="rvs-control-data" data-width="250" data-height="100">
+        <div class="form-group">
+            <span class="right-offset">Выберите</span>
+            <div class="rvs-bool" data-init="initButtonGroup">
+                <span>Да</span>
+                <span>Нет</span>
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+            <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+            <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+        </div>
+    </div>
+</script>
+
+<script id="rvs-reference-control-template" type="text/html">
+    <div class="rvs-control-data rvs-value" data-width="400" data-height="65">
+        <div class="form-group">
+            <input type="text" class="rvs-ddl rvs-ddl-reference" data-type-element="multiSelect" />
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+            <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+            <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+            <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+        </div>
+    </div>
+</script>  
+
+<script id="rvs-control-buttons-template" type="text/html">
+    <div class="form-group" style="margin-bottom: 0;">
+        <button class="k-button rvs-button rvs-btn-search" title="Найти"><span class="k-icon k-i-zoom"></span></button>
+        <button class="k-button rvs-button rvs-btn-ok" title="Применить"><span class="k-icon k-i-check"></span></button>
+        <button class="k-button rvs-button rvs-btn-clear" title="Очистить"><span class="k-icon k-i-close"></span></button>
+    </div>
+</script>  
+
+<script id="rvs-reference-checkbox-template" type="text/html">
+    <ul class="rvs-lb rvs-ddl-reference" data-role="listbox">
+        {{#references}}
+        <li>
+            <input class="k-checkbox" type="checkbox" name="{{text}}" id="cb{{id}}" value="{{id}}" style="width: 100%" />
+            <label class="k-checkbox-label" for="cb{{id}}"></label>
+            <span>{{text}}</span>
+        </li>
+        {{/references}}
+    </ul>
+</script>

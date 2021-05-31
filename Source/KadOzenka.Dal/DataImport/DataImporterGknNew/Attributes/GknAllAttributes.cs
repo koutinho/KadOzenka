@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
+using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.XmlParser;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 
@@ -64,7 +66,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				(o, v) => o.CadastralNumber = v?.ToString());
 
 			AddAttributeToGeneral(generalSection.DateCreatedAttributeIdValue, current => current.DateCreate,
-				(o, v) => o.DateCreate = (DateTime?)v);
+				(o, v) => o.DateCreate = CastToDateTime(generalSection.DateCreatedAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralBlockAttributeIdValue,
 				current => current.CadastralNumberBlock, (o, v) => o.CadastralNumberBlock = v?.ToString());
@@ -72,31 +74,46 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			#region Cadastral Cost Block
 
 			AddAttributeToGeneral(generalSection.CadastralCostValueAttributeIdValue,
-				current => current.CadastralCost?.Value, (o, v) => o.CadastralCost.Value = v?.ParseToDouble());
+				current => current.CadastralCost?.Value,
+				(o, v) => o.CadastralCost.Value = CastToDouble(generalSection.CadastralCostValueAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostDateValuationAttributeIdValue,
-				current => current.CadastralCost?.DateValuation, (o, v) => o.CadastralCost.DateValuation = (DateTime?)v);
+				current => current.CadastralCost?.DateValuation,
+				(o, v) => o.CadastralCost.DateValuation =
+					CastToDateTime(generalSection.CadastralCostDateValuationAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostDateEnteringAttributeIdValue,
-				current => current.CadastralCost?.DateEntering, (o, v) => o.CadastralCost.DateEntering = (DateTime?)v);
+				current => current.CadastralCost?.DateEntering,
+				(o, v) => o.CadastralCost.DateEntering =
+					CastToDateTime(generalSection.CadastralCostDateEnteringAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostDateApprovalAttributeIdValue,
-				current => current.CadastralCost?.DateApproval, (o, v) => o.CadastralCost.DateApproval = (DateTime?)v);
+				current => current.CadastralCost?.DateApproval,
+				(o, v) => o.CadastralCost.DateApproval =
+					CastToDateTime(generalSection.CadastralCostDateApprovalAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostDocNumberAttributeIdValue,
 				current => current.CadastralCost?.DocNumber, (o, v) => o.CadastralCost.DocNumber = v?.ToString());
 
 			AddAttributeToGeneral(generalSection.CadastralCostDocDateAttributeIdValue,
-				current => current.CadastralCost?.DocDate, (o, v) => o.CadastralCost.DocDate = (DateTime?)v);
+				current => current.CadastralCost?.DocDate,
+				(o, v) => o.CadastralCost.DocDate =
+					CastToDateTime(generalSection.CadastralCostDocDateAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostApplicationDateAttributeIdValue,
-				current => current.CadastralCost?.ApplicationDate, (o, v) => o.CadastralCost.ApplicationDate = (DateTime?)v);
+				current => current.CadastralCost?.ApplicationDate,
+				(o, v) => o.CadastralCost.ApplicationDate =
+					CastToDateTime(generalSection.CadastralCostApplicationDateAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostRevisalStatementDateAttributeIdValue,
-				current => current.CadastralCost?.RevisalStatementDate, (o, v) => o.CadastralCost.RevisalStatementDate = (DateTime?)v);
+				current => current.CadastralCost?.RevisalStatementDate,
+				(o, v) => o.CadastralCost.RevisalStatementDate =
+					CastToDateTime(generalSection.CadastralCostRevisalStatementDateAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostApplicationLastDateAttributeIdValue,
-				current => current.CadastralCost?.ApplicationLastDate, (o, v) => o.CadastralCost.ApplicationLastDate = (DateTime?)v);
+				current => current.CadastralCost?.ApplicationLastDate,
+				(o, v) => o.CadastralCost.ApplicationLastDate =
+					CastToDateTime(generalSection.CadastralCostApplicationLastDateAttributeIdValue, v));
 
 			AddAttributeToGeneral(generalSection.CadastralCostDocNameAttributeIdValue,
 				current => current.CadastralCost?.DocName, (o, v) => o.CadastralCost.DocName = v?.ToString());
@@ -211,11 +228,13 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				current => xmlCodeName.GetNames(((xmlObjectParcel) current).InnerCadastralNumbers),
 				(o, v) => o.InnerCadastralNumbers = new List<string> {v?.ToString()});
 
-			AddAttributeToParcel(parcelSection.AreaAttributeIdValue, 
-				current => ((xmlObjectParcel)current).Area, (o, v) => o.Area = v?.ParseToDouble());
-			
-			AddAttributeToParcel(parcelSection.AreaInaccuracyAttributeIdValue, 
-				current => ((xmlObjectParcel)current).AreaInaccuracy, (o, v) => o.AreaInaccuracy = v?.ParseToDouble());
+			AddAttributeToParcel(parcelSection.AreaAttributeIdValue,
+				current => ((xmlObjectParcel) current).Area,
+				(o, v) => o.Area = CastToDouble(parcelSection.AreaAttributeIdValue, v));
+
+			AddAttributeToParcel(parcelSection.AreaInaccuracyAttributeIdValue,
+				current => ((xmlObjectParcel) current).AreaInaccuracy,
+				(o, v) => o.AreaInaccuracy = CastToDouble(parcelSection.AreaInaccuracyAttributeIdValue, v));
 
 			AddAttributeToParcel(parcelSection.CategoryAttributeIdValue, 
 				current => ((xmlObjectParcel)current).Category?.Name, (o, v) => o.Category.Name = v?.ToString());
@@ -366,7 +385,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
-							element.Area = v?.ParseToDouble();
+							element.Area = CastToDouble(subParcel.AreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
@@ -375,7 +394,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
-							element.AreaInaccuracy = v?.ParseToDouble();
+							element.AreaInaccuracy = CastToDouble(subParcel.AreaInaccuracyAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 
@@ -437,7 +456,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
-								element.Registration.Date = v.ParseToDateTimeNullable();
+								element.Registration.Date = CastToDateTime(encumbrance.RegistrationDateAttributeIdValue, v);
 							},
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
@@ -482,7 +501,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObject(o, iCounter, jCounter);
-								element.Document.Date = v.ParseToDateTimeNullable();
+								element.Document.Date = CastToDateTime(encumbrance.Document?.DateAttributeIdValue, v);
 							},
 							current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1 && ((xmlObjectParcel)current).SubParcels[iCounter].Encumbrances.Count >= jCounter + 1);
 
@@ -519,7 +538,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubParcelObject(o, iCounter);
-							element.DateCreated = v.ParseToDateTimeNullable();
+							element.DateCreated = CastToDateTime(subParcel.DateCreatedAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).SubParcels.Count >= iCounter + 1);
 				}
@@ -629,7 +648,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitZoneAndTerritoriesObject(o, iCounter);
-							element.Document.Date = v.ParseToDateTimeNullable();
+							element.Document.Date = CastToDateTime(zoneAndTerritory.Document?.DateAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).ZonesAndTerritories.Count >= iCounter + 1);
 
@@ -695,7 +714,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
-							element.InspectionEnd = v.ParseToDateTimeNullable();
+							element.InspectionEnd = CastToDateTime(supervisionEvent.InspectionEndAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
@@ -731,7 +750,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
-							element.IdentifiedViolations.Area = v?.ParseToDouble();
+							element.IdentifiedViolations.Area =
+								CastToDouble(supervisionEvent.IdentifiedViolationsAreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
@@ -776,7 +796,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
-							element.DocRequisites.Date = v.ParseToDateTimeNullable();
+							element.DocRequisites.Date = CastToDateTime(supervisionEvent.DocRequisites?.DateAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
@@ -857,7 +877,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitGovernmentLandSupervisionObject(o, iCounter);
-							element.EliminationDocRequisites.Date = v.ParseToDateTimeNullable();
+							element.EliminationDocRequisites.Date = CastToDateTime(supervisionEvent.EliminationDocRequisites?.DateAttributeIdValue, v);
 						},
 						current => ((xmlObjectParcel)current).GovernmentLandSupervision.Count >= iCounter + 1);
 
@@ -902,8 +922,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				(o, v) => o.SurveyingProjectDecisionRequisites.Number = v?.ToString());
 
 			AddAttributeToParcel(parcelSection.SurveyingProjectDecisionRequisites?.DateAttributeIdValue,
-				current => ((xmlObjectParcel)current).SurveyingProjectDecisionRequisites?.Date,
-				(o, v) => o.SurveyingProjectDecisionRequisites.Date = v.ParseToDateTimeNullable());
+				current => ((xmlObjectParcel) current).SurveyingProjectDecisionRequisites?.Date,
+				(o, v) => o.SurveyingProjectDecisionRequisites.Date =
+					CastToDateTime(parcelSection.SurveyingProjectDecisionRequisites?.DateAttributeIdValue, v));
 
 			AddAttributeToParcel(parcelSection.SurveyingProjectDecisionRequisites?.IssueOrganAttributeIdValue,
 				current => ((xmlObjectParcel)current).SurveyingProjectDecisionRequisites?.IssueOrgan,
@@ -958,8 +979,9 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				(o, v) => o.HiredHouse.DocHiredHouse.Number = v?.ToString());
 
 			AddAttributeToParcel(parcelSection.HiredHouse?.DocHiredHouse?.DateAttributeIdValue,
-				current => ((xmlObjectParcel)current).HiredHouse?.DocHiredHouse?.Date,
-				(o, v) => o.HiredHouse.DocHiredHouse.Date = v.ParseToDateTimeNullable());
+				current => ((xmlObjectParcel) current).HiredHouse?.DocHiredHouse?.Date,
+				(o, v) => o.HiredHouse.DocHiredHouse.Date =
+					CastToDateTime(parcelSection.HiredHouse?.DocHiredHouse?.DateAttributeIdValue, v));
 
 			AddAttributeToParcel(parcelSection.HiredHouse?.DocHiredHouse?.IssueOrganAttributeIdValue,
 				current => ((xmlObjectParcel)current).HiredHouse?.DocHiredHouse?.IssueOrgan,
@@ -1085,7 +1107,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToBuilding(buildingSection.AreaAttributeIdValue, 
 				current => ((xmlObjectBuild)current).Area,
-				(o, v) => o.Area = v?.ParseToDouble());
+				(o, v) => o.Area = CastToDouble(buildingSection.AreaAttributeIdValue, v));
 
 			AddAttributeToBuilding(buildingSection.ObjectPermittedUsesAttributeIdValue, 
 				current => xmlCodeName.GetNames(((xmlObjectBuild)current).ObjectPermittedUses),
@@ -1106,7 +1128,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitFlatSubBuilding(o, iCounter);
-							element.Area = v?.ParseToDouble();
+							element.Area = CastToDouble(subBuilding.AreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectBuild) current).SubBuildings.Count >= iCounter + 1);
 
@@ -1151,7 +1173,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
-								element.Registration.Date = v.ParseToDateTimeNullable();
+								element.Registration.Date = CastToDateTime(encumbrance.RegistrationDateAttributeIdValue, v);
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
 
@@ -1196,7 +1218,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObjectForBuilding(o, iCounter, jCounter);
-								element.Document.Date = v.ParseToDateTimeNullable();
+								element.Document.Date = CastToDateTime(encumbrance.Document?.DateAttributeIdValue, v);
 							},
 							current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1 && ((xmlObjectBuild)current).SubBuildings[iCounter].EncumbrancesOks.Count >= jCounter + 1);
 
@@ -1233,7 +1255,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitFlatSubBuilding(o, iCounter);
-							element.DateCreated = v.ParseToDateTimeNullable();
+							element.DateCreated = CastToDateTime(subBuilding.DateCreatedAttributeIdValue, v);
 						},
 						current => ((xmlObjectBuild)current).SubBuildings.Count >= iCounter + 1);
 				}
@@ -1290,10 +1312,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.NumberAttributeIdValue, 
 				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Number,
 				(o, v) => o.CulturalHeritage.Document.Number = v?.ToString());
-			
-			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.DateAttributeIdValue, 
-				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.Date,
-				(o, v) => o.CulturalHeritage.Document.Date = v.ParseToDateTimeNullable());
+
+			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.DateAttributeIdValue,
+				current => ((xmlObjectBuild) current).CulturalHeritage?.Document?.Date,
+				(o, v) => o.CulturalHeritage.Document.Date =
+					CastToDateTime(buildingSection.CulturalHeritage?.Document?.DateAttributeIdValue, v));
 			
 			AddAttributeToBuilding(buildingSection.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, 
 				current => ((xmlObjectBuild)current).CulturalHeritage?.Document?.IssueOrgan,
@@ -1480,7 +1503,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
-								element.Registration.Date = v.ParseToDateTimeNullable();
+								element.Registration.Date = CastToDateTime(encumbrance.RegistrationDateAttributeIdValue, v);
 							},
 							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
 						
@@ -1525,7 +1548,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObjectForConstruction(o, iCounter, jCounter);
-								element.Document.Date = v.ParseToDateTimeNullable();
+								element.Document.Date = CastToDateTime(encumbrance.Document?.DateAttributeIdValue, v);
 							},
 							current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1 && ((xmlObjectConstruction)current).SubConstructions[iCounter].EncumbrancesOks.Count >= jCounter + 1);
 						
@@ -1562,7 +1585,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubConstruction(o, iCounter);
-							element.DateCreated = v.ParseToDateTimeNullable();
+							element.DateCreated = CastToDateTime(subConstruction.DateCreatedAttributeIdValue, v);
 						},
 						current => ((xmlObjectConstruction)current).SubConstructions.Count >= iCounter + 1);
 				}
@@ -1619,10 +1642,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.NumberAttributeIdValue, 
 				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Number,
 				(o, v) => o.CulturalHeritage.Document.Number = v?.ToString());
-			
-			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.DateAttributeIdValue, 
-				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.Date,
-				(o, v) => o.CulturalHeritage.Document.Date = v.ParseToDateTimeNullable());
+
+			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.DateAttributeIdValue,
+				current => ((xmlObjectConstruction) current).CulturalHeritage?.Document?.Date,
+				(o, v) => o.CulturalHeritage.Document.Date =
+					CastToDateTime(constructionSection.CulturalHeritage?.Document?.DateAttributeIdValue, v));
 			
 			AddAttributeToConstruction(constructionSection.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, 
 				current => ((xmlObjectConstruction)current).CulturalHeritage?.Document?.IssueOrgan,
@@ -1744,7 +1768,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToFlat(flatSection.AreaAttributeIdValue, 
 				current => ((xmlObjectFlat)current).Area,
-				(o, v) => o.Area = v?.ParseToDouble());
+				(o, v) => o.Area = CastToDouble(flatSection.AreaAttributeIdValue, v));
 
 			AddAttributeToFlat(flatSection.PositionNumberOnPlanAttributeIdValue, 
 				current => ((xmlObjectFlat)current).Position?.NumberOnPlan,
@@ -1821,7 +1845,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubFlat(o, iCounter);
-							element.Area = v?.ParseToDouble();
+							element.Area = CastToDouble(subFlat.AreaAttributeIdValue, v);
 						},
 						current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1);
 
@@ -1865,7 +1889,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
-								element.Registration.Date = v?.ParseToDateTimeNullable();
+								element.Registration.Date = CastToDateTime(encumbrance.RegistrationDateAttributeIdValue, v);
 							},
 							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
 						
@@ -1910,7 +1934,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 							(o, v) =>
 							{
 								var element = InitEncumbrancesObjectForFlat(o, iCounter, jCounter);
-								element.Document.Date = v?.ParseToDateTimeNullable();
+								element.Document.Date = CastToDateTime(encumbrance.Document?.DateAttributeIdValue, v);
 							},
 							current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1 && ((xmlObjectFlat)current).SubFlats[iCounter].EncumbrancesOks.Count >= jCounter + 1);
 						
@@ -1946,7 +1970,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 						(o, v) =>
 						{
 							var element = InitSubFlat(o, iCounter);
-							element.DateCreated = v?.ParseToDateTimeNullable();
+							element.DateCreated = CastToDateTime(subFlat.DateCreatedAttributeIdValue, v);
 						},
 						current => ((xmlObjectFlat)current).SubFlats.Count >= iCounter + 1);
 				}
@@ -1995,10 +2019,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.NumberAttributeIdValue, 
 				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Number,
 				(o, v) => o.CulturalHeritage.Document.Number = v?.ToString());
-			
-			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.DateAttributeIdValue, 
-				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.Date,
-				(o, v) => o.CulturalHeritage.Document.Date = v?.ParseToDateTimeNullable());
+
+			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.DateAttributeIdValue,
+				current => ((xmlObjectFlat) current).CulturalHeritage?.Document?.Date,
+				(o, v) => o.CulturalHeritage.Document.Date =
+					CastToDateTime(flatSection.CulturalHeritage?.Document?.DateAttributeIdValue, v));
 			
 			AddAttributeToFlat(flatSection.CulturalHeritage?.Document?.IssueOrganAttributeIdValue, 
 				current => ((xmlObjectFlat)current).CulturalHeritage?.Document?.IssueOrgan,
@@ -2094,7 +2119,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToUncompleted(uncompletedSection.DegreeReadinessAttributeIdValue, 
 				current => ((xmlObjectUncomplited)current).DegreeReadiness,
-				(o, v) => o.DegreeReadiness = v?.ParseToLongNullable());
+				(o, v) => o.DegreeReadiness = CastToLong(uncompletedSection.DegreeReadinessAttributeIdValue, v));
 
 			AddAttributeToUncompleted(uncompletedSection.FacilityCadastralNumberAttributeIdValue, 
 				current => ((xmlObjectUncomplited)current).FacilityCadastralNumber,
@@ -2163,7 +2188,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			AddAttributeToCarPlace(carPlaceSection.AreaAttributeIdValue, 
 				current => ((xmlObjectCarPlace)current).Area,
-				(o, v) => o.Area = v?.ParseToDouble());
+				(o, v) => o.Area = CastToDouble(carPlaceSection.AreaAttributeIdValue, v));
 
 			AddAttributeToCarPlace(carPlaceSection.PositionInObject?.NumberAttributeIdValue,
 				current => ((xmlObjectCarPlace)current).PositionInObject?.Number,
@@ -2254,7 +2279,42 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			return element;
 		}
-		
+
+		public static DateTime? CastToDateTime(long? attributeId, object value)
+		{
+			if (value == null)
+				return null;
+
+			var date = value.ParseToDateTime();
+			if (date == DateTime.MinValue || date == DateTime.MaxValue || date == default)
+				throw new CastingToAttributeTypeException(attributeId, value);
+
+			return date;
+		}
+
+		public static double? CastToDouble(long? attributeId, object value)
+		{
+			if (value == null)
+				return null;
+
+			if (!double.TryParse(value.ToString().Replace(',', '.'), NumberStyles.Any,
+				CultureInfo.InvariantCulture, out var result))
+				throw new CastingToAttributeTypeException(attributeId, value);
+
+			return result;
+		}
+
+		public static long? CastToLong(long? attributeId, object value)
+		{
+			if (value == null)
+				return null;
+
+			if (!long.TryParse(value.ToString(), out var result))
+				throw new CastingToAttributeTypeException(attributeId, value);
+
+			return result;
+		}
+
 		#endregion
 	}
 }

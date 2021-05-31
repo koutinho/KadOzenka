@@ -7789,3 +7789,255 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация электроснабжения (12092)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12092)]
+    public enum ElectricityLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация газоснабжения (12093)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12093)]
+    public enum GasLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Давление газа (12094)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12094)]
+    public enum GasPressureType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Высокое (1)
+		/// </summary>
+		[Description("Высокое")]
+        [EnumCode("1")]
+        [ShortTitle("Высокое")]
+        High = 1,
+		/// <summary>
+		/// Среднее (2)
+		/// </summary>
+		[Description("Среднее")]
+        [EnumCode("2")]
+        [ShortTitle("Среднее")]
+        Middle = 2,
+		/// <summary>
+		/// Низкое (3)
+		/// </summary>
+		[Description("Низкое")]
+        [EnumCode("3")]
+        [ShortTitle("Низкое")]
+        Low = 3,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация канализации (12095)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12095)]
+    public enum DrainageLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип канализации (12096)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12096)]
+    public enum DrainageType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Автономная (1)
+		/// </summary>
+		[Description("Автономная")]
+        [EnumCode("1")]
+        [ShortTitle("Автономная")]
+        Autonomous = 1,
+		/// <summary>
+		/// Центральная (2)
+		/// </summary>
+		[Description("Центральная")]
+        [EnumCode("2")]
+        [ShortTitle("Центральная")]
+        Central = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Локация водоснабжения (12097)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12097)]
+    public enum WaterLocationType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По границе участка (1)
+		/// </summary>
+		[Description("По границе участка")]
+        [EnumCode("1")]
+        [ShortTitle("По границе участка")]
+        Border = 1,
+		/// <summary>
+		/// На участке (2)
+		/// </summary>
+		[Description("На участке")]
+        [EnumCode("2")]
+        [ShortTitle("На участке")]
+        Location = 2,
+    }
+}
+
+namespace ObjectModel.Directory
+{
+    /// <summary>
+    /// Тип водоснабжения (12098)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 12098)]
+    public enum WaterType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// Автономная (1)
+		/// </summary>
+		[Description("Автономная")]
+        [EnumCode("1")]
+        [ShortTitle("Автономная")]
+        Autonomous = 1,
+		/// <summary>
+		/// Центральная (2)
+		/// </summary>
+		[Description("Центральная")]
+        [EnumCode("2")]
+        [ShortTitle("Центральная")]
+        Central = 2,
+		/// <summary>
+		/// Водонапорная станция (3)
+		/// </summary>
+		[Description("Водонапорная станция")]
+        [EnumCode("3")]
+        [ShortTitle("Водонапорная станция")]
+        PumpingStation = 3,
+		/// <summary>
+		/// Водозаборный узел (4)
+		/// </summary>
+		[Description("Водозаборный узел")]
+        [EnumCode("4")]
+        [ShortTitle("Водозаборный узел")]
+        WaterIntakeFacility = 4,
+		/// <summary>
+		/// Водонапорная башня (5)
+		/// </summary>
+		[Description("Водонапорная башня")]
+        [EnumCode("5")]
+        [ShortTitle("Водонапорная башня")]
+        WaterTower = 5,
+    }
+}
+

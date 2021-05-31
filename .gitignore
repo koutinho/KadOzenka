@@ -33,6 +33,10 @@
 /Source/KadOzenka.Dal/bin
 /Source/KadOzenka.Dal.Tests/obj
 /Source/KadOzenka.Dal.Tests/bin
+/Source/KadOzenka.Dal.IntegrationTests/obj
+/Source/KadOzenka.Dal.IntegrationTests/bin
+/Source/KadOzenka.Common.Tests/obj
+/Source/KadOzenka.Common.Tests/bin
 /Source/ImageProccessor/obj
 /Source/ImageProccessor/bin
 /Source/Utils/EP.SdkCore/obj
@@ -68,5 +72,6 @@
 /Source/EmbeddedResource/bin
 /Source/EmbeddedResource/obj
 /Source/MarketPlaceBusiness/bin
-/Source/MarketPlaceBusiness/objbin
+/Source/MarketPlaceBusiness/obj
 obj
+/Source/angular-Web-settings/node_modules

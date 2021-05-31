@@ -543,3 +543,24 @@ delete from core_reference where referenceid=12090;
 
 --Справочник "Статус земли"
 delete from core_reference where referenceid=12091;
+
+--Справочник "Локация электроснабжения"
+delete from core_reference where referenceid=12092;
+
+--Справочник "Локация газоснабжения"
+delete from core_reference where referenceid=12093;
+
+--Справочник "Давление газа"
+delete from core_reference where referenceid=12094;
+
+--Справочник "Локация канализации"
+delete from core_reference where referenceid=12095;
+
+--Справочник "Тип канализации"
+delete from core_reference where referenceid=12096;
+
+--Справочник "Локация водоснабжения"
+delete from core_reference where referenceid=12097;
+
+--Справочник "Тип водоснабжения"
+delete from core_reference where referenceid=12098;

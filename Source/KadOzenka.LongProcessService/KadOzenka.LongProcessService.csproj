@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.722-beta.0" />
+    <PackageReference Include="Platform.Web" Version="1.0.727" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspnetcoreHttpcontext" Version="1.1.0" />
     <PackageReference Include="Serilog.Enrichers.Context" Version="4.2.0" />
@@ -60,6 +60,8 @@
         <Optimize>false</Optimize>
         <OutputPath>.\bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
+		<EnvironmentName>Development</EnvironmentName>
+		<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
       </PropertyGroup>
       <ItemGroup>
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json" />
@@ -113,6 +115,7 @@
     <PropertyGroup>
 		<PublishingTasksdll>$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Web\Microsoft.Web.Publishing.Tasks.dll</PublishingTasksdll>
 		<PublishingTasksdll_buildServer>C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VisualStudio\v16.0\Web\Microsoft.Web.Publishing.Tasks.dll</PublishingTasksdll_buildServer>
+		<UserSecretsId>d86ab7cb-862c-47ac-8f0d-097383849d8f</UserSecretsId>
 	</PropertyGroup>
 	<UsingTask TaskName="TransformXml" AssemblyFile="$(PublishingTasksdll)" Condition=" Exists(' $(PublishingTasksdll) ') " />
 	<UsingTask TaskName="TransformXml" AssemblyFile="$(PublishingTasksdll_buildServer)" Condition=" Exists(' $(PublishingTasksdll_buildServer) ') and !Exists(' $(PublishingTasksdll) ') " />

@@ -20,7 +20,7 @@ namespace MarketPlaceBusiness.Dto
 		/// <summary>
 		/// 10002700 Цена сделки/предложения (PRICE)
 		/// </summary>
-		public decimal? Price { get; set; }
+		public decimal Price { get; set; }
 
 
 		/// <summary>
@@ -41,7 +41,7 @@ namespace MarketPlaceBusiness.Dto
 		/// <summary>
 		/// 10004300 Общая площадь (AREA)
 		/// </summary>
-		public decimal? Area { get; set; }
+		public decimal Area { get; set; }
 
 		/// <summary>
 		/// 10004700 Год постройки (BUILDING_YEAR)
@@ -223,5 +223,49 @@ namespace MarketPlaceBusiness.Dto
 		public string ParcelStatus { get; set; }
 
 		public ParcelStatus ParcelStatus_Code { get; set; }
+
+		public string ElectricityLocationType { get; set; }
+
+		public ElectricityLocationType ElectricityLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectElectricity { get; set; }
+
+		public long? ElectricityPower { get; set; }
+
+		public string GasLocationType { get; set; }
+
+		public GasLocationType GasLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectGas { get; set; }
+
+		public long? GasCapacity { get; set; }
+
+		public string GasPressureType { get; set; }
+
+		public GasPressureType GasPressureType_Code { get; set; }
+
+		public string DrainageLocationType { get; set; }
+
+		public DrainageLocationType DrainageLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectDrainage { get; set; }
+
+		public long? DrainageCapacity { get; set; }
+
+		public string DrainageType { get; set; }
+
+		public DrainageType DrainageType_Code { get; set; }
+
+		public string WaterLocationType { get; set; }
+
+		public WaterLocationType WaterLocationType_Code { get; set; }
+
+		public bool? PossibilityToConnectWater { get; set; }
+
+		public long? WaterCapacity { get; set; }
+
+		public string WaterType { get; set; }
+
+		public WaterType WaterType_Code { get; set; }
 	}
 }

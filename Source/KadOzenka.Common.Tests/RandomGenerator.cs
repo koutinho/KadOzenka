@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KadOzenka.Dal.Tests
+namespace KadOzenka.Common.Tests
 {
 	public static class RandomGenerator
 	{
@@ -30,6 +30,14 @@ namespace KadOzenka.Dal.Tests
 		{
 			var integer = Random.Next();
 			return (decimal) (integer / 2.3);
+		}
+
+		public static DateTime GenerateRandomDate()
+		{
+			var startDate = new DateTime(1995, 1, 1);
+			var daysToToday = (DateTime.Today - startDate).Days;
+
+			return startDate.AddDays(Random.Next(daysToToday));
 		}
 
 		public static List<T> CreateListWithRepeatedElements<T>(T element, int count)

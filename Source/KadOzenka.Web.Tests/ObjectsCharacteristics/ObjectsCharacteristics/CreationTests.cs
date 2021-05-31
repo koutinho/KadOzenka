@@ -1,8 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Core.Register;
 using Core.Shared.Extensions;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Web.Models.ObjectsCharacteristics;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
@@ -71,7 +74,7 @@ namespace KadOzenka.Web.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 		public void CanNot_Add_Characteristic_If_Model_State_Is_Invalid()
 		{
 			var controller = ObjectsCharacteristicsController;
-			var method = new ControllerMethod<CharacteristicModel>(controller.EditCharacteristic);
+			var method = new Func<CharacteristicModel, IActionResult>(controller.EditCharacteristic);
 
 			CheckMethodValidateModelState(controller, method);
 		}

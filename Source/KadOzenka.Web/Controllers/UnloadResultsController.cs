@@ -1,6 +1,7 @@
 ﻿using System;
 using Core.Shared.Extensions;
 using Core.SRD;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,8 @@ namespace KadOzenka.Web.Controllers
 {
 	public class UnloadResultsController : KoBaseController
 	{
-		public UnloadResultsController()
+		public UnloadResultsController(IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 		}
 

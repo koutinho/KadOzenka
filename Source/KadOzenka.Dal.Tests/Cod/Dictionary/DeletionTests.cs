@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using KadOzenka.Common.Tests;
+using Moq;
 using NUnit.Framework;
 using ObjectModel.Common;
 using ObjectModel.KO;

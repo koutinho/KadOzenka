@@ -3,29 +3,17 @@ using System.IO;
 using System.Linq;
 using System.IO.Compression;
 using System.Collections.Generic;
-using System.Threading;
-using Core.ErrorManagment;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ObjectModel.Market;
 using KadOzenka.Web.Models.MarketObject;
 using Core.Main.FileStorages;
 using Core.Shared.Extensions;
-using Core.SRD;
 using Core.UI.Registers.CoreUI.Registers;
-using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.LongProcess.InputParameters;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
-using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json.Linq;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory;
-using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.Directory.MarketObjects;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers
@@ -34,7 +22,9 @@ namespace KadOzenka.Web.Controllers
 	{
 		public IMarketObjectService MarketObjectsService { get; set; }
 
-        public MarketObjectsController(IMarketObjectService marketObjectsService)
+        public MarketObjectsController(IMarketObjectService marketObjectsService, IRegisterCacheWrapper registerCacheWrapper,
+	        IGbuObjectService gbuObjectService)
+	        : base(gbuObjectService, registerCacheWrapper)
         {
 	        MarketObjectsService = marketObjectsService;
         }

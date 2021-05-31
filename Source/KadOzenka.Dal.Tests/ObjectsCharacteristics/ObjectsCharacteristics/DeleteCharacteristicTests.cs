@@ -1,4 +1,5 @@
 ﻿using System;
+using KadOzenka.Common.Tests;
 using Moq;
 using NUnit.Framework;
 

@@ -1,7 +1,6 @@
 ﻿using Platform.Shared;
 using GemBox.Spreadsheet;
 using Core.Register.LongProcessManagment;
-using KadOzenka.BlFrontEnd.DataExport;
 using KadOzenka.BlFrontEnd.ExportKO;
 using KadOzenka.BlFrontEnd.ExportSud;
 using KadOzenka.BlFrontEnd.ExportMSSQL;
@@ -12,7 +11,6 @@ using System.IO;
 using KadOzenka.Dal.XmlParser;
 using System;
 using KadOzenka.BlFrontEnd.GbuTest;
-using KadOzenka.BlFrontEnd.DataImport;
 using KadOzenka.Dal.ExcelParser;
 using KadOzenka.WebClients.ReonClient.Api;
 using System.Linq;
@@ -116,9 +114,6 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("1902", "Генерация тайлов для карты", () => { new CoordinatesConverter().GenerateInitialImages(); });
 
 			//consoleHelper.AddCommand("5", "Загрузка словаря с кадастровыми номерами из Excel", ObjectReplicationExcelProcess.StartImport);
-
-			consoleHelper.AddCommand("10", "Экспорт данных в Excel на основе шаблона", DataExportConsole.ExportData);
-			consoleHelper.AddCommand("11", "Импорт данных в Excel из шаблона", DataImportConsole.ImportData);
 
 			//consoleHelper.AddCommand("16", "Выгрузка кад. номеров в excel по первоначальным адресам",
 			//	() =>
@@ -229,8 +224,6 @@ namespace KadOzenka.BlFrontEnd
             consoleHelper.AddCommand("364", "Экспорт в Word - Ответные документы по объектам.", ExporterKO.ExportDocOtvet);
             consoleHelper.AddCommand("365", "ExportXlsTable4", ExporterKO.ExportXlsTable4);
             consoleHelper.AddCommand("390", "Тест API судебной подсистемы", SudTestApi.TestAll);
-
-            consoleHelper.AddCommand("501", "Импорт данных деклараций (Excel)", () => { new DataImporterDeclarationsTest().ImportData(); });
 
             //consoleHelper.AddCommand("161-1", "Привязка к объектам аналогам кадастровых кварталов", () =>
             //{

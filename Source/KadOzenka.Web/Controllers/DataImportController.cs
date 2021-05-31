@@ -4,6 +4,8 @@ using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
 using System.Linq;
+using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
 using ObjectModel.Directory.Common;
@@ -12,6 +14,12 @@ namespace KadOzenka.Web.Controllers
 {
 	public class DataImportController : KoBaseController
 	{
+		public DataImportController(IGbuObjectService gbuObjectService, IRegisterCacheWrapper registerCacheWrapper)
+			: base(gbuObjectService, registerCacheWrapper)
+		{
+			
+		}
+
 		[HttpGet]
         [SRDFunction(Tag = "")]
 		public ActionResult MainData(long importId)

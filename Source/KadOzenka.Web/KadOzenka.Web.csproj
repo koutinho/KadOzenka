@@ -9,6 +9,7 @@
     <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <Configurations>Debug;Release;QA;Demo;UAT;Local</Configurations>
+	<LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <!--PackageReference-->
@@ -22,7 +23,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.3" PrivateAssets="All" />
-    <PackageReference Include="Platform.Web" Version="1.0.722-beta.0" />
+    <PackageReference Include="Platform.Web" Version="1.0.727" />
     <PackageReference Include="RazorLight" Version="2.0.0-beta2" />
     <PackageReference Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageReference Include="Serilog.Enrichers.AspNetCore" Version="1.0.0" />
@@ -153,6 +154,7 @@
 			  <EnvironmentName>Local</EnvironmentName>
 			  <ASPNETCORE_ENVIRONMENT>Local</ASPNETCORE_ENVIRONMENT>
 			  <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+			  <LangVersion>9.0</LangVersion>
 		  </PropertyGroup>
 	  </When>
 	  <When Condition=" '$(Configuration)'=='Debug' ">
@@ -164,6 +166,8 @@
         <OutputPath>.\bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+		<EnvironmentName>Development</EnvironmentName>
+		<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
       </PropertyGroup>
 	  <ItemGroup>
 	    <None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json" />

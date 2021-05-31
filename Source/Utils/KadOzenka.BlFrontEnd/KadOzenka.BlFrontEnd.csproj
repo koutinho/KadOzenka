@@ -50,7 +50,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.10.0" />
     <PackageReference Include="Npgsql" Version="4.1.4" />
-    <PackageReference Include="Platform.Web" Version="1.0.722-beta.0" />
+    <PackageReference Include="Platform.Web" Version="1.0.727" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.26.0" />
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="83.0.4103.3900" />
@@ -263,6 +263,8 @@
     </None>
   </ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties _1_1_4_1_1_4_1_1_4_1_1_4_1_1_4_1_1_4_1nuget_4packages_4platform_1web_41_10_1628_4contentfiles_4any_4netcoreapp2_11_4appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions>
+		<VisualStudio><UserProperties /></VisualStudio>
+	</ProjectExtensions>
 
 </Project>

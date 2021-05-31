@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using KadOzenka.Dal.Modeling.Resources;
-using KadOzenka.Dal.Tests.Modeling.Builders;
+using KadOzenka.Dal.UnitTests.Modeling.Builders;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;

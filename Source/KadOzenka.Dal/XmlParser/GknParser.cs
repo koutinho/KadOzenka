@@ -7,14 +7,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using Core.Register;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
+using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Helpers;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -42,6 +46,7 @@ namespace KadOzenka.Dal.XmlParser
         static xsdDictionary dictForestCategoryProtective = null;
         static xsdDictionary dictForestEncumbrances = null;
 
+        public int TotalObjectCounter { get; private set; }
         private readonly object _locker;
         private readonly GbuReportService _gbuReportService;
 
@@ -54,47 +59,47 @@ namespace KadOzenka.Dal.XmlParser
         public static void FillDictionary(string pathSchema)
         {
             if (dictAssignationBuild == null)
-                dictAssignationBuild = new xsdDictionary(pathSchema + "\\dAssBuilding_v02.xsd", "dAssBuilding");
+                dictAssignationBuild = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssBuilding_v02.xsd"), "dAssBuilding");
             if (dictWall == null)
-                dictWall = new xsdDictionary(pathSchema + "\\dWall_v02.xsd", "dWall");
+                dictWall = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dWall_v02.xsd"), "dWall");
             if (dictTypeParameter == null)
-                dictTypeParameter = new xsdDictionary(pathSchema + "\\dTypeParameter_v01.xsd", "dTypeParameter");
+                dictTypeParameter = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dTypeParameter_v01.xsd"), "dTypeParameter");
             if (dictAssignationFlat == null)
-                dictAssignationFlat = new xsdDictionary(pathSchema + "\\dAssFlat_v02.xsd", "dAssFlat");
+                dictAssignationFlat = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssFlat_v02.xsd"), "dAssFlat");
             if (dictAssignationFlatType == null)
-                dictAssignationFlatType = new xsdDictionary(pathSchema + "\\dAssFlatType_v01.xsd", "dAssFlatType");
+                dictAssignationFlatType = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssFlatType_v01.xsd"), "dAssFlatType");
             if (dictStrorey == null)
-                dictStrorey = new xsdDictionary(pathSchema + "\\dTypeStorey_v01.xsd", "dTypeStorey");
+                dictStrorey = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dTypeStorey_v01.xsd"), "dTypeStorey");
             if (dictCat == null)
-                dictCat = new xsdDictionary(pathSchema + "\\dCategories_v01.xsd", "dCategories");
+                dictCat = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dCategories_v01.xsd"), "dCategories");
             if (dictName == null)
-                dictName = new xsdDictionary(pathSchema + "\\dParcels_v02.xsd", "dParcels");
+                dictName = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dParcels_v02.xsd"), "dParcels");
             if (dictUtilizations == null)
-                dictUtilizations = new xsdDictionary(pathSchema + "\\dUtilizations_v01.xsd", "dUtilizations");
+                dictUtilizations = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dUtilizations_v01.xsd"), "dUtilizations");
             if (dictAllowedUse == null)
-                dictAllowedUse = new xsdDictionary(pathSchema + "\\dAllowedUse_v02.xsd", "dAllowedUse");
+                dictAllowedUse = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAllowedUse_v02.xsd"), "dAllowedUse");
             if (dictEncumbrance == null)
-                dictEncumbrance = new xsdDictionary(pathSchema + "\\dEncumbrances_v04.xsd", "dEncumbrances");
+                dictEncumbrance = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dEncumbrances_v04.xsd"), "dEncumbrances");
             if (dictAllDocuments == null)
-                dictAllDocuments = new xsdDictionary(pathSchema + "\\dAllDocuments_v05.xsd", "dAllDocuments");
+                dictAllDocuments = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAllDocuments_v05.xsd"), "dAllDocuments");
             if (dictInspection == null)
-                dictInspection = new xsdDictionary(pathSchema + "\\dInspection_v01.xsd", "dInspection");
+                dictInspection = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dInspection_v01.xsd"), "dInspection");
             if (dictFormEvents == null)
-                dictFormEvents = new xsdDictionary(pathSchema + "\\dFormEvents_v01.xsd", "dFormEvents");
+                dictFormEvents = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dFormEvents_v01.xsd"), "dFormEvents");
             if (dictRealty == null)
-                dictRealty = new xsdDictionary(pathSchema + "\\dRealty_v04.xsd", "dRealty");
+                dictRealty = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dRealty_v04.xsd"), "dRealty");
             if (dictCultural == null)
-                dictCultural = new xsdDictionary(pathSchema + "\\dCultural_v01.xsd", "dCultural");
+                dictCultural = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dCultural_v01.xsd"), "dCultural");
             if(dictSpecialTypeFlat == null)
-	            dictSpecialTypeFlat = new xsdDictionary(pathSchema + "\\dSpecialTypeFlat_v01.xsd", "dSpecialTypeFlat");
+	            dictSpecialTypeFlat = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dSpecialTypeFlat_v01.xsd"), "dSpecialTypeFlat");
             if(dictNaturalObjects == null)
-                dictNaturalObjects = new xsdDictionary(pathSchema + "\\dNaturalObjects_v01.xsd", "dNaturalObjects");
+                dictNaturalObjects = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dNaturalObjects_v01.xsd"), "dNaturalObjects");
             if(dictForestUse == null)
-	            dictForestUse = new xsdDictionary(pathSchema + "\\dForestUse_v01.xsd", "dForestUse");
+	            dictForestUse = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestUse_v01.xsd"), "dForestUse");
             if(dictForestCategoryProtective == null)
-	            dictForestCategoryProtective = new xsdDictionary(pathSchema + "\\dForestCategoryProtective_v01.xsd", "dForestCategoryProtective");
+	            dictForestCategoryProtective = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestCategoryProtective_v01.xsd"), "dForestCategoryProtective");
             if(dictForestEncumbrances == null)
-	            dictForestEncumbrances = new xsdDictionary(pathSchema + "\\dForestEncumbrances_v01.xsd", "dForestEncumbrances");
+	            dictForestEncumbrances = new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestEncumbrances_v01.xsd"), "dForestEncumbrances");
         }
 
         public xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
@@ -107,6 +112,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnBuilding in xnBuildings)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnBuilding, enTypeObject.toBuilding, assessmentDate));
                 }
             }
@@ -115,6 +121,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnConstructions)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnConstruction, enTypeObject.toConstruction, assessmentDate));
                 }
             }
@@ -123,6 +130,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnConstruction in xnUnConstructions)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnConstruction, enTypeObject.toUncomplited, assessmentDate));
                 }
             }
@@ -131,6 +139,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnFlats)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnFlat, enTypeObject.toFlat, assessmentDate));
                 }
             }
@@ -139,6 +148,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnFlat in xnCarParkingSpaces)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnFlat, enTypeObject.toCarPlace, assessmentDate));
                 }
             }
@@ -147,6 +157,7 @@ namespace KadOzenka.Dal.XmlParser
             {
                 foreach (XmlNode xnParcel in xnParcels)
                 {
+	                TotalObjectCounter++;
                     objs.Add(GetData(xnParcel, enTypeObject.toParcel, assessmentDate));
                 }
             }
@@ -199,12 +210,14 @@ namespace KadOzenka.Dal.XmlParser
 
         public xmlObject GetData(XmlNode xnObjectNode, enTypeObject typeobject, DateTime assessmentDate)
         {
-            string kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
-            DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
-            xmlObject obj = new xmlObject(typeobject, kn, dc, assessmentDate);
-
+	        string kn = string.Empty;
+	        xmlObject obj = null;
             try
-            {
+	        { 
+			    kn = (xnObjectNode.Attributes["CadastralNumber"] == null) ? string.Empty : xnObjectNode.Attributes["CadastralNumber"].InnerText;
+	            DateTime dc = (xnObjectNode.Attributes["DateCreated"] == null) ? DateTime.MinValue : Convert.ToDateTime(xnObjectNode.Attributes["DateCreated"].InnerText);
+	            obj = new xmlObject(typeobject, kn, dc, assessmentDate);
+
 	            #region Импорт
             foreach (XmlNode xnChild in xnObjectNode.ChildNodes)
             {
@@ -1306,7 +1319,7 @@ namespace KadOzenka.Dal.XmlParser
 	        }
             catch (Exception ex)
             {
-	            Serilog.Log.Error(ex, $"Ошибка при обработке объекта '{kn}' из xml-файла");
+	            Serilog.Log.Error(ex, "Ошибка при обработке объекта '{kn}' из xml-файла", kn);
 
 	            var reportRow = _gbuReportService.GetCurrentRow();
 	            _gbuReportService.AddValue(kn, BaseImporter.CadastralNumberColumnIndex, reportRow);
@@ -1665,7 +1678,7 @@ namespace KadOzenka.Dal.XmlParser
         //        {
         //         lock (_locker)
         //         {
-        //          LogErrorInExcel(row.Index, cadastralNumber, ex);
+        //          LogErrorInReport(row.Index, cadastralNumber, ex);
         //            }
         //        }
         //    });
@@ -1692,29 +1705,43 @@ namespace KadOzenka.Dal.XmlParser
 	        mainWorkSheet.Rows.ForEach(row =>
 	        {
 		        string cadastralNumber = null;
-		        try
+                var reportInfo = new ReportInfo();
+	            try
 		        {
 			        if (row.Index == 0 || row.Index > lastUsedRowIndex) 
 				        return;
 
-			        cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
-			        var square = row.Cells[squareMapping.ColumnIndex].Value?.ParseToDouble();
-                    var assessmentDate = row.Cells[assessmentDateMapping.ColumnIndex].Value.ParseToDateTimeNullable();
+			        TotalObjectCounter++;
+                    cadastralNumber = GetStringValue(row, cadastralNumberMapping.ColumnIndex);
+                    var square = GknAllAttributes.CastToDouble(RequiredFieldsForExcelMapping.SquareAttributeId,
+	                    row.Cells[squareMapping.ColumnIndex].Value);
+			        var assessmentDate = GknAllAttributes.CastToDateTime(
+				        RequiredFieldsForExcelMapping.AssessmentDateAttributeId,
+				        row.Cells[assessmentDateMapping.ColumnIndex].Value);
                     var typeFromFile = GetStringValue(row, objectTypeMapping.ColumnIndex);
                     var typeEnum = GetObjectType(objectTypeDescriptions, typeFromFile);
 
-                    var obj = MapExcelRowToObject(row, cadastralNumber, square, assessmentDate, typeEnum,
+                    reportInfo.CadastralNumber = cadastralNumber;
+                    var obj = MapExcelRowToObject(row, reportInfo, cadastralNumber, square, assessmentDate, typeEnum,
 	                    columnsMapping, importedAttributes);
 			        objects.Add(obj);
+                }
+                catch (Exception ex)
+                {
+	                Serilog.Log.Error(ex, "Ошибка при обработке {rowIndex} строки excel-файла. Объект '{CadastralNumber}'.",
+		                row.Index + 1, cadastralNumber);
+                    reportInfo.AddError(ex.Message, row.Index);
 		        }
-		        catch (Exception ex)
-		        {
-			        LogErrorInExcel(row.Index, cadastralNumber, ex);
-		        }
+
+                if (reportInfo.MustWriteToReport)
+                {
+	                LogInfoToReport(reportInfo);
+                }
 	        });
 
 	        return objects;
         }
+
 
         #region Support Methods
 
@@ -1751,9 +1778,9 @@ namespace KadOzenka.Dal.XmlParser
             throw new Exception($"Указан неизвестный тип объекта '{typeFromFile}'");
         }
 
-        private xmlObject MapExcelRowToObject(ExcelRow row, string cadastralNumber, double? square,
-	        DateTime? assessmentDate, enTypeObject objectType, List<ColumnToAttributeMapping> columnsMapping,
-	        GknAllAttributes importedAttributes)
+        private xmlObject MapExcelRowToObject(ExcelRow row, ReportInfo reportInfo, string cadastralNumber,
+	        double? square, DateTime? assessmentDate, enTypeObject objectType, 
+	        List<ColumnToAttributeMapping> columnsMapping, GknAllAttributes importedAttributes)
         {
 	        ValidateExcelObjectRequiredColumns(cadastralNumber, square, assessmentDate);
 
@@ -1788,8 +1815,29 @@ namespace KadOzenka.Dal.XmlParser
             columnsMapping.ForEach(map =>
             {
 	            var attributeInfo = attributes.FirstOrDefault(x => x.AttributeId == map.AttributeId);
+	            //если атрибут не соответствует типу ОН (например, пытаемся записать Материал стен в ЗУ
+	            if (attributeInfo == null)
+	            {
+		            var attributeData = RegisterCache.GetAttributeData(map.AttributeId);
+		            if (attributeData.RegisterId != OMUnit.GetRegisterId())
+		            {
+			            var message = $"{attributeData.Name} ({objectType.GetEnumDescription()})";
+                        reportInfo.AddNotProcessedAttribute(message, row.Index, map.ColumnIndex);
+		            }
+	            }
 	            var valueFromExcel = row.Cells[map.ColumnIndex].Value;
-	            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+	            try
+	            {
+		            attributeInfo?.SetValue.Invoke(obj, valueFromExcel);
+	            }
+	            catch (CastingToAttributeTypeException e)
+	            {
+		            Serilog.Log.Error(e,
+			            "Ошибка преобразования типов при обработке {RowIndex} строки excel-файла. Объект '{CadastralNumber}'.",
+			            row.Index + 1, cadastralNumber);
+
+                    reportInfo.AddTypeConvertingError(e.Message, row.Index, map.ColumnIndex);
+                }
             });
 
             return obj;
@@ -1845,15 +1893,14 @@ namespace KadOzenka.Dal.XmlParser
 
         #endregion
 
-        private void LogErrorInExcel(int rowIndex, string cadastralNumber, Exception ex)
+        private void LogInfoToReport(ReportInfo reportInfo)
         {
-	        var realRowIndex = rowIndex + 1;
-	        Serilog.Log.Error(ex, $"Ошибка при обработке {realRowIndex} строки excel-файла. Объект '{cadastralNumber}'.");
-
 	        var reportRow = _gbuReportService.GetCurrentRow();
-	        _gbuReportService.AddValue(cadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
-	        _gbuReportService.AddValue(ex.Message, BaseImporter.ErrorMessageColumnIndex, reportRow);
-	        _gbuReportService.AddValue($"Строка в файле {realRowIndex}", BaseImporter.CommentColumnIndex, reportRow);
+
+            _gbuReportService.AddValue(reportInfo.CadastralNumber, BaseImporter.CadastralNumberColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.NotProcessedAttributeNames, BaseImporter.NotProcessedAttributesColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.TypeConvertingError, BaseImporter.TypeConvertingErrorColumnIndex, reportRow);
+	        _gbuReportService.AddValue(reportInfo.Error, BaseImporter.ErrorMessageColumnIndex, reportRow);
         }
     }
 }

@@ -64,3 +64,57 @@ delete from core_register_attribute where id=10009400;
 alter table market_core_object drop column parcel_type;
 alter table market_core_object drop column parcel_type_code;
 delete from core_register_attribute where id=10009500;
+
+alter table market_core_object drop column electricity_location_type;
+alter table market_core_object drop column electricity_location_type_code;
+delete from core_register_attribute where id=10009600;
+
+alter table market_core_object drop column possibility_to_connect_electricity;
+delete from core_register_attribute where id=10009700;
+
+alter table market_core_object drop column electricity_power;
+delete from core_register_attribute where id=10009800;
+
+alter table market_core_object drop column gas_location_type;
+alter table market_core_object drop column gas_location_type_code;
+delete from core_register_attribute where id=10009900;
+
+alter table market_core_object drop column possibility_to_connect_gas;
+delete from core_register_attribute where id=10010000;
+
+alter table market_core_object drop column gas_capacity;
+delete from core_register_attribute where id=10010100;
+
+alter table market_core_object drop column gas_pressure_type;
+alter table market_core_object drop column gas_pressure_type_code;
+delete from core_register_attribute where id=10010200;
+
+alter table market_core_object drop column drainage_location_type;
+alter table market_core_object drop column drainage_location_type_code;
+delete from core_register_attribute where id=10010300;
+
+alter table market_core_object drop column possibility_to_connect_drainage;
+delete from core_register_attribute where id=10010400;
+
+alter table market_core_object drop column drainage_capacity;
+delete from core_register_attribute where id=10010500;
+
+alter table market_core_object drop column drainage_type;
+alter table market_core_object drop column drainage_type_code;
+delete from core_register_attribute where id=10010600;
+
+alter table market_core_object drop column water_location;
+alter table market_core_object drop column water_location_code;
+delete from core_register_attribute where id=10010700;
+
+alter table market_core_object drop column possibility_to_connect_water;
+delete from core_register_attribute where id=10010800;
+
+alter table market_core_object drop column water_capacity;
+delete from core_register_attribute where id=10010900;
+
+alter table market_core_object drop column water_type;
+alter table market_core_object drop column water_type_code;
+delete from core_register_attribute where id=10011000;
+
+

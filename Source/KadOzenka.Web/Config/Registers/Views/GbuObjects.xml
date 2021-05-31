@@ -50,16 +50,7 @@
         <Button Caption="Выгрузить в Excel" SRDFunctionTag="GBU.OBJECTS.EXPORT_TO_EXCEL" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" />
 
         <Button Caption="Гармонизация" NavigateURL="/GbuObject/Harmonization" WindowHeight="800" WindowWidth="1150"  SRDFunctionTag="GBU.OBJECTS.HARMONIZATION" Icon="fas fa-wrench"/>
-
-        <Button Caption="Образы" NavigateURL="/RegistersView/CoreSharedAttachment" WindowTitleTemplate="Образы объекта" Icon="far fa-images"
-                NeedRefresh="true" SRDFunctionTag="">
-            <Parameters>
-                <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
-                <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
-                <Parameter Key="NotSetTitle" Value="true" />
-            </Parameters>
-        </Button>
-    </Buttons>
+	</Buttons>
 
     <Tabs>
         <Tab Caption="Основные данные" NavigateURL="/GbuObject/GbuObjectCard">

@@ -19,14 +19,6 @@
         </Parameters>
       </Button>
 
-      <Button Caption="Образы" NavigateURL="/RegistersView/CoreSharedAttachment" WindowTitleTemplate="Образы отчета" Icon="far fa-images"
-                        NeedRefresh="true" SRDFunctionTag="">
-        <Parameters>
-          <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
-          <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
-          <Parameter Key="NotSetTitle" Value="true" />
-        </Parameters>
-      </Button>
     </Buttons>
   
     <StatusBarConfiguration StatusBarEnabled="false" />
@@ -35,13 +27,6 @@
       <Button Caption="Редактировать" Icon="fas fa-edit" OpenInRadWindow="true" WindowWidth="800" WindowHeight="500" NavigateURL="~/Sud/EditReport">
         <Parameters>
           <Parameter Key="reportId" Value="[ObjectId]" />
-        </Parameters>
-      </Button>
-      <Button Caption="Образы" Icon="far fa-images" OpenInRadWindow="true" NavigateURL="~/RegistersView/CoreSharedAttachment">
-        <Parameters>
-          <Parameter Key="AttachmentObjectId" Value="[ObjectId]" />
-          <Parameter Key="AttachmentRegisterId" Value="[RegisterId]" />
-          <Parameter Key="NotSetTitle" Value="true" />
         </Parameters>
       </Button>
     </RowMenuButtons>

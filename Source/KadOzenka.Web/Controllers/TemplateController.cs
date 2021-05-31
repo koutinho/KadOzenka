@@ -2,6 +2,7 @@
 using System.Linq;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.GbuObject;
 using KadOzenka.Web.Models.Task;
@@ -19,7 +20,9 @@ namespace KadOzenka.Web.Controllers
 		private TemplateService _templateService;
 		private const string TourSeparator = "$";
 
-		public TemplateController(TemplateService templateService)
+		public TemplateController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
+			IGbuObjectService gbuObjectService)
+			: base(gbuObjectService, registerCacheWrapper)
 		{
 			_templateService = templateService;
 		}

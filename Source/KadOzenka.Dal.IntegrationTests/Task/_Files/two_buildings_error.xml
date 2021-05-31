@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ListForRating Version="03">
+	<ListInfo DateForm="2018-01-01" GUID="68BCF7F8-33A4-4CAA-8310-C864911AEA5A">
+		<Region>50</Region>
+		<ObjectsType>
+			<ObjectType>002001002000</ObjectType>
+		</ObjectsType>
+		<Quantity>1548</Quantity>
+	</ListInfo>
+	<Objects>
+		<Buildings>
+			<Building CadastralNumber="50:08:0000000:32056" DateCreated="2012-07-24">
+				<CadastralBlock>50:08:0000000</CadastralBlock>
+				<Name>жилое строение (садовый дом)</Name>
+				<ObjectType>002001002000</ObjectType>
+				<AssignationBuilding>204002000000</AssignationBuilding>
+				<ElementsConstruct><Material Wall="061001005000"/></ElementsConstruct>
+				<ExploitationChar YearBuilt="1989"/>
+				<Floors Floors="1"/>
+				<Area>63.30</Area>
+				<Location>
+					<OKATO>46218843017</OKATO>
+					<KLADR>5000900070000</KLADR>
+					<RussianFederation>Российская Федерация</RussianFederation>
+					<Region>50</Region>
+					<District Name="Истринский" Type="р-н"/><Locality Name="Будьково" Type="д"/>
+					<Level1 Type="д" Value="60"/>
+					<Level2 Type="корп" Value="уч."/>
+					<Other>Ядроминское с/п</Other>
+					<Note>Московская обл., Истринский р-н, Ядроминское с/п, деревня Будьково,  СНТ Кварц, 60, уч.</Note>
+				</Location>
+				<CadastralCost Value="640673.86" Unit="383">
+					<DateValuation>2015-08-01</DateValuation>
+					<DateEntering>2015-12-07</DateEntering>
+					<DateApproval>2015-11-30</DateApproval>
+					<DocNumber>13ВР-1998</DocNumber>
+					<DocDate>2015-11-24</DocDate>
+					<DocName>Распоряжение министерства имущества Московской области</DocName>
+				</CadastralCost>
+				<FlatsCadastralNumbers>
+					<CadastralNumber>50:08:0000000:84321</CadastralNumber>
+				</FlatsCadastralNumbers>
+			</Building>
+			<Building CadastralNumber="50:08:0000000:32056" DateCreated="ERROR_HERE">
+				<CadastralBlock>50:08:0000000</CadastralBlock>
+				<Name>жилое строение (садовый дом)</Name>
+				<ObjectType>002001002000</ObjectType>
+				<AssignationBuilding>204002000000</AssignationBuilding>
+				<ElementsConstruct>
+					<Material Wall="061001005000"/>
+				</ElementsConstruct>
+				<ExploitationChar YearBuilt="1989"/>
+				<Floors Floors="1"/>
+				<Area>63.30</Area>
+			</Building>
+		</Buildings>
+	</Objects>
+</ListForRating>
