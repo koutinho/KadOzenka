@@ -258,23 +258,25 @@ namespace KadOzenka.Dal.GbuObject
                     errorCODStr = "Не найдено кодов для проставления";
                 }
 
-                if (values.Length == 1)
+                switch (values.Length)
                 {
-                    resGroup = values.First();
-                }
-
-                if (values.Length == 2)
-                {
-                    var attr2 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor2Selections);
-                    resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween2,
-                        setting.Filter2ForSelectionBetween2},attr2);
-                }
-
-                if (values.Length == 3)
-                {
-                    var attr3 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor3Selections);
-                    resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween3,
-                        setting.Filter2ForSelectionBetween3, setting.Filter3ForSelectionBetween3},attr3);
+                    case 1:
+                        resGroup = values.First();
+                        break;
+                    case 2:
+                    {
+                        var attr2 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor2Selections);
+                        resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween2,
+                            setting.Filter2ForSelectionBetween2},attr2);
+                        break;
+                    }
+                    case 3:
+                    {
+                        var attr3 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor3Selections);
+                        resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween3,
+                            setting.Filter2ForSelectionBetween3, setting.Filter3ForSelectionBetween3},attr3);
+                        break;
+                    }
                 }
 
                 #region Результат
