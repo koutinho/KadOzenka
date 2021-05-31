@@ -3,7 +3,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Integration._Builders.Task
 {
-	public class TaskBuilder : AGbuObjectBuilder
+	public class TaskBuilder : ATaskBuilder
 	{
 		public override OMTask Build()
 		{
