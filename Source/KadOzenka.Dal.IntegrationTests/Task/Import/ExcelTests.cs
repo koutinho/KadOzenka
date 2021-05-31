@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
-using KadOzenka.Dal.IntegrationTests.Task._Builders;
+using KadOzenka.Dal.Integration._Builders.Task;
 using NUnit.Framework;
 using ObjectModel.Directory;
 
