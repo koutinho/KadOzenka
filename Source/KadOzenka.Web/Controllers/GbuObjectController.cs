@@ -529,8 +529,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
-			long[] arr = new long[5];
-			return View(new InheritanceViewModel{Attributes = new List<long>(arr.ToList())});
+			return View(new InheritanceViewModel());
 		}
 
 		[HttpPost]

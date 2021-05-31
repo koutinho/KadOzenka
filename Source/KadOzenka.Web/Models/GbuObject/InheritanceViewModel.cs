@@ -10,6 +10,13 @@ namespace KadOzenka.Web.Models.GbuObject
 	{
 		public long Attributes { get; set; }
 	}
+
+	public class AttributeMapping
+	{
+		public long IdFrom { get; set; }
+		public long IdTo { get; set; }
+	}
+
 	public class InheritanceViewModel : IValidatableObject
 	{
 		public long RatingTour { get; set; }
@@ -67,7 +74,17 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Список выбранных атрибутов
 		/// </summary>
 		[Required(ErrorMessage = "Заполните атрибуты")]
-		public List<long> Attributes { get; set; }
+		public List<AttributeMapping> Attributes { get; set; }
+
+		private const int StartAttributesCount = 5;
+
+
+
+		public InheritanceViewModel()
+		{
+			Attributes = Enumerable.Repeat(new AttributeMapping(), StartAttributesCount).ToList();
+		}
+
 
 		public GbuInheritanceAttributeSettings ToAttributeSettings()
 		{
@@ -75,7 +92,8 @@ namespace KadOzenka.Web.Models.GbuObject
 			{
 				TaskFilter = TaskFilter,
 				ObjectChangeStatus = ObjectChangeStatus,
-				Attributes = Attributes,
+				//TODO
+				//Attributes = Attributes,
 				ParcelToConstruction = ParcelToConstruction,
 				ParcelToUncomplited = ParcelToUncomplited,
 				ParcelToBuilding = ParcelToBuilding,
