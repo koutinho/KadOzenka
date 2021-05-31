@@ -218,12 +218,18 @@ namespace KadOzenka.Dal.GbuObject
                     FilteringType.None => false,
                     _ => false
                 };
-                if (valResolved) return orderedCodes[i];
+                if (!valResolved) continue;
+                Log.ForContext<PriorityItemFinal>()
+                    .ForContext("FilterType", orderedFilters[i].Type)
+                    .Verbose("Найден код для финализации нормализации: {resolvedValue}, Массив кодов: {valueArray}, Значения атрибута: {numValue}, {dtValue}, {stringValue}",
+                        orderedCodes[i], orderedCodes, attr?.NumValue, attr?.DtValue, attr?.StringValue);
+
+                return orderedCodes[i];
             }
 
-            return orderedCodes.FirstOrDefault();
+            Log.ForContext<PriorityGroupingFinal>().Verbose("Совпадения не найдено, записываем прочерк");
+            return "-";
         }
-
 
         public void SetPriorityGroup(GroupingSettingsFinal setting,
             List<long> allAttributeIds, GroupingItem inputItem, DateTime dateActual,
