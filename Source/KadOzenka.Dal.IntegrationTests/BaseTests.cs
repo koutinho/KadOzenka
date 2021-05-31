@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Task;
 using ObjectModel.Core.TD;
+using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Dal.IntegrationTests
 {
 	public class BaseTests
 	{
-		public static OMInstance Document { get; private set; }
+		protected OMInstance Document { get; private set; }
 		private static bool _initialized;
 
 		[OneTimeSetUp]

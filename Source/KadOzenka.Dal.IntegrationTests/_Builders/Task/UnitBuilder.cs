@@ -3,12 +3,12 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Integration._Builders.Task
 {
-	public class TaskBuilder : AGbuObjectBuilder
+	public class UnitBuilder : AUnitBuilder
 	{
-		public override OMTask Build()
+		public override OMUnit Build()
 		{
-			_task.Save();
-			return _task;
+			_unit.Save();
+			return _unit;
 		}
 	}
 }

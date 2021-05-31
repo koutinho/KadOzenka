@@ -8,7 +8,7 @@ using ObjectModel.KO;
 namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 {
 	//[TestFixture, Ignore("Интеграционные тесты пропускаются, т.к. нет БД")]
-	public class UpdatingTests : BaseModelingTests
+	public class InheritanceTests : BaseGbuObjectTests
 	{
 		[Test]
 		public void Can_Update_Automatic_Model()

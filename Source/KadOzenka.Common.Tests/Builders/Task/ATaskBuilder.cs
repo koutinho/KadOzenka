@@ -5,11 +5,11 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Common.Tests.Builders.Task
 {
-	public abstract class ATaskBuilder
+	public abstract class AGbuObjectBuilder
 	{
 		protected readonly OMTask _task;
 
-		protected ATaskBuilder()
+		protected AGbuObjectBuilder()
 		{
 			_task = new OMTask
 			{
@@ -26,7 +26,7 @@ namespace KadOzenka.Common.Tests.Builders.Task
 		public abstract OMTask Build();
 
 
-		public ATaskBuilder Document(long documentId)
+		public AGbuObjectBuilder Document(long documentId)
 		{
 			_task.DocumentId = documentId;
 			return this;

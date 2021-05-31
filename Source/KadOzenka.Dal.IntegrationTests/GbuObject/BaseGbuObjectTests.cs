@@ -1,7 +1,8 @@
-﻿using KadOzenka.Dal.Modeling;
+﻿using KadOzenka.Dal.IntegrationTests;
+using KadOzenka.Dal.Modeling;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.IntegrationTests.Modeling
+namespace KadOzenka.Dal.Integration.GbuObject
 {
 	public class BaseGbuObjectTests : BaseTests
 	{
@@ -9,7 +10,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling
 
 
 		[OneTimeSetUp]
-		protected void OneTimeSetUpForModeling()
+		protected void OneTimeSetUpForGbuObject()
 		{
 			ModelingService = new ModelingService();
 		}
