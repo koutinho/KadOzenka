@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApiService } from '../common/api/api';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {ApiService} from '../common/api/api';
+import {ControlModel} from "./model/control.model";
+import {HttpErrorResponse} from "@angular/common/http";
+import {ISetting} from "../common/api/Interface/setting.interface";
+import {EnumControl} from "./enum/enum.control";
 
 @Component({
   selector: 'app-setting',
@@ -9,16 +13,28 @@ import { ApiService } from '../common/api/api';
 })
 export class SettingComponent implements OnInit {
 
+  controls: ControlModel<any>[] | null = [new ControlModel<string[]>({
+    key: "use",
+    value: ["1 \r","2\r","3"],
+    controlType: EnumControl.array,
+    label: ""
+  })];
+
   constructor(private api: ApiService, private route: Router) { }
 
 
 
   ngOnInit(): void {
-    this.api.settingApi.getSetting().subscribe(d => console.log(d));
+    this.api.settingApi.getSetting()
+      .subscribe((res: ISetting) => {
+
+      }, (error: HttpErrorResponse) => {
+      alert(error.error)
+    });
   }
 
   logOut(){
-    this.api.authApi.logOut().subscribe(res => {
+    this.api.authApi.logOut().subscribe(() => {
       this.route.navigate(["signIn"]);
     })
   }
