@@ -200,8 +200,8 @@
             @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
             {
                 GetTemplatesActionName = nameof(TemplateController.GetTemplates),
-                Parameters = "formStorageType=" + (int) DataFormStorege.Normalisation,
-                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObject)
+                Parameters = "formStorageType=" + (int) DataFormStorege.NormalisationFinal,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObjectFinal)
             }))
         </div>
 
@@ -399,42 +399,20 @@
         getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
     }
 
-    function resetParams()
-    {
-        $('.codJobParam').hide();
-        for (var i=1; i <= 9; i++) {
-            var selector = $('#level'+i+'cod');
-            selector.find('span>input').val(null);
-            $('#Level'+i+'_CodValueId').val(null);
-            $('#Level'+i+'_CodValueName').val(null);
-            clearField('Level'+i+'_IdFactor');
-        }
+    function clear2CodeParams(){
+        let selector = 'input[id$="ForSelectionBetween2_Type"]';
+        $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').value('None'));
+        $(selector).toArray().forEach(e=> $(e).trigger('change'));
     }
 
-    function getCodJobParams() {
-        kendo.ui.progress($('body'), true);
-        resetParams();
-        let codJobId = $('#IdCodJob').val();
-
-        $.get({
-            url: '/GbuObject/GetCodJobParam',
-            data: { codJobId },
-            success: function (data){
-                kendo.ui.progress($('body'), false);
-                for (var i=1; i <= data.length; i++) {
-                    var selector = $('#level'+i+'cod');
-                    selector.find('legend').text(data[i-1].CodValueName);
-                    $('#Level'+i+'_CodValueId').val(data[i-1].CodValueId);
-                    $('#Level'+i+'_CodValueName').val(data[i-1].CodValueName);
-                    selector.show();
-                }
-            }
-        });
+    function clear3CodeParams(){
+        let selector = 'input[id$="ForSelectionBetween3_Type"]';
+        $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').value('None'));
+        $(selector).toArray().forEach(e=> $(e).trigger('change'));
     }
 
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
-        $('#IdCodJob').on('change',() => getCodJobParams());
 
         $('#SelectAllObject').bind("change",
             function() {
@@ -448,6 +426,9 @@
             function() {
                 changeTaskFilterAvailability(this.checked);
             });
+
+        $('.clear-button-IdAttributeForSelectionBetween2_IdFactor').bind('click', () => clear2CodeParams());
+        $('.clear-button-IdAttributeForSelectionBetween3_IdFactor').bind('click', () => clear3CodeParams());
 
         bindUnusedFieldHider('Filter1ForSelectionBetween2');
         bindUnusedFieldHider('Filter2ForSelectionBetween2');
