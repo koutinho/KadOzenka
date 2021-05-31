@@ -2,11 +2,11 @@
 using System.Threading;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
+using Core.SRD;
 using KadOzenka.Dal.Tasks;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.KO;
 using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.RecycleBin
@@ -20,6 +20,16 @@ namespace KadOzenka.Dal.LongProcess.RecycleBin
 
 		public static long AddProcessToQueue(MoveTaskToRecycleBinLongProcessParams settings)
 		{
+			////TODO код для отладки
+			//new MoveTaskToRecycleBinLongProcess().StartProcess(new OMProcessType(),
+			//	new OMQueue
+			//	{
+			//		Status_Code = Status.Added,
+			//		UserId = SRDSession.GetCurrentUserId(),
+			//		ObjectId = settings.TaskId,
+			//		Parameters = settings.SerializeToXml()
+			//	}, new CancellationTokenSource().Token);
+
 			return LongProcessManager.AddTaskToQueue(LongProcessName, null, settings.TaskId, settings.SerializeToXml());
 		}
 

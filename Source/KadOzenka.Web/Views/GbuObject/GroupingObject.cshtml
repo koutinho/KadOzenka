@@ -384,6 +384,7 @@
         var isSelectAllObjectsChecked =
             $('#SelectAllObject').prop('checked');
         selectAllObjectChanged(isSelectAllObjectsChecked);
+        getCodJobParams(false);
         updateStates();
     }
 
@@ -504,9 +505,9 @@
         }
     }
 
-    function getCodJobParams() {
+    function getCodJobParams(reset) {
         kendo.ui.progress($('body'), true);
-        resetParams();
+        if (reset) resetParams();
         let codJobId = $('#IdCodJob').val();
 
         $.get({
@@ -527,7 +528,7 @@
 
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
-        $('#IdCodJob').on('change',() => getCodJobParams());
+        $('#IdCodJob').on('change',() => getCodJobParams(true));
 
         $('#SelectAllObject').bind("change",
             function() {

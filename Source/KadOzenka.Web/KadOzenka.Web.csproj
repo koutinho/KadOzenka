@@ -9,6 +9,7 @@
     <UserSecretsId>aspnet-CIPJS-FFB46405-E6EB-4199-9CFF-974F827463C3</UserSecretsId>
     <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
     <Configurations>Debug;Release;QA;Demo;UAT;Local</Configurations>
+	<LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <!--PackageReference-->
@@ -163,6 +164,8 @@
         <OutputPath>.\bin\Debug\</OutputPath>
         <DefineConstants>DEBUG;TRACE</DefineConstants>
         <CopyOutputSymbolsToPublishDirectory>true</CopyOutputSymbolsToPublishDirectory>
+		<EnvironmentName>Development</EnvironmentName>
+		<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
       </PropertyGroup>
 	  <ItemGroup>
 	    <None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json" />
