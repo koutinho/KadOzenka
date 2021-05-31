@@ -5,6 +5,7 @@ using System.Net;
 using KadOzenka.Dal.Api.Models;
 using KadOzenka.Dal.Api.Service;
 using KadOzenka.Web.Api.Dto;
+using Serilog;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace KadOzenka.Web.Api
@@ -13,11 +14,12 @@ namespace KadOzenka.Web.Api
 	[ApiController]
 	public class ConfigController : ControllerBase
 	{
-		private ConfigService _configService;
+		private readonly ILogger _log = Log.ForContext<ConfigController>();
+		private readonly ConfigService _configService;
 
 		public ConfigController()
 		{
-			_configService = new ConfigService();
+			_configService = new ConfigService(_log);
 		}
 
 		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
@@ -40,6 +42,7 @@ namespace KadOzenka.Web.Api
 			}
 			catch (Exception e)
 			{
+				_log.Error(e, e.Message);
 				return BadRequest(e.Message);
 			}
 			return Ok(config);
@@ -65,6 +68,7 @@ namespace KadOzenka.Web.Api
 			}
 			catch (Exception e)
 			{
+				_log.Error(e, e.Message);
 				return BadRequest(e.Message);
 			}
 			return Ok();

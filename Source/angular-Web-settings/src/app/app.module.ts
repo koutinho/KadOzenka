@@ -17,6 +17,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { FormsModule } from '@angular/forms';
 import {DynamicControlComponent} from "./setting/components/dynamic/dynamic-control.component";
 import {ArrayControlComponent} from "./setting/components/array/array.component";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {ArrayControlComponent} from "./setting/components/array/array.component"
     FormsModule,
     MatInputModule,
     MatButtonModule,
-    MatToolbarModule
+    MatToolbarModule,
+    NgbModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

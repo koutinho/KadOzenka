@@ -4,9 +4,13 @@
         <mat-icon>logout</mat-icon>
       </button>
 </mat-toolbar>
-<div>
-  <div *ngFor="let control of controls" class="form-row">
-    <ko-dynamic-control [control]="control"></ko-dynamic-control>
+<div class="container-fluid row">
+  <div class="col-md-6">
+    <div *ngFor="let control of controls" class="form-row">
+      <ko-dynamic-control [control]="control"></ko-dynamic-control>
+    </div>
   </div>
+  <div class="col-md-6">***</div>
+
 </div>
 

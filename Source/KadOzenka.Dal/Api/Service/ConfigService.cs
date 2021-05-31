@@ -3,12 +3,19 @@ using System.IO;
 using System.Text;
 using KadOzenka.Dal.Api.Models;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace KadOzenka.Dal.Api.Service
 {
 	public class ConfigService
 	{
-		private string rootPath = AppDomain.CurrentDomain.BaseDirectory + Path.PathSeparator + "appsettings.json";
+		private ILogger _log;
+
+		public ConfigService(ILogger logger)
+		{
+			_log = logger;
+		}
+		private string rootPath = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "appsettings.json";
 
 		public ConfigDto GetSerilogConfig(string env)
 		{

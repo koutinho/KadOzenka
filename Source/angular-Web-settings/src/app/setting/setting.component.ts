@@ -15,7 +15,7 @@ export class SettingComponent implements OnInit {
 
   controls: ControlModel<any>[] | null = [new ControlModel<string[]>({
     key: "use",
-    value: ["1 \r","2\r","3"],
+    value: ["1 \r","2\r","3\r"],
     controlType: EnumControl.array,
     label: ""
   })];
