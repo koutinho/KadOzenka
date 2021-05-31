@@ -200,17 +200,15 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.Debug("Получение информации о наличии предыдущих единиц оценки у обновляемых юнитов");
 			var unitWithHistoryIds = GetUnitIdWithHistory(taskId);
 			_log.Debug("Найдена информация о наличии предыдущих единиц оценки у {UnitsWithHistoryCount} из {UnitsCount} обновляемых юнитов", unitWithHistoryIds.Count, units.Count);
-			_log.Debug("Сохранение наследуемых атрибутов");
+			
+			_log.Debug("Начато сохранение наследуемых атрибутов");
 			var unitsWithHistory = units.Where(x => unitWithHistoryIds.Contains(x.Id)).ToList();
 			Parallel.ForEach(unitsWithHistory, options, unit =>
 			{
 				unit.InheritedKOFactors(_log);
 			});
+			_log.Debug("Закончено сохранение наследуемых атрибутов");
 
-
-			
-
-			_log.Debug("Сохранение отчета");
 			var reportId = reportService.SaveReport();
 
 			return reportService.GetUrlToDownloadFile(reportId);

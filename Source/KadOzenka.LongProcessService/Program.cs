@@ -18,7 +18,7 @@ namespace KadOzenka.LongProcessService
 {
     public class Program
     {
-        static string ASPNETCORE_ENVIRONMENT;
+        static string ASPNETCORE_ENVIRONMENT = "Development";
         public static void Main(string[] args)
         {
 	        if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
