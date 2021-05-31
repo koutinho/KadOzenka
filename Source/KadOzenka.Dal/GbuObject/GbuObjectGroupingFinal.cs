@@ -279,6 +279,9 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 }
 
+                // Если нет совпадений - записываем обратно составной код
+                if (resGroup == "-") resGroup = valueSource.Value;
+
                 #region Результат
 
                 if (!errorCOD)
