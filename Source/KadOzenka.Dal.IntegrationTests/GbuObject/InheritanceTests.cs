@@ -5,10 +5,11 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Integration._Builders.GbuObject;
 using KadOzenka.Dal.Integration._Builders.Task;
+using KadOzenka.Dal.Integration.GbuObject;
 using NUnit.Framework;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.Integration.GbuObject
+namespace KadOzenka.Dal.IntegrationTests.GbuObject
 {
 	public class InheritanceTests : BaseGbuObjectTests
 	{

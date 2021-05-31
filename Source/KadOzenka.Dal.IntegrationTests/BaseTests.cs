@@ -8,14 +8,24 @@ using NUnit.Framework;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.Integration._Builders.Task;
 using ObjectModel.Core.TD;
-using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Dal.IntegrationTests
 {
 	public class BaseTests
 	{
-		protected OMInstance Document { get; private set; }
+		private OMInstance _document;
+		protected OMInstance Document
+		{
+			get
+			{
+				if (_document == null)
+					_document = new DocumentBuilder().Build();
+
+				return _document;
+			}
+		}
+
 		private static bool _initialized;
 
 		[OneTimeSetUp]
@@ -32,8 +42,6 @@ namespace KadOzenka.Dal.IntegrationTests
 			InitConfig();
 
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
-
-			Document = new DocumentBuilder().Build();
 		}
 
 
