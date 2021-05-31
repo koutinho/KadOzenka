@@ -6,11 +6,13 @@
 </mat-toolbar>
 <div class="container-fluid row">
   <div class="col-md-6">
-    <div *ngFor="let control of controls" class="form-row">
-      <ko-dynamic-control [control]="control"></ko-dynamic-control>
+    <div>
+      <h3 style="text-align: center">Serilog конфигурация</h3>
     </div>
+    <div #jsonEditorRoot></div>
   </div>
-  <div class="col-md-6">***</div>
-
+  <div class="col-md-6">
+    <div #jsonEditorEnv></div>
+  </div>
 </div>
 

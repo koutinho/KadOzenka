@@ -19,7 +19,13 @@ namespace KadOzenka.Web.Api
 
 		public ConfigController()
 		{
-			_configService = new ConfigService(_log);
+			string env = "";
+			if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
+			{
+				env = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
+			}
+
+			_configService = new ConfigService(_log, env);
 		}
 
 		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
@@ -28,16 +34,11 @@ namespace KadOzenka.Web.Api
 		[HttpGet]
 		public IActionResult GetConfigurations()
 		{
-			string env = "";
-			if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
-			{
-				env = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
-			}
 
 			ConfigDto config;
 			try
 			{
-				config = _configService.GetSerilogConfig(env);
+				config = _configService.GetSerilogConfig();
 			
 			}
 			catch (Exception e)
@@ -54,16 +55,9 @@ namespace KadOzenka.Web.Api
 		[HttpPost]
 		public IActionResult SetConfigurations(ConfigDto config)
 		{
-			string env = "";
-			if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
-			{
-				env = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
-			}
-
-	
 			try
 			{
-				_configService.SetSerilogConfig(env, config);
+				_configService.SetSerilogConfig(config);
 
 			}
 			catch (Exception e)

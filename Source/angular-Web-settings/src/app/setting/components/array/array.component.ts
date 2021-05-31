@@ -11,4 +11,8 @@ export class ArrayControlComponent {
 
 constructor() {
 }
+
+getArrayValue(): string{
+  return this.control.value?.join("\n") || "";
+}
 }
