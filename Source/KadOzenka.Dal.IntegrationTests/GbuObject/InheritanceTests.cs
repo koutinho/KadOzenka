@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Register;
 using Core.Shared.Misc;
 using KadOzenka.Common.Tests;
+using KadOzenka.Common.Tests.Builders.GbuObject;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Integration._Builders.GbuObject;
@@ -35,34 +36,15 @@ namespace KadOzenka.Dal.Integration.GbuObject
 				}).ToList();
 
 			var date = unit.CreationDate.Value.AddDays(-1);
-			var parentCadastralNumberAttribute = new GbuObjectAttribute
-			{
-				Id = -1,
-				AttributeId = parentCadastralNumberAttributeId,
-				ObjectId = childObject.Id,
-				ChangeDocId = -1,
-				S = date,
-				ChangeUserId = -1,
-				ChangeDate = DateTime.Now,
-				Ot = date,
-				StringValue = parentObjectObject.CadastralNumber
-			};
-			parentCadastralNumberAttribute.Save();
+
+			var parentCadastralNumberAttribute = new GbuObjectAttributeBuilder()
+				.Attribute(parentCadastralNumberAttributeId)
+				.Object(childObject.Id).OtAndSDates(date).Value(parentObjectObject.CadastralNumber).Build();
+
 			attributesToCopy.ForEach(x =>
 			{
-				var cur = new GbuObjectAttribute
-				{
-					Id = -1,
-					AttributeId = x.Id,
-					ObjectId = parentObjectObject.Id,
-					ChangeDocId = -1,
-					S = date,
-					ChangeUserId = -1,
-					ChangeDate = DateTime.Now,
-					Ot = date,
-					StringValue = x.Value
-				};
-				cur.Save();
+				new GbuObjectAttributeBuilder().Attribute(x.Id).Object(parentObjectObject.Id)
+					.OtAndSDates(date).Value(x.Value).Build();
 			});
 
 			var attributeIdsToCopy = attributesToCopy.Select(x => x.Id).ToList();
