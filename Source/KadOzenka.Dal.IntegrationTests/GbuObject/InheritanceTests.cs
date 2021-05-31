@@ -5,6 +5,7 @@ using Core.Register;
 using Core.Shared.Misc;
 using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Builders.GbuObject;
+using KadOzenka.Common.Tests.Consts;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Integration._Builders.GbuObject;
@@ -24,48 +25,32 @@ namespace KadOzenka.Dal.Integration.GbuObject
 			var parentObjectObject = new GbuObjectBuilder().Build();
 			var childObject = new GbuObjectBuilder().Build();
 			var unit = new UnitBuilder().Task(task).Object(childObject).Type(PropertyTypes.Pllacement).Build();
-			
-			var egrnRegisterId = 2;
-			var egrnAttributes = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == egrnRegisterId && x.Type == RegisterAttributeType.STRING).ToList();
-			var parentCadastralNumberAttributeId = egrnAttributes.First().Id;
-			var attributesToCopy = egrnAttributes.Where(x => x.Id != parentCadastralNumberAttributeId).Take(2)
-				.Select(x => new
-				{
-					x.Id, 
-					Value = RandomGenerator.GetRandomString()
-				}).ToList();
 
 			var date = unit.CreationDate.Value.AddDays(-1);
 
 			var parentCadastralNumberAttribute = new GbuObjectAttributeBuilder()
-				.Attribute(parentCadastralNumberAttributeId)
+				.Attribute(EgrnAttributes.CadastralNumber.Id)
 				.Object(childObject.Id).OtAndSDates(date).Value(parentObjectObject.CadastralNumber).Build();
 
-			attributesToCopy.ForEach(x =>
-			{
-				new GbuObjectAttributeBuilder().Attribute(x.Id).Object(parentObjectObject.Id)
-					.OtAndSDates(date).Value(x.Value).Build();
-			});
+			var attributeToCopy = new GbuObjectAttributeBuilder().Attribute(EgrnAttributes.Address.Id).Object(parentObjectObject.Id)
+				.OtAndSDates(date).Build();
 
-			var attributeIdsToCopy = attributesToCopy.Select(x => x.Id).ToList();
+			var attributeIdsToCopy = new List<long> {attributeToCopy.AttributeId};
 			var settings = new GbuInheritanceAttributeSettings
 			{
 				TaskFilter = new List<long> { task.Id },
 				BuildToFlat = true,
-				ParentCadastralNumberAttribute = parentCadastralNumberAttributeId,
+				ParentCadastralNumberAttribute = parentCadastralNumberAttribute.AttributeId,
 				Attributes = attributeIdsToCopy
 			};
 			new GbuObjectInheritanceAttribute(settings).Run();
 
 
 			var copiedAttributes = new GbuObjectService().GetAllAttributes(childObject.Id, null, attributeIdsToCopy, date);
-			Assert.That(copiedAttributes.Count, Is.EqualTo(attributesToCopy.Count));
-			attributesToCopy.ForEach(attributeInfo =>
-			{
-				var copiedAttribute = copiedAttributes.FirstOrDefault(x => x.AttributeId == attributeInfo.Id);
-				Assert.That(copiedAttribute, Is.Not.Null, attributeInfo.Id.ToString);
-				Assert.That(copiedAttribute.StringValue, Is.EqualTo(attributeInfo.Value));
-			});
+			Assert.That(copiedAttributes.Count, Is.EqualTo(1));
+			var copiedAttribute = copiedAttributes.FirstOrDefault(x => x.AttributeId == attributeToCopy.AttributeId);
+			Assert.That(copiedAttribute, Is.Not.Null, attributeToCopy.Id.ToString);
+			Assert.That(copiedAttribute.StringValue, Is.EqualTo(attributeToCopy.StringValue));
 		}
 	}
 }
