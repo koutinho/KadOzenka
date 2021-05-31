@@ -150,6 +150,22 @@ namespace KadOzenka.Dal.GbuObject
             {
                 return filter.FilteringType switch
                 {
+                    // Обработка пустых/не найденных значений атрибутов без выброса ошибок
+                    FilteringTypeString.Contains or
+                        FilteringTypeString.ContainsIgnoreCase or
+                        FilteringTypeString.NotContains or
+                        FilteringTypeString.NotContainsIgnoreCase or
+                        FilteringTypeString.BeginsFrom or
+                        FilteringTypeString.BeginsFromIgnoreCase or
+                        FilteringTypeString.NotBeginsFrom or
+                        FilteringTypeString.NotBeginsFromIgnoreCase or
+                        FilteringTypeString.EndsWith or
+                        FilteringTypeString.EndsWithIgnoreCase or
+                        FilteringTypeString.NotEndsWith or
+                        FilteringTypeString.NotEndsWithIgnoreCase
+                        when filter.Value == null => false,
+
+
                     FilteringTypeString.Equal => value == filter.Value,
                     FilteringTypeString.EqualIgnoreCase => string.Equals(value, filter.Value, StringComparison.CurrentCultureIgnoreCase),
                     FilteringTypeString.NotEqual => value != filter.Value,
@@ -243,14 +259,14 @@ namespace KadOzenka.Dal.GbuObject
 
                 if (values.Length == 2)
                 {
-                    var attr2 = objectAttributes.FirstOrDefault(x => x.Id == setting.IdAttributeFor2Selections);
+                    var attr2 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor2Selections);
                     resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween2,
                         setting.Filter2ForSelectionBetween2},attr2);
                 }
 
                 if (values.Length == 3)
                 {
-                    var attr3 = objectAttributes.FirstOrDefault(x => x.Id == setting.IdAttributeFor3Selections);
+                    var attr3 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor3Selections);
                     resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween3,
                         setting.Filter2ForSelectionBetween3, setting.Filter3ForSelectionBetween3},attr3);
                 }
