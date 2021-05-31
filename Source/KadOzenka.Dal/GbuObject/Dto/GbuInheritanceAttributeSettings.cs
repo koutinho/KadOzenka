@@ -66,6 +66,13 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// <summary>
         /// Список выбранных атрибутов
         /// </summary>
-        public List<long> Attributes;
+        public List<AttributeMapping> Attributes;
+    }
+
+
+    public class AttributeMapping
+    {
+	    public long IdFrom { get; set; }
+	    public long IdTo { get; set; }
     }
 }

@@ -11,12 +11,6 @@ namespace KadOzenka.Web.Models.GbuObject
 		public long Attributes { get; set; }
 	}
 
-	public class AttributeMapping
-	{
-		public long IdFrom { get; set; }
-		public long IdTo { get; set; }
-	}
-
 	public class InheritanceViewModel : IValidatableObject
 	{
 		public long RatingTour { get; set; }
@@ -92,8 +86,8 @@ namespace KadOzenka.Web.Models.GbuObject
 			{
 				TaskFilter = TaskFilter,
 				ObjectChangeStatus = ObjectChangeStatus,
-				//TODO
-				//Attributes = Attributes,
+				Attributes = Attributes,
+				BuildToFlat = BuildToFlat,
 				ParcelToConstruction = ParcelToConstruction,
 				ParcelToUncomplited = ParcelToUncomplited,
 				ParcelToBuilding = ParcelToBuilding,

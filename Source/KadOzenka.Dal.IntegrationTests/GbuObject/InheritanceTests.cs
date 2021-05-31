@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 		[Test]
 		public void Can_Inherit_BuildToFlat()
 		{
-			var task = new TaskBuilder().Build();
+			var task = new TaskBuilder().Tour(Tour.Id).Document(Document.Id).Build();
 			var childObject = new GbuObjectBuilder().Build();
 			var parentObject = new GbuObjectBuilder().Build();
 			var unit = new UnitBuilder().Task(task).Object(childObject).Type(PropertyTypes.Pllacement).Build();
@@ -27,28 +27,31 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 				.Object(childObject.Id)
 				.OtAndSDates(dateForAttributes)
 				.Value(parentObject.CadastralNumber).Build();
-			var attributeToCopy = new GbuObjectAttributeBuilder()
+			var attributeCopyFrom = new GbuObjectAttributeBuilder()
 				.Attribute(EgrnAttributes.Address.Id)
 				.Object(parentObject.Id)
 				.OtAndSDates(dateForAttributes)
 				.Build();
-
+			var attributeCopyTo = EgrnAttributes.AddressOrLocation;
 
 			var settings = new GbuInheritanceAttributeSettings
 			{
 				TaskFilter = new List<long> { task.Id },
 				BuildToFlat = true,
 				ParentCadastralNumberAttribute = parentCadastralNumberAttribute.AttributeId,
-				Attributes = new List<long> { attributeToCopy.AttributeId }
+				Attributes = new List<AttributeMapping>
+				{
+					new AttributeMapping{IdFrom = attributeCopyFrom.AttributeId, IdTo = attributeCopyTo.Id}
+				}
 			};
 			new GbuObjectInheritanceAttribute(settings).Run();
 
 
-			var copiedAttributes = GetAttributeValue(EgrnAttributes.Address, childObject.Id, attributeToCopy.ChangeDocId);
+			var copiedAttributes = GetAttributeValue(attributeCopyTo, childObject.Id, attributeCopyFrom.ChangeDocId);
 			Assert.That(copiedAttributes.Count, Is.EqualTo(1));
 			var copiedAttribute = copiedAttributes.First();
-			Assert.That(copiedAttribute, Is.Not.Null, attributeToCopy.Id.ToString);
-			Assert.That(copiedAttribute.Value, Is.EqualTo(attributeToCopy.StringValue));
+			Assert.That(copiedAttribute, Is.Not.Null, attributeCopyFrom.Id.ToString);
+			Assert.That(copiedAttribute.Value, Is.EqualTo(attributeCopyFrom.StringValue));
 		}
 	}
 }

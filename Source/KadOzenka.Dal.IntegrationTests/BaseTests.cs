@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Task;
 using ObjectModel.Core.TD;
+using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Dal.IntegrationTests
@@ -23,6 +25,18 @@ namespace KadOzenka.Dal.IntegrationTests
 					_document = new DocumentBuilder().Build();
 
 				return _document;
+			}
+		}
+
+		private OMTour _tour;
+		protected OMTour Tour
+		{
+			get
+			{
+				if (_tour == null)
+					_tour = new TourBuilder().Build();
+
+				return _tour;
 			}
 		}
 

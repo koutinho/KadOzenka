@@ -21,7 +21,8 @@ namespace KadOzenka.Dal.GbuObject
 	    private static readonly ILogger _log = Log.ForContext<GbuObjectInheritanceAttribute>();
         private GbuObjectService GbuObjectService { get; }
         private GbuInheritanceAttributeSettings Settings { get; }
-        private List<long> AttributeIdsToCopy { get; }
+        private List<AttributeMapping> AttributesMapping { get; }
+        public List<long> AttributeIdsFromCopy { get; }
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -41,9 +42,10 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        GbuObjectService = new GbuObjectService();
 	        Settings = settings;
-	        AttributeIdsToCopy = Settings.Attributes.Where(id => id > 0).ToList();
+	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0).ToList();
+	        AttributeIdsFromCopy = AttributesMapping.Select(x => x.IdFrom).ToList();
         }
-        
+
 
         /// <summary>
         /// Выполнение операции наследования атрибутов
@@ -111,7 +113,7 @@ namespace KadOzenka.Dal.GbuObject
 
                 if (parent != null)
                 {
-	                var parentAttributes = new GbuObjectService().GetAllAttributes(parent.Id, null, AttributeIdsToCopy, unit.CreationDate);
+	                var parentAttributes = new GbuObjectService().GetAllAttributes(parent.Id, null, AttributeIdsFromCopy, unit.CreationDate);
 
                     var rowsReport = new List<GbuReportService.Row>();
                     if (parentAttributes.Count > 0)
@@ -125,10 +127,11 @@ namespace KadOzenka.Dal.GbuObject
                     int counter = 0;
                     foreach (var pattrib in parentAttributes)
                     {
+	                    var attributeTo = AttributesMapping.First(x => x.IdFrom == pattrib.AttributeId);
                         var attributeValue = new GbuObjectAttribute
                         {
                             Id = -1,
-                            AttributeId = pattrib.AttributeId,
+                            AttributeId = attributeTo.IdTo,
                             ObjectId = unit.ObjectId,
                             ChangeDocId = pattrib.ChangeDocId,
                             S = pattrib.S,

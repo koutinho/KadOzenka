@@ -306,16 +306,15 @@
         }
         var attributes = [];
         var formObjectKeys = Object.keys(formObject);
-        //todo убрать 5
-        for (var i = 0; i < 5; i++) {
-            var nameKo = formObjectKeys.find(key => key.includes('__IdFrom' + i));
-            var nameGbu = formObjectKeys.find(key => key.includes('__IdTo' + i));
+        for (var i = 0; i < currentRowNumber; i++) {
+            var nameFrom = formObjectKeys.find(key => key.includes('__IdFrom' + i));
+            var nameTo = formObjectKeys.find(key => key.includes('__IdTo' + i));
             attributes.push({
-                IdAttributeGbu: formObject[nameGbu],
-                IdAttributeKO: formObject[nameKo]
+                IdAttributeGbu: formObject[nameTo],
+                IdAttributeKO: formObject[nameFrom]
             });
-            delete formObject[nameGbu];
-            delete formObject[nameKo];
+            delete formObject[nameTo];
+            delete formObject[nameFrom];
         }
         attributes = attributes.filter(function (val) { return !!val});
         return Object.assign({}, formObject, { Attributes: attributes });
