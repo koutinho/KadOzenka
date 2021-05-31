@@ -14,7 +14,7 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 				Id = -1,
 				AttributeId = RandomGenerator.GenerateRandomInteger(),
 				ObjectId = RandomGenerator.GenerateRandomInteger(),
-				ChangeDocId = RandomGenerator.GenerateRandomInteger(),
+				ChangeDocId = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue),
 				S = DateTime.Now,
 				ChangeUserId = RandomGenerator.GenerateRandomInteger(),
 				ChangeDate = DateTime.Now,
