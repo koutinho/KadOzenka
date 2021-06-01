@@ -12,6 +12,7 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
@@ -535,7 +536,12 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
-			return View(new InheritanceViewModel());
+			var model = new InheritanceViewModel
+			{
+				Attributes = Enumerable.Repeat(new AttributeMapping(), InheritanceViewModel.StartAttributesCount).ToList()
+			};
+
+			return View(model);
 		}
 
 		[HttpPost]

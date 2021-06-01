@@ -71,13 +71,13 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Required(ErrorMessage = "Заполните атрибуты")]
 		public List<AttributeMapping> Attributes { get; set; }
 
-		private const int StartAttributesCount = 5;
+		public static readonly int StartAttributesCount = 5;
 
 
 
 		public InheritanceViewModel()
 		{
-			Attributes = Enumerable.Repeat(new AttributeMapping(), StartAttributesCount).ToList();
+			Attributes = new List<AttributeMapping>();
 		}
 
 

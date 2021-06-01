@@ -282,6 +282,7 @@
     }
 
 
+    /*
     function addCustomLevelsToForm(formObject) {
         if (!formObject) {
             return formObject;
@@ -296,7 +297,7 @@
         attributes = attributes.filter(function (val) { return !!val});
         return Object.assign({}, formObject, { Attributes: attributes });
     }
-
+    */
 
     function fillAttributesMappingInfo(formObject) {
         if (!formObject) {
@@ -321,8 +322,8 @@
             var nameFrom = formObjectKeys.find(key => key.includes(fromKey));
             var nameTo = formObjectKeys.find(key => key.includes(toKey));
             attributes.push({
-                IdFrom: formObject[nameFrom],
-                IdTo: formObject[nameTo]
+                IdFrom: formObject[nameFrom] || 0,
+                IdTo: formObject[nameTo] || 0
             });
             delete formObject[nameTo];
             delete formObject[nameFrom];
@@ -389,23 +390,36 @@
             }
 
             if (elementName.startsWith('@nameof(Model.Attributes)')) {
-                var predefinedKendoDropDownTree = $(`#${elementName}_`).data('kendoDropDownTree');
-                if (predefinedKendoDropDownTree) {
-                    predefinedKendoDropDownTree.value(elementValue || '');
-                    predefinedKendoDropDownTree.trigger('change');
-                    predefinedKendoDropDownTree.filterInput.val('');
-                    predefinedKendoDropDownTree.trigger('filtering', [true]);
-                } else {
-                    customRowValues.push(elementValue);
-                    currentRowNumber++;
-                }
+                //приходит: Attributes_1 = {IdFrom: 1001, IdTo: 0}
+                //преобразуем к Attributes_0__IdFrom и Attributes_0__IdTo
+                var id = '@nameof(Model.Attributes)';
+                var index = elementName.split('_')[1] - 1;
+                var baseElementId = `${id}_${index}__`;
+                var elementFromId = baseElementId + "IdFrom";
+                var elementToId = baseElementId + "IdTo";
+                createTreeElementForAttribute(elementFromId, elementValue.IdFrom, customRowValues);
+                createTreeElementForAttribute(elementToId, elementValue.IdTo, customRowValues);
             }
         });
 
-        await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
+        //await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
         updateStates();
     }
 
+    function createTreeElementForAttribute(id, elementValue, customRowValues) {
+        var predefinedKendoDropDownTree = $(`#${id}`).data('kendoDropDownTree');
+        //console.log('id', `#${id}`);
+        //console.log('predefinedKendoDropDownTree', predefinedKendoDropDownTree);
+        if (predefinedKendoDropDownTree) {
+            predefinedKendoDropDownTree.value(elementValue || '');
+            predefinedKendoDropDownTree.trigger('change');
+            predefinedKendoDropDownTree.filterInput.val('');
+            predefinedKendoDropDownTree.trigger('filtering', [true]);
+        } else {
+            //customRowValues.push(elementValue);
+            currentRowNumber++;
+        }
+    }
 
 
     $(document).ready(function () {
@@ -446,7 +460,7 @@
                 });
             });
 
-        templateStorage.init(@((int)DataFormStorege.Inheritance), null, addCustomLevelsToForm, fillForm);
+        templateStorage.init(@((int) DataFormStorege.Inheritance), null, fillAttributesMappingInfo, fillForm);
     });
 
 </script>
