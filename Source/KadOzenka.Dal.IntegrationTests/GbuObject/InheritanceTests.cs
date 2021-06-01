@@ -9,7 +9,6 @@ using KadOzenka.Dal.Integration._Builders.Task;
 using KadOzenka.Dal.Integration.GbuObject;
 using NUnit.Framework;
 using ObjectModel.Directory;
-using ObjectModel.Gbu;
 
 namespace KadOzenka.Dal.IntegrationTests.GbuObject
 {
@@ -42,7 +41,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
 
 
-			CheckCopiedAttribute(attributeCopyTo, childObject, attributeCopyFrom);
+			CheckCopiedAttribute(attributeCopyTo, childObject.Id, attributeCopyFrom);
 		}
 
 		[Test]
@@ -80,8 +79,8 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
 
 
-			CheckCopiedAttribute(attributeCopyTo, firstChildObject, attributeCopyFrom);
-			CheckCopiedAttribute(attributeCopyTo, secondChildObject, attributeCopyFrom);
+			CheckCopiedAttribute(attributeCopyTo, firstChildObject.Id, attributeCopyFrom);
+			CheckCopiedAttribute(attributeCopyTo, secondChildObject.Id, attributeCopyFrom);
 		}
 
 		[Test]
@@ -119,8 +118,8 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 				parentCadastralNumberAttributeBuilder.AttributeId, attributeCopyFrom.AttributeId, attributeCopyTo.Id);
 
 
-			CheckCopiedAttribute(attributeCopyTo, firstChildObject, firstParentAttribute);
-			CheckCopiedAttribute(attributeCopyTo, secondChildObject, secondParentAttribute);
+			CheckCopiedAttribute(attributeCopyTo, firstChildObject.Id, firstParentAttribute);
+			CheckCopiedAttribute(attributeCopyTo, secondChildObject.Id, secondParentAttribute);
 		}
 
 
@@ -139,13 +138,14 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 					new AttributeMapping {IdFrom = attributeCopyFromId, IdTo = attributeIdCopyTo}
 				}
 			};
+
 			new GbuObjectInheritanceAttribute(settings).Run();
 		}
 
-		private void CheckCopiedAttribute(EgrnAttributeForTest attributeCopyTo, OMMainObject firstChildObject,
+		private void CheckCopiedAttribute(EgrnAttributeForTest attributeCopyTo, long childObjectId,
 			GbuObjectAttribute attributeCopyFrom)
 		{
-			var copiedAttributes = GetAttributeValue(attributeCopyTo, firstChildObject.Id, attributeCopyFrom.ChangeDocId);
+			var copiedAttributes = GetAttributeValue(attributeCopyTo, childObjectId, attributeCopyFrom.ChangeDocId);
 			Assert.That(copiedAttributes.Count, Is.EqualTo(1));
 
 			var copiedAttribute = copiedAttributes.First();
