@@ -250,15 +250,15 @@ namespace KadOzenka.Dal.GbuObject
             {
                 string resGroup = "";
                 var valueSource = GetValueFactor(objectAttributes, setting.IdAttributeSource);
-                var values = valueSource.Value.Split("/");
+                var values = valueSource.Value?.Split("/");
 
-                if (values.Length == 0 || valueSource.Value.IsNullOrEmpty())
+                if (valueSource.Value.IsNullOrEmpty() || values == null)
                 {
                     errorCOD = true;
                     errorCODStr = "Не найдено кодов для проставления";
                 }
 
-                switch (values.Length)
+                else switch (values.Length)
                 {
                     case 1:
                         resGroup = values.First();
@@ -279,9 +279,6 @@ namespace KadOzenka.Dal.GbuObject
                     }
                 }
 
-                // Если нет совпадений - записываем обратно составной код
-                if (resGroup == "-") resGroup = valueSource.Value;
-
                 #region Результат
 
                 if (!errorCOD)
@@ -290,6 +287,9 @@ namespace KadOzenka.Dal.GbuObject
                     {
                         try
                         {
+                            // Если нет совпадений - записываем обратно составной код
+                            if (resGroup == "-") resGroup = valueSource.Value;
+
                             //todo iddoc
                             AddValueFactor(inputItem.ObjectId, setting.IdAttributeResult, 0, dateActual,
                                 resGroup);
@@ -312,7 +312,7 @@ namespace KadOzenka.Dal.GbuObject
 
                         lock (PriorityGroupingFinal.Locked)
                         {
-                            //reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
+                            reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
                         }
                     }
                 }
@@ -320,7 +320,7 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     lock (PriorityGroupingFinal.Locked)
                     {
-                        //reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
+                        reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
                     }
                 }
 
