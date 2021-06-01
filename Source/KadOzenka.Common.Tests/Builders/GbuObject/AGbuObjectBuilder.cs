@@ -22,5 +22,13 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 		}
 
 		public abstract OMMainObject Build();
+
+
+		public AGbuObjectBuilder Type(PropertyTypes type)
+		{
+			_gbuObject.ObjectType_Code = type;
+			_gbuObject.ObjectType = type.GetEnumDescription();
+			return this;
+		}
 	}
 }

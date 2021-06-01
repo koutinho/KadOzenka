@@ -7,6 +7,7 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using Serilog;
@@ -102,7 +103,11 @@ namespace KadOzenka.Dal.GbuObject
         public void Inheritance(InheritanceUnitPure unit, PropertyTypes typecode, GbuReportService reportService)
         {
 	        var parentCadastralNumberAttributeIdList = new List<long>(1) { Settings.ParentCadastralNumberAttribute };
-	        var parentCadastralNumberAttribute = GbuObjectService.GetAllAttributes(unit.ObjectId, null, parentCadastralNumberAttributeIdList, unit.CreationDate);
+	        var parentCadastralNumberAttribute = GbuObjectService.GetAllAttributes(unit.ObjectId, null, parentCadastralNumberAttributeIdList, unit.CreationDate,
+		        attributesToDownload: new List<GbuColumnsToDownload>
+		        {
+			        GbuColumnsToDownload.Value
+		        });
 	        var parentCadastralNumber = parentCadastralNumberAttribute.ElementAtOrDefault(0)?.StringValue;
 
             if (!string.IsNullOrWhiteSpace(parentCadastralNumber))
@@ -113,7 +118,14 @@ namespace KadOzenka.Dal.GbuObject
 
                 if (parent != null)
                 {
-	                var parentAttributes = new GbuObjectService().GetAllAttributes(parent.Id, null, AttributeIdsFromCopy, unit.CreationDate);
+	                var parentAttributes = GbuObjectService.GetAllAttributes(parent.Id, null, AttributeIdsFromCopy, unit.CreationDate,
+					 attributesToDownload: new List<GbuColumnsToDownload>
+					 {
+						 GbuColumnsToDownload.DocumentId,
+						 GbuColumnsToDownload.S,
+						 GbuColumnsToDownload.Ot,
+						 GbuColumnsToDownload.Value
+					 });
 
                     var rowsReport = new List<GbuReportService.Row>();
                     if (parentAttributes.Count > 0)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Common.Tests.Consts;
 using KadOzenka.Dal.GbuObject;
@@ -22,7 +23,10 @@ namespace KadOzenka.Dal.Integration.GbuObject
 		//делаем через свой метод, чтобы не зависить от GbuObjectService
 		protected List<EgrnAttributeRow> GetAttributeValue(EgrnAttributeForTest attribute, long objectId, long documentId)
 		{
-			var sql = $@"select value as {nameof(EgrnAttributeRow.Value)} 
+			var sql = $@"select 
+							s as {nameof(EgrnAttributeRow.S)},
+							ot as {nameof(EgrnAttributeRow.Ot)},
+							value as {nameof(EgrnAttributeRow.Value)} 
 							from {attribute.TableName} 
 							where object_id = {objectId} and change_doc_id = {documentId}";
 
@@ -33,8 +37,8 @@ namespace KadOzenka.Dal.Integration.GbuObject
 		{
 			//public long Id { get; set; }
 			//public long ObjectId { get; set; }
-			//public DateTime Ot { get; set; }
-			//public DateTime S { get; set; }
+			public DateTime Ot { get; set; }
+			public DateTime S { get; set; }
 			//public long? ReferenceId { get; set; }
 			public object Value { get; set; }
 			//public DateTime ChangeDate { get; set; }
