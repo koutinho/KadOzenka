@@ -4,6 +4,7 @@
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
 @using DevExpress.XtraRichEdit.Import.Html
+@using KadOzenka.Dal.GbuObject.Dto
 @model KadOzenka.Web.Models.GbuObject.InheritanceViewModel;
 
 @using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
@@ -395,8 +396,8 @@
                 var id = '@nameof(Model.Attributes)';
                 var index = elementName.split('_')[1] - 1;
                 var baseElementId = `${id}_${index}__`;
-                var elementFromId = baseElementId + "IdFrom";
-                var elementToId = baseElementId + "IdTo";
+                var elementFromId = baseElementId + '@nameof(AttributeMapping.IdFrom)';
+                var elementToId = baseElementId + '@nameof(AttributeMapping.IdTo)';
                 createTreeElementForAttribute(elementFromId, elementValue.IdFrom, customRowValues);
                 createTreeElementForAttribute(elementToId, elementValue.IdTo, customRowValues);
             }
