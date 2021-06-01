@@ -1,4 +1,4 @@
-﻿@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Models.GbuObject
 @model List<KadOzenka.Web.Models.GbuObject.PartialAttribute>
 @{
     var startRowNumber = (int) ViewData["StartRowNumber"];
@@ -6,14 +6,9 @@
 }
 @for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
 {
-    <!--TODO взять из вьюки с одной строкой-->
-    <div class="row">
-        <div class="col-sm-5">
-            @Html.KendoDropDownListTreeWithButton(m => m[i].Attributes.IdFrom, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + rowNumber)
-        </div>
-        <div class="col-sm-5 col-sm-offset-1">
-            @Html.KendoDropDownListTreeWithButton(m => m[i].Attributes.IdTo, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + rowNumber)
-        </div>
-    </div>
-
+    @(await Html.PartialAsync("Partials/PartialNewRow", new PartialAttribute
+    {
+        Attributes = Model[i].Attributes,
+        RowNumber = rowNumber
+    }))
 }
