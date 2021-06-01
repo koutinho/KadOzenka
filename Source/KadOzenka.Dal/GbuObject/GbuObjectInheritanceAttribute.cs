@@ -11,6 +11,7 @@ using KadOzenka.Dal.GbuObject.Entities;
 using Microsoft.Practices.ObjectBuilder2;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.Gbu;
 using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
@@ -88,6 +89,10 @@ namespace KadOzenka.Dal.GbuObject
 					.ToDictionary(k => k.Key, v => v.ToList());
 				_log.Debug("Найдено {UnitsGroupCount} групп ЕО с одинаковой датой создания", unitsGroupedByCreationDate.Count);
 
+				var possibleTypes = new List<PropertyTypes>
+				{
+					PropertyTypes.Building, PropertyTypes.Stead, PropertyTypes.CadastralQuartal
+				};
                 unitsGroupedByCreationDate.ForEach(group =>
 				{
 					var units = group.Value;
@@ -101,9 +106,26 @@ namespace KadOzenka.Dal.GbuObject
 	                    attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value});
                     _log.Debug("Найдено {ParentCadastralNumberAttributesCount} атрибутов с КН-родителя", parentCadastralNumberAttributes.Count);
 
+                    var uniqueCadastralNumbers = parentCadastralNumberAttributes.Select(x => x.StringValue).Distinct()
+	                    .Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+                    _log.Debug("Найдено {UniqueParentCadastralNumberAttributesCount} уникальных атрибутов с КН-родителя", uniqueCadastralNumbers.Count);
+
+                    _log.Debug("Начато скачивание ОН-родителей по уникальным КН");
+                    var parents = new List<OMMainObject>();
+                    if (uniqueCadastralNumbers.Count > 0)
+                    {
+	                    parents = OMMainObject.Where(x => uniqueCadastralNumbers.Contains(x.CadastralNumber) && possibleTypes.Contains(x.ObjectType_Code))
+		                    .Select(x => new
+		                    {
+                                x.CadastralNumber,
+                                x.ObjectType_Code
+		                    }).Execute();
+                    }
+                    _log.Debug("Найдено {ParentCadastralNumberAttributesCount} ОН-родителей по уникальным КН", parents.Count);
+
                     _log.Debug("Начата обработка Единиц Оценки");
 					Parallel.ForEach(units, options, unit => {
-						ProcessOneUnit(unit, parentCadastralNumberAttributes, reportService);
+						ProcessOneUnit(unit, parentCadastralNumberAttributes, parents, reportService);
 					});
 					_log.Debug("Закончена обработка Единиц Оценки");
                 });
@@ -121,17 +143,16 @@ namespace KadOzenka.Dal.GbuObject
         }
 
         public void Inheritance(InheritanceUnitPure unit, PropertyTypes typecode,
-	        List<GbuObjectAttribute> parentCadastralNumberAttributes, GbuReportService reportService)
+	        List<GbuObjectAttribute> parentCadastralNumberAttributes, List<OMMainObject> omMainObjects,
+	        GbuReportService reportService)
         {
 	        var parentCadastralNumberAttribute = parentCadastralNumberAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId);
 	        var parentCadastralNumber = parentCadastralNumberAttribute?.StringValue;
 
             if (!string.IsNullOrWhiteSpace(parentCadastralNumber))
             {
-	            var parent = ObjectModel.Gbu.OMMainObject
-		            .Where(x => x.CadastralNumber == parentCadastralNumber && x.ObjectType_Code == typecode)
-		            .ExecuteFirstOrDefault();
-
+	            var parent = omMainObjects.FirstOrDefault(x =>
+			           x.CadastralNumber == parentCadastralNumber && x.ObjectType_Code == typecode);
                 if (parent != null)
                 {
 	                var parentAttributes = GbuObjectService.GetAllAttributes(parent.Id, null, AttributeIdsFromCopy, unit.CreationDate,
@@ -204,7 +225,7 @@ namespace KadOzenka.Dal.GbuObject
         }
 
         public void ProcessOneUnit(InheritanceUnitPure unit, List<GbuObjectAttribute> parentCadastralNumberAttributes,
-	        GbuReportService reportService)
+	        List<OMMainObject> parents, GbuReportService reportService)
         {
             lock (locked)
             {
@@ -255,7 +276,7 @@ namespace KadOzenka.Dal.GbuObject
 
             if (type != null)
             {
-	            Inheritance(unit, type.Value, parentCadastralNumberAttributes, reportService);
+	            Inheritance(unit, type.Value, parentCadastralNumberAttributes, parents, reportService);
             }
         }
 

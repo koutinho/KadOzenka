@@ -122,6 +122,32 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 			CheckCopiedAttribute(attributeCopyTo, secondChildObject.Id, secondParentAttribute);
 		}
 
+		[Test]
+		public void CanNot_Inherit_BuildToFlat_If_There_Are_No_Info_About_Parent_Cadastral_Number()
+		{
+			var childType = PropertyTypes.Pllacement;
+			var task = new TaskBuilder().Tour(Tour.Id).Document(FirstDocument.Id).Build();
+			var childObject = new GbuObjectBuilder().Type(childType).Build();
+			var parentObject = new GbuObjectBuilder().Type(PropertyTypes.Building).Build();
+			var unit = new UnitBuilder().Task(task).Object(childObject).Type(childType).Build();
+
+			var dateForAttributes = unit.CreationDate.GetValueOrDefault().AddDays(-1);
+			var attributeCopyFrom = new GbuObjectAttributeBuilder()
+				.Attribute(EgrnAttributes.Address.Id)
+				.Object(parentObject.Id)
+				.OtAndSDates(dateForAttributes)
+				.Build();
+			var attributeCopyTo = EgrnAttributes.AddressOrLocation;
+
+
+			RanInheritance(new List<long> { task.Id }, EgrnAttributes.CadastralNumber.Id,
+				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
+
+
+			var copiedAttributes = GetAttributeValue(attributeCopyTo, childObject.Id, attributeCopyFrom.ChangeDocId);
+			Assert.That(copiedAttributes.Count, Is.EqualTo(0));
+		}
+
 
 		#region Support Methods
 
