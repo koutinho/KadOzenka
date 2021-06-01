@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 		public void Can_Inherit_BuildToFlat_From_One_Task_With_One_Unit()
 		{
 			var childType = PropertyTypes.Pllacement;
-			var task = new TaskBuilder().Tour(Tour.Id).Document(Document.Id).Build();
+			var task = new TaskBuilder().Tour(Tour.Id).Document(FirstDocument.Id).Build();
 			var childObject = new GbuObjectBuilder().Type(childType).Build();
 			var parentObject = new GbuObjectBuilder().Type(PropertyTypes.Building).Build();
 			var unit = new UnitBuilder().Task(task).Object(childObject).Type(childType).Build();
@@ -50,7 +50,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 		public void Can_Inherit_BuildToFlat_From_One_Task_With_Several_Units()
 		{
 			var childType = PropertyTypes.Pllacement;
-			var task = new TaskBuilder().Tour(Tour.Id).Document(Document.Id).Build();
+			var task = new TaskBuilder().Tour(Tour.Id).Document(FirstDocument.Id).Build();
 			
 			var objectBuilder = new GbuObjectBuilder().Type(childType);
 			var firstChildObject = objectBuilder.ShallowCopy().Build();

@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		{
 			var fileName = "one_parcel_success.xlsx";
 			var columnsMapping = GetColumnsMapping();
-			var task = new TaskBuilder().Document(Document.Id).Build();
+			var task = new TaskBuilder().Document(FirstDocument.Id).Build();
 
 			StartImport(task.Id, fileName, columnsMapping);
 
@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		{
 			var fileName = "two_parcels_error.xlsx";
 			var columnsMapping = GetColumnsMapping();
-			var task = new TaskBuilder().Document(Document.Id).Build();
+			var task = new TaskBuilder().Document(FirstDocument.Id).Build();
 
 			StartImport(task.Id, fileName, columnsMapping);
 

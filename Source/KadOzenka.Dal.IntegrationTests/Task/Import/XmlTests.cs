@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		public void Can_Import_Task_Document()
 		{
 			var fileName = "one_building_success.xml";
-			var task = new TaskBuilder().Document(Document.Id).Build();
+			var task = new TaskBuilder().Document(FirstDocument.Id).Build();
 
 			StartImport(task.Id, fileName);
 
@@ -22,7 +22,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		public void If_CanNot_Parse_Data_From_File_So_Include_Object_In_Total_Counter()
 		{
 			var fileName = "two_buildings_error.xml";
-			var task = new TaskBuilder().Document(Document.Id).Build();
+			var task = new TaskBuilder().Document(FirstDocument.Id).Build();
 
 			StartImport(task.Id, fileName);
 

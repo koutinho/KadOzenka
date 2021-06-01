@@ -16,15 +16,27 @@ namespace KadOzenka.Dal.IntegrationTests
 {
 	public class BaseTests
 	{
-		private OMInstance _document;
-		protected OMInstance Document
+		private OMInstance _firstDocument;
+		protected OMInstance FirstDocument
 		{
 			get
 			{
-				if (_document == null)
-					_document = new DocumentBuilder().Build();
+				if (_firstDocument == null)
+					_firstDocument = new DocumentBuilder().Build();
 
-				return _document;
+				return _firstDocument;
+			}
+		}
+
+		private OMInstance _secondDocument;
+		protected OMInstance SecondDocument
+		{
+			get
+			{
+				if (_secondDocument == null)
+					_secondDocument = new DocumentBuilder().Build();
+
+				return _secondDocument;
 			}
 		}
 
