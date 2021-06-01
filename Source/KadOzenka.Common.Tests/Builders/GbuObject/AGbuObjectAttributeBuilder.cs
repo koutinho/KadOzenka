@@ -5,6 +5,7 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 {
 	public abstract class AGbuObjectAttributeBuilder
 	{
+		public long AttributeId => _gbuObjectAttribute.AttributeId;
 		protected readonly GbuObjectAttribute _gbuObjectAttribute;
 
 		protected AGbuObjectAttributeBuilder()
