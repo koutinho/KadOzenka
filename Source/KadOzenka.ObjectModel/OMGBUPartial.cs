@@ -264,4 +264,15 @@ namespace ObjectModel.Gbu.CodSelection
     }
 }
 
+namespace ObjectModel.Gbu
+{
+	public partial class OMMainObject
+	{
+		public OMMainObject ShallowCopy()
+		{
+			return (OMMainObject) MemberwiseClone();
+		}
+    }
+}
+
 

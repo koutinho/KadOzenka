@@ -1,4 +1,5 @@
-﻿using ObjectModel.KO;
+﻿using System;
+using ObjectModel.KO;
 
 namespace KadOzenka.Common.Tests.Builders
 {
@@ -10,7 +11,7 @@ namespace KadOzenka.Common.Tests.Builders
 		{
 			_tour = new OMTour
 			{
-				Year = RandomGenerator.GenerateRandomInteger(2030, 3000)
+				Year = RandomGenerator.GenerateRandomInteger(2030, int.MaxValue)
 			};
 		}
 

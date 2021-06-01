@@ -1,6 +1,5 @@
 ﻿using System;
 using Core.Shared.Extensions;
-using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
@@ -49,7 +48,10 @@ namespace KadOzenka.Common.Tests.Builders.Task
 			};
 		}
 
-		public abstract OMUnit Build();
+		protected AUnitBuilder(OMUnit unit)
+		{
+			_unit = unit.ShallowCopy();
+		}
 
 
 		public AUnitBuilder Task(OMTask task)
@@ -72,5 +74,15 @@ namespace KadOzenka.Common.Tests.Builders.Task
 			_unit.PropertyType = type.GetEnumDescription();
 			return this;
 		}
+
+		public AUnitBuilder CreationDate(DateTime date)
+		{
+			_unit.CreationDate = date;
+			return this;
+		}
+
+
+		public abstract OMUnit Build();
+		public abstract AUnitBuilder ShallowCopy();
 	}
 }

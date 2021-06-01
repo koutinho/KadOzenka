@@ -21,7 +21,11 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 			};
 		}
 
-		public abstract OMMainObject Build();
+		protected AGbuObjectBuilder(OMMainObject gbuObject)
+		{
+			_gbuObject = gbuObject.ShallowCopy();
+		}
+
 
 
 		public AGbuObjectBuilder Type(PropertyTypes type)
@@ -30,5 +34,9 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 			_gbuObject.ObjectType = type.GetEnumDescription();
 			return this;
 		}
+
+
+		public abstract OMMainObject Build();
+		public abstract AGbuObjectBuilder ShallowCopy();
 	}
 }

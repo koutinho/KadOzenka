@@ -23,7 +23,10 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 			};
 		}
 
-		public abstract GbuObjectAttribute Build();
+		protected AGbuObjectAttributeBuilder(GbuObjectAttribute attribute)
+		{
+			_gbuObjectAttribute = attribute.ShallowCopy();
+		}
 
 
 		public AGbuObjectAttributeBuilder Attribute(long attributeId)
@@ -62,5 +65,9 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 			_gbuObjectAttribute.StringValue = value;
 			return this;
 		}
+
+
+		public abstract GbuObjectAttribute Build();
+		public abstract AGbuObjectAttributeBuilder ShallowCopy();
 	}
 }
