@@ -13,4 +13,8 @@ export class SettingApi{
   getSetting(): Observable<ISetting>{
     return this.http.get<ISetting>("api/Config/GetConfigurations")
   }
+
+  setSetting(data: ISetting): Observable<boolean>{
+    return this.http.post("api/Config/SetConfigurations", data)
+  }
 }

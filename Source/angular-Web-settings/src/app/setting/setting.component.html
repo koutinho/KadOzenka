@@ -1,18 +1,27 @@
 <mat-toolbar style="justify-content: space-between;">
-    <span>Настройки конфигурации</span>
+  <h3>Serilog конфигурация</h3>
     <button mat-icon-button class="example-icon favorite-icon" (click)="logOut()">
         <mat-icon>logout</mat-icon>
       </button>
 </mat-toolbar>
 <div class="container-fluid row">
-  <div class="col-md-6">
-    <div>
-      <h3 style="text-align: center">Serilog конфигурация</h3>
-    </div>
+  <div class="col-md-12" style="text-align: end">
+    <button mat-raised-button color="primary" (click)="saveSetting()" type="button">
+      Сохранить
+    </button>
+  </div>
+  <div class="col-md-12">
+  <h4>Основной файл настройки конфигурации</h4>
+  </div>
+  <div class="col-md-12">
     <div #jsonEditorRoot></div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-12">
+    <h4>Доп. файл конфигурации</h4>
     <div #jsonEditorEnv></div>
   </div>
 </div>
-
+<!--TODO Custom loader, we must make good-->
+<div *ngIf="showLoader" style="height: 100%; width: 100%; position: absolute; left: 0; top: 0">
+  <mat-spinner mode="indeterminate" style="position: relative; top: 50%; left: 50%"></mat-spinner>
+</div>

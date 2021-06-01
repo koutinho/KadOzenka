@@ -4,7 +4,6 @@ import {ApiService} from '../common/api/api';
 import {ControlModel} from "./model/control.model";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ISetting} from "../common/api/Interface/setting.interface";
-import JSONFormatter from 'json-formatter-js';
 import JSONEditor from "jsoneditor";
 
 @Component({
@@ -14,7 +13,10 @@ import JSONEditor from "jsoneditor";
 })
 export class SettingComponent implements OnInit {
 
-  controls: ControlModel<any>[] | null = [];
+  showLoader: boolean = false;
+  rootEditor!: JSONEditor;
+  envEditor!: JSONEditor;
+
   @ViewChild('jsonEditorEnv') jsonEditorEnv!:ElementRef;
 
   @ViewChild('jsonEditorRoot') jsonEditorRoot!: ElementRef;
@@ -44,13 +46,30 @@ export class SettingComponent implements OnInit {
 
     const container: HTMLElement = this.jsonEditorRoot.nativeElement;
     const options = {}
-    const editor = new JSONEditor(container, options)
-    editor.set(rootConfig);
+    this.rootEditor = new JSONEditor(container, options)
+    this.rootEditor.set(rootConfig);
 
 
     const containerEnv: HTMLElement = this.jsonEditorEnv.nativeElement;
-    const editorEnv = new JSONEditor(containerEnv, options)
-    editorEnv.set(rootConfig);
+    this.envEditor = new JSONEditor(containerEnv, options)
+    this.envEditor.set(envConfig);
+  }
+
+  saveSetting(){
+    this.showLoader = true;
+    const data: ISetting  = {
+      RootConfig: JSON.stringify(this.rootEditor.get()),
+      EnvConfig: JSON.stringify(this.envEditor.get())
+    }
+
+    this.api.settingApi.setSetting(data).subscribe((res) => {
+      this.showLoader = false;
+      alert("Успешно сохранено")
+    }, (error: HttpErrorResponse) => {
+      this.showLoader = false;
+      alert(error.error)
+    })
+
   }
 
 }

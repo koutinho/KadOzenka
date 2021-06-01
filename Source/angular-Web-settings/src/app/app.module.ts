@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
 import {DynamicControlComponent} from "./setting/components/dynamic/dynamic-control.component";
 import {ArrayControlComponent} from "./setting/components/array/array.component";
@@ -38,7 +39,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MatInputModule,
     MatButtonModule,
     MatToolbarModule,
-    NgbModule
+    NgbModule,
+    MatProgressSpinnerModule
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

@@ -56,14 +56,14 @@ namespace KadOzenka.Dal.Api.Service
 			{
 				throw new Exception("Конфигурация для Серилога не найдена");
 			}
-			config.Serilog = configDto.RootConfig;
-			File.WriteAllText(_rootPath, string.Empty);
+			config.Serilog = JsonConvert.DeserializeObject<dynamic>(configDto.RootConfig);
 
 			using (FileStream fs = File.OpenWrite(_rootPath))
 			{
 				var str = JsonConvert.SerializeObject(config);
 				byte[] bytes = Encoding.UTF8.GetBytes(str);
 
+				fs.SetLength(0);
 				if (fs.CanWrite)
 				{
 					fs.Write(bytes);
@@ -76,14 +76,14 @@ namespace KadOzenka.Dal.Api.Service
 				var configEnv = JsonConvert.DeserializeObject<dynamic>(fileEnv);
 				if (configEnv?.Serilog != null)
 				{
-					configEnv.Serilog = configDto.EnvConfig;
-					File.WriteAllText(_envPath, string.Empty);
+					configEnv.Serilog = JsonConvert.DeserializeObject<dynamic>(configDto.EnvConfig);
 
-					using (FileStream fs = File.OpenWrite(_rootPath))
+					using (FileStream fs = File.OpenWrite(_envPath))
 					{
 						var str = JsonConvert.SerializeObject(configEnv);
 						byte[] bytes = Encoding.UTF8.GetBytes(str);
 
+						fs.SetLength(0);
 						if (fs.CanWrite)
 						{
 							fs.Write(bytes);
