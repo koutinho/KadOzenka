@@ -479,7 +479,8 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region Inheritance
+
+		#region Наследование
 
 		#region load data
 
@@ -501,8 +502,12 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
-			ViewData["RowNumber"] = rowNumber.ToString();
-			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", new PartialAttribute());
+			var model = new PartialAttribute
+			{
+				RowNumber = rowNumber
+			};
+
+			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", model);
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
@@ -515,7 +520,8 @@ namespace KadOzenka.Web.Controllers
 			var models = new List<PartialAttribute>();
 			for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
 			{
-				models.Add(new PartialAttribute {Attributes = rowValues[i]});
+				//TODO KOMO-53
+				//models.Add(new PartialAttribute {Attributes = rowValues[i]});
 			}
 
 			return PartialView("/Views/GbuObject/Partials/PartialNewRows.cshtml", models);

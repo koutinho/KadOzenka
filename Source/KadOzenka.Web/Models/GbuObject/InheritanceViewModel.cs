@@ -8,7 +8,8 @@ namespace KadOzenka.Web.Models.GbuObject
 {
 	public class PartialAttribute
 	{
-		public long Attributes { get; set; }
+		public int RowNumber { get; set; }
+		public AttributeMapping Attributes { get; set; }
 	}
 
 	public class InheritanceViewModel : IValidatableObject
@@ -108,10 +109,21 @@ namespace KadOzenka.Web.Models.GbuObject
 						new ValidationResult(errorMessage: "Выберите тип наследования");
 			}
 
-			if (!Attributes.Any())
+			if (!Attributes.Any(x => x.IdTo != 0 && x.IdFrom != 0))
 			{
 				yield return
 					new ValidationResult(errorMessage: "Заполните наследуемые факторы");
+			}
+
+			for (var i = 0; i < Attributes.Count; i++)
+			{
+				var attribute = Attributes[i];
+
+				if (attribute.IdTo == 0 && attribute.IdFrom != 0)
+					yield return new ValidationResult($"В строке №{i + 1} не указан атрибут 'Куда копировать'");
+
+				if (attribute.IdTo != 0 && attribute.IdFrom == 0)
+					yield return new ValidationResult($"В строке №{i + 1} не указан атрибут 'Откуда копировать'");
 			}
 		}
 	}
