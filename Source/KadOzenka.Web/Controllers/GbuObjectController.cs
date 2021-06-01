@@ -512,7 +512,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public ActionResult GetRows(int startRowNumber, int rowCount, int[] rowValues)
+		public ActionResult GetRows(int startRowNumber, int rowCount, AttributeMapping[] rowValues)
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 			ViewData["StartRowNumber"] = startRowNumber;
@@ -521,8 +521,8 @@ namespace KadOzenka.Web.Controllers
 			var models = new List<PartialAttribute>();
 			for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
 			{
-				//TODO KOMO-53
-				//models.Add(new PartialAttribute {Attributes = rowValues[i]});
+				var model = new PartialAttribute {Attributes = rowValues[i]};
+				models.Add(model);
 			}
 
 			return PartialView("/Views/GbuObject/Partials/PartialNewRows.cshtml", models);

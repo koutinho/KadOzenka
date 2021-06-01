@@ -174,7 +174,6 @@
     async function addNewRows(startRowNumber, rowCount, rowValues) {
         if (rowCount === 0)
             return;
-
         var rowRange = `${startRowNumber}-${startRowNumber + rowCount - 1}`;
         var classWrapper = generateCustomRowFromTemplate(rowRange);
         await $.post("@Url.Action("GetRows", "GbuObject")",
@@ -347,6 +346,7 @@
         $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
         var customRowValues = [];
+        currentRowNumber = 0;
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
             var elementValue = val[elementName];
@@ -393,32 +393,35 @@
             if (elementName.startsWith('@nameof(Model.Attributes)')) {
                 //приходит: Attributes_1 = {IdFrom: 1001, IdTo: 0}
                 //преобразуем к Attributes_0__IdFrom и Attributes_0__IdTo
-                var id = '@nameof(Model.Attributes)';
-                var index = elementName.split('_')[1] - 1;
-                var baseElementId = `${id}_${index}__`;
-                var elementFromId = baseElementId + '@nameof(AttributeMapping.IdFrom)';
-                var elementToId = baseElementId + '@nameof(AttributeMapping.IdTo)';
-                createTreeElementForAttribute(elementFromId, elementValue.IdFrom, customRowValues);
-                createTreeElementForAttribute(elementToId, elementValue.IdTo, customRowValues);
+                //заполняем атрибуты без динамически добавленных строк
+                if (currentRowNumber < minCustomRowNumber) {
+                    var id = '@nameof(Model.Attributes)';
+                    var index = elementName.split('_')[1] - 1;
+                    var baseElementId = `${id}_${index}__`;
+                    var elementFromId = baseElementId + '@nameof(AttributeMapping.IdFrom)';
+                    var elementToId = baseElementId + '@nameof(AttributeMapping.IdTo)';
+                    createTreeElementForAttribute(elementFromId, elementValue.IdFrom, customRowValues);
+                    createTreeElementForAttribute(elementToId, elementValue.IdTo, customRowValues);
+                }
+                //заполняем атрибуты из динамически добавленных строк
+                else {
+                    customRowValues.push(elementValue);
+                }
+                currentRowNumber++;
             }
         });
 
-        //await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
+        await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
         updateStates();
     }
 
     function createTreeElementForAttribute(id, elementValue, customRowValues) {
         var predefinedKendoDropDownTree = $(`#${id}`).data('kendoDropDownTree');
-        //console.log('id', `#${id}`);
-        //console.log('predefinedKendoDropDownTree', predefinedKendoDropDownTree);
         if (predefinedKendoDropDownTree) {
             predefinedKendoDropDownTree.value(elementValue || '');
             predefinedKendoDropDownTree.trigger('change');
             predefinedKendoDropDownTree.filterInput.val('');
             predefinedKendoDropDownTree.trigger('filtering', [true]);
-        } else {
-            //customRowValues.push(elementValue);
-            currentRowNumber++;
         }
     }
 
