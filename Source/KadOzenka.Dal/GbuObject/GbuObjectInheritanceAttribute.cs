@@ -138,7 +138,7 @@ namespace KadOzenka.Dal.GbuObject
 			        GbuColumnsToDownload.S,
 			        GbuColumnsToDownload.Ot,
 			        GbuColumnsToDownload.Value
-		        });
+		        }).GroupBy(x => x.ObjectId).ToDictionary(x => x.Key, x => x.ToList());
 
             return new ParentInfo
 	        {
@@ -186,7 +186,7 @@ namespace KadOzenka.Dal.GbuObject
 	            var parent = parentInfo.Parents.FirstOrDefault(x => x.CadastralNumber == parentCadastralNumber && x.ObjectType_Code == typecode);
                 if (parent != null)
                 {
-	                var parentAttributes = parentInfo.ParentAttributes.Where(x => x.ObjectId == parent.Id).ToList();
+	                parentInfo.ParentAttributes.TryGetValue(parent.Id, out var parentAttributes);
 	                var rowsReport = new List<GbuReportService.Row>();
                     if (parentAttributes.Count > 0)
                     {
@@ -364,7 +364,8 @@ namespace KadOzenka.Dal.GbuObject
     {
 	    public Dictionary<long, GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
 	    public List<OMMainObject> Parents { get; set; }
-	    public List<GbuObjectAttribute> ParentAttributes { get; set; }
+	    public Dictionary<long, List<GbuObjectAttribute>> ParentAttributes { get; set; }
     }
+
     #endregion
 }
