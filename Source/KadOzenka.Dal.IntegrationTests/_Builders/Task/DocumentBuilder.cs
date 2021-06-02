@@ -1,7 +1,7 @@
 ﻿using KadOzenka.Common.Tests.Builders.Task;
 using ObjectModel.Core.TD;
 
-namespace KadOzenka.Dal.IntegrationTests.Task._Builders
+namespace KadOzenka.Dal.Integration._Builders.Task
 {
 	public class DocumentBuilder : ADocumentBuilder
 	{

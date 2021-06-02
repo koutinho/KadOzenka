@@ -5,11 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Shared.Extensions;
 using Core.SRD;
-using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
+using KadOzenka.Dal.GbuObject.Entities;
+using Microsoft.Practices.ObjectBuilder2;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.Gbu;
 using Serilog;
 
 namespace KadOzenka.Dal.GbuObject
@@ -20,6 +22,9 @@ namespace KadOzenka.Dal.GbuObject
     public class GbuObjectInheritanceAttribute
     {
 	    private static readonly ILogger _log = Log.ForContext<GbuObjectInheritanceAttribute>();
+        private GbuObjectService GbuObjectService { get; }
+        private GbuInheritanceAttributeSettings Settings { get; }
+        private List<AttributeMapping> AttributesMapping { get; }
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -34,13 +39,21 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static int CurrentCount = 0;
 
+        
+        public GbuObjectInheritanceAttribute(GbuInheritanceAttributeSettings settings)
+        {
+	        GbuObjectService = new GbuObjectService();
+	        Settings = settings;
+	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0).ToList();
+        }
+
 
         /// <summary>
         /// Выполнение операции наследования атрибутов
         /// </summary>
-        public static string Run(GbuInheritanceAttributeSettings setting)
+        public string Run()
         {
-	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(setting)).Debug("Входные данные для Наследования");
+	        _log.ForContext("InputParameters", JsonConvert.SerializeObject(Settings)).Debug("Входные данные для Наследования");
 
             using var reportService = new GbuReportService("Отчет наследование");
 			reportService.AddHeaders(new List<string>{ "КН", "КН наследуемого объекта", "Имя наследуемого атрибута", "Значение атрибута", "Ошибка" });
@@ -58,28 +71,40 @@ namespace KadOzenka.Dal.GbuObject
                 MaxDegreeOfParallelism = 20
             };
 
-            if (setting.TaskFilter?.Count > 0)
+            if (Settings.TaskFilter?.Count > 0)
             {
-	            var unitsGetter = new InheritanceUnitsGetter(_log, setting) as AItemsGetter<InheritanceUnitPure>;
-	            unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, setting.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
+	           _log.ForContext("TasksIds", Settings.TaskFilter, true).Debug("Начато скачивание ЕО по {TasksCount} ЗнО", Settings.TaskFilter.Count);
+	           var unitsGetter = new InheritanceUnitsGetter(_log, Settings) as AItemsGetter<InheritanceUnitPure>;
+	           unitsGetter = new GbuObjectStatusFilterDecorator<InheritanceUnitPure>(unitsGetter, _log, Settings.ObjectChangeStatus, DateTime.Now.GetEndOfTheDay());
+	           var allUnits = unitsGetter.GetItems();
+	           MaxCount = allUnits.Count;
+	           CurrentCount = 0;
+	           _log.Debug("Скачено {UnitsCount} ЕО по ЗнО", MaxCount);
 
-                var units = unitsGetter.GetItems();
-                MaxCount = units.Count;
-                CurrentCount = 0;
-                _log.Debug("Наследование атрибутов ГБУ. Загружено {Count} объектов", MaxCount);
 
-                _log.ForContext("TasksId", setting.TaskFilter)
-                  .Debug("Выполнение операции наследования атрибутов ГБУ по {TasksCount} заданиям на оценку. Всего {Count} объектов", setting.TaskFilter.Count, MaxCount);
+				var unitsGroupedByCreationDate = allUnits.GroupBy(x => x.CreationDate ?? DateTime.Now.Date)
+					.ToDictionary(k => k.Key, v => v.ToList());
+				_log.Debug("Найдено {UnitsGroupCount} групп ЕО с одинаковой датой создания", unitsGroupedByCreationDate.Count);
 
-                Parallel.ForEach(units, options, item => { 
-                    RunOneUnit(item, setting, reportService);
+                unitsGroupedByCreationDate.ForEach(group =>
+				{
+					var units = group.Value;
+					var unitsCreationDate = group.Key;
+
+					var parentInfo = GetInfoAboutParentObjects(units, unitsCreationDate);
+
+					_log.Debug("Начата обработка Единиц Оценки");
+					Parallel.ForEach(units, options, unit => {
+						ProcessOneUnit(unit, parentInfo, reportService);
+					});
+					_log.Debug("Закончена обработка Единиц Оценки");
                 });
-                _log.Debug("Операция наследования атрибутов ГБУ завершена");
+
 
                 CurrentCount = 0;
                 MaxCount = 0;
-                units.Clear();
-                _log.Debug("Переменная очищена. Записей {Count}", units.Count);
+                allUnits.Clear();
+                _log.Debug("Переменная очищена. Записей {Count}", allUnits.Count);
             }
 
             var reportId = reportService.SaveReport();
@@ -87,42 +112,100 @@ namespace KadOzenka.Dal.GbuObject
             return reportService.GetUrlToDownloadFile(reportId);
         }
 
-        public static void Inheritance(InheritanceUnitPure unit, GbuInheritanceAttributeSettings setting, ObjectModel.Directory.PropertyTypes typecode, GbuReportService reportService)
+
+        #region Support Methods
+
+        private ParentInfo GetInfoAboutParentObjects(List<InheritanceUnitPure> units, DateTime unitsCreationDate)
         {
-            List<long> lstIds = new List<long>();
-            lstIds.Add(setting.ParentCadastralNumberAttribute);
-            List<GbuObjectAttribute> attribs = new GbuObjectService().GetAllAttributes(unit.ObjectId, null, lstIds, unit.CreationDate);
-            if (attribs.Count > 0)
+	        _log.Debug("Начато скачивание атрибутов с КН-родителя для {UnitsCount} ЕО в группе", units.Count);
+	        var parentCadastralNumberAttributeIdList = new List<long>(1) { Settings.ParentCadastralNumberAttribute };
+	        var parentCadastralNumberAttributes = GbuObjectService.GetAllAttributes(
+		        units.Select(x => x.ObjectId).ToList(),
+		        null,
+		        parentCadastralNumberAttributeIdList, unitsCreationDate,
+		        attributesToDownload: new List<GbuColumnsToDownload> {GbuColumnsToDownload.Value});
+	        _log.Debug("Найдено {ParentCadastralNumberAttributesCount} атрибутов с КН-родителя", parentCadastralNumberAttributes.Count);
+
+	        var parents = GetParentGbuMainObjects(parentCadastralNumberAttributes);
+
+	        var attributeIdsFromCopy = AttributesMapping.Select(x => x.IdFrom).ToList();
+	        var parentIds = parents.Select(x => x.Id).ToList();
+            var parentAttributes = GbuObjectService.GetAllAttributes(parentIds, null, attributeIdsFromCopy, unitsCreationDate,
+		        attributesToDownload: new List<GbuColumnsToDownload>
+		        {
+			        GbuColumnsToDownload.DocumentId,
+			        GbuColumnsToDownload.S,
+			        GbuColumnsToDownload.Ot,
+			        GbuColumnsToDownload.Value
+		        }).GroupBy(x => x.ObjectId).ToDictionary(x => x.Key, x => x.ToList());
+
+            return new ParentInfo
+	        {
+		        ParentCadastralNumberAttributes = parentCadastralNumberAttributes.ToDictionary(key => key.ObjectId),
+		        Parents = parents,
+                ParentAttributes = parentAttributes
+            };
+        }
+
+        private List<OMMainObject> GetParentGbuMainObjects(List<GbuObjectAttribute> parentCadastralNumberAttributes)
+        {
+	        var uniqueCadastralNumbers = parentCadastralNumberAttributes.Select(x => x.StringValue)
+		        .Where(x => !string.IsNullOrWhiteSpace(x)).Distinct().ToList();
+	        _log.Debug("Найдено {UniqueParentCadastralNumberAttributesCount} уникальных атрибутов с КН-родителя", uniqueCadastralNumbers.Count);
+
+	        var parents = new List<OMMainObject>();
+	        if (uniqueCadastralNumbers.Count > 0)
+	        {
+		        var possibleTypes = new List<PropertyTypes>
+		        {
+			        PropertyTypes.Building, PropertyTypes.Stead, PropertyTypes.CadastralQuartal
+		        };
+
+		        _log.Debug("Начато скачивание ОН-родителей по уникальным КН");
+		        parents = OMMainObject.Where(x =>
+				        uniqueCadastralNumbers.Contains(x.CadastralNumber) && possibleTypes.Contains(x.ObjectType_Code))
+			        .Select(x => new
+			        {
+				        x.CadastralNumber,
+				        x.ObjectType_Code
+			        }).Execute();
+                _log.Debug("Найдено {ParentCadastralNumberAttributesCount} ОН-родителей по уникальным КН", parents.Count);
+            }
+
+	        return parents;
+        }
+
+		private void Inheritance(InheritanceUnitPure unit, PropertyTypes typecode, ParentInfo parentInfo,
+	        GbuReportService reportService)
+        {
+	        parentInfo.ParentCadastralNumberAttributes.TryGetValue(unit.ObjectId, out var parentCadastralNumberAttribute);
+	        var parentCadastralNumber = parentCadastralNumberAttribute?.StringValue;
+	        if (!string.IsNullOrWhiteSpace(parentCadastralNumber))
             {
-                ObjectModel.Gbu.OMMainObject parent = ObjectModel.Gbu.OMMainObject.Where(x => x.CadastralNumber == attribs[0].StringValue && x.ObjectType_Code == typecode).SelectAll().ExecuteFirstOrDefault();
+	            var parent = parentInfo.Parents.FirstOrDefault(x => x.CadastralNumber == parentCadastralNumber && x.ObjectType_Code == typecode);
                 if (parent != null)
                 {
-                    List<long> lstPIds = new List<long>();
-                    if (setting.Attributes != null)
-                    {
-                        foreach (long id in setting.Attributes)
-                        {
-                            if (id > 0) lstPIds.Add(id);
-                        }
-                    }
-                    List<GbuObjectAttribute> pattribs = new GbuObjectService().GetAllAttributes(parent.Id, null, lstPIds, unit.CreationDate);
-
+	                parentInfo.ParentAttributes.TryGetValue(parent.Id, out var parentAttributes);
+	                if (parentAttributes == null)
+		                return;
+                    
                     var rowsReport = new List<GbuReportService.Row>();
-                    if (pattribs.Count > 0)
+                    if (parentAttributes.Count > 0)
                     {
 	                    lock (locked)
 	                    {
-		                    rowsReport = reportService.GetRangeRows(pattribs.Count);
+		                    rowsReport = reportService.GetRangeRows(parentAttributes.Count);
 	                    }
                     }
 
                     int counter = 0;
-                    foreach (GbuObjectAttribute pattrib in pattribs)
+                    foreach (var pattrib in parentAttributes)
                     {
+	                    var attributeTo = AttributesMapping.First(x => x.IdFrom == pattrib.AttributeId);
                         var attributeValue = new GbuObjectAttribute
                         {
                             Id = -1,
-                            AttributeId = pattrib.AttributeId,
+                            AttributeId = attributeTo.IdTo,
                             ObjectId = unit.ObjectId,
                             ChangeDocId = pattrib.ChangeDocId,
                             S = pattrib.S,
@@ -138,7 +221,7 @@ namespace KadOzenka.Dal.GbuObject
                         {
 	                        if (rowsReport != null && rowsReport.Count >= counter)
 	                        {
-		                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, attribs[0].StringValue,
+		                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, parentCadastralNumber,
 			                        pattrib.AttributeId, pattrib.StringValue, "", reportService);
 		                        counter++;
 	                        }
@@ -151,7 +234,7 @@ namespace KadOzenka.Dal.GbuObject
 					{
 						var rowReport = reportService.GetCurrentRow();
                         reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-                        reportService.AddValue($"Не найден объект по кадастровому номеру {attribs[0].StringValue}", 4, rowReport);
+                        reportService.AddValue($"Не найден объект по кадастровому номеру {parentCadastralNumber}", 4, rowReport);
                     }
                 }
             }
@@ -165,52 +248,59 @@ namespace KadOzenka.Dal.GbuObject
                 }
             }
         }
-        public static void RunOneUnit(InheritanceUnitPure unit, GbuInheritanceAttributeSettings setting, GbuReportService reportService)
+
+        public void ProcessOneUnit(InheritanceUnitPure unit, ParentInfo parentInfo, GbuReportService reportService)
         {
             lock (locked)
             {
                 CurrentCount++;
             }
 
+            PropertyTypes? type = null;
             //Тип наследования: Здание -> Помещение
-            if (setting.BuildToFlat && unit.PropertyType_Code==ObjectModel.Directory.PropertyTypes.Pllacement)
+            if (Settings.BuildToFlat && unit.PropertyType_Code == PropertyTypes.Pllacement)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Building, reportService);
+	            type = PropertyTypes.Building;
             }
             //Тип наследования: Земельный участок -> Объект незавершенного строительства
-            if (setting.ParcelToUncomplited && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding)
+            if (Settings.ParcelToUncomplited && unit.PropertyType_Code == PropertyTypes.UncompletedBuilding)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Stead, reportService);
+	            type = PropertyTypes.Stead;
             }
             //Тип наследования: Земельный участок -> Сооружение
-            if (setting.ParcelToConstruction && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction)
+            if (Settings.ParcelToConstruction && unit.PropertyType_Code == PropertyTypes.Construction)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Stead, reportService);
+	            type = PropertyTypes.Stead;
             }
             //Тип наследования: Земельный участок -> Здание
-            if (setting.ParcelToBuilding && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+            if (Settings.ParcelToBuilding && unit.PropertyType_Code == PropertyTypes.Building)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.Stead, reportService);
+	            type = PropertyTypes.Stead;
             }
             //Тип наследования: Кадастровый квартал -> Объект незавершенного строительства
-            if (setting.CadastralBlockToUncomplited && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.UncompletedBuilding)
+            if (Settings.CadastralBlockToUncomplited && unit.PropertyType_Code == PropertyTypes.UncompletedBuilding)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralQuartal, reportService);
+	            type = PropertyTypes.CadastralQuartal;
             }
             //Тип наследования: Кадастровый квартал -> Сооружение
-            if (setting.CadastralBlockToConstruction && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Construction)
+            if (Settings.CadastralBlockToConstruction && unit.PropertyType_Code == PropertyTypes.Construction)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralQuartal, reportService);
+	            type = PropertyTypes.CadastralQuartal;
             }
             //Тип наследования: Кадастровый квартал -> Здание
-            if (setting.CadastralBlockToBuilding && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Building)
+            if (Settings.CadastralBlockToBuilding && unit.PropertyType_Code == PropertyTypes.Building)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralQuartal, reportService);
+	            type = PropertyTypes.CadastralQuartal;
             }
             //Тип наследования: Кадастровый квартал -> Земельный участок
-            if (setting.CadastralBlockToParcel && unit.PropertyType_Code == ObjectModel.Directory.PropertyTypes.Stead)
+            if (Settings.CadastralBlockToParcel && unit.PropertyType_Code == PropertyTypes.Stead)
             {
-                Inheritance(unit, setting, ObjectModel.Directory.PropertyTypes.CadastralQuartal, reportService);
+	            type = PropertyTypes.CadastralQuartal;
+            }
+
+            if (type != null)
+            {
+	            Inheritance(unit, type.Value, parentInfo, reportService);
             }
         }
 
@@ -224,6 +314,8 @@ namespace KadOzenka.Dal.GbuObject
 			reportService.AddValue(errorMessage, 4, rowNumber);
         }
     }
+
+    #endregion
 
 
     #region Entities
@@ -268,6 +360,13 @@ namespace KadOzenka.Dal.GbuObject
 				    PropertyType_Code = x.PropertyType_Code
 			    }).ToList();
 	    }
+    }
+
+    public class ParentInfo
+    {
+	    public Dictionary<long, GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
+	    public List<OMMainObject> Parents { get; set; }
+	    public Dictionary<long, List<GbuObjectAttribute>> ParentAttributes { get; set; }
     }
 
     #endregion

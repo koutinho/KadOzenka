@@ -1,7 +1,7 @@
 ﻿using KadOzenka.Common.Tests.Builders.Task;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.IntegrationTests.Task._Builders
+namespace KadOzenka.Dal.Integration._Builders.Task
 {
 	public class TaskBuilder : ATaskBuilder
 	{
