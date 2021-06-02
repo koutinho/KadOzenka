@@ -25,7 +25,6 @@ namespace KadOzenka.Dal.GbuObject
         private GbuObjectService GbuObjectService { get; }
         private GbuInheritanceAttributeSettings Settings { get; }
         private List<AttributeMapping> AttributesMapping { get; }
-        public List<long> AttributeIdsFromCopy { get; }
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -46,7 +45,6 @@ namespace KadOzenka.Dal.GbuObject
 	        GbuObjectService = new GbuObjectService();
 	        Settings = settings;
 	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0).ToList();
-	        AttributeIdsFromCopy = AttributesMapping.Select(x => x.IdFrom).ToList();
         }
 
 
@@ -129,9 +127,10 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.Debug("Найдено {ParentCadastralNumberAttributesCount} атрибутов с КН-родителя", parentCadastralNumberAttributes.Count);
 
 	        var parents = GetParentGbuMainObjects(parentCadastralNumberAttributes);
-	        var parentIds = parents.Select(x => x.Id).ToList();
 
-	        var parentAttributes = GbuObjectService.GetAllAttributes(parentIds, null, AttributeIdsFromCopy, unitsCreationDate,
+	        var attributeIdsFromCopy = AttributesMapping.Select(x => x.IdFrom).ToList();
+	        var parentIds = parents.Select(x => x.Id).ToList();
+            var parentAttributes = GbuObjectService.GetAllAttributes(parentIds, null, attributeIdsFromCopy, unitsCreationDate,
 		        attributesToDownload: new List<GbuColumnsToDownload>
 		        {
 			        GbuColumnsToDownload.DocumentId,
@@ -187,7 +186,10 @@ namespace KadOzenka.Dal.GbuObject
                 if (parent != null)
                 {
 	                parentInfo.ParentAttributes.TryGetValue(parent.Id, out var parentAttributes);
-	                var rowsReport = new List<GbuReportService.Row>();
+	                if (parentAttributes == null)
+		                return;
+                    
+                    var rowsReport = new List<GbuReportService.Row>();
                     if (parentAttributes.Count > 0)
                     {
 	                    lock (locked)
