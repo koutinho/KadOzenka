@@ -12,6 +12,7 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.GbuLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
@@ -479,7 +480,8 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-		#region Inheritance
+
+		#region Наследование
 
 		#region load data
 
@@ -501,12 +503,16 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
-			ViewData["RowNumber"] = rowNumber.ToString();
-			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", new PartialAttribute());
+			var model = new PartialAttribute
+			{
+				RowNumber = rowNumber
+			};
+
+			return PartialView("/Views/GbuObject/Partials/PartialNewRow.cshtml", model);
 		}
 
 		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public ActionResult GetRows(int startRowNumber, int rowCount, int[] rowValues)
+		public ActionResult GetRows(int startRowNumber, int rowCount, AttributeMapping[] rowValues)
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 			ViewData["StartRowNumber"] = startRowNumber;
@@ -515,7 +521,8 @@ namespace KadOzenka.Web.Controllers
 			var models = new List<PartialAttribute>();
 			for (int rowNumber = startRowNumber, i = 0; rowNumber < startRowNumber + rowCount; rowNumber++, i++)
 			{
-				models.Add(new PartialAttribute {Attributes = rowValues[i]});
+				var model = new PartialAttribute {Attributes = rowValues[i]};
+				models.Add(model);
 			}
 
 			return PartialView("/Views/GbuObject/Partials/PartialNewRows.cshtml", models);
@@ -529,8 +536,12 @@ namespace KadOzenka.Web.Controllers
 		{
 			ViewData["TreeAttributes"] = GetGbuAttributesTree();
 
-			long[] arr = new long[5];
-			return View(new InheritanceViewModel{Attributes = new List<long>(arr.ToList())});
+			var model = new InheritanceViewModel
+			{
+				Attributes = Enumerable.Repeat(new AttributeMapping(), InheritanceViewModel.StartAttributesCount).ToList()
+			};
+
+			return View(model);
 		}
 
 		[HttpPost]
