@@ -34,12 +34,12 @@ namespace KadOzenka.Web.Models.GbuObject
         /// <summary>
         /// Преобразовываемый атрибут
         /// </summary>
-        public LevelItemGroup IdAttributeSource { get; set; }
+        public long IdAttributeSource { get; set; }
 
         /// <summary>
         /// Настройки 2 уровня группировки
         /// </summary>
-        public LevelItemGroup IdAttributeForSelectionBetween2 { get; set; }
+        public long IdAttributeForSelectionBetween2 { get; set; }
 
         public Filters Filter1ForSelectionBetween2 { get; set; }
         public Filters Filter2ForSelectionBetween2 { get; set; }
@@ -47,7 +47,7 @@ namespace KadOzenka.Web.Models.GbuObject
         /// <summary>
         /// Настройки 3 уровня группировки
         /// </summary>
-        public LevelItemGroup IdAttributeForSelectionBetween3 { get; set; }
+        public long IdAttributeForSelectionBetween3 { get; set; }
 
         public Filters Filter1ForSelectionBetween3 { get; set; }
         public Filters Filter2ForSelectionBetween3 { get; set; }
@@ -56,9 +56,6 @@ namespace KadOzenka.Web.Models.GbuObject
 
         public GroupingObjectFinalize()
         {
-            IdAttributeSource = new LevelItemGroup();
-            IdAttributeForSelectionBetween2 = new LevelItemGroup();
-            IdAttributeForSelectionBetween3 = new LevelItemGroup();
             Filter1ForSelectionBetween2 = new Filters();
             Filter2ForSelectionBetween2 = new Filters();
             Filter1ForSelectionBetween3 = new Filters();
@@ -72,13 +69,13 @@ namespace KadOzenka.Web.Models.GbuObject
             return new()
             {
                 IdAttributeResult = IdAttributeResult,
-                IdAttributeSource = IdAttributeSource.IdFactor,
+                IdAttributeSource = IdAttributeSource,
 
-                IdAttributeFor2Selections = IdAttributeForSelectionBetween2.IdFactor,
+                IdAttributeFor2Selections = IdAttributeForSelectionBetween2,
                 Filter1ForSelectionBetween2 = Filter1ForSelectionBetween2,
                 Filter2ForSelectionBetween2 = Filter2ForSelectionBetween2,
 
-                IdAttributeFor3Selections = IdAttributeForSelectionBetween3.IdFactor,
+                IdAttributeFor3Selections = IdAttributeForSelectionBetween3,
                 Filter1ForSelectionBetween3 = Filter1ForSelectionBetween3,
                 Filter2ForSelectionBetween3 = Filter2ForSelectionBetween3,
                 Filter3ForSelectionBetween3 = Filter3ForSelectionBetween3,
