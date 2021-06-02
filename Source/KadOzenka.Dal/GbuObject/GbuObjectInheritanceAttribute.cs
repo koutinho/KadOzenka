@@ -142,7 +142,7 @@ namespace KadOzenka.Dal.GbuObject
 
             return new ParentInfo
 	        {
-		        ParentCadastralNumberAttributes = parentCadastralNumberAttributes,
+		        ParentCadastralNumberAttributes = parentCadastralNumberAttributes.ToDictionary(key => key.ObjectId),
 		        Parents = parents,
                 ParentAttributes = parentAttributes
             };
@@ -179,7 +179,7 @@ namespace KadOzenka.Dal.GbuObject
 		private void Inheritance(InheritanceUnitPure unit, PropertyTypes typecode, ParentInfo parentInfo,
 	        GbuReportService reportService)
         {
-	        var parentCadastralNumberAttribute = parentInfo.ParentCadastralNumberAttributes.FirstOrDefault(x => x.ObjectId == unit.ObjectId);
+	        parentInfo.ParentCadastralNumberAttributes.TryGetValue(unit.ObjectId, out var parentCadastralNumberAttribute);
 	        var parentCadastralNumber = parentCadastralNumberAttribute?.StringValue;
 	        if (!string.IsNullOrWhiteSpace(parentCadastralNumber))
             {
@@ -362,7 +362,7 @@ namespace KadOzenka.Dal.GbuObject
 
     public class ParentInfo
     {
-	    public List<GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
+	    public Dictionary<long, GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
 	    public List<OMMainObject> Parents { get; set; }
 	    public List<GbuObjectAttribute> ParentAttributes { get; set; }
     }
