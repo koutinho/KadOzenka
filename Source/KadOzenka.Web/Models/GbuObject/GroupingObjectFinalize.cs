@@ -105,6 +105,11 @@ namespace KadOzenka.Web.Models.GbuObject
                         memberNames: new[] {nameof(TaskFilter)});
             }
 
+            if (IdAttributeSource == IdAttributeResult && IdAttributeSource!= 0
+                && IdAttributeResult != null && IdAttributeResult != 0)
+            {
+                yield return new ValidationResult("Исходная и результирующие характеристики не могут совпадать");
+            }
             foreach (var validationResult in CheckResultAttribute()) yield return validationResult;
 
             foreach (var validationResult1 in CheckFilterTypes()) yield return validationResult1;
