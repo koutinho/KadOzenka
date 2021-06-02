@@ -129,12 +129,23 @@ namespace KadOzenka.Dal.GbuObject
 	        _log.Debug("Найдено {ParentCadastralNumberAttributesCount} атрибутов с КН-родителя", parentCadastralNumberAttributes.Count);
 
 	        var parents = GetParentGbuMainObjects(parentCadastralNumberAttributes);
+	        var parentIds = parents.Select(x => x.Id).ToList();
 
-	        return new ParentInfo
+	        var parentAttributes = GbuObjectService.GetAllAttributes(parentIds, null, AttributeIdsFromCopy, unitsCreationDate,
+		        attributesToDownload: new List<GbuColumnsToDownload>
+		        {
+			        GbuColumnsToDownload.DocumentId,
+			        GbuColumnsToDownload.S,
+			        GbuColumnsToDownload.Ot,
+			        GbuColumnsToDownload.Value
+		        });
+
+            return new ParentInfo
 	        {
 		        ParentCadastralNumberAttributes = parentCadastralNumberAttributes,
-		        Parents = parents
-	        };
+		        Parents = parents,
+                ParentAttributes = parentAttributes
+            };
         }
 
         private List<OMMainObject> GetParentGbuMainObjects(List<GbuObjectAttribute> parentCadastralNumberAttributes)
@@ -175,16 +186,8 @@ namespace KadOzenka.Dal.GbuObject
 	            var parent = parentInfo.Parents.FirstOrDefault(x => x.CadastralNumber == parentCadastralNumber && x.ObjectType_Code == typecode);
                 if (parent != null)
                 {
-	                var parentAttributes = GbuObjectService.GetAllAttributes(parent.Id, null, AttributeIdsFromCopy, unit.CreationDate,
-					 attributesToDownload: new List<GbuColumnsToDownload>
-					 {
-						 GbuColumnsToDownload.DocumentId,
-						 GbuColumnsToDownload.S,
-						 GbuColumnsToDownload.Ot,
-						 GbuColumnsToDownload.Value
-					 });
-
-                    var rowsReport = new List<GbuReportService.Row>();
+	                var parentAttributes = parentInfo.ParentAttributes.Where(x => x.ObjectId == parent.Id).ToList();
+	                var rowsReport = new List<GbuReportService.Row>();
                     if (parentAttributes.Count > 0)
                     {
 	                    lock (locked)
@@ -361,6 +364,7 @@ namespace KadOzenka.Dal.GbuObject
     {
 	    public List<GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
 	    public List<OMMainObject> Parents { get; set; }
+	    public List<GbuObjectAttribute> ParentAttributes { get; set; }
     }
     #endregion
 }
