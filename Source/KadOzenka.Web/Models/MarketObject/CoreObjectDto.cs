@@ -40,7 +40,8 @@ namespace KadOzenka.Web.Models.MarketObject
         public PropertyTypesCIPJS CIPJSTypeCode { get; set; }
         [DisplayName("Сегмент")]
 		public string MarketSegment { get; set; }
-        public MarketSegment MarketSegmentCode { get; set; }
+		[DisplayName("Сегмент")]
+		public MarketSegment MarketSegmentCode { get; set; }
         public decimal? PricePerSquareMeter { get; set; }
 		public string ImageUrl { get; set; }
 		public string MarketLogoUrl { get; set; }
