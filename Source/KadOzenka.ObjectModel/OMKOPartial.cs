@@ -626,6 +626,11 @@ namespace ObjectModel.KO
 	                    .Verbose("Не найдена предыдущая единица оценки для {UnitCadastralNumber}", this.CadastralNumber);
             }
         }
+
+        public OMUnit ShallowCopy()
+        {
+	        return (OMUnit)MemberwiseClone();
+        }
     }
 
     public partial class OMModel

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
-using KadOzenka.Dal.IntegrationTests.Task._Builders;
+using KadOzenka.Dal.Integration._Builders.Task;
 using NUnit.Framework;
 using ObjectModel.Directory;
 
@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		{
 			var fileName = "one_parcel_success.xlsx";
 			var columnsMapping = GetColumnsMapping();
-			var task = new TaskBuilder().Document(Document.Id).Build();
+			var task = new TaskBuilder().Document(FirstDocument.Id).Build();
 
 			StartImport(task.Id, fileName, columnsMapping);
 
@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.Import
 		{
 			var fileName = "two_parcels_error.xlsx";
 			var columnsMapping = GetColumnsMapping();
-			var task = new TaskBuilder().Document(Document.Id).Build();
+			var task = new TaskBuilder().Document(FirstDocument.Id).Build();
 
 			StartImport(task.Id, fileName, columnsMapping);
 

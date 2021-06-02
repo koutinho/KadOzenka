@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling
 {
-	public class BaseModelingTests : BaseTests
+	public class BaseGbuObjectTests : BaseTests
 	{
 		protected IModelingService ModelingService { get; set; }
 
