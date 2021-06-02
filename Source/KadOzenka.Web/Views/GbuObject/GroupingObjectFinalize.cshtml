@@ -228,38 +228,28 @@
             let valKey = Object.keys(val)[0];
             if (valKey.includes('IdFactor') || valKey.includes('IdAttributeResult')
                 || valKey.includes('IdAttributeSource') || valKey.includes('IdAttributeForSelection')) {
-                try{
-                    $('#' + valKey).data('kendoDropDownTree').value(val[valKey] || '');
-                }
-                catch {
-                    console.log(valKey+ " failed");
-                }
+                $('#' + valKey).data('kendoDropDownTree').value(val[valKey]);
             }
 
             if (valKey.match('Filter.ForSelectionBetween._Type')){
-                console.log(valKey+ " - Type");
-                console.log(val[valKey]);
                 let dropDownList = $('#' + valKey);
-                dropDownList.data('kendoDropDownList').select(val[valKey] || 'None');
+                dropDownList.data('kendoDropDownList').select(val[valKey] || 0);
                 dropDownList.trigger('change');
             }
 
             if (valKey.match('Filter.ForSelectionBetween._.+Filter_FilteringType')){
-                console.log(valKey + " - FilteringType - " + val[valKey]);
                 let dropDownList = $('#' + valKey);
                 dropDownList.data('kendoDropDownList').select(val[valKey]);
                 dropDownList.trigger('change');
             }
 
             if (valKey.match('.+_NumberFilter_Value.?')){
-                console.log(valKey+ " - Value - " + val[valKey] );
                 let input = $('#' + valKey);
                 input.data('kendoNumericTextBox').value(val[valKey]);
                 input.trigger('change');
             }
 
             if (valKey.match('.+_DateFilter_Value.?')){
-                console.log(valKey+ " - Value - " + val[valKey] );
                 let input = $('#' + valKey);
                 if (val[valKey]) input.data('kendoDatePicker').value(new Date(val[valKey]));
                 input.trigger('change');
