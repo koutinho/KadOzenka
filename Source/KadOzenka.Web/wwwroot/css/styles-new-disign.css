@@ -1014,9 +1014,9 @@ label.control-label.required:after {
     color: #484848;
 }
 
-.k-grid-header .k-header > .k-link, .k-header, .k-treemap-title {
-    color: #484848;
-}
+/* .k-grid-header .k-header > .k-link, .k-header, .k-treemap-title { */
+/*     color: #484848; */
+/* } */
 
 .static-nav > fieldset label, .static-nav > .control-data > fieldset label {
     color: #484848;
@@ -1030,29 +1030,29 @@ label.control-label.required:after {
         color: #484848;
     }
 
-.k-calendar .k-link {
+/*.k-calendar .k-link {
     color: #484848;
 }
-
-    .k-calendar .k-link.k-nav-fast {
+*/
+/*    .k-calendar .k-link.k-nav-fast {
         color: #484848;
-    }
+    }*/
 
-.k-link:link, .k-link:visited, .k-nav-current.k-state-hover .k-link {
+/*.k-link:link, .k-link:visited, .k-nav-current.k-state-hover .k-link {
     color: #484848;
-}
+}*/
 
-.k-panelbar > li.k-state-default > .k-link, .k-tabstrip-items .k-state-default .k-link {
+/*.k-panelbar > li.k-state-default > .k-link, .k-tabstrip-items .k-state-default .k-link {
     color: #484848;
-}
+}*/
 
 .k-grid-footer td, .k-group-footer td, .k-grouping-row td {
     color: #484848;
 }
 
-.k-button {
+/*.k-button {
     color: #484848;
-}
+}*/
 
 .k-panelbar > li > .k-link {
     color: #484848;
