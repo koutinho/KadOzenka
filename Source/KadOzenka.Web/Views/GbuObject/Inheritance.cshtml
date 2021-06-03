@@ -166,7 +166,8 @@
         $(classWrapper).load("@Url.Action("GetRow", "GbuObject")", { rowNumber: rowNumber }, function (response) {
             $(classWrapper).show(250);
             $("html, body").animate({ scrollTop: $(document).height() }, "slow");
-            addSelectionHandlersForDropDowns();
+            addSelectionHandlersForDropDownsInFromBlock();
+            addSelectionHandlersForDropDownsInToBlock();
             kendo.ui.progress($('body'), false);
         });
     }
@@ -217,16 +218,47 @@
         }
     }
 
+    //TODO collect dynamic rows
+    /*
     function getDataSource() {
         return $.find('[class^=Attributes_]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
     }
+    */
+    function getDataSourceInFromBlock() {
+        //console.log('concat 1', $.find('div[class^=wrapper-] input[class*=Attributes_]'));
+        //console.log('concat 2',  $.find('input[id$=_IdFrom]'));
+        return $.find('input[id$=_IdFrom]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
+    }
+    function getDataSourceInToBlock() {
+        return $.find('input[id$=_IdTo]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
+    }
 
+    /*
     function getSelectedValues() {
         return getDataSource().map(d => d.value());
     }
+    */
+    function getSelectedValuesInFromBlock() {
+        return getDataSourceInFromBlock().map(d => d.value());
+    }
+    function getSelectedValuesInToBlock() {
+        return getDataSourceInToBlock().map(d => d.value());
+    }
 
+    /*
     function getAllUidsToDisable(arrValues) {
         var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+    */
+    function getAllUidsInFromBlockToDisable(arrValues) {
+        var allNodes = getDataSourceInFromBlock().map((d) => flattenDataSource(d)).flat();
+        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
+        return filter.map((i) => { return i.uid; });
+    }
+    function getAllUidsInToBlockToDisable(arrValues) {
+        var allNodes = getDataSourceInToBlock().map((d) => flattenDataSource(d)).flat();
         var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
         return filter.map((i) => { return i.uid; });
     }
@@ -235,16 +267,37 @@
         return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
     }
 
+    /*
     function blockAlreadySelectedNodes(arr) {
         var uidsToBlock = getAllUidsToDisable(arr);
         var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
         nodes.forEach(n => n.addClass('k-state-disabled'));
     }
+    */
+    function blockAlreadySelectedNodesInFromBlock(arr) {
+        var uidsToBlock = getAllUidsInFromBlockToDisable(arr);
+        var nodes = getDataSourceInFromBlock().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
+    function blockAlreadySelectedNodesInToBlock(arr) {
+        var uidsToBlock = getAllUidsInToBlockToDisable(arr);
+        var nodes = getDataSourceInToBlock().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
+        nodes.forEach(n => n.addClass('k-state-disabled'));
+    }
 
+    /*
     function clearTreeStates() {
         getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
     }
+    */
+    function clearTreeStatesInFromBlock() {
+        getDataSourceInFromBlock().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
+    function clearTreeStatesInToBlock() {
+        getDataSourceInToBlock().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
+    }
 
+    /*
     function updateSelected(e) {
         var dataItem = e.sender.dataItem(e.node);
         var itemValue = Number(dataItem.value);
@@ -262,13 +315,62 @@
         filtered.push(dataItem.value);
         blockAlreadySelectedNodes(filtered);
     }
+    */
+    function updateSelectedValuesInFromBlock(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+        clearTreeStatesInFromBlock();
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValuesInFromBlock();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodesInFromBlock(filtered);
+    }
 
+    function updateSelectedValuesInToBlock(e) {
+        var dataItem = e.sender.dataItem(e.node);
+        var itemValue = Number(dataItem.value);
+        if (isNaN(itemValue) || itemValue <= 0 ) {
+            e.preventDefault();
+            return;
+        }
+        clearTreeStatesInToBlock();
+        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
+        var arr = getSelectedValuesInToBlock();
+        if (arr.includes(dataItem.value)) {
+            e.preventDefault();
+        }
+        var filtered = arr.filter(v=>!changedEntries.includes(v));
+        filtered.push(dataItem.value);
+        blockAlreadySelectedNodesInToBlock(filtered);
+    }
+
+    /*
     function updateStates() {
         clearTreeStates();
         var arr = getSelectedValues();
         blockAlreadySelectedNodes(arr);
     }
+    */
+    function updateStatesInFromBlock() {
+        clearTreeStatesInFromBlock();
+        var arr = getSelectedValuesInFromBlock();
+        blockAlreadySelectedNodesInFromBlock(arr);
+    }
+    function updateStatesInToBlock() {
+        clearTreeStatesInToBlock();
+        var arr = getSelectedValuesInToBlock();
+        blockAlreadySelectedNodesInToBlock(arr);
+    }
 
+    /*
     function addSelectionHandlersForDropDowns() {
         getDataSource().forEach(function (d) {
                 d.treeview.unbind('select', e => updateSelected(e));
@@ -280,24 +382,36 @@
         clearButtons.forEach(b => b.onclick = function () { updateStates(); });
         getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
     }
-
-
-    /*
-    function addCustomLevelsToForm(formObject) {
-        if (!formObject) {
-            return formObject;
-        }
-        var attributes = [];
-        Object.keys(formObject).forEach(function (key) {
-            if (key.includes('Attributes')) {
-                attributes.push(formObject[key]);
-                delete formObject[key];
-            }
-        });
-        attributes = attributes.filter(function (val) { return !!val});
-        return Object.assign({}, formObject, { Attributes: attributes });
-    }
     */
+
+    function addSelectionHandlersForDropDownsInFromBlock() {
+        getDataSourceInFromBlock().forEach(function (d) {
+                d.treeview.unbind('select', e => updateSelectedValuesInFromBlock(e));
+                d.treeview.bind('select', e => updateSelectedValuesInFromBlock(e));
+            }
+        );
+        updateStatesInFromBlock();
+        //clear-button-Attributes_0__IdFrom
+        var clearButtons = $.find("a[class^='clear-button-Attributes'][class*='IdFrom']").concat($.find('div[class^=wrapper-] [class^=clear-button]'));
+        //console.log('clearButtons', $.find('[class^=clear-button-Attributes][class$=_IdFrom]'));
+        //console.log('clearButtons', $.find('[class^=clear-button-Attributes_0__IdFrom] [class=k-button-icon]'));
+        //console.log('clearButtons', clearButtons);
+        clearButtons.forEach(b => b.onclick = function () { updateStatesInFromBlock(); });
+        getDataSourceInFromBlock().forEach(d => d.bind("onFiltered", function () { updateStatesInFromBlock(); }));
+    }
+
+    function addSelectionHandlersForDropDownsInToBlock() {
+        getDataSourceInToBlock().forEach(function (d) {
+                d.treeview.unbind('select', e => updateSelectedValuesInToBlock(e));
+                d.treeview.bind('select', e => updateSelectedValuesInToBlock(e));
+            }
+        );
+        updateStatesInToBlock();
+        var clearButtons = $.find("a[class^='clear-button-Attributes'][class*='IdTo']").concat($.find('div[class^=wrapper-] [class^=clear-button]'));
+        clearButtons.forEach(b => b.onclick = function () { updateStatesInToBlock(); });
+        getDataSourceInToBlock().forEach(d => d.bind("onFiltered", function () { updateStatesInToBlock(); }));
+    }
+
 
     function fillAttributesMappingInfo(formObject) {
         if (!formObject) {
@@ -340,6 +454,9 @@
         });
         currentRowNumber = minCustomRowNumber;
     }
+
+
+
 
     async function fillForm(data) {
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
@@ -412,7 +529,8 @@
         });
 
         await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
-        updateStates();
+        updateStatesInFromBlock();
+        updateStatesInToBlock();
     }
 
     function createTreeElementForAttribute(id, elementValue, customRowValues) {
@@ -427,7 +545,8 @@
 
 
     $(document).ready(function () {
-        addSelectionHandlersForDropDowns();
+        addSelectionHandlersForDropDownsInFromBlock();
+        addSelectionHandlersForDropDownsInToBlock();
 
         $('#addRow').on('click', (e) => {
             e.preventDefault();
