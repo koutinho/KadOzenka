@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Platform" Version="1.0.392-beta.2" />
+    <PackageReference Include="Platform" Version="2.0.1-beta.1" />
   </ItemGroup>
 
   <ItemGroup>
