@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
   </ItemGroup>

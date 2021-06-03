@@ -10,7 +10,7 @@ namespace KadOzenka.Dal.Models.Filters
 		public StringFilter StringFilter { get; set; }
 		public NumberFilter NumberFilter { get; set; }
 		public BoolFilter BoolFilter { get; set; }
-		public ReferenceFilter ReferenceFilter { get; set; }
+		//public ReferenceFilter ReferenceFilter { get; set; }
 	}
 
 	public class DateFilter

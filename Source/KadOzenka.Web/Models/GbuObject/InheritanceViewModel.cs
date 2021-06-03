@@ -8,8 +8,10 @@ namespace KadOzenka.Web.Models.GbuObject
 {
 	public class PartialAttribute
 	{
-		public long Attributes { get; set; }
+		public int RowNumber { get; set; }
+		public AttributeMapping Attributes { get; set; }
 	}
+
 	public class InheritanceViewModel : IValidatableObject
 	{
 		public long RatingTour { get; set; }
@@ -67,7 +69,17 @@ namespace KadOzenka.Web.Models.GbuObject
 		/// Список выбранных атрибутов
 		/// </summary>
 		[Required(ErrorMessage = "Заполните атрибуты")]
-		public List<long> Attributes { get; set; }
+		public List<AttributeMapping> Attributes { get; set; }
+
+		public static readonly int StartAttributesCount = 5;
+
+
+
+		public InheritanceViewModel()
+		{
+			Attributes = new List<AttributeMapping>();
+		}
+
 
 		public GbuInheritanceAttributeSettings ToAttributeSettings()
 		{
@@ -76,6 +88,7 @@ namespace KadOzenka.Web.Models.GbuObject
 				TaskFilter = TaskFilter,
 				ObjectChangeStatus = ObjectChangeStatus,
 				Attributes = Attributes,
+				BuildToFlat = BuildToFlat,
 				ParcelToConstruction = ParcelToConstruction,
 				ParcelToUncomplited = ParcelToUncomplited,
 				ParcelToBuilding = ParcelToBuilding,
@@ -96,10 +109,21 @@ namespace KadOzenka.Web.Models.GbuObject
 						new ValidationResult(errorMessage: "Выберите тип наследования");
 			}
 
-			if (!Attributes.Any())
+			if (!Attributes.Any(x => x.IdTo != 0 && x.IdFrom != 0))
 			{
 				yield return
 					new ValidationResult(errorMessage: "Заполните наследуемые факторы");
+			}
+
+			for (var i = 0; i < Attributes.Count; i++)
+			{
+				var attribute = Attributes[i];
+
+				if (attribute.IdTo == 0 && attribute.IdFrom != 0)
+					yield return new ValidationResult($"В строке №{i + 1} не указан атрибут 'Куда копировать'");
+
+				if (attribute.IdTo != 0 && attribute.IdFrom == 0)
+					yield return new ValidationResult($"В строке №{i + 1} не указан атрибут 'Откуда копировать'");
 			}
 		}
 	}

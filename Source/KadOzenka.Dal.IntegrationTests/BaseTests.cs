@@ -6,14 +6,52 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.Integration._Builders;
+using KadOzenka.Dal.Integration._Builders.Task;
 using ObjectModel.Core.TD;
+using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Dal.IntegrationTests
 {
 	public class BaseTests
 	{
-		public static OMInstance Document { get; private set; }
+		private OMInstance _firstDocument;
+		protected OMInstance FirstDocument
+		{
+			get
+			{
+				if (_firstDocument == null)
+					_firstDocument = new DocumentBuilder().Build();
+
+				return _firstDocument;
+			}
+		}
+
+		private OMInstance _secondDocument;
+		protected OMInstance SecondDocument
+		{
+			get
+			{
+				if (_secondDocument == null)
+					_secondDocument = new DocumentBuilder().Build();
+
+				return _secondDocument;
+			}
+		}
+
+		private OMTour _tour;
+		protected OMTour Tour
+		{
+			get
+			{
+				if (_tour == null)
+					_tour = new TourBuilder().Build();
+
+				return _tour;
+			}
+		}
+
 		private static bool _initialized;
 
 		[OneTimeSetUp]
@@ -30,8 +68,6 @@ namespace KadOzenka.Dal.IntegrationTests
 			InitConfig();
 
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
-
-			Document = new Task._Builders.DocumentBuilder().Build();
 		}
 
 

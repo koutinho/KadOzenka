@@ -114,7 +114,7 @@
                 @Html.CustomLabel("Преобразовываемая характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeSource.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeSource, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
             </div>
         </div>
     </fieldset>
@@ -125,7 +125,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween2.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween2, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
             </div>
         </div>
 
@@ -155,7 +155,7 @@
                 @Html.CustomLabel("Характеристика")
             </div>
             <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween3.IdFactor, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
+                @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeForSelectionBetween3, (IEnumerable<DropDownTreeItemModel>) ViewBag.TreeAttributes)
             </div>
         </div>
         <div id="condition-group-3">
@@ -225,20 +225,38 @@
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
         $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         data.forEach(function (val) {
-            if (Object.keys(val)[0].includes('IdFactor') || Object.keys(val)[0].includes('IdAttributeResult')
-                || Object.keys(val)[0].includes('IdAttributeSource') || Object.keys(val)[0].includes('IdAttributeDocument')) {
-                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').value(val[Object.keys(val)[0]] || '');
-                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('change');
-                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').filterInput.val('');
-                $('#' + Object.keys(val)[0]).data('kendoDropDownTree').trigger('filtering', [true]);
+            let valKey = Object.keys(val)[0];
+            if (valKey.includes('IdFactor') || valKey.includes('IdAttributeResult')
+                || valKey.includes('IdAttributeSource') || valKey.includes('IdAttributeForSelection')) {
+                $('#' + valKey).data('kendoDropDownTree').value(val[valKey]);
             }
 
-            if (Object.keys(val)[0].includes('IdCodJob')) {
-                $('#' + Object.keys(val)[0]).data('kendoDropDownList').value(val[Object.keys(val)[0]]);
+            if (valKey.match('Filter.ForSelectionBetween._Type')){
+                let dropDownList = $('#' + valKey);
+                dropDownList.data('kendoDropDownList').select(val[valKey] || 0);
+                dropDownList.trigger('change');
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.SelectAllObject))') {
-                if (!!val[Object.keys(val)[0]]) {
+            if (valKey.match('Filter.ForSelectionBetween._.+Filter_FilteringType')){
+                let dropDownList = $('#' + valKey);
+                dropDownList.data('kendoDropDownList').select(val[valKey]);
+                dropDownList.trigger('change');
+            }
+
+            if (valKey.match('.+_NumberFilter_Value.?')){
+                let input = $('#' + valKey);
+                input.data('kendoNumericTextBox').value(val[valKey]);
+                input.trigger('change');
+            }
+
+            if (valKey.match('.+_DateFilter_Value.?')){
+                let input = $('#' + valKey);
+                if (val[valKey]) input.data('kendoDatePicker').value(new Date(val[valKey]));
+                input.trigger('change');
+            }
+
+            if (valKey === '@(nameof(Model.SelectAllObject))') {
+                if (!!val[valKey]) {
                     $('#@(nameof(Model.SelectAllObject))').prop("checked", true);
                     selectAllObjectChanged(true);
                     return;
@@ -247,8 +265,8 @@
                 selectAllObjectChanged(false);
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.IsDataActualUsed))') {
-                if (!!val[Object.keys(val)[0]]) {
+            if (valKey === '@(nameof(Model.IsDataActualUsed))') {
+                if (!!val[valKey]) {
                     $('#@(nameof(Model.IsDataActualUsed))').prop("checked", true);
                     changeDataActualAvailability(true);
                     return;
@@ -257,8 +275,8 @@
                 changeDataActualAvailability(false);
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.IsTaskFilterUsed))') {
-                if (!!val[Object.keys(val)[0]]) {
+            if (valKey === '@(nameof(Model.IsTaskFilterUsed))') {
+                if (!!val[valKey]) {
                     $('#@(nameof(Model.IsTaskFilterUsed))').prop("checked", true);
                     changeTaskFilterAvailability(true);
                     return;
@@ -267,31 +285,26 @@
                 changeTaskFilterAvailability(false);
             }
 
-            if (Object.keys(val)[0] === '@(nameof(Model.DataActual))') {
-                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(kendo.parseDate(val[Object.keys(val)[0]]));
+            if (valKey === '@(nameof(Model.DataActual))') {
+                $('#@(nameof(Model.DataActual))').data('kendoDatePicker').value(kendo.parseDate(val[valKey]));
             }
 
-            if (Object.keys(val)[0].includes('@(nameof(Model.TaskFilter))')) {
+            if (valKey.includes('@(nameof(Model.TaskFilter))')) {
                 var currentValue = $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value();
-                currentValue.push([val[Object.keys(val)[0]]]);
+                currentValue.push([val[valKey]]);
                 $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(currentValue);
             }
 
-            if (Object.keys(val)[0].includes('@(nameof(Model.ObjectChangeStatus))')) {
+            if (valKey.includes('@(nameof(Model.ObjectChangeStatus))')) {
                 var element = $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect");
                 var currentUnitChangeStatusValue = element.value();
-                currentUnitChangeStatusValue.push([val[Object.keys(val)[0]]]);
+                currentUnitChangeStatusValue.push([val[valKey]]);
                 element.value(currentUnitChangeStatusValue);
-            }
-
-            if (Object.keys(val)[0].includes('UseDictionary') || Object.keys(val)[0].includes('SkipDefis')) {
-                $('#' + Object.keys(val)[0]).prop("checked", val[Object.keys(val)[0]]);
             }
         });
         var isSelectAllObjectsChecked =
             $('#SelectAllObject').prop('checked');
         selectAllObjectChanged(isSelectAllObjectsChecked);
-        updateStates();
     }
 
     function changeDataActualAvailability(isDataActualUsed) {
@@ -330,75 +343,6 @@
         }
     }
 
-    function getDataSource() {
-        return $.find('input[class^=Level]').concat($.find('input[class^=Attribute]')).map(d => $(d).data('kendoDropDownTree'));
-    }
-
-    function getSelectedValues() {
-        return getDataSource().map(d => d.value());
-    }
-
-    function getAllUidsToDisable(arrValues) {
-        var allNodes = getDataSource().map((d) => flattenDataSource(d)).flat();
-        var filter = allNodes.filter((e) => { return arrValues.includes(e.value); });
-        return filter.map((i) => { return i.uid; });
-    }
-
-    function flattenDataSource(d) {
-        return d.dataSource.data().map((v) => { return v.items; }).map((l1) => { return l1.map((l2) => { return l2; }); }).flat();
-    }
-
-    function blockAlreadySelectedNodes(arr) {
-        var uidsToBlock = getAllUidsToDisable(arr);
-        var nodes = getDataSource().map((d) => uidsToBlock.map((s) => d.treeview.findByUid(s))).flat();
-        nodes.forEach(n => n.addClass('k-state-disabled'));
-    }
-
-    function clearTreeStates() {
-        getDataSource().forEach((d) => d.tree.find('.k-item').removeClass('k-state-disabled'));
-    }
-
-    function updateSelected(e) {
-        var dataItem = e.sender.dataItem(e.node);
-        var itemValue = Number(dataItem.value);
-        if (isNaN(itemValue) || itemValue <= 0 ) {
-            e.preventDefault();
-            return;
-        }
-
-        clearTreeStates();
-
-        var changedEntries = flattenDataSource($(e.node.closest('.k-treeview')).data().kendoTreeView).filter(v=>v.selected).map(v=>v.value);
-        var arr = getSelectedValues();
-        if (arr.includes(dataItem.value)) {
-            e.preventDefault();
-        }
-        var filtered = arr.filter(v=>!changedEntries.includes(v));
-        filtered.push(dataItem.value);
-        blockAlreadySelectedNodes(filtered);
-    }
-
-    function updateStates() {
-        clearTreeStates();
-        var arr = getSelectedValues();
-        blockAlreadySelectedNodes(arr);
-    }
-
-    function addSelectionHandlersForDropDowns() {
-        getDataSource().forEach(function (d) {
-                d.treeview.unbind('select', e => updateSelected(e));
-                d.treeview.bind('select', e => updateSelected(e));
-            }
-        );
-
-        updateStates();
-
-        var clearButtons = $.find('[class^=clear-button-Level]').concat($.find('[class^=clear-button-Attribute]'));
-
-        clearButtons.forEach(b => b.onclick = function() { updateStates(); });
-        getDataSource().forEach(d => d.bind("onFiltered", function () { updateStates(); }));
-    }
-
     function clear2CodeParams(){
         let selector = 'input[id$="ForSelectionBetween2_Type"]';
         $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').value('None'));
@@ -411,9 +355,35 @@
         $(selector).toArray().forEach(e=> $(e).trigger('change'));
     }
 
-    $(document).ready(function () {
-        addSelectionHandlersForDropDowns();
+    function getData(){
+        return JSON.parse('{"SelectAllObject":true,"IsDataActualUsed":false,"IsTaskFilterUsed":false,"TaskFilter":[],"ObjectChangeStatus":[],"DataActual":null,"IdAttributeSource":{"CodValueName":null,"CodValueId":null,"SkipDefis":false,"IdFactor":56194265},"IdAttributeForSelectionBetween2":{"CodValueName":null,"CodValueId":null,"SkipDefis":false,"IdFactor":2},"Filter1ForSelectionBetween2":{"Type":3,"DateFilter":{"FilteringType":0,"Value":null,"Value2":null},"StringFilter":{"FilteringType":0,"Value":null},"NumberFilter":{"FilteringType":2,"Value":115.0,"Value2":null},"BoolFilter":{"FilteringType":0,"Value":false},"ReferenceFilter":null},"Filter2ForSelectionBetween2":{"Type":3,"DateFilter":{"FilteringType":0,"Value":null,"Value2":null},"StringFilter":{"FilteringType":0,"Value":null},"NumberFilter":{"FilteringType":5,"Value":115.0,"Value2":null},"BoolFilter":{"FilteringType":0,"Value":false},"ReferenceFilter":null},"IdAttributeForSelectionBetween3":{"CodValueName":null,"CodValueId":null,"SkipDefis":false,"IdFactor":1003},"Filter1ForSelectionBetween3":{"Type":1,"DateFilter":{"FilteringType":0,"Value":null,"Value2":null},"StringFilter":{"FilteringType":1,"Value":"safaf"},"NumberFilter":{"FilteringType":0,"Value":null,"Value2":null},"BoolFilter":{"FilteringType":0,"Value":false},"ReferenceFilter":null},"Filter2ForSelectionBetween3":{"Type":1,"DateFilter":{"FilteringType":0,"Value":null,"Value2":null},"StringFilter":{"FilteringType":5,"Value":"dghh"},"NumberFilter":{"FilteringType":0,"Value":null,"Value2":null},"BoolFilter":{"FilteringType":0,"Value":false},"ReferenceFilter":null},"Filter3ForSelectionBetween3":{"Type":1,"DateFilter":{"FilteringType":0,"Value":null,"Value2":null},"StringFilter":{"FilteringType":16,"Value":null},"NumberFilter":{"FilteringType":0,"Value":null,"Value2":null},"BoolFilter":{"FilteringType":0,"Value":false},"ReferenceFilter":null},"IdAttributeResult":56246499,"NameNewAttribute":null,"TypeNewAttribute":1,"RegistryId":3,"IsNewAttribute":false,"PossibleAttributes":null}');
+    }
 
+    function flattenObject(ob, prefix = false, result = null) {
+      result = result || {};
+
+      // Preserve empty objects and arrays, they are lost otherwise
+      if (prefix && typeof ob === 'object' && ob !== null && Object.keys(ob).length === 0) {
+        result[prefix] = Array.isArray(ob) ? [] : {};
+        return result;
+      }
+
+      prefix = prefix ? prefix + '_' : '';
+
+      for (const i in ob) {
+        if (Object.prototype.hasOwnProperty.call(ob, i)) {
+          if (typeof ob[i] === 'object' && ob[i] !== null) {
+            // Recursion on deeper objects
+            flattenObject(ob[i], prefix + i, result);
+          } else {
+            result[prefix + i] = ob[i];
+          }
+        }
+      }
+      return result;
+    }
+
+    $(document).ready(function () {
         $('#SelectAllObject').bind("change",
             function() {
                 selectAllObjectChanged(this.checked);
@@ -427,16 +397,16 @@
                 changeTaskFilterAvailability(this.checked);
             });
 
-        $('.clear-button-IdAttributeForSelectionBetween2_IdFactor').bind('click', () => clear2CodeParams());
-        $('.clear-button-IdAttributeForSelectionBetween3_IdFactor').bind('click', () => clear3CodeParams());
+        $('.clear-button-IdAttributeForSelectionBetween2').bind('click', () => clear2CodeParams());
+        $('.clear-button-IdAttributeForSelectionBetween3').bind('click', () => clear3CodeParams());
 
         bindUnusedFieldHider('Filter1ForSelectionBetween2');
         bindUnusedFieldHider('Filter2ForSelectionBetween2');
         bindUnusedFieldHider('Filter1ForSelectionBetween3');
         bindUnusedFieldHider('Filter2ForSelectionBetween3');
         bindUnusedFieldHider('Filter3ForSelectionBetween3');
-        bindAttributeSelectorEvents('#IdAttributeForSelectionBetween2_IdFactor');
-        bindAttributeSelectorEvents('#IdAttributeForSelectionBetween3_IdFactor');
+        bindAttributeSelectorEvents('#IdAttributeForSelectionBetween2');
+        bindAttributeSelectorEvents('#IdAttributeForSelectionBetween3');
 
         templateStorage.init(@((int) DataFormStorege.NormalisationFinal), fillForm);
 

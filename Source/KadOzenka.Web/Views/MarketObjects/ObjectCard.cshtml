@@ -99,19 +99,10 @@
                             </span>
                         </div>
                         <div class="col-sm-2">
-                            <label class="control-label">Сегмент рынка</label>
+                            @Html.CustomLabelFor(x => x.MarketSegmentCode, true)
                         </div>
                         <div class="col-sm-2">
-                            @*<input id="priceInput" class="k-textbox" readonly value="@Model.MarketSegment" />*@
-                            <span title="" class="k-widget k-dropdown" unselectable="on" role="listbox">
-                                <span unselectable="on" class="k-dropdown-wrap k-state-default">
-                                    <span unselectable="on" class="k-input">@Html.Raw(Model.MarketSegment)</span>
-                                    <span unselectable="on" class="k-select" aria-label="select">
-                                        <span class="k-icon k-i-arrow-60-down"></span>
-                                    </span>
-                                </span>
-                                <input data-val="true" data-val-required="Поле Сегмент рынка обязательное" editmode="true" id="ObjectMarketSegment" name="ObjectMarketSegment" type="text" value="2" data-role="dropdownlist" style="display: none;">
-                            </span>
+                            @Html.KendoEnumDropDownListFor(x => x.MarketSegmentCode, isReadonly: false)
                         </div>
                     </div>
                     <div class="form-group">
