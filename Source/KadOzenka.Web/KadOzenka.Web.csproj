@@ -123,10 +123,6 @@
 		<None CopyToOutputDirectory="PreserveNewest" Include="Config\Param\SpdSettings.xml" />
 
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Development.json" Condition="'$(Configuration)'=='Debug'" />
-
-		<None Include="appsettings.Development.json" Condition="'$(Configuration)'=='DebugPlatform'">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Local.json" Condition="'$(Configuration)'=='Local'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json" Condition="'$(Configuration)'=='QA'" />
 		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.Demo.json" Condition="'$(Configuration)'=='Demo'" />
@@ -136,13 +132,12 @@
 
 	<!-- Comfort presentation of configuration files -->
 	
-
   <ItemGroup>
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Development.pubxml" />
-    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Production.pubxml" />
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_QA.pubxml" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Demo.pubxml" />
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_UAT.pubxml" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Production.pubxml" />
   </ItemGroup>
 
   <Choose>
