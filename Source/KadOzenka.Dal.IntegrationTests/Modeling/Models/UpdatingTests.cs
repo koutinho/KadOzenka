@@ -1,14 +1,14 @@
 ﻿using KadOzenka.Common.Tests;
+using KadOzenka.Dal.Integration._Builders.Model;
 using NUnit.Framework;
-using KadOzenka.Dal.IntegrationTests.Modeling.Builders;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 {
-	[TestFixture, Ignore("Интеграционные тесты пропускаются, т.к. нет БД")]
-	public class UpdatingTests : BaseModelingTests
+	//[TestFixture, Ignore("Интеграционные тесты пропускаются, т.к. нет БД")]
+	public class InheritanceTests : BaseGbuObjectTests
 	{
 		[Test]
 		public void Can_Update_Automatic_Model()

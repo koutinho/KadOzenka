@@ -172,5 +172,10 @@ namespace KadOzenka.Dal.GbuObject
 
 			return Id;
 		}
-    }
+
+		public GbuObjectAttribute ShallowCopy()
+		{
+			return (GbuObjectAttribute)MemberwiseClone();
+		}
+	}
 }

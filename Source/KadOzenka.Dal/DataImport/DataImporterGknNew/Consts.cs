@@ -37,6 +37,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 		public static readonly int CadastralNumberOKSAttributeId = 604;
 		public static readonly int CadastralNumberFlatAttributeId = 605;
 		public static readonly int FlatNumbersAttributeId = 606;
+		public static readonly int CadastralCostDocDateAttributeId = 1421;
 
 		public static readonly int P1GroupAttributeId = 660;
 		public static readonly int P2FsAttributeId = 661;

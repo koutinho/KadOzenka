@@ -3,6 +3,8 @@
 @using KadOzenka.Web.Helpers
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Directory.Common
+@using DevExpress.XtraRichEdit.Import.Html
+@using KadOzenka.Dal.GbuObject.Dto
 @model KadOzenka.Web.Models.GbuObject.InheritanceViewModel;
 
 @using (Html.BeginForm("Inheritance", "GbuObject", FormMethod.Post))
@@ -91,24 +93,39 @@
                 </div>
             </div>
         </fieldset>
-        <div id="wrapperCustomRow">
+        <div>
             <div class="form-group">
                 <div class="col-sm-12">
                     <h4>Наследуемые факторы</h4>
                 </div>
             </div>
             <div class="form-group"></div>
-            @for (int i = 0; i < Model.Attributes.Count; i++)
-            {
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        @Html.KendoDropDownListTreeWithButton(m => m.Attributes[i], (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
+            <div class="form-group attributes-list">
+                <div id="wrapperCustomRow" class="col-sm-11 col-sm-offset-1">
+                    <div class="row">
+                        <div class="col-sm-5">
+                            @Html.Label("Фактор - откуда копировать значение")
+                        </div>
+                        <div class="col-sm-5 col-sm-offset-1">
+                            @Html.Label("Фактор - куда копировать значение")
+                        </div>
                     </div>
+                    @for (var i = 0; i < Model.Attributes.Count; i++)
+                    {
+                        <div class="row">
+                            <div class="col-sm-5">
+                                @Html.KendoDropDownListTreeWithButton(m => m.Attributes[i].IdFrom, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
+                            </div>
+                            <div class="col-sm-5 col-sm-offset-1">
+                                @Html.KendoDropDownListTreeWithButton(m => m.Attributes[i].IdTo, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
+                            </div>
+                        </div>
+                    }
                 </div>
-            }
+            </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-10" style="margin-top: 8px">
+            <div class="col-sm-offset-1 col-sm-11" style="margin-top: 8px">
                 <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
             </div>
         </div>
@@ -127,9 +144,14 @@
         </div>
     </div>
 }
+
+
 <script type="text/x-kendo-template" id="templateRow">
     <div class="wrapper-#: rowNumber #" style="display: none"></div>
 </script>
+
+
+
 
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
@@ -140,7 +162,6 @@
 
     function addNewRow(rowNumber) {
         kendo.ui.progress($('body'), true);
-
         var classWrapper = generateCustomRowFromTemplate(rowNumber);
         $(classWrapper).load("@Url.Action("GetRow", "GbuObject")", { rowNumber: rowNumber }, function (response) {
             $(classWrapper).show(250);
@@ -153,7 +174,6 @@
     async function addNewRows(startRowNumber, rowCount, rowValues) {
         if (rowCount === 0)
             return;
-
         var rowRange = `${startRowNumber}-${startRowNumber + rowCount - 1}`;
         var classWrapper = generateCustomRowFromTemplate(rowRange);
         await $.post("@Url.Action("GetRows", "GbuObject")",
@@ -262,6 +282,7 @@
     }
 
 
+    /*
     function addCustomLevelsToForm(formObject) {
         if (!formObject) {
             return formObject;
@@ -273,6 +294,40 @@
                 delete formObject[key];
             }
         });
+        attributes = attributes.filter(function (val) { return !!val});
+        return Object.assign({}, formObject, { Attributes: attributes });
+    }
+    */
+
+    function fillAttributesMappingInfo(formObject) {
+        if (!formObject) {
+            return formObject;
+        }
+        var attributes = [];
+        var formObjectKeys = Object.keys(formObject);
+        for (var i = 0; i < currentRowNumber; i++) {
+            var fromKey, toKey;
+            //собираем атрибуты без динамически добавленных строк
+            if (i < minCustomRowNumber) {
+                var elementIdPart = `Attributes[${i}]`;
+                fromKey = elementIdPart + '.IdFrom';
+                toKey = elementIdPart + '.IdTo';
+            }
+            //собираем атрибуты из динамически добавленных строк
+            else
+            {
+                fromKey = 'IdFrom_' + i;
+                toKey = 'IdTo_' + i;
+            }
+            var nameFrom = formObjectKeys.find(key => key.includes(fromKey));
+            var nameTo = formObjectKeys.find(key => key.includes(toKey));
+            attributes.push({
+                IdFrom: formObject[nameFrom] || 0,
+                IdTo: formObject[nameTo] || 0
+            });
+            delete formObject[nameTo];
+            delete formObject[nameFrom];
+        }
         attributes = attributes.filter(function (val) { return !!val});
         return Object.assign({}, formObject, { Attributes: attributes });
     }
@@ -291,6 +346,7 @@
         $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
         var customRowValues = [];
+        currentRowNumber = 0;
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
             var elementValue = val[elementName];
@@ -335,22 +391,40 @@
             }
 
             if (elementName.startsWith('@nameof(Model.Attributes)')) {
-                var predefinedKendoDropDownTree = $(`#${elementName}_`).data('kendoDropDownTree');
-                if (predefinedKendoDropDownTree) {
-                    predefinedKendoDropDownTree.value(elementValue || '');
-                    predefinedKendoDropDownTree.trigger('change');
-                    predefinedKendoDropDownTree.filterInput.val('');
-                    predefinedKendoDropDownTree.trigger('filtering', [true]);
-                } else {
-                    customRowValues.push(elementValue);
-                    currentRowNumber++;
+                //приходит: Attributes_1 = {IdFrom: 1001, IdTo: 0}
+                //преобразуем к Attributes_0__IdFrom и Attributes_0__IdTo
+                //заполняем атрибуты без динамически добавленных строк
+                if (currentRowNumber < minCustomRowNumber) {
+                    var id = '@nameof(Model.Attributes)';
+                    var index = elementName.split('_')[1] - 1;
+                    var baseElementId = `${id}_${index}__`;
+                    var elementFromId = baseElementId + '@nameof(AttributeMapping.IdFrom)';
+                    var elementToId = baseElementId + '@nameof(AttributeMapping.IdTo)';
+                    createTreeElementForAttribute(elementFromId, elementValue.IdFrom, customRowValues);
+                    createTreeElementForAttribute(elementToId, elementValue.IdTo, customRowValues);
                 }
+                //заполняем атрибуты из динамически добавленных строк
+                else {
+                    customRowValues.push(elementValue);
+                }
+                currentRowNumber++;
             }
         });
 
         await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
         updateStates();
     }
+
+    function createTreeElementForAttribute(id, elementValue, customRowValues) {
+        var predefinedKendoDropDownTree = $(`#${id}`).data('kendoDropDownTree');
+        if (predefinedKendoDropDownTree) {
+            predefinedKendoDropDownTree.value(elementValue || '');
+            predefinedKendoDropDownTree.trigger('change');
+            predefinedKendoDropDownTree.filterInput.val('');
+            predefinedKendoDropDownTree.trigger('filtering', [true]);
+        }
+    }
+
 
     $(document).ready(function () {
         addSelectionHandlersForDropDowns();
@@ -373,7 +447,7 @@
                 var form = $('form');
                 var formObject = Common.Functions.FormToObject(form);
                 formObject['TaskFilter'] = $("#TaskFilter").data('kendoMultiSelect').value();
-                var data = addCustomLevelsToForm(formObject);
+                var data = fillAttributesMappingInfo(formObject);
                 $.post(form.attr('action'), data).done(function(response) {
                     if (response.Errors) {
                         var errors = getErrors(response.Errors);
@@ -390,7 +464,7 @@
                 });
             });
 
-        templateStorage.init(@((int)DataFormStorege.Inheritance), null, addCustomLevelsToForm, fillForm);
+        templateStorage.init(@((int) DataFormStorege.Inheritance), null, fillAttributesMappingInfo, fillForm);
     });
 
 </script>

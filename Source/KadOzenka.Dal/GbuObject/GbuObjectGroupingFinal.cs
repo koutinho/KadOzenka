@@ -150,6 +150,22 @@ namespace KadOzenka.Dal.GbuObject
             {
                 return filter.FilteringType switch
                 {
+                    // Обработка пустых/не найденных значений атрибутов без выброса ошибок
+                    FilteringTypeString.Contains or
+                        FilteringTypeString.ContainsIgnoreCase or
+                        FilteringTypeString.NotContains or
+                        FilteringTypeString.NotContainsIgnoreCase or
+                        FilteringTypeString.BeginsFrom or
+                        FilteringTypeString.BeginsFromIgnoreCase or
+                        FilteringTypeString.NotBeginsFrom or
+                        FilteringTypeString.NotBeginsFromIgnoreCase or
+                        FilteringTypeString.EndsWith or
+                        FilteringTypeString.EndsWithIgnoreCase or
+                        FilteringTypeString.NotEndsWith or
+                        FilteringTypeString.NotEndsWithIgnoreCase
+                        when filter.Value == null => false,
+
+
                     FilteringTypeString.Equal => value == filter.Value,
                     FilteringTypeString.EqualIgnoreCase => string.Equals(value, filter.Value, StringComparison.CurrentCultureIgnoreCase),
                     FilteringTypeString.NotEqual => value != filter.Value,
@@ -202,12 +218,18 @@ namespace KadOzenka.Dal.GbuObject
                     FilteringType.None => false,
                     _ => false
                 };
-                if (valResolved) return orderedCodes[i];
+                if (!valResolved) continue;
+                Log.ForContext<PriorityItemFinal>()
+                    .ForContext("FilterType", orderedFilters[i].Type)
+                    .Verbose("Найден код для финализации нормализации: {resolvedValue}, Массив кодов: {valueArray}, Значения атрибута: {numValue}, {dtValue}, {stringValue}",
+                        orderedCodes[i], orderedCodes, attr?.NumValue, attr?.DtValue, attr?.StringValue);
+
+                return orderedCodes[i];
             }
 
-            return orderedCodes.FirstOrDefault();
+            Log.ForContext<PriorityGroupingFinal>().Verbose("Совпадения не найдено, записываем прочерк");
+            return "-";
         }
-
 
         public void SetPriorityGroup(GroupingSettingsFinal setting,
             List<long> allAttributeIds, GroupingItem inputItem, DateTime dateActual,
@@ -228,31 +250,33 @@ namespace KadOzenka.Dal.GbuObject
             {
                 string resGroup = "";
                 var valueSource = GetValueFactor(objectAttributes, setting.IdAttributeSource);
-                var values = valueSource.Value.Split("/");
+                var values = valueSource.Value?.Split("/");
 
-                if (values.Length == 0 || valueSource.Value.IsNullOrEmpty())
+                if (valueSource.Value.IsNullOrEmpty() || values == null)
                 {
                     errorCOD = true;
                     errorCODStr = "Не найдено кодов для проставления";
                 }
 
-                if (values.Length == 1)
+                else switch (values.Length)
                 {
-                    resGroup = values.First();
-                }
-
-                if (values.Length == 2)
-                {
-                    var attr2 = objectAttributes.FirstOrDefault(x => x.Id == setting.IdAttributeFor2Selections);
-                    resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween2,
-                        setting.Filter2ForSelectionBetween2},attr2);
-                }
-
-                if (values.Length == 3)
-                {
-                    var attr3 = objectAttributes.FirstOrDefault(x => x.Id == setting.IdAttributeFor3Selections);
-                    resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween3,
-                        setting.Filter2ForSelectionBetween3, setting.Filter3ForSelectionBetween3},attr3);
+                    case 1:
+                        resGroup = values.First();
+                        break;
+                    case 2:
+                    {
+                        var attr2 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor2Selections);
+                        resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween2,
+                            setting.Filter2ForSelectionBetween2},attr2);
+                        break;
+                    }
+                    case 3:
+                    {
+                        var attr3 = objectAttributes.FirstOrDefault(x => x.AttributeId == setting.IdAttributeFor3Selections);
+                        resGroup = ResolveCode(values, new []{setting.Filter1ForSelectionBetween3,
+                            setting.Filter2ForSelectionBetween3, setting.Filter3ForSelectionBetween3},attr3);
+                        break;
+                    }
                 }
 
                 #region Результат
@@ -263,6 +287,9 @@ namespace KadOzenka.Dal.GbuObject
                     {
                         try
                         {
+                            // Если нет совпадений - записываем обратно составной код
+                            if (resGroup == "-") resGroup = valueSource.Value;
+
                             //todo iddoc
                             AddValueFactor(inputItem.ObjectId, setting.IdAttributeResult, 0, dateActual,
                                 resGroup);
@@ -285,7 +312,7 @@ namespace KadOzenka.Dal.GbuObject
 
                         lock (PriorityGroupingFinal.Locked)
                         {
-                            //reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
+                            reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
                         }
                     }
                 }
@@ -293,7 +320,7 @@ namespace KadOzenka.Dal.GbuObject
                 {
                     lock (PriorityGroupingFinal.Locked)
                     {
-                        //reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
+                        reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
                     }
                 }
 

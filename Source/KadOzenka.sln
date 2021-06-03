@@ -71,7 +71,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MarketPlace", "MarketPlace"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.ObjectModelEnum", "KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj", "{15D54D99-B9A2-49D7-ABB3-2413DF68F45E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.IntegrationTests", "KadOzenka.Dal.IntegrationTests\KadOzenka.Dal.IntegrationTests.csproj", "{B57C7647-CF6A-476E-97D8-1C1DE1CA349F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Dal.Integration", "KadOzenka.Dal.IntegrationTests\KadOzenka.Dal.Integration.csproj", "{B57C7647-CF6A-476E-97D8-1C1DE1CA349F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KadOzenka.Common.Tests", "KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj", "{A7DC3A73-9386-4AC8-8D89-780D9981D1E6}"
 EndProject

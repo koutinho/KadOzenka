@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 							var value = objectCoefficient.Value.Replace(',', '.');
 							var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
-							rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {groupId}, {attribute.AttributeId}, {value}, {metka}),");
+							rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {groupId}, {attribute.AttributeId}, '{value}', {metka}),");
 
 							//добавляем метки пакетом по 1000 записей
 							marksCounter++;
