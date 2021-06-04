@@ -1122,6 +1122,23 @@ namespace KadOzenka.Web.Controllers
             return Json(new { fileName = fileName });
         }
 
+
+        #region График вылетов
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ModelObjectsDiagram(long modelId)
+        {
+	        var objects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.All,
+			        select => new {select.Price});
+
+	        var models = objects.Select(ModelingObjectsDiagramModel.ToModel).OrderBy(x => x.Price).ToList();
+
+            return View(models);
+        }
+
+        #endregion
+
         #endregion
 
 

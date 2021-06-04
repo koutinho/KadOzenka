@@ -34,25 +34,40 @@ namespace KadOzenka.Dal.Modeling.Repositories
 			return GetIncludedModelObjectsQuery(modelId, mode).ExecuteExists();
 		}
 
-		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode)
+		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
 		{
-			return GetIncludedModelObjectsQuery(modelId, mode).SelectAll().Execute();
+			var query = GetIncludedModelObjectsQuery(modelId, mode);
+			
+			query = selectExpression == null
+				? query.SelectAll()
+				: query.Select(selectExpression);
+
+			return query.Execute();
 		}
+
 
 		#region Support Methods
 
 		private QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, IncludedObjectsMode mode)
 		{
-			if (mode == IncludedObjectsMode.Training)
+			var baseQuery = OMModelToMarketObjects.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false);
+
+			if (mode == IncludedObjectsMode.All)
 			{
-				return OMModelToMarketObjects
-					.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-					            (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
+				return baseQuery;
 			}
 
-			return OMModelToMarketObjects
-				.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-				            x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
+			if (mode == IncludedObjectsMode.Training)
+			{
+				return baseQuery.And(x => x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true);
+			}
+
+			if (mode == IncludedObjectsMode.Prediction)
+			{
+				return baseQuery.And(x => x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
+			}
+
+			throw new InvalidOperationException($"Указан неизвестный тип объектов моделирования '{mode}'");
 		}
 
 		#endregion
