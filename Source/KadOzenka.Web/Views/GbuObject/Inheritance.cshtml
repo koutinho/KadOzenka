@@ -225,12 +225,14 @@
     }
     */
     function getDataSourceInFromBlock() {
-        //console.log('concat 1', $.find('div[class^=wrapper-] input[class*=Attributes_]'));
-        //console.log('concat 2',  $.find('input[id$=_IdFrom]'));
-        return $.find('input[id$=_IdFrom]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
+        var constantAttributes = $.find('input[id$=_IdFrom]');
+        var dynamicallyAddedAttributes = $.find('div[id*=Wrapper] input[class^=Attributes_IdFrom_]');
+        return constantAttributes.concat(dynamicallyAddedAttributes).map(d => $(d).data('kendoDropDownTree'));
     }
     function getDataSourceInToBlock() {
-        return $.find('input[id$=_IdTo]').concat($.find('div[class^=wrapper-] input[class*=Attributes_]')).map(d => $(d).data('kendoDropDownTree'));
+        var constantAttributes = $.find('input[id$=_IdTo]');
+        var dynamicallyAddedAttributes = $.find('div[id*=Wrapper] input[class^=Attributes_IdTo_]');
+        return constantAttributes.concat(dynamicallyAddedAttributes).map(d => $(d).data('kendoDropDownTree'));
     }
 
     /*
