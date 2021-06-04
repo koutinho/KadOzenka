@@ -65,11 +65,6 @@ namespace KadOzenka.Dal.Modeling
                 .Execute();
 		}
 
-        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
-        {
-	        return ModelObjectsRepository.GetIncludedModelObjects(modelId, isForTraining);
-        }
-
         public int DestroyModelMarketObjects(OMModel model)
         {
 	        var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {model.Id}";

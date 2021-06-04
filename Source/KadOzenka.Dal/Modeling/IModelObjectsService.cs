@@ -19,8 +19,6 @@ namespace KadOzenka.Dal.Modeling
 
 		List<OMModelToMarketObjects> GetModelObjects(long modelId);
 
-		List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining);
-
 		int DestroyModelMarketObjects(OMModel model);
 
 		void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects);
