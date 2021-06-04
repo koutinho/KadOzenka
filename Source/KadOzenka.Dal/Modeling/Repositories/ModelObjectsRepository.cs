@@ -7,6 +7,13 @@ using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling.Repositories
 {
+	public enum IncludedObjectsMode
+	{
+		All,
+		Training,
+		Prediction
+	}
+
 	public class ModelObjectsRepository : GenericRepository<OMModelToMarketObjects>, IModelObjectsRepository
 	{
 		protected override QSQuery<OMModelToMarketObjects> GetBaseQuery(Expression<Func<OMModelToMarketObjects, bool>> whereExpression)
@@ -19,21 +26,24 @@ namespace KadOzenka.Dal.Modeling.Repositories
 			return x => x.Id == id;
 		}
 
-		public bool AreIncludedModelObjectsExist(long? modelId, bool isForTraining)
+		public bool AreIncludedModelObjectsExist(long? modelId, IncludedObjectsMode mode)
 		{
-			return GetIncludedModelObjectsQuery(modelId, isForTraining).ExecuteExists();
+			if (modelId.GetValueOrDefault() == 0)
+				return false;
+
+			return GetIncludedModelObjectsQuery(modelId, mode).ExecuteExists();
 		}
 
-		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
+		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode)
 		{
-			return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
+			return GetIncludedModelObjectsQuery(modelId, mode).SelectAll().Execute();
 		}
 
 		#region Support Methods
 
-		private QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, bool isForTraining)
+		private QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, IncludedObjectsMode mode)
 		{
-			if (isForTraining)
+			if (mode == IncludedObjectsMode.Training)
 			{
 				return OMModelToMarketObjects
 					.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&

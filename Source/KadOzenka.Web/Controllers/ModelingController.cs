@@ -175,7 +175,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelingService.GetModelById(modelId);
 
-            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
+            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.Training);
             var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
             model.IsReadOnly = isReadOnly;
 

@@ -6,8 +6,8 @@ namespace KadOzenka.Dal.Modeling.Repositories
 {
 	public interface IModelObjectsRepository : IGenericRepository<OMModelToMarketObjects>
 	{
-		bool AreIncludedModelObjectsExist(long? modelId, bool isForTraining);
+		bool AreIncludedModelObjectsExist(long? modelId, IncludedObjectsMode mode);
 
-		List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining);
+		List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode);
 	}
 }

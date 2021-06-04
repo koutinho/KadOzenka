@@ -269,7 +269,7 @@ namespace KadOzenka.Dal.Modeling
 
 	        if (model.Type_Code == KoModelType.Automatic)
 	        {
-		        var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
+		        var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.Training);
 		        var hasTrainingResult = !string.IsNullOrWhiteSpace(model.LinearTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
