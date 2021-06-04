@@ -81,6 +81,16 @@
 .left-slide-panel {
   background-color: #25306b !important;
 }
+
+/*net 5*/
+input.k-checkbox {
+	max-width: 17px !important;
+}
+/*net 5*/
+input[type="checkbox"]:focus, input[type="radio"]:focus {
+  outline: none;
+}
+
 /*end custom*/
 .k-theme-test-class,
 .ktb-theme-id-material {
