@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Register;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Decorators;
@@ -24,7 +26,7 @@ namespace KadOzenka.Dal.GbuObject
 	    private static readonly ILogger _log = Log.ForContext<GbuObjectInheritanceAttribute>();
         private GbuObjectService GbuObjectService { get; }
         private GbuInheritanceAttributeSettings Settings { get; }
-        private List<AttributeMapping> AttributesMapping { get; }
+        private List<AttributeMappingInternal> AttributesMapping { get; }
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -44,7 +46,12 @@ namespace KadOzenka.Dal.GbuObject
         {
 	        GbuObjectService = new GbuObjectService();
 	        Settings = settings;
-	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0).ToList();
+	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0)
+		        .Select(x => new AttributeMappingInternal
+		        {
+			        From = RegisterCache.GetAttributeData(x.IdFrom),
+			        To = RegisterCache.GetAttributeData(x.IdTo)
+		        }).ToList();
         }
 
 
@@ -128,7 +135,7 @@ namespace KadOzenka.Dal.GbuObject
 
 	        var parents = GetParentGbuMainObjects(parentCadastralNumberAttributes);
 
-	        var attributeIdsFromCopy = AttributesMapping.Select(x => x.IdFrom).ToList();
+	        var attributeIdsFromCopy = AttributesMapping.Select(x => x.From.Id).ToList();
 	        var parentIds = parents.Select(x => x.Id).ToList();
             var parentAttributes = GbuObjectService.GetAllAttributes(parentIds, null, attributeIdsFromCopy, unitsCreationDate,
 		        attributesToDownload: new List<GbuColumnsToDownload>
@@ -201,19 +208,19 @@ namespace KadOzenka.Dal.GbuObject
                     int counter = 0;
                     foreach (var pattrib in parentAttributes)
                     {
-	                    var attributeTo = AttributesMapping.First(x => x.IdFrom == pattrib.AttributeId);
+	                    var attributeTo = AttributesMapping.First(x => x.From.Id == pattrib.AttributeId).To;
                         var attributeValue = new GbuObjectAttribute
                         {
                             Id = -1,
-                            AttributeId = attributeTo.IdTo,
+                            AttributeId = attributeTo.Id,
                             ObjectId = unit.ObjectId,
                             ChangeDocId = pattrib.ChangeDocId,
                             S = pattrib.S,
                             ChangeUserId = SRDSession.Current.UserID,
                             ChangeDate = DateTime.Now,
-                            Ot = pattrib.Ot,
-                            StringValue = pattrib.StringValue,
+                            Ot = pattrib.Ot
                         };
+                        attributeValue.CopyValue(pattrib);
 
                         GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
 
@@ -367,6 +374,12 @@ namespace KadOzenka.Dal.GbuObject
 	    public Dictionary<long, GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
 	    public List<OMMainObject> Parents { get; set; }
 	    public Dictionary<long, List<GbuObjectAttribute>> ParentAttributes { get; set; }
+    }
+
+    internal class AttributeMappingInternal
+    {
+        public RegisterAttribute From { get; set; }
+        public RegisterAttribute To { get; set; }
     }
 
     #endregion

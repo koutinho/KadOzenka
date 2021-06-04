@@ -29,19 +29,20 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 				.Object(childObject.Id)
 				.OtAndSDates(dateForAttributes)
 				.Value(parentObject.CadastralNumber).Build();
-			var attributeCopyFrom = new GbuObjectAttributeBuilder()
-				.Attribute(EgrnAttributes.Address.Id)
-				.Object(parentObject.Id)
-				.OtAndSDates(dateForAttributes)
-				.Build();
-			var attributeCopyTo = EgrnAttributes.AddressOrLocation;
+			var copyAttributeToBuilder = new GbuObjectAttributeBuilder().Object(parentObject.Id).OtAndSDates(dateForAttributes);
+			var firstAttributeCopyFrom = copyAttributeToBuilder.ShallowCopy().Attribute(EgrnAttributes.Address.Id).Build();
+			var secondAttributeCopyFrom = copyAttributeToBuilder.ShallowCopy().Attribute(EgrnAttributes.Square.Id).Build();
+			var firstAttributeCopyTo = EgrnAttributes.AddressOrLocation;
+			var secondAttributeCopyTo = EgrnAttributes.Square;
 
 
-			RanInheritance(new List<long> {task.Id}, parentCadastralNumberAttribute.AttributeId,
-				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
+			RunInheritance(new List<long> {task.Id}, parentCadastralNumberAttribute.AttributeId,
+				new List<long> { firstAttributeCopyFrom.AttributeId, secondAttributeCopyFrom.AttributeId },
+				new List<long> { firstAttributeCopyTo.Id, secondAttributeCopyTo.Id });
 
 
-			CheckCopiedAttribute(attributeCopyTo, childObject.Id, attributeCopyFrom);
+			CheckCopiedAttribute(firstAttributeCopyTo, childObject.Id, firstAttributeCopyFrom);
+			CheckCopiedAttribute(secondAttributeCopyTo, childObject.Id, secondAttributeCopyFrom);
 		}
 
 		[Test]
@@ -75,7 +76,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 			var attributeCopyTo = EgrnAttributes.AddressOrLocation;
 
 
-			RanInheritance(new List<long> {task.Id}, parentCadastralNumberAttributeBuilder.AttributeId,
+			RunInheritance(new List<long> {task.Id}, parentCadastralNumberAttributeBuilder.AttributeId,
 				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
 
 
@@ -114,7 +115,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 			var attributeCopyTo = EgrnAttributes.AddressOrLocation;
 
 
-			RanInheritance(new List<long> {firstTask.Id, secondTask.Id},
+			RunInheritance(new List<long> {firstTask.Id, secondTask.Id},
 				parentCadastralNumberAttributeBuilder.AttributeId, attributeCopyFrom.AttributeId, attributeCopyTo.Id);
 
 
@@ -140,7 +141,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 			var attributeCopyTo = EgrnAttributes.AddressOrLocation;
 
 
-			RanInheritance(new List<long> { task.Id }, EgrnAttributes.CadastralNumber.Id,
+			RunInheritance(new List<long> { task.Id }, EgrnAttributes.CadastralNumber.Id,
 				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
 
 
@@ -151,18 +152,37 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 
 		#region Support Methods
 
-		private static void RanInheritance(List<long> taskIds, long parentCadastralNumberAttributeId,
-			long attributeCopyFromId, long attributeIdCopyTo)
+		private void RunInheritance(List<long> taskIds, long parentCadastralNumberAttributeId,
+			List<long> attributeIdsCopyFrom, List<long> attributeIdsCopyTo)
+		{
+			var mapping = new List<AttributeMapping>();
+			for (var i = 0; i < attributeIdsCopyFrom.Count; i++)
+			{
+				mapping.Add(new AttributeMapping {IdFrom = attributeIdsCopyFrom[i], IdTo = attributeIdsCopyTo[i]});
+			}
+
+			DoProcess(taskIds, parentCadastralNumberAttributeId, mapping);
+		}
+
+		private void RunInheritance(List<long> taskIds, long parentCadastralNumberAttributeId,
+			long attributeIdCopyFrom, long attributeIdCopyTo)
+		{
+			var mapping = new List<AttributeMapping>
+			{
+				new AttributeMapping {IdFrom = attributeIdCopyFrom, IdTo = attributeIdCopyTo}
+			};
+
+			DoProcess(taskIds, parentCadastralNumberAttributeId, mapping);
+		}
+
+		private void DoProcess(List<long> taskIds, long parentCadastralNumberAttributeId, List<AttributeMapping> mapping)
 		{
 			var settings = new GbuInheritanceAttributeSettings
 			{
 				TaskFilter = taskIds,
 				BuildToFlat = true,
 				ParentCadastralNumberAttribute = parentCadastralNumberAttributeId,
-				Attributes = new List<AttributeMapping>
-				{
-					new AttributeMapping {IdFrom = attributeCopyFromId, IdTo = attributeIdCopyTo}
-				}
+				Attributes = mapping
 			};
 
 			new GbuObjectInheritanceAttribute(settings).Run();
@@ -176,7 +196,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 
 			var copiedAttribute = copiedAttributes.First();
 			Assert.That(copiedAttribute, Is.Not.Null, attributeCopyFrom.Id.ToString);
-			Assert.That(copiedAttribute.Value, Is.EqualTo(attributeCopyFrom.StringValue));
+			Assert.That(copiedAttribute.Value, Is.EqualTo(attributeCopyFrom.GetValue()));
 			//сравниваем даты с учетом +- 50 сек
 			Assert.That(copiedAttribute.S, Is.EqualTo(attributeCopyFrom.S).Within(TimeSpan.FromMilliseconds(50000)));
 			Assert.That(copiedAttribute.Ot, Is.EqualTo(attributeCopyFrom.Ot).Within(TimeSpan.FromMilliseconds(50000)));
