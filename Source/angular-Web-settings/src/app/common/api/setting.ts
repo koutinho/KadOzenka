@@ -10,11 +10,11 @@ export class SettingApi{
     this.http = new Http(httpClient);
   }
 
-  getSetting(): Observable<ISetting>{
+  getSettingSerilog(): Observable<ISetting>{
     return this.http.get<ISetting>("api/Config/GetConfigurations")
   }
 
-  setSetting(data: ISetting): Observable<boolean>{
+  setSettingSerilog(data: ISetting): Observable<boolean>{
     return this.http.post("api/Config/SetConfigurations", data)
   }
 }

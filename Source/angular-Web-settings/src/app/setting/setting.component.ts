@@ -1,15 +1,18 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../common/api/api';
 import {ControlModel} from "./model/control.model";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ISetting} from "../common/api/Interface/setting.interface";
 import JSONEditor from "jsoneditor";
+import {EnumRouteSetting} from "../common/route/enum.route";
+import {SettingService} from "./service/setting.service";
 
 @Component({
   selector: 'app-setting',
   templateUrl: './setting.component.html',
-  styleUrls: ['./setting.component.css']
+  styleUrls: ['./setting.component.css'],
+  providers: [SettingService]
 })
 export class SettingComponent implements OnInit {
 
@@ -21,12 +24,15 @@ export class SettingComponent implements OnInit {
 
   @ViewChild('jsonEditorRoot') jsonEditorRoot!: ElementRef;
 
-  constructor(private api: ApiService, private route: Router) { }
+  constructor(private api: ApiService,
+              private route: Router,
+              private activatedRoute: ActivatedRoute,
+              private settingService: SettingService) { }
 
 
 
   ngOnInit(): void {
-    this.api.settingApi.getSetting()
+    this.settingService.getSetting(this.activatedRoute.snapshot.data["setting"])
       .subscribe((res: ISetting) => {
         this.settingBindToObject(res);
       }, (error: HttpErrorResponse) => {
