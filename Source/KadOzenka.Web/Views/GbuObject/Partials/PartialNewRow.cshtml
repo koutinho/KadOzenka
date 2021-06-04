@@ -1,11 +1,11 @@
-﻿@using System.Collections
-@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.GbuObject.PartialAttribute
 
-<div class="form-group">
-	<div class="col-sm-10 col-sm-offset-2">
-		<div>
-			@Html.KendoDropDownListTreeWithButton(m => m.Attributes, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + (string) ViewData["RowNumber"])
-		</div>
-	</div>
+<div class="row">
+    <div class="col-sm-5">
+        @Html.KendoDropDownListTreeWithButton(m => m.Attributes.IdFrom, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + Model.RowNumber)
+    </div>
+    <div class="col-sm-5 col-sm-offset-1">
+        @Html.KendoDropDownListTreeWithButton(m => m.Attributes.IdTo, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + Model.RowNumber)
+    </div>
 </div>

@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.LongProcess.GbuLongProcesses
 				}, cancelToken);
 
 
-				var urlToDownload = GbuObjectInheritanceAttribute.Run(settings);
+				var urlToDownload = new GbuObjectInheritanceAttribute(settings).Run();
 				cancelSource.Cancel();
 				t.Wait(cancellationToken);
 				cancelSource.Dispose();
