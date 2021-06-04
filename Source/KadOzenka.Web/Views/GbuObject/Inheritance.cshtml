@@ -331,21 +331,22 @@
 
     function addSelectionHandlersForDropDownsInFromBlock() {
         var dataSource = getDataSourceInFromBlock();
-        var clearButtons = $.find("a[class^='clear-button-Attributes'][class*='IdFrom']").concat($.find('div[class^=wrapper-] [class^=clear-button]'));
-        addSelectionHandlersForDropDowns(dataSource, updateSelectedValuesInFromBlock, updateStatesInFromBlock, clearButtons);
+        var clearButtonsClassStr = '@nameof(AttributeMapping.IdFrom)';
+        addSelectionHandlersForDropDowns(dataSource, updateSelectedValuesInFromBlock, updateStatesInFromBlock, clearButtonsClassStr);
     }
     function addSelectionHandlersForDropDownsInToBlock() {
         var dataSource = getDataSourceInToBlock();
-        var clearButtons = $.find("a[class^='clear-button-Attributes'][class*='IdTo']").concat($.find('div[class^=wrapper-] [class^=clear-button]'));
-        addSelectionHandlersForDropDowns(dataSource, updateSelectedValuesInToBlock, updateStatesInToBlock, clearButtons);
+        var clearButtonsClassStr = '@nameof(AttributeMapping.IdTo)';
+        addSelectionHandlersForDropDowns(dataSource, updateSelectedValuesInToBlock, updateStatesInToBlock, clearButtonsClassStr);
     }
-    function addSelectionHandlersForDropDowns(dataSource, updateSelectedInput, updateStatesInput, clearButtons) {
+    function addSelectionHandlersForDropDowns(dataSource, updateSelectedInput, updateStatesInput, clearButtonsClassStr) {
         dataSource.forEach(function (d) {
                 d.treeview.unbind('select', e => updateSelectedInput(e));
                 d.treeview.bind('select', e => updateSelectedInput(e));
             }
         );
         updateStatesInput();
+        var clearButtons = $.find("a[class^='clear-button-Attributes'][class*='" + clearButtonsClassStr + "']").concat($.find('div[class^=wrapper-] [class^=clear-button]'));
         clearButtons.forEach(b => b.onclick = function () { updateStatesInput(); });
         dataSource.forEach(d => d.bind("onFiltered", function () { updateStatesInput(); }));
     }
@@ -357,19 +358,21 @@
         }
         var attributes = [];
         var formObjectKeys = Object.keys(formObject);
+        var fromPrefix = '@nameof(AttributeMapping.IdFrom)';
+        var toPrefix = '@nameof(AttributeMapping.IdTo)';
         for (var i = 0; i < currentRowNumber; i++) {
             var fromKey, toKey;
             //собираем атрибуты без динамически добавленных строк
             if (i < minCustomRowNumber) {
                 var elementIdPart = `Attributes[${i}]`;
-                fromKey = elementIdPart + '.IdFrom';
-                toKey = elementIdPart + '.IdTo';
+                fromKey = elementIdPart + '.' + fromPrefix;
+                toKey = elementIdPart + '.' + toPrefix;
             }
             //собираем атрибуты из динамически добавленных строк
             else
             {
-                fromKey = 'IdFrom_' + i;
-                toKey = 'IdTo_' + i;
+                fromKey = fromPrefix + '_' + i;
+                toKey = toPrefix + '_' + i;
             }
             var nameFrom = formObjectKeys.find(key => key.includes(fromKey));
             var nameTo = formObjectKeys.find(key => key.includes(toKey));
@@ -455,8 +458,8 @@
                     var baseElementId = `${id}_${index}__`;
                     var elementFromId = baseElementId + '@nameof(AttributeMapping.IdFrom)';
                     var elementToId = baseElementId + '@nameof(AttributeMapping.IdTo)';
-                    createTreeElementForAttribute(elementFromId, elementValue.IdFrom, customRowValues);
-                    createTreeElementForAttribute(elementToId, elementValue.IdTo, customRowValues);
+                    createTreeElementForAttribute(elementFromId, elementValue.IdFrom);
+                    createTreeElementForAttribute(elementToId, elementValue.IdTo);
                 }
                 //заполняем атрибуты из динамически добавленных строк
                 else {
@@ -471,7 +474,7 @@
         updateStatesInToBlock();
     }
 
-    function createTreeElementForAttribute(id, elementValue, customRowValues) {
+    function createTreeElementForAttribute(id, elementValue) {
         var predefinedKendoDropDownTree = $(`#${id}`).data('kendoDropDownTree');
         if (predefinedKendoDropDownTree) {
             predefinedKendoDropDownTree.value(elementValue || '');
