@@ -546,16 +546,16 @@ namespace KadOzenka.Dal.XmlParser
                             {
                                 obj.Adress.UrbanDistrict = new xmlAdresLevel()
                                 {
-                                    Type = xnChild1.Attributes["Type"].InnerText,
-                                    Value = xnChild1.Attributes["Name"].InnerText
+                                    Type = xnChild1.Attributes["Type"]?.InnerText,
+                                    Value = xnChild1.Attributes["Name"]?.InnerText
                                 };
                             }
                             if (xnChild1.Name == "SovietVillage")
                             {
 	                            obj.Adress.SovietVillage = new xmlAdresLevel()
 	                            {
-		                            Type = xnChild1.Attributes["Type"].InnerText,
-		                            Value = xnChild1.Attributes["Name"].InnerText
+		                            Type = xnChild1.Attributes["Type"]?.InnerText,
+		                            Value = xnChild1.Attributes["Name"]?.InnerText
 	                            };
                             }
                             if (xnChild1.Name == "Locality")
@@ -578,16 +578,16 @@ namespace KadOzenka.Dal.XmlParser
                             {
                                 obj.Adress.Street = new xmlAdresLevel()
                                 {
-                                    Type = xnChild1.Attributes["Type"].InnerText,
-                                    Value = xnChild1.Attributes["Name"].InnerText
+                                    Type = xnChild1.Attributes["Type"]?.InnerText,
+                                    Value = xnChild1.Attributes["Name"]?.InnerText
                                 };
                             }
                             if (xnChild1.Name == "Level1")
                             {
                                 obj.Adress.Level1 = new xmlAdresLevel()
                                 {
-                                    Type = xnChild1.Attributes["Type"].InnerText,
-                                    Value = xnChild1.Attributes["Value"].InnerText
+                                    Type = xnChild1.Attributes["Type"]?.InnerText,
+                                    Value = xnChild1.Attributes["Value"]?.InnerText
                                 };
                             }
                             if (xnChild1.Name == "Level2")
@@ -602,16 +602,16 @@ namespace KadOzenka.Dal.XmlParser
                             {
                                 obj.Adress.Level3 = new xmlAdresLevel()
                                 {
-                                    Type = xnChild1.Attributes["Type"].InnerText,
-                                    Value = xnChild1.Attributes["Value"].InnerText
+                                    Type = xnChild1.Attributes["Type"]?.InnerText,
+                                    Value = xnChild1.Attributes["Value"]?.InnerText
                                 };
                             }
                             if (xnChild1.Name == "Apartment")
                             {
                                 obj.Adress.Apartment = new xmlAdresLevel()
                                 {
-                                    Type = xnChild1.Attributes["Type"].InnerText,
-                                    Value = xnChild1.Attributes["Value"].InnerText
+                                    Type = xnChild1.Attributes["Type"]?.InnerText,
+                                    Value = xnChild1.Attributes["Value"]?.InnerText
                                 };
                             }
                         }

@@ -9,6 +9,8 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 	{
 		public long AttributeId { get; }
 		protected virtual bool SkipNullValues { get; } = false;
+		private const int MaxStringSizeForSpecialAttributes = 5000;
+
 
 		public ImportedAttribute(long attributeId)
 		{
@@ -33,7 +35,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 			{
 				case RegisterAttributeType.STRING:
 				{
-					attributeValue.StringValue = value.ParseToStringNullable();
+					var strValue = value.ParseToStringNullable();
+					if (ShouldCheckValueLength(AttributeId))
+					{
+						if (!string.IsNullOrWhiteSpace(strValue) && strValue.Length >= MaxStringSizeForSpecialAttributes)
+						{
+							strValue = strValue.Substring(0, MaxStringSizeForSpecialAttributes);
+						}
+					}
+
+					attributeValue.StringValue = strValue;
 					if(SkipNullValues && string.IsNullOrEmpty(attributeValue.StringValue))
 						return;
 
@@ -70,5 +81,16 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 			GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
 		}
+
+
+		#region Support Methods
+
+		private bool ShouldCheckValueLength(long attributeId)
+		{
+			return ConfigurationManagers.ConfigurationManager.KoConfig.ImportDocumentForTaskConfig
+				.AttributesToTrimLength.Contains(attributeId);
+		}
+
+		#endregion
 	}
 }
