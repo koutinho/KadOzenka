@@ -1,5 +1,6 @@
 ﻿using System;
 using Core.Register;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.GbuObject;
 using NUnit.Framework;
 
@@ -12,7 +13,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void Can_Convert_String_To_String()
         {
-            var value = "Test";
+            var value = RandomGenerator.GetRandomString();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.STRING, RegisterAttributeType.STRING);
 
             Assert.That(result.Value, Is.EqualTo(value));
@@ -21,7 +22,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void Can_Convert_String_To_Date()
         {
-            var value = DateTime.Now;
+            var value = RandomGenerator.GenerateRandomDate();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.STRING, RegisterAttributeType.DATE);
 
             Assert.That(result.Value, Is.EqualTo(value).Within(TimeSpan.FromMilliseconds(50000)));
@@ -30,16 +31,16 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void If_CanNot_Convert_String_To_Date_Return_Error_Message()
         {
-            var value = "asd";
+            var value = RandomGenerator.GetRandomString("test", 10);
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.STRING, RegisterAttributeType.DATE);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
         public void Can_Convert_String_To_Number()
         {
-            var value = 1.2;
+            var value = RandomGenerator.GenerateRandomDecimal();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value.ToString(), RegisterAttributeType.STRING, RegisterAttributeType.DECIMAL);
 
             Assert.That(result.Value, Is.EqualTo(value));
@@ -48,10 +49,10 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void If_CanNot_Convert_String_To_Number_Return_Error_Message()
         {
-            var value = "asd";
+            var value = RandomGenerator.GetRandomString("test", 10);
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.STRING, RegisterAttributeType.DECIMAL);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [TestCase("True", ExpectedResult = true)]
@@ -68,7 +69,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         {
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy("Test", RegisterAttributeType.STRING, RegisterAttributeType.BOOLEAN);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
@@ -88,7 +89,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void Can_Convert_Date_To_String()
         {
-            var value = DateTime.Now;
+            var value = RandomGenerator.GenerateRandomDate();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DATE, RegisterAttributeType.STRING);
 
             Assert.That(result.Value, Is.EqualTo(value.ToString()));
@@ -97,19 +98,19 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void CanNot_Convert_Date_To_Number()
         {
-            var value = DateTime.Now;
+            var value = RandomGenerator.GenerateRandomDate();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DATE, RegisterAttributeType.DECIMAL);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
         public void CanNot_Convert_Date_To_Boolean()
         {
-            var value = DateTime.Now;
+            var value = RandomGenerator.GenerateRandomDate();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DATE, RegisterAttributeType.BOOLEAN);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
@@ -120,7 +121,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void Can_Convert_Number_To_Number()
         {
-            var value = 1;
+            var value = RandomGenerator.GenerateRandomDecimal();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DECIMAL, RegisterAttributeType.DECIMAL);
 
             Assert.That(result.Value, Is.EqualTo(value));
@@ -129,7 +130,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void Can_Convert_Number_To_String()
         {
-            var value = 1;
+	        var value = RandomGenerator.GenerateRandomDecimal();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DECIMAL, RegisterAttributeType.STRING);
 
             Assert.That(result.Value, Is.EqualTo(value.ToString()));
@@ -138,19 +139,19 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         [Test]
         public void CanNot_Convert_Number_To_Date()
         {
-            var value = 1;
+	        var value = RandomGenerator.GenerateRandomDecimal();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DECIMAL, RegisterAttributeType.DATE);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
         public void CanNot_Convert_Number_To_Boolean()
         {
-            var value = 1;
+	        var value = RandomGenerator.GenerateRandomDecimal();
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DECIMAL, RegisterAttributeType.BOOLEAN);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
@@ -182,7 +183,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = true;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.BOOLEAN, RegisterAttributeType.DATE);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
@@ -191,7 +192,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = true;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.BOOLEAN, RegisterAttributeType.DECIMAL);
 
-            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage, Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
