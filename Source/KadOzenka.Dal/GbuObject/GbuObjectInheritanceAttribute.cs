@@ -226,9 +226,13 @@ namespace KadOzenka.Dal.GbuObject
                             ChangeDate = DateTime.Now,
                             Ot = pattrib.Ot
                         };
-                        //TODO error message
-                        var result = GetAttributeValueToCopy(pattrib.GetValue(), pattrib.AttributeData.Type, attributeTo.Type);
-                        attributeValue.SetValue(result);
+
+                        var parentAttributeValue = pattrib.GetValue();
+                        var result = ProcessAttributeValueToCopy(parentAttributeValue, pattrib.AttributeData.Type, attributeTo.Type);
+                        if (result.IsSuccess)
+                        {
+	                        attributeValue.SetValue(result.Value);
+                        }
 
                         GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
 
@@ -237,7 +241,7 @@ namespace KadOzenka.Dal.GbuObject
 	                        if (rowsReport != null && rowsReport.Count >= counter)
 	                        {
 		                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, parentCadastralNumber,
-			                        pattrib.AttributeId, pattrib.StringValue, "", reportService);
+			                        pattrib.AttributeId, parentAttributeValue, result.ErrorMessages?.ToString(), reportService);
 		                        counter++;
 	                        }
                         }
@@ -245,7 +249,7 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 else
                 {
-	                AddErrorToReport(unit.CadastralNumber, $"Не найден объект по кадастровому номеру {parentCadastralNumber}", reportService);
+	                AddErrorToReport(unit.CadastralNumber, $"Не найден объект по кадастровому номеру '{parentCadastralNumber}'", reportService);
                 }
             }
             else
@@ -254,7 +258,8 @@ namespace KadOzenka.Dal.GbuObject
 	        }
         }
 
-		public static object GetAttributeValueToCopy(object parentAttributeValue, RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
+		public static ConvertingResult ProcessAttributeValueToCopy(object parentAttributeValue,
+			RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
         {
             object result = null;
             var errorMessages = new StringBuilder();
@@ -371,10 +376,17 @@ namespace KadOzenka.Dal.GbuObject
             }
             else
             {
-                return parentAttributeValue;
+	            return new ConvertingResult
+	            {
+		            Value = parentAttributeValue
+                };
             }
 
-            return errorMessages.Length == 0 ? result : errorMessages.ToString();
+            return new ConvertingResult
+            {
+                ErrorMessages = errorMessages,
+                Value = result
+            };
         }
 
         private static string GetErrorMessageForNotConvertedChildValue(string initialValue, RegisterAttributeType typeToCast)
@@ -444,14 +456,14 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        private void AddRowToReport(GbuReportService.Row rowNumber, string kn, string knInh, long sourceAttribute, string value,  string errorMessage, GbuReportService reportService)
+        private void AddRowToReport(GbuReportService.Row rowNumber, string kn, string knInh, long sourceAttribute, object value, string errorMessage, GbuReportService reportService)
         {
 	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 	        reportService.AddValue(kn, 0, rowNumber);
 	        reportService.AddValue(knInh, 1, rowNumber);
 	        reportService.AddValue(sourceName, 2, rowNumber);
-			reportService.AddValue(value, 3, rowNumber);
-			reportService.AddValue(errorMessage, 4, rowNumber);
+			reportService.AddValue(value?.ToString(), 3, rowNumber);
+			reportService.AddValue(errorMessage, ErrorColumnIndex, rowNumber);
         }
 
         private void AddErrorToReport(string unitCadastralNumber, string message, GbuReportService reportService)
@@ -523,6 +535,13 @@ namespace KadOzenka.Dal.GbuObject
     {
         public RegisterAttribute From { get; set; }
         public RegisterAttribute To { get; set; }
+    }
+
+    public class ConvertingResult
+    {
+	    public object Value { get; set; }
+	    public StringBuilder ErrorMessages { get; set; }
+	    public bool IsSuccess => ErrorMessages == null || ErrorMessages.Length == 0;
     }
 
     #endregion
