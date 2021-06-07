@@ -1,6 +1,13 @@
 ﻿@model List<KadOzenka.Web.Models.Modeling.ModelingObjectsDiagramModel>
 
-<div class="form-horizontal col-sm-12">
+<div class="form-horizontal col-sm-12" style="padding: 3%;">
+    <div class="form-group">
+        @(Html.Kendo().Button()
+            .Name("reloadBtn")
+            .Icon("reload")
+            .Content("Перестроить")
+            .Events(x => x.Click("redrawChart")))
+    </div>
     <div class="form-group">
         @(Html.Kendo().Chart(Model.Take(10))
             .Name("chart")
@@ -32,7 +39,7 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-
+    var excludedObjectIds = [];
     $(document).ready(function () {
 
     });
@@ -40,15 +47,17 @@
 
 
     function excludeObjectFromCalculation(chartPoint) {
+        var objectId = chartPoint.category;
         Common.UI.ShowConfirm({
             title: 'Исключение из расчёта',
             content: `Исключить объект с ценой '${chartPoint.value}' из расчёта?`,
             onSuccess: function () {
+                excludedObjectIds.push(objectId);
                 kendo.ui.progress($('body'), true);
                 $.ajax({
                     url: '@Url.Action("ExcludeObjectFromCalculation", "Modeling")',
                     type: 'POST',
-                    data: { objectId: chartPoint.category },
+                    data: { objectId: objectId },
                     success: function () {
                         Common.ShowMessage("Объект исключен");
                     },
@@ -61,6 +70,27 @@
                 });
             }
         });
+    }
+
+
+    function redrawChart() {
+        if (excludedObjectIds.length === 0) {
+            Common.ShowMessage("График не перестроен, т.к. нет исключенных объектов");
+            return;
+        }
+        kendo.ui.progress($('body'), true);
+        var chart = $("#chart").getKendoChart();
+        var newDataSource = [];
+        chart.options.series[0].data.forEach(serie => {
+            if (!excludedObjectIds.includes(serie.Id)) {
+                newDataSource.push(serie);
+            }
+        });
+        chart.setDataSource(newDataSource);
+        chart.redraw();
+        kendo.ui.progress($('body'), false);
+        excludedObjectIds = [];
+        Common.ShowMessage("График перестроен");
     }
 
 </script>
