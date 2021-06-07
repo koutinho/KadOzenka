@@ -20,7 +20,6 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper.Configuration;
 using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;
@@ -235,30 +234,6 @@ namespace CIPJS
 
                 app.UseSession();
                 app.UseAuthentication();
-
-                //app.UseSignalR(routes =>
-                //{
-                //    routes.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
-                //    routes.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
-                //    //routes.MapHub<OutliersCheckingHub>("/marketOutliersCheckingProgress");
-                //    routes.MapHub<EsHub>("/esCheckProgress");
-                //    routes.MapHub<ActivateCoordinates>("/ActivateCoordinates");
-                //    routes.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
-                //    routes.MapHub<UrgentMessageHub>("/coreMessageData");
-                //    routes.MapHub<NotificationMessageHub>("/coreMessagesList");
-                //    routes.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
-                //});
-
-                //app.UseMvc(routes =>
-                //{
-                //    routes.MapRoute(
-                //        name: "Register",
-                //        template: "RegistersView/{registerId}",
-                //        defaults: new {controller = "RegistersView", action = "Index"});
-                //    routes.MapRoute(
-                //        name: "default",
-                //        template: "{controller=Home}/{action=Index}/{id?}");
-                //});
 
                 app.UseRouting();
                 app.UseAuthorization();
