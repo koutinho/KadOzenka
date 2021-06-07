@@ -20,7 +20,9 @@ namespace KadOzenka.Common.Tests.Builders.GbuObject
 				ChangeUserId = RandomGenerator.GenerateRandomInteger(),
 				ChangeDate = DateTime.Now,
 				Ot = DateTime.Now,
-				StringValue = RandomGenerator.GetRandomString()
+				StringValue = RandomGenerator.GetRandomString(),
+				NumValue = RandomGenerator.GenerateRandomDecimal(),
+				DtValue = RandomGenerator.GenerateRandomDate()
 			};
 		}
 
