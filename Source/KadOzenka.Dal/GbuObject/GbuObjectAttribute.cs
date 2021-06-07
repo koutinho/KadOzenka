@@ -116,6 +116,27 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
+		public void SetValue(object value)
+		{
+			var type = AttributeData.Type;
+			switch (type)
+			{
+				case RegisterAttributeType.STRING:
+					StringValue = value?.ToString();
+					break;
+				case RegisterAttributeType.BOOLEAN:
+				case RegisterAttributeType.DECIMAL:
+				case RegisterAttributeType.INTEGER:
+					NumValue = (decimal?) value;
+					break;
+				case RegisterAttributeType.DATE:
+					DtValue = (DateTime?) value;
+					break;
+				default:
+					throw new Exception($"Неподдерживаемый тип показателя '{type.GetEnumDescription()}'");
+			}
+		}
+
 		public string GetDocument()
 		{
 			List<string> docFacets = new List<string>();

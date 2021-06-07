@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Register;
@@ -41,7 +42,11 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static int CurrentCount = 0;
 
-        
+        public static string ErrorMessageForNotSupporterType = "Неподдерживаемый тип атрибута";
+        public static string ErrorMessageForChildConverting = "Невозможно привести значение";
+        public static string ErrorMessageForParentConverting = "Невозможно привести значение родительского фактора";
+
+
         public GbuObjectInheritanceAttribute(GbuInheritanceAttributeSettings settings)
         {
 	        GbuObjectService = new GbuObjectService();
@@ -220,7 +225,9 @@ namespace KadOzenka.Dal.GbuObject
                             ChangeDate = DateTime.Now,
                             Ot = pattrib.Ot
                         };
-                        attributeValue.CopyValue(pattrib);
+                        //TODO error message
+                        var result = GetAttributeValueToCopy(pattrib.GetValue(), pattrib.AttributeData.Type, attributeTo.Type);
+                        attributeValue.SetValue(result);
 
                         GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
 
@@ -254,6 +261,141 @@ namespace KadOzenka.Dal.GbuObject
                     reportService.AddValue("Не найдено значение родительского кадастрового номера", 4, rowReport);
                 }
             }
+        }
+
+        public static object GetAttributeValueToCopy(object parentAttributeValue, RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
+        {
+            object result = null;
+            var errorMessages = new StringBuilder();
+            var parentAttributeStr = parentAttributeValue?.ToString();
+
+            if (!string.IsNullOrWhiteSpace(parentAttributeStr) && parentAttributeType != childAttributeType)
+            {
+	            _log.Warning("Несопадение типов атрибутов {AttributeFromType} => {AttributeToType}, идет попытка конвертации", parentAttributeType.GetEnumDescription(), childAttributeType.GetEnumDescription());
+
+                switch (parentAttributeType)
+                {
+                    case RegisterAttributeType.STRING:
+                        switch (childAttributeType)
+                        {
+                            case RegisterAttributeType.DATE:
+	                            if (parentAttributeStr.TryParseToDateTime(out var dateResult))
+                                    result = dateResult;
+                                else
+                                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+                                break;
+                            case RegisterAttributeType.DECIMAL:
+                            case RegisterAttributeType.INTEGER:
+                                if (parentAttributeValue.TryParseToDecimal(out var doubleResult))
+                                    result = doubleResult;
+                                else
+                                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+                                break;
+                            case RegisterAttributeType.BOOLEAN:
+	                            if (parentAttributeValue.TryParseToBoolean(out var boolResult))
+                                    result = boolResult;
+                                else
+                                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+                                break;
+                            default:
+                            {
+	                            errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+	                            break;
+                            }
+                        }
+                        break;
+
+
+                    case RegisterAttributeType.DATE:
+	                    switch (childAttributeType)
+	                    {
+		                    case RegisterAttributeType.STRING:
+			                    result = parentAttributeStr;
+			                    break;
+		                    case RegisterAttributeType.DECIMAL:
+		                    case RegisterAttributeType.INTEGER:
+			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    break;
+		                    case RegisterAttributeType.BOOLEAN:
+			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    break;
+		                    default:
+		                    {
+			                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+			                    break;
+		                    }
+	                    }
+                        break;
+
+
+                    case RegisterAttributeType.DECIMAL:
+                    case RegisterAttributeType.INTEGER:
+	                    switch (childAttributeType)
+	                    {
+		                    case RegisterAttributeType.STRING:
+			                    result = parentAttributeStr;
+			                    break;
+		                    case RegisterAttributeType.DATE:
+			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    break;
+		                    case RegisterAttributeType.BOOLEAN:
+			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    break;
+		                    default:
+		                    {
+			                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+			                    break;
+		                    }
+	                    }
+                        break;
+
+
+                    case RegisterAttributeType.BOOLEAN:
+	                    switch (childAttributeType)
+	                    {
+		                    case RegisterAttributeType.STRING:
+			                    result = parentAttributeStr;
+			                    break;
+		                    case RegisterAttributeType.DATE:
+			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    break;
+		                    case RegisterAttributeType.DECIMAL:
+		                    case RegisterAttributeType.INTEGER:
+			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    break;
+		                    default:
+		                    {
+			                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+			                    break;
+		                    }
+	                    }
+                        break;
+
+                    default:
+                    {
+	                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+	                    break;
+                    }
+                }
+            }
+            else
+            {
+                return parentAttributeValue;
+            }
+
+            return errorMessages.Length == 0 ? result : errorMessages.ToString();
+        }
+
+        private static string GetErrorMessageForNotConvertedChildValue(string initialValue, RegisterAttributeType typeToCast)
+        {
+	        //TODO get type
+	        return $"{ErrorMessageForChildConverting} '{initialValue}' к типу '{typeToCast.GetEnumDescription()}'";
+        }
+
+        private static string GetErrorMessageForNotConvertedParentValue(string initialValue, RegisterAttributeType typeToCast)
+        {
+	        //TODO get type
+	        return $"{ErrorMessageForParentConverting} '{initialValue}' к типу '{typeToCast.GetEnumDescription()}'";
         }
 
         public void ProcessOneUnit(InheritanceUnitPure unit, ParentInfo parentInfo, GbuReportService reportService)

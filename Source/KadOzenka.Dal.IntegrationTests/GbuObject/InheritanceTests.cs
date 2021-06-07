@@ -151,7 +151,30 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 			Assert.That(copiedAttributes.Count, Is.EqualTo(0));
 		}
 
-		
+		[Test]
+		public void Can_Convert_Attribute_Types_During_Inheritance()
+		{
+			var dateForAttributes = _unit.CreationDate.GetValueOrDefault().AddDays(-1);
+			var parentCadastralNumberAttribute = new GbuObjectAttributeBuilder()
+				.Attribute(EgrnAttributes.CadastralNumber.Id)
+				.Object(_childObject.Id)
+				.OtAndSDates(dateForAttributes)
+				.Value(_parentObject.CadastralNumber).Build();
+			var attributeCopyFrom = new GbuObjectAttributeBuilder()
+				.Attribute(EgrnAttributes.Address.Id)
+				.Value("1.23")
+				.Object(_parentObject.Id).OtAndSDates(dateForAttributes).Build();
+			var attributeCopyTo = EgrnAttributes.Square;
+
+
+			RunInheritance(new List<long> { _task.Id }, parentCadastralNumberAttribute.AttributeId,
+				attributeCopyFrom.AttributeId, attributeCopyTo.Id);
+
+
+			CheckCopiedAttribute(attributeCopyTo, _childObject.Id, attributeCopyFrom);
+		}
+
+
 		#region Support Methods
 
 		private void RunInheritance(List<long> taskIds, long parentCadastralNumberAttributeId,
@@ -198,7 +221,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 
 			var copiedAttribute = copiedAttributes.First();
 			Assert.That(copiedAttribute, Is.Not.Null, attributeCopyFrom.Id.ToString);
-			Assert.That(copiedAttribute.Value, Is.EqualTo(attributeCopyFrom.GetValue()));
+			Assert.That(copiedAttribute.Value.ToString(), Is.EqualTo(attributeCopyFrom.GetValue().ToString()));
 			//сравниваем даты с учетом +- 50 сек
 			Assert.That(copiedAttribute.S, Is.EqualTo(attributeCopyFrom.S).Within(TimeSpan.FromMilliseconds(50000)));
 			Assert.That(copiedAttribute.Ot, Is.EqualTo(attributeCopyFrom.Ot).Within(TimeSpan.FromMilliseconds(50000)));
