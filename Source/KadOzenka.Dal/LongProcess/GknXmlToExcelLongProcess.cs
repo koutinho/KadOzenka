@@ -73,7 +73,7 @@ namespace KadOzenka.Dal.LongProcess
 
             WorkerCommon.SetProgress(processQueue, 50);
 
-            var exporter = new XmlToExcelExportOld(allObjects, config);
+            var exporter = new XmlToExcelExport(allObjects, config);
 
             var result = exporter.GetResult();
 
