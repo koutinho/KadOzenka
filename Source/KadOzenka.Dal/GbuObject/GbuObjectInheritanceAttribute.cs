@@ -241,7 +241,7 @@ namespace KadOzenka.Dal.GbuObject
 	                        if (rowsReport != null && rowsReport.Count >= counter)
 	                        {
 		                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, parentCadastralNumber,
-			                        pattrib.AttributeId, parentAttributeValue, result.ErrorMessages?.ToString(), reportService);
+			                        pattrib.AttributeId, parentAttributeValue, result.ErrorMessage?.ToString(), reportService);
 		                        counter++;
 	                        }
                         }
@@ -262,7 +262,7 @@ namespace KadOzenka.Dal.GbuObject
 			RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
         {
             object result = null;
-            var errorMessages = new StringBuilder();
+            string errorMessage = null;
             var parentAttributeStr = parentAttributeValue?.ToString();
 
             if (!string.IsNullOrWhiteSpace(parentAttributeStr) && parentAttributeType != childAttributeType)
@@ -278,24 +278,24 @@ namespace KadOzenka.Dal.GbuObject
 	                            if (parentAttributeStr.TryParseToDateTime(out var dateResult))
                                     result = dateResult;
                                 else
-                                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+		                            errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
                                 break;
                             case RegisterAttributeType.DECIMAL:
                             case RegisterAttributeType.INTEGER:
                                 if (parentAttributeValue.TryParseToDecimal(out var doubleResult))
                                     result = doubleResult;
                                 else
-                                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+	                                errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
                                 break;
                             case RegisterAttributeType.BOOLEAN:
 	                            if (parentAttributeValue.TryParseToBoolean(out var boolResult))
                                     result = boolResult;
                                 else
-                                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+		                            errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
                                 break;
                             default:
                             {
-	                            errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+	                            errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
 	                            break;
                             }
                         }
@@ -310,14 +310,14 @@ namespace KadOzenka.Dal.GbuObject
 			                    break;
 		                    case RegisterAttributeType.DECIMAL:
 		                    case RegisterAttributeType.INTEGER:
-			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
 			                    break;
 		                    case RegisterAttributeType.BOOLEAN:
-			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
 			                    break;
 		                    default:
 		                    {
-			                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+			                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
 			                    break;
 		                    }
 	                    }
@@ -332,14 +332,14 @@ namespace KadOzenka.Dal.GbuObject
 			                    result = parentAttributeStr;
 			                    break;
 		                    case RegisterAttributeType.DATE:
-			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
 			                    break;
 		                    case RegisterAttributeType.BOOLEAN:
-			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
 			                    break;
 		                    default:
 		                    {
-			                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+			                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
 			                    break;
 		                    }
 	                    }
@@ -353,15 +353,15 @@ namespace KadOzenka.Dal.GbuObject
 			                    result = parentAttributeStr;
 			                    break;
 		                    case RegisterAttributeType.DATE:
-			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
 			                    break;
 		                    case RegisterAttributeType.DECIMAL:
 		                    case RegisterAttributeType.INTEGER:
-			                    errorMessages.AppendLine(GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType));
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
 			                    break;
 		                    default:
 		                    {
-			                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+			                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
 			                    break;
 		                    }
 	                    }
@@ -369,7 +369,7 @@ namespace KadOzenka.Dal.GbuObject
 
                     default:
                     {
-	                    errorMessages.AppendLine($"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}");
+	                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
 	                    break;
                     }
                 }
@@ -384,7 +384,7 @@ namespace KadOzenka.Dal.GbuObject
 
             return new ConvertingResult
             {
-                ErrorMessages = errorMessages,
+                ErrorMessage = errorMessage,
                 Value = result
             };
         }
@@ -540,8 +540,8 @@ namespace KadOzenka.Dal.GbuObject
     public class ConvertingResult
     {
 	    public object Value { get; set; }
-	    public StringBuilder ErrorMessages { get; set; }
-	    public bool IsSuccess => ErrorMessages == null || ErrorMessages.Length == 0;
+	    public string ErrorMessage { get; set; }
+	    public bool IsSuccess => string.IsNullOrWhiteSpace(ErrorMessage);
     }
 
     #endregion

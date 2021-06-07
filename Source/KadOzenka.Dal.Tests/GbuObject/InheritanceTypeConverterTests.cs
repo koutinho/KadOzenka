@@ -33,7 +33,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = "asd";
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.STRING, RegisterAttributeType.DATE);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = "asd";
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.STRING, RegisterAttributeType.DECIMAL);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [TestCase("True", ExpectedResult = true)]
@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
         {
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy("Test", RegisterAttributeType.STRING, RegisterAttributeType.BOOLEAN);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
@@ -100,7 +100,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = DateTime.Now;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DATE, RegisterAttributeType.DECIMAL);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = DateTime.Now;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DATE, RegisterAttributeType.BOOLEAN);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
@@ -141,7 +141,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = 1;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DECIMAL, RegisterAttributeType.DATE);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = 1;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.DECIMAL, RegisterAttributeType.BOOLEAN);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
@@ -182,7 +182,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = true;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.BOOLEAN, RegisterAttributeType.DATE);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         [Test]
@@ -191,7 +191,7 @@ namespace KadOzenka.Dal.UnitTests.GbuObject
             var value = true;
             var result = GbuObjectInheritanceAttribute.ProcessAttributeValueToCopy(value, RegisterAttributeType.BOOLEAN, RegisterAttributeType.DECIMAL);
 
-            Assert.That(result.ErrorMessages?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
+            Assert.That(result.ErrorMessage?.ToString(), Contains.Substring(GbuObjectInheritanceAttribute.ErrorMessageForChildConverting));
         }
 
         #endregion
