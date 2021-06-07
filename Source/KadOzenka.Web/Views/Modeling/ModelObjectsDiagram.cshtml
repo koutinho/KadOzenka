@@ -2,14 +2,18 @@
 
 <div class="form-horizontal col-sm-12">
     <div class="form-group">
-        @(Html.Kendo().Chart()
+        @(Html.Kendo().Chart(Model.Take(10))
             .Name("chart")
             .Title("Цена аналогов, включенных в моделирование")
             .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
             .Series(series =>
             {
-                series.Line(Model.Select(x => x.Price)).Name("Цена за кв.м.");
-            }))
+                series.Line(model => model.Price, model => model.Id)
+                    .Name("Цена за кв.м.")
+                    .Markers(m => m.Size(15));
+            })
+            .CategoryAxis(x => x.Visible(false))
+            .Events(x => x.SeriesClick("excludeObjectFromCalculation")))
     </div>
 </div>
 
@@ -25,28 +29,39 @@
 
 
 
-<script id="GridToolbarTemplate" type="text/x-kendo-template">
-    <div style="float: left">
-        <a class="k-button k-button-icon" id="saveBtn-#: gridId #" style="width:120px;">
-            <span class="k-icon k-i-save" style="padding-right: 30%"></span>
-            Сохранить
-        </a>
-        <a class="k-button k-button-icon" id="exportBtn-#: gridId #" style="width:120px;">
-            <span class="k-icon k-i-download" style="padding-right: 30%"></span>
-            Выгрузить
-        </a>
-        <span>Показано </span><span id="filteredObjectsCount"></span><span> из </span><span id="allObjectsCount"></span>
-    </div>
-</script>
-
-
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
 
     $(document).ready(function () {
-       
+
     });
+
+
+
+    function excludeObjectFromCalculation(chartPoint) {
+        Common.UI.ShowConfirm({
+            title: 'Исключение из расчёта',
+            content: `Исключить объект с ценой '${chartPoint.value}' из расчёта?`,
+            onSuccess: function () {
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    url: '@Url.Action("ExcludeObjectFromCalculation", "Modeling")',
+                    type: 'POST',
+                    data: { objectId: chartPoint.category },
+                    success: function () {
+                        Common.ShowMessage("Объект исключен");
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function() {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+        });
+    }
 
 </script>
 

@@ -1137,6 +1137,15 @@ namespace KadOzenka.Web.Controllers
             return View(models);
         }
 
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ExcludeObjectFromCalculation(long objectId)
+        {
+	        ModelObjectsService.ExcludeObjectFromCalculation(objectId);
+
+            return Ok();
+        }
+
         #endregion
 
         #endregion

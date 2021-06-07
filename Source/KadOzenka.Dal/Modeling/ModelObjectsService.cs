@@ -350,8 +350,21 @@ namespace KadOzenka.Dal.Modeling
 	        return percent;
         }
 
+        public void ExcludeObjectFromCalculation(long objectId)
+        {
+	        var obj = ModelObjectsRepository.GetById(objectId, x => new {x.IsExcluded});
+	        if (obj == null)
+		        throw new Exception($"Не найден объект с ИД '{objectId}'");
 
-		#region Support Methods
+	        if (obj.IsExcluded.GetValueOrDefault() == false)
+	        {
+		        obj.IsExcluded = true;
+		        obj.Save();
+	        }
+        }
+
+
+        #region Support Methods
 
 		private List<ModelObjectsFromExcelData> GetInfoFromFile(ExcelWorksheet sheet, List<ColumnToAttributeMapping> columnsMapping)
 		{

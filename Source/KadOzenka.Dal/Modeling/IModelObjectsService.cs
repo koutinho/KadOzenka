@@ -29,5 +29,7 @@ namespace KadOzenka.Dal.Modeling
 
 		ModelObjectsService.ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 			List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber);
+
+		void ExcludeObjectFromCalculation(long objectId);
 	}
 }
