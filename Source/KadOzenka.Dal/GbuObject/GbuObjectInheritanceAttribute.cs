@@ -28,6 +28,7 @@ namespace KadOzenka.Dal.GbuObject
         private GbuObjectService GbuObjectService { get; }
         private GbuInheritanceAttributeSettings Settings { get; }
         private List<AttributeMappingInternal> AttributesMapping { get; }
+        private int ErrorColumnIndex = 4;
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -73,7 +74,7 @@ namespace KadOzenka.Dal.GbuObject
 			reportService.SetIndividualWidth(0, 4);
 			reportService.SetIndividualWidth(2, 6);
 			reportService.SetIndividualWidth(3, 4);
-			reportService.SetIndividualWidth(4, 6);
+			reportService.SetIndividualWidth(ErrorColumnIndex, 6);
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -244,26 +245,16 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 else
                 {
-                    lock (locked)
-					{
-						var rowReport = reportService.GetCurrentRow();
-                        reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-                        reportService.AddValue($"Не найден объект по кадастровому номеру {parentCadastralNumber}", 4, rowReport);
-                    }
+	                AddErrorToReport(unit.CadastralNumber, $"Не найден объект по кадастровому номеру {parentCadastralNumber}", reportService);
                 }
             }
             else
-            {
-                lock (locked)
-	            {
-		            var rowReport = reportService.GetCurrentRow();
-                    reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-                    reportService.AddValue("Не найдено значение родительского кадастрового номера", 4, rowReport);
-                }
-            }
+	        {
+		        AddErrorToReport(unit.CadastralNumber, "Не найдено значение родительского кадастрового номера", reportService);
+	        }
         }
 
-        public static object GetAttributeValueToCopy(object parentAttributeValue, RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
+		public static object GetAttributeValueToCopy(object parentAttributeValue, RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
         {
             object result = null;
             var errorMessages = new StringBuilder();
@@ -453,7 +444,7 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        public static void AddRowToReport(GbuReportService.Row rowNumber, string kn, string knInh, long sourceAttribute, string value,  string errorMessage, GbuReportService reportService)
+        private void AddRowToReport(GbuReportService.Row rowNumber, string kn, string knInh, long sourceAttribute, string value,  string errorMessage, GbuReportService reportService)
         {
 	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 	        reportService.AddValue(kn, 0, rowNumber);
@@ -461,6 +452,16 @@ namespace KadOzenka.Dal.GbuObject
 	        reportService.AddValue(sourceName, 2, rowNumber);
 			reportService.AddValue(value, 3, rowNumber);
 			reportService.AddValue(errorMessage, 4, rowNumber);
+        }
+
+        private void AddErrorToReport(string unitCadastralNumber, string message, GbuReportService reportService)
+        {
+	        lock (locked)
+	        {
+		        var rowReport = reportService.GetCurrentRow();
+		        reportService.AddValue(unitCadastralNumber, 0, rowReport);
+		        reportService.AddValue(message, ErrorColumnIndex, rowReport);
+	        }
         }
     }
 
