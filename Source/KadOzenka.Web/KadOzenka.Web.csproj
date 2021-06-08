@@ -139,6 +139,16 @@
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_QA.pubxml" />
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_UAT.pubxml" />
   </ItemGroup>
+	
+
+  <ItemGroup>
+    <Content Update="wwwroot\lib\kendo-ui\styles\kendo.miomo.theme..css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\lib\kendo-ui\styles\kendo.miomo.theme.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <Choose>
 	  <When Condition=" '$(Configuration)'=='Local' ">

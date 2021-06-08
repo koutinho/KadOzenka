@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Register;
 using KadOzenka.Dal.XmlParser;
 
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
@@ -37,6 +38,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 				Serilog.Log.ForContext<ImportedAttributeGkn>()
 					.ForContext("ObjectId", idObject)
 					.ForContext("AttributeId", AttributeId)
+					.ForContext("AttributeName", RegisterCache.GetAttributeData(AttributeId).Name)
 					.ForContext("Value", val, destructureObjects: true)
 					.Error(e, "Ошибка во время сохранения гбу-атрибута для объекта {CadastralNumber}", current.CadastralNumber);
 				

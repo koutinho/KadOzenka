@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Register;
+using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.GbuObject.Decorators;
@@ -24,7 +27,8 @@ namespace KadOzenka.Dal.GbuObject
 	    private static readonly ILogger _log = Log.ForContext<GbuObjectInheritanceAttribute>();
         private GbuObjectService GbuObjectService { get; }
         private GbuInheritanceAttributeSettings Settings { get; }
-        private List<AttributeMapping> AttributesMapping { get; }
+        private List<AttributeMappingInternal> AttributesMapping { get; }
+        private int ErrorColumnIndex = 4;
 
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
@@ -39,12 +43,21 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public static int CurrentCount = 0;
 
-        
+        public static string ErrorMessageForNotSupporterType = "Неподдерживаемый тип атрибута";
+        public static string ErrorMessageForChildConverting = "Невозможно привести значение";
+        public static string ErrorMessageForParentConverting = "Невозможно привести значение родительского фактора";
+
+
         public GbuObjectInheritanceAttribute(GbuInheritanceAttributeSettings settings)
         {
 	        GbuObjectService = new GbuObjectService();
 	        Settings = settings;
-	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0).ToList();
+	        AttributesMapping = Settings.Attributes.Where(x => x.IdFrom > 0 && x.IdTo > 0)
+		        .Select(x => new AttributeMappingInternal
+		        {
+			        From = RegisterCache.GetAttributeData(x.IdFrom),
+			        To = RegisterCache.GetAttributeData(x.IdTo)
+		        }).ToList();
         }
 
 
@@ -61,7 +74,7 @@ namespace KadOzenka.Dal.GbuObject
 			reportService.SetIndividualWidth(0, 4);
 			reportService.SetIndividualWidth(2, 6);
 			reportService.SetIndividualWidth(3, 4);
-			reportService.SetIndividualWidth(4, 6);
+			reportService.SetIndividualWidth(ErrorColumnIndex, 6);
 
             locked = new object();
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
@@ -128,7 +141,7 @@ namespace KadOzenka.Dal.GbuObject
 
 	        var parents = GetParentGbuMainObjects(parentCadastralNumberAttributes);
 
-	        var attributeIdsFromCopy = AttributesMapping.Select(x => x.IdFrom).ToList();
+	        var attributeIdsFromCopy = AttributesMapping.Select(x => x.From.Id).ToList();
 	        var parentIds = parents.Select(x => x.Id).ToList();
             var parentAttributes = GbuObjectService.GetAllAttributes(parentIds, null, attributeIdsFromCopy, unitsCreationDate,
 		        attributesToDownload: new List<GbuColumnsToDownload>
@@ -201,19 +214,25 @@ namespace KadOzenka.Dal.GbuObject
                     int counter = 0;
                     foreach (var pattrib in parentAttributes)
                     {
-	                    var attributeTo = AttributesMapping.First(x => x.IdFrom == pattrib.AttributeId);
+	                    var attributeTo = AttributesMapping.First(x => x.From.Id == pattrib.AttributeId).To;
                         var attributeValue = new GbuObjectAttribute
                         {
                             Id = -1,
-                            AttributeId = attributeTo.IdTo,
+                            AttributeId = attributeTo.Id,
                             ObjectId = unit.ObjectId,
                             ChangeDocId = pattrib.ChangeDocId,
                             S = pattrib.S,
                             ChangeUserId = SRDSession.Current.UserID,
                             ChangeDate = DateTime.Now,
-                            Ot = pattrib.Ot,
-                            StringValue = pattrib.StringValue,
+                            Ot = pattrib.Ot
                         };
+
+                        var parentAttributeValue = pattrib.GetValue();
+                        var result = ProcessAttributeValueToCopy(parentAttributeValue, pattrib.AttributeData.Type, attributeTo.Type);
+                        if (result.IsSuccess)
+                        {
+	                        attributeValue.SetValue(result.Value);
+                        }
 
                         GbuObjectService.SaveAttributeValueWithCheck(attributeValue);
 
@@ -222,7 +241,7 @@ namespace KadOzenka.Dal.GbuObject
 	                        if (rowsReport != null && rowsReport.Count >= counter)
 	                        {
 		                        AddRowToReport(rowsReport[counter], unit.CadastralNumber, parentCadastralNumber,
-			                        pattrib.AttributeId, pattrib.StringValue, "", reportService);
+			                        pattrib.AttributeId, parentAttributeValue, result.ErrorMessage?.ToString(), reportService);
 		                        counter++;
 	                        }
                         }
@@ -230,23 +249,156 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 else
                 {
-                    lock (locked)
-					{
-						var rowReport = reportService.GetCurrentRow();
-                        reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-                        reportService.AddValue($"Не найден объект по кадастровому номеру {parentCadastralNumber}", 4, rowReport);
+	                AddErrorToReport(unit.CadastralNumber, $"Не найден объект по кадастровому номеру '{parentCadastralNumber}'", reportService);
+                }
+            }
+            else
+	        {
+		        AddErrorToReport(unit.CadastralNumber, "Не найдено значение родительского кадастрового номера", reportService);
+	        }
+        }
+
+		public static ConvertingResult ProcessAttributeValueToCopy(object parentAttributeValue,
+			RegisterAttributeType parentAttributeType, RegisterAttributeType childAttributeType)
+        {
+            object result = null;
+            string errorMessage = null;
+            var parentAttributeStr = parentAttributeValue?.ToString();
+
+            if (!string.IsNullOrWhiteSpace(parentAttributeStr) && parentAttributeType != childAttributeType)
+            {
+	            _log.Warning("Несопадение типов атрибутов {AttributeFromType} => {AttributeToType}, идет попытка конвертации", parentAttributeType.GetEnumDescription(), childAttributeType.GetEnumDescription());
+
+                switch (parentAttributeType)
+                {
+                    case RegisterAttributeType.STRING:
+                        switch (childAttributeType)
+                        {
+                            case RegisterAttributeType.DATE:
+	                            if (parentAttributeStr.TryParseToDateTime(out var dateResult))
+                                    result = dateResult;
+                                else
+		                            errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+                                break;
+                            case RegisterAttributeType.DECIMAL:
+                            case RegisterAttributeType.INTEGER:
+                                if (parentAttributeValue.TryParseToDecimal(out var doubleResult))
+                                    result = doubleResult;
+                                else
+	                                errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+                                break;
+                            case RegisterAttributeType.BOOLEAN:
+	                            if (parentAttributeValue.TryParseToBoolean(out var boolResult))
+                                    result = boolResult;
+                                else
+		                            errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+                                break;
+                            default:
+                            {
+	                            errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
+	                            break;
+                            }
+                        }
+                        break;
+
+
+                    case RegisterAttributeType.DATE:
+	                    switch (childAttributeType)
+	                    {
+		                    case RegisterAttributeType.STRING:
+			                    result = parentAttributeStr;
+			                    break;
+		                    case RegisterAttributeType.DECIMAL:
+		                    case RegisterAttributeType.INTEGER:
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+			                    break;
+		                    case RegisterAttributeType.BOOLEAN:
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+			                    break;
+		                    default:
+		                    {
+			                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
+			                    break;
+		                    }
+	                    }
+                        break;
+
+
+                    case RegisterAttributeType.DECIMAL:
+                    case RegisterAttributeType.INTEGER:
+	                    switch (childAttributeType)
+	                    {
+		                    case RegisterAttributeType.STRING:
+			                    result = parentAttributeStr;
+			                    break;
+		                    case RegisterAttributeType.DATE:
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+			                    break;
+		                    case RegisterAttributeType.BOOLEAN:
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+			                    break;
+		                    default:
+		                    {
+			                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
+			                    break;
+		                    }
+	                    }
+                        break;
+
+
+                    case RegisterAttributeType.BOOLEAN:
+	                    switch (childAttributeType)
+	                    {
+		                    case RegisterAttributeType.STRING:
+			                    result = parentAttributeStr;
+			                    break;
+		                    case RegisterAttributeType.DATE:
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+			                    break;
+		                    case RegisterAttributeType.DECIMAL:
+		                    case RegisterAttributeType.INTEGER:
+			                    errorMessage = GetErrorMessageForNotConvertedChildValue(parentAttributeStr, childAttributeType);
+			                    break;
+		                    default:
+		                    {
+			                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
+			                    break;
+		                    }
+	                    }
+                        break;
+
+                    default:
+                    {
+	                    errorMessage = $"{ErrorMessageForNotSupporterType} {childAttributeType.GetEnumDescription()}";
+	                    break;
                     }
                 }
             }
             else
             {
-                lock (locked)
+	            return new ConvertingResult
 	            {
-		            var rowReport = reportService.GetCurrentRow();
-                    reportService.AddValue(unit.CadastralNumber, 0, rowReport);
-                    reportService.AddValue("Не найдено значение родительского кадастрового номера", 4, rowReport);
-                }
+		            Value = parentAttributeValue
+                };
             }
+
+            return new ConvertingResult
+            {
+                ErrorMessage = errorMessage,
+                Value = result
+            };
+        }
+
+        private static string GetErrorMessageForNotConvertedChildValue(string initialValue, RegisterAttributeType typeToCast)
+        {
+	        //TODO get type
+	        return $"{ErrorMessageForChildConverting} '{initialValue}' к типу '{typeToCast.GetEnumDescription()}'";
+        }
+
+        private static string GetErrorMessageForNotConvertedParentValue(string initialValue, RegisterAttributeType typeToCast)
+        {
+	        //TODO get type
+	        return $"{ErrorMessageForParentConverting} '{initialValue}' к типу '{typeToCast.GetEnumDescription()}'";
         }
 
         public void ProcessOneUnit(InheritanceUnitPure unit, ParentInfo parentInfo, GbuReportService reportService)
@@ -304,14 +456,24 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        public static void AddRowToReport(GbuReportService.Row rowNumber, string kn, string knInh, long sourceAttribute, string value,  string errorMessage, GbuReportService reportService)
+        private void AddRowToReport(GbuReportService.Row rowNumber, string kn, string knInh, long sourceAttribute, object value, string errorMessage, GbuReportService reportService)
         {
 	        string sourceName = GbuObjectService.GetAttributeNameById(sourceAttribute);
 	        reportService.AddValue(kn, 0, rowNumber);
 	        reportService.AddValue(knInh, 1, rowNumber);
 	        reportService.AddValue(sourceName, 2, rowNumber);
-			reportService.AddValue(value, 3, rowNumber);
-			reportService.AddValue(errorMessage, 4, rowNumber);
+			reportService.AddValue(value?.ToString(), 3, rowNumber);
+			reportService.AddValue(errorMessage, ErrorColumnIndex, rowNumber);
+        }
+
+        private void AddErrorToReport(string unitCadastralNumber, string message, GbuReportService reportService)
+        {
+	        lock (locked)
+	        {
+		        var rowReport = reportService.GetCurrentRow();
+		        reportService.AddValue(unitCadastralNumber, 0, rowReport);
+		        reportService.AddValue(message, ErrorColumnIndex, rowReport);
+	        }
         }
     }
 
@@ -367,6 +529,19 @@ namespace KadOzenka.Dal.GbuObject
 	    public Dictionary<long, GbuObjectAttribute> ParentCadastralNumberAttributes { get; set; }
 	    public List<OMMainObject> Parents { get; set; }
 	    public Dictionary<long, List<GbuObjectAttribute>> ParentAttributes { get; set; }
+    }
+
+    internal class AttributeMappingInternal
+    {
+        public RegisterAttribute From { get; set; }
+        public RegisterAttribute To { get; set; }
+    }
+
+    public class ConvertingResult
+    {
+	    public object Value { get; set; }
+	    public string ErrorMessage { get; set; }
+	    public bool IsSuccess => string.IsNullOrWhiteSpace(ErrorMessage);
     }
 
     #endregion

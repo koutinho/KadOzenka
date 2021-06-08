@@ -12,6 +12,11 @@ namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager
 
 		public ModelingProcessConfig ModelingProcessConfig { get; set; }
 
+		/// <summary>
+		/// Конфигурация для импорта документа к Заданию на оценку
+		/// </summary>
+		public ImportDocumentForTaskConfig ImportDocumentForTaskConfig { get; set; }
+
 		//Внедренные ресурсы 
 		[JsonIgnore]
 		public DataImporterGknConfig DataImporterGknConfig => EmbeddedResourceProvider.DataImporterGknConfig;

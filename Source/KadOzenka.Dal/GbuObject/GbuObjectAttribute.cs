@@ -77,6 +77,66 @@ namespace KadOzenka.Dal.GbuObject
 			return StringValue;
 		}
 
+		public object GetValue()
+		{
+			var type = AttributeData.Type;
+			switch (type)
+			{
+				case RegisterAttributeType.INTEGER:
+				case RegisterAttributeType.DECIMAL:
+				case RegisterAttributeType.BOOLEAN:
+					return NumValue;
+				case RegisterAttributeType.STRING:
+					return StringValue;
+				case RegisterAttributeType.DATE:
+					return DtValue;
+				default:
+					throw new ArgumentOutOfRangeException($"Нельзя получить значение у атрибута типа '{type.GetEnumDescription()}'");
+			}
+		}
+
+		public void CopyValue(GbuObjectAttribute copyFromAttribute)
+		{
+			var type = AttributeData.Type;
+			switch (type)
+			{
+				case RegisterAttributeType.STRING:
+					StringValue = copyFromAttribute.StringValue;
+					break;
+				case RegisterAttributeType.BOOLEAN:
+				case RegisterAttributeType.DECIMAL:
+				case RegisterAttributeType.INTEGER:
+					NumValue = copyFromAttribute.NumValue;
+					break;
+				case RegisterAttributeType.DATE:
+					DtValue = copyFromAttribute.DtValue;
+					break;
+				default:
+					throw new Exception($"Неподдерживаемый тип показателя '{type.GetEnumDescription()}'");
+			}
+		}
+
+		public void SetValue(object value)
+		{
+			var type = AttributeData.Type;
+			switch (type)
+			{
+				case RegisterAttributeType.STRING:
+					StringValue = value?.ToString();
+					break;
+				case RegisterAttributeType.BOOLEAN:
+				case RegisterAttributeType.DECIMAL:
+				case RegisterAttributeType.INTEGER:
+					NumValue = (decimal?) value;
+					break;
+				case RegisterAttributeType.DATE:
+					DtValue = (DateTime?) value;
+					break;
+				default:
+					throw new Exception($"Неподдерживаемый тип показателя '{type.GetEnumDescription()}'");
+			}
+		}
+
 		public string GetDocument()
 		{
 			List<string> docFacets = new List<string>();
