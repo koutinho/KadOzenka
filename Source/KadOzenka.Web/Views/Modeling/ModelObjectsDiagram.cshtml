@@ -1,18 +1,45 @@
-﻿@model List<KadOzenka.Web.Models.Modeling.ModelingObjectsDiagramModel>
+﻿@using KadOzenka.Web.Models.Modeling
+@using KadOzenka.Dal.Modeling.Entities
+@model KadOzenka.Web.Models.Modeling.ModelingObjectsDiagramModel
 
 <div class="form-horizontal col-sm-12" style="padding: 3%;">
+    
+    <div class="form-group">
+        <div class="col-sm-12 col-sm-offset-2" style="width: 100%">
+            <div class="col-sm-4">
+                @(Html.Kendo().RadioButton()
+                    .Name("sampleType")
+                    .Label(TrainingSampleType.Control.GetEnumDescription())
+                    .Value((int) TrainingSampleType.Control)
+                    .Checked(Model.TrainingSampleType == TrainingSampleType.Control))
+            </div>
+            <div class="col-sm-4 col-sm-offset-1">
+                @(Html.Kendo().RadioButton()
+                    .Name("sampleType")
+                    .Label(TrainingSampleType.Training.GetEnumDescription())
+                    .Value((int) TrainingSampleType.Training)
+                    .Checked(Model.TrainingSampleType == TrainingSampleType.Training))
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         @(Html.Kendo().Button()
             .Name("reloadBtn")
             .Icon("reload")
             .Content("Перестроить")
-            .Events(x => x.Click("redrawChart")))
+            .Events(x => x.Click("drawChartWithoutExcludedObjects")))
     </div>
+
     <div class="form-group">
-        @(Html.Kendo().Chart(Model.Take(10))
+        @(Html.Kendo().Chart<ObjectInfoForDiagram>()
             .Name("chart")
             .Title("Цена аналогов, включенных в моделирование")
             .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
+            .DataSource(x =>
+            {
+                x.Read(read => read.Action("GetObjectsForDiagram", "Modeling").Data("getParametersToDownloadObjects"));
+            })
             .Series(series =>
             {
                 series.Line(model => model.Price, model => model.Id)
@@ -22,6 +49,7 @@
             .CategoryAxis(x => x.Visible(false))
             .Events(x => x.SeriesClick("excludeObjectFromCalculation")))
     </div>
+
 </div>
 
 
@@ -40,10 +68,13 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     var excludedObjectIds = [];
-    $(document).ready(function () {
 
+    $(document).ready(function () {
+        $('[name="sampleType"]').on('change', reloadData);
     });
 
+
+    
 
 
     function excludeObjectFromCalculation(chartPoint) {
@@ -73,7 +104,7 @@
     }
 
 
-    function redrawChart() {
+    function drawChartWithoutExcludedObjects() {
         if (excludedObjectIds.length === 0) {
             Common.ShowMessage("График не перестроен, т.к. нет исключенных объектов");
             return;
@@ -91,6 +122,24 @@
         kendo.ui.progress($('body'), false);
         excludedObjectIds = [];
         Common.ShowMessage("График перестроен");
+    }
+
+
+    function reloadData() {
+        kendo.ui.progress($('body'), true);
+        var chart = $("#chart").data("kendoChart");
+        chart.dataSource.read();
+        chart.refresh();
+        kendo.ui.progress($('body'), false);
+    }
+
+
+    function getParametersToDownloadObjects() {
+        var sampleType = $('input[name="sampleType"]:checked').val();
+        return {
+            modelId: '@Model.ModelId',
+            trainingSampleType: sampleType
+        }
     }
 
 </script>

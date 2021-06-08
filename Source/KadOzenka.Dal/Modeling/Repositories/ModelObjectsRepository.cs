@@ -3,17 +3,11 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling.Repositories
 {
-	public enum IncludedObjectsMode
-	{
-		All,
-		Training,
-		Prediction
-	}
-
 	public class ModelObjectsRepository : GenericRepository<OMModelToMarketObjects>, IModelObjectsRepository
 	{
 		protected override QSQuery<OMModelToMarketObjects> GetBaseQuery(Expression<Func<OMModelToMarketObjects, bool>> whereExpression)
@@ -37,12 +31,16 @@ namespace KadOzenka.Dal.Modeling.Repositories
 		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
 		{
 			var query = GetIncludedModelObjectsQuery(modelId, mode);
-			
-			query = selectExpression == null
-				? query.SelectAll()
-				: query.Select(selectExpression);
 
-			return query.Execute();
+			return RunQuery(query, selectExpression);
+
+		}
+
+		public List<OMModelToMarketObjects> GetIncludedObjectsForTraining(long modelId, TrainingSampleType mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
+		{
+			var query = GetIncludedObjectsForTrainingQuery(modelId, mode).OrderBy(x => x.Price);
+
+			return RunQuery(query, selectExpression);
 		}
 
 
@@ -68,6 +66,39 @@ namespace KadOzenka.Dal.Modeling.Repositories
 			}
 
 			throw new InvalidOperationException($"Указан неизвестный тип объектов моделирования '{mode}'");
+		}
+
+		private QSQuery<OMModelToMarketObjects> GetIncludedObjectsForTrainingQuery(long? modelId, TrainingSampleType mode)
+		{
+			var baseQuery = OMModelToMarketObjects.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false);
+
+			bool isForTraining;
+			bool isForControl;
+			switch (mode)
+			{
+				case TrainingSampleType.Control:
+					isForTraining = false;
+					isForControl = true;
+					break;
+				case TrainingSampleType.Training:
+					isForTraining = true;
+					isForControl = false;
+					break;
+				default:
+					throw new InvalidOperationException($"Указан неизвестный тип выборки объектов моделирования '{mode}'");
+			}
+
+			return baseQuery.And(x => x.IsForTraining.Coalesce(false) == isForTraining && x.IsForControl.Coalesce(false) == isForControl);
+		}
+
+		private List<OMModelToMarketObjects> RunQuery(QSQuery<OMModelToMarketObjects> query,
+			Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
+		{
+			query = selectExpression == null
+				? query.SelectAll()
+				: query.Select(selectExpression);
+
+			return query.Execute();
 		}
 
 		#endregion

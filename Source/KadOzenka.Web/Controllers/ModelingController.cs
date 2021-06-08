@@ -1129,12 +1129,29 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public ActionResult ModelObjectsDiagram(long modelId)
         {
-	        var objects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.All,
-			        select => new {select.Price});
+	        var model = new ModelingObjectsDiagramModel
+	        {
+		        ModelId = modelId,
+		        TrainingSampleType = TrainingSampleType.Control
+	        };
 
-	        var models = objects.Select(ModelingObjectsDiagramModel.ToModel).OrderBy(x => x.Price).ToList();
+	        return View(model);
+        }
 
-            return View(models);
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult GetObjectsForDiagram(long modelId, TrainingSampleType trainingSampleType)
+        {
+	        var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType,
+		        select => new { select.Price }).Take(10).ToList();
+
+	        var model = objects.Select(x => new ObjectInfoForDiagram
+		        {
+			        Id = x.Id, 
+			        Price = x.Price
+		        }).ToList();
+
+            return Json(model);
         }
 
         [HttpPost]
