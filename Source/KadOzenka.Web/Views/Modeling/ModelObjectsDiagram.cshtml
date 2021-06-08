@@ -52,7 +52,7 @@
                 .Mousewheel(mousewheel => mousewheel.Lock(ChartAxisLock.Y))
             )
             .Tooltip(t => t.Visible(true).Format("Цена: {0:N3}"))
-            .Events(x => x.SeriesClick("excludeObjectFromCalculation")))
+            .Events(x => x.SeriesClick("excludeObjectFromCalculation").Render("render")))
     </div>
 
 </div>
@@ -80,6 +80,8 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
+    //TODO разобраться, почему не работает kendo.ui.progress при изменении типа выборки
+    var selectorForProgress = "body";
     var excludedObjectIds = [];
 
     $(document).ready(function () {
@@ -96,20 +98,20 @@
             title: 'Исключение из расчёта',
             content: `Исключить объект с ценой '${chartPoint.value}' из расчёта?`,
             onSuccess: function () {
-                excludedObjectIds.push(objectId);
-                kendo.ui.progress($('body'), true);
+                kendo.ui.progress($(selectorForProgress), true);
                 $.ajax({
                     url: '@Url.Action("ExcludeObjectFromCalculation", "Modeling")',
                     type: 'POST',
                     data: { objectId: objectId },
                     success: function () {
                         Common.ShowMessage("Объект исключен");
+                        excludedObjectIds.push(objectId);
                     },
                     error: function (response) {
                         Common.ShowError(response.responseText);
                     },
                     complete: function() {
-                        kendo.ui.progress($('body'), false);
+                        kendo.ui.progress($(selectorForProgress), false);
                     }
                 });
             }
@@ -122,7 +124,7 @@
             Common.ShowMessage("График не перестроен, т.к. нет исключенных объектов");
             return;
         }
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($(selectorForProgress), true);
         var chart = $("#chart").getKendoChart();
         var newDataSource = [];
         chart.options.series[0].data.forEach(serie => {
@@ -132,27 +134,33 @@
         });
         chart.setDataSource(newDataSource);
         chart.redraw();
-        kendo.ui.progress($('body'), false);
+        kendo.ui.progress($(selectorForProgress), false);
         excludedObjectIds = [];
         Common.ShowMessage("График перестроен");
     }
 
 
     function reloadData() {
-        kendo.ui.progress($('body'), true);
         var chart = $("#chart").data("kendoChart");
         chart.dataSource.read();
         chart.refresh();
-        kendo.ui.progress($('body'), false);
     }
 
 
-    function getParametersToDownloadObjects() {
+    function getParametersToDownloadObjects(e) {
+        //console.log('getParametersToDownloadObjects', $(selectorForProgress));
+        kendo.ui.progress($(selectorForProgress), true);
         var sampleType = $('input[name="sampleType"]:checked').val();
         return {
             modelId: '@Model.ModelId',
             trainingSampleType: sampleType
         }
+    }
+
+
+    function render(e) {
+        //console.log('render');
+        kendo.ui.progress($(selectorForProgress), false);
     }
 
 </script>
