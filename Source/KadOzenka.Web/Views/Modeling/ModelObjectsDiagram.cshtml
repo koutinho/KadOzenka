@@ -31,7 +31,7 @@
             .Events(x => x.Click("drawChartWithoutExcludedObjects")))
     </div>
 
-    <div class="form-group">
+    <div class="form-group parent-container">
         @(Html.Kendo().Chart<ObjectInfoForDiagram>()
             .Name("chart")
             .Title("Цена аналогов, включенных в моделирование")
@@ -42,12 +42,10 @@
             })
             .Series(series =>
             {
-                series.Line(model => model.Price, model => model.Id)
-                    .Name("Цена за кв.м.")
-                    .Markers(m => m.Size(15));
+                series.Line(model => model.Price, model => model.Id).Name("Цена за кв.м.");
             })
             .CategoryAxis(x => x.Visible(false))
-            .Events(x => x.SeriesClick("excludeObjectFromCalculation")))
+            .HtmlAttributes(new { @class = "chart-container" }))
     </div>
 
 </div>
@@ -57,7 +55,15 @@
 
 
 <style>
+    /* В KendoChart нет возможности работать со скроллом */
+    .parent-container {
+        overflow-y: scroll; 
+        width: 100%;
+    }
 
+    .chart-container {
+        width: 200%;
+    }
 </style>
 
 
