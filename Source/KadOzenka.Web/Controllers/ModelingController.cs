@@ -1138,21 +1138,35 @@ namespace KadOzenka.Web.Controllers
 	        return View(model);
         }
 
-        [HttpPost]
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public ActionResult GetObjectsForDiagram(long modelId, TrainingSampleType trainingSampleType)
         {
-	        var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType,
-		        select => new { select.Price }).ToList();
+			////TODO для тестирования
+			//var objects = new List<ObjectInfoForDiagram>();
 
-	        var model = objects.Select(x => new ObjectInfoForDiagram
-		        {
-			        Id = x.Id, 
-			        Price = x.Price
-		        }).ToList();
+			//for (var i = 0; i < 30000; i++)
+			//{
+			//	objects.Add(new ObjectInfoForDiagram
+			//	{
+			//		Id = i,
+			//		Price = new Random().Next(100, Int32.MaxValue)
+			//	});
+			//}
 
-            return Json(model);
-        }
+			//return Json(objects.OrderBy(x => x.Price).ToList());
+
+			var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType,
+			 select => new { select.Price }).ToList();
+
+			var model = objects.Select(x => new ObjectInfoForDiagram
+			{
+				Id = x.Id,
+				Price = x.Price
+			}).ToList();
+
+			return Json(model);
+		}
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]

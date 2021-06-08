@@ -38,7 +38,9 @@
             .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
             .DataSource(x =>
             {
-                x.Read(read => read.Action("GetObjectsForDiagram", "Modeling").Data("getParametersToDownloadObjects"));
+                x.Read(read => read.Action("GetObjectsForDiagram", "Modeling")
+                    .Data("getParametersToDownloadObjects")
+                    .Type(HttpVerbs.Get));
             })
             .Series(series =>
             {
