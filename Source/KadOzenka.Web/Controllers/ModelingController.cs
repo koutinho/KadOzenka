@@ -1143,7 +1143,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GetObjectsForDiagram(long modelId, TrainingSampleType trainingSampleType)
         {
 	        var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType,
-		        select => new { select.Price }).Take(10).ToList();
+		        select => new { select.Price }).ToList();
 
 	        var model = objects.Select(x => new ObjectInfoForDiagram
 		        {
