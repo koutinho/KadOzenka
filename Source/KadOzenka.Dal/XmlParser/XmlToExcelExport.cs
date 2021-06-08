@@ -1127,8 +1127,8 @@ namespace KadOzenka.Dal.XmlParser
                 if (!ReadConfigValue(_configOffset + column)) return;
                 var range = _sheet.Cells
                     .GetSubrange(
-                        CellRange.RowColumnToPosition(_curRow + rowOffset - 1, column),
-                        CellRange.RowColumnToPosition(_curRow + rowOffset + rows - 2, column + cols - 1));
+                        CellRange.RowColumnToPosition(_curRow + rowOffset, column),
+                        CellRange.RowColumnToPosition(_curRow + rowOffset + rows - 1, column + cols - 1));
                 range.Value = text;
                 range.Merged = true;
             }
@@ -1136,7 +1136,7 @@ namespace KadOzenka.Dal.XmlParser
             private void DrawBorder(int widthInColumns)
             {
                 for (var col = 0; col < widthInColumns; col++)
-                    _sheet.Cells[_curRow - 1, col].Style.Borders[IndividualBorder.Top].LineStyle = LineStyle.Thin;
+                    _sheet.Cells[_curRow, col].Style.Borders[IndividualBorder.Top].LineStyle = LineStyle.Thin;
             }
         }
     }
