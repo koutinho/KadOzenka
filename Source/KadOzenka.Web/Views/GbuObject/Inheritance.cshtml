@@ -403,6 +403,8 @@
         $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value([]);
         $('#@(nameof(Model.ObjectChangeStatus))').data("kendoMultiSelect").value([]);
         clearCustomLevels();
+        var customRowValuesFrom = [];
+        var customRowValuesTo = [];
         var customRowValues = [];
         currentRowNumber = 0;
         data.forEach(function (val) {
@@ -449,25 +451,31 @@
             }
 
             if (elementName.startsWith('@nameof(Model.Attributes)')) {
-                //приходит: Attributes_1 = {IdFrom: 1001, IdTo: 0}
+                //приходит раздельно: Attributes_0_IdFrom: 1001
+                //         и        : Attributes_0_IdTo: 0
                 //преобразуем к Attributes_0__IdFrom и Attributes_0__IdTo
                 //заполняем атрибуты без динамически добавленных строк
-                if (currentRowNumber < minCustomRowNumber) {
-                    var id = '@nameof(Model.Attributes)';
-                    var index = elementName.split('_')[1] - 1;
-                    var baseElementId = `${id}_${index}__`;
-                    var elementFromId = baseElementId + '@nameof(AttributeMapping.IdFrom)';
-                    var elementToId = baseElementId + '@nameof(AttributeMapping.IdTo)';
-                    createTreeElementForAttribute(elementFromId, elementValue.IdFrom);
-                    createTreeElementForAttribute(elementToId, elementValue.IdTo);
+                let index = elementName.split('_')[1];
+                if (index < minCustomRowNumber) {
+                    let elementConverted = elementName.replace('_Id','__Id');
+                    createTreeElementForAttribute(elementConverted, elementValue);
                 }
                 //заполняем атрибуты из динамически добавленных строк
                 else {
-                    customRowValues.push(elementValue);
+                    if (elementName.endsWith('IdFrom'))
+                        customRowValuesFrom.push(elementValue);
+                    else if (elementName.endsWith('IdTo'))
+                        customRowValuesTo.push(elementValue);
                 }
-                currentRowNumber++;
+
+                // Учитываем только одну сторону т.к. записи приходят полностью декомпозироваными
+                if (elementName.endsWith('IdFrom'))
+                    currentRowNumber++;
             }
         });
+
+        // Преобразование дополнительных уровней в старый формат для работы без изменений
+        customRowValues = customRowValuesFrom.map( (e,i) => { return [e,customRowValuesTo[i]]; });
 
         await addNewRows(minCustomRowNumber, currentRowNumber - minCustomRowNumber, customRowValues);
         updateStatesInFromBlock();

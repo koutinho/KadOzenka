@@ -36,6 +36,8 @@ namespace KadOzenka.Dal.LongProcess
 
 				var url = new PriorityGroupingFinal().SetPriorityGroup(settings, cancellationToken);
 
+				_log.Information("URL результата финальной группировки: {Url}", url);
+
 				LongProcessProgressLogger.StopLogProgress();
 
 				WorkerCommon.SetProgress(processQueue, 100);
