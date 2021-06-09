@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.LongProcess;
+using KadOzenka.Dal.Modeling.Repositories;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -17,7 +18,7 @@ namespace KadOzenka.Dal.Modeling
     {
         private static HttpClient _httpClient;
         protected ModelingService ModelingService { get; set; }
-        protected IModelObjectsService ModelObjectsService { get; set; }
+        protected IModelObjectsRepository ModelObjectsRepository { get; set; }
         protected ModelFactorsService ModelFactorsService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
         protected ILogger Logger { get; set; }
@@ -25,7 +26,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
-	        ModelObjectsService = new ModelObjectsService();
+	        ModelObjectsRepository = new ModelObjectsRepository();
             ModelingService = new ModelingService();
             ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;

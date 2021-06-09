@@ -175,7 +175,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelingService.GetModelById(modelId);
 
-            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
+            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.Training);
             var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
             model.IsReadOnly = isReadOnly;
 
@@ -1121,6 +1121,63 @@ namespace KadOzenka.Web.Controllers
 
             return Json(new { fileName = fileName });
         }
+
+
+        #region График вылетов
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ModelObjectsDiagram(long modelId)
+        {
+	        var model = new ModelingObjectsDiagramModel
+	        {
+		        ModelId = modelId,
+		        TrainingSampleType = TrainingSampleType.Control
+	        };
+
+	        return View(model);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult GetObjectsForDiagram(long modelId, TrainingSampleType trainingSampleType)
+        {
+			////TODO для тестирования
+			//var objects = new List<ObjectInfoForDiagram>();
+
+			//for (var i = 0; i < 30000; i++)
+			//{
+			//	objects.Add(new ObjectInfoForDiagram
+			//	{
+			//		Id = i,
+			//		Price = new Random().Next(100, Int32.MaxValue)
+			//	});
+			//}
+
+			//return Json(objects.OrderBy(x => x.Price).ToList());
+
+			var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType,
+			 select => new { select.Price }).ToList();
+
+			var model = objects.Select(x => new ObjectInfoForDiagram
+			{
+				Id = x.Id,
+				Price = x.Price
+			}).ToList();
+
+			return Json(model);
+		}
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ExcludeObjectFromCalculation(long objectId)
+        {
+	        ModelObjectsService.ExcludeObjectFromCalculation(objectId);
+
+            return Ok();
+        }
+
+        #endregion
 
         #endregion
 

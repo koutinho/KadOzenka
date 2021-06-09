@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling.Repositories
@@ -19,30 +20,85 @@ namespace KadOzenka.Dal.Modeling.Repositories
 			return x => x.Id == id;
 		}
 
-		public bool AreIncludedModelObjectsExist(long? modelId, bool isForTraining)
+		public bool AreIncludedModelObjectsExist(long? modelId, IncludedObjectsMode mode)
 		{
-			return GetIncludedModelObjectsQuery(modelId, isForTraining).ExecuteExists();
+			if (modelId.GetValueOrDefault() == 0)
+				return false;
+
+			return GetIncludedModelObjectsQuery(modelId, mode).ExecuteExists();
 		}
 
-		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
+		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
 		{
-			return GetIncludedModelObjectsQuery(modelId, isForTraining).SelectAll().Execute();
+			var query = GetIncludedModelObjectsQuery(modelId, mode);
+
+			return RunQuery(query, selectExpression);
+
 		}
+
+		public List<OMModelToMarketObjects> GetIncludedObjectsForTraining(long modelId, TrainingSampleType mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
+		{
+			var query = GetIncludedObjectsForTrainingQuery(modelId, mode).OrderBy(x => x.Price);
+
+			return RunQuery(query, selectExpression);
+		}
+
 
 		#region Support Methods
 
-		private QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, bool isForTraining)
+		private QSQuery<OMModelToMarketObjects> GetIncludedModelObjectsQuery(long? modelId, IncludedObjectsMode mode)
 		{
-			if (isForTraining)
+			var baseQuery = OMModelToMarketObjects.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false);
+
+			if (mode == IncludedObjectsMode.All)
 			{
-				return OMModelToMarketObjects
-					.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-					            (x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true));
+				return baseQuery;
 			}
 
-			return OMModelToMarketObjects
-				.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false &&
-				            x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
+			if (mode == IncludedObjectsMode.Training)
+			{
+				return baseQuery.And(x => x.IsForTraining.Coalesce(false) == true || x.IsForControl.Coalesce(false) == true);
+			}
+
+			if (mode == IncludedObjectsMode.Prediction)
+			{
+				return baseQuery.And(x => x.IsForTraining.Coalesce(false) == false && x.IsForControl.Coalesce(false) == false);
+			}
+
+			throw new InvalidOperationException($"Указан неизвестный тип объектов моделирования '{mode}'");
+		}
+
+		private QSQuery<OMModelToMarketObjects> GetIncludedObjectsForTrainingQuery(long? modelId, TrainingSampleType mode)
+		{
+			var baseQuery = OMModelToMarketObjects.Where(x => x.ModelId == modelId && x.IsExcluded.Coalesce(false) == false);
+
+			bool isForTraining;
+			bool isForControl;
+			switch (mode)
+			{
+				case TrainingSampleType.Control:
+					isForTraining = false;
+					isForControl = true;
+					break;
+				case TrainingSampleType.Training:
+					isForTraining = true;
+					isForControl = false;
+					break;
+				default:
+					throw new InvalidOperationException($"Указан неизвестный тип выборки объектов моделирования '{mode}'");
+			}
+
+			return baseQuery.And(x => x.IsForTraining.Coalesce(false) == isForTraining && x.IsForControl.Coalesce(false) == isForControl);
+		}
+
+		private List<OMModelToMarketObjects> RunQuery(QSQuery<OMModelToMarketObjects> query,
+			Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
+		{
+			query = selectExpression == null
+				? query.SelectAll()
+				: query.Select(selectExpression);
+
+			return query.Execute();
 		}
 
 		#endregion
