@@ -65,11 +65,6 @@ namespace KadOzenka.Dal.Modeling
                 .Execute();
 		}
 
-        public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, bool isForTraining)
-        {
-	        return ModelObjectsRepository.GetIncludedModelObjects(modelId, isForTraining);
-        }
-
         public int DestroyModelMarketObjects(OMModel model)
         {
 	        var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {model.Id}";
@@ -355,8 +350,21 @@ namespace KadOzenka.Dal.Modeling
 	        return percent;
         }
 
+        public void ExcludeObjectFromCalculation(long objectId)
+        {
+	        var obj = ModelObjectsRepository.GetById(objectId, x => new {x.IsExcluded});
+	        if (obj == null)
+		        throw new Exception($"Не найден объект с ИД '{objectId}'");
 
-		#region Support Methods
+	        if (obj.IsExcluded.GetValueOrDefault() == false)
+	        {
+		        obj.IsExcluded = true;
+		        obj.Save();
+	        }
+        }
+
+
+        #region Support Methods
 
 		private List<ModelObjectsFromExcelData> GetInfoFromFile(ExcelWorksheet sheet, List<ColumnToAttributeMapping> columnsMapping)
 		{

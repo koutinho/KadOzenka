@@ -9,6 +9,7 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Repositories;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -66,7 +67,7 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Найдено {ModelAttributes?.Count} активных атрибутов для модели.");
             Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 
-            MarketObjectsForTraining = ModelObjectsService.GetIncludedModelObjects(GeneralModel.Id, true);
+            MarketObjectsForTraining = ModelObjectsRepository.GetIncludedModelObjects(GeneralModel.Id, IncludedObjectsMode.Training);
             AddLog($"Найдено {MarketObjectsForTraining.Count} объекта для обучения.");
         }
 
