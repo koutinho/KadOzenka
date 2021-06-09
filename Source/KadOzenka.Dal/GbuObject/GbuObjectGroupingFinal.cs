@@ -437,11 +437,11 @@ namespace KadOzenka.Dal.GbuObject
         /// </summary>
         public string SetPriorityGroup(GroupingSettingsFinal setting, CancellationToken processCancellationToken)
         {
-            Log.ForContext("InputParameters", setting).Debug("Старт нормализации. Входные параметры.");
+            Log.ForContext("InputParameters", setting).Debug("Старт финализации нормализации. Входные параметры.");
             ValidateInputParameters(setting);
 
 
-            using var reportService = new GbuReportService("Отчет нормализации");
+            using var reportService = new GbuReportService("Отчет финализации нормализации");
             var dataHeaderAndColumnNumber = GenerateReportHeaderWithColumnNumber(setting);
 
             Log.Debug("Заголовки отчета и номера столбцов ${DictionaryColumns} ${Headers}",
@@ -494,8 +494,8 @@ namespace KadOzenka.Dal.GbuObject
             Log.ForContext("useTask", useTask)
                 .ForContext("Objs_0", JsonConvert.SerializeObject(items.ElementAtOrDefault(0)))
                 .Debug(useTask
-                    ? "Нормализация по Заданиям на оценку. Всего {Count} единиц оценки"
-                    : "Нормализация по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
+                    ? "Финализация нормализации по Заданиям на оценку. Всего {Count} единиц оценки"
+                    : "Финализация нормализации по Объектам Недвижимости. Всего {Count} объектов", MaxCount);
 
             var allAttributeIds = GetAttributes(setting);
             var queryManager = new QueryManager();

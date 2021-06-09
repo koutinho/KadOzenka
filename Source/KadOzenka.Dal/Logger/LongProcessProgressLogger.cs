@@ -60,6 +60,11 @@ namespace KadOzenka.Dal.Logger
 			{
 				_taskLogProgress.Wait();
 			}
+			catch (TaskCanceledException ex)
+			{
+				Serilog.Log.Logger.ForContext("CancelTokenSource", _cancelSourceLogProcess,true)
+					.Warning(ex, "Попытка остановить логирование прогресса при активном токене отмены");
+			}
 			catch (Exception ex)
 			{
 				Serilog.Log.Logger.Error(ex, "Ошибка во время остановки процесса логирования прогресса");
