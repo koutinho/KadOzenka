@@ -52,7 +52,7 @@
                 .Mousewheel(mousewheel => mousewheel.Lock(ChartAxisLock.Y))
             )
             .Tooltip(t => t.Visible(true).Format("Цена: {0:N3}"))
-            .Events(x => x.SeriesClick("excludeObjectFromCalculation").Render("render")))
+            .Events(x => x.SeriesClick("excludeObjectFromCalculation").DataBound("dataBound").Render("render")))
     </div>
 
 </div>
@@ -80,7 +80,6 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    //TODO разобраться, почему не работает kendo.ui.progress при изменении типа выборки
     var selectorForProgress = "body";
     var excludedObjectIds = [];
 
@@ -143,12 +142,10 @@
     function reloadData() {
         var chart = $("#chart").data("kendoChart");
         chart.dataSource.read();
-        chart.refresh();
     }
 
 
     function getParametersToDownloadObjects(e) {
-        //console.log('getParametersToDownloadObjects', $(selectorForProgress));
         kendo.ui.progress($(selectorForProgress), true);
         var sampleType = $('input[name="sampleType"]:checked').val();
         return {
@@ -159,8 +156,18 @@
 
 
     function render(e) {
-        //console.log('render');
         kendo.ui.progress($(selectorForProgress), false);
+    }
+
+
+    function dataBound() {
+        var chart = $("#chart").getKendoChart();
+        var objectsCount = chart.options.series[0].data.length;
+        if (objectsCount < 50)
+            return;
+        //не получилось настроить расстояние между точками на графике через кендо
+        var width = `${objectsCount * 2}%`;
+        $('.chart-container').css('width', width);
     }
 
 </script>
