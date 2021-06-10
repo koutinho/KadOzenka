@@ -66,8 +66,7 @@ namespace KadOzenka.Dal.Modeling
         {
             RequestForService = new PredictionRequest();
 
-            var allAttributes = ModelFactorsService.GetGeneralModelAttributes(InputParameters.ModelId);
-
+            var allAttributes = ModelFactorsService.GetGeneralModelAttributes(InputParameters.ModelId).Where(x => x.IsActive).ToList();
             var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(InputParameters.ModelId, IncludedObjectsMode.Prediction);
             modelObjects.ForEach(modelObject =>
             {
