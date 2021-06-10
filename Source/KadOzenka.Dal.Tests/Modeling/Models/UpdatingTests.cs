@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.UnitTests.Modeling.Builders;
 using Moq;
@@ -35,7 +37,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 
 			MoqModelingRepository_GetById(initialModel);
 			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
-			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(true);
+			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
 			ModelingService.MakeModelActive(initialModel.Id);
@@ -49,7 +51,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 			var initialModel = new ModelBuilder().Automatic().IsActive(false).Build();
 
 			MoqModelingRepository_GetById(initialModel);
-			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(false);
+			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(false);
 
 			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
 
@@ -65,7 +67,7 @@ namespace KadOzenka.Dal.Tests.Modeling.Models
 				.Build();
 
 			MoqModelingRepository_GetById(initialModel);
-			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, true)).Returns(true);
+			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 
 			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
 

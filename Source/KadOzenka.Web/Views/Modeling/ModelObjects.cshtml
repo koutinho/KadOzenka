@@ -114,6 +114,12 @@
             Обновить объекты
         </a>
     </div>
+    <div class="form-group">
+        <a class="k-button k-button-icon" id="modelObjectsDiagramBtn" style="width:250px;">
+            <span class="k-icon k-i-table-properties" style="padding-right: 30%"></span>
+           График вылетов
+        </a>
+    </div>
     <div class="form-group" style="padding: 1% 0 2% 0">
         @*<div>Объекты с рассчитанной МС</div>*@
         <div id="grid"></div>
@@ -188,6 +194,7 @@
         //initFactorsGrid();
 
         $('#updateBtn').on('click', showModelObjectsUpdatingConstructor);
+        $('#modelObjectsDiagramBtn').on('click', showModelObjectsDiagram);
     });
 
 
@@ -232,6 +239,7 @@
             success: function (result) {
                 if (!result.successfulModels || result.successfulModels.length == 0) {
                     $("#updateBtn").addClass('k-state-disabled');
+                    $("#modelObjectsDiagramBtn").addClass('k-state-disabled');
                 }
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
@@ -805,6 +813,12 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+
+    function showModelObjectsDiagram() {
+        var url = '@Url.Action("ModelObjectsDiagram", "Modeling", new {modelId = Model.Id})';
+        window.open(url, '_blank');
     }
 
 </script>
