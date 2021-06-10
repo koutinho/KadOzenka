@@ -25,15 +25,23 @@ namespace KadOzenka.Dal.CommonFunctions
 	        }
 
 	        var userId = isCommon ? (int?)null : SRDSession.GetCurrentUserId().GetValueOrDefault();
-	        new OMDataFormStorage
+
+	        try
 	        {
-		        UserId = userId,
-		        FormType_Code = formType,
-		        Data = serializeData,
-		        TemplateName = nameTemplate,
-		        IsCommon = isCommon
-	        }.Save();
-		}
+		        new OMDataFormStorage
+		        {
+			        UserId = userId,
+			        FormType_Code = formType,
+			        Data = serializeData,
+			        TemplateName = nameTemplate,
+			        IsCommon = isCommon
+		        }.Save();
+	        }
+	        catch (Exception e)
+	        {
+		        throw new Exception("Шаблон с таким названием уже существует", e);
+	        }
+        }
 
         public void UpdateTemplate(long id, string nameTemplate, bool isCommon, DataFormStorege formType, string serializeData)
         {

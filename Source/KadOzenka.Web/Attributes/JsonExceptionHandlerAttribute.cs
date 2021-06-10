@@ -42,33 +42,28 @@ namespace KadOzenka.Web.Attributes
 
         private ObjectResult ExceptionToMessage(ExceptionContext context)
         {
-            switch (context.Exception)
+            return context.Exception switch
             {
-                case PostgresException ex: return PostgresExceptionToMessage(ex);
-                case Exception ex: return BasicExceptionToMessage(ex);
-                default: return new ObjectResult("Неизвестная ошибка");
-            }
+                PostgresException ex => PostgresExceptionToMessage(ex),
+                { } ex => BasicExceptionToMessage(ex),
+                _ => new ObjectResult("Неизвестная ошибка")
+            };
         }
 
         private ObjectResult PostgresExceptionToMessage(PostgresException ex)
         {
-            string message;
-            switch (ex.SqlState)
+            var message = ex.SqlState switch
             {
-                case "23505": message = "Нарушение ограничения уникальности записи"; break;
-
-                case "42501": message = "Нет доступа к таблице"; break;
-                case "42601": message = "Ошибка синтаксиса запроса"; break;
-
-                case "53000": message = "Недостаточно ресурсов"; break;
-                case "53100": message = "Диск заполнен"; break;
-                case "53200": message = "Недостаточно памяти"; break;
-                case "53300": message = "Лимит соединений исчерпан"; break;
-
-                case "57014": message = "Выполнение запроса отменено по команде пользователя"; break;
-
-                default: message = "Неизвестная ошибка"; break;
-            }
+                "23505" => "Нарушение ограничения уникальности записи",
+                "42501" => "Нет доступа к таблице",
+                "42601" => "Ошибка синтаксиса запроса",
+                "53000" => "Недостаточно ресурсов",
+                "53100" => "Диск заполнен",
+                "53200" => "Недостаточно памяти",
+                "53300" => "Лимит соединений исчерпан",
+                "57014" => "Выполнение запроса отменено по команде пользователя",
+                _ => "Неизвестная ошибка"
+            };
 
             return new ObjectResult("[База данных] "+message);
         }
