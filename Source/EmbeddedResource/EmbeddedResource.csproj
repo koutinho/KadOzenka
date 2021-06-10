@@ -12,6 +12,27 @@
     <None Remove="Config\Param\Core.Numeration.xml" />
     <None Remove="Config\Param\FmReportTypes.xml" />
     <None Remove="Config\Param\SpdSettings.xml" />
+    <None Remove="GknImport\dAllDocuments_v05.xsd" />
+    <None Remove="GknImport\dAllowedUse_v02.xsd" />
+    <None Remove="GknImport\dAssBuilding_v02.xsd" />
+    <None Remove="GknImport\dAssFlatType_v01.xsd" />
+    <None Remove="GknImport\dAssFlat_v02.xsd" />
+    <None Remove="GknImport\dCategories_v01.xsd" />
+    <None Remove="GknImport\dCultural_v01.xsd" />
+    <None Remove="GknImport\dEncumbrances_v04.xsd" />
+    <None Remove="GknImport\dForestCategoryProtective_v01.xsd" />
+    <None Remove="GknImport\dForestEncumbrances_v01.xsd" />
+    <None Remove="GknImport\dForestUse_v01.xsd" />
+    <None Remove="GknImport\dFormEvents_v01.xsd" />
+    <None Remove="GknImport\dInspection_v01.xsd" />
+    <None Remove="GknImport\dNaturalObjects_v01.xsd" />
+    <None Remove="GknImport\dParcels_v02.xsd" />
+    <None Remove="GknImport\dRealty_v04.xsd" />
+    <None Remove="GknImport\dSpecialTypeFlat_v01.xsd" />
+    <None Remove="GknImport\dTypeParameter_v01.xsd" />
+    <None Remove="GknImport\dTypeStorey_v01.xsd" />
+    <None Remove="GknImport\dUtilizations_v01.xsd" />
+    <None Remove="GknImport\dWall_v02.xsd" />
     <None Remove="GknImport\gknImportSettings.json" />
   </ItemGroup>
 
@@ -23,6 +44,27 @@
     <EmbeddedResource Include="Config\Param\Core.Numeration.xml" />
     <EmbeddedResource Include="Config\Param\FmReportTypes.xml" />
     <EmbeddedResource Include="Config\Param\SpdSettings.xml" />
+    <EmbeddedResource Include="GknImport\dAllDocuments_v05.xsd" />
+    <EmbeddedResource Include="GknImport\dAllowedUse_v02.xsd" />
+    <EmbeddedResource Include="GknImport\dAssBuilding_v02.xsd" />
+    <EmbeddedResource Include="GknImport\dAssFlatType_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dAssFlat_v02.xsd" />
+    <EmbeddedResource Include="GknImport\dCategories_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dCultural_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dEncumbrances_v04.xsd" />
+    <EmbeddedResource Include="GknImport\dForestCategoryProtective_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dForestEncumbrances_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dForestUse_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dFormEvents_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dInspection_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dNaturalObjects_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dParcels_v02.xsd" />
+    <EmbeddedResource Include="GknImport\dRealty_v04.xsd" />
+    <EmbeddedResource Include="GknImport\dSpecialTypeFlat_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dTypeParameter_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dTypeStorey_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dUtilizations_v01.xsd" />
+    <EmbeddedResource Include="GknImport\dWall_v02.xsd" />
     <EmbeddedResource Include="GknImport\gknImportSettings.json" />
   </ItemGroup>
 

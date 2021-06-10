@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using System.Xml;
 using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models;
 using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 
@@ -19,6 +20,10 @@ namespace KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager
 
 		//Внедренные ресурсы 
 		[JsonIgnore]
-		public DataImporterGknConfig DataImporterGknConfig => EmbeddedResourceProvider.DataImporterGknConfig;
+		public DataImporterGknConfig DataImporterGknConfig => EmbeddedResourceProviderForGknImport.DataImporterGknConfig;
+
+		//Внедренные ресурсы 
+		[JsonIgnore]
+		public DictionariesForTaskDocument DictionariesForTaskDocument => EmbeddedResourceProviderForGknImport.DictionariesForTaskDocument;
 	}
 }

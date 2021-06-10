@@ -1,14 +1,6 @@
-﻿using Core.ErrorManagment;
-using Core.Main.FileStorages;
-using Core.Shared.Extensions;
-using GemBox.Spreadsheet;
-using ObjectModel.Commission;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace KadOzenka.Dal.XmlParser
@@ -137,12 +129,10 @@ namespace KadOzenka.Dal.XmlParser
     public class xsdDictionary
     {
         public recArray Records;
-        public xsdDictionary(string file, string simpletype)
+        
+        public xsdDictionary(XmlDocument _shema, string simpletype)
         {
             Records = new recArray();
-            XmlDocument _shema;
-            _shema = new XmlDocument();
-            _shema.Load(file);
             XmlNodeList xnBuildings = _shema.GetElementsByTagName("xs:simpleType");
             foreach (XmlNode xnBuilding in xnBuildings)
             {
