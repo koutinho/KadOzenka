@@ -72,12 +72,12 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportDataGknFromXml(Stream xmlFile, string pathSchema, OMTask task, CancellationToken cancellationToken)
+        public void ImportDataGknFromXml(Stream xmlFile, OMTask task, CancellationToken cancellationToken)
         {
 			xmlObjectList GknItems = null;
 			using (Operation.Time("Импорт задания на оценку: парсинг xml"))
 			{
-				xmlImportGkn.FillDictionary(pathSchema);
+				xmlImportGkn.FillDictionary();
 				GknItems = XmlImportGkn.GetXmlObject(xmlFile, task.GetAssessmentDateForUnit());
 			}
 
@@ -114,13 +114,13 @@ namespace KadOzenka.Dal.DataImport
         /// pathSchema - путь к каталогу где хранится схема
         /// task - ссылка на задание на оценку
         /// </summary>
-        public void ImportGknFromExcel(ExcelFile excelFile, string pathSchema, OMTask task,
+        public void ImportGknFromExcel(ExcelFile excelFile, OMTask task,
 	        List<ColumnToAttributeMapping> columnsMapping, CancellationToken cancellationToken)
         {
 	        xmlObjectList gknItems;
 	        using (Operation.Time("Импорт задания на оценку: парсинг excel"))
 	        {
-		        xmlImportGkn.FillDictionary(pathSchema);
+		        xmlImportGkn.FillDictionary();
 		        gknItems = XmlImportGkn.GetExcelObject(excelFile, columnsMapping, AllGknAttributes);
 	        }
 

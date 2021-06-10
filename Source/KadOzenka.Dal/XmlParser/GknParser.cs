@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Core.Register;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
@@ -56,31 +57,31 @@ namespace KadOzenka.Dal.XmlParser
             _gbuReportService = gbuReportService;
         }
 
-        public static void FillDictionary(string pathSchema)
+        public static void FillDictionary()
         {
-            dictAssignationBuild ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssBuilding_v02.xsd"), "dAssBuilding");
-            dictWall ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dWall_v02.xsd"), "dWall");
-            dictTypeParameter ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dTypeParameter_v01.xsd"), "dTypeParameter");
-            dictAssignationFlat ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssFlat_v02.xsd"), "dAssFlat");
-            dictAssignationFlatType ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAssFlatType_v01.xsd"), "dAssFlatType");
-            dictStrorey ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dTypeStorey_v01.xsd"), "dTypeStorey");
-            dictCat ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dCategories_v01.xsd"), "dCategories");
-            dictName ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dParcels_v02.xsd"), "dParcels");
-            dictUtilizations ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dUtilizations_v01.xsd"), "dUtilizations");
-            dictAllowedUse ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAllowedUse_v02.xsd"), "dAllowedUse");
-            dictEncumbrance ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dEncumbrances_v04.xsd"), "dEncumbrances");
-            dictAllDocuments ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dAllDocuments_v05.xsd"), "dAllDocuments");
-            dictInspection ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dInspection_v01.xsd"), "dInspection");
-            dictFormEvents ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dFormEvents_v01.xsd"), "dFormEvents");
-            dictRealty ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dRealty_v04.xsd"), "dRealty");
-            dictCultural ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dCultural_v01.xsd"), "dCultural");
-            dictSpecialTypeFlat ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dSpecialTypeFlat_v01.xsd"), "dSpecialTypeFlat");
-            dictNaturalObjects ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dNaturalObjects_v01.xsd"), "dNaturalObjects");
-            dictForestUse ??= new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestUse_v01.xsd"), "dForestUse");
-            dictForestCategoryProtective ??=
-                new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestCategoryProtective_v01.xsd"), "dForestCategoryProtective");
-            dictForestEncumbrances ??=
-                new xsdDictionary(PathCombiner.GetFullPath(pathSchema, "dForestEncumbrances_v01.xsd"), "dForestEncumbrances");
+	        var dictionaries = ConfigurationManagers.ConfigurationManager.KoConfig.DictionariesForTaskDocument;
+            
+            dictAssignationBuild ??= new xsdDictionary(dictionaries.AssBuilding, "dAssBuilding");
+            dictWall ??= new xsdDictionary(dictionaries.Wall, "dWall");
+            dictTypeParameter ??= new xsdDictionary(dictionaries.TypeParameter, "dTypeParameter");
+            dictAssignationFlat ??= new xsdDictionary(dictionaries.AssFlat, "dAssFlat");
+            dictAssignationFlatType ??= new xsdDictionary(dictionaries.AssFlatType, "dAssFlatType");
+            dictStrorey ??= new xsdDictionary(dictionaries.TypeStorey, "dTypeStorey");
+            dictCat ??= new xsdDictionary(dictionaries.Categories, "dCategories");
+            dictName ??= new xsdDictionary(dictionaries.Parcels, "dParcels");
+            dictUtilizations ??= new xsdDictionary(dictionaries.Utilizations, "dUtilizations");
+            dictAllowedUse ??= new xsdDictionary(dictionaries.AllowedUse, "dAllowedUse");
+            dictEncumbrance ??= new xsdDictionary(dictionaries.Encumbrances, "dEncumbrances");
+            dictAllDocuments ??= new xsdDictionary(dictionaries.AllDocuments, "dAllDocuments");
+            dictInspection ??= new xsdDictionary(dictionaries.Inspection, "dInspection");
+            dictFormEvents ??= new xsdDictionary(dictionaries.FormEvents, "dFormEvents");
+            dictRealty ??= new xsdDictionary(dictionaries.ObjectType, "dRealty");
+            dictCultural ??= new xsdDictionary(dictionaries.Cultural, "dCultural");
+            dictSpecialTypeFlat ??= new xsdDictionary(dictionaries.SpecialTypeFlat, "dSpecialTypeFlat");
+            dictNaturalObjects ??= new xsdDictionary(dictionaries.NaturalObjects, "dNaturalObjects");
+            dictForestUse ??= new xsdDictionary(dictionaries.ForestUse, "dForestUse");
+            dictForestCategoryProtective ??= new xsdDictionary(dictionaries.ForestCategoryProtective, "dForestCategoryProtective");
+            dictForestEncumbrances ??= new xsdDictionary(dictionaries.ForestEncumbrances, "dForestEncumbrances");
         }
 
         public xmlObjectList GetXmlObject(Stream file, DateTime assessmentDate)
