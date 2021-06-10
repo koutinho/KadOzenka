@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using ObjectModel.Market;
 using KadOzenka.Web.Models.MarketObject;
 using Core.Main.FileStorages;
+using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.CommonFunctions;
@@ -68,7 +69,7 @@ namespace KadOzenka.Web.Controllers
         public FileResult UnloadScreenshots(long objectId)
 		{
 			var ids = RegistersVariables.CurrentList != null && RegistersVariables.CurrentList.Count > 0 ? RegistersVariables.CurrentList?.Cast<long>()?.ToList() : new List<long> { objectId };
-			var screenList = OMScreenshots.Where(x => ids.Contains(x.InitialId.GetValueOrDefault())).SelectAll().Execute().ToList();
+			var screenList = OMScreenshots.Where(x => ids.Contains((long) x.InitialId)).SelectAll().Execute().ToList();
 			var analogItems = MarketObjectsService.GetByIds(ids, x => x.CadastralNumber);
 			using (MemoryStream zipStream = new MemoryStream())
 			{
