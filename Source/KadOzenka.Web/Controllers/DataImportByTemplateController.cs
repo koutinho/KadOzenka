@@ -415,7 +415,9 @@ namespace KadOzenka.Web.Controllers
 				            attributeIdsCondition = availableAttributeIds.Contains(x.Id);
 			            }
 
-			            return x.RegisterId == registerData.Id && pkCondition && attributeIdsCondition;
+			            var activeCondition = !x.IsDeleted;
+
+			            return x.RegisterId == registerData.Id && pkCondition && attributeIdsCondition && activeCondition;
 
 		            }).Select(attributeData => new AttributeInfoForMapping
 		            {
