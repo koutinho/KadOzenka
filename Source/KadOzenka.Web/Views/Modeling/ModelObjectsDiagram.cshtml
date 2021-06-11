@@ -46,7 +46,8 @@
             {
                 series.Line(model => model.Price, model => model.Id).Name("Цена за кв.м.");
             })
-            .CategoryAxis(x => x.Visible(false))
+            .CategoryAxis(x => x.Visible(false).MajorGridLines(l => l.Visible(false)))
+            .ValueAxis(x => x.MinorGridLines(l => l.Visible(false)))
             .HtmlAttributes(new { @class = "chart-container" })
             .Zoomable(zoomable => zoomable
                 .Mousewheel(mousewheel => mousewheel.Lock(ChartAxisLock.Y))
