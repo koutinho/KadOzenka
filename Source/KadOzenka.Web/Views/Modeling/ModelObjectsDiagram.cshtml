@@ -32,28 +32,7 @@
     </div>
 
     <div class="form-group parent-container">
-        @(Html.Kendo().Chart<ObjectInfoForDiagram>()
-            .Name("chart")
-            .Title("Цена аналогов, включенных в моделирование")
-            .Legend(legend => legend.Position(ChartLegendPosition.Bottom))
-            .DataSource(x =>
-            {
-                x.Read(read => read.Action("GetObjectsForDiagram", "Modeling")
-                    .Data("getParametersToDownloadObjects")
-                    .Type(HttpVerbs.Get));
-            })
-            .Series(series =>
-            {
-                series.Line(model => model.Price, model => model.Id).Name("Цена за кв.м.");
-            })
-            .CategoryAxis(x => x.Visible(false).MajorGridLines(l => l.Visible(false)))
-            .ValueAxis(x => x.MinorGridLines(l => l.Visible(false)))
-            .HtmlAttributes(new { @class = "chart-container" })
-            .Zoomable(zoomable => zoomable
-                .Mousewheel(mousewheel => mousewheel.Lock(ChartAxisLock.Y))
-            )
-            .Tooltip(t => t.Visible(true).Format("Цена: {0:N3}"))
-            .Events(x => x.SeriesClick("excludeObjectFromCalculation").DataBound("dataBound").Render("render")))
+        <div id="chart" class="chart-container"></div>
     </div>
 
 </div>
@@ -84,14 +63,83 @@
     var selectorForProgress = "body";
     var excludedObjectIds = [];
 
+    var lineForAveragePriceFrom = 0;
+    var lineForAveragePriceTo = 0;
+    var deltaForLineWithAveragePrice = 0;
+
     $(document).ready(function () {
         $('[name="sampleType"]').on('change', reloadData);
+        
+        initChart();
     });
 
 
     
 
 
+    function initChart() {
+        $("#chart").kendoChart({
+            dataSource: {
+                transport: {
+                    read: downloadData
+                }
+            },
+            title: "Цена аналогов, включенных в моделирование",
+            legend: {
+                position: "bottom"
+            },
+            series: [{
+                type: "line",
+                name: "Цена за кв.м.",
+                field: '@nameof(ObjectInfo.Price)',
+                categoryField: '@nameof(ObjectInfo.Id)',
+                markers: {
+                    size: 10
+                }
+            }],
+            //ось X
+            categoryAxis: {
+                majorGridLines: {
+                    visible: false
+                },
+                visible: false
+            },
+            zoomable: {
+                mousewheel: true,
+                lock: "y"
+            },
+            tooltip: {
+                visible: true,
+                format: "Цена: {0:N3}"
+            },
+            seriesClick: excludeObjectFromCalculation,
+            dataBound: onDataBound,
+            render: render
+        });
+    }
+    
+
+    function downloadData(options) {
+        kendo.ui.progress($(selectorForProgress), true);
+        var sampleType = $('input[name="sampleType"]:checked').val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetObjectsForDiagram", "Modeling")',
+            data: {modelId: '@Model.ModelId', trainingSampleType: sampleType},
+            success: function(result) {
+                deltaForLineWithAveragePrice = result.Delta;
+                lineForAveragePriceFrom = result.Average - deltaForLineWithAveragePrice;
+                lineForAveragePriceTo = result.Average + deltaForLineWithAveragePrice;
+                options.success(result.Info);
+            },
+            error: function(result) {
+                Common.ShowError(result.responseText);
+                kendo.ui.progress($(selectorForProgress), false);
+            }
+        });
+    }
+
+    
     function excludeObjectFromCalculation(chartPoint) {
         var objectId = chartPoint.category;
         Common.UI.ShowConfirm({
@@ -127,11 +175,18 @@
         kendo.ui.progress($(selectorForProgress), true);
         var chart = $("#chart").getKendoChart();
         var newDataSource = [];
+        var priceSum = 0;
+        var counter = 0;
         chart.options.series[0].data.forEach(serie => {
             if (!excludedObjectIds.includes(serie.Id)) {
                 newDataSource.push(serie);
+                priceSum += serie.Price;
+                counter++;
             }
         });
+        var averagePrice = priceSum / counter;
+        lineForAveragePriceFrom = averagePrice - deltaForLineWithAveragePrice;
+        lineForAveragePriceTo = averagePrice + deltaForLineWithAveragePrice;
         chart.setDataSource(newDataSource);
         chart.redraw();
         kendo.ui.progress($(selectorForProgress), false);
@@ -141,18 +196,11 @@
 
 
     function reloadData() {
-        var chart = $("#chart").data("kendoChart");
+        var chart = $("#chart").getKendoChart();
         chart.dataSource.read();
-    }
-
-
-    function getParametersToDownloadObjects(e) {
-        kendo.ui.progress($(selectorForProgress), true);
-        var sampleType = $('input[name="sampleType"]:checked').val();
-        return {
-            modelId: '@Model.ModelId',
-            trainingSampleType: sampleType
-        }
+        //todo 
+        //chart.dataSource.fetch();
+        //chart.refresh();
     }
 
 
@@ -161,8 +209,17 @@
     }
 
 
-    function dataBound() {
+    function onDataBound() {
         var chart = $("#chart").getKendoChart();
+        //ось Y, линия со средним значением цены
+        chart.options.valueAxis.plotBands = [
+            {
+                from: lineForAveragePriceFrom,
+                to: lineForAveragePriceTo,
+                color: "green",
+                opacity: 0.3
+            }
+        ];
         var objectsCount = chart.options.series[0].data.length;
         if (objectsCount < 50)
             return;
