@@ -23,15 +23,13 @@ addressAttrValues as (
 parcelNameAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {7})
 ),
+
 --Tour
-objectTypeAttrValues as (
+cadastralQuartalAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {8})
 ),
-cadastralQuartalAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {9})
-),
 subGroupNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {10})
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {9})
 )
 
 
@@ -56,7 +54,6 @@ SELECT
     addressAttr.attributeValue as Address,
     parcelNameAttr.attributeValue as ParcelName,
     --Tour
-    objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
 FROM KO_UNIT unit
@@ -70,7 +67,6 @@ FROM KO_UNIT unit
     LEFT JOIN addressAttrValues addressAttr ON unit.object_id=addressAttr.objectId
     LEFT JOIN parcelNameAttrValues parcelNameAttr ON unit.object_id=parcelNameAttr.objectId
     --Tour
-    LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
     LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
     LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
 {0}

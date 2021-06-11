@@ -383,8 +383,7 @@ namespace KadOzenka.Web.Controllers
                     FileName = file.FileName,
                     CodeColumnName = model.CodeColumnName,
                     GroupColumnName = model.GroupColumnName,
-                    RoomTypeColumnName = model.RoomTypeColumnName,
-                    TerritoryTypeColumnName = model.TerritoryTypeColumnName
+                    RoomTypeColumnName = model.RoomTypeColumnName
                 };
 
                 using (Stream stream = file.OpenReadStream())
@@ -437,20 +436,6 @@ namespace KadOzenka.Web.Controllers
                     TourId = model.TourId.Value,
                     AttributeId = model.CodeGroupAttributeId,
                     KoAttributeUsingType = KoAttributeUsingType.CodeGroupAttribute
-                });
-
-                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
-                {
-                    TourId = model.TourId.Value,
-                    AttributeId = model.CodeQuarterAttributeId,
-                    KoAttributeUsingType = KoAttributeUsingType.CodeQuarterAttribute
-                });
-
-                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
-                {
-                    TourId = model.TourId.Value,
-                    AttributeId = model.TerritoryTypeAttributeId,
-                    KoAttributeUsingType = KoAttributeUsingType.TerritoryTypeAttribute
                 });
             }
             catch (Exception e)

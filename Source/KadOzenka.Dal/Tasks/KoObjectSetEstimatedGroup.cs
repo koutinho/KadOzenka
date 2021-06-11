@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Register;
@@ -40,16 +41,19 @@ namespace KadOzenka.Dal.KoObject
 	{
 		public string Group { get; set; }
 		public string Code { get; set; }
-		public string TypeRoom { get; set; }
+		//public string TypeRoom { get; set; }
 		public long SubGroup { get; set; }
+
+		public override string ToString()
+		{
+			return $"Код - {Code}, Группа - '{Group}', Подгруппа - {SubGroup}.";
+		}
 	}
 
 	public class EstimatedGroupModel
 	{
 		public long IdTask { get; set; }
 		public long IdCodeGroup { get; set; }
-		public long IdCodeQuarter { get; set; }
-		public long IdTerritoryType { get; set; }
 		public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
 		/// <summary>
@@ -98,8 +102,6 @@ namespace KadOzenka.Dal.KoObject
 
 			var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
 			var codeGroupAttribute = RegisterCache.GetAttributeData((int)param.IdCodeGroup);
-			var attributeQuarter = RegisterCache.GetAttributeData((int)param.IdCodeQuarter);
-			var attributeTerritoryType = RegisterCache.GetAttributeData((int)param.IdTerritoryType);
 			var tourId = OMTask.Where(x => x.Id == param.IdTask).Select(x => x.TourId).ExecuteFirstOrDefault().TourId;
 			var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
 
@@ -135,21 +137,6 @@ namespace KadOzenka.Dal.KoObject
 				}
 				Logger.Debug("Найдено {CurrentComplianceGuidesCount} значений из таблицы соответствий кода и группы для пакета №{PackageIndex}", currentComplianceGuides.Count, i);
 
-				var codeQuarters = GetValueFactors(gbuObjectIds, attributeQuarter.RegisterId, attributeQuarter.Id);
-				Logger.Debug("Найдено {CodeQuartersCount} атрибутов кадастрового квартала для пакета №{PackageIndex}", codeQuarters.Count, i);
-
-				var gbuQuarterObjects = new List<OMMainObject>();
-				if (codeQuarters.Values.Any(x => !string.IsNullOrEmpty(x.Value)))
-				{
-					var codeQuartersValues = codeQuarters.Values.Where(x => !string.IsNullOrEmpty(x.Value)).Select(x => x.Value).Distinct().ToList();
-					gbuQuarterObjects = OMMainObject.Where(x => codeQuartersValues.Contains(x.CadastralNumber)).Select(x => x.CadastralNumber).Execute();
-				}
-				Logger.Debug("Найдено {GbuQuarterObjectsCount} ГБУ объектов кадастровых кварталов для пакета №{PackageIndex}", gbuQuarterObjects.Count, i);
-
-				var gbuQuarterObjectIds = gbuQuarterObjects.Select(x => x.Id).ToList();
-				var territoryTypes = GetValueFactors(gbuQuarterObjectIds, attributeTerritoryType.RegisterId, attributeTerritoryType.Id);
-				Logger.Debug("Найдено {TerritoryTypesCount} атрибутов тип территории для кадастровых кварталов для пакета №{PackageIndex}", territoryTypes.Count, i);
-
 				var cancelTokenSource = new CancellationTokenSource();
 				var options = new ParallelOptions
 				{
@@ -167,15 +154,15 @@ namespace KadOzenka.Dal.KoObject
 					codeGroups.TryGetValue(item.ObjectId, out var codeGroup);
 					if (string.IsNullOrEmpty(codeGroup.Value))
 					{
-						AddErrorRow(item.CadastralNumber, $"Не найдено значение справочника ЦОД у объекта {item.CadastralNumber}", reportService);
+						AddErrorRow(item.CadastralNumber, $"Не заполнен код в атрибуте '{codeGroupAttribute.Name}'", reportService);
 						return;
 					}
 
-					var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroup.Value && x.TypeProperty == item.PropertyType).ToList());
-
+					var codeGroupValue = codeGroup.Value;
+					var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroupValue && x.TypeProperty == item.PropertyType).ToList());
 					if (complianceGuides.IsEmpty())
 					{
-						AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления {item.CadastralNumber}", reportService);
+						AddErrorRow(item.CadastralNumber, $"В таблице сопоставления не найдено значение с кодом '{codeGroupValue}' и типом '{item.PropertyType}'", reportService);
 					} 
 					else if (complianceGuides.Count == 1)
 					{
@@ -185,38 +172,9 @@ namespace KadOzenka.Dal.KoObject
 					} 
 					else
 					{
-						codeQuarters.TryGetValue(item.ObjectId, out var codeQuarter);
-						if (string.IsNullOrEmpty(codeQuarter.Value))
-						{
-							AddErrorRow(item.CadastralNumber, $"Не найден кадастровый квартал для объекта {item.CadastralNumber}.", reportService);
-							return;
-						}
-
-						var gbuQuarterObject = gbuQuarterObjects.FirstOrDefault(x => x.CadastralNumber == codeQuarter.Value);
-						if (gbuQuarterObject == null)
-						{
-							AddErrorRow(item.CadastralNumber, $"Не найден объект кадастровый квартал {codeQuarter.Value} .", reportService);
-							return;
-						}
-
-						territoryTypes.TryGetValue(gbuQuarterObject.Id, out var territoryType);
-						if (string.IsNullOrEmpty(territoryType.Value))
-						{
-							AddErrorRow(item.CadastralNumber, $"Не найден тип территории для объекта {gbuQuarterObject.CadastralNumber}", reportService);
-							return;
-						}
-
-						var complianceGuid = complianceGuides
-							.FirstOrDefault(x => x.SubGroup.ToString() == territoryType.Value);
-
-						if (string.IsNullOrEmpty(complianceGuid.Code))
-						{
-							AddErrorRow(item.CadastralNumber, $"Не найдено значение в таблице сопоставления, для кода {codeGroup.Value} и подгруппы {territoryType.Value}", reportService);
-							return;
-						}
-						var value = complianceGuid.Group;
-						AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
-						AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
+						var complianceGuidesStr = new StringBuilder();
+						complianceGuides.ForEach(x => complianceGuidesStr.AppendLine(x.ToString()));
+						AddErrorRow(item.CadastralNumber, $"Найдено несколько соответсвий: {complianceGuidesStr}", reportService);
 					}
 				});
 

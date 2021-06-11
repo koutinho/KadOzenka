@@ -41,14 +41,11 @@ objectNameAttrValues as (
 
 
 --Tour
-objectTypeAttrValues as (
+cadastralQuartalAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {13})
 ),
-cadastralQuartalAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {14})
-),
 subGroupNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {15})
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {14})
 )
 
 
@@ -79,7 +76,6 @@ SELECT
 			else null end) as Purpose,	 
     objectNameAttr.attributeValue as ObjectName,
     --Tour
-    objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
 FROM KO_UNIT unit
@@ -98,7 +94,6 @@ FROM KO_UNIT unit
     LEFT JOIN constructionPurposeAttrValues constructionPurposeAttr ON unit.object_id=constructionPurposeAttr.objectId
     LEFT JOIN objectNameAttrValues objectNameAttr ON unit.object_id=objectNameAttr.objectId
     --Tour
-    LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
     LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
     LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
 {0}
