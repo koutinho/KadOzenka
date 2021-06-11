@@ -28,7 +28,7 @@
             .Name("reloadBtn")
             .Icon("reload")
             .Content("Перестроить")
-            .Events(x => x.Click("drawChartWithoutExcludedObjects")))
+            .Events(x => x.Click("reloadData")))
     </div>
 
     <div class="form-group parent-container">
@@ -61,7 +61,7 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     var selectorForProgress = "body";
-    var excludedObjectIds = [];
+    //var excludedObjectIds = [];
 
     var lineForAveragePriceFrom = 0;
     var lineForAveragePriceTo = 0;
@@ -153,7 +153,7 @@
                     data: { objectId: objectId },
                     success: function () {
                         Common.ShowMessage("Объект исключен");
-                        excludedObjectIds.push(objectId);
+                        //excludedObjectIds.push(objectId);
                     },
                     error: function (response) {
                         Common.ShowError(response.responseText);
@@ -167,7 +167,8 @@
     }
 
 
-    function drawChartWithoutExcludedObjects() {
+    //изначально кнопка "Перестроить" работала без перезагрузки данных
+    /*function drawChartWithoutExcludedObjects() {
         if (excludedObjectIds.length === 0) {
             Common.ShowMessage("График не перестроен, т.к. нет исключенных объектов");
             return;
@@ -192,15 +193,12 @@
         kendo.ui.progress($(selectorForProgress), false);
         excludedObjectIds = [];
         Common.ShowMessage("График перестроен");
-    }
+    }*/
 
 
     function reloadData() {
         var chart = $("#chart").getKendoChart();
         chart.dataSource.read();
-        //todo 
-        //chart.dataSource.fetch();
-        //chart.refresh();
     }
 
 
