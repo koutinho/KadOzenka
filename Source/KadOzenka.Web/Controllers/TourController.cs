@@ -76,6 +76,10 @@ namespace KadOzenka.Web.Controllers
             ViewBag.ChangedTourId = tourId ?? 0;
             ViewBag.ChangedGroupParentGroupId = parentGroupId ?? 0;
             ViewBag.ChangedGroupId = groupId ?? 0;
+
+            var groupAlgorithms = Helpers.EnumExtensions.GetSelectList(typeof(KoGroupAlgoritm));
+            ViewBag.GroupAlgorithms = groupAlgorithms;
+
             return View();
         }
 

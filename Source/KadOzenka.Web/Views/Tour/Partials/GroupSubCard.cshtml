@@ -10,7 +10,6 @@
     <div class="form-horizontal row" style="padding-top: 5%;">
         @Html.HiddenFor(x => x.Id)
         @Html.HiddenFor(x => x.ParentGroupId)
-        @Html.HiddenFor(x => x.GroupingAlgorithmId)
         @Html.HiddenFor(x => x.RatingTourId)
         <div class="form-group" style="@(Model.GroupType == GroupType.Main ? "display:none;" : "")">
             <div class="col-sm-2">
@@ -26,6 +25,14 @@
             </div>
             <div class="col-sm-8 col-sm-offset-1">
                 @Html.TextAreaFor(x => x.Name, new { @class = "k-textbox col-sm-8", id = "updateGroupNameId", style = "padding: 1%; resize: none; width: 100%;", rows = 3 })
+            </div>
+        </div>
+        <div id="groupAlgorithmBlock" class="form-group">
+            <div class="col-sm-2">
+                @Html.CustomLabelFor(x => x.GroupAlgorithm)
+            </div>
+            <div class="col-sm-8 col-sm-offset-1">
+                @Html.KendoEnumDropDownListFor(x => x.GroupAlgorithm, isReadonly: Model.GroupType != GroupType.SubGroup, withoutNull: true)
             </div>
         </div>
     </div>
@@ -146,6 +153,7 @@
             {
                 <text>
                     $("#updateGroupNameId").prop("disabled", true);
+                    $("#groupAlgorithmBlock").hide();
                     $("#updateGroupNumberId").prop("disabled", true);
                     $("#updateGroupBtn").prop( "disabled", true);
                 </text>

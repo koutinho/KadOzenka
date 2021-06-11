@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Core.Shared.Extensions;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -8,21 +7,20 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Tour
 {
-	public class GroupModel
+	public class GroupModel : IValidatableObject
 	{
 		public long? Id { get; set; }
 		public long? RatingTourId { get; set; }
 		public GroupType GroupType { get; set; }
-
-        public string ObjType { get; set; }
-
-		public long? GroupingAlgorithmId { get; set; }
 
 		public long? ParentGroupId { get; set; }
 
 		[Display(Name = "Наименование")]
         [Required(ErrorMessage = "Не заполнено имя группы")]
         public string Name { get; set; }
+
+        [Display(Name = "Механизм группировки")]
+        public KoGroupAlgoritm GroupAlgorithm { get; set; }
 
         [Display(Name = "Номер")]
         [Required(ErrorMessage = "Не заполнен номер группы")]
@@ -58,27 +56,33 @@ namespace KadOzenka.Web.Models.Tour
                 Number = group.Number,
 				ParentGroupId = parentId,
                 GroupType = group.GroupType,
-                GroupingAlgorithmId = group.GroupingAlgorithmId,
-				ObjType = group.GroupAlgorithmCode.GetEnumDescription()
+                GroupAlgorithm = group.GroupAlgorithmCode
 			};
         }
 
         public static GroupDto FromModel(GroupModel group)
         {
-            var parentId = group.ParentGroupId == (long?) KoGroupAlgoritm.MainOKS ||
-                           group.ParentGroupId == (long?) KoGroupAlgoritm.MainParcel
-                ? -1
-                : group.ParentGroupId;
-
-            return new GroupDto
+	        return new GroupDto
             {
                 Id = group.Id,
                 Name = group.Name,
                 Number = group.Number,
-                GroupingAlgorithmId = group.GroupingAlgorithmId,
-                ParentGroupId = parentId,
+                GroupAlgorithmCode = group.GroupAlgorithm,
+                ParentGroupId = group.ParentGroupId,
                 RatingTourId = group.RatingTourId
             };
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+	        if (string.IsNullOrWhiteSpace(Name))
+		        yield return new ValidationResult("Не заполнено имя группы");
+
+	        if (Number == null)
+		        yield return new ValidationResult("Не заполнен номер");
+
+	        if (RatingTourId == null)
+	            yield return new ValidationResult("Не заполнен тур");
         }
     }
 }
