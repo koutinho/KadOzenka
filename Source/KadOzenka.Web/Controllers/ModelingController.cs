@@ -1135,7 +1135,7 @@ namespace KadOzenka.Web.Controllers
 		        TrainingSampleType = TrainingSampleType.Control
 	        };
 
-	        return View(model);
+	        return PartialView(model);
         }
 
         [HttpGet]

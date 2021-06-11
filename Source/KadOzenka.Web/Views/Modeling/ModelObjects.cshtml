@@ -5,6 +5,10 @@
 <div id="constructorModal" style="display: none;">
 </div>
 
+<!-- Модальное окно с графиком вылетов -->
+<div id="modelObjectsDiagramModal" style="display: none;">
+</div>
+
 
 
 <!-- Модальное окно с результатами исключения объектов из расчета после загрузки Excel-файла -->
@@ -817,8 +821,23 @@
 
 
     function showModelObjectsDiagram() {
-        var url = '@Url.Action("ModelObjectsDiagram", "Modeling", new {modelId = Model.Id})';
-        window.open(url, '_blank');
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ModelObjectsDiagram", "Modeling")',
+            data: { modelId: '@Model.Id' },
+            success: function (response) {
+                $("#modelObjectsDiagramModal").html(response);
+                var modal = $("#modelObjectsDiagramModal");
+                ShowModal(modal, '90%', '70%', "График вылетов");
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
 </script>
