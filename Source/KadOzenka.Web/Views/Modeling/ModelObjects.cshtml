@@ -61,7 +61,7 @@
 
 
 
-<div class="form-horizontal" style="padding: 2%;">
+<div id="mainBlock" class="form-horizontal" style="padding: 2%;">
     <div class="form-group">
         <div class="col-sm-2">
             @Html.CustomLabel("Модель")
@@ -821,7 +821,7 @@
 
 
     function showModelObjectsDiagram() {
-        kendo.ui.progress($('body'), true);
+        kendo.ui.progress($('#mainBlock'), true);
         $.ajax({
             type: 'GET',
             url: '@Url.Action("ModelObjectsDiagram", "Modeling")',
@@ -835,7 +835,7 @@
                 Common.ShowError(response.responseText);
             },
             complete: function() {
-                kendo.ui.progress($('body'), false);
+                kendo.ui.progress($('#mainBlock'), false);
             }
         });
     }

@@ -2,7 +2,7 @@
 @using KadOzenka.Dal.Modeling.Entities
 @model KadOzenka.Web.Models.Modeling.ModelingObjectsDiagramModel
 
-<div class="form-horizontal col-sm-12" style="padding: 3%;">
+<div id="chartBlock" class="form-horizontal" style="padding: 3%; width: 100%;">
     
     <div class="form-group">
         <div class="col-sm-12 col-sm-offset-2" style="width: 100%">
@@ -59,7 +59,7 @@
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    var selectorForProgress = "body";
+    var selectorForProgress = "#chartBlock";
     //var excludedObjectIds = [];
 
     var lineForAveragePriceFrom = 0;
