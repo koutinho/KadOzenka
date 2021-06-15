@@ -329,28 +329,6 @@ namespace KadOzenka.Dal.Tours
 
             paramsDto.IdCodeGroup = tourCodeGroupAttributeId.Value;
 
-            var codeQuarterAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
-                    x.AttributeUsingType_Code == KoAttributeUsingType.CodeQuarterAttribute && x.AttributeId.HasValue)
-                ?.AttributeId;
-            if (!codeQuarterAttributeId.HasValue)
-            {
-                throw new Exception(
-                    $"Для тура {tour.Year} не задан {KoAttributeUsingType.CodeQuarterAttribute.GetEnumDescription()}");
-            }
-
-            paramsDto.IdCodeQuarter = codeQuarterAttributeId.Value;
-
-            var tourTerritoryTypeAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
-                    x.AttributeUsingType_Code == KoAttributeUsingType.TerritoryTypeAttribute && x.AttributeId.HasValue)
-                ?.AttributeId;
-            if (!tourTerritoryTypeAttributeId.HasValue)
-            {
-                throw new Exception(
-                    $"Для тура {tour.Year} не задан {KoAttributeUsingType.TerritoryTypeAttribute.GetEnumDescription()}");
-            }
-
-            paramsDto.IdTerritoryType = tourTerritoryTypeAttributeId.Value;
-
             return paramsDto;
         }
 

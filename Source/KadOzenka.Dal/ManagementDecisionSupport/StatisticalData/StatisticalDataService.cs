@@ -140,11 +140,6 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             return GetTourAttribute(tourId, KoAttributeUsingType.CodeGroupAttribute);
         }
 
-        public RegisterAttribute GetObjectTypeAttributeFromTourSettings(long tourId)
-        {
-            return GetTourAttribute(tourId, KoAttributeUsingType.TerritoryTypeAttribute);
-        }
-
         public RegisterAttribute GetCadastralQuartalAttributeFromTourSettings(long tourId)
         {
             return GetTourAttribute(tourId, KoAttributeUsingType.CodeQuarterAttribute);

@@ -76,6 +76,10 @@ namespace KadOzenka.Web.Controllers
             ViewBag.ChangedTourId = tourId ?? 0;
             ViewBag.ChangedGroupParentGroupId = parentGroupId ?? 0;
             ViewBag.ChangedGroupId = groupId ?? 0;
+
+            var groupAlgorithms = Helpers.EnumExtensions.GetSelectList(typeof(KoGroupAlgoritm));
+            ViewBag.GroupAlgorithms = groupAlgorithms;
+
             return View();
         }
 
@@ -383,8 +387,7 @@ namespace KadOzenka.Web.Controllers
                     FileName = file.FileName,
                     CodeColumnName = model.CodeColumnName,
                     GroupColumnName = model.GroupColumnName,
-                    RoomTypeColumnName = model.RoomTypeColumnName,
-                    TerritoryTypeColumnName = model.TerritoryTypeColumnName
+                    RoomTypeColumnName = model.RoomTypeColumnName
                 };
 
                 using (Stream stream = file.OpenReadStream())
@@ -437,20 +440,6 @@ namespace KadOzenka.Web.Controllers
                     TourId = model.TourId.Value,
                     AttributeId = model.CodeGroupAttributeId,
                     KoAttributeUsingType = KoAttributeUsingType.CodeGroupAttribute
-                });
-
-                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
-                {
-                    TourId = model.TourId.Value,
-                    AttributeId = model.CodeQuarterAttributeId,
-                    KoAttributeUsingType = KoAttributeUsingType.CodeQuarterAttribute
-                });
-
-                TourService.UpdateTourAttributeSettings(new TourAttributeSettingsDto
-                {
-                    TourId = model.TourId.Value,
-                    AttributeId = model.TerritoryTypeAttributeId,
-                    KoAttributeUsingType = KoAttributeUsingType.TerritoryTypeAttribute
                 });
             }
             catch (Exception e)

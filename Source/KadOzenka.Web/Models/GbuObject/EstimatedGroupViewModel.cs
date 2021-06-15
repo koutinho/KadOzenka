@@ -24,9 +24,7 @@ namespace KadOzenka.Web.Models.GbuObject
             {
                 IdTask = IdTask.Value,
                 ObjectChangeStatus = ObjectChangeStatus,
-                IdCodeQuarter = paramsDto.IdCodeQuarter,
                 IdCodeGroup = paramsDto.IdCodeGroup,
-                IdTerritoryType = paramsDto.IdTerritoryType,
                 IdEstimatedSubGroup = IdEstimatedSubGroup.GetValueOrDefault()
             };
         }

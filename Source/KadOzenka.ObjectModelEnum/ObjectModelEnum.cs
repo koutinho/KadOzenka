@@ -5642,13 +5642,6 @@ namespace ObjectModel.Directory
         [EnumCode("2")]
         [ShortTitle("Атрибут кадастрового квартала")]
         CodeQuarterAttribute = 2,
-		/// <summary>
-		/// Атрибут типа территории (3)
-		/// </summary>
-		[Description("Атрибут типа территории")]
-        [EnumCode("3")]
-        [ShortTitle("Атрибут типа территории")]
-        TerritoryTypeAttribute = 3,
     }
 }
 

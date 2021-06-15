@@ -646,8 +646,8 @@ namespace KadOzenka.Dal.Groups
             if (tourId == null)
                 throw new Exception("Не передан идентификатор Тура для поиска");
 
-            var tour = OMTour.Where(x => x.Id == tourId).SelectAll().ExecuteFirstOrDefault();
-            if (tour == null)
+            var isTourExists = OMTour.Where(x => x.Id == tourId).ExecuteExists();
+            if (!isTourExists)
                 throw new Exception($"Не найден Тур с id='{tourId}'");
         }
 
@@ -664,17 +664,21 @@ namespace KadOzenka.Dal.Groups
             using (var ts = new TransactionScope())
             {
                 string numberStr;
-
+                KoGroupAlgoritm groupAlgorithm;
                 var groupType = GetGroupType(groupDto.ParentGroupId);
                 if (groupType == GroupType.Group)
                 {
-                    numberStr = groupDto.Number.ToString();
+	                groupAlgorithm = groupDto.ParentGroupId == (long) KoGroupAlgoritm.MainOKS
+		                ? KoGroupAlgoritm.MainOKS
+		                : KoGroupAlgoritm.MainParcel;
+	                numberStr = groupDto.Number.ToString();
                     if(numberStr != group.Number)
                         UpdateSubgroupsNumber(groupDto.Id, numberStr);
                 }
                 else
                 {
-                    var parentGroupNumber = OMGroup.Where(x => x.Id == groupDto.ParentGroupId).Select(x => x.Number)
+	                groupAlgorithm = groupDto.GroupAlgorithmCode;
+	                var parentGroupNumber = OMGroup.Where(x => x.Id == groupDto.ParentGroupId).Select(x => x.Number)
                         .ExecuteFirstOrDefault()?.Number;
                     numberStr = $"{parentGroupNumber}.{groupDto.Number}";
                 }
@@ -682,7 +686,7 @@ namespace KadOzenka.Dal.Groups
                 group.GroupName = groupDto.Name;
                 group.Number = numberStr;
                 group.ParentId = groupDto.ParentGroupId ?? -1;
-                group.GroupAlgoritm_Code = (KoGroupAlgoritm) groupDto.GroupingAlgorithmId;
+                group.GroupAlgoritm_Code = groupAlgorithm;
                 groupId = group.Save();
 
                 tourGroup.GroupId = group.Id;

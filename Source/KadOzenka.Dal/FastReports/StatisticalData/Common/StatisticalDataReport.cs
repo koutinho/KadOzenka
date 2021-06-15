@@ -151,9 +151,6 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
         {
             var attributesDictionary = new Dictionary<string, RegisterAttribute>();
 
-            attributesDictionary.Add(nameof(InfoFromTourSettings.ObjectType),
-                StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId));
-
             attributesDictionary.Add(nameof(InfoFromTourSettings.CadastralQuartal),
                 StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId));
 

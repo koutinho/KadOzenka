@@ -1135,7 +1135,7 @@ namespace KadOzenka.Web.Controllers
 		        TrainingSampleType = TrainingSampleType.Control
 	        };
 
-	        return View(model);
+	        return PartialView(model);
         }
 
         [HttpGet]
@@ -1143,30 +1143,49 @@ namespace KadOzenka.Web.Controllers
         public ActionResult GetObjectsForDiagram(long modelId, TrainingSampleType trainingSampleType)
         {
 			////TODO для тестирования
-			//var objects = new List<ObjectInfoForDiagram>();
-
+			//var objects = new List<ObjectInfo>();
 			//for (var i = 0; i < 30000; i++)
 			//{
-			//	objects.Add(new ObjectInfoForDiagram
-			//	{
-			//		Id = i,
-			//		Price = new Random().Next(100, Int32.MaxValue)
-			//	});
+			// objects.Add(new ObjectInfo
+			// {
+			//  Id = i,
+			//  Price = i // new Random().Next(100, int.MaxValue)
+			// });
 			//}
 
-			//return Json(objects.OrderBy(x => x.Price).ToList());
+			//var averagePrice = objects.Average(x => x.Price);
+			//var delta = averagePrice * 5 / 100;
+			//var model = new ObjectsInfoForDiagram
+			//{
+			// Average = objects.Average(x => x.Price),
+			// Delta = delta,
+			// Info = objects.OrderBy(x => x.Price).ToList()
+			//};
 
-			var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType,
-			 select => new { select.Price }).ToList();
+			//return Json(model);
 
-			var model = objects.Select(x => new ObjectInfoForDiagram
-			{
-				Id = x.Id,
-				Price = x.Price
-			}).ToList();
+			var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType, select => new { select.Price }).ToList();
+			if (objects.Count == 0)
+		        return Json(new ObjectsInfoForDiagram());
 
-			return Json(model);
-		}
+	        var averagePrice = objects.Average(x => x.Price);
+	        // 5%
+	        var delta = averagePrice * 5 / 100;
+	        var mappedObjects = objects.OrderBy(x => x.Price).Select(x => new ObjectInfo
+	        {
+		        Id = x.Id,
+		        Price = x.Price
+	        }).ToList();
+
+	        var model = new ObjectsInfoForDiagram
+	        {
+		        Average = averagePrice,
+		        Delta = delta,
+		        Info = mappedObjects
+	        };
+
+	        return Json(model);
+        }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
