@@ -199,16 +199,16 @@ namespace KadOzenka.Dal.GbuObject
                 if (parent != null)
                 {
 	                parentInfo.ParentAttributes.TryGetValue(parent.Id, out var parentAttributes);
-	                if (parentAttributes == null)
+	                if (parentAttributes == null || parentAttributes.Count == 0)
+	                {
+		                AddErrorToReport(unit.CadastralNumber, "Нет данных по атрибутам", reportService);
 		                return;
-                    
-                    var rowsReport = new List<GbuReportService.Row>();
-                    if (parentAttributes.Count > 0)
+	                }
+
+	                List<GbuReportService.Row> rowsReport;
+                    lock (locked)
                     {
-	                    lock (locked)
-	                    {
-		                    rowsReport = reportService.GetRangeRows(parentAttributes.Count);
-	                    }
+	                    rowsReport = reportService.GetRangeRows(parentAttributes.Count);
                     }
 
                     int counter = 0;
