@@ -201,7 +201,7 @@ namespace KadOzenka.Dal.GbuObject
 	                parentInfo.ParentAttributes.TryGetValue(parent.Id, out var parentAttributes);
 	                if (parentAttributes == null || parentAttributes.Count == 0)
 	                {
-		                AddErrorToReport(unit.CadastralNumber, "Нет данных по атрибутам", reportService);
+		                AddErrorToReport(unit.CadastralNumber, $"Нет данных по атрибутам родителя с КН '{parentCadastralNumber}'", reportService);
 		                return;
 	                }
 
