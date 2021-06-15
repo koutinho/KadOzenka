@@ -60,7 +60,7 @@ function onTypeChange(prefix) {
     hideAllFilterContainers(prefix);
     resetAllFields(prefix);
     let filterType = getFilterTypeField(prefix);
-    let filterTypeValue = $(filterType).val();
+    let filterTypeValue = $(filterType).data('kendoDropDownList').text();
     switch (filterTypeValue) {
         case "String":
             $(getStringFilterContainerSelector(prefix)).show();
@@ -79,7 +79,7 @@ function onTypeChange(prefix) {
 
 function onStringFilterChange(prefix) {
     let stringFilterTypeField = getStringFilteringTypeSelector(prefix);
-    let stringFilterTypeValue = $(stringFilterTypeField).val();
+    let stringFilterTypeValue = $(stringFilterTypeField).data('kendoDropDownList').text();
     let stringFilterValueContainer = '#' + prefix + '_stringFilterValueContainer';
     switch (stringFilterTypeValue) {
         case "Пусто":
@@ -96,7 +96,7 @@ function onStringFilterChange(prefix) {
 
 function onDateFilterChange(prefix) {
     let dateFilterTypeField = getDateFilteringTypeSelector(prefix);
-    let dateFilterTypeValue = $(dateFilterTypeField).val();
+    let dateFilterTypeValue = $(dateFilterTypeField).data('kendoDropDownList').text();
     let dateFilterValueContainer = '#' + prefix + '_dateFilterValueContainer';
     let dateFilterValue2Container = '#' + prefix + '_dateFilterValue2Container';
     switch (dateFilterTypeValue) {
@@ -126,7 +126,7 @@ function onDateFilterChange(prefix) {
 
 function onNumberFilterChange(prefix) {
     let numberFilterTypeField = getNumberFilteringTypeSelector(prefix);
-    let numberFilterTypeValue = $(numberFilterTypeField).val();
+    let numberFilterTypeValue = $(numberFilterTypeField).data('kendoDropDownList').text();
     let numberFilterValueContainer = '#' + prefix + '_numberFilterValueContainer';
     let numberFilterValue2Container = '#' + prefix + '_numberFilterValue2Container';
     switch (numberFilterTypeValue) {
@@ -156,7 +156,7 @@ function onNumberFilterChange(prefix) {
 
 function onRefFilterChange(prefix){
     let refFilterTypeField = getRefFilteringTypeSelector(prefix);
-    let refFilterTypeValue = $(refFilterTypeField).val();
+    let refFilterTypeValue = $(refFilterTypeField).data('kendoDropDownList').text();
     let refFilterValueContainer = '#' + prefix + '_referenceFilterValueContainer';
     switch (refFilterTypeValue) {
         case "Пусто":
@@ -173,7 +173,7 @@ function onRefFilterChange(prefix){
 
 function onBoolFilterChange(prefix){
     let boolFilterTypeField = getBoolFilteringTypeSelector(prefix);
-    let boolFilterTypeValue = $(boolFilterTypeField).val();
+    let boolFilterTypeValue = $(boolFilterTypeField).data('kendoDropDownList').text();
     let boolFilterValueContainer = '#' + prefix + '_referenceFilterValueContainer';
     switch (boolFilterTypeValue) {
         case "Пусто":
@@ -257,7 +257,7 @@ function getAttributeInfo(e){
                                 break;
                         }
                     }
-                    typeSelectors.forEach(x=>$(x).data('kendoDropDownList').value(convertedType));
+                    typeSelectors.forEach(x=>$(x).data('kendoDropDownList').text(convertedType));
                     typeSelectors.forEach(x=>$(x).trigger('change'));
                 }
                 kendo.ui.progress($(container), false);
