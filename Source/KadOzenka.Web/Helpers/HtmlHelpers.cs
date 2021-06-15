@@ -429,10 +429,9 @@ namespace KadOzenka.Web.Helpers
 		public static IHtmlContent KendoDropDownListEnumFor<TModel, TProperty>(this IHtmlHelper<TModel> helper,
 			Expression<Func<TModel, TProperty>> expression)
 		{
-			var x = helper.GetEnumSelectList(typeof(TProperty));
 			return helper.Kendo().DropDownListFor(expression)
 				.DataTextField("Text")
-				.DataValueField("Text")
+				.DataValueField("Value")
 				.BindTo(helper.GetEnumSelectList(typeof(TProperty)));
 		}
 	}

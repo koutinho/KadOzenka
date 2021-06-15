@@ -34,12 +34,12 @@ namespace KadOzenka.Web.Models.GbuObject
         /// <summary>
         /// Преобразовываемый атрибут
         /// </summary>
-        public long IdAttributeSource { get; set; }
+        public long? IdAttributeSource { get; set; }
 
         /// <summary>
         /// Настройки 2 уровня группировки
         /// </summary>
-        public long IdAttributeForSelectionBetween2 { get; set; }
+        public long? IdAttributeForSelectionBetween2 { get; set; }
 
         public Filters Filter1ForSelectionBetween2 { get; set; }
         public Filters Filter2ForSelectionBetween2 { get; set; }
@@ -47,7 +47,7 @@ namespace KadOzenka.Web.Models.GbuObject
         /// <summary>
         /// Настройки 3 уровня группировки
         /// </summary>
-        public long IdAttributeForSelectionBetween3 { get; set; }
+        public long? IdAttributeForSelectionBetween3 { get; set; }
 
         public Filters Filter1ForSelectionBetween3 { get; set; }
         public Filters Filter2ForSelectionBetween3 { get; set; }
@@ -91,10 +91,15 @@ namespace KadOzenka.Web.Models.GbuObject
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            if (IdAttributeSource is null or 0)
+            {
+                yield return new ValidationResult("Поле Преобразовываемая характеристика не может быть пустым");
+            }
+
             if (!SelectAllObject && IsDataActualUsed && !DataActual.HasValue)
             {
                 yield return
-                    new ValidationResult(errorMessage: "Поле Дата актулизации обязательное",
+                    new ValidationResult(errorMessage: "Поле Дата актуализации обязательное",
                         memberNames: new[] {nameof(DataActual)});
             }
 

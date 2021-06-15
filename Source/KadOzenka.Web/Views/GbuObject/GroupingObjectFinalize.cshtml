@@ -249,6 +249,12 @@
                 input.trigger('change');
             }
 
+            if (valKey.match('.+_StringFilter_Value.?')){
+                let input = $('#' + valKey);
+                input.data('kendoTextBox').value(val[valKey]);
+                input.trigger('change');
+            }
+
             if (valKey.match('.+_DateFilter_Value.?')){
                 let input = $('#' + valKey);
                 if (val[valKey]) input.data('kendoDatePicker').value(new Date(val[valKey]));
@@ -345,13 +351,13 @@
 
     function clear2CodeParams(){
         let selector = 'input[id$="ForSelectionBetween2_Type"]';
-        $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').value('None'));
+        $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').text('None'));
         $(selector).toArray().forEach(e=> $(e).trigger('change'));
     }
 
     function clear3CodeParams(){
         let selector = 'input[id$="ForSelectionBetween3_Type"]';
-        $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').value('None'));
+        $(selector).toArray().forEach(e=> $(e).data('kendoDropDownList').text('None'));
         $(selector).toArray().forEach(e=> $(e).trigger('change'));
     }
 
