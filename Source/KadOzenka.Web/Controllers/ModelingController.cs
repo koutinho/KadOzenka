@@ -175,7 +175,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelingService.GetModelById(modelId);
 
-            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, true);
+            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.Training);
             var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
             model.IsReadOnly = isReadOnly;
 
@@ -1121,6 +1121,82 @@ namespace KadOzenka.Web.Controllers
 
             return Json(new { fileName = fileName });
         }
+
+
+        #region График вылетов
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ModelObjectsDiagram(long modelId)
+        {
+	        var model = new ModelingObjectsDiagramModel
+	        {
+		        ModelId = modelId,
+		        TrainingSampleType = TrainingSampleType.Control
+	        };
+
+	        return PartialView(model);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult GetObjectsForDiagram(long modelId, TrainingSampleType trainingSampleType)
+        {
+			////TODO для тестирования
+			//var objects = new List<ObjectInfo>();
+			//for (var i = 0; i < 30000; i++)
+			//{
+			// objects.Add(new ObjectInfo
+			// {
+			//  Id = i,
+			//  Price = i // new Random().Next(100, int.MaxValue)
+			// });
+			//}
+
+			//var averagePrice = objects.Average(x => x.Price);
+			//var delta = averagePrice * 5 / 100;
+			//var model = new ObjectsInfoForDiagram
+			//{
+			// Average = objects.Average(x => x.Price),
+			// Delta = delta,
+			// Info = objects.OrderBy(x => x.Price).ToList()
+			//};
+
+			//return Json(model);
+
+			var objects = ModelObjectsRepository.GetIncludedObjectsForTraining(modelId, trainingSampleType, select => new { select.Price }).ToList();
+			if (objects.Count == 0)
+		        return Json(new ObjectsInfoForDiagram());
+
+	        var averagePrice = objects.Average(x => x.Price);
+	        // 5%
+	        var delta = averagePrice * 5 / 100;
+	        var mappedObjects = objects.OrderBy(x => x.Price).Select(x => new ObjectInfo
+	        {
+		        Id = x.Id,
+		        Price = x.Price
+	        }).ToList();
+
+	        var model = new ObjectsInfoForDiagram
+	        {
+		        Average = averagePrice,
+		        Delta = delta,
+		        Info = mappedObjects
+	        };
+
+	        return Json(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
+        public ActionResult ExcludeObjectFromCalculation(long objectId)
+        {
+	        ModelObjectsService.ExcludeObjectFromCalculation(objectId);
+
+            return Ok();
+        }
+
+        #endregion
 
         #endregion
 

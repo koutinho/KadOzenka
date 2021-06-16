@@ -124,7 +124,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 				item.Address,
 				item.ParcelName,
 				item.Square,
-				item.ObjectType,
+				"Не задан тип территории",
 				item.CadastralQuartal,
 				item.CostValue,
 				item.DateValuation,
@@ -157,13 +157,12 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
 			var address = RosreestrRegisterService.GetAddressAttribute();
 			var parcelName = RosreestrRegisterService.GetParcelNameAttribute();
 
-			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
 			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
 			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
 			var sqlWithParameters = string.Format(sql, "{0}", typeOfUseByDocuments.Id,
 				typeOfUseByClassifier.Id, formationDate.Id, parcelCategory.Id, location.Id, address.Id, parcelName.Id,
-				objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
+				cadastralQuartal.Id, subGroupNumber.Id);
 
 			return sqlWithParameters;
 		}

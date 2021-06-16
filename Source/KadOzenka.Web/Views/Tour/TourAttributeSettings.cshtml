@@ -1,5 +1,4 @@
-﻿@using System.Collections
-@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Helpers
 @using ObjectModel.Directory
 @model KadOzenka.Web.Models.Tour.TourAttributeSettingsModel
 
@@ -38,28 +37,13 @@
 				@Html.KendoDropDownListTreeWithButton(m => m.CodeGroupAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.CodeQuarterAttributeId)
-			</div>
-			<div class="col-sm-10">
-				@Html.KendoDropDownListTreeWithButton(m => m.CodeQuarterAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.TerritoryTypeAttributeId)
-			</div>
-			<div class="col-sm-10">
-				@Html.KendoDropDownListTreeWithButton(m => m.TerritoryTypeAttributeId, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"])
-			</div>
-		</div>
-		<div class="form-group">
+        </div>
+
+        <div class="form-group">
 			<div class="col-sm-12">
 				<button style="float: right" class="k-button" id="save" type="button">Сохранить</button>
 			</div>
 		</div>
-	</div>
 
 	<div style="height: auto">
 		<div class="form-horizontal col-sm-12">
@@ -118,9 +102,6 @@
         $.get('@Url.Action("GetTourGbuAttributeSettings", "Tour")', { tourId: tourId}).done(function (response) {
             if (response.Data) {
                 changeAttrValue($('#CodeGroupAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.CodeGroupAttribute.GetEnumCode());
-                changeAttrValue($('#CodeQuarterAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.CodeQuarterAttribute.GetEnumCode());
-				changeAttrValue($('#TerritoryTypeAttributeId').data('kendoDropDownTree'), response.Data, @KoAttributeUsingType.TerritoryTypeAttribute.GetEnumCode());
-
             }
         }).fail(function (response, textStatus, errorThrown) {
             Common.ShowError(response.responseText);

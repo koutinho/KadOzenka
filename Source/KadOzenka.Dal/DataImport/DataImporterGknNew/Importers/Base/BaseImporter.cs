@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 		}
 
 
-		protected abstract void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, string pathSchema,
+		protected abstract void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream,
 			OMTask task, CancellationToken cancellationToken, object additionalParameters = null);
 
 
@@ -43,13 +43,11 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base
 		{
 			_logger.Information("Начат импорт для задачи с Id {TaskId}", task.Id);
 
-			var schemaPath = FileStorageManager.GetPathForStorage("SchemaPath");
-
 			var dataImporterGkn = new DataImporterGkn(GbuReportService);
 			try
 			{
 				DataImporterGknLongProcessProgressLogger.StartLogProgress(dataLog, dataImporterGkn);
-				ImportGkn(dataImporterGkn, fileStream, schemaPath, task, processCancellationToken, additionalParameters);
+				ImportGkn(dataImporterGkn, fileStream, task, processCancellationToken, additionalParameters);
 				DataImporterGknLongProcessProgressLogger.StopLogProgress();
 
 				if (!processCancellationToken.IsCancellationRequested && task.NoteType_Code != KoNoteType.Initial)

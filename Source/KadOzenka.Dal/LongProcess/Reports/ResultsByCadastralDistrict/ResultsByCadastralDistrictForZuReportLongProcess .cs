@@ -126,7 +126,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 				item.CadastralNumber,
 				item.CadastralQuartal,
 				item.CadastralDistrict,
-				item.ObjectType,
+				"Не задан тип территории",
 				item.Square,
 				item.ParcelName,
 				item.Location,
@@ -173,14 +173,13 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			var usageTypeName = RegisterCache.GetAttributeData(inputParameters.UsageTypeNameAttributeId);
 			var usageTypeCodeSource = RegisterCache.GetAttributeData(inputParameters.UsageTypeCodeSourceAttributeId);
 
-			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
 			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
 			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
 			var sqlWithParameters = string.Format(sql, "{0}", parcelName.Id, location.Id,
 				address.Id, formationDate.Id, parcelCategory.Id, typeOfUseByDocuments.Id, typeOfUseByClassifier.Id,
 				infoAboutExistenceOfOtherObjects.Id, infoSource.Id, segment.Id, usageTypeCode.Id, usageTypeName.Id,
-				usageTypeCodeSource.Id, objectType.Id, cadastralQuartal.Id, subGroupNumber.Id);
+				usageTypeCodeSource.Id, cadastralQuartal.Id, subGroupNumber.Id);
 
 			return sqlWithParameters;
 		}

@@ -370,9 +370,10 @@
             }
 
             if (elementName.startsWith('@(nameof(Model.ExportAttribute))')) {
-                var y = Object.values(val)[0];
-                if (y.IdAttributeGbu)
-                    attrValues.push(String(y.IdAttributeGbu));
+                 if (elementName.endsWith('Gbu'))
+                 {
+                     attrValues.push(String(elementValue));
+                 }
             }
         });
         checkNodesByValue(attrValues);

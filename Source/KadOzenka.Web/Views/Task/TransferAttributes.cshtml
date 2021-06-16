@@ -521,6 +521,8 @@
         var taskValues = [];
         var koAttributes = {};
         var additionalCustomLevels = [];
+        var additionalCustomLevelsGbu = [];
+        var additionalCustomLevelsKO = [];
         data.forEach(function (val) {
             var elementName = Object.keys(val)[0];
             var elementValue = val[elementName];
@@ -567,11 +569,22 @@
             }
 
             if (elementName.startsWith('@(nameof(Model.ExportAttribute))')) {
-                var additionalCustomLevel = elementValue;
-                additionalCustomLevels.push(additionalCustomLevel);
-                rowNumber++;
+                if (Array.isArray(elementValue)) {
+                    // Пустой массив если нет доп уровней, игнорируем
+                }
+
+                if (elementName.endsWith('Gbu'))
+                    {
+                        additionalCustomLevelsGbu.push(elementValue);
+                        rowNumber++;
+                    }
+                else if (elementName.endsWith('KO'))
+                    additionalCustomLevelsKO.push(elementValue);
             }
         });
+
+        let additionalCustomLevelsTmp = additionalCustomLevelsGbu.map( (e,i) => { return [e,additionalCustomLevelsKO[i]]; });
+        additionalCustomLevels = additionalCustomLevelsTmp.map( (e) => e.reduce( (q,a) => { return { IdAttributeGbu: q, IdAttributeKo: a};}))
 
         await Promise.all([
             initTasksList(null, () => $('#@(nameof(Model.TaskFilter))').data("kendoMultiSelect").value(taskValues)),

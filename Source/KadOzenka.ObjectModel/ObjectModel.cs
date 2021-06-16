@@ -8550,26 +8550,6 @@ namespace ObjectModel.KO
             }
         }
 
-
-        private string _territorytype;
-        /// <summary>
-        /// 25400800 Тип территории (TERRITORY_TYPE)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 25400800)]
-        public string TerritoryType
-        {
-            get
-            {
-                CheckPropertyInited("TerritoryType");
-                return _territorytype;
-            }
-            set
-            {
-                _territorytype = value;
-                NotifyPropertyChanged("TerritoryType");
-            }
-        }
-
     }
 }
 

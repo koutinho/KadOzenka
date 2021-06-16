@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.LongProcess
             var attachments = OMImportDataLog.Where(x => x.RegisterId == OMTask.GetRegisterId() && x.ObjectId == id)
                 .SelectAll().Execute();
             var omImportDataLogs = attachments.Where(a => a.FileExtension == "xml").ToList();
-            xmlImportGkn.FillDictionary(FileStorageManager.GetPathForStorage("SchemaPath"));
+            xmlImportGkn.FillDictionary();
 
             var reportService = new GbuReportService("Ошибки импорта");
             var allObjects = new xmlObjectList();

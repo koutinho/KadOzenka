@@ -1,0 +1,230 @@
+﻿@using KadOzenka.Web.Models.Modeling
+@using KadOzenka.Dal.Modeling.Entities
+@model KadOzenka.Web.Models.Modeling.ModelingObjectsDiagramModel
+
+<div id="chartBlock" style="padding: 3%; width: 100%;">
+    
+    <div class="form-group">
+        <div class="col-sm-12 col-sm-offset-2" style="width: 100%">
+            <div class="col-sm-4">
+                @(Html.Kendo().RadioButton()
+                    .Name("sampleType")
+                    .Label(TrainingSampleType.Control.GetEnumDescription())
+                    .Value((int) TrainingSampleType.Control)
+                    .Checked(Model.TrainingSampleType == TrainingSampleType.Control))
+            </div>
+            <div class="col-sm-4 col-sm-offset-1">
+                @(Html.Kendo().RadioButton()
+                    .Name("sampleType")
+                    .Label(TrainingSampleType.Training.GetEnumDescription())
+                    .Value((int) TrainingSampleType.Training)
+                    .Checked(Model.TrainingSampleType == TrainingSampleType.Training))
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @(Html.Kendo().Button()
+            .Name("reloadBtn")
+            .Icon("reload")
+            .Content("Перестроить"))
+    </div>
+
+    <div class="form-group parent-container">
+        <div id="chart" class="chart-container"></div>
+    </div>
+
+</div>
+
+
+
+
+
+<style>
+    /* В KendoChart нет возможности работать со скроллом */
+    .parent-container {
+        overflow-y: scroll; 
+        width: 100%;
+    }
+
+    .chart-container {
+        width: 200%;
+    }
+</style>
+
+
+
+
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
+<script>
+    var selectorForProgress = "#chartBlock";
+    //var excludedObjectIds = [];
+
+    var lineForAveragePriceFrom = 0;
+    var lineForAveragePriceTo = 0;
+    var deltaForLineWithAveragePrice = 0;
+
+    $(document).ready(function () {
+        $('[name="sampleType"]').on('change', reloadData);
+        $('#reloadBtn').on('click', reloadData);
+
+        initChart();
+    });
+
+
+    
+
+
+    function initChart() {
+        $("#chart").kendoChart({
+            dataSource: {
+                transport: {
+                    read: downloadData
+                }
+            },
+            title: "Цена аналогов, включенных в моделирование",
+            legend: {
+                position: "bottom"
+            },
+            series: [{
+                type: "line",
+                name: "Цена за кв.м.",
+                field: '@nameof(ObjectInfo.Price)',
+                categoryField: '@nameof(ObjectInfo.Id)',
+                markers: {
+                    size: 10
+                }
+            }],
+            //ось X
+            categoryAxis: {
+                majorGridLines: {
+                    visible: false
+                },
+                visible: false
+            },
+            zoomable: {
+                mousewheel: true,
+                lock: "y"
+            },
+            tooltip: {
+                visible: true,
+                format: "Цена: {0:N3}"
+            },
+            seriesClick: excludeObjectFromCalculation,
+            dataBound: onDataBound,
+            render: render
+        });
+    }
+    
+
+    function downloadData(options) {
+        kendo.ui.progress($(selectorForProgress), true);
+        var sampleType = $('input[name="sampleType"]:checked').val();
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetObjectsForDiagram", "Modeling")',
+            data: {modelId: '@Model.ModelId', trainingSampleType: sampleType},
+            success: function(result) {
+                deltaForLineWithAveragePrice = result.Delta;
+                lineForAveragePriceFrom = result.Average - deltaForLineWithAveragePrice;
+                lineForAveragePriceTo = result.Average + deltaForLineWithAveragePrice;
+                options.success(result.Info);
+            },
+            error: function(result) {
+                Common.ShowError(result.responseText);
+                kendo.ui.progress($(selectorForProgress), false);
+            }
+        });
+    }
+
+    
+    function excludeObjectFromCalculation(chartPoint) {
+        var objectId = chartPoint.category;
+        Common.UI.ShowConfirm({
+            title: 'Исключение из расчёта',
+            content: `Исключить объект с ценой '${chartPoint.value}' из расчёта?`,
+            onSuccess: function () {
+                kendo.ui.progress($(selectorForProgress), true);
+                $.ajax({
+                    url: '@Url.Action("ExcludeObjectFromCalculation", "Modeling")',
+                    type: 'POST',
+                    data: { objectId: objectId },
+                    success: function () {
+                        Common.ShowMessage("Объект исключен");
+                        //excludedObjectIds.push(objectId);
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function() {
+                        kendo.ui.progress($(selectorForProgress), false);
+                    }
+                });
+            }
+        });
+    }
+
+
+    //изначально кнопка "Перестроить" работала без перезагрузки данных
+    /*function drawChartWithoutExcludedObjects() {
+        if (excludedObjectIds.length === 0) {
+            Common.ShowMessage("График не перестроен, т.к. нет исключенных объектов");
+            return;
+        }
+        kendo.ui.progress($(selectorForProgress), true);
+        var chart = $("#chart").getKendoChart();
+        var newDataSource = [];
+        var priceSum = 0;
+        var counter = 0;
+        chart.options.series[0].data.forEach(serie => {
+            if (!excludedObjectIds.includes(serie.Id)) {
+                newDataSource.push(serie);
+                priceSum += serie.Price;
+                counter++;
+            }
+        });
+        var averagePrice = priceSum / counter;
+        lineForAveragePriceFrom = averagePrice - deltaForLineWithAveragePrice;
+        lineForAveragePriceTo = averagePrice + deltaForLineWithAveragePrice;
+        chart.setDataSource(newDataSource);
+        chart.redraw();
+        kendo.ui.progress($(selectorForProgress), false);
+        excludedObjectIds = [];
+        Common.ShowMessage("График перестроен");
+    }*/
+
+
+    function reloadData() {
+        var chart = $("#chart").getKendoChart();
+        chart.dataSource.read();
+    }
+
+
+    function render(e) {
+        kendo.ui.progress($(selectorForProgress), false);
+    }
+
+
+    function onDataBound() {
+        var chart = $("#chart").getKendoChart();
+        //ось Y, линия со средним значением цены
+        chart.options.valueAxis.plotBands = [
+            {
+                from: lineForAveragePriceFrom,
+                to: lineForAveragePriceTo,
+                color: "green",
+                opacity: 0.3
+            }
+        ];
+        var objectsCount = chart.options.series[0].data.length;
+        if (objectsCount < 50)
+            return;
+        //не получилось настроить расстояние между точками на графике через кендо
+        var width = `${objectsCount * 2}%`;
+        $('.chart-container').css('width', width);
+    }
+
+</script>
+

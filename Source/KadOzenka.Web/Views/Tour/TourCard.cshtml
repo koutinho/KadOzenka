@@ -61,7 +61,27 @@
                 </div>
                 <div class="col-sm-7 col-sm-offset-1">
                     <textarea id="addGroupNameInput" class="form-control" required="required" name="addGroupNameInput" rows="3"></textarea>
-                    <button class="btn btn-default" style="margin-top: 10px;" id="saveGroup"> Сохранить </button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group" id="addGroupAlgorithmBlock">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="addGroupAlgorithmInput">Механизм группировки</label>
+                </div>
+                <div class="col-sm-7 col-sm-offset-1">
+                    @(Html.Kendo().DropDownList()
+                        .Name("addGroupAlgorithmInput")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .BindTo((System.Collections.IEnumerable)ViewBag.GroupAlgorithms))
+                 </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-sm-2 col-sm-offset-5">
+                    <button class="btn btn-default" style="margin-top: 10px;" id="saveGroup">Сохранить</button>
                 </div>
             </div>
         </div>
@@ -563,8 +583,9 @@
 				$("#tourYear").html(parentYearData.GroupName);
 	            $("#mainGroupId").val(data.Id);
 				$("#mainGroupName").html(data.GroupName);
+                $("#addGroupAlgorithmBlock").hide();
                 var modal = $("#groupAdditionModal");
-                ShowModal(modal, '50%', '30%');
+                ShowModal(modal, '60%', '45%');
             }
         }
     }
@@ -591,8 +612,9 @@
 
 				$("#groupId").val(data.Id);
 				$("#groupName").html(data.GroupName);
+                $("#addGroupAlgorithmBlock").show();
                 var modal = $("#groupAdditionModal");
-                ShowModal(modal, '50%', '30%');
+                ShowModal(modal, '60%', '45%');
             }
         }
     }
@@ -603,10 +625,10 @@
         var dto = {
             Id: null,
 			RatingTourId: $('#tourYearId').val(),
-            ParentGroupId: !isSubGroup ? null : $('#groupId').val(),
-            GroupingAlgorithmId: $('#mainGroupId').val(),
+            ParentGroupId: isSubGroup ? $('#groupId').val() : $('#mainGroupId').val(),
             Name: $('#addGroupNameInput').val(),
-            Number: $('#addGroupNumberInput').val()
+            Number: $('#addGroupNumberInput').val(),
+            GroupAlgorithm: $('[name="addGroupAlgorithmInput"]').val() 
         };
         $.ajax({
             url: '@Url.Action("EditGroup", "Tour")',

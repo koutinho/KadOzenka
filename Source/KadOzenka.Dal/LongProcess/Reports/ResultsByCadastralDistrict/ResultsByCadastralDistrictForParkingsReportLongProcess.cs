@@ -141,7 +141,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 				item.PlacementPurpose,
 				item.ObjectName,
 				item.Square,
-				item.ObjectType,
+				"Не задан тип территории",
 				item.Floor,
 				item.CadastralQuartal,
 				item.Segment,
@@ -186,7 +186,6 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 			var subGroupUsageTypeCode = RegisterCache.GetAttributeData(inputParameters.SubGroupUsageTypeCodeAttributeId);
 			var functionalSubGroupName = RegisterCache.GetAttributeData(inputParameters.FunctionalSubGroupNameAttributeId);
 
-			var objectType = StatisticalDataService.GetObjectTypeAttributeFromTourSettings(tourId);
 			var cadastralQuartal = StatisticalDataService.GetCadastralQuartalAttributeFromTourSettings(tourId);
 			var subGroupNumber = StatisticalDataService.GetGroupAttributeFromTourSettings(tourId);
 
@@ -197,7 +196,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.ResultsByCadastralDistrict
 				undergroundFloorsNumber.Id, floorsNumber.Id, wallMaterial.Id, location.Id,
 				address.Id, parentCadastralNumber.Id, placementPurpose.Id, objectName.Id,
 				floor.Id, segment.Id, usageTypeName.Id, usageTypeCode.Id, usageTypeCodeSource.Id,
-				subGroupUsageTypeCode.Id, functionalSubGroupName.Id, objectType.Id, cadastralQuartal.Id,
+				subGroupUsageTypeCode.Id, functionalSubGroupName.Id, cadastralQuartal.Id,
 				subGroupNumber.Id, buildingPurpose.Id, constructionPurpose.Id, subGroupNumber.Id);
 
 			return sqlWithParameters;

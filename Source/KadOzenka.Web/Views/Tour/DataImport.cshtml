@@ -40,15 +40,7 @@
 				@Html.Kendo().DropDownListFor(m => m.GroupColumnName).DataTextField("Name").DataValueField("Name")
 			</div>
 		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor("Тип территории")
-			</div>
-			<div class="col-sm-10">
-				@Html.Kendo().DropDownListFor(m => m.TerritoryTypeColumnName).DataTextField("Name").DataValueField("Name")
-			</div>
-		</div>
-		<div class="form-group">
+        <div class="form-group">
 			<div class="col-sm-6">
 				@Html.Kendo().CheckBox().Name("ByTypeRoom").Checked(false).Label("По типу жилого помещения")
 			</div>
@@ -75,8 +67,7 @@
 <script type="text/javascript">
 
 	function changeTypeObject(e) {
-		debugger;
-		if (this.value() === '4' || this.value() === '11' || this.value() === '802' || this.value() === '8') {
+        if (this.value() === '4' || this.value() === '11' || this.value() === '802' || this.value() === '8') {
 			$('#ByTypeRoom').prop('checked', false);
 			$('#ByTypeRoom').prop('disabled', true);
 			if ($('#@nameof(Model.RoomTypeColumnName)').data("kendoDropDownList")) {
@@ -138,7 +129,6 @@
 		$('#@(nameof(Model.CodeColumnName))').data('kendoDropDownList').setDataSource(dataSource);
 		$('#@(nameof(Model.GroupColumnName))').data('kendoDropDownList').setDataSource(dataSource);
 		$('#@(nameof(Model.RoomTypeColumnName))').data('kendoDropDownList').setDataSource(dataSource);
-		$('#@(nameof(Model.TerritoryTypeColumnName))').data('kendoDropDownList').setDataSource(dataSource);
 
 
 		$('#importButton').on('click', function() {
@@ -157,7 +147,6 @@
 			formData.append("model.CodeColumnName", formObject['CodeColumnName']);
 			formData.append("model.GroupColumnName", formObject['GroupColumnName']);
 			formData.append("model.RoomTypeColumnName", formObject['RoomTypeColumnName'] || "");
-			formData.append("model.TerritoryTypeColumnName", formObject['TerritoryTypeColumnName'] || "");
 			formData.append("model.ObjectType", formObject['ObjectType']);
 			formData.append("model.TourId", formObject['TourId']);
 

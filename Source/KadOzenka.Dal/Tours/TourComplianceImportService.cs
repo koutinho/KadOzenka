@@ -76,12 +76,6 @@ namespace KadOzenka.Dal.Tours
 							.Cells[columnNames.IndexOf(fileDto.CodeColumnName)];
 						var group = mainWorkSheet.Rows[row.Index]
 							.Cells[columnNames.IndexOf(fileDto.GroupColumnName)];
-						ExcelCell territoryType = null;
-						if (!fileDto.TerritoryTypeColumnName.IsNullOrEmpty())
-						{
-							territoryType = mainWorkSheet.Rows[row.Index]
-								.Cells[columnNames.IndexOf(fileDto.TerritoryTypeColumnName)];
-						}
 
 						ExcelCell typeRoom = null;
 						if (fileDto.RoomTypeColumnName.IsNotEmpty())
@@ -97,7 +91,7 @@ namespace KadOzenka.Dal.Tours
 
 						if (!decimal.TryParse(group.Value?.ToString().Replace('.', ','), out var d))
 						{
-							throw new Exception("Неверное значение группы");
+							throw new Exception($"Неверное значение группы '{group.Value}'");
 						}
 
 						KoTypeOfRoom correctTypeOfRoom = KoTypeOfRoom.None;
@@ -148,8 +142,7 @@ namespace KadOzenka.Dal.Tours
 							SubGroup = group.StringValue.Replace(',', '.'),
 							TypeRoom_Code = correctTypeOfRoom,
 							TypeProperty_Code = objectType,
-							TourId = tourId,
-							TerritoryType = territoryType?.Value != null ? territoryType.StringValue : ""
+							TourId = tourId
 						}.Save();
 
 						lock (locked)

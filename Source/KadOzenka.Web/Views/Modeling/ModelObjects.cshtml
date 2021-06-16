@@ -6,6 +6,10 @@
 </div>
 
 
+<!-- Модальное окно с графиком вылетов -->
+<div id="modelObjectsDiagramModal" style="display: none;">
+</div>
+
 
 <!-- Модальное окно с результатами исключения объектов из расчета после загрузки Excel-файла -->
 <div id="excludeModelObjectsFromCalculationResult" style="display: none; padding: 2%;">
@@ -57,7 +61,7 @@
 
 
 
-<div class="form-horizontal" style="padding: 2%;">
+<div id="mainBlock" class="form-horizontal" style="padding: 2%;">
     <div class="form-group">
         <div class="col-sm-2">
             @Html.CustomLabel("Модель")
@@ -112,6 +116,12 @@
         <a class="k-button k-button-icon" id="updateBtn" style="width:250px;">
             <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
             Обновить объекты
+        </a>
+    </div>
+    <div class="form-group">
+        <a class="k-button k-button-icon" id="modelObjectsDiagramBtn" style="width:250px;">
+            <span class="k-icon k-i-table-properties" style="padding-right: 30%"></span>
+           График вылетов
         </a>
     </div>
     <div class="form-group" style="padding: 1% 0 2% 0">
@@ -188,6 +198,7 @@
         //initFactorsGrid();
 
         $('#updateBtn').on('click', showModelObjectsUpdatingConstructor);
+        $('#modelObjectsDiagramBtn').on('click', showModelObjectsDiagram);
     });
 
 
@@ -232,6 +243,7 @@
             success: function (result) {
                 if (!result.successfulModels || result.successfulModels.length == 0) {
                     $("#updateBtn").addClass('k-state-disabled');
+                    $("#modelObjectsDiagramBtn").addClass('k-state-disabled');
                 }
                 generateGrid(result.successfulModels, successfulObjectsGridId,
                     setIsExcludedCheckboxForSuccessfulObjects,
@@ -803,6 +815,27 @@
             },
             complete: function() {
                 kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function showModelObjectsDiagram() {
+        kendo.ui.progress($('#mainBlock'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ModelObjectsDiagram", "Modeling")',
+            data: { modelId: '@Model.Id' },
+            success: function (response) {
+                $("#modelObjectsDiagramModal").html(response);
+                var modal = $("#modelObjectsDiagramModal");
+                ShowModal(modal, '90%', '70%', "График вылетов");
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('#mainBlock'), false);
             }
         });
     }

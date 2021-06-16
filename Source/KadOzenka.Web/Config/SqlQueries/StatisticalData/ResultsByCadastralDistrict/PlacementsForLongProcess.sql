@@ -57,14 +57,11 @@ functionalSubGroupNameAttrValues as (
 ),
 
 --TOUR ATTRIBUTES
-objectTypeAttrValues as (
+cadastralQuartalAttrValues as (
 	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {18})
 ),
-cadastralQuartalAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {19})
-),
 subGroupNumberAttrValues as (
-	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {20})
+	select * from  gbu_get_allpri_attribute_values( ARRAY(select object_id from object_ids), {19})
 ),
 
 
@@ -91,7 +88,6 @@ SELECT
     usageTypeCodeSourceAttr.attributeValue as UsageTypeCodeSource,
     subGroupUsageTypeCodeAttr.attributeValue as SubGroupUsageTypeCode,
     functionalSubGroupNameAttr.attributeValue as FunctionalSubGroupName,
-    objectTypeAttr.attributeValue as ObjectType,
     cadastralQuartalAttr.attributeValue as CadastralQuartal,
     subGroupNumberAttr.attributeValue as SubGroupNumber
 		FROM KO_UNIT unit
@@ -112,7 +108,6 @@ SELECT
             LEFT JOIN usageTypeCodeSourceAttrValues usageTypeCodeSourceAttr ON unit.object_id=usageTypeCodeSourceAttr.objectId
             LEFT JOIN subGroupUsageTypeCodeAttrValues subGroupUsageTypeCodeAttr ON unit.object_id=subGroupUsageTypeCodeAttr.objectId
             LEFT JOIN functionalSubGroupNameAttrValues functionalSubGroupNameAttr ON unit.object_id=functionalSubGroupNameAttr.objectId
-            LEFT JOIN objectTypeAttrValues objectTypeAttr ON unit.object_id=objectTypeAttr.objectId
             LEFT JOIN cadastralQuartalAttrValues cadastralQuartalAttr ON unit.object_id=cadastralQuartalAttr.objectId
             LEFT JOIN subGroupNumberAttrValues subGroupNumberAttr ON unit.object_id=subGroupNumberAttr.objectId
 		{0}
@@ -146,7 +141,6 @@ select
   UsageTypeCodeSource,
   SubGroupUsageTypeCode,
   FunctionalSubGroupName,
-  ObjectType,
   CadastralQuartal,
   SubGroupNumber,
   p.purpose as ParentPurpose,

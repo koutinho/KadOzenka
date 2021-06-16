@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 		}
 
 
-		protected override void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, string pathSchema, OMTask task,
+		protected override void ImportGkn(DataImporterGkn dataImporterGkn, FileStream fileStream, OMTask task,
 			CancellationToken cancellationToken, object columnsMappingObj = null)
 		{
 			var columnsMappingStr = columnsMappingObj?.ToString();
@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Importers
 			DataImporterGknValidator.ValidateExcelColumnsForNotPetition(columnsMapping.Select(x => x.AttributeId).ToList());
 
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-			dataImporterGkn.ImportGknFromExcel(excelFile, pathSchema, task, columnsMapping, cancellationToken);
+			dataImporterGkn.ImportGknFromExcel(excelFile, task, columnsMapping, cancellationToken);
 		}
 	}
 }

@@ -21,6 +21,10 @@
     <Folder Include="GeneratedScripts\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\EmbeddedResource\EmbeddedResource.csproj" />
+  </ItemGroup>
+
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="attrib /S &quot;../../../../../Database/GeneratedScripts/*.*&quot; -R&#xD;&#xA;&#xD;&#xA;attrib /S &quot;C:\TFSProjects\CIPJS\KadOzenka\Source\Database\GeneratedScripts\*.*&quot; -R" />
   </Target>
