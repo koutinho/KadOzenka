@@ -5,6 +5,7 @@ using KadOzenka.Common.Tests;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
 using KadOzenka.Dal.ObjectsCharacteristics.Resources;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Core.Register;
@@ -109,6 +110,29 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 					It.IsAny<bool>(),It.IsAny<bool>()), Times.Once);
 		}
 
+		[Test]
+		public void CanNot_Create_Characteristic_For_Egrn()
+		{
+			var dto = new CharacteristicDto
+			{
+				Name = RandomGenerator.GetRandomString(),
+				RegisterId = RosreestrRegisterService.Id
+			};
+
+			Assert.Throws<CaracteristicAdditionToEgrnException>(() => 
+				ObjectsCharacteristicsService.AddCharacteristic(dto));
+
+			RegisterAttributeService.Verify(
+				x => x.CreateRegisterAttribute(It.IsAny<string>(), It.IsAny<long>(), It.IsAny<RegisterAttributeType>(),
+					It.IsAny<bool>(), It.IsAny<long>(), It.IsAny<bool>()), Times.Never);
+			ObjectCharacteristicsRepository.Verify(
+				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
+					It.IsAny<bool>(), It.IsAny<bool>()), Times.Never);
+		}
+
+
+		#region Support Methods
+
 		private void MockRegisterAttributeServiceCreateRegisterAttribute(CharacteristicDto dto)
 		{
 			RegisterAttributeService
@@ -121,5 +145,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 		{
 			RegisterCacheWrapper.Setup(x => x.GetRegisterData((int)registerId)).Returns(new RegisterData(){AllpriPartitioning = allpriPartitioningType});
 		}
+
+		#endregion
 	}
 }

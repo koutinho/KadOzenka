@@ -79,6 +79,15 @@ namespace KadOzenka.Dal.ObjectsCharacteristics.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Добавление характеристик для ЕГРН запрещено.
+        /// </summary>
+        public static string ForbiddenAdditionToEgrn {
+            get {
+                return ResourceManager.GetString("ForbiddenAdditionToEgrn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Источник с Id {0} не найден.
         /// </summary>
         public static string SourceDoesNotExist {

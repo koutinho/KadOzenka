@@ -3,6 +3,7 @@ using KadOzenka.Common.Tests;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
 using KadOzenka.Dal.ObjectsCharacteristics.Resources;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Moq;
 using NUnit.Framework;
 
@@ -96,6 +97,27 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
 					It.IsAny<bool>(),It.IsAny<bool>()), Times.Once);
+			ObjectCharacteristicsRepository.Verify(
+				x => x.CreateOrUpdateCharacteristicSetting(dto.Id, dto.UseParentAttributeForLivingPlacement,
+					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace, dto.DisableAttributeEditing), Times.Once);
+		}
+
+		[Test]
+		public void Can_Edit_Characteristic_For_Egrn()
+		{
+			var dto = new CharacteristicDto
+			{
+				Id = RandomGenerator.GenerateRandomInteger(),
+				Name = RandomGenerator.GetRandomString(),
+				RegisterId = RosreestrRegisterService.Id
+			};
+
+			ObjectsCharacteristicsService.EditCharacteristic(dto);
+
+			ObjectCharacteristicsRepository.Verify(
+				x => x.CreateOrUpdateCharacteristicSetting(It.IsAny<long>(), It.IsAny<bool>(), It.IsAny<bool>(),
+					It.IsAny<bool>(), It.IsAny<bool>()), Times.Once);
+			
 			ObjectCharacteristicsRepository.Verify(
 				x => x.CreateOrUpdateCharacteristicSetting(dto.Id, dto.UseParentAttributeForLivingPlacement,
 					dto.UseParentAttributeForNotLivingPlacement, dto.UseParentAttributeForCarPlace, dto.DisableAttributeEditing), Times.Once);
