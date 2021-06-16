@@ -11,6 +11,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Tasks;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
@@ -22,6 +23,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private static readonly int PropertyTypeColumn = 2;
 		private static readonly int KnColumn = 3;
 		private static readonly int ErrorColumn = 4;
+		private readonly ILogger _log = Log.ForContext<CalculateCadastralPriceLongProcess>();
+
 
 		public static long AddProcessToQueue(KOCalcSettings settings)
 		{
@@ -30,6 +33,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			_log.ForContext("InputParameters", processQueue.Parameters).Debug("Старт процесса расчета. Входные параметры");
+
 			try
 			{
 				WorkerCommon.SetProgress(processQueue, 0);
@@ -48,13 +53,23 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", $"Операция была прервана: {ex.Message} (Подробнее в журнале: {errorId})");
 				throw;
 			}
+
+			_log.Debug("Финиш процесса расчета");
 		}
 
 		private string PerformProc(KOCalcSettings settings)
 		{
+			_log.Debug("Начат расчет");
 			var result = OMGroup.CalculateSelectGroup(settings);
-			var urlToDownload = FormReport(result);
+			_log.ForContext("Result", result, true).Debug("Закончен расчет. Возвращенное значение.");
 
+
+			_log.Debug("Начато формирование отчета");
+			var urlToDownload = FormReport(result);
+			_log.Debug("Закончено формирование отчета");
+
+
+			_log.Debug("Начато сравнение данных ПККО и РСМ");
 			var taskIds = settings.TaskFilter;
 			if (taskIds.Count > 0)
 			{
@@ -66,7 +81,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					DEKOUnit.ExportToXml(null, unloadSettings, null);
 				}
 			}
-			
+			_log.Debug("Закончено сравнение данных ПККО и РСМ");
+
 
 			return urlToDownload;
 		}
