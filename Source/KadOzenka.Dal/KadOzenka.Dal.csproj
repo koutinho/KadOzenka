@@ -60,6 +60,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Api\Models\" />
     <Folder Include="DataImport\DataImportKoFactory\ImportKoFactoryCommon\" />
     <Folder Include="DataImport\DataImportKoFactory\Interface\" />
     <Folder Include="Documents\Dto\" />
