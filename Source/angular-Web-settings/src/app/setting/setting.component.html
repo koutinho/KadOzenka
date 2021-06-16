@@ -1,11 +1,23 @@
 <mat-toolbar style="justify-content: space-between;">
-  <h3>Serilog конфигурация</h3>
+  <div>
+    <h3>{{title}}</h3>
+  </div>
+
     <button mat-icon-button class="example-icon favorite-icon" (click)="logOut()">
         <mat-icon>logout</mat-icon>
       </button>
 </mat-toolbar>
 <div class="container-fluid row">
-  <div class="col-md-12" style="text-align: end">
+  <div class="col-md-6">
+    <mat-form-field>
+      <mat-select [(value)]="selectedSection" (selectionChange)="selectionChange($event)">
+        <mat-option value="serilog">Секция серилог</mat-option>
+        <mat-option value="core">Секция Платформы</mat-option>
+        <mat-option value="ko">Секция Кад. Оценки</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="col-md-6" style="text-align: end">
     <button mat-raised-button color="primary" (click)="saveSetting()" type="button">
       Сохранить
     </button>

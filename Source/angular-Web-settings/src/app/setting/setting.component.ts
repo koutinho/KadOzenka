@@ -1,12 +1,12 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {ApiService} from '../common/api/api';
-import {ControlModel} from "./model/control.model";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ISetting} from "../common/api/Interface/setting.interface";
 import JSONEditor from "jsoneditor";
-import {EnumRouteSetting} from "../common/route/enum.route";
 import {SettingService} from "./service/setting.service";
+import {MatSelectChange} from "@angular/material/select";
+import {EnumSection} from "../common/route/enum.route";
 
 @Component({
   selector: 'app-setting',
@@ -16,6 +16,8 @@ import {SettingService} from "./service/setting.service";
 })
 export class SettingComponent implements OnInit {
 
+  selectedSection: EnumSection = EnumSection.serilog;
+  title = "Секция серилог";
   showLoader: boolean = false;
   rootEditor!: JSONEditor;
   envEditor!: JSONEditor;
@@ -32,12 +34,16 @@ export class SettingComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.settingService.getSetting(this.activatedRoute.snapshot.data["setting"])
+  this.loadSection(this.selectedSection);
+  }
+
+  private loadSection(section: EnumSection){
+    this.settingService.getSetting(section)
       .subscribe((res: ISetting) => {
         this.settingBindToObject(res);
       }, (error: HttpErrorResponse) => {
-      alert(error.error)
-    });
+        alert(error.error)
+      });
   }
 
   logOut(){
@@ -51,12 +57,14 @@ export class SettingComponent implements OnInit {
     const envConfig = data.EnvConfig && JSON.parse(data.EnvConfig);
 
     const container: HTMLElement = this.jsonEditorRoot.nativeElement;
+    container.innerText = "";
     const options = {}
     this.rootEditor = new JSONEditor(container, options)
     this.rootEditor.set(rootConfig);
 
 
     const containerEnv: HTMLElement = this.jsonEditorEnv.nativeElement;
+    containerEnv.innerText = "";
     this.envEditor = new JSONEditor(containerEnv, options)
     this.envEditor.set(envConfig);
   }
@@ -68,7 +76,7 @@ export class SettingComponent implements OnInit {
       EnvConfig: JSON.stringify(this.envEditor.get())
     }
 
-    this.api.settingApi.setSetting(data).subscribe((res) => {
+    this.settingService.setSetting(data, this.selectedSection).subscribe((res) => {
       this.showLoader = false;
       alert("Успешно сохранено")
     }, (error: HttpErrorResponse) => {
@@ -76,6 +84,18 @@ export class SettingComponent implements OnInit {
       alert(error.error)
     })
 
+  }
+
+  selectionChange(event: MatSelectChange){
+    const { value } = event;
+    if(value){
+      this.loadSection(value)
+      switch (value){
+        case EnumSection.serilog: this.title = "Секция серилог"; break;
+        case EnumSection.core: this.title = "Секция платформы"; break;
+        case EnumSection.ko: this.title = "Секция Кад. Оценки"; break;
+      }
+    }
   }
 
 }

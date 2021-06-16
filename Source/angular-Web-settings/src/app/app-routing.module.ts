@@ -3,43 +3,22 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './common/guards/auth.guard';
 import { LoginComponent } from './login/login/login.component';
 import { SettingComponent } from './setting/setting.component';
-import {EnumRouteSetting} from "./common/route/enum.route";
+import {EnumSection} from "./common/route/enum.route";
 
 const routes: Routes = [
     {
       path: '',
       pathMatch: 'full',
-      redirectTo: '/setting/serilog',
+      redirectTo: '/setting',
     },
-  {
-    path: 'setting',
-    pathMatch: 'full',
-    redirectTo: '/setting/serilog',
-  },
     {
-      path: 'setting/serilog',
+      path: 'setting',
       component: SettingComponent,
       canActivate: [AuthGuard],
       data: {
-        setting: EnumRouteSetting.serilog
+        setting: EnumSection.serilog
       }
     },
-  {
-    path: 'setting/ko',
-    component: SettingComponent,
-    canActivate: [AuthGuard],
-    data: {
-      setting: EnumRouteSetting.ko
-    }
-  },
-  {
-    path: 'setting/core',
-    component: SettingComponent,
-    canActivate: [AuthGuard],
-    data: {
-      setting: EnumRouteSetting.core
-    }
-  },
     {
       path: 'signIn',
       component: LoginComponent

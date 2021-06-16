@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Core.Shared.Extensions;
+using KadOzenka.Dal.Api.Enums;
 using KadOzenka.Dal.Api.Models;
 using Newtonsoft.Json;
 using Serilog;
@@ -9,38 +11,96 @@ namespace KadOzenka.Dal.Api.Service
 {
 	public class ConfigService
 	{
-		private ILogger _log;
-
-		private string _envPath;
+		private readonly ILogger _log;
+		private readonly string _envPath;
+		private readonly string _rootPath = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "appsettings.json";
 		public ConfigService(ILogger logger,string env)
 		{
 			_log = logger;
 			_envPath = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + $"appsettings.{env}.json";
 		}
-		private readonly string _rootPath = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "appsettings.json";
+
+		#region serilog section
 
 		public ConfigDto GetSerilogConfig()
 		{
+			return GetConfig(ConfigType.Serilog);
+		}
+
+		public void SetSerilogConfig(ConfigDto configDto)
+		{
+			SetConfig(configDto, ConfigType.Serilog);
+
+		}
+
+		#endregion
+
+		#region core section
+
+		public ConfigDto GetCoreConfig()
+		{
+			return GetConfig(ConfigType.Core);
+		}
+
+		public void SetCoreConfig(ConfigDto configDto)
+		{
+			SetConfig(configDto, ConfigType.Core);
+
+		}
+
+		#endregion
+
+		#region ko section
+
+		public ConfigDto GetKoConfig()
+		{
+			return GetConfig(ConfigType.KoConfig);
+		}
+
+		public void SetKoConfig(ConfigDto configDto)
+		{
+			SetConfig(configDto, ConfigType.KoConfig);
+
+		}
+
+		#endregion
+
+		private ConfigDto GetConfig(ConfigType configType)
+		{
+
 			var file = File.ReadAllText(_rootPath);
 			var config = JsonConvert.DeserializeObject<dynamic>(file);
-			var serilogConfig = config?.Serilog;
-			if (serilogConfig == null)
+
+			dynamic сonfigSection = null;
+	
+			switch (configType)
 			{
-				throw new Exception("Конфигурация для Серилога не найдена");
+				case ConfigType.Serilog: сonfigSection = config?.Serilog; break;
+				case ConfigType.Core: сonfigSection = config?.Core; break;
+				case ConfigType.KoConfig: сonfigSection = config?.KoConfig; break;
 			}
 
 			var res = new ConfigDto();
-			res.RootConfig = JsonConvert.SerializeObject(serilogConfig);
+			if (сonfigSection != null)
+			{
+				res.RootConfig = JsonConvert.SerializeObject(сonfigSection);
+			}
+			else
+			{
+				_log.Verbose("Секция {configType} не найдена", configType.GetEnumDescription());
+			}
+
 
 			if (File.Exists(_envPath))
 			{
 				var fileEnv = File.ReadAllText(_envPath);
 				var configEnv = JsonConvert.DeserializeObject<dynamic>(fileEnv);
-				var serilogConfigEnv = configEnv?.Serilog;
+				string currentSection = configType.ToString();
+				var currentConfigEnv = configEnv?[currentSection];
 
-				if (serilogConfigEnv != null)
+				if (currentConfigEnv != null)
 				{
-					res.EnvConfig = JsonConvert.SerializeObject(serilogConfigEnv);
+					res.EnvConfig = JsonConvert.SerializeObject(currentConfigEnv);
 				}
 			}
 
@@ -48,19 +108,32 @@ namespace KadOzenka.Dal.Api.Service
 			return res;
 		}
 
-		public void SetSerilogConfig(ConfigDto configDto)
+		private void SetConfig(ConfigDto configDto, ConfigType configType)
 		{
 			var file = File.ReadAllText(_rootPath);
 			var config = JsonConvert.DeserializeObject<dynamic>(file);
-			if (config?.Serilog == null)
+
+			dynamic сonfigSection = null;
+			switch (configType)
 			{
-				throw new Exception("Конфигурация для Серилога не найдена");
+				case ConfigType.Serilog: сonfigSection = config?.Serilog; break;
+				case ConfigType.Core: сonfigSection = config?.Core; break;
+				case ConfigType.KoConfig: сonfigSection = config?.KoConfig; break;
 			}
-			config.Serilog = JsonConvert.DeserializeObject<dynamic>(configDto.RootConfig);
+
+			if (сonfigSection != null)
+			{
+				string sectionName = configType.ToString();
+				config[sectionName] = JsonConvert.DeserializeObject<dynamic>(configDto.RootConfig);
+			}
+			else
+			{
+				_log.Verbose("Секция {section} не существует в основном файле конфигурации", configType.GetEnumDescription());
+			}
 
 			using (FileStream fs = File.OpenWrite(_rootPath))
 			{
-				var str = JsonConvert.SerializeObject(config);
+				string str = JsonConvert.SerializeObject(config);
 				byte[] bytes = Encoding.UTF8.GetBytes(str);
 
 				fs.SetLength(0);
@@ -74,9 +147,17 @@ namespace KadOzenka.Dal.Api.Service
 			{
 				var fileEnv = File.ReadAllText(_envPath);
 				var configEnv = JsonConvert.DeserializeObject<dynamic>(fileEnv);
-				if (configEnv?.Serilog != null)
+
+				switch (configType)
 				{
-					configEnv.Serilog = JsonConvert.DeserializeObject<dynamic>(configDto.EnvConfig);
+					case ConfigType.Serilog: сonfigSection = configEnv?.Serilog; break;
+					case ConfigType.Core: сonfigSection = configEnv?.Core; break;
+					case ConfigType.KoConfig: сonfigSection = configEnv?.KoCongig; break;
+				}
+				if (сonfigSection != null)
+				{
+					string sectionName = configType.ToString();
+					configEnv[sectionName] = JsonConvert.DeserializeObject<dynamic>(configDto.EnvConfig);
 
 					using (FileStream fs = File.OpenWrite(_envPath))
 					{
@@ -93,7 +174,6 @@ namespace KadOzenka.Dal.Api.Service
 				}
 
 			}
-
 		}
 	}
 }

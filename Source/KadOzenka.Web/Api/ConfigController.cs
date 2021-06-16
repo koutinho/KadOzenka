@@ -28,18 +28,20 @@ namespace KadOzenka.Web.Api
 			_configService = new ConfigService(_log, env);
 		}
 
+		#region serilog section
+
 		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
-		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось получить настройки конфигурации")]
-		[Route("GetConfigurations")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось получить настройки конфигурации серилога")]
+		[Route("GetSerilogConfigurations")]
 		[HttpGet]
-		public IActionResult GetConfigurations()
+		public IActionResult GetSerilogConfigurations()
 		{
 
 			ConfigDto config;
 			try
 			{
 				config = _configService.GetSerilogConfig();
-			
+
 			}
 			catch (Exception e)
 			{
@@ -50,10 +52,10 @@ namespace KadOzenka.Web.Api
 		}
 
 		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
-		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось установить настройки конфигурации")]
-		[Route("SetConfigurations")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось установить настройки конфигурации серилога")]
+		[Route("SetSerilogConfigurations")]
 		[HttpPost]
-		public IActionResult SetConfigurations(ConfigDto config)
+		public IActionResult SetSerilogConfigurations(ConfigDto config)
 		{
 			try
 			{
@@ -67,6 +69,96 @@ namespace KadOzenka.Web.Api
 			}
 			return Ok();
 		}
+
+		#endregion
+
+		#region core section
+
+		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось получить настройки конфигурации платформы")]
+		[Route("GetCoreConfigurations")]
+		[HttpGet]
+		public IActionResult GetCoreConfigurations()
+		{
+
+			ConfigDto config;
+			try
+			{
+				config = _configService.GetCoreConfig();
+
+			}
+			catch (Exception e)
+			{
+				_log.Error(e, e.Message);
+				return BadRequest(e.Message);
+			}
+			return Ok(config);
+		}
+
+		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось установить настройки конфигурации платформы")]
+		[Route("SetCoreConfigurations")]
+		[HttpPost]
+		public IActionResult SetCoreConfigurations(ConfigDto config)
+		{
+			try
+			{
+				_configService.SetCoreConfig(config);
+
+			}
+			catch (Exception e)
+			{
+				_log.Error(e, e.Message);
+				return BadRequest(e.Message);
+			}
+			return Ok();
+		}
+
+		#endregion
+
+		#region ko section
+		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось получить настройки конфигурации кад. оценки")]
+		[Route("GetKoConfigurations")]
+		[HttpGet]
+		public IActionResult GetKoConfigurations()
+		{
+
+			ConfigDto config;
+			try
+			{
+				config = _configService.GetKoConfig();
+
+			}
+			catch (Exception e)
+			{
+				_log.Error(e, e.Message);
+				return BadRequest(e.Message);
+			}
+			return Ok(config);
+		}
+
+		[SwaggerResponse(statusCode: 200, type: typeof(string), description: "OK")]
+		[SwaggerResponse(statusCode: (int)HttpStatusCode.BadRequest, type: typeof(string), description: "Не удалось установить настройки конфигурации кад. оценки")]
+		[Route("SetKoConfigurations")]
+		[HttpPost]
+		public IActionResult SetKoConfigurations(ConfigDto config)
+		{
+			try
+			{
+				_configService.SetKoConfig(config);
+
+			}
+			catch (Exception e)
+			{
+				_log.Error(e, e.Message);
+				return BadRequest(e.Message);
+			}
+			return Ok();
+		}
+
+
+		#endregion
 
 	}
 }

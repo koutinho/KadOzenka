@@ -11,10 +11,26 @@ export class SettingApi{
   }
 
   getSettingSerilog(): Observable<ISetting>{
-    return this.http.get<ISetting>("api/Config/GetConfigurations")
+    return this.http.get<ISetting>("api/Config/GetSerilogConfigurations")
+  }
+
+  getSettingCore(): Observable<ISetting>{
+    return this.http.get<ISetting>("api/Config/GetCoreConfigurations")
+  }
+
+  getSettingKo(): Observable<ISetting>{
+    return this.http.get<ISetting>("api/Config/GetKoConfigurations")
   }
 
   setSettingSerilog(data: ISetting): Observable<boolean>{
-    return this.http.post("api/Config/SetConfigurations", data)
+    return this.http.post("api/Config/SetSerilogConfigurations", data)
+  }
+
+  setSettingCore(data: ISetting): Observable<boolean>{
+    return this.http.post("api/Config/SetCoreConfigurations", data)
+  }
+
+  setSettingKo(data: ISetting): Observable<boolean>{
+    return this.http.post("api/Config/SetKoConfigurations", data)
   }
 }

@@ -1,5 +1,5 @@
-export enum EnumRouteSetting{
-  serilog = 0,
-  ko = 1,
-  core = 2
+export enum EnumSection{
+  serilog = "serilog",
+  ko = "ko",
+  core = "core"
 }
