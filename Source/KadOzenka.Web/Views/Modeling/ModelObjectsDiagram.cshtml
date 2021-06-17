@@ -2,7 +2,7 @@
 @using KadOzenka.Dal.Modeling.Entities
 @model KadOzenka.Web.Models.Modeling.ModelingObjectsDiagramModel
 
-<div id="chartBlock" style="padding: 3%; width: 100%;">
+<div id="chartBlock" style="padding: 3% 5%; width: 90%;">
     
     <div class="form-group">
         <div class="col-sm-12 col-sm-offset-2" style="width: 100%">
@@ -50,6 +50,21 @@
     .chart-container {
         width: 200%;
     }
+
+    /* Ширина ползунка */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Полоса за ползунком */
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Ползунок при наведении мыши */
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
 </style>
 
 
@@ -94,7 +109,7 @@
                 field: '@nameof(ObjectInfo.Price)',
                 categoryField: '@nameof(ObjectInfo.Id)',
                 markers: {
-                    size: 10
+                    size: 12
                 }
             }],
             //ось X
