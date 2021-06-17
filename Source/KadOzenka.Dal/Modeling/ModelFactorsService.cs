@@ -10,6 +10,9 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Exceptions.Factors;
+using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Resources;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.ES;
@@ -17,8 +20,17 @@ using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelFactorsService
+	public class ModelFactorsService : IModelFactorsService
 	{
+		private IModelFactorsRepository ModelFactorsRepository { get; }
+
+
+		public ModelFactorsService(IModelFactorsRepository modelFactorsRepository = null)
+		{
+			ModelFactorsRepository = modelFactorsRepository ?? new ModelFactorsRepository();
+		}
+
+
 		#region Факторы
 
 		public OMModelFactor GetFactorById(long? id)
@@ -250,7 +262,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				types.ForEach(type =>
 				{
-					new OMModelFactor
+					var newFactor = new OMModelFactor
 					{
 						ModelId = dto.ModelId,
 						FactorId = dto.FactorId,
@@ -261,7 +273,9 @@ namespace KadOzenka.Dal.Modeling
 						IsActive = dto.IsActive,
 						SignExponentiation = dto.SignExponentiation,
 						MarkType_Code = dto.MarkType
-					}.Save();
+					};
+
+					ModelFactorsRepository.Save(newFactor);
 				});
 
 				ts.Complete();
@@ -285,11 +299,12 @@ namespace KadOzenka.Dal.Modeling
 							x.DictionaryId,
 							x.IsActive
 						}).Execute();
+					
 					factors.ForEach(x =>
 					{
 						x.DictionaryId = dto.DictionaryId;
 						x.IsActive = dto.IsActive;
-						x.Save();
+						ModelFactorsRepository.Save(x);
 					});
 					mustResetTrainingResult = true;
 				}
@@ -297,7 +312,7 @@ namespace KadOzenka.Dal.Modeling
 				factor.PreviousWeight = dto.PreviousWeight ?? 1;
 				factor.SignExponentiation = dto.SignExponentiation;
 				factor.MarkType_Code = dto.MarkType;
-				factor.Save();
+				ModelFactorsRepository.Save(factor);
 
 				ts.Complete();
 			}
@@ -309,7 +324,7 @@ namespace KadOzenka.Dal.Modeling
 		{
 			ValidateManualFactor(dto);
 
-			var id = new OMModelFactor
+			var newFactor = new OMModelFactor
 			{
 				ModelId = dto.GeneralModelId,
 				FactorId = dto.FactorId,
@@ -322,7 +337,9 @@ namespace KadOzenka.Dal.Modeling
 				AlgorithmType_Code = dto.Type,
 				SignExponentiation = dto.SignExponentiation,
 				MarkType_Code = dto.MarkType
-			}.Save();
+			};
+
+			var id = ModelFactorsRepository.Save(newFactor);
 
 			RecalculateFormula(dto.GeneralModelId);
 
@@ -343,7 +360,7 @@ namespace KadOzenka.Dal.Modeling
 			factor.SignExponentiation = dto.SignExponentiation;
 			factor.MarkType_Code = dto.MarkType;
 
-			factor.Save();
+			ModelFactorsRepository.Save(factor);
 
 			RecalculateFormula(dto.GeneralModelId);
 		}
@@ -465,7 +482,7 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception("Не передан ИД фактора");
 
 			if (markType == MarkType.None)
-				throw new Exception("Не указан тип метки");
+				throw new EmptyMarkTypeForFactor();
 
 			bool isTheSameAttributeExists;
 			if (type == KoAlgoritmType.None)

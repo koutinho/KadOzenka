@@ -70,6 +70,15 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не указан тип метки.
+        /// </summary>
+        public static string EmptyMarkType {
+            get {
+                return ResourceManager.GetString("EmptyMarkType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не передан идентификатор Модели.
         /// </summary>
         public static string EmptyModelId {
