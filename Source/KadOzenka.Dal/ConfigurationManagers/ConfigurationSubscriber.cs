@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.ConfigurationManagers
 
 		private static void InvokeChanged(IConfigurationRoot config)
 		{
-			Log.Debug("Спаботала подписка на изменение конфигурационного файла");
+			Log.Debug("Сработала подписка на изменение конфигурационного файла");
 
 			KoConfigManager manger = new KoConfigManager();
 			config.GetSection("KoConfig").Bind(manger);
