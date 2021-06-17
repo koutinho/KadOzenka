@@ -555,11 +555,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_CALCULATE_CADASTRAL_PRICE)]
         public JsonResult CalculateCadastralPrice(CadastralPriceCalculationModel model)
         {
-            if (model.TaskFilter == null || model.TaskFilter.Count == 0)
-                throw new ArgumentException("Не выбраны задания на оценку");
-
-            if (!model.IsAllGroups && (model.SubGroups == null || model.SubGroups.Count == 0))
-                throw new ArgumentException("Не выбраны группы");
+	        if (!ModelState.IsValid)
+		        return GenerateMessageNonValidModel();
 
             var settings = CadastralPriceCalculationModel.UnMap(model);
 

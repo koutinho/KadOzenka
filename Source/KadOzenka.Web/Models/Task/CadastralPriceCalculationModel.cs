@@ -5,7 +5,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
-    public class CadastralPriceCalculationModel
+    public class CadastralPriceCalculationModel : IValidatableObject
     {
         [Display(Name = "Тур оценки")]
         public long TourId { get; set; }
@@ -44,6 +44,15 @@ namespace KadOzenka.Web.Models.Task
                 CalcAllGroups = model.IsAllGroups,
                 CalcGroups = model.IsAllGroups ? null : model.SubGroups
             };
+        }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+	        if (TaskFilter == null || TaskFilter.Count == 0)
+		        yield return new ValidationResult("Не выбраны задания на оценку");
+
+	        if (!IsAllGroups && (SubGroups == null || SubGroups.Count == 0))
+		        yield return new ValidationResult("Не выбраны группы");
         }
     }
 }
