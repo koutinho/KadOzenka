@@ -184,6 +184,11 @@
                     template: "#=SignAdd ? 'Да' : 'Нет'#"
                 },
                 {
+                    field: 'SignExponentiation',
+                    title: 'Возведение в степень',
+                    template: "#=SignExponentiation ? 'Да' : 'Нет'#"
+                },
+                {
                     field: 'SignMarket',
                     title: 'Метка',
                     template: "#=SignMarket ? 'Да' : 'Нет'#"
@@ -194,7 +199,11 @@
                 },
                 {
                     field: 'Coefficient',
-                    title: 'Вес'
+                    title: 'Поправка'
+                },
+                {
+                    field: 'MarkType',
+                    title: 'Тип метки'
                 }
             ],
             width: '100%',
@@ -346,7 +355,7 @@
                     UpdateView();
                 }
             },
-            800, 400);
+            800, 450);
     }
 
 
@@ -361,7 +370,7 @@
                         UpdateView();
                     }
                 },
-                800, 400
+                800, 450
             );
         }
     }

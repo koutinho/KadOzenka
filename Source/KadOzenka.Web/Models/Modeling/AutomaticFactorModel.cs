@@ -2,6 +2,7 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -10,6 +11,7 @@ namespace KadOzenka.Web.Models.Modeling
 	{
 		public long Id { get; set; }
 		public long? ModelId { get; set; }
+		public bool IsNewFactor => Id == -1;
 		
 		[Display(Name = "Алгоритм расчета")]
 		public KoAlgoritmType AlgorithmType { get; set; }
@@ -28,6 +30,12 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Использовать в модели")]
 		public bool? IsActive { get; set; }
 
+		[Display(Name = "Возведение в степень")]
+		public bool SignExponentiation { get; set; }
+
+		[Display(Name = "Тип метки")]
+		public MarkType MarkType { get; set; }
+
 
 		public static AutomaticFactorModel ToModel(OMModelFactor factor)
 		{
@@ -39,7 +47,9 @@ namespace KadOzenka.Web.Models.Modeling
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
 				PreviousWeight = factor.PreviousWeight,
-				IsActive = factor.IsActive.GetValueOrDefault()
+				IsActive = factor.IsActive.GetValueOrDefault(),
+				SignExponentiation = factor.SignExponentiation.GetValueOrDefault(),
+				MarkType = factor.MarkType_Code
 			};
 		}
 
@@ -53,7 +63,9 @@ namespace KadOzenka.Web.Models.Modeling
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
 				PreviousWeight = PreviousWeight,
-				IsActive = IsActive.GetValueOrDefault()
+				IsActive = IsActive.GetValueOrDefault(),
+				SignExponentiation = SignExponentiation,
+				MarkType = MarkType
 			};
 		}
 	}
