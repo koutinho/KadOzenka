@@ -3952,7 +3952,7 @@ namespace ObjectModel.KO
 
         private decimal _weight;
         /// <summary>
-        /// 21000500 Вес фактора (WEIGHT)
+        /// 21000500 Поправка (WEIGHT)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000500)]
         public decimal Weight
