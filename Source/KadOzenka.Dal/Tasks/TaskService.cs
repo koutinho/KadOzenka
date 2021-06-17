@@ -626,7 +626,7 @@ namespace KadOzenka.Dal.Tasks
 	        };
 	        query.AddColumn(OMUnit.GetColumn(x => x.ObjectId));
 	        query.AddPKColumn = false;
-	        registerObjectsList.Add(new RecycleBinService.GbuRegisterObjects((int)RosreestrRegisterService.RosreestrRegisterId, dto.IncomingDocument.Id, query.GetSql()));
+	        registerObjectsList.Add(new RecycleBinService.GbuRegisterObjects((int)Registers.GbuRegistersServices.RosreestrRegisterService.Id, dto.IncomingDocument.Id, query.GetSql()));
 
             var oksFactorRegister = TourFactorService.GetTourRegister(dto.Tour.Id, ObjectType.Oks);
 	        var zuFactorRegister = TourFactorService.GetTourRegister(dto.Tour.Id, ObjectType.ZU);

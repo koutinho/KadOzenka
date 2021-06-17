@@ -123,6 +123,9 @@
   <data name="EmptyCharacteristicSourceName" xml:space="preserve">
     <value>Имя источника не может быть пустым</value>
   </data>
+  <data name="ForbiddenAdditionToEgrn" xml:space="preserve">
+    <value>Добавление характеристик для ЕГРН запрещено</value>
+  </data>
   <data name="SourceDoesNotExist" xml:space="preserve">
     <value>Источник с Id {0} не найден</value>
   </data>
