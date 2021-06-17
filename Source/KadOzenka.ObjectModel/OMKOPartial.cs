@@ -1371,12 +1371,18 @@ namespace ObjectModel.KO
 
         private List<CalcErrorItem> Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup, PropertyTypes curTypeObject)
         {
+	        _log.Debug("Запущен расчет по {UnitsCount} ЕО типа {Type}. Механизм группировки группы - '{GroupAlgoritm}'",
+		        units.Count, curTypeObject.GetEnumDescription(), GroupAlgoritm_Code.GetEnumDescription());
+
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             if (units.Count == 0) return res;
 
             #region Моделирование
+            
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Model || this.GroupAlgoritm_Code == KoGroupAlgoritm.Etalon)
             {
+	            _log.Debug("Начата обработка моделирования");
+
                 int? factorReestrId = GetFactorReestrId(this);
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
                 var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
@@ -1827,13 +1833,21 @@ namespace ObjectModel.KO
                         }
                     });
                 }
+
+                _log.Debug("Закончена обработка моделирования");
             }
+
             #endregion
 
+
             #region Здания
+            
             #region Среднее (КР, КЛАДР)
+            
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Building)
             {
+	            _log.Debug("Начата обработка Здания -> Среднее (КР, КЛАДР)");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -1876,11 +1890,17 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Закончена обработка Здания -> Среднее (КР, КЛАДР)");
             }
             #endregion
+
             #region Минимальное (КР, КЛАДР)
+
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Building)
             {
+	            _log.Debug("Начата обработка Здания -> Минимальное (КР, КЛАДР)");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -1944,14 +1964,22 @@ namespace ObjectModel.KO
 
                     }
                 }
+
+                _log.Debug("Закончена обработка Здания -> Минимальное (КР, КЛАДР)");
             }
             #endregion
+
             #endregion
 
+
             #region Помещения
+
             #region Помещения по зданиям (КР, КЛАДР) (квартиры)
+
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding && curTypeObject == PropertyTypes.Pllacement)
             {
+	            _log.Debug("Начата обработка Помещения по зданиям (КР, КЛАДР) (квартиры)");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2018,11 +2046,17 @@ namespace ObjectModel.KO
                         }
                     }
                 }
+
+                _log.Debug("Начата обработка Помещения по зданиям (КР, КЛАДР) (квартиры)");
             }
             #endregion
+
             #region Среднее (КР, КЛАДР)
+
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Pllacement)
             {
+	            _log.Debug("Начата обработка Помещения Среднее (КР, КЛАДР)");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2074,11 +2108,17 @@ namespace ObjectModel.KO
                         }
                     }
                 }
+
+                _log.Debug("Закончена обработка Помещения Среднее (КР, КЛАДР)");
             }
             #endregion
+            
             #region Минимальное (КР, КЛАДР)
+            
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Pllacement)
             {
+	            _log.Debug("Начата обработка Помещения Минимальное (КР, КЛАДР)");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2131,14 +2171,22 @@ namespace ObjectModel.KO
                         }
                     }
                 }
+
+                _log.Debug("Закончена обработка Помещения Минимальное (КР, КЛАДР)");
             }
             #endregion
+            
             #endregion
 
+
             #region Сооружения
+
             #region Среднее
+
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Construction)
             {
+	            _log.Debug("Начата обработка Сооружения Среднее");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2181,11 +2229,18 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Закончена обработка Сооружения Среднее");
             }
+
             #endregion
+            
             #region Минимальное
+            
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Construction)
             {
+	            _log.Debug("Начата обработка Сооружения Минимальное");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2228,14 +2283,22 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Закончена обработка Сооружения Минимальное");
             }
             #endregion
+            
             #endregion
 
+
             #region Участки
+            
             #region Среднее
+            
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.AVG && curTypeObject == PropertyTypes.Stead)
             {
+	            _log.Debug("Начата обработка Участки Среднее");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2278,11 +2341,17 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Законена обработка Участки Среднее");
             }
             #endregion
+            
             #region Минимальное
+            
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.Min && curTypeObject == PropertyTypes.Stead)
             {
+	            _log.Debug("Начата обработка Участки Минимальное");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2325,13 +2394,21 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Закочена обработка Участки Минимальное");
             }
+
             #endregion
+            
             #endregion
 
+
             #region ОНС
+
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id > 300000)
             {
+	            _log.Debug("Начата обработка ОНС с ИД > 300000");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2384,9 +2461,14 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Закончена обработка ОНС с ИД > 300000");
             }
+
             if (this.GroupAlgoritm_Code == KoGroupAlgoritm.UnComplited && this.Id < 300000)
             {
+	            _log.Debug("Начата обработка ОНС с ИД < 300000");
+
                 OMTourGroup tourgroup = OMTourGroup.Where(x => x.GroupId == this.Id).SelectAll().ExecuteFirstOrDefault();
                 if (tourgroup != null)
                 {
@@ -2435,23 +2517,36 @@ namespace ObjectModel.KO
                         unit.Save();
                     }
                 }
+
+                _log.Debug("Закончена обработка ОНС с ИД < 300000");
             }
             #endregion
 
             return res;
         }
+        
+        
         public List<CalcErrorItem> Calculate(List<ObjectModel.KO.OMUnit> units, List<long> CalcParentGroup)
         {
+	        _log.Debug("Начат Предварительный расчет");
+
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             res.AddRange(Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Building), CalcParentGroup, PropertyTypes.Building));
             res.AddRange(Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Construction), CalcParentGroup, PropertyTypes.Construction));
             res.AddRange(Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.UncompletedBuilding), CalcParentGroup, PropertyTypes.UncompletedBuilding));
             res.AddRange(Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Stead), CalcParentGroup, PropertyTypes.Stead));
             res.AddRange(Calculate(units.FindAll(x => x.PropertyType_Code == PropertyTypes.Pllacement), CalcParentGroup, PropertyTypes.Pllacement));
+
+            _log.Debug("Закончен Предварительный расчет");
+
             return res;
         }
+
+
         public List<CalcErrorItem> CalculateResult(List<ObjectModel.KO.OMUnit> units)
         {
+	        _log.Debug("Начат Окончательный расчет");
+
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             //CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             //ParallelOptions options = new ParallelOptions
@@ -2460,6 +2555,8 @@ namespace ObjectModel.KO
             //    MaxDegreeOfParallelism = 1
             //};
             int ? factorReestrId = GetFactorReestrId(this);
+            _log.Debug("Найден реестр с ИД '{RegisterId}' из настроек тура", factorReestrId);
+
             if (factorReestrId != null)
             {
                 foreach(ObjectModel.KO.OMUnit unit in units)
@@ -2469,8 +2566,11 @@ namespace ObjectModel.KO
                 //Parallel.ForEach(units, options, item => CalculateResult(item, factorReestrId.Value));
             }
 
+            _log.Debug("Закончен Окончательный расчет");
+
             return res;
         }
+
         private List<CalcErrorItem> CalculateResult(ObjectModel.KO.OMUnit unit, int factorReestrId)
         {
             List<CalcErrorItem> res = new List<CalcErrorItem>();
@@ -2621,6 +2721,7 @@ namespace ObjectModel.KO
             unit.Save();
             return res;
         }
+        
         private void CalculateChildForEtalon(ObjectModel.KO.OMUnit unit)
         {
             List<OMUnit> childs = OMUnit.Where(x=>x.GroupId==unit.GroupId && x.UseAsPrototype==false && x.TourId==unit.TourId && x.Status_Code==unit.Status_Code && x.CadastralBlock==unit.CadastralBlock).SelectAll().Execute();
@@ -2644,33 +2745,43 @@ namespace ObjectModel.KO
 
         public List<CalcErrorItem> CalculateKorrect(List<ObjectModel.KO.OMUnit> units)
         {
+	        _log.Debug("Начат Расчет поправок/коэффициентов");
+
             List<CalcErrorItem> res = new List<CalcErrorItem>();
             List<ObjectModel.KO.OMGroupFactor> koeff = ObjectModel.KO.OMGroupFactor.Where(x => x.GroupId == this.Id).SelectAll().Execute();
             int? factorReestrId = GetFactorReestrId(this);
+            _log.Debug("Найден реестр с ИД '{RegisterId}' из настроек тура", factorReestrId);
 
             if (factorReestrId != null)
             {
                 OMModel model = OMModel.Where(x => x.GroupId == this.Id && x.IsActive.Coalesce(false) == true).SelectAll().ExecuteFirstOrDefault();
-                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
+                _log.Debug("Модель найдена {IsModelExists}", model != null);
+
                 if (model != null)
                 {
+	                var marks = OMMarkCatalog.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
+	                _log.Debug("Скачено {MarksCount} меток по группе с ИД '{modelGroupId}'", marks.Count, model.GroupId);
+
                     if (model.ModelFactor.Count == 0)
                         model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
 
                     foreach (OMModelFactor weight in model.ModelFactor)
                     {
-
-                        if (weight.SignMarket)
+	                    if (weight.SignMarket)
                             weight.FillMarkCatalogsFromList(marks, model.GroupId);
                     }
 
 
+                    _log.Debug("Начата обработка {UnitsCount} ЕО", units.Count);
                     foreach (ObjectModel.KO.OMUnit unit in units)
                     {
-                        res.AddRange(CalculateKorrect(model, unit, factorReestrId.Value, koeff));
+	                    res.AddRange(CalculateKorrect(model, unit, factorReestrId.Value, koeff));
                     }
+                    _log.Debug("Закончена обработка {UnitsCount} ЕО", units.Count);
                 }
             }
+
+            _log.Debug("Закончен Расчет поправок/коэффициентов");
 
             return res;
         }
@@ -2922,15 +3033,23 @@ namespace ObjectModel.KO
             List<CalcErrorItem> result = new List<CalcErrorItem>();
             if (setting.CalcAllGroups)
             {
-                List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.IdTour, setting.CalcParcel);
+	            _log.Debug("Выбран расчет по всем группам");
 
+                List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.IdTour, setting.CalcParcel);
+                var maxCalculationSettingsCount = RobotCalcGroups.Count;
+                _log.ForContext("TableName", "KO_AUTO_CALCULATION_SETTINGS").ForContext("RegisterId", "260")
+	                .Debug("В реестре с настройками автоматического расчета найдено {count} записей для Тура", maxCalculationSettingsCount);
+
+                var counter = 0;
                 foreach (ObjectModel.KO.OMAutoCalculationSettings AutoCalcGroup in RobotCalcGroups)
                 {
-                    if (AutoCalcGroup != null)
+	                if (AutoCalcGroup != null)
                     {
                         var CalcGroup = ObjectModel.KO.OMGroup.Where(x => x.Id == AutoCalcGroup.IdGroup).SelectAll().ExecuteFirstOrDefault();
                         if (CalcGroup != null)
                         {
+	                        _log.Debug("Начата обработка группы с ИД '{GroupId}' №{CurrentCount} из {MaxCount}", CalcGroup.Id, counter, maxCalculationSettingsCount);
+
                             List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                             foreach (long taskId in setting.TaskFilter)
                             {
@@ -2943,6 +3062,8 @@ namespace ObjectModel.KO
                                     Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code != PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                                 }
                             }
+                            _log.Debug("Скачено {Count} ЕО", Units.Count);
+
 
                             if (Units.Count > 0)
                             {
@@ -2953,40 +3074,50 @@ namespace ObjectModel.KO
                                     if (parentsGroup.ParentCalcGroupId != null)
                                         calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
                                 }
+                                _log.Debug("Скачено {Count} идентификаторов группы, на основе которой считается текущая группа", calcParentGroup.Count);
+
 
                                 if (AutoCalcGroup.CalcStage1)
                                 {
-                                    var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
+	                                var calculationResult = CalcGroup.Calculate(Units, calcParentGroup);
                                     result.AddRange(calculationResult);
                                 }
                                 if (AutoCalcGroup.CalcStage2)
                                 {
-                                    var calculationResult = CalcGroup.CalculateKorrect(Units);
+	                                var calculationResult = CalcGroup.CalculateKorrect(Units);
                                     result.AddRange(calculationResult);
                                 }
                                 if (AutoCalcGroup.CalcStage3)
                                 {
-                                    var calculationResult = CalcGroup.CalculateResult(Units);
+	                                var calculationResult = CalcGroup.CalculateResult(Units);
                                     result.AddRange(calculationResult);
                                 }
                             }
                         }
                     }
+
+	                counter++;
                 }
             }
             else
             {
-                List<ObjectModel.KO.OMGroup> CalcGroups = new List<OMGroup>();
+	            _log.ForContext("GroupIds", setting.CalcGroups, true)
+	                .Debug("Выбран расчет по конкретным группам ({Count} штуки)", setting.CalcGroups.Count);
 
+                List<ObjectModel.KO.OMGroup> CalcGroups = new List<OMGroup>();
                 foreach (long idGroup in setting.CalcGroups)
                 {
                     var group = ObjectModel.KO.OMGroup.Where(x => x.Id == idGroup).SelectAll().ExecuteFirstOrDefault();
                     if (group != null) CalcGroups.Add(group);
                 }
+
+                var counter = 0;
                 foreach (ObjectModel.KO.OMGroup CalcGroup in CalcGroups)
                 {
                     if (CalcGroup != null)
                     {
+	                    _log.Debug("Начата обработка группы с ИД '{GroupId}' №{CurrentCount} из {MaxCount}", CalcGroup.Id, counter, CalcGroups.Count);
+
                         List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
                         foreach (long taskId in setting.TaskFilter)
                         {
@@ -2999,6 +3130,8 @@ namespace ObjectModel.KO
                                 Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code != PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                             }
                         }
+                        _log.Debug("Скачено {Count} ЕО", Units.Count);
+
 
                         if (Units.Count > 0)
                         {
@@ -3009,6 +3142,7 @@ namespace ObjectModel.KO
                                 if (parentsGroup.ParentCalcGroupId != null)
                                     calcParentGroup.Add(parentsGroup.ParentCalcGroupId.Value);
                             }
+                            _log.Debug("Скачено {Count} идентификаторов группы, на основе которой считается текущая группа", calcParentGroup.Count);
 
                             if (setting.CalcStage1)
                             {
@@ -3028,6 +3162,8 @@ namespace ObjectModel.KO
                             }
                         }
                     }
+
+                    counter++;
                 }
             }
 

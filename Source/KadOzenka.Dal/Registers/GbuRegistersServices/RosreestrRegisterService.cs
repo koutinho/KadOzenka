@@ -8,7 +8,7 @@ namespace KadOzenka.Dal.Registers.GbuRegistersServices
 	{
 	    protected override string RegisterName => "Источник: ЕГРН";
 
-	    public long RosreestrRegisterId => RegisterId;
+        public static long Id => 2;
 
 	    /// <summary>
         /// Аттрибут "Наименование объекта"

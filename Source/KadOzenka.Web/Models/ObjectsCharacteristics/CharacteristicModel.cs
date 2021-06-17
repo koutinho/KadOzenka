@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Register;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 
@@ -75,6 +76,9 @@ namespace KadOzenka.Web.Models.ObjectsCharacteristics
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+	        if (Id == -1 && RegisterId == RosreestrRegisterService.Id)
+		        yield return new ValidationResult("Добавление характеристик для ЕГРН запрещено");
+
             if (Type == RegisterAttributeType.REFERENCE && !ReferenceId.HasValue)
             {
                 yield return new ValidationResult(errorMessage: ReferenceTypeWithoutReferenceLinkErrorMessage,

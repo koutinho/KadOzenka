@@ -1,0 +1,11 @@
+<div class="header">
+ <p>{{control.label || control.key}} секция</p>
+</div>
+<mat-form-field>
+  <mat-label>{{control.label || control.key}}</mat-label>
+  <textarea matInput
+            cdkTextareaAutosize
+            cdkAutosizeMinRows="1"
+            cdkAutosizeMaxRows="15"
+            [value]="getArrayValue()"></textarea>
+</mat-form-field>

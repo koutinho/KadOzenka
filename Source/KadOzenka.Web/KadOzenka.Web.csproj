@@ -37,14 +37,17 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Seq" Version="5.0.1" />
     <PackageReference Include="SerilogTimings" Version="2.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
-    <!--DotNetCliToolReference-->
-    <!--
+  </ItemGroup>
+  <!--DotNetCliToolReference-->
+  <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.3" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2" />
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.4" />
-	-->
   </ItemGroup>
+  <!--DotNetCliToolReference-->
   <!--Reference-->
   <ItemGroup>
     <Reference Include="DevExpress.Charts.v20.1.Core">

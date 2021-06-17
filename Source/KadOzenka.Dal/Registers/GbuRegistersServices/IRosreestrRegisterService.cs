@@ -4,8 +4,6 @@ namespace KadOzenka.Dal.Registers.GbuRegistersServices
 {
 	public interface IRosreestrRegisterService
 	{
-		long RosreestrRegisterId { get; }
-
 		/// <summary>
 		/// Аттрибут "Наименование объекта"
 		/// </summary>

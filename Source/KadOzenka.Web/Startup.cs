@@ -18,6 +18,7 @@ using System;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
@@ -52,8 +53,12 @@ using KadOzenka.Web.SignalR.AnalogCheck;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.OpenApi.Models;
 using Platform.Web.SignalR.BackgroundProcessWidget;
 using Platform.Web.SignalR.Messages;
 using Serilog.Context;
@@ -161,17 +166,38 @@ namespace CIPJS
                     options.Cookie.Name = "CIPJS.Session";
                     options.IdleTimeout = TimeSpan.FromMinutes(60);
                 });
-                services.AddKendo();
+
+				services.AddCors(op =>
+				{
+					op.AddDefaultPolicy(builder =>
+					{
+						builder.AllowAnyHeader().AllowAnyMethod().SetIsOriginAllowed(o => true).AllowCredentials();
+					});
+				});
+				services.AddKendo();
                 services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                    .AddCookie(options => { options.LoginPath = new PathString("/Account/Login"); });
+	                .AddCookie(options =>
+	                {
+		                options.LoginPath = new PathString("/Account/Login");
+		                options.Events = new MyCookieAuthenticationEvents();
+	                });
+
+
                 services.AddMvc(opts =>
                     {
                         opts.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser()
                             .Build()));
                         opts.Filters.Add(new MasterPageHeaderAttribute());
+                        opts.Conventions.Add(new WhitelistControllersConvention());
                     })
                     .AddNewtonsoftJson(options =>
                         options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
+                services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "KadOzenka Api"
+                }));
+
                 services.Configure<FormOptions>(x =>
                 {
                     x.ValueLengthLimit = int.MaxValue;
@@ -196,6 +222,8 @@ namespace CIPJS
                     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
                     .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
+              
+
                 var cultureInfo = new CultureInfo("ru-RU");
                 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
                 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
@@ -205,10 +233,11 @@ namespace CIPJS
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using (Operation.Time("Конфигурация pipeline http-запросов"))
+	        using (Operation.Time("Конфигурация pipeline http-запросов"))
             {
                 app.UseMiddleware<SerilogMiddleware>();
                 app.UseFastReport();
+                app.UseCors();
                 app.UseExceptionHandler(
                     builder =>
                     {
@@ -224,7 +253,6 @@ namespace CIPJS
                     });
 
                 app.UseStaticFiles();
-
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(
@@ -234,15 +262,13 @@ namespace CIPJS
 
                 app.UseSession();
                 app.UseAuthentication();
-
                 app.UseRouting();
                 app.UseAuthorization();
-                app.UseEndpoints(endpoints =>
+                app.UseEndpoints(endpoints => 
                 {
                     endpoints.MapHub<GbuLongProcessesProgressBarHub>("/gbuLongProcessesProgressBar");
                     endpoints.MapHub<KoUnloadResultsProgressHub>("/koUnloadResultsProgress");
                     endpoints.MapHub<EsHub>("/esCheckProgress");
-                    //endpoints.MapHub<ActivateCoordinates>("/ActivateCoordinates");
                     endpoints.MapHub<ActivateDistrictsRegionsZones>("/ActivateDistrictsRegionsZones");
                     endpoints.MapHub<UrgentMessageHub>("/coreMessageData");
                     endpoints.MapHub<NotificationMessageHub>("/coreMessagesList");
@@ -258,7 +284,6 @@ namespace CIPJS
 
                 app.UseSerilogRequestLogging();
                 app.UseWebSockets();
-
                 app.Use(async (context, next) =>
                 {
                     if (context.WebSockets.IsWebSocketRequest)
@@ -277,11 +302,39 @@ namespace CIPJS
                     else await next();
                 });
 
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                });
+
                 HttpContextHelper.HttpContextAccessor = app.ApplicationServices.GetService<IHttpContextAccessor>();
                 HttpContextHelper.WebRootPath = env.ContentRootPath;
                 LogContext.PushProperty("EnvironmentName", env.EnvironmentName);
                 LogContext.PushProperty("WebRootPath", env.WebRootPath);
             }
         }
+    }
+    public class WhitelistControllersConvention : IActionModelConvention
+    {
+	    public void Apply(ActionModel action)
+	    {
+		    action.ApiExplorer.IsVisible = action.Controller.Attributes.OfType<ApiControllerAttribute>().Any();
+	    }
+    }
+
+    public class MyCookieAuthenticationEvents : CookieAuthenticationEvents
+    {
+	    public override Task RedirectToLogin(RedirectContext<CookieAuthenticationOptions> redirectContext)
+	    {
+		    //get HttpContext
+		    var path = redirectContext.HttpContext.Request.Path;
+		    if (path.StartsWithSegments("/api", StringComparison.OrdinalIgnoreCase))
+		    {
+			    redirectContext.RedirectUri = "/api/auth/NotAuthorize";
+		    }
+		    return base.RedirectToLogin(redirectContext);
+	    }
+
     }
 }

@@ -140,7 +140,9 @@
     }
 </style>
 
+
 <script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {
 
@@ -302,6 +304,11 @@
             url: form.attr('action'),
             data: formObject,
             success: function(response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                }
                 Common.ShowMessage(response.Message);
             },
             error: function(response) {
