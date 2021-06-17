@@ -130,7 +130,7 @@ namespace KadOzenka.Dal.LongProcess
 
 	        var fsAttributes = GbuObjectService.GetAllAttributes(
 			        units.Select(x => x.ObjectId.GetValueOrDefault()).ToList(),
-			        new List<long> { RosreestrRegisterService.RosreestrRegisterId },
+			        new List<long> { Registers.GbuRegistersServices.RosreestrRegisterService.Id },
 			        new List<long> { fs.Id },
 			        DateTime.Now.GetEndOfTheDay(),
 				   attributesToDownload: new List<GbuColumnsToDownload> { GbuColumnsToDownload.Value });

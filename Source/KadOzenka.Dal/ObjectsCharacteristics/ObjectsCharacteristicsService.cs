@@ -8,6 +8,7 @@ using KadOzenka.Dal.ObjectsCharacteristics.Exceptions;
 using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics.Resources;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.Gbu;
 using Platform.Configurator;
 using Platform.Register;
@@ -45,6 +46,8 @@ namespace KadOzenka.Dal.ObjectsCharacteristics
         public long AddCharacteristic(CharacteristicDto characteristicDto)
         {
             ValidateCharacteristic(characteristicDto);
+            if (characteristicDto.RegisterId == RosreestrRegisterService.Id)
+	            throw new CaracteristicAdditionToEgrnException();
 
             long id;
             using (var ts = new TransactionScope())
