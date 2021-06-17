@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
+using Serilog;
 
 namespace KadOzenka.Dal.Logger
 {
@@ -18,6 +19,7 @@ namespace KadOzenka.Dal.Logger
 	{
 		private Task _taskLogProgress;
 		private CancellationTokenSource _cancelSourceLogProcess;
+		private readonly ILogger _log = Log.ForContext<LongProcessProgressLogger>();
 
 		public void StartLogProgress(OMQueue processQueue, Func<int> getMaxCount, Func<int> getCurrentCount)
 		{
@@ -29,21 +31,21 @@ namespace KadOzenka.Dal.Logger
 			_taskLogProgress = Task.Run(() => {
 				try
 				{
+					_log.Information("Запуск процесса логирования в потоке {Thread}", Thread.CurrentThread.ManagedThreadId);
 					while (true)
 					{
-						
-							if (token.IsCancellationRequested)
-							{
-								break;
-							}
+						if (token.IsCancellationRequested)
+						{
+							break;
+						}
 
-							LogProgress(getMaxCount(), getCurrentCount(), processQueue);
-							Thread.Sleep(1000);
+						LogProgress(getMaxCount(), getCurrentCount(), processQueue);
+						Thread.Sleep(1000);
 					}
 				}
 				catch (Exception ex)
 				{
-					Serilog.Log.Logger.Error(ex, "Ошибка во время логирования прогресса");
+					_log.Error(ex, "Ошибка во время логирования прогресса в потоке {Thread}", Thread.CurrentThread.ManagedThreadId);
 					throw;
 				}
 			}, token);
@@ -51,23 +53,36 @@ namespace KadOzenka.Dal.Logger
 
 		public void StopLogProgress()
 		{
+			_log.Information("Остановка процесса (вход в метод) логирования в потоке {Thread}", Thread.CurrentThread.ManagedThreadId);
 			if (_taskLogProgress == null)
 				return;
 
-			_cancelSourceLogProcess.Cancel();
+			_log.Information("Остановка процесса (отмена токена) логирования в потоке {Thread}", Thread.CurrentThread.ManagedThreadId);
+			if (!_cancelSourceLogProcess.IsCancellationRequested)
+				_cancelSourceLogProcess.Cancel();
 
+			_log.Information("Остановка процесса (Wait) логирования в потоке {Thread}", Thread.CurrentThread.ManagedThreadId);
 			try
 			{
 				_taskLogProgress.Wait();
 			}
+			catch (AggregateException ex)
+			{
+				if (ex.InnerException is TaskCanceledException)
+				{
+					_log.ForContext("CancelTokenSource", _cancelSourceLogProcess, true)
+						.Warning(ex, "Попытка остановить логирование прогресса при активном токене отмены");
+				}
+				else throw;
+			}
 			catch (TaskCanceledException ex)
 			{
-				Serilog.Log.Logger.ForContext("CancelTokenSource", _cancelSourceLogProcess,true)
+				_log.ForContext("CancelTokenSource", _cancelSourceLogProcess,true)
 					.Warning(ex, "Попытка остановить логирование прогресса при активном токене отмены");
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Logger.Error(ex, "Ошибка во время остановки процесса логирования прогресса");
+				_log.Error(ex, "Ошибка во время остановки процесса логирования прогресса");
 				_taskLogProgress = null;
 				throw;
 			}
@@ -88,7 +103,7 @@ namespace KadOzenka.Dal.Logger
 			//убираем 100, т.к. после обработки объектов процесс обычно выполняет еще какие-нибудь действия
 			if (newProgress != processQueue.Progress && newProgress != 100)
 			{
-				Serilog.Log.Logger.Debug("Обрабатывается объект {CurrentCount} из {MaxCount}", currentCount, maxCount);
+				_log.Debug("Обрабатывается объект {CurrentCount} из {MaxCount}", currentCount, maxCount);
 				WorkerCommon.SetProgress(processQueue, newProgress);
 			}
 		}
