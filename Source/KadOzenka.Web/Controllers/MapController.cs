@@ -280,7 +280,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult SetFilters(string filter)
         {
-            new CoreUiController(_coreUiService, _registersService).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
+            new CoreUiController(_coreUiService, _registersService, Mapper).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
             return Json(new { });
         }
 

@@ -14,6 +14,7 @@ using Core.Shared.Extensions;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common;
 using MarketPlaceBusiness.Interfaces;
+using AutoMapper;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -23,14 +24,16 @@ namespace KadOzenka.Web.Controllers
 		private readonly CoreUiService _service;
 		private readonly RegistersService _registersService;
 		private IMarketObjectService MarketObjectService { get; }
+		private IMapper _mapper { get; }
 		public string MarketObjectsRegisterViewId => "MarketObjects";
 
 
 		public PrefilterController(CoreUiService service, RegistersService registersService,
-			IMarketObjectService marketObjectService)
+			IMarketObjectService marketObjectService, IMapper mapper)
 		{
 			_service = service;
 			_registersService = registersService;
+			_mapper = mapper;
 			MarketObjectService = marketObjectService;
 		}
 
@@ -87,7 +90,7 @@ namespace KadOzenka.Web.Controllers
 		public ActionResult ConfigureSearchFilter(PrefilterDto model)
 		{
 			var filter = CreateConditionFilter(model);
-			var c = new CoreUiController(_service, _registersService);
+			var c = new CoreUiController(_service, _registersService, _mapper);
 			c.SaveSearchFilter(MarketObjectsRegisterViewId, filter);
 			return NoContent();
 		}
