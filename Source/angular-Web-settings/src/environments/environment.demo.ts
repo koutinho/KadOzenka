@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: ''
+  apiUrl: 'http://demo-miomo-ko.genix.pro/'
 };
