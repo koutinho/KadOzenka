@@ -6139,6 +6139,45 @@ namespace ObjectModel.Directory
     }
 }
 
+namespace ObjectModel.Directory.Ko
+{
+    /// <summary>
+    /// Тип метки (226)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 226)]
+    public enum MarkType : long
+    {
+		/// <summary>
+		/// Значение отсутствует (0)
+		/// </summary>
+		[Description("Значение отсутствует")]
+        [EnumCode("0")]
+        [ShortTitle("Значение отсутствует")]
+        None = 0,
+		/// <summary>
+		/// По умолчанию (1)
+		/// </summary>
+		[Description("По умолчанию")]
+        [EnumCode("1")]
+        [ShortTitle("По умолчанию")]
+        Default = 1,
+		/// <summary>
+		/// Прямая (2)
+		/// </summary>
+		[Description("Прямая")]
+        [EnumCode("2")]
+        [ShortTitle("Прямая")]
+        Straight = 2,
+		/// <summary>
+		/// Обратная (3)
+		/// </summary>
+		[Description("Обратная")]
+        [EnumCode("3")]
+        [ShortTitle("Обратная")]
+        Reverse = 3,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

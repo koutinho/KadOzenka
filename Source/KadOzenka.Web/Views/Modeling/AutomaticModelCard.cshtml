@@ -260,7 +260,9 @@
                             DictionaryName: { type: "string" },
                             Coefficient: { type: "number" },
                             PreviousWeight: { type: "number" },
-                            IsActive: { type: "boolean" }
+                            IsActive: { type: "boolean" },
+                            SignExponentiation: { type: "boolean" },
+                            MarkType: { type: "string" }
                         }
                     }
                 }
@@ -285,12 +287,6 @@
                     attributes: { style: "text-align: center;" }
                 },
                 {
-                    field: 'IsActive',
-                    title: 'Использовать в модели',
-                    template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
                     field: 'DictionaryName',
                     title: 'Справочник',
                     attributes: { style: "text-align: center;" }
@@ -303,6 +299,23 @@
                 {
                     field: 'PreviousWeight',
                     title: 'Коэффициент из предыдущего тура (для справки)',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'IsActive',
+                    title: 'Использовать в модели',
+                    template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'SignExponentiation',
+                    title: 'Возведение в степень',
+                    template: '<input type="checkbox" #= SignExponentiation ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
+                    attributes: { style: "text-align: center;" }
+                },
+                {
+                    field: 'MarkType',
+                    title: 'Тип метки',
                     attributes: { style: "text-align: center;" }
                 }
             ],
@@ -554,7 +567,7 @@
             '@Url.Action("AddAutomaticModelFactor", "Modeling", new { generalModelId = Model.Id})',
             'editFactorWindow',
             reloadGrid,
-            800, 400);
+            800, 450);
     }
 
     function editAttribute() {
@@ -563,7 +576,7 @@
             '@Url.Action("EditAutomaticModelFactor", "Modeling")' + '?id=' + selectedRowData.Id,
             'editFactorWindow',
             reloadGrid,
-            800, 400);
+            800, 450);
     }
 
     function deleteAttribute() {

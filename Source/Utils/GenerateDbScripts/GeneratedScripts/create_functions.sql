@@ -14378,7 +14378,7 @@ begin
     script := format('create table gbu_source%1$s_a_%2$s
 (
     id             bigint    not null
-        constraint reg_%1$s_a_%2$s_pk
+        constraint reg_%1$s_a_%2$s__pk
             primary key,
     object_id      bigint    not null
         constraint reg_%1$s_a_%2$s_fk_o

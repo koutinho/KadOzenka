@@ -431,7 +431,7 @@ namespace KadOzenka.Web.Controllers
             var dto = factorModel.ToDto();
 
             var isProcessForFactorAdditionCreated = false;
-            if (factorModel.Id == -1)
+            if (factorModel.IsNewFactor)
             {
                 var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
                 var queue = LongProcessService.GetProcessActiveQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
@@ -636,19 +636,7 @@ namespace KadOzenka.Web.Controllers
             {
                 var factor = ModelFactorsService.GetFactorById(id);
 
-                manualFactorDto = new ManualFactorModel
-                {
-                    Id = factor.Id,
-                    GeneralModelId = generalModelId,
-                    FactorId = factor.FactorId,
-                    Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
-                    MarkerId = factor.MarkerId,
-                    Weight = factor.Weight,
-                    B0 = factor.B0,
-                    SignDiv = factor.SignDiv,
-                    SignAdd = factor.SignAdd,
-                    SignMarket = factor.SignMarket
-                };
+                manualFactorDto = ManualFactorModel.ToModel(generalModelId, factor);
             }
             else
             {

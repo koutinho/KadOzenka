@@ -4164,6 +4164,81 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private bool? _signexponentiation;
+        /// <summary>
+        /// 21001400 Признак возведения в степень (sign_exponentiation)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001400)]
+        public bool? SignExponentiation
+        {
+            get
+            {
+                CheckPropertyInited("SignExponentiation");
+                return _signexponentiation;
+            }
+            set
+            {
+                _signexponentiation = value;
+                NotifyPropertyChanged("SignExponentiation");
+            }
+        }
+
+
+        private string _marktype;
+        /// <summary>
+        /// 21001500 Тип метки (mark_type)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001500)]
+        public string MarkType
+        {
+            get
+            {
+                CheckPropertyInited("MarkType");
+                return _marktype;
+            }
+            set
+            {
+                _marktype = value;
+                NotifyPropertyChanged("MarkType");
+            }
+        }
+
+
+        private ObjectModel.Directory.Ko.MarkType _marktype_Code;
+        /// <summary>
+        /// 21001500 Тип метки (справочный код) (mark_type_code)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001500)]
+        public ObjectModel.Directory.Ko.MarkType MarkType_Code
+        {
+            get
+            {
+                CheckPropertyInited("MarkType_Code");
+                return this._marktype_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_marktype))
+                    {
+                         _marktype = descr;
+                    }
+                }
+                else
+                {
+                     _marktype = descr;
+                }
+
+                this._marktype_Code = value;
+                NotifyPropertyChanged("MarkType");
+                NotifyPropertyChanged("MarkType_Code");
+            }
+        }
+
     }
 }
 
