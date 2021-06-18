@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
 using System.Net;
 using KadOzenka.Dal.Api.Models;
 using KadOzenka.Dal.Api.Service;
-using KadOzenka.Web.Api.Dto;
 using Serilog;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -22,9 +20,10 @@ namespace KadOzenka.Web.Api
 			string env = "";
 			if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
 			{
-				env = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
+				env = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"]?.ToString();
 			}
 
+			_log.Debug("Переменная окружения ASPNETCORE_ENVIRONMENT = {env}", env);
 			_configService = new ConfigService(_log, env);
 		}
 
