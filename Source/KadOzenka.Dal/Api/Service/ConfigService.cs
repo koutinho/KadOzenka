@@ -18,18 +18,19 @@ namespace KadOzenka.Dal.Api.Service
 		{
 			_log = logger;
 			_envPath = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + $"appsettings.{env}.json";
+			_log.Debug("Путь к файлу дополнительных ресурсов: {_envPath}", _envPath);
 		}
 
 		#region serilog section
 
 		public ConfigDto GetSerilogConfig()
 		{
-			return GetConfig(ConfigType.Serilog);
+			return GetConfig(SectionType.Serilog);
 		}
 
 		public void SetSerilogConfig(ConfigDto configDto)
 		{
-			SetConfig(configDto, ConfigType.Serilog);
+			SetConfig(configDto, SectionType.Serilog);
 
 		}
 
@@ -39,12 +40,12 @@ namespace KadOzenka.Dal.Api.Service
 
 		public ConfigDto GetCoreConfig()
 		{
-			return GetConfig(ConfigType.Core);
+			return GetConfig(SectionType.Core);
 		}
 
 		public void SetCoreConfig(ConfigDto configDto)
 		{
-			SetConfig(configDto, ConfigType.Core);
+			SetConfig(configDto, SectionType.Core);
 
 		}
 
@@ -54,18 +55,18 @@ namespace KadOzenka.Dal.Api.Service
 
 		public ConfigDto GetKoConfig()
 		{
-			return GetConfig(ConfigType.KoConfig);
+			return GetConfig(SectionType.KoConfig);
 		}
 
 		public void SetKoConfig(ConfigDto configDto)
 		{
-			SetConfig(configDto, ConfigType.KoConfig);
+			SetConfig(configDto, SectionType.KoConfig);
 
 		}
 
 		#endregion
 
-		private ConfigDto GetConfig(ConfigType configType)
+		private ConfigDto GetConfig(SectionType sectionType)
 		{
 
 			var file = File.ReadAllText(_rootPath);
@@ -73,11 +74,11 @@ namespace KadOzenka.Dal.Api.Service
 
 			dynamic сonfigSection = null;
 	
-			switch (configType)
+			switch (sectionType)
 			{
-				case ConfigType.Serilog: сonfigSection = config?.Serilog; break;
-				case ConfigType.Core: сonfigSection = config?.Core; break;
-				case ConfigType.KoConfig: сonfigSection = config?.KoConfig; break;
+				case SectionType.Serilog: сonfigSection = config?.Serilog; break;
+				case SectionType.Core: сonfigSection = config?.Core; break;
+				case SectionType.KoConfig: сonfigSection = config?.KoConfig; break;
 			}
 
 			var res = new ConfigDto();
@@ -87,7 +88,7 @@ namespace KadOzenka.Dal.Api.Service
 			}
 			else
 			{
-				_log.Verbose("Секция {configType} не найдена", configType.GetEnumDescription());
+				_log.Debug("Секция {sectionType} не найдена", sectionType.GetEnumDescription());
 			}
 
 
@@ -95,7 +96,7 @@ namespace KadOzenka.Dal.Api.Service
 			{
 				var fileEnv = File.ReadAllText(_envPath);
 				var configEnv = JsonConvert.DeserializeObject<dynamic>(fileEnv);
-				string currentSection = configType.ToString();
+				string currentSection = sectionType.ToString();
 				var currentConfigEnv = configEnv?[currentSection];
 
 				if (currentConfigEnv != null)
@@ -103,32 +104,36 @@ namespace KadOzenka.Dal.Api.Service
 					res.EnvConfig = JsonConvert.SerializeObject(currentConfigEnv);
 				}
 			}
+			else
+			{
+				_log.Debug("Дополнительный конфигурационный файл не найден");
+			}
 
 
 			return res;
 		}
 
-		private void SetConfig(ConfigDto configDto, ConfigType configType)
+		private void SetConfig(ConfigDto configDto, SectionType sectionType)
 		{
 			var file = File.ReadAllText(_rootPath);
 			var config = JsonConvert.DeserializeObject<dynamic>(file);
 
 			dynamic сonfigSection = null;
-			switch (configType)
+			switch (sectionType)
 			{
-				case ConfigType.Serilog: сonfigSection = config?.Serilog; break;
-				case ConfigType.Core: сonfigSection = config?.Core; break;
-				case ConfigType.KoConfig: сonfigSection = config?.KoConfig; break;
+				case SectionType.Serilog: сonfigSection = config?.Serilog; break;
+				case SectionType.Core: сonfigSection = config?.Core; break;
+				case SectionType.KoConfig: сonfigSection = config?.KoConfig; break;
 			}
 
 			if (сonfigSection != null)
 			{
-				string sectionName = configType.ToString();
+				string sectionName = sectionType.ToString();
 				config[sectionName] = JsonConvert.DeserializeObject<dynamic>(configDto.RootConfig);
 			}
 			else
 			{
-				_log.Verbose("Секция {section} не существует в основном файле конфигурации", configType.GetEnumDescription());
+				_log.Debug("Секция {section} не существует в основном файле конфигурации", sectionType.GetEnumDescription());
 			}
 
 			using (FileStream fs = File.OpenWrite(_rootPath))
@@ -148,16 +153,16 @@ namespace KadOzenka.Dal.Api.Service
 				var fileEnv = File.ReadAllText(_envPath);
 				var configEnv = JsonConvert.DeserializeObject<dynamic>(fileEnv);
 
-				switch (configType)
+				switch (sectionType)
 				{
-					case ConfigType.Serilog: сonfigSection = configEnv?.Serilog; break;
-					case ConfigType.Core: сonfigSection = configEnv?.Core; break;
-					case ConfigType.KoConfig: сonfigSection = configEnv?.KoCongig; break;
+					case SectionType.Serilog: сonfigSection = configEnv?.Serilog; break;
+					case SectionType.Core: сonfigSection = configEnv?.Core; break;
+					case SectionType.KoConfig: сonfigSection = configEnv?.KoCongig; break;
 				}
 				if (сonfigSection != null)
 				{
-					string sectionName = configType.ToString();
-					configEnv[sectionName] = JsonConvert.DeserializeObject<dynamic>(configDto.EnvConfig);
+					string sectionName = sectionType.ToString();
+					configEnv[sectionName] = JsonConvert.DeserializeObject<dynamic>(configDto.EnvConfig ?? "");
 
 					using (FileStream fs = File.OpenWrite(_envPath))
 					{
@@ -170,6 +175,11 @@ namespace KadOzenka.Dal.Api.Service
 							fs.Write(bytes);
 						}
 					}
+
+				}
+				else
+				{
+					_log.Debug("Секция {section} не существует в дополнительном файле конфигурации", sectionType.GetEnumDescription());
 
 				}
 

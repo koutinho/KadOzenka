@@ -42,7 +42,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     MatToolbarModule,
     NgbModule,
     MatProgressSpinnerModule,
-    MatSelectModule
+    MatSelectModule,
+
   ],
   providers: [ApiService],
   bootstrap: [AppComponent]

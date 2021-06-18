@@ -21,7 +21,14 @@
                 </mat-error>
               </mat-form-field>
           <div style="text-align: end;">
-            <button type="button" mat-raised-button color="primary" [disabled]="login === '' || password === ''" aria-label="Войти" (click)="signIn()">Войти</button>
+            <button
+              id="loginButton"
+              type="button"
+              mat-raised-button
+              color="primary"
+              [disabled]="login === '' || password === ''"
+              aria-label="Войти"
+              (click)="signIn()">Войти</button>
           </div>
     </div>
 </div>

@@ -2,7 +2,7 @@
 
 namespace KadOzenka.Dal.Api.Enums
 {
-	public enum ConfigType
+	public enum SectionType
 	{
 		[Description("Серилог")]
 		Serilog = 1,
