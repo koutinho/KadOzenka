@@ -60,11 +60,12 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 		[Test]
 		public void Can_Create_Characteristic_With_Attribute_Allpri_Partitioning()
 		{
+			var registerMinId = (int) (RosreestrRegisterService.Id + RandomGenerator.GenerateRandomInteger());
 			var dto = new CharacteristicDto
 			{
 				Name = RandomGenerator.GetRandomString(),
 				RegisterId = RandomGenerator.GenerateRandomInteger(),
-				ReferenceId = RandomGenerator.GenerateRandomInteger()
+				ReferenceId = RandomGenerator.GenerateRandomInteger(registerMinId, registerMinId + RandomGenerator.GenerateRandomInteger())
 			};
 			MockRegisterAttributeServiceCreateRegisterAttribute(dto);
 			MockRegisterCacheGetRegisterData(dto.RegisterId, AllpriPartitioningType.AttributeId);
