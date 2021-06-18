@@ -4165,26 +4165,6 @@ namespace ObjectModel.KO
         }
 
 
-        private bool? _signexponentiation;
-        /// <summary>
-        /// 21001400 Признак возведения в степень (sign_exponentiation)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001400)]
-        public bool? SignExponentiation
-        {
-            get
-            {
-                CheckPropertyInited("SignExponentiation");
-                return _signexponentiation;
-            }
-            set
-            {
-                _signexponentiation = value;
-                NotifyPropertyChanged("SignExponentiation");
-            }
-        }
-
-
         private string _marktype;
         /// <summary>
         /// 21001500 Тип метки (mark_type)
@@ -4236,6 +4216,46 @@ namespace ObjectModel.KO
                 this._marktype_Code = value;
                 NotifyPropertyChanged("MarkType");
                 NotifyPropertyChanged("MarkType_Code");
+            }
+        }
+
+
+        private decimal? _correctingterm;
+        /// <summary>
+        /// 21001600 Корректирующее слагаемое (correcting_term)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001600)]
+        public decimal? CorrectingTerm
+        {
+            get
+            {
+                CheckPropertyInited("CorrectingTerm");
+                return _correctingterm;
+            }
+            set
+            {
+                _correctingterm = value;
+                NotifyPropertyChanged("CorrectingTerm");
+            }
+        }
+
+
+        private decimal? _k;
+        /// <summary>
+        /// 21001700 K (k)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001700)]
+        public decimal? K
+        {
+            get
+            {
+                CheckPropertyInited("K");
+                return _k;
+            }
+            set
+            {
+                _k = value;
+                NotifyPropertyChanged("K");
             }
         }
 

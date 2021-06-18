@@ -145,7 +145,6 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(ModelAttributeRelationDto.SignAdd)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignExponentiation, nameof(ModelAttributeRelationDto.SignExponentiation)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.PreviousWeight, nameof(ModelAttributeRelationDto.PreviousWeight)));
@@ -174,7 +173,6 @@ namespace KadOzenka.Dal.Modeling
 				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
 				var signAdd = row[nameof(ModelAttributeRelationDto.SignAdd)].ParseToBooleanNullable();
 				var signDiv = row[nameof(ModelAttributeRelationDto.SignDiv)].ParseToBooleanNullable();
-				var signExponentiation = row[nameof(ModelAttributeRelationDto.SignExponentiation)].ParseToBooleanNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
 				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 				var previousWeight = row[nameof(ModelAttributeRelationDto.PreviousWeight)].ParseToDecimalNullable();
@@ -193,7 +191,6 @@ namespace KadOzenka.Dal.Modeling
 					B0 = b0.GetValueOrDefault(),
 					SignAdd = signAdd.GetValueOrDefault(),
 					SignDiv = signDiv.GetValueOrDefault(),
-					SignExponentiation = signExponentiation.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
 					Coefficient = weight,
 					PreviousWeight = previousWeight,
@@ -271,7 +268,6 @@ namespace KadOzenka.Dal.Modeling
 						AlgorithmType_Code = type,
 						PreviousWeight = dto.PreviousWeight ?? 1,
 						IsActive = dto.IsActive,
-						SignExponentiation = dto.SignExponentiation,
 						MarkType_Code = dto.MarkType
 					};
 
@@ -310,7 +306,6 @@ namespace KadOzenka.Dal.Modeling
 				}
 
 				factor.PreviousWeight = dto.PreviousWeight ?? 1;
-				factor.SignExponentiation = dto.SignExponentiation;
 				factor.MarkType_Code = dto.MarkType;
 				ModelFactorsRepository.Save(factor);
 
@@ -335,7 +330,6 @@ namespace KadOzenka.Dal.Modeling
 				SignAdd = dto.SignAdd,
 				SignMarket = dto.SignMarket,
 				AlgorithmType_Code = dto.Type,
-				SignExponentiation = dto.SignExponentiation,
 				MarkType_Code = dto.MarkType
 			};
 
@@ -357,7 +351,6 @@ namespace KadOzenka.Dal.Modeling
 			factor.SignDiv = dto.SignDiv;
 			factor.SignAdd = dto.SignAdd;
 			factor.SignMarket = dto.SignMarket;
-			factor.SignExponentiation = dto.SignExponentiation;
 			factor.MarkType_Code = dto.MarkType;
 
 			ModelFactorsRepository.Save(factor);

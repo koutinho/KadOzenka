@@ -12,7 +12,6 @@ namespace KadOzenka.Dal.Modeling.Dto.Factors
 		public long? DictionaryId { get; set; }
 		public decimal? PreviousWeight { get; set; }
 		public bool IsActive { get; set; }
-		public bool SignExponentiation { get; set; }
 		public MarkType MarkType { get; set; }
 	}
 }

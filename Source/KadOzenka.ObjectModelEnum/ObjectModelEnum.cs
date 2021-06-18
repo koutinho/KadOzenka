@@ -6148,11 +6148,11 @@ namespace ObjectModel.Directory.Ko
     public enum MarkType : long
     {
 		/// <summary>
-		/// Значение отсутствует (0)
+		/// Не использовать метку (0)
 		/// </summary>
-		[Description("Значение отсутствует")]
+		[Description("Не использовать метку")]
         [EnumCode("0")]
-        [ShortTitle("Значение отсутствует")]
+        [ShortTitle("Не использовать метку")]
         None = 0,
 		/// <summary>
 		/// По умолчанию (1)
@@ -6162,18 +6162,18 @@ namespace ObjectModel.Directory.Ko
         [ShortTitle("По умолчанию")]
         Default = 1,
 		/// <summary>
-		/// Прямая (2)
+		/// Прямая метка (2)
 		/// </summary>
-		[Description("Прямая")]
+		[Description("Прямая метка")]
         [EnumCode("2")]
-        [ShortTitle("Прямая")]
+        [ShortTitle("Прямая метка")]
         Straight = 2,
 		/// <summary>
-		/// Обратная (3)
+		/// Обратная метка (3)
 		/// </summary>
-		[Description("Обратная")]
+		[Description("Обратная метка")]
         [EnumCode("3")]
-        [ShortTitle("Обратная")]
+        [ShortTitle("Обратная метка")]
         Reverse = 3,
     }
 }

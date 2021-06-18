@@ -16,7 +16,6 @@ namespace KadOzenka.Dal.Modeling.Dto.Factors
 		public bool SignDiv { get; set; }
 		public bool SignAdd { get; set; }
 		public bool SignMarket { get; set; }
-		public bool SignExponentiation { get; set; }
 		public MarkType MarkType { get; set; }
 	}
 }

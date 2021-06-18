@@ -54876,17 +54876,8 @@ end $$;
 
 DO $$
 begin
-    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'sign_exponentiation')) then
-        execute 'alter table KO_MODEL_FACTOR add "sign_exponentiation" SMALLINT';
-    end if;
-end $$;
-
---<DO>--
-
-DO $$
-begin
     if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'mark_type')) then
-        execute 'alter table KO_MODEL_FACTOR add "mark_type" VARCHAR(255)';
+        execute 'alter table KO_MODEL_FACTOR add "mark_type" VARCHAR(255) NOT NULL';
     end if;
 end $$;
 
@@ -54896,6 +54887,24 @@ DO $$
 begin
     if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'mark_type_code')) then
         execute 'alter table KO_MODEL_FACTOR add "mark_type_code" BIGINT';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'correcting_term')) then
+        execute 'alter table KO_MODEL_FACTOR add "correcting_term" NUMERIC';
+    end if;
+end $$;
+
+--<DO>--
+
+DO $$
+begin
+    if (not core_updstru_CheckExistColumn('KO_MODEL_FACTOR', 'k')) then
+        execute 'alter table KO_MODEL_FACTOR add "k" NUMERIC';
     end if;
 end $$;
 

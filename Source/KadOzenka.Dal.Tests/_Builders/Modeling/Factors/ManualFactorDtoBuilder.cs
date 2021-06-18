@@ -23,7 +23,6 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				SignDiv = true,
 				SignAdd = true,
 				SignMarket = true,
-				SignExponentiation = true,
 				MarkType = MarkType.Default
 			};
 		}

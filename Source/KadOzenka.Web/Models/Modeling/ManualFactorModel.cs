@@ -20,7 +20,6 @@ namespace KadOzenka.Web.Models.Modeling
 		public bool SignDiv { get; set; }
 		public bool SignAdd { get; set; }
 		public bool SignMarket { get; set; }
-		public bool SignExponentiation { get; set; }
 		public MarkType MarkType { get; set; }
 
 		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
@@ -37,7 +36,6 @@ namespace KadOzenka.Web.Models.Modeling
 				SignDiv = factor.SignDiv,
 				SignAdd = factor.SignAdd,
 				SignMarket = factor.SignMarket,
-				SignExponentiation = factor.SignExponentiation.GetValueOrDefault(),
 				MarkType = factor.MarkType_Code
 			};
 		}
@@ -55,7 +53,6 @@ namespace KadOzenka.Web.Models.Modeling
 				SignDiv = SignDiv,
 				SignAdd = SignAdd,
 				SignMarket = SignMarket,
-				SignExponentiation = SignExponentiation,
 				MarkType = MarkType
 			};
 		}
