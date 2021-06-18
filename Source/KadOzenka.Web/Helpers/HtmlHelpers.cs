@@ -361,7 +361,7 @@ namespace KadOzenka.Web.Helpers
 
 		public static IHtmlContent KendoKoReferenceDropDownListFor<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression,
-			long? referenceId, bool isReadonly = true, bool withOptionLabel = true, string filter = "contains")
+			long? referenceId, string text = null, string value = null, bool isReadonly = true, bool withOptionLabel = true, string filter = "contains")
 		{
 			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
 			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
@@ -374,8 +374,8 @@ namespace KadOzenka.Web.Helpers
 				.BindTo(dataSource)
 				.NoDataTemplate("Ничего не найдено!")
 				.Filter(filter)
-				.Value(modelExplorer.Model?.ToString())
-				.OptionLabel(new SelectListItem {Value = null, Text = "-"});
+				.Text(text)
+				.Value(value);
 
 			if (withOptionLabel)
 				element.OptionLabel(new SelectListItem {Value = null, Text = "-"});

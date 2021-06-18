@@ -1,4 +1,5 @@
-﻿using Core.Register;
+﻿using System.ComponentModel.DataAnnotations;
+using Core.Register;
 using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -15,48 +16,57 @@ namespace KadOzenka.Web.Models.Modeling
 		public long? FactorId { get; set; }
 		public string Factor { get; set; }
 		public long? MarkerId { get; set; }
-		public decimal Weight { get; set; }
+		public decimal Correction { get; set; }
 		public decimal B0 { get; set; }
 		public bool SignDiv { get; set; }
 		public bool SignAdd { get; set; }
 		public bool SignMarket { get; set; }
-		public bool SignExponentiation { get; set; }
+
+		[Display(Name = "Тип метки")]
 		public MarkType MarkType { get; set; }
+
+		[Display(Name = "Корректирующее слагаемое")]
+		public decimal? CorrectItem { get; set; }
+
+		[Display(Name = "K=[A+M]/2")]
+		public decimal? K { get; set; }
+
 
 		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
 		{
-			return new ManualFactorModel
+			return new()
 			{
 				Id = factor.Id,
 				GeneralModelId = generalModelId,
 				FactorId = factor.FactorId,
 				Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
 				MarkerId = factor.MarkerId,
-				Weight = factor.Weight,
+				Correction = factor.Weight,
 				B0 = factor.B0,
 				SignDiv = factor.SignDiv,
 				SignAdd = factor.SignAdd,
-				SignMarket = factor.SignMarket,
-				SignExponentiation = factor.SignExponentiation.GetValueOrDefault(),
-				MarkType = factor.MarkType_Code
+				MarkType = factor.MarkType_Code,
+				CorrectItem = factor.CorrectingTerm,
+				K = factor.K
 			};
 		}
 
+
 		public ManualModelFactorDto ToDto()
 		{
-			return new ManualModelFactorDto
+			return new()
 			{
 				Id = Id,
 				GeneralModelId = GeneralModelId,
 				Type = Type,
 				FactorId = FactorId,
-				Weight = Weight,
+				Weight = Correction,
 				B0 = B0,
 				SignDiv = SignDiv,
 				SignAdd = SignAdd,
-				SignMarket = SignMarket,
-				SignExponentiation = SignExponentiation,
-				MarkType = MarkType
+				MarkType = MarkType,
+				CorrectItem = CorrectItem,
+				K = K
 			};
 		}
 	}

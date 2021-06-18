@@ -112,5 +112,8 @@
     <EmbeddedResource Update="CodDictionary\Resources\CodMessages.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Update="Modeling\Resources\Messages.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

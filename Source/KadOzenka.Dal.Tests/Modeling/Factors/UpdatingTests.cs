@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Modeling.Exceptions.Factors;
+﻿using KadOzenka.Common.Tests;
+using KadOzenka.Dal.Modeling.Exceptions.Factors;
 using KadOzenka.Dal.Tests.Modeling.Models;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Moq;
@@ -9,24 +10,26 @@ using ObjectModel.KO;
 namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 {
 	[TestFixture]
-	public class UpdatingTests : BaseModelTests
+	public class UpdatingTests : BaseFactorsTests
 	{
-		[Test]
-		public void CanNot_Update_Automatic_Factor_With_Empty_Mark_Type()
+		[TestCase(MarkType.Straight)]
+		[TestCase(MarkType.Reverse)]
+		public void CanNot_Update_Manual_Factor_Of_Special_MarkType_Without_CorrectionTerm(MarkType markType)
 		{
-			var factorDto = new AutomaticFactorDtoBuilder().Type(MarkType.None).Build();
-			
-			Assert.Throws<EmptyMarkTypeForFactor>(() => ModelFactorsService.UpdateAutomaticFactor(factorDto));
+			var factor = PrepareManualModelFactorForCRUD(markType, null, RandomGenerator.GenerateRandomDecimal());
+
+			Assert.Throws<EmptyCorrectTermForFactorException>(() => ModelFactorsService.UpdateManualFactor(factor));
 
 			ModelFactorsRepository.Verify(foo => foo.Save(It.IsAny<OMModelFactor>()), Times.Never);
 		}
 
-		[Test]
-		public void CanNot_Update_Manual_Factor_With_Empty_Mark_Type()
+		[TestCase(MarkType.Straight)]
+		[TestCase(MarkType.Reverse)]
+		public void CanNot_Update_Manual_Factor_Of_Special_MarkType_Without_K(MarkType markType)
 		{
-			var factorDto = new ManualFactorDtoBuilder().Type(MarkType.None).Build();
+			var factor = PrepareManualModelFactorForCRUD(markType, RandomGenerator.GenerateRandomDecimal(), null);
 
-			Assert.Throws<EmptyMarkTypeForFactor>(() => ModelFactorsService.UpdateManualFactor(factorDto));
+			Assert.Throws<EmptyKForFactorException>(() => ModelFactorsService.UpdateManualFactor(factor));
 
 			ModelFactorsRepository.Verify(foo => foo.Save(It.IsAny<OMModelFactor>()), Times.Never);
 		}

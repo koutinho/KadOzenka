@@ -20,7 +20,6 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				DictionaryId = RandomGenerator.GenerateRandomInteger(),
 				PreviousWeight = RandomGenerator.GenerateRandomDecimal(),
 				IsActive = true,
-				SignExponentiation = true,
 				MarkType = MarkType.Default
 			};
 		}
