@@ -223,7 +223,7 @@ namespace CIPJS
                     .PersistKeysToFileSystem(new DirectoryInfo(keysFolder))
                     .SetDefaultKeyLifetime(TimeSpan.FromDays(14));
 
-              
+                services.AddRazorPages().AddRazorRuntimeCompilation();
 
                 var cultureInfo = new CultureInfo("ru-RU");
                 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
