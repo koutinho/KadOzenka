@@ -17,7 +17,11 @@ namespace CIPJS
 
 	        if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
             {
-                ASPNETCORE_ENVIRONMENT = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"].ToString();
+                ASPNETCORE_ENVIRONMENT = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"]?.ToString();
+            }
+	        else
+	        {
+		        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", ASPNETCORE_ENVIRONMENT);
             }
             var envConfigFile = $"appsettings.{ASPNETCORE_ENVIRONMENT}.json";
             var configuration = new ConfigurationBuilder()
