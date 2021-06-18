@@ -30,9 +30,6 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Использовать в модели")]
 		public bool? IsActive { get; set; }
 
-		[Display(Name = "Возведение в степень")]
-		public bool SignExponentiation { get; set; }
-
 		[Display(Name = "Тип метки")]
 		public MarkType MarkType { get; set; }
 
@@ -48,7 +45,6 @@ namespace KadOzenka.Web.Models.Modeling
 				DictionaryId = factor.DictionaryId,
 				PreviousWeight = factor.PreviousWeight,
 				IsActive = factor.IsActive.GetValueOrDefault(),
-				SignExponentiation = factor.SignExponentiation.GetValueOrDefault(),
 				MarkType = factor.MarkType_Code
 			};
 		}
@@ -64,7 +60,6 @@ namespace KadOzenka.Web.Models.Modeling
 				DictionaryId = DictionaryId,
 				PreviousWeight = PreviousWeight,
 				IsActive = IsActive.GetValueOrDefault(),
-				SignExponentiation = SignExponentiation,
 				MarkType = MarkType
 			};
 		}

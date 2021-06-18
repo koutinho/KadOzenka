@@ -261,7 +261,6 @@
                             Coefficient: { type: "number" },
                             PreviousWeight: { type: "number" },
                             IsActive: { type: "boolean" },
-                            SignExponentiation: { type: "boolean" },
                             MarkType: { type: "string" }
                         }
                     }
@@ -305,12 +304,6 @@
                     field: 'IsActive',
                     title: 'Использовать в модели',
                     template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'SignExponentiation',
-                    title: 'Возведение в степень',
-                    template: '<input type="checkbox" #= SignExponentiation ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
                     attributes: { style: "text-align: center;" }
                 },
                 {
