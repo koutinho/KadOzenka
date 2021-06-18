@@ -1,4 +1,6 @@
-﻿@model KadOzenka.Web.Models.Modeling.ManualFactorModel
+﻿@using ObjectModel.Directory.Ko
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Modeling.ManualFactorModel
 
 @using (Html.BeginForm("EditManualModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
 {
@@ -15,6 +17,33 @@
         </div>
         <div class="form-group">
             <div class="col-sm-3">
+                @Html.CustomLabelFor(x => x.MarkType)
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoKoReferenceDropDownListFor(x => x.MarkType, 226,
+                    text: Model.MarkType.GetEnumDescription(), 
+                    value: ((long) Model.MarkType).ToString(),
+                    isReadonly: false, withOptionLabel: false)
+            </div>
+        </div>
+        <div id="correctItemBlock" class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(x => x.CorrectItem)
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoNumericTextBoxFor(x => x.CorrectItem, precision: 5, isReadonly: false)
+            </div>
+        </div>
+        <div id="kBlock" class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(x => x.K)
+            </div>
+            <div class="col-sm-9">
+                @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: false)
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-3">
                 @Html.CustomLabel("Коэффициент")
             </div>
             <div class="col-sm-9">
@@ -26,18 +55,9 @@
                 @Html.CustomLabel("Поправка")
             </div>
             <div class="col-sm-9">
-                @Html.KendoNumericTextBoxFor(x => x.Weight, precision: 15, isReadonly: false)
+                @Html.KendoNumericTextBoxFor(x => x.Correction, precision: 15, isReadonly: false)
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabel("Тип метки")
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoEnumDropDownListFor(x => x.MarkType, isReadonly: false, withoutNull: Model.IsNewFactor)
-            </div>
-        </div>
-
         <div class="form-group">
             <div class="col-sm-3">
                 @Html.CustomLabel("Деление на фактор")
@@ -65,6 +85,7 @@
     </div>
 }
 
+
 <script>
     $(document).ready(function () {
         $('#save').on('click', saveFactor);
@@ -74,6 +95,9 @@
         });
 
         initAttributes();
+
+        setParametersVisibility();
+        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setParametersVisibility);
     });
 
 
@@ -126,6 +150,20 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+
+    function setParametersVisibility() {
+        var selectedMarkType = $('#@nameof(Model.MarkType)').data('kendoDropDownList').value();
+        var correctItemBlock = $("#correctItemBlock");
+        var kBlock = $("#kBlock");
+        if (selectedMarkType === '@((long)MarkType.Straight)' || selectedMarkType === '@((long)MarkType.Reverse)') {
+            correctItemBlock.show();
+            kBlock.show();
+        } else {
+            correctItemBlock.hide();
+            kBlock.hide();
+        }
     }
 
 

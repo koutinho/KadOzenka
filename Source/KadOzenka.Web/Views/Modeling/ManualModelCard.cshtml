@@ -184,21 +184,24 @@
                     template: "#=SignAdd ? 'Да' : 'Нет'#"
                 },
                 {
-                    field: 'SignMarket',
-                    title: 'Метка',
-                    template: "#=SignMarket ? 'Да' : 'Нет'#"
-                },
-                {
                     field: 'B0',
                     title: 'Коэф.'
                 },
                 {
-                    field: 'Coefficient',
-                    title: 'Поправка'
-                },
-                {
                     field: 'MarkType',
                     title: 'Тип метки'
+                },
+                {
+                    field: 'CorrectingTerm',
+                    title: 'Корректирующее слагаемое'
+                },
+                {
+                    field: 'K',
+                    title: 'К'
+                },
+                {
+                    field: 'Coefficient',
+                    title: 'Поправка'
                 }
             ],
             width: '100%',
@@ -350,7 +353,7 @@
                     UpdateView();
                 }
             },
-            800, 450);
+            800, 480);
     }
 
 
@@ -365,8 +368,7 @@
                         UpdateView();
                     }
                 },
-                800, 450
-            );
+                800, 480);
         }
     }
 

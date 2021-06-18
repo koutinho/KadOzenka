@@ -16,5 +16,7 @@ namespace KadOzenka.Dal.Modeling.Dto.Factors
 		public bool SignDiv { get; set; }
 		public bool SignAdd { get; set; }
 		public MarkType MarkType { get; set; }
+		public decimal? CorrectItem { get; set; }
+		public decimal? K { get; set; }
 	}
 }

@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CommonFunctions;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling.Repositories
@@ -16,6 +17,20 @@ namespace KadOzenka.Dal.Modeling.Repositories
 		protected override Expression<Func<OMModelFactor, bool>> GetWhereByIdExpression(long id)
 		{
 			return x => x.Id == id;
+		}
+
+		public bool IsTheSameAttributeExists(long id, long factorId, long modelId, KoAlgoritmType type)
+		{
+			//todo вынести базовую часть запроса в QsQuery
+			if (type == KoAlgoritmType.None)
+			{
+				return OMModelFactor.Where(x => x.Id != id && x.FactorId == factorId && x.ModelId == modelId)
+					.ExecuteExists();
+			}
+
+			return OMModelFactor.Where(x =>
+					x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
+				.ExecuteExists();
 		}
 	}
 }

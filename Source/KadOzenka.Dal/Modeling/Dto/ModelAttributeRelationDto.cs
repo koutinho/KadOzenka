@@ -1,6 +1,5 @@
 ﻿using Core.Register;
 using ObjectModel.Directory;
-using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.Modeling.Dto
 {
@@ -29,5 +28,7 @@ namespace KadOzenka.Dal.Modeling.Dto
         public bool SignAdd { get; set; }
         public bool SignMarket { get; set; }
         public string MarkType { get; set; }
-    }
+        public decimal? CorrectingTerm { get; set; }
+        public decimal? K { get; set; }
+	}
 }

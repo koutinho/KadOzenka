@@ -22,13 +22,28 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				B0 = RandomGenerator.GenerateRandomDecimal(),
 				SignDiv = true,
 				SignAdd = true,
-				MarkType = MarkType.Default
+				MarkType = MarkType.Default,
+				CorrectItem = RandomGenerator.GenerateRandomDecimal(),
+				K = RandomGenerator.GenerateRandomDecimal()
 			};
 		}
+
 
 		public ManualFactorDtoBuilder Type(MarkType type)
 		{
 			_factor.MarkType = type;
+			return this;
+		}
+
+		public ManualFactorDtoBuilder CorrectItem(decimal? correctItem)
+		{
+			_factor.CorrectItem = correctItem;
+			return this;
+		}
+
+		public ManualFactorDtoBuilder K(decimal? k)
+		{
+			_factor.K = k;
 			return this;
 		}
 

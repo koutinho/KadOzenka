@@ -70,11 +70,20 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не указан тип метки.
+        ///   Looks up a localized string similar to Не передано обязательное &apos;Корректирующее слагаемое&apos; для метки типа {0}.
         /// </summary>
-        public static string EmptyMarkType {
+        public static string EmptyCorrectTermForFactor {
             get {
-                return ResourceManager.GetString("EmptyMarkType", resourceCulture);
+                return ResourceManager.GetString("EmptyCorrectTermForFactor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не передано обязательное &apos;К&apos; для метки типа {0}.
+        /// </summary>
+        public static string EmptyKForFactor {
+            get {
+                return ResourceManager.GetString("EmptyKForFactor", resourceCulture);
             }
         }
         
