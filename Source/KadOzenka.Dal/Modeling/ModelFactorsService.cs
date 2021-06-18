@@ -432,10 +432,10 @@ namespace KadOzenka.Dal.Modeling
 			if (IsSpecialMarkType(factorDto.MarkType))
 			{
 				if (factorDto.CorrectItem == null)
-					throw new EmptyCorrectTermForFactorException(factorDto.MarkType);
+					throw new EmptyCorrectTermForFactorException();
 				
 				if (factorDto.K == null)
-					throw new EmptyKForFactorException(factorDto.MarkType);
+					throw new EmptyKForFactorException();
 			}
 		}
 

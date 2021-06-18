@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не передано обязательное &apos;Корректирующее слагаемое&apos; для метки типа {0}.
+        ///   Looks up a localized string similar to Не передано &apos;Корректирующее слагаемое&apos;.
         /// </summary>
         public static string EmptyCorrectTermForFactor {
             get {
@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не передано обязательное &apos;К&apos; для метки типа {0}.
+        ///   Looks up a localized string similar to Не передан &apos;К&apos;.
         /// </summary>
         public static string EmptyKForFactor {
             get {

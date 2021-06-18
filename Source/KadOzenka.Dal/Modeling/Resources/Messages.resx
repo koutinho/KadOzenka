@@ -121,10 +121,10 @@
     <value>Невозможно активировать необученную модель</value>
   </data>
   <data name="EmptyCorrectTermForFactor" xml:space="preserve">
-    <value>Не передано обязательное 'Корректирующее слагаемое' для метки типа {0}</value>
+    <value>Не передано 'Корректирующее слагаемое'</value>
   </data>
   <data name="EmptyKForFactor" xml:space="preserve">
-    <value>Не передано обязательное 'К' для метки типа {0}</value>
+    <value>Не передан 'К'</value>
   </data>
   <data name="EmptyModelId" xml:space="preserve">
     <value>Не передан идентификатор Модели</value>
