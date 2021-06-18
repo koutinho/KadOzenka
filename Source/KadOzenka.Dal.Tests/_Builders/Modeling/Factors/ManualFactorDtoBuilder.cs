@@ -22,7 +22,6 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				B0 = RandomGenerator.GenerateRandomDecimal(),
 				SignDiv = true,
 				SignAdd = true,
-				SignMarket = true,
 				MarkType = MarkType.Default
 			};
 		}

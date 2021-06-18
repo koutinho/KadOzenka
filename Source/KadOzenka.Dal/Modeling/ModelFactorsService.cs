@@ -328,7 +328,6 @@ namespace KadOzenka.Dal.Modeling
 				B0 = dto.Weight,
 				SignDiv = dto.SignDiv,
 				SignAdd = dto.SignAdd,
-				SignMarket = dto.SignMarket,
 				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
 			};
@@ -350,7 +349,6 @@ namespace KadOzenka.Dal.Modeling
 			factor.B0 = dto.B0;
 			factor.SignDiv = dto.SignDiv;
 			factor.SignAdd = dto.SignAdd;
-			factor.SignMarket = dto.SignMarket;
 			factor.MarkType_Code = dto.MarkType;
 
 			ModelFactorsRepository.Save(factor);

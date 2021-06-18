@@ -35,7 +35,6 @@ namespace KadOzenka.Web.Models.Modeling
 				B0 = factor.B0,
 				SignDiv = factor.SignDiv,
 				SignAdd = factor.SignAdd,
-				SignMarket = factor.SignMarket,
 				MarkType = factor.MarkType_Code
 			};
 		}
@@ -52,7 +51,6 @@ namespace KadOzenka.Web.Models.Modeling
 				B0 = B0,
 				SignDiv = SignDiv,
 				SignAdd = SignAdd,
-				SignMarket = SignMarket,
 				MarkType = MarkType
 			};
 		}
