@@ -17,12 +17,12 @@ namespace KadOzenka.Web.Api
 
 		public ConfigController()
 		{
-			string env = "";
+			string env = ""; 
 			if (Environment.GetEnvironmentVariables().Contains("ASPNETCORE_ENVIRONMENT"))
 			{
 				env = Environment.GetEnvironmentVariables()["ASPNETCORE_ENVIRONMENT"]?.ToString();
 			}
-
+			
 			_log.Debug("Переменная окружения ASPNETCORE_ENVIRONMENT = {env}", env);
 			_configService = new ConfigService(_log, env);
 		}
