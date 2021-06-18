@@ -20,11 +20,15 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "outputHashing": "bundles",
+            "baseHref": "/settings/",
+            "deployUrl": "/settings/",
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "resourcesOutputPath": "assets",
             "assets": [
               "src/logo.png",
               "src/assets"

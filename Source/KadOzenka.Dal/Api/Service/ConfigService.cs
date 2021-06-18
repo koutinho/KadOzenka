@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.Api.Service
 		{
 			_log = logger;
 			_envPath = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + $"appsettings.{env}.json";
-			_log.Debug("Путь к файлу дополнительных ресурсов: {_envPath}", _envPath);
+			_log.Debug("Путь к файлу дополнительной конфигурации: {_envPath}", _envPath);
 		}
 
 		#region serilog section
