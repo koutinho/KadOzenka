@@ -3,11 +3,11 @@ using KadOzenka.Dal.Modeling.Resources;
 
 namespace KadOzenka.Dal.Modeling.Exceptions.Factors
 {
-	public class EmptyMarkTypeForFactor : Exception
+	public class EmptyKForFactorException : Exception
 	{
-		public EmptyMarkTypeForFactor() : base(Messages.EmptyMarkType)
+		public EmptyKForFactorException() : base(Messages.EmptyKForFactor)
 		{
-			
+
 		}
 	}
 }

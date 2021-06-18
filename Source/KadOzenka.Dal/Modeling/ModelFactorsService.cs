@@ -145,12 +145,13 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(ModelAttributeRelationDto.SignAdd)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignExponentiation, nameof(ModelAttributeRelationDto.SignExponentiation)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.PreviousWeight, nameof(ModelAttributeRelationDto.PreviousWeight)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType, nameof(ModelAttributeRelationDto.MarkType)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelAttributeRelationDto.CorrectingTerm)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.K, nameof(ModelAttributeRelationDto.K)));
 
 			//var sql = query.GetSql();
 
@@ -174,9 +175,10 @@ namespace KadOzenka.Dal.Modeling
 				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
 				var signAdd = row[nameof(ModelAttributeRelationDto.SignAdd)].ParseToBooleanNullable();
 				var signDiv = row[nameof(ModelAttributeRelationDto.SignDiv)].ParseToBooleanNullable();
-				var signExponentiation = row[nameof(ModelAttributeRelationDto.SignExponentiation)].ParseToBooleanNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
 				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
+				var correctingTerm = row[nameof(ModelAttributeRelationDto.CorrectingTerm)].ParseToDecimalNullable();
+				var k = row[nameof(ModelAttributeRelationDto.K)].ParseToDecimalNullable();
 				var previousWeight = row[nameof(ModelAttributeRelationDto.PreviousWeight)].ParseToDecimalNullable();
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 				var markType = row[nameof(ModelAttributeRelationDto.MarkType)].ParseToString();
@@ -193,9 +195,10 @@ namespace KadOzenka.Dal.Modeling
 					B0 = b0.GetValueOrDefault(),
 					SignAdd = signAdd.GetValueOrDefault(),
 					SignDiv = signDiv.GetValueOrDefault(),
-					SignExponentiation = signExponentiation.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
 					Coefficient = weight,
+					CorrectingTerm = correctingTerm,
+					K = k,
 					PreviousWeight = previousWeight,
 					IsActive = isActive.GetValueOrDefault(),
 					MarkType = markType
@@ -271,7 +274,6 @@ namespace KadOzenka.Dal.Modeling
 						AlgorithmType_Code = type,
 						PreviousWeight = dto.PreviousWeight ?? 1,
 						IsActive = dto.IsActive,
-						SignExponentiation = dto.SignExponentiation,
 						MarkType_Code = dto.MarkType
 					};
 
@@ -310,7 +312,6 @@ namespace KadOzenka.Dal.Modeling
 				}
 
 				factor.PreviousWeight = dto.PreviousWeight ?? 1;
-				factor.SignExponentiation = dto.SignExponentiation;
 				factor.MarkType_Code = dto.MarkType;
 				ModelFactorsRepository.Save(factor);
 
@@ -333,11 +334,15 @@ namespace KadOzenka.Dal.Modeling
 				B0 = dto.Weight,
 				SignDiv = dto.SignDiv,
 				SignAdd = dto.SignAdd,
-				SignMarket = dto.SignMarket,
 				AlgorithmType_Code = dto.Type,
-				SignExponentiation = dto.SignExponentiation,
 				MarkType_Code = dto.MarkType
 			};
+
+			if (IsSpecialMarkType(dto.MarkType))
+			{
+				newFactor.CorrectingTerm = dto.CorrectItem;
+				newFactor.K = dto.K;
+			}
 
 			var id = ModelFactorsRepository.Save(newFactor);
 
@@ -356,9 +361,13 @@ namespace KadOzenka.Dal.Modeling
 			factor.B0 = dto.B0;
 			factor.SignDiv = dto.SignDiv;
 			factor.SignAdd = dto.SignAdd;
-			factor.SignMarket = dto.SignMarket;
-			factor.SignExponentiation = dto.SignExponentiation;
 			factor.MarkType_Code = dto.MarkType;
+
+			if (IsSpecialMarkType(dto.MarkType))
+			{
+				factor.CorrectingTerm = dto.CorrectItem;
+				factor.K = dto.K;
+			}
 
 			ModelFactorsRepository.Save(factor);
 
@@ -415,15 +424,29 @@ namespace KadOzenka.Dal.Modeling
 
 		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
-			ValidateBaseFactor(factorDto.Id, factorDto.GeneralModelId, factorDto.FactorId, factorDto.MarkType, factorDto.Type);
+			ValidateBaseFactor(factorDto.Id, factorDto.GeneralModelId, factorDto.FactorId, factorDto.Type);
 
 			if (factorDto.Type == KoAlgoritmType.None)
-				throw new Exception("Не передан тип алгоритма для фактора");
+				throw new Exception("Не передан тип алгоритма модели для фактора");
+
+			if (IsSpecialMarkType(factorDto.MarkType))
+			{
+				if (factorDto.CorrectItem == null)
+					throw new EmptyCorrectTermForFactorException();
+				
+				if (factorDto.K == null)
+					throw new EmptyKForFactorException();
+			}
+		}
+
+		private bool IsSpecialMarkType(MarkType markType)
+		{
+			return markType == MarkType.Straight || markType == MarkType.Reverse;
 		}
 
 		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
 		{
-			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, factor.MarkType, factor.Type);
+			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, factor.Type);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
@@ -473,7 +496,7 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(string.Join("<br>", errors));
 		}
 
-		private void ValidateBaseFactor(long id, long? modelId, long? factorId, MarkType markType, KoAlgoritmType type)
+		private void ValidateBaseFactor(long id, long? modelId, long? factorId, KoAlgoritmType type)
 		{
 			if (modelId == null)
 				throw new Exception("Не передан ИД основной модели");
@@ -481,22 +504,7 @@ namespace KadOzenka.Dal.Modeling
 			if (factorId == null)
 				throw new Exception("Не передан ИД фактора");
 
-			if (markType == MarkType.None)
-				throw new EmptyMarkTypeForFactor();
-
-			bool isTheSameAttributeExists;
-			if (type == KoAlgoritmType.None)
-			{
-				isTheSameAttributeExists = OMModelFactor.Where(x => x.Id != id && x.FactorId == factorId && x.ModelId == modelId)
-					.ExecuteExists();
-			}
-			else
-			{
-				isTheSameAttributeExists = OMModelFactor.Where(x =>
-						x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
-					.ExecuteExists();
-			}
-
+			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(id, factorId.Value, modelId.Value, type);
 			if (isTheSameAttributeExists)
 				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}
