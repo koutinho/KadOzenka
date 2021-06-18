@@ -56,6 +56,26 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			RegisterConfiguratorWrapper.Verify(x => x.CreateDbColumnForRegister(It.IsAny<OMAttribute>(), It.IsAny<DbConfiguratorBase>()), Times.Once);
 		}
 
+
+		[Test]
+		public void Can_Create_Characteristic_With_Attribute_Allpri_Partitioning()
+		{
+			var dto = new CharacteristicDto
+			{
+				Name = RandomGenerator.GetRandomString(),
+				RegisterId = RandomGenerator.GenerateRandomInteger(),
+				ReferenceId = RandomGenerator.GenerateRandomInteger()
+			};
+			MockRegisterAttributeServiceCreateRegisterAttribute(dto);
+			MockRegisterCacheGetRegisterData(dto.RegisterId, AllpriPartitioningType.AttributeId);
+
+			ObjectsCharacteristicsService.AddCharacteristic(dto);
+
+			RegisterAttributeService.Verify(
+				x => x.CreateRegisterAttribute(dto.Name, dto.RegisterId, dto.Type, false, dto.ReferenceId, true), Times.Once);
+			RegisterConfiguratorWrapper.Verify(x => x.CreateDbTableForRegister(It.IsAny<long>()), Times.Once);
+		}
+
 		[Test]
 		public void CanNot_Create_Characteristic_With_Attribute_Allpri_Partitioning_If_User_HasNot_Admin_Permission()
 		{
