@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ApiService } from './common/api/api';
-import { LoginComponent } from './login/login/login.component';
+import { LoginComponent } from './login/login.component';
 import { SettingComponent } from './setting/setting.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
