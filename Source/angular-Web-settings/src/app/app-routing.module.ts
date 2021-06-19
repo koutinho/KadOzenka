@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './common/guards/auth.guard';
-import { LoginComponent } from './login/login/login.component';
+import { LoginComponent } from './login/login.component';
 import { SettingComponent } from './setting/setting.component';
 import {EnumSection} from "./common/route/enum.route";
 
