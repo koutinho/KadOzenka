@@ -1,7 +1,5 @@
 ﻿using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Exceptions.Factors;
-using KadOzenka.Dal.Tests.Modeling.Models;
-using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
