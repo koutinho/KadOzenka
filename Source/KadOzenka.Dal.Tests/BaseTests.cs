@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Registers;
+﻿using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Registers;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
@@ -10,12 +11,15 @@ namespace KadOzenka.Dal.Tests
 	{
 		protected ServiceProvider Provider { get; set; }
         protected Mock<IRegisterService> RegisterService { get; set; }
+        protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
+
 
 		[OneTimeSetUp]
 		public void BaseTestsSetUp()
 		{
 			ConfigureServices();
             RegisterService = new Mock<IRegisterService>();
+            RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
 		}
 
 		protected virtual void AddServicesToContainer(ServiceCollection container)
@@ -39,6 +43,7 @@ namespace KadOzenka.Dal.Tests
 			AddServicesToContainer(container);
 
             container.AddTransient(typeof(IRegisterService), sp => RegisterService.Object);
+            container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
 
 			Provider = container.BuildServiceProvider();
 		}

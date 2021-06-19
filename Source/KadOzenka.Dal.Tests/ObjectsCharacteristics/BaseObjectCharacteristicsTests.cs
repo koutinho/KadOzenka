@@ -17,7 +17,6 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics
         protected Mock<IRegisterAttributeService> RegisterAttributeService { get; set; }
 		protected Mock<ISRDSessionWrapper> SRDSessionWrapper { get; set; }
 		protected Mock<IRegisterConfiguratorWrapper> RegisterConfiguratorWrapper { get; set; }
-		protected Mock<IRegisterCacheWrapper> RegisterCacheWrapper { get; set; }
 
 
 		[SetUp]
@@ -28,7 +27,6 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics
 			RegisterAttributeService = new Mock<IRegisterAttributeService>();
 			SRDSessionWrapper = new Mock<ISRDSessionWrapper>();
 			RegisterConfiguratorWrapper = new Mock<IRegisterConfiguratorWrapper>();
-			RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
 		}
 
 
@@ -41,7 +39,6 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics
 			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
 			container.AddTransient(typeof(ISRDSessionWrapper), sp => SRDSessionWrapper.Object);
 			container.AddTransient(typeof(IRegisterConfiguratorWrapper), sp => RegisterConfiguratorWrapper.Object);
-			container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
 		}
 	}
 }
