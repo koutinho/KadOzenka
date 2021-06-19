@@ -17,6 +17,16 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 	[TestFixture]
 	public class AddCharacteristicTests : BaseObjectCharacteristicsTests
 	{
+		private long RegisterId { get; set; }
+
+		[SetUp]
+		protected void SetUp()
+		{
+			var registerMinId = (int)(RosreestrRegisterService.Id + RandomGenerator.GenerateRandomInteger());
+			RegisterId = RandomGenerator.GenerateRandomInteger(registerMinId, registerMinId + RandomGenerator.GenerateRandomInteger());
+		}
+
+
 		[Test]
 		[TestCase("")]
 		[TestCase(" ")]
@@ -43,7 +53,7 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			var dto = new CharacteristicDto
 			{
 				Name = RandomGenerator.GetRandomString(),
-				RegisterId = RandomGenerator.GenerateRandomInteger(),
+				RegisterId = RegisterId,
 				ReferenceId = RandomGenerator.GenerateRandomInteger()
 			};
 			MockRegisterAttributeServiceCreateRegisterAttribute(dto);
@@ -64,8 +74,8 @@ namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
 			var dto = new CharacteristicDto
 			{
 				Name = RandomGenerator.GetRandomString(),
-				RegisterId = RandomGenerator.GenerateRandomInteger(),
-				ReferenceId = RandomGenerator.GenerateRandomInteger(registerMinId, registerMinId + RandomGenerator.GenerateRandomInteger())
+				RegisterId = RegisterId,
+				ReferenceId = RandomGenerator.GenerateRandomInteger()
 			};
 			MockRegisterAttributeServiceCreateRegisterAttribute(dto);
 			MockRegisterCacheGetRegisterData(dto.RegisterId, AllpriPartitioningType.AttributeId);
