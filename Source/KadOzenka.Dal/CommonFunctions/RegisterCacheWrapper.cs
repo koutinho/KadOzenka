@@ -21,11 +21,17 @@ namespace KadOzenka.Dal.CommonFunctions
             RegisterCache.UpdateCache(0, null);
         }
 
+        public RegisterAttribute GetAttributeData(long attributeId)
+        {
+	        return RegisterCache.GetAttributeData(attributeId);
+        }
+
         public Dictionary<long, RegisterAttribute> GetRegisterAttributesCache()
         {
             return RegisterCache.RegisterAttributes;
         }
     }
+
 
 	public interface IRegisterCacheWrapper
 	{
@@ -36,5 +42,7 @@ namespace KadOzenka.Dal.CommonFunctions
         Dictionary<long, RegisterAttribute> GetRegisterAttributesCache();
 
         void UpdateCache();
-    }
+
+        RegisterAttribute GetAttributeData(long attributeId);
+	}
 }

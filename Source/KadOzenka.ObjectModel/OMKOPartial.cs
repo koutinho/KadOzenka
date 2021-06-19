@@ -636,6 +636,7 @@ namespace ObjectModel.KO
     public partial class OMModel
     {
 	    public string InternalName => $"model_{Id}";
+	    public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 
 	    public decimal? GetA0()
 	    {
@@ -833,7 +834,11 @@ namespace ObjectModel.KO
     {
         static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
-        [Obsolete]
+
+		public decimal CorrectionInFormula => Math.Round(Weight, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		public decimal CoefficientInFormula => Math.Round(B0, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+
+		[Obsolete]
         public void FillMarkCatalogs(OMModel model)
         {
             MarkCatalogs = new List<OMMarkCatalog>();

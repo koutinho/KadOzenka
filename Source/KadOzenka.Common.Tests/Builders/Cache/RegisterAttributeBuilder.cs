@@ -46,6 +46,13 @@ namespace KadOzenka.Common.Tests.Builders.Cache
 		}
 
 
+		public RegisterAttributeBuilder Id(long id)
+		{
+			_attribute.Id = id;
+			return this;
+		}
+
+
 		public RegisterAttribute Build()
 		{
 			return _attribute;

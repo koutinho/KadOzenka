@@ -17,8 +17,11 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
+using Core.Register;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
+using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -27,16 +30,20 @@ namespace KadOzenka.Dal.Modeling
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelingRepository ModelingRepository { get; set; }
         private IModelObjectsRepository ModelObjectsRepository { get; set; }
-        private ModelFactorsService ModelFactorsService { get; set; }
+        private IModelFactorsService ModelFactorsService { get; set; }
         private RecycleBinService RecycleBinService { get; }
+        public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
         public ModelingService(IModelingRepository modelingRepository = null,
-			IModelObjectsRepository modelObjectsRepository = null)
+			IModelObjectsRepository modelObjectsRepository = null,
+			IModelFactorsService modelFactorsService = null,
+			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
-			ModelFactorsService = new ModelFactorsService();
+			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
 			ModelingRepository = modelingRepository ?? new ModelingRepository();
 			RecycleBinService = new RecycleBinService();
 			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
+			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
 
@@ -559,6 +566,49 @@ namespace KadOzenka.Dal.Modeling
 			return OMModelTrainingResultImages.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type)
 				.SelectAll()
 				.ExecuteFirstOrDefault();
+		}
+
+		#endregion
+
+
+		#region Formulas
+
+		public string GetFormula(long modelId)
+		{
+			//TODO validate: A0ForMultiplicative
+
+			var model = GetModelEntityById(modelId);
+			if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+			{
+				var formula = new StringBuilder();
+				formula.Append($"{model.A0ForMultiplicativeInFormula}");
+
+				var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Multi);
+				factors.ForEach(x =>
+				{
+					var attributeName = RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name;
+					switch (x.MarkType_Code)
+					{
+						case MarkType.None:
+							formula.Append($" * ({attributeName} + {x.CorrectionInFormula})^{x.CoefficientInFormula}");
+							break;
+						case MarkType.Default:
+							formula.Append($" * (метка({attributeName}) + {x.CorrectionInFormula})^{x.CoefficientInFormula})");
+							break;
+						case MarkType.Straight:
+							break;
+						case MarkType.Reverse:
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
+				});
+
+				return formula.ToString();
+			}
+
+			//TODO другие типы будут реализованы позднее
+			return model.GetFormulaFull(true);
 		}
 
 		#endregion

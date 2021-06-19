@@ -120,8 +120,7 @@ namespace CIPJS
 	        services.AddTransient<TemplateService>();
 	        services.AddTransient<GroupService>();
 	        services.AddTransient<DocumentService>();
-	        services.AddTransient<ModelFactorsService>();
-            services.AddSingleton<KoUnloadResultsListenerService>();
+	        services.AddSingleton<KoUnloadResultsListenerService>();
             //services.AddSingleton<OutliersCheckingListenerService>();
             services.AddSingleton<DictionaryService>();
             services.AddSingleton<EsHubService>();
@@ -131,6 +130,7 @@ namespace CIPJS
             services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
             services.AddTransient(typeof(IModelingService), typeof(ModelingService));
             services.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
+            services.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));
             services.AddTransient(typeof(ITourRepository), typeof(TourRepository));
             services.AddTransient(typeof(ITourService), typeof(TourService));
             services.AddTransient(typeof(IImportDataLogRepository), typeof(ImportDataLogRepository));

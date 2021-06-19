@@ -7,12 +7,15 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 {
 	public abstract class AFactorBuilder
 	{
+		public long Id => _factor.Id;
+
 		protected readonly OMModelFactor _factor;
+
 
 		protected AFactorBuilder()
 		{
 			var algorithm = KoAlgoritmType.Line;
-			var markType = MarkType.None;
+			var markType = ObjectModel.Directory.Ko.MarkType.None;
 
 			_factor = new OMModelFactor
 			{
@@ -35,6 +38,15 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				K = RandomGenerator.GenerateRandomDecimal()
 			};
 		}
+
+
+		public AFactorBuilder MarkType(MarkType markType)
+		{
+			_factor.MarkType = markType.GetEnumDescription();
+			_factor.MarkType_Code = markType;
+			return this;
+		}
+
 
 		public abstract OMModelFactor Build();
 	}
