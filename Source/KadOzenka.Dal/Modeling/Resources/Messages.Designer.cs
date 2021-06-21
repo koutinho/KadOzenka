@@ -88,6 +88,15 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;K&apos; не может быть равным нулю для прямой метки (т.к. используется в знаменателе).
+        /// </summary>
+        public static string EmptyKForFactorWithStraightMark {
+            get {
+                return ResourceManager.GetString("EmptyKForFactorWithStraightMark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не передан идентификатор Модели.
         /// </summary>
         public static string EmptyModelId {
