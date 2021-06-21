@@ -1063,7 +1063,7 @@ namespace KadOzenka.Dal.XmlParser
             [MustUseReturnValue]
             private int AddEntry(IEnumerable<string> value, int column, int rowOffset = 0, int cols = 1, int rows = 1)
             {
-                var resultValue = value.JoinStrings(";");
+                var resultValue = value.JoinStrings(";\n");
                 AddEntry(resultValue, column, rowOffset, cols, rows);
                 return 1;
             }
