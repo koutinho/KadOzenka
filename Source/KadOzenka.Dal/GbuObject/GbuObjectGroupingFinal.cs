@@ -35,10 +35,12 @@ namespace KadOzenka.Dal.GbuObject
     public class PriorityItemFinal
     {
         private readonly ILogger _log;
+        private readonly PriorityGroupingFinal _groupingFinal;
 
-        public PriorityItemFinal(ILogger log)
+        public PriorityItemFinal(ILogger log, PriorityGroupingFinal groupingFinal)
         {
             _log = log;
+            _groupingFinal = groupingFinal;
         }
 
         #region Методы
@@ -79,18 +81,6 @@ namespace KadOzenka.Dal.GbuObject
             };
 
             attributeValue.Save();
-        }
-
-
-        string CleanUp(string x)
-        {
-            if (x == null) return null;
-            // Оставляем только значимые символы в строках и убираем мусор из значения
-            return Regex
-                .Replace(x, "\\s+", "")
-                .Replace("_x000D_", "")
-                .Replace("-", "")
-                .ToLower();
         }
 
         private void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list,
@@ -236,10 +226,10 @@ namespace KadOzenka.Dal.GbuObject
             List<GbuObjectAttribute> objectAttributes, GbuReportService reportService)
         {
             GbuReportService.Row currentRow;
-            lock (PriorityGroupingFinal.Locked)
+            lock (_groupingFinal.Locked)
             {
                 currentRow = reportService.GetCurrentRow();
-                PriorityGroupingFinal.CurrentCount++;
+                _groupingFinal.CurrentCount++;
                 reportService.AddValue(inputItem.CadastralNumber, PriorityGroupingFinal.KnColumn, currentRow);
             }
 
@@ -300,7 +290,7 @@ namespace KadOzenka.Dal.GbuObject
                                 $"Ошибка при сохрании значения '{resGroup}' в Характеристику", e);
                         }
 
-                        lock (PriorityGroupingFinal.Locked)
+                        lock (_groupingFinal.Locked)
                         {
                             reportService.AddValue(
                                 GbuObjectService.GetAttributeNameById(setting.IdAttributeResult
@@ -310,7 +300,7 @@ namespace KadOzenka.Dal.GbuObject
                             //AddValueItemsToReport(reportService, valueItems, currentRow, PriorityGroupingFinal.ValueColumnOffset);
                         }
 
-                        lock (PriorityGroupingFinal.Locked)
+                        lock (_groupingFinal.Locked)
                         {
                             reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
                         }
@@ -318,7 +308,7 @@ namespace KadOzenka.Dal.GbuObject
                 }
                 else
                 {
-                    lock (PriorityGroupingFinal.Locked)
+                    lock (_groupingFinal.Locked)
                     {
                         reportService.AddValue(errorCODStr, PriorityGroupingFinal.ErrorColumn, currentRow);
                     }
@@ -337,10 +327,13 @@ namespace KadOzenka.Dal.GbuObject
                 LogException(message, inputItem, reportService, ex, currentRow);
             }
 
-            if (PriorityGroupingFinal.CurrentCount % 1000 == 0)
+            lock (_groupingFinal.Locked)
             {
-                _log.Debug("Обработан объект {CurrentCount} из {MaxCount}", PriorityGroupingFinal.CurrentCount,
-                    PriorityGroupingFinal.MaxCount);
+                if (_groupingFinal.CurrentCount % 1000 == 0)
+                {
+                    _log.Debug("Обработан объект {CurrentCount} из {MaxCount}", _groupingFinal.CurrentCount,
+                        _groupingFinal.MaxCount);
+                }
             }
         }
 
@@ -357,7 +350,7 @@ namespace KadOzenka.Dal.GbuObject
         private void LogException(string message, GroupingItem inputItem, GbuReportService reportService, Exception ex,
             GbuReportService.Row currentRow)
         {
-            lock (PriorityGroupingFinal.Locked)
+            lock (_groupingFinal.Locked)
             {
                 //var errorId = ErrorManager.LogError(ex);
                 var fullMessage = $"{message}. {ex.Message}.";
@@ -400,17 +393,17 @@ namespace KadOzenka.Dal.GbuObject
         /// <summary>
         /// Объект для блокировки счетчика в многопоточке
         /// </summary>
-        public static object Locked;
+        public object Locked;
 
         /// <summary>
         /// Общее число объектов
         /// </summary>
-        public static int MaxCount;
+        public int MaxCount;
 
         /// <summary>
         /// Индекс текущего объекта
         /// </summary>
-        public static int CurrentCount;
+        public int CurrentCount;
 
         /// <summary>
         /// Количество объектов прошедших процедуру
@@ -550,7 +543,7 @@ namespace KadOzenka.Dal.GbuObject
             }
         }
 
-        private static void ProcessUnits(GroupingSettingsFinal setting, List<GroupingItem> units, List<long> allAttributeIds,
+        private void ProcessUnits(GroupingSettingsFinal setting, List<GroupingItem> units, List<long> allAttributeIds,
             GbuObjectService gbuObjectService, GbuReportService reportService,
             ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
         {
@@ -600,7 +593,7 @@ namespace KadOzenka.Dal.GbuObject
             });
         }
 
-        private static void ProcessObjects(GroupingSettingsFinal setting,
+        private void ProcessObjects(GroupingSettingsFinal setting,
             List<GroupingItem> objects, List<long> allAttributeIds, DateTime actualDate,
             GbuObjectService gbuObjectService, GbuReportService reportService,
             ReportHeaderWithColumnDic dataHeaderAndColumnNumber, CancellationToken processCancellationToken)
@@ -640,7 +633,7 @@ namespace KadOzenka.Dal.GbuObject
             });
         }
 
-        private static void ProcessItems(ProcessItemInputParametersFinal inputParameters)
+        private void ProcessItems(ProcessItemInputParametersFinal inputParameters)
         {
             var localCancelTokenSource = new CancellationTokenSource();
             var options = new ParallelOptions
@@ -669,7 +662,7 @@ namespace KadOzenka.Dal.GbuObject
                     ? attributes
                     : defaultAttributes;
 
-                new PriorityItemFinal(Log).SetPriorityGroup(inputParameters.Setting,
+                new PriorityItemFinal(Log, this).SetPriorityGroup(inputParameters.Setting,
                     inputParameters.AllAttributeIds, item, localActualDate,
                     currentObjectAttributes, inputParameters.ReportService);
             }
@@ -772,7 +765,7 @@ namespace KadOzenka.Dal.GbuObject
             return res;
         }
 
-        public static void AddInfoToReport(List<DataLevel> dataLevels, GbuReportService.Row rowNumber,
+        public void AddInfoToReport(List<DataLevel> dataLevels, GbuReportService.Row rowNumber,
             Dictionary<long, long> dictionaryColumns, GbuReportService reportService)
         {
             lock (Locked)
