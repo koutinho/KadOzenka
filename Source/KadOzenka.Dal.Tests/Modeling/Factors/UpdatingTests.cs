@@ -33,5 +33,15 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 
 			ModelFactorsRepository.Verify(foo => foo.Save(It.IsAny<OMModelFactor>()), Times.Never);
 		}
+
+		[Test]
+		public void CanNot_Updated_Manual_Factor_Of_Straight_MarkType_With_Zero_K()
+		{
+			var factor = PrepareManualModelFactorForCRUD(MarkType.Straight, RandomGenerator.GenerateRandomDecimal(), 0);
+
+			Assert.Throws<EmptyKForFactorWithStraightMarkException>(() => ModelFactorsService.UpdateManualFactor(factor));
+
+			ModelFactorsRepository.Verify(foo => foo.Save(It.IsAny<OMModelFactor>()), Times.Never);
+		}
 	}
 }

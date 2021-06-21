@@ -436,6 +436,9 @@ namespace KadOzenka.Dal.Modeling
 				
 				if (factorDto.K == null)
 					throw new EmptyKForFactorException();
+
+				if (factorDto.MarkType == MarkType.Straight && factorDto.K.GetValueOrDefault() == 0)
+					throw new EmptyKForFactorWithStraightMarkException();
 			}
 		}
 

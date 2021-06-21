@@ -126,6 +126,9 @@
   <data name="EmptyKForFactor" xml:space="preserve">
     <value>Не передан 'К'</value>
   </data>
+  <data name="EmptyKForFactorWithStraightMark" xml:space="preserve">
+    <value>'K' не может быть равным нулю для прямой метки (т.к. используется в знаменателе)</value>
+  </data>
   <data name="EmptyModelId" xml:space="preserve">
     <value>Не передан идентификатор Модели</value>
   </data>
