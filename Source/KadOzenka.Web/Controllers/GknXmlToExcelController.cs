@@ -36,8 +36,8 @@ namespace KadOzenka.Web.Controllers
                 GknXmlToExcelLongProcess.AddProcessToQueue(
                     new GknXmlToExcelLongProcess.GknXmlConvertParams
                     {
-                        KOTaskId = id,
-                        config = config,
+                        KoTaskId = id,
+                        Config = config,
                         UserId = SRDSession.GetCurrentUserId()
                     });
                 return Ok();
