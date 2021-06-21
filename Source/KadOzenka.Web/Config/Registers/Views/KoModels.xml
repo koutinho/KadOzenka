@@ -14,7 +14,7 @@
                 <Parameter Key="RegisterId" Value="[RegisterId]"/>
             </Parameters>
         </Button>
-        <Button Caption="Добавить" NavigateURL="/Modeling/AddModel" WindowHeight="590" WindowWidth="800"
+        <Button Caption="Добавить" NavigateURL="/Modeling/AddModel" WindowHeight="610" WindowWidth="800"
                 SRDFunctionTag="KO.DICT.MODELS.ADD_MODEL" Icon="fas fa-plus"/>
 
         <Button Caption="Удалить" NavigateURL="/Modeling/ModelDelete" WindowHeight="150" WindowWidth="800"

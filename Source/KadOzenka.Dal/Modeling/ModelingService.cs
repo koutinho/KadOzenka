@@ -253,7 +253,7 @@ namespace KadOzenka.Dal.Modeling
 		            : KoCalculationMethod.None;
 
 	            existedModel.CalculationType_Code = modelDto.CalculationType;
-	            existedModel.Formula = GetFormula(existedModel);
+	            //existedModel.Formula = GetFormula(existedModel);
 
 	            existedModel.Save();
 

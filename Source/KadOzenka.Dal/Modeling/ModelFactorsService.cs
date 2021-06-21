@@ -346,7 +346,7 @@ namespace KadOzenka.Dal.Modeling
 
 			var id = ModelFactorsRepository.Save(newFactor);
 
-			RecalculateFormula(dto.GeneralModelId);
+			//RecalculateFormula(dto.GeneralModelId);
 
 			return id;
 		}
@@ -371,7 +371,7 @@ namespace KadOzenka.Dal.Modeling
 
 			ModelFactorsRepository.Save(factor);
 
-			RecalculateFormula(dto.GeneralModelId);
+			//RecalculateFormula(dto.GeneralModelId);
 		}
 
 		public void DeleteManualModelFactor(long? id)
@@ -380,7 +380,7 @@ namespace KadOzenka.Dal.Modeling
 
 			factor.Destroy();
 
-			RecalculateFormula(factor.ModelId);
+			//RecalculateFormula(factor.ModelId);
 		}
 
 		public void DeleteAutomaticModelFactor(long? id)
@@ -517,15 +517,15 @@ namespace KadOzenka.Dal.Modeling
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
 
-		private void RecalculateFormula(long? generalModelId)
-		{
-			var model = OMModel.Where(x => x.Id == generalModelId).SelectAll().ExecuteFirstOrDefault();
-			if(model == null)
-				throw new Exception($"Не найдена модель с ИД '{generalModelId}'");
+		//private void RecalculateFormula(long? generalModelId)
+		//{
+		//	var model = OMModel.Where(x => x.Id == generalModelId).SelectAll().ExecuteFirstOrDefault();
+		//	if(model == null)
+		//		throw new Exception($"Не найдена модель с ИД '{generalModelId}'");
 
-			model.Formula = model.GetFormulaFull(true);
-			model.Save();
-		}
+		//	model.Formula = model.GetFormulaFull(true);
+		//	model.Save();
+		//}
 
 		#endregion
 
