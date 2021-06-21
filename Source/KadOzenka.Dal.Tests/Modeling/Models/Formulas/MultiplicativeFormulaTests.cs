@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		private OMModel _model;
 		private FactorBuilder _factorBuilder;
 		private RegisterAttribute _cacheAttribute;
-		private string _cacheAttributeName => $"\"{_cacheAttribute.Name}\"";
+		private string CacheAttributeName => $"\"{_cacheAttribute.Name}\"";
 
 
 		[SetUp]
@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelingService.GetFormula(_model);
 
-			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*({_cacheAttributeName}+{factor.WeightInFormula})^{factor.B0InFormula}";
+			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*({CacheAttributeName}+{factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelingService.GetFormula(_model);
 
-			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(метка({_cacheAttributeName})+{factor.WeightInFormula})^{factor.B0InFormula})";
+			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(метка({CacheAttributeName})+{factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -60,7 +60,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelingService.GetFormula(_model);
 
-			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(({_cacheAttributeName}+{factor.CorrectingTermInFormula})/{factor.KInFormula} + {factor.WeightInFormula})^{factor.B0InFormula}";
+			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(({CacheAttributeName}+{factor.CorrectingTermInFormula})/{factor.KInFormula} + {factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -72,7 +72,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelingService.GetFormula(_model);
 
-			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*({factor.KInFormula}/({_cacheAttributeName}+{factor.CorrectingTermInFormula})+{factor.WeightInFormula})^{factor.B0InFormula}";
+			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*({factor.KInFormula}/({CacheAttributeName}+{factor.CorrectingTermInFormula})+{factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -100,7 +100,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var baseFormulaPart = $"{_model.A0ForMultiplicativeInFormula}";
 			var noneMarkTypeFormulaPart = $"*(\"{noneMarkTypeAttribute.Name}\"+{noneMarkTypeFactor.WeightInFormula})^{noneMarkTypeFactor.B0InFormula}";
-			var defaultMarkTypeFormulaPart = $"*(метка(\"{defaultMarkTypeAttribute.Name}\")+{defaultMarkTypeFactor.WeightInFormula})^{defaultMarkTypeFactor.B0InFormula})";
+			var defaultMarkTypeFormulaPart = $"*(метка(\"{defaultMarkTypeAttribute.Name}\")+{defaultMarkTypeFactor.WeightInFormula})^{defaultMarkTypeFactor.B0InFormula}";
 			var straightMarkTypeFormulaPart = $"*((\"{straightMarkTypeAttribute.Name}\"+{straightMarkTypeFactor.CorrectingTermInFormula})/{straightMarkTypeFactor.KInFormula} + {straightMarkTypeFactor.WeightInFormula})^{straightMarkTypeFactor.B0InFormula}";
 			var reverseMarkTypeFormulaPart = $"*({reverseMarkTypeFactor.KInFormula}/(\"{reverseMarkTypeAttribute.Name}\"+{reverseMarkTypeFactor.CorrectingTermInFormula})+{reverseMarkTypeFactor.WeightInFormula})^{reverseMarkTypeFactor.B0InFormula}";
 			var expectedFormula = baseFormulaPart + noneMarkTypeFormulaPart + defaultMarkTypeFormulaPart + straightMarkTypeFormulaPart + reverseMarkTypeFormulaPart;

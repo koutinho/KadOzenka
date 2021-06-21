@@ -596,7 +596,7 @@ namespace KadOzenka.Dal.Modeling
 							formula.Append($" * ({attributeName} + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						case MarkType.Default:
-							formula.Append($" * (метка({attributeName}) + {x.WeightInFormula})^{x.B0InFormula})");
+							formula.Append($" * (метка({attributeName}) + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						case MarkType.Straight:
 							formula.Append($" * (({attributeName} + {x.CorrectingTermInFormula}) / {x.KInFormula} + {x.WeightInFormula})^{x.B0InFormula}");
