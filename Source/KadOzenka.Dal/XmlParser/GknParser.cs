@@ -1102,9 +1102,10 @@ namespace KadOzenka.Dal.XmlParser
                                     {
                                         if (xnChild2.Name == "Area")
                                         {
-                                            subParcel.Area = double.TryParse(xnChild2.InnerText, out var valResult)
-                                                ? valResult
-                                                : (double?) null;
+                                            if (xnChild2.FirstChild.Name == "Area")
+                                                subParcel.Area = double.TryParse(xnChild2.FirstChild.InnerText, out var valResult)
+                                                    ? valResult
+                                                    : (double?) null;
                                         }
 
                                         if (xnChild1.Name == "Inaccuracy")

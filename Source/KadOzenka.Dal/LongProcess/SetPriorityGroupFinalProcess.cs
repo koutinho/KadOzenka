@@ -27,14 +27,17 @@ namespace KadOzenka.Dal.LongProcess
 			try
 			{
 				_log.Information("Начато выполнение фонового процесса: {ProcessType}",
-					processType.Description ?? "debug");
+					processType.Description);
 				WorkerCommon.SetProgress(processQueue, 0);
 
 				var settings = processQueue.Parameters.DeserializeFromXml<GroupingSettingsFinal>();
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => PriorityGroupingFinal.MaxCount,
-					() => PriorityGroupingFinal.CurrentCount);
 
-				var url = new PriorityGroupingFinal().SetPriorityGroup(settings, cancellationToken);
+				var process = new PriorityGroupingFinal();
+
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => process.MaxCount,
+					() => process.CurrentCount);
+
+				var url = process.SetPriorityGroup(settings, cancellationToken);
 
 				_log.Information("URL результата финальной группировки: {Url}", url);
 

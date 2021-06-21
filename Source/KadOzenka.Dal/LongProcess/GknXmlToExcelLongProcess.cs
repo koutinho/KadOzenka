@@ -8,18 +8,22 @@ using Core.Messages;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using JetBrains.Annotations;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.XmlParser;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.LongProcess
 {
+    [UsedImplicitly]
     public class GknXmlToExcelLongProcess : LongProcess
     {
-        public const string LongProcessName = nameof(GknXmlToExcelLongProcess);
+        private const string LongProcessName = nameof(GknXmlToExcelLongProcess);
+        private ILogger _log = Log.ForContext<GknXmlToExcelLongProcess>();
 
         public static void AddProcessToQueue(GknXmlConvertParams convertParams)
         {
@@ -32,8 +36,8 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetProgress(processQueue, 0);
             var convertParams = processQueue.Parameters.DeserializeFromXml<GknXmlConvertParams>();
 
-            var id = convertParams.KOTaskId;
-            var config = convertParams.config;
+            var id = convertParams.KoTaskId;
+            var config = convertParams.Config;
             var userId = convertParams.UserId;
 
             var task = OMTask.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
@@ -41,6 +45,7 @@ namespace KadOzenka.Dal.LongProcess
                 .SelectAll().Execute();
             var omImportDataLogs = attachments.Where(a => a.FileExtension == "xml").ToList();
             xmlImportGkn.FillDictionary();
+            _log.Information("Найдено {FileCount} xml файлов для конвертации в xlsx", omImportDataLogs.Count);
 
             var reportService = new GbuReportService("Ошибки импорта");
             var allObjects = new xmlObjectList();
@@ -50,7 +55,6 @@ namespace KadOzenka.Dal.LongProcess
                 try
                 {
                     var fileName = DataImporterCommon.GetStorageDataFileName(log.Id);
-                    Console.WriteLine($"Log name: {fileName}");
                     var fs = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, log.DateCreated,
                         fileName);
 
@@ -59,7 +63,8 @@ namespace KadOzenka.Dal.LongProcess
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    _log.ForContext("Exception", e)
+                        .Warning("Ошибка при получении xml-файла для конвертации. Имя файла: {FileName}, Идентификатор: {FileId}", log.DataFileName, log.Id);
                     continue;
                 }
 
@@ -94,7 +99,6 @@ namespace KadOzenka.Dal.LongProcess
 
             memoryStream.Seek(0, SeekOrigin.Begin);
 
-
             var fsName = "DataExporterByTemplate";
             var dt = DateTime.Today;
             FileStorageManager.Save(memoryStream, fsName, dt, $"{id}_ExcelConversion.zip");
@@ -102,9 +106,9 @@ namespace KadOzenka.Dal.LongProcess
             string reportWithErrorsMessage = null;
             if (!reportService.IsReportEmpty)
             {
-	            var reportId = reportService.SaveReport();
-	            var urlToDownloadReportWithErrors = reportService.GetUrlToDownloadFile(reportId);
-	            reportWithErrorsMessage = $@"<a href=""{urlToDownloadReportWithErrors}"">Скачать отчет с ошибками</a>";
+                var reportId = reportService.SaveReport();
+                var urlToDownloadReportWithErrors = reportService.GetUrlToDownloadFile(reportId);
+                reportWithErrorsMessage = $@"<a href=""{urlToDownloadReportWithErrors}"">Скачать отчет с ошибками</a>";
             }
 
             if (userId != null)
@@ -114,7 +118,7 @@ namespace KadOzenka.Dal.LongProcess
                     Subject = $"Конвертация xml в xlsx по задаче с идентификатором {id}",
                     Message =
                         $@"Процесс конвертации завершен. <a href=""/GknXmlToExcel/DownloadResult?dt={dt}&id={id}"">Скачать результаты</a>
-						{reportWithErrorsMessage}",
+                        {reportWithErrorsMessage}",
                     IsUrgent = true,
                     IsEmail = false,
                     ExpireDate = DateTime.Now.AddHours(2)
@@ -124,8 +128,8 @@ namespace KadOzenka.Dal.LongProcess
 
         public class GknXmlConvertParams
         {
-            public int[] config;
-            public long KOTaskId;
+            public int[] Config;
+            public long KoTaskId;
             public int? UserId;
         }
     }

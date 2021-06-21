@@ -331,7 +331,7 @@ namespace KadOzenka.Dal.Modeling
 				FactorId = dto.FactorId,
 				MarkerId = -1,
 				Weight = dto.Weight,
-				B0 = dto.Weight,
+				B0 = dto.B0,
 				SignDiv = dto.SignDiv,
 				SignAdd = dto.SignAdd,
 				AlgorithmType_Code = dto.Type,
