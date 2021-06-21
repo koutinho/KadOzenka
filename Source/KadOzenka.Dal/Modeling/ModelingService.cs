@@ -254,7 +254,7 @@ namespace KadOzenka.Dal.Modeling
 		            : KoCalculationMethod.None;
 
 	            existedModel.CalculationType_Code = modelDto.CalculationType;
-	            existedModel.Formula = existedModel.GetFormulaFull(true);
+	            existedModel.Formula = GetFormula(existedModel);
 
 	            existedModel.Save();
 
@@ -573,11 +573,10 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Formulas
 
-		public string GetFormula(long modelId)
+		public string GetFormula(OMModel model)
 		{
 			//TODO validate: A0ForMultiplicative
-
-			var model = GetModelEntityById(modelId);
+			
 			if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
 			{
 				var formula = new StringBuilder();
@@ -590,17 +589,19 @@ namespace KadOzenka.Dal.Modeling
 					switch (x.MarkType_Code)
 					{
 						case MarkType.None:
-							formula.Append($" * ({attributeName} + {x.CorrectionInFormula})^{x.CoefficientInFormula}");
+							formula.Append($" * ({attributeName} + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						case MarkType.Default:
-							formula.Append($" * (метка({attributeName}) + {x.CorrectionInFormula})^{x.CoefficientInFormula})");
+							formula.Append($" * (метка({attributeName}) + {x.WeightInFormula})^{x.B0InFormula})");
 							break;
 						case MarkType.Straight:
+							formula.Append($" * (({attributeName} + {x.CorrectingTermInFormula}) / {x.KInFormula} + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						case MarkType.Reverse:
+							formula.Append($" * ({x.KInFormula}/({attributeName}+{x.CorrectingTermInFormula}) + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						default:
-							throw new ArgumentOutOfRangeException();
+							throw new UnknownMarkTypeException(x.MarkType_Code);
 					}
 				});
 

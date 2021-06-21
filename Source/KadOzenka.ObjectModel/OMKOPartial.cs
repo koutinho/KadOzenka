@@ -835,8 +835,16 @@ namespace ObjectModel.KO
         static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMMarkCatalog> MarkCatalogs { get; set; }
 
-		public decimal CorrectionInFormula => Math.Round(Weight, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-		public decimal CoefficientInFormula => Math.Round(B0, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+        /// <summary>
+        /// Поправка
+        /// </summary>
+		public decimal WeightInFormula => Math.Round(Weight, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		/// <summary>
+        /// Добавочный коэффициент
+        /// </summary>
+		public decimal B0InFormula => Math.Round(B0, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 
 		[Obsolete]
         public void FillMarkCatalogs(OMModel model)

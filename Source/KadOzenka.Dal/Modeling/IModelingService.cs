@@ -30,6 +30,7 @@ namespace KadOzenka.Dal.Modeling
 		TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type);
 
 		Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type);
-		string GetFormula(long modelId);
+
+		string GetFormula(OMModel model);
 	}
 }

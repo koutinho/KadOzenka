@@ -64,7 +64,7 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public IRegisterAttributeService RegisterAttributeService { get; set; }
         public DictionaryService DictionaryService { get; set; }
-        public ModelFactorsService ModelFactorsService { get; set; }
+        public IModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelingRepository ModelingRepository { get; set; }
@@ -73,7 +73,7 @@ namespace KadOzenka.Web.Controllers
 
         public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
 	        IRegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
-	        ModelFactorsService modelFactorsService, GroupService groupService,
+	        IModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
@@ -618,7 +618,7 @@ namespace KadOzenka.Web.Controllers
             var model = ModelingService.GetModelEntityById(modelId);
 
             model.AlgoritmType_Code = (KoAlgoritmType)algType;
-            var formula = model.GetFormulaFull(true);
+            var formula = ModelingService.GetFormula(model);
             var a0 = model.GetA0();
 
             return Json(new { formula, a0 });
