@@ -181,9 +181,7 @@ namespace KadOzenka.Dal.Modeling
 		        Type_Code = KoModelType.Manual
 	        };
 
-	        model.Formula = model.GetFormulaFull(true);
-
-			ModelingRepository.Save(model);
+	        ModelingRepository.Save(model);
 		}
 
         public void UpdateAutomaticModel(ModelingModelDto modelDto)
@@ -575,14 +573,19 @@ namespace KadOzenka.Dal.Modeling
 
 		public string GetFormula(OMModel model)
 		{
-			//TODO validate: A0ForMultiplicative
-			
 			if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
 			{
 				var formula = new StringBuilder();
-				formula.Append($"{model.A0ForMultiplicativeInFormula}");
+				var a0 = model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
+				formula.Append($"{a0}");
 
-				var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Multi);
+				//для ручной модели существует один набор факторов под алгоритм самой модели
+				//для автоматической модели набор факторов разный под тип алгоритма
+				var algorithmType = model.Type_Code == KoModelType.Manual ? KoAlgoritmType.None : model.AlgoritmType_Code;
+				var factors = ModelFactorsService.GetFactors(model.Id, algorithmType);
+				if (factors.Count == 0)
+					throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
+
 				factors.ForEach(x =>
 				{
 					var attributeName = RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name;
@@ -601,7 +604,7 @@ namespace KadOzenka.Dal.Modeling
 							formula.Append($" * ({x.KInFormula}/({attributeName}+{x.CorrectingTermInFormula}) + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						default:
-							throw new UnknownMarkTypeException(x.MarkType_Code);
+							throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code}'");
 					}
 				});
 

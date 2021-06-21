@@ -218,8 +218,8 @@
             showAfter: 500
         });
 
-
-        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').bind('change', onTypeChanged);
+        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').bind('change', downloadInfoForFormula);
+        downloadInfoForFormula();
 
         $('#@nameof(Model.CalculationType)').data('kendoDropDownList').bind('change', onCalculationTypeChanged);
         onCalculationTypeChanged();
@@ -292,8 +292,11 @@
 
 
     function getDataForModelAttributesDownloader() {
-        var modelType = $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').value();
+        var modelType = getModelAlgorithmType();
         return { modelId: '@Model.Id', type: modelType }
+    }
+    function getModelAlgorithmType() {
+        return $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').value();
     }
 
 
@@ -307,8 +310,8 @@
     }
 
 
-    function onTypeChanged() {
-        var algType = this.value();
+    function downloadInfoForFormula() {
+        var algType = getModelAlgorithmType();
         $.ajax({
             url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.Id&algType=' + algType,
             type: 'GET',
