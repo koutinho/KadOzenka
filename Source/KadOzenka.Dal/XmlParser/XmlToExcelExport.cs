@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Core.ConfigParam;
+using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using JetBrains.Annotations;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace KadOzenka.Dal.XmlParser
 {
@@ -17,12 +19,12 @@ namespace KadOzenka.Dal.XmlParser
 
         private readonly Dictionary<int, string> _listNames = new Dictionary<int, string>
         {
-            {1, "Parcel"},
-            {2, "Build"},
-            {3, "Construction"},
-            {4, "Uncomplited"},
-            {5, "Flat"},
-            {6, "CarPlace"}
+            {1, "ЗУ"},
+            {2, "Здания"},
+            {3, "Сооружения"},
+            {4, "ОНС"},
+            {5, "Помещения"},
+            {6, "Машино-места"}
         };
 
         private Dictionary<string, ExcelFile> _resultExcelFiles;
@@ -49,7 +51,6 @@ namespace KadOzenka.Dal.XmlParser
             return _resultExcelFiles;
         }
 
-        //TODO: необходима доработка выгрузки после талона KOMO-5
         private void Export()
         {
             _resultExcelFiles = new Dictionary<string, ExcelFile>();
@@ -65,7 +66,7 @@ namespace KadOzenka.Dal.XmlParser
                 AddFlats(excelFile.Worksheets[_listNames[5]], _allObjects.Flats);
                 AddCarPlaces(excelFile.Worksheets[_listNames[6]], _allObjects.CarPlaces);
                 TrimEmptyWorksheets(excelFile);
-                _resultExcelFiles.Add("allObjects", excelFile);
+                _resultExcelFiles.Add("Все объекты", excelFile);
             }
             // Если много - разделяем по типу объекта и количеству
             else
@@ -146,7 +147,7 @@ namespace KadOzenka.Dal.XmlParser
 
         private void AddParcels(ExcelWorksheet sheet, List<xmlObjectParcel> parcels)
         {
-            var valOffset = 1;
+            var valOffset = 0;
             sheet.Cells.Style.WrapText = true;
             var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
 
@@ -155,12 +156,12 @@ namespace KadOzenka.Dal.XmlParser
                 converter.AddParcel(parcel, 0);
             }
 
-            RemoveUncheckedColumns(sheet, valOffset, 97);
+            RemoveUncheckedColumns(sheet, valOffset, 158);
         }
 
         private void AddBuildings(ExcelWorksheet sheet, List<xmlObjectBuild> buildings)
         {
-            var valOffset = 201;
+            var valOffset = 200;
             sheet.Cells.Style.WrapText = true;
 
             var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
@@ -169,12 +170,12 @@ namespace KadOzenka.Dal.XmlParser
                 converter.AddBuild(building, 0);
             }
 
-            RemoveUncheckedColumns(sheet, valOffset, 39);
+            RemoveUncheckedColumns(sheet, valOffset, 90);
         }
 
         private void AddConstructions(ExcelWorksheet sheet, List<xmlObjectConstruction> constructions)
         {
-            var valOffset = 301;
+            var valOffset = 300;
             sheet.Cells.Style.WrapText = true;
 
             var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
@@ -188,7 +189,7 @@ namespace KadOzenka.Dal.XmlParser
 
         private void AddIncompleteBuildings(ExcelWorksheet sheet, List<xmlObjectUncomplited> incompletedBuildings)
         {
-            var valOffset = 401;
+            var valOffset = 400;
             sheet.Cells.Style.WrapText = true;
 
             var converter = new XmlToExcelExportWorker(sheet, _config, 3, valOffset);
@@ -202,7 +203,7 @@ namespace KadOzenka.Dal.XmlParser
 
         private void AddFlats(ExcelWorksheet sheet, List<xmlObjectFlat> flats)
         {
-            var valOffset = 501;
+            var valOffset = 500;
             sheet.Cells.Style.WrapText = true;
             var curRow = 5;
 
@@ -217,108 +218,9 @@ namespace KadOzenka.Dal.XmlParser
 
         private void AddCarPlaces(ExcelWorksheet sheet, List<xmlObjectCarPlace> carPlaces)
         {
-            var valOffset = 701;
+            var valOffset = 700;
             sheet.Cells.Style.WrapText = true;
             var curRow = 3;
-            // foreach (var item in carPlaces)
-            // {
-            //     AddEntry(sheet, item.CadastralNumber, true, 1, curRow);
-            //
-            //     AddEntry(sheet, item.TypeObject.ToString(), ReadConfigValue(valOffset + 2), 2, curRow);
-            //     AddEntry(sheet, item.TypeRealty, ReadConfigValue(valOffset + 3), 3, curRow);
-            //     AddEntry(sheet, item.DateCreate?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 4), 4, curRow);
-            //     AddEntry(sheet, item.CadastralNumberBlock, ReadConfigValue(valOffset + 5), 5, curRow);
-            //
-            //     AddEntry(sheet, item.CadastralCost?.Value?.ToString(), ReadConfigValue(valOffset + 6), 6, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.DateValuation?.ToString("dd/MM/yyyy"),
-            //         ReadConfigValue(valOffset + 7), 7, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.DateEntering?.ToString("dd/MM/yyyy"),
-            //         ReadConfigValue(valOffset + 8),
-            //         8, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.DocDate?.ToString("dd/MM/yyyy"), ReadConfigValue(valOffset + 9), 9,
-            //         curRow);
-            //     AddEntry(sheet, item.CadastralCost?.ApplicationDate?.ToString("dd/MM/yyyy"),
-            //         ReadConfigValue(valOffset + 10), 10, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.DocNumber, ReadConfigValue(valOffset + 11), 11, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.DocName, ReadConfigValue(valOffset + 12), 12, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.DateApproval?.ToString("dd/MM/yyyy"),
-            //         ReadConfigValue(valOffset + 13), 13, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.RevisalStatementDate?.ToString("dd/MM/yyyy"),
-            //         ReadConfigValue(valOffset + 14), 14, curRow);
-            //     AddEntry(sheet, item.CadastralCost?.ApplicationLastDate?.ToString("dd/MM/yyyy"),
-            //         ReadConfigValue(valOffset + 15), 15, curRow);
-            //
-            //
-            //     AddEntry(sheet, item.Area?.ToString(), ReadConfigValue(valOffset + 15), 15, curRow);
-            //
-            //
-            //     AddEntry(sheet, item.Adress.FIAS, ReadConfigValue(valOffset + 17), 17, curRow);
-            //     AddEntry(sheet, item.Adress.OKATO, ReadConfigValue(valOffset + 17), 17, curRow);
-            //     AddEntry(sheet, item.Adress.KLADR, ReadConfigValue(valOffset + 16), 16, curRow);
-            //     AddEntry(sheet, item.Adress.OKTMO, ReadConfigValue(valOffset + 17), 17, curRow);
-            //     AddEntry(sheet, item.Adress.PostalCode, ReadConfigValue(valOffset + 17), 17, curRow);
-            //     AddEntry(sheet, item.Adress.RussianFederation, ReadConfigValue(valOffset + 18), 18, curRow);
-            //     AddEntry(sheet, item.Adress.Region, ReadConfigValue(valOffset + 18), 18, curRow);
-            //     AddEntry(sheet, item.Adress.Note, ReadConfigValue(valOffset + 19), 19, curRow);
-            //     AddEntry(sheet, item.Adress.Other, ReadConfigValue(valOffset + 20), 20, curRow);
-            //     AddEntry(sheet, item.Adress.AddressOrLocation, ReadConfigValue(valOffset + 21), 21, curRow);
-            //
-            //
-            //     AddEntry(sheet, item.Adress.District?.Value, ReadConfigValue(valOffset + 21), 21, curRow);
-            //     AddEntry(sheet, item.Adress.Locality?.Value, ReadConfigValue(valOffset + 22), 22, curRow);
-            //     AddEntry(sheet, item.Adress.City?.Value, ReadConfigValue(valOffset + 23), 23, curRow);
-            //     AddEntry(sheet, item.Adress.UrbanDistrict?.Value, ReadConfigValue(valOffset + 24), 24, curRow);
-            //     AddEntry(sheet, item.Adress.SovietVillage?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
-            //     AddEntry(sheet, item.Adress.PlanningElement?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
-            //     AddEntry(sheet, item.Adress.Street?.Value, ReadConfigValue(valOffset + 25), 25, curRow);
-            //     AddEntry(sheet, item.Adress.Level1?.Value, ReadConfigValue(valOffset + 26), 26, curRow);
-            //     AddEntry(sheet, item.Adress.Level2?.Value, ReadConfigValue(valOffset + 27), 27, curRow);
-            //     AddEntry(sheet, item.Adress.Level3?.Value, ReadConfigValue(valOffset + 28), 28, curRow);
-            //     AddEntry(sheet, item.Adress.Apartment?.Value, ReadConfigValue(valOffset + 29), 29, curRow);
-            //
-            //     //TODO: PositionInObject
-            //     //var posRows = 0;
-            //     //foreach (var position in item.PositionsInObject)
-            //     //{
-            //     //	AddEntry(sheet, position.Position.Code, ReadConfigValue(valOffset + 30), 30, curRow + posRows);
-            //     //	AddEntry(sheet, position.Position.Name, ReadConfigValue(valOffset + 31), 31, curRow + posRows);
-            //     //	AddEntry(sheet, position.Position.Value, ReadConfigValue(valOffset + 32), 32, curRow + posRows);
-            //
-            //     //	foreach (var number in position.NumbersOnPlan)
-            //     //	{
-            //     //		AddEntry(sheet, number, ReadConfigValue(valOffset + 33), 33, curRow + posRows);
-            //     //		posRows++;
-            //     //	}
-            //     //}
-            //
-            //     AddEntry(sheet, item.CadastralNumberOKS, ReadConfigValue(valOffset + 34), 34, curRow);
-            //
-            //     //TODO: item.ParentOks
-            //     //AddEntry(sheet, item.parentFloors.Floors, ReadConfigValue(valOffset + 35), 35, curRow);
-            //     //AddEntry(sheet, item.parentFloors.Underground_Floors, ReadConfigValue(valOffset + 36), 36, curRow);
-            //
-            //     //AddEntry(sheet, item.parentYears.Year_Built, ReadConfigValue(valOffset + 37), 37, curRow);
-            //     //AddEntry(sheet, item.parentYears.Year_Used, ReadConfigValue(valOffset + 38), 38, curRow);
-            //
-            //     //AddEntry(sheet, item.parentAssignationBuilding.Code, ReadConfigValue(valOffset + 39), 39, curRow);
-            //     //AddEntry(sheet, item.parentAssignationBuilding.Name, ReadConfigValue(valOffset + 40), 40, curRow);
-            //
-            //     //AddEntry(sheet, item.parentAssignationName, ReadConfigValue(valOffset + 41), 41, curRow);
-            //
-            //     //var posWalls = 0;
-            //     //foreach (var wall in item.parentWalls)
-            //     //{
-            //     //	AddEntry(sheet, wall.Code, ReadConfigValue(valOffset + 42), 42, curRow + posWalls);
-            //     //	AddEntry(sheet, wall.Name, ReadConfigValue(valOffset + 43), 43, curRow + posWalls);
-            //     //	posWalls++;
-            //     //}
-            //
-            //     //int[] rowsAdded = { posWalls, posRows, 1 };
-            //     int[] rowsAdded = {1};
-            //     curRow += rowsAdded.Max();
-            //
-            //     DrawBorder(sheet, curRow, 43);
-            // }
             var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
             foreach (var carPlace in carPlaces)
             {
@@ -406,7 +308,7 @@ namespace KadOzenka.Dal.XmlParser
             private void AddParticular(xmlObjectParticular xml, int col)
             {
                 AddEntry(xml.CadastralNumber, col + 0);
-                AddEntry(xml.TypeObject.ToString(), col + 1);
+                AddEntry(xml.TypeObject.GetEnumDescription(), col + 1);
                 AddEntry(xml.TypeRealty, col + 2);
                 AddEntry(xml.DateCreate, col + 3);
                 AddEntry(xml.CadastralNumberBlock, col + 4);
@@ -418,7 +320,9 @@ namespace KadOzenka.Dal.XmlParser
 
             public void AddParcel(xmlObjectParcel xml, int col)
             {
-                AddParticular(xml, 0);
+                var columnsTotal = 158;
+
+                AddParticular(xml, col + 0);
                 var innerCadNumbers = AddEntry(xml.InnerCadastralNumbers, col + 44);
                 AddEntry(xml.Area, col + 45);
                 AddEntry(xml.AreaInaccuracy, col + 46);
@@ -429,14 +333,14 @@ namespace KadOzenka.Dal.XmlParser
                 var naturalObjects = 0;
                 foreach (var natObject in xml.NaturalObjects)
                 {
-                    var natObjCount = AddNaturalObject(natObject, 57, naturalObjects);
+                    var natObjCount = AddNaturalObject(natObject, col + 57, naturalObjects);
                     naturalObjects += natObjCount;
                 }
 
                 var subParcels = 0;
                 foreach (var subParcel in xml.SubParcels)
                 {
-                    var subParcelCount = AddSubParcel(subParcel, 71, subParcels);
+                    var subParcelCount = AddSubParcel(subParcel, col + 71, subParcels);
                     subParcels += subParcelCount;
                 }
 
@@ -446,14 +350,14 @@ namespace KadOzenka.Dal.XmlParser
                 var zonesAndTerritories = 0;
                 foreach (var zones in xml.ZonesAndTerritories)
                 {
-                    AddZoneAndTerritory(zones, 92, zonesAndTerritories);
+                    AddZoneAndTerritory(zones, col + 92, zonesAndTerritories);
                     zonesAndTerritories++;
                 }
 
                 var governmentLandSupervision = 0;
                 foreach (var supervision in xml.GovernmentLandSupervision)
                 {
-                    AddSupervisionEvent(supervision, 105, governmentLandSupervision);
+                    AddSupervisionEvent(supervision, col + 105, governmentLandSupervision);
                     governmentLandSupervision++;
                 }
 
@@ -465,12 +369,17 @@ namespace KadOzenka.Dal.XmlParser
                 int[] rowsAdded =
                     {innerCadNumbers, naturalObjects, subParcels, zonesAndTerritories, governmentLandSupervision, 1};
 
-                _curRow += rowsAdded.Max();
+                var rowsToAdvance = RowsToAdvance(rowsAdded, columnsTotal);
+
+                _curRow += rowsToAdvance;
+
+                DrawBorder(columnsTotal);
             }
 
             public void AddBuild(xmlObjectBuild xml, int col)
             {
-                AddParticular(xml, 0);
+                var columnsTotal = 90;
+                AddParticular(xml, col + 0);
                 var parentCadNumbers = AddEntry(xml.ParentCadastralNumbers, col + 44);
                 AddEntry(xml.Area, col + 45);
                 AddCodeName(xml.AssignationBuilding, col + 46);
@@ -481,7 +390,7 @@ namespace KadOzenka.Dal.XmlParser
                 var walls = 0;
                 foreach (var wall in xml.Walls)
                 {
-                    AddCodeName(wall, 53, walls);
+                    AddCodeName(wall, col + 53, walls);
                     walls++;
                 }
 
@@ -490,7 +399,7 @@ namespace KadOzenka.Dal.XmlParser
                 var subBuildings = 0;
                 foreach (var subBuildingFlat in xml.SubBuildings)
                 {
-                    var subBuildingCount = AddSubBuildingFlat(subBuildingFlat, 56, subBuildings);
+                    var subBuildingCount = AddSubBuildingFlat(subBuildingFlat, col + 56, subBuildings);
                     subBuildings += subBuildingCount;
                 }
 
@@ -507,14 +416,17 @@ namespace KadOzenka.Dal.XmlParser
                     flatsCadNumbers, carSpacesCadNumbers, unitedCadNumbers, 1
                 };
 
-                _curRow += rowsAdded.Max();
-                DrawBorder(90);
+                var rowsToAdvance = RowsToAdvance(rowsAdded, columnsTotal);
+
+                _curRow += rowsToAdvance;
+
+                DrawBorder(columnsTotal);
             }
 
-            [MustUseReturnValue]
             public void AddConstruction(xmlObjectConstruction xml, int col)
             {
-                AddParticular(xml, 0);
+                var columnsTotal = 92;
+                AddParticular(xml, col + 0);
                 var parentCadNumbers = AddEntry(xml.ParentCadastralNumbers, col + 44);
                 AddEntry(xml.AssignationName, col + 45);
                 AddFloors(xml.Floors, col + 46);
@@ -524,7 +436,7 @@ namespace KadOzenka.Dal.XmlParser
                 var keyParameters = 0;
                 foreach (var param in xml.KeyParameters)
                 {
-                    AddCodeNameValue(param, 51, keyParameters);
+                    AddCodeNameValue(param, col + 51, keyParameters);
                     keyParameters++;
                 }
 
@@ -533,7 +445,7 @@ namespace KadOzenka.Dal.XmlParser
                 var subConstructions = 0;
                 foreach (var subConstruction in xml.SubConstructions)
                 {
-                    var constructionCount = AddSubConstruction(subConstruction, 55, subConstructions);
+                    var constructionCount = AddSubConstruction(subConstruction, col + 55, subConstructions);
                     subConstructions += constructionCount;
                 }
 
@@ -549,20 +461,25 @@ namespace KadOzenka.Dal.XmlParser
                     flatsCadNumbers, carSpacesCadNumbers, unitedCadNumbers, 1
                 };
 
-                _curRow += rowsAdded.Max();
-                DrawBorder(91);
+                var rowsToAdvance = RowsToAdvance(rowsAdded, columnsTotal);
+
+                _curRow += rowsToAdvance;
+
+                DrawBorder(columnsTotal);
             }
 
             public void AddUncomplited(xmlObjectUncomplited xml, int col)
             {
-                AddParticular(xml, 0);
+                var columnsTotal = 52;
+
+                AddParticular(xml, col + 0);
                 var parentCadNumbers = AddEntry(xml.ParentCadastralNumbers, col + 44);
                 AddEntry(xml.AssignationName, col + 45);
                 AddEntry(xml.DegreeReadiness, col + 46);
                 var keyParameters = 0;
                 foreach (var param in xml.KeyParameters)
                 {
-                    AddCodeNameValue(param, 47, keyParameters);
+                    AddCodeNameValue(param, col + 47, keyParameters);
                     keyParameters++;
                 }
 
@@ -570,13 +487,18 @@ namespace KadOzenka.Dal.XmlParser
                 AddEntry(xml.FacilityPurpose, col + 51);
 
                 int[] rowsAdded = {parentCadNumbers, keyParameters, 1};
-                _curRow += rowsAdded.Max();
-                DrawBorder(52);
+                var rowsToAdvance = RowsToAdvance(rowsAdded, columnsTotal);
+
+                _curRow += rowsToAdvance;
+
+                DrawBorder(columnsTotal);
             }
 
             public void AddFlat(xmlObjectFlat xml, int col)
             {
-                AddParticular(xml,0);
+                var columnsTotal = 108;
+
+                AddParticular(xml,col + 0);
                 AddEntry(xml.CadastralNumberFlat, col + 44);
                 AddEntry(xml.CadastralNumberOKS, col + 45);
                 var parentOks = AddParentOks(xml.ParentOks, col + 46);
@@ -587,7 +509,7 @@ namespace KadOzenka.Dal.XmlParser
                 var levelCounter = 0;
                 foreach (var level in xml.Levels)
                 {
-                    AddLevel(level, 62, levelCounter);
+                    AddLevel(level, col + 62, levelCounter);
                     levelCounter++;
                 }
 
@@ -601,7 +523,7 @@ namespace KadOzenka.Dal.XmlParser
                 var subFlats = 0;
                 foreach (var buildingFlat in xml.SubFlats)
                 {
-                    var flatsCount = AddSubBuildingFlat(buildingFlat, 76, subFlats);
+                    var flatsCount = AddSubBuildingFlat(buildingFlat, col + 76, subFlats);
                     subFlats += flatsCount;
                 }
 
@@ -611,13 +533,17 @@ namespace KadOzenka.Dal.XmlParser
                 AddCulturalHeritage(xml.CulturalHeritage, col + 95);
 
                 int[] rowsAdded = {levelCounter, permittedUses, subFlats, unitedCadNumbers, parentOks, 1};
-                _curRow += rowsAdded.Max();
-                DrawBorder(108);
+                var rowsToAdvance = RowsToAdvance(rowsAdded, columnsTotal);
+
+                _curRow += rowsToAdvance;
+
+                DrawBorder(columnsTotal);
             }
 
             public void AddCarPlace(xmlObjectCarPlace xml, int col)
             {
-                AddParticular(xml, 0);
+                var columnsTotal = 66;
+                AddParticular(xml, col + 0);
                 AddEntry(xml.Area, col + 44);
                 AddEntry(xml.CadastralNumberOKS, col + 45);
                 var parentOks = AddParentOks(xml.ParentOks, col + 46);
@@ -627,8 +553,28 @@ namespace KadOzenka.Dal.XmlParser
                 AddEntry(xml.FacilityPurpose, col + 65);
 
                 int[] rowsAdded = {unitedCadNumbers, parentOks, 1};
-                _curRow += rowsAdded.Max();
-                DrawBorder(66);
+                var rowsToAdvance = RowsToAdvance(rowsAdded, columnsTotal);
+
+                _curRow += rowsToAdvance;
+
+                DrawBorder(columnsTotal);
+            }
+
+            private int RowsToAdvance(int[] rowsAdded, int columnsToCheck)
+            {
+                bool hasValue = true;
+                int rowsToAdvance = 1;
+                for (var i = rowsAdded.Max(); i > 1 && hasValue; i--)
+                {
+                    var range = _sheet.Cells
+                        .GetSubrange(
+                            CellRange.RowColumnToPosition(_curRow + i, 1),
+                            CellRange.RowColumnToPosition(_curRow + i, columnsToCheck));
+                    hasValue = range.Any(x => x.Value != null && !x.Value.ToString().IsNullOrEmpty());
+                    rowsToAdvance = 1 + rowsAdded.Max() - i;
+                }
+
+                return rowsToAdvance;
             }
 
             /// <summary>
@@ -639,7 +585,7 @@ namespace KadOzenka.Dal.XmlParser
             /// <param name="rowOffset"></param>
             private void AddCost(xmlCost xml, int col, int rowOffset = 0)
             {
-                AddEntry(xml.Value, col + col + 0, rowOffset);
+                AddEntry(xml.Value, col + 0, rowOffset);
                 AddEntry(xml.DateValuation, col + 1, rowOffset);
                 AddEntry(xml.DateEntering, col + 2, rowOffset);
                 AddEntry(xml.DateApproval, col + 3, rowOffset);
@@ -696,7 +642,7 @@ namespace KadOzenka.Dal.XmlParser
             /// <param name="rowOffset"></param>
             private void AddAddressLevel(xmlAdresLevel xml, int col, int rowOffset = 0)
             {
-                AddEntry(xml.Value, col + col + 0, rowOffset);
+                AddEntry(xml.Value, col + 0, rowOffset);
                 //AddEntry(xml.Type,col + 0, rowOffset);
             }
 
@@ -708,7 +654,7 @@ namespace KadOzenka.Dal.XmlParser
             /// <param name="rowOffset"></param>
             private void AddElaborationLocation(xmlElaborationLocation xml, int col, int rowOffset = 0)
             {
-                AddEntry(xml.ReferenceMark, col + col + 0, rowOffset);
+                AddEntry(xml.ReferenceMark, col + 0, rowOffset);
                 AddEntry(xml.Distance, col + 1, rowOffset);
                 AddEntry(xml.Direction, col + 2, rowOffset);
             }
@@ -721,7 +667,7 @@ namespace KadOzenka.Dal.XmlParser
             /// <param name="rowOffset"></param>
             private void AddCodeName(xmlCodeName xml, int col, int rowOffset = 0)
             {
-                AddEntry(xml.Name, col + col + 0, rowOffset);
+                AddEntry(xml.Name, col + 0, rowOffset);
                 AddEntry(xml.Code, col + 1, rowOffset);
             }
 
@@ -733,7 +679,7 @@ namespace KadOzenka.Dal.XmlParser
             /// <param name="rowOffset"></param>
             private void AddUtilization(xmlUtilization xml, int col, int rowOffset = 0)
             {
-                AddCodeName(xml.Utilization, 0);
+                AddCodeName(xml.Utilization, col + 0);
                 AddCodeName(xml.LandUse, col + 2, rowOffset);
                 AddEntry(xml.ByDoc, col + 4, rowOffset);
                 AddEntry(xml.PermittedUseText, col + 5, rowOffset);
@@ -759,7 +705,7 @@ namespace KadOzenka.Dal.XmlParser
                 var encumbrances = 0;
                 foreach (var encumbrance in xml.ForestEncumbrances)
                 {
-                    AddCodeName(encumbrance, col+9, encumbrances);
+                    AddCodeName(encumbrance, col+9, rowOffset + encumbrances);
                     encumbrances++;
                 }
 
@@ -786,7 +732,7 @@ namespace KadOzenka.Dal.XmlParser
                 var encumbrances = 0;
                 foreach (var encumbrance in xml.Encumbrances)
                 {
-                    AddEncumbranceZu(encumbrance, 2, encumbrances);
+                    AddEncumbranceZu(encumbrance, col + 2, rowOffset + encumbrances);
                     encumbrances++;
                 }
 
@@ -985,7 +931,7 @@ namespace KadOzenka.Dal.XmlParser
                 var encumbrances = 0;
                 foreach (var encumbrance in xml.EncumbrancesOks)
                 {
-                    AddEncumbranceOks(encumbrance, 1, encumbrances);
+                    AddEncumbranceOks(encumbrance, 1, rowOffset + encumbrances);
                     encumbrances++;
                 }
 
@@ -1028,7 +974,7 @@ namespace KadOzenka.Dal.XmlParser
                 var walls = 0;
                 foreach (var wall in xml.Walls)
                 {
-                    AddCodeName(wall, 6, walls);
+                    AddCodeName(wall, col + 6, walls);
                     walls++;
                 }
 
@@ -1077,7 +1023,7 @@ namespace KadOzenka.Dal.XmlParser
                 var encumbrances = 0;
                 foreach (var encumbrance in xml.EncumbrancesOks)
                 {
-                    AddEncumbranceOks(encumbrance, col + 3, encumbrances);
+                    AddEncumbranceOks(encumbrance, col + 3, rowOffset + encumbrances);
                     encumbrances++;
                 }
 
@@ -1100,8 +1046,13 @@ namespace KadOzenka.Dal.XmlParser
 
             private void AddEntry(bool? value, int column, int rowOffset = 0, int cols = 1, int rows = 1)
             {
-                AddEntry(value.GetValueOrDefault().ToString(CultureInfo.InvariantCulture), column, rowOffset, cols,
-                    rows);
+                var textVal = value switch
+                {
+                    true => "Да",
+                    false => "Нет",
+                    null => ""
+                };
+                AddEntry(textVal, column, rowOffset, cols, rows);
             }
 
             private void AddEntry(DateTime? value, int column, int rowOffset = 0, int cols = 1, int rows = 1)
@@ -1110,21 +1061,16 @@ namespace KadOzenka.Dal.XmlParser
             }
 
             [MustUseReturnValue]
-            private int AddEntry(List<string> value, int column, int rowOffset = 0, int cols = 1, int rows = 1)
+            private int AddEntry(IEnumerable<string> value, int column, int rowOffset = 0, int cols = 1, int rows = 1)
             {
-                var counter = 0;
-                foreach (var val in value)
-                {
-                    AddEntry(val, column, rowOffset + counter, cols, rows);
-                    counter++;
-                }
-
-                return counter;
+                var resultValue = value.JoinStrings(";");
+                AddEntry(resultValue, column, rowOffset, cols, rows);
+                return 1;
             }
 
             private void AddEntry(string text, int column, int rowOffset = 0, int cols = 1, int rows = 1)
             {
-                if (!ReadConfigValue(_configOffset + column)) return;
+                if (!ReadConfigValue(_configOffset + column + 1)) return;
                 var range = _sheet.Cells
                     .GetSubrange(
                         CellRange.RowColumnToPosition(_curRow + rowOffset, column),
