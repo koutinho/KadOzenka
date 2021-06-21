@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using KadOzenka.Dal.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
-using KadOzenka.Dal.UnitTests._Builders;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Modeling.Models
+namespace KadOzenka.Dal.UnitTests.Modeling.Models
 {
 	[TestFixture]
 	public class UpdatingTests : BaseModelTests

@@ -9,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Cod.Value
+namespace KadOzenka.Dal.UnitTests.Cod.Value
 {
     [TestFixture]
     public class EditionTests : BaseCodTests

@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Castle.Components.DictionaryAdapter;
-using Core.Register;
-using Core.Register.RegisterEntities;
 using KadOzenka.Common.Tests;
-using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.CodDictionary.Resources;
-using KadOzenka.Dal.Registers;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Cod.Dictionary
+namespace KadOzenka.Dal.UnitTests.Cod.Dictionary
 {
     [TestFixture]
     public class UpdatingTests : BaseCodTests

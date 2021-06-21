@@ -3,7 +3,7 @@ using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Modeling.Factors
+namespace KadOzenka.Web.UnitTests.Modeling.Factors
 {
 	public class CreationTests : BaseModelingTests
 	{

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Modeling.Marks
+namespace KadOzenka.Web.UnitTests.Modeling.Marks
 {
 	public class GettingTests : BaseModelingTests
 	{

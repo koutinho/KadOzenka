@@ -8,7 +8,7 @@ using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Tours
+namespace KadOzenka.Dal.UnitTests.Tours
 {
 	[TestFixture]
 	public class CreationTests : BaseTourTests

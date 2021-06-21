@@ -2,7 +2,6 @@
 using KadOzenka.Dal.Modeling.Dto.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Tests;
-using KadOzenka.Dal.Tests.Modeling.Models;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

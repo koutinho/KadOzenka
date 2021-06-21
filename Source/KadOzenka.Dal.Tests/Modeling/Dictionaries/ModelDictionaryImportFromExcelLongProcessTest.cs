@@ -8,6 +8,7 @@ using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
@@ -15,7 +16,7 @@ using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 
-namespace KadOzenka.Dal.Tests.Modeling.Dictionaries
+namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 {
 	[TestFixture]
 	public class ModelDictionaryImportFromExcelLongProcessTest : BaseLongProcessTests

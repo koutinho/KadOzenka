@@ -4,7 +4,7 @@ using KadOzenka.Web.Models.ObjectsCharacteristics;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSource
+namespace KadOzenka.Web.UnitTests.ObjectsCharacteristics.ObjectsCharacteristicsSource
 {
 	public class GettingTests : BaseObjectCharacteristicsTests
 	{

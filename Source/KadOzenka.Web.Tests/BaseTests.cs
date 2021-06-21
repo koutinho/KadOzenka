@@ -15,7 +15,6 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
-using KadOzenka.Dal.ScoreCommon;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Web.Helpers;
@@ -26,7 +25,7 @@ using Moq;
 using NUnit.Framework;
 using Platform.Web.SignalR.Messages;
 
-namespace KadOzenka.Web.Tests
+namespace KadOzenka.Web.UnitTests
 {
 	public class BaseTests
 	{
@@ -123,6 +122,7 @@ namespace KadOzenka.Web.Tests
 			container.AddSingleton<StatisticalDataService>();
 			container.AddSingleton<CustomReportsService>();
 			container.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
+			container.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 			container.AddTransient(typeof(IModelingService), sp => ModelingService.Object);
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);

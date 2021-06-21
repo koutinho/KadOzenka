@@ -12,7 +12,7 @@ using ObjectModel.Core.Register;
 using Platform.Configurator.DbConfigurator;
 using Platform.Register;
 
-namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
+namespace KadOzenka.Dal.UnitTests.ObjectsCharacteristics.ObjectsCharacteristics
 {
 	[TestFixture]
 	public class AddCharacteristicTests : BaseObjectCharacteristicsTests

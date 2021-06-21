@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.ObjectsCharacteristics.ObjectsCharacteristics
+namespace KadOzenka.Web.UnitTests.ObjectsCharacteristics.ObjectsCharacteristics
 {
 	public class CreationTests : BaseObjectCharacteristicsTests
 	{

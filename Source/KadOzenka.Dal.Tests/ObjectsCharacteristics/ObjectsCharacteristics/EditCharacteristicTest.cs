@@ -7,7 +7,7 @@ using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
+namespace KadOzenka.Dal.UnitTests.ObjectsCharacteristics.ObjectsCharacteristics
 {
 	public class EditCharacteristicTest : BaseObjectCharacteristicsTests
 	{

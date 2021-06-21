@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Web.Tests.Tours
+namespace KadOzenka.Web.UnitTests.Tours
 {
 	public class GroupSegmentTests : BaseTourTests
 	{

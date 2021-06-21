@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Modeling.Models
+namespace KadOzenka.Dal.UnitTests.Modeling.Models
 {
 	[TestFixture]
 	public class GettingTests : BaseModelTests

@@ -3,7 +3,7 @@ using KadOzenka.Common.Tests;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristics
+namespace KadOzenka.Dal.UnitTests.ObjectsCharacteristics.ObjectsCharacteristics
 {
 	public class DeleteCharacteristicTests : BaseObjectCharacteristicsTests
 	{

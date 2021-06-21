@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Register.RegisterEntities;
 using KadOzenka.Common.Tests.Builders.Cache;
-using KadOzenka.Dal.Tests.Modeling.Models;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using NUnit.Framework;

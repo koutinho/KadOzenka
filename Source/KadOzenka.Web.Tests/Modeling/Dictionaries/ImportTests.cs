@@ -3,7 +3,7 @@ using KadOzenka.Common.Tests;
 using KadOzenka.Web.Models.Modeling;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Modeling.Dictionaries
+namespace KadOzenka.Web.UnitTests.Modeling.Dictionaries
 {
 	public class ImportTests : BaseModelingTests
 	{

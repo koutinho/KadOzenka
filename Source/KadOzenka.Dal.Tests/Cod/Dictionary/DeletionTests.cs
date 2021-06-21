@@ -4,7 +4,7 @@ using NUnit.Framework;
 using ObjectModel.Common;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Cod.Dictionary
+namespace KadOzenka.Dal.UnitTests.Cod.Dictionary
 {
     [TestFixture]
     public class DeletionTests : BaseCodTests

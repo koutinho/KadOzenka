@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CodDictionary.Entities;
@@ -7,12 +6,13 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.Entities;
+using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 using Platform.Configurator.DbConfigurator;
 
-namespace KadOzenka.Dal.Tests.Cod
+namespace KadOzenka.Dal.UnitTests.Cod
 {
     [TestFixture]
     public class BaseCodTests : BaseTests

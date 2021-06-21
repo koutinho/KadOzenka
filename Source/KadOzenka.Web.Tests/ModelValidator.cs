@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-namespace KadOzenka.Web.Tests
+namespace KadOzenka.Web.UnitTests
 {
 	public static class ModelValidator
 	{

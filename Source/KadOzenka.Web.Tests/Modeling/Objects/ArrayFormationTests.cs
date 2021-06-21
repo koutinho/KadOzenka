@@ -4,7 +4,7 @@ using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Web.Helpers;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Modeling.Objects
+namespace KadOzenka.Web.UnitTests.Modeling.Objects
 {
 	public class ArrayFormationTests : BaseModelingTests
 	{

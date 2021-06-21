@@ -8,6 +8,7 @@ using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Tasks;
+using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Units.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -16,7 +17,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Tasks.LongProcess
+namespace KadOzenka.Dal.UnitTests.Tasks.LongProcess
 {
 	[TestFixture]
 	public class TaskForCodLongProcessTest : BaseLongProcessTests

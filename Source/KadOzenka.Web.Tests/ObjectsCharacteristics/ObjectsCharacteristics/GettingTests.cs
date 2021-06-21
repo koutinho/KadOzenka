@@ -7,7 +7,7 @@ using NUnit.Framework;
 using ObjectModel.Core.Register;
 using ObjectModel.Gbu;
 
-namespace KadOzenka.Web.Tests.ObjectsCharacteristics.ObjectsCharacteristics
+namespace KadOzenka.Web.UnitTests.ObjectsCharacteristics.ObjectsCharacteristics
 {
 	public class GettingTests: BaseObjectCharacteristicsTests
 	{

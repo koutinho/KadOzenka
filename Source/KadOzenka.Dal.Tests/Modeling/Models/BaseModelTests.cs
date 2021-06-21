@@ -1,11 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.Tests.Modeling.Models
+namespace KadOzenka.Dal.UnitTests.Modeling.Models
 {
 	[TestFixture]
 	public class BaseModelTests : BaseTests

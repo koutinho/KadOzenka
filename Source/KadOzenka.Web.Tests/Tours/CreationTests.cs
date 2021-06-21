@@ -4,7 +4,7 @@ using KadOzenka.Web.Models.Tour;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Tours
+namespace KadOzenka.Web.UnitTests.Tours
 {
 	public class CreationTests : BaseTourTests
 	{

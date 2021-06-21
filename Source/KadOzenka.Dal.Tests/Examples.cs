@@ -1,6 +1,7 @@
-using KadOzenka.Dal.Tests.Modeling.Dictionaries;
-using KadOzenka.Dal.Tests.Modeling.Models;
-using KadOzenka.Dal.Tests.Tasks.LongProcess;
+using KadOzenka.Dal.UnitTests.Modeling.Dictionaries;
+using KadOzenka.Dal.UnitTests.Modeling.Models;
+using KadOzenka.Dal.UnitTests.Tasks.LongProcess;
+using CreationTests = KadOzenka.Dal.UnitTests.Tours.CreationTests;
 
 namespace KadOzenka.Dal.Tests
 {
@@ -20,10 +21,10 @@ namespace KadOzenka.Dal.Tests
 			tmp = nameof(GettingTests.If_Model_Not_Found_By_Id_Throw_Exception);
 
 			//проверка, что данные не сохранились (не вызвался метод репозитория)
-			tmp = nameof(Tours.CreationTests.CanNot_Create_Tour_Without_Year);
+			tmp = nameof(CreationTests.CanNot_Create_Tour_Without_Year);
 
 			//проверка, что данные сохранились (вызвался метод репозитория с определенными входными параметрами)
-			tmp = nameof(Tours.CreationTests.Can_Create_Tour);
+			tmp = nameof(CreationTests.Can_Create_Tour);
 
 
 			//примеры тестов для длительных процессов

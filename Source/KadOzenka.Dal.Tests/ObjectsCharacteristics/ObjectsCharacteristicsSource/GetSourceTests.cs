@@ -8,7 +8,7 @@ using NUnit.Framework;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSource
+namespace KadOzenka.Dal.UnitTests.ObjectsCharacteristics.ObjectsCharacteristicsSource
 {
 	[TestFixture]
 	public class GetSourceTests: BaseObjectCharacteristicsTests

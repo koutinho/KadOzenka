@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.ObjectsCharacteristics
+namespace KadOzenka.Web.UnitTests.ObjectsCharacteristics
 {
 	[TestFixture]
 	public class BaseObjectCharacteristicsTests : BaseTests

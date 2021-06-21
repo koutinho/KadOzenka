@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.ObjectsCharacteristics.ObjectsCharacteristicsSource
+namespace KadOzenka.Web.UnitTests.ObjectsCharacteristics.ObjectsCharacteristicsSource
 {
 	public class CreationTests : BaseObjectCharacteristicsTests
 	{

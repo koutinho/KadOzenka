@@ -2,11 +2,12 @@
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.Registers;
+using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.Tests.ObjectsCharacteristics
+namespace KadOzenka.Dal.UnitTests.ObjectsCharacteristics
 {
 	[TestFixture]
 	public class BaseObjectCharacteristicsTests : BaseTests

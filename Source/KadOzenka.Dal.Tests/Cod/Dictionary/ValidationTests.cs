@@ -6,7 +6,7 @@ using KadOzenka.Dal.CodDictionary.Resources;
 using KadOzenka.Dal.Registers.Entities;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.Tests.Cod.Dictionary
+namespace KadOzenka.Dal.UnitTests.Cod.Dictionary
 {
     [TestFixture]
     public class ValidationTests : BaseCodTests

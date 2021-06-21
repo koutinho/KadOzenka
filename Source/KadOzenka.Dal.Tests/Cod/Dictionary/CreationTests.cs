@@ -10,7 +10,7 @@ using NUnit.Framework;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tests.Cod.Dictionary
+namespace KadOzenka.Dal.UnitTests.Cod.Dictionary
 {
     [TestFixture]
     public class CreationTests : BaseCodTests

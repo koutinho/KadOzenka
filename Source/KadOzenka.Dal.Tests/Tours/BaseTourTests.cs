@@ -1,12 +1,13 @@
 ﻿using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.RecycleBin;
+using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 
-namespace KadOzenka.Dal.Tests.Tours
+namespace KadOzenka.Dal.UnitTests.Tours
 {
 	[TestFixture]
 	public class BaseTourTests : BaseTests

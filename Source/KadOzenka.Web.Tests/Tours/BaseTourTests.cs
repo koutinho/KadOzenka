@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Tours
+namespace KadOzenka.Web.UnitTests.Tours
 {
 	[TestFixture]
 	public class BaseTourTests : BaseTests

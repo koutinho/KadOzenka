@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace KadOzenka.Web.Tests.Modeling
+namespace KadOzenka.Web.UnitTests.Modeling
 {
 	[TestFixture]
 	public class BaseModelingTests : BaseTests
