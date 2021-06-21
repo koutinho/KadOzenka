@@ -178,8 +178,9 @@ namespace KadOzenka.Dal.Modeling
 		        GroupId = modelDto.GroupId,
 		        IsOksObjectType = modelDto.IsOksObjectType,
                 AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation,
-		        Type_Code = KoModelType.Manual
-	        };
+		        Type_Code = KoModelType.Manual,
+		        Formula = "-"
+			};
 
 	        ModelingRepository.Save(model);
 		}
