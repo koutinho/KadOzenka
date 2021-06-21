@@ -46,6 +46,12 @@
                 </div>
             </div>
             <div class="form-group">
+                <div class="col-sm-12">
+                    <p style="text-align:center" id="mathFormula">
+                    </p>
+                </div>
+            </div>
+            <div class="form-group">
                 <div class="col-sm-2">
                     @Html.CustomLabelFor(x => x.A0)
                 </div>
@@ -68,9 +74,19 @@
 
 
 
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/startup.js"></script>
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
+    MathJax = {
+        loader: {load: ['input/asciimath', 'output/chtml']},
+        asciimath: {
+            decimalsign: "."
+        }
+    }
+
+
     $(document).ready(function () {
         $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
         $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
@@ -318,6 +334,13 @@
             success: function (e) {
                 $('#Formula').val(e.formula);
                 $('#@nameof(Model.A0)').data("kendoNumericTextBox").value(e.a0);
+                $("#mathFormula").empty().append("`" + e.formula + "`");
+                try {
+                    MathJax.typeset(["#mathFormula"]);
+                }
+                catch(exception) {
+                    console.error('Ошибка во время работы MathJax', exception);
+                }
             },
             error: function (e) {
                 Common.ShowError(e.responseText);

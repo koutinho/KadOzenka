@@ -588,7 +588,7 @@ namespace KadOzenka.Dal.Modeling
 
 				factors.ForEach(x =>
 				{
-					var attributeName = RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name;
+					var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
 					switch (x.MarkType_Code)
 					{
 						case MarkType.None:
