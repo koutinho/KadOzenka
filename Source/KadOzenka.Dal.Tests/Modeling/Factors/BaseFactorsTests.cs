@@ -1,4 +1,6 @@
-﻿using KadOzenka.Dal.Modeling;
+﻿using Core.Register;
+using KadOzenka.Common.Tests.Builders.Cache;
+using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dto.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Tests;
@@ -32,10 +34,14 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			decimal? k)
 		{
 			var factor = new ManualFactorDtoBuilder().Type(markType).CorrectItem(correctItem).K(k).Build();
+			
 			ModelFactorsRepository.Setup(x =>
 					x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.GeneralModelId.Value,
 						factor.Type))
 				.Returns(false);
+
+			var attribute = new RegisterAttributeBuilder().Id(factor.FactorId).Type(RegisterAttributeType.INTEGER).Build();
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.GetValueOrDefault())).Returns(attribute);
 
 			return factor;
 		}

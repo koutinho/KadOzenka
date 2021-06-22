@@ -9,10 +9,10 @@ using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
+using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
-using KadOzenka.Dal.Modeling.Resources;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.ES;
@@ -23,11 +23,14 @@ namespace KadOzenka.Dal.Modeling
 	public class ModelFactorsService : IModelFactorsService
 	{
 		private IModelFactorsRepository ModelFactorsRepository { get; }
+		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
 
-		public ModelFactorsService(IModelFactorsRepository modelFactorsRepository = null)
+		public ModelFactorsService(IModelFactorsRepository modelFactorsRepository = null,
+			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelFactorsRepository = modelFactorsRepository ?? new ModelFactorsRepository();
+			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
 
@@ -35,7 +38,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public OMModelFactor GetFactorById(long? id)
 		{
-			var factor = OMModelFactor.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			var factor = ModelFactorsRepository.GetById(id.GetValueOrDefault(), null);
 			if (factor == null)
 				throw new Exception($"Не найден фактор модели с ИД '{id}'");
 
@@ -428,6 +431,11 @@ namespace KadOzenka.Dal.Modeling
 
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма модели для фактора");
+
+			var factorAttributeType = RegisterCacheWrapper.GetAttributeData(factorDto.FactorId.GetValueOrDefault()).Type;
+			if (factorAttributeType != RegisterAttributeType.DECIMAL &&
+			    factorAttributeType != RegisterAttributeType.INTEGER && factorDto.MarkType != MarkType.Default)
+				throw new WrongFactorTypeException();
 
 			if (IsSpecialMarkType(factorDto.MarkType))
 			{
