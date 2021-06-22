@@ -7137,13 +7137,6 @@ namespace ObjectModel.Directory.Common
         [ShortTitle("Гармонизация")]
         Harmonization = 2,
 		/// <summary>
-		/// Выборка из справочника ЦОД (4)
-		/// </summary>
-		[Description("Выборка из справочника ЦОД")]
-        [EnumCode("4")]
-        [ShortTitle("Выборка из справочника ЦОД")]
-        UnloadingFromDict = 4,
-		/// <summary>
 		/// Проставление оценочной группы (5)
 		/// </summary>
 		[Description("Проставление оценочной группы")]

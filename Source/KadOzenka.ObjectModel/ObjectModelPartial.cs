@@ -796,12 +796,6 @@ namespace ObjectModel.Gbu
         /// </summary>
         [Reference]
         public List<ObjectModel.KO.OMUnit> Unit { get; set; }
-
-        /// <summary>
-        /// Ссылка на (214 Справочник ЦОД)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMCodDictionary> CodDictionary { get; set; }
         public OMMainObject()
         {
 
@@ -853,8 +847,6 @@ namespace ObjectModel.Gbu
             Source23 = new List<ObjectModel.Gbu.OMSource23>();
 
             Unit = new List<ObjectModel.KO.OMUnit>();
-
-            CodDictionary = new List<ObjectModel.KO.OMCodDictionary>();
 
         }
         public OMMainObject(bool trackPropertyChanging) : this()
@@ -1258,30 +1250,6 @@ namespace ObjectModel.KO
 
         }
         public OMAttributeMap(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 214 Справочник ЦОД
-    /// </summary>
-    public partial class OMCodDictionary
-    {
-
-        public OMCodDictionary()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMCodDictionary(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

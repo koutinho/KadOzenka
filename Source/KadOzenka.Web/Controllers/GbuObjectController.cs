@@ -411,68 +411,6 @@ namespace KadOzenka.Web.Controllers
 
 		#endregion
 
-        #region Unloading From Dict
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_UNLOADING_FROM_DICT)]
-		public ActionResult UnloadingFromDict()
-		{
-			ViewData["CodJob"] = OMCodJob.Where(x => x).SelectAll().Execute().Select(x => new
-			{
-				Value = x.Id,
-				Text = x.NameJob
-			}).AsEnumerable();
-
-			ViewData["TreeAttributes"] = GetGbuAttributesTree();
-
-			ViewData["Documents"] = GetDocumentsForPartialView();
-
-			return View(new UnloadingFromDicViewModel());
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS_UNLOADING_FROM_DICT)]
-		public JsonResult UnloadingFromDict(UnloadingFromDicViewModel viewModel)
-		{
-            if (!ModelState.IsValid)
-			{
-				return GenerateMessageNonValidModel();
-			}
-
-			if (viewModel.IsNewAttribute)
-			{
-				int idAttr = GbuObjectService.AddNewVirtualAttribute(viewModel.NameNewAttribute, viewModel.RegistryId.GetValueOrDefault(), viewModel.TypeNewAttribute ?? RegisterAttributeType.INTEGER);
-				if (idAttr == 0)
-				{
-					return SendErrorMessage("Не корректные данные для создания нового атрибута");
-				}
-
-				viewModel.IdAttributeResult = idAttr;
-			}
-
-            viewModel.Document.ProcessDocument();
-
-			////TODO код для отладки
-			//new SelectionCodLongProcess().StartProcess(new OMProcessType(), new OMQueue
-			//{
-			//	Status_Code = Status.Added,
-			//	UserId = SRDSession.GetCurrentUserId(),
-			//	Parameters = viewModel.ToCodSelectionSettings().SerializeToXml()
-			//}, new CancellationToken());
-
-			SelectionCodLongProcess.AddProcessToQueue(viewModel.ToCodSelectionSettings());
-
-			return Json(new
-		    {
-		        success = "Операция успешно поставлена в очерердь",
-		        idResultAttribute = viewModel.IsNewAttribute ? viewModel.IdAttributeResult : null,
-		        idDocument = viewModel.Document.IsNewDocument ? viewModel.Document.IdDocument : null
-		    });
-		}
-
-		#endregion
-
-
 		#region Наследование
 
 		#region load data
