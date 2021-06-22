@@ -273,7 +273,10 @@
         @{
             if (!Model.IsPartial)
             {
-                <text>location.reload();</text>
+                <text>
+                    location.reload();
+                    redrawFormula();
+                </text>
             }
             else
             {
@@ -283,7 +286,7 @@
                 </text>
             }
         }
-	}
+    }
 
 
 	function UpdateModel() {
@@ -336,20 +339,23 @@
                 $('#Formula').val(e.formula);
                 $('#@nameof(Model.A0)').data("kendoNumericTextBox").value(e.a0);
                 $("#mathFormula").empty().append("`" + e.formula + "`");
-                //TODO KOMO-98 разобраться, почему иногда падает с ошибкой
-                try {
-                    MathJax.typesetPromise().then(() => {
-                        MathJax.typesetPromise();
-                    }).catch((err) => console.log(err.message));
-                }
-                catch(exception) {
-                    console.error('Ошибка во время работы MathJax (будет поправлена позднее)', exception);
-                }
+                redrawFormula();
             },
             error: function (e) {
                 Common.ShowError(e.responseText);
             }
         });
+    }
+    function redrawFormula() {
+        //TODO KOMO-98 разобраться, почему иногда падает с ошибкой
+        try {
+            MathJax.typesetPromise().then(() => {
+                MathJax.typesetPromise();
+            }).catch((err) => console.log(err.message));
+        }
+        catch(exception) {
+            console.error('Ошибка во время работы MathJax (будет поправлена позднее)', exception);
+        }
     }
 
 

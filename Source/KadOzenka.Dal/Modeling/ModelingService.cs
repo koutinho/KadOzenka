@@ -17,7 +17,6 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
 using System.Linq.Expressions;
-using Core.Register;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;

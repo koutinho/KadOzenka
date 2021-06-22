@@ -113,5 +113,14 @@ namespace KadOzenka.Dal.Modeling.Resources {
                 return ResourceManager.GetString("EmptyName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Фактор относится к нечисловому типу, нужно установить тип метки &apos;Метка по умолчанию&apos;.
+        /// </summary>
+        public static string WrongFactorType {
+            get {
+                return ResourceManager.GetString("WrongFactorType", resourceCulture);
+            }
+        }
     }
 }

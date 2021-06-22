@@ -135,4 +135,7 @@
   <data name="EmptyName" xml:space="preserve">
     <value>У модели не заполнено Имя</value>
   </data>
+  <data name="WrongFactorType" xml:space="preserve">
+    <value>Фактор относится к нечисловому типу, нужно установить тип метки 'Метка по умолчанию'</value>
+  </data>
 </root>
