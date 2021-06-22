@@ -11,7 +11,6 @@ namespace KadOzenka.Dal.Modeling
 	{
 		OMModelFactor GetFactorById(long? id);
 		List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type);
-		List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type);
 		List<ModelAttributeRelationPure> GetGeneralModelAttributes(long modelId);
 		List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type);
 		QSQuery GetModelFactorsQuery(long modelId, QSJoin additionalJoin = null, QSCondition additionalCondition = null);

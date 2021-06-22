@@ -52,23 +52,6 @@ namespace KadOzenka.Dal.Modeling
 			return OMModelFactor.Where(x => x.ModelId == modelId && types.Contains(x.AlgorithmType_Code)).SelectAll().Execute();
 		}
 
-		public List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type)
-		{
-			var types = new List<KoAlgoritmType>();
-			if (type == KoAlgoritmType.None)
-			{
-				types.Add(KoAlgoritmType.Line);
-				types.Add(KoAlgoritmType.Exp);
-				types.Add(KoAlgoritmType.Multi);
-			}
-			else
-			{
-				types.Add(type);
-			}
-
-			return types;
-		}
-
 		public List<ModelAttributeRelationPure> GetGeneralModelAttributes(long modelId)
 		{
 			var query = GetModelFactorsQuery(modelId);
@@ -115,6 +98,7 @@ namespace KadOzenka.Dal.Modeling
 			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
 		}
 
+		//TODO разделить на получение факторов для Ручной и Автоматический моделей
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
 			var dictionaryJoin = new QSJoin
@@ -523,6 +507,23 @@ namespace KadOzenka.Dal.Modeling
 		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
 		{
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
+		}
+
+		private List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type)
+		{
+			var types = new List<KoAlgoritmType>();
+			if (type == KoAlgoritmType.None)
+			{
+				types.Add(KoAlgoritmType.Line);
+				types.Add(KoAlgoritmType.Exp);
+				types.Add(KoAlgoritmType.Multi);
+			}
+			else
+			{
+				types.Add(type);
+			}
+
+			return types;
 		}
 
 		//private void RecalculateFormula(long? generalModelId)
