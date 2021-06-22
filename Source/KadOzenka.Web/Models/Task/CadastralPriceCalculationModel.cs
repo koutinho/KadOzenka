@@ -31,18 +31,18 @@ namespace KadOzenka.Web.Models.Task
         public List<long> SubGroups { get; set; }
 
 
-        public static KOCalcSettings UnMap(CadastralPriceCalculationModel model)
+        public static CadastralPriceCalculationSettions UnMap(CadastralPriceCalculationModel model)
         {
-            return new KOCalcSettings
+            return new CadastralPriceCalculationSettions
             {
-                IdTour = model.TourId,
-                TaskFilter = model.TaskFilter,
-                CalcParcel = model.IsParcel,
+                TourId = model.TourId,
+                TaskIds = model.TaskFilter,
+                IsParcel = model.IsParcel,
                 CalcStage1 = model.IsEstimation,
                 CalcStage2 = model.IsCorrectionsOrCoefficients,
                 CalcStage3 = model.IsFinalCalculation,
-                CalcAllGroups = model.IsAllGroups,
-                CalcGroups = model.IsAllGroups ? null : model.SubGroups
+                IsAllGroups = model.IsAllGroups,
+                SelectedGroupIds = model.IsAllGroups ? null : model.SubGroups
             };
         }
 

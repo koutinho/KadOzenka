@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private readonly ILogger _log = Log.ForContext<CalculateCadastralPriceLongProcess>();
 
 
-		public static long AddProcessToQueue(KOCalcSettings settings)
+		public static long AddProcessToQueue(CadastralPriceCalculationSettions settings)
 		{
 			return LongProcessManager.AddTaskToQueue(LongProcessName, null, null, settings.SerializeToXml());
 		}
@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			{
 				WorkerCommon.SetProgress(processQueue, 0);
 
-				var settings = processQueue.Parameters.DeserializeFromXml<KOCalcSettings>();
+				var settings = processQueue.Parameters.DeserializeFromXml<CadastralPriceCalculationSettions>();
 				var urlToDownload = PerformProc(settings);
 
 				WorkerCommon.SetProgress(processQueue, 100);
@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.Debug("Финиш процесса расчета");
 		}
 
-		private string PerformProc(KOCalcSettings settings)
+		private string PerformProc(CadastralPriceCalculationSettions settings)
 		{
 			_log.Debug("Начат расчет");
 			var result = OMGroup.CalculateSelectGroup(settings);
@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 
 			_log.Debug("Начато сравнение данных ПККО и РСМ");
-			var taskIds = settings.TaskFilter;
+			var taskIds = settings.TaskIds;
 			if (taskIds.Count > 0)
 			{
 				var tasks = OMTask.Where(x => taskIds.Contains(x.Id)).SelectAll().Execute();
