@@ -69,19 +69,26 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.Debug("Закончено формирование отчета");
 
 
-			_log.Debug("Начато сравнение данных ПККО и РСМ");
-			var taskIds = settings.TaskIds;
-			if (taskIds.Count > 0)
+			try
 			{
-				var tasks = OMTask.Where(x => taskIds.Contains(x.Id)).SelectAll().Execute();
-				foreach (var task in tasks)
+				_log.Debug("Начато сравнение данных ПККО и РСМ");
+				var taskIds = settings.TaskIds;
+				if (taskIds.Count > 0)
 				{
-					var path = CadastralCostDataComparingStorageManager.GetTaskRsmFolderFullPath(task);
-					var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long>{ task.Id }, IsDataComparingUnload = true, DirectoryName = path };
-					DEKOUnit.ExportToXml(null, unloadSettings, null);
+					var tasks = OMTask.Where(x => taskIds.Contains(x.Id)).SelectAll().Execute();
+					foreach (var task in tasks)
+					{
+						var path = CadastralCostDataComparingStorageManager.GetTaskRsmFolderFullPath(task);
+						var unloadSettings = new KOUnloadSettings { TaskFilter = new List<long> { task.Id }, IsDataComparingUnload = true, DirectoryName = path };
+						DEKOUnit.ExportToXml(null, unloadSettings, null);
+					}
 				}
+				_log.Debug("Закончено сравнение данных ПККО и РСМ");
 			}
-			_log.Debug("Закончено сравнение данных ПККО и РСМ");
+			catch (Exception e)
+			{
+				_log.Error("Ошибка во время сравнения данных ПККО и РСМ", e);
+			}
 
 
 			return urlToDownload;
