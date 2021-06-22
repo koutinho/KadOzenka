@@ -69,7 +69,7 @@ namespace KadOzenka.Dal.Modeling
 			return types;
 		}
 
-		public List<ModelAttributeRelationDto> GetGeneralModelAttributes(long modelId)
+		public List<ModelAttributeRelationPure> GetGeneralModelAttributes(long modelId)
 		{
 			var query = GetModelFactorsQuery(modelId);
 
@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 
-			var attributes = new List<ModelAttributeRelationDto>();
+			var attributes = new List<ModelAttributeRelationPure>();
 			var table = query.ExecuteQuery();
 			for (var i = 0; i < table.Rows.Count; i++)
 			{
@@ -98,7 +98,7 @@ namespace KadOzenka.Dal.Modeling
 				
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 
-				attributes.Add(new ModelAttributeRelationDto
+				attributes.Add(new ModelAttributeRelationPure
 				{
 					Id = id,
 					RegisterId = registerId,

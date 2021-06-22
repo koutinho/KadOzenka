@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.Modeling
         protected GeneralModelingInputParameters InputParameters { get; set; }
         private OMModel GeneralModel { get; }
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
-        private List<ModelAttributeRelationDto> ModelAttributes { get; set; }
+        private List<ModelAttributeRelationPure> ModelAttributes { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
         private string AdditionalMessage { get; set; }
 
@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.Modeling
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
-            ModelAttributes = new List<ModelAttributeRelationDto>();
+            ModelAttributes = new List<ModelAttributeRelationPure>();
             DictionaryService = new DictionaryService();
         }
 
