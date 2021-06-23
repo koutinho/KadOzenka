@@ -116,8 +116,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			ModelFactorsService.Setup(x => x.GetFactors(model.Id, It.IsAny<KoAlgoritmType>()))
 				.Returns(new List<OMModelFactor> { factor });
 
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value))
-				.Returns(cacheAttribute);
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(cacheAttribute);
 		}
 
 		#endregion

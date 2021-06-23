@@ -26,5 +26,6 @@ namespace KadOzenka.Dal.Modeling
 		void UpdateMark(long id, string value, decimal? metka);
 		void DeleteMark(long id);
 		int DeleteMarks(long? groupId, long? factorId);
+		List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds);
 	}
 }

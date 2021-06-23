@@ -1,4 +1,5 @@
 ﻿using System;
+using Core.Register.RegisterEntities;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.WebClients.ConfigurationManagers;
 using Microsoft.AspNetCore;
@@ -8,6 +9,7 @@ using NUnit.Framework;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Task;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.TD;
 using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
@@ -55,7 +57,7 @@ namespace KadOzenka.Dal.IntegrationTests
 		private static bool _initialized;
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public void BaseOneTimeSetUp()
 		{
 			//костыль для вызова метода один раз перед запуском любых тестов
 			//nUnit позволяет определить OneTimeSetUp только для классов в одном namespace
@@ -68,6 +70,14 @@ namespace KadOzenka.Dal.IntegrationTests
 			InitConfig();
 
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
+		}
+
+		protected void AddUnitFactor(RegisterData tourRegister, RegisterAttribute tourFactor, long unitId, object value)
+		{
+			var sql = $"insert into {tourRegister.QuantTable} (id, {tourFactor.ValueField}) values ({unitId}, {value})";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			DBMngr.Main.ExecuteNonQuery(command);
 		}
 
 

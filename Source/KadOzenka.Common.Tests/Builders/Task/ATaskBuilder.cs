@@ -37,5 +37,11 @@ namespace KadOzenka.Common.Tests.Builders.Task
 			_task.TourId = tourId;
 			return this;
 		}
+
+		public ATaskBuilder Tour2018()
+		{
+			_task.TourId = 2018;
+			return this;
+		}
 	}
 }

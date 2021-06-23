@@ -654,7 +654,26 @@ namespace ObjectModel.KO
 		    return null;
 	    }
 
-	    public decimal? GetA0ForPreviousTour()
+	    public void SetA0(decimal? a0)
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    A0ForExponential = a0;
+                    break;
+			    case KoAlgoritmType.Line:
+				    A0 = a0;
+				    break;
+			    case KoAlgoritmType.Multi:
+				    A0ForMultiplicative = a0;
+                    break;
+                default:
+	                A0 = a0;
+                    break;
+		    }
+	    }
+
+        public decimal? GetA0ForPreviousTour()
 	    {
 		    switch (AlgoritmType_Code)
 		    {

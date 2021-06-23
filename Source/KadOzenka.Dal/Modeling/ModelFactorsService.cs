@@ -544,7 +544,18 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<OMMarkCatalog> GetMarks(long? groupId, long? factorId)
 		{
-			return OMMarkCatalog.Where(x => x.FactorId == factorId && x.GroupId == groupId).SelectAll().Execute();
+			var factorIds = new List<long?> {factorId};
+
+			return GetMarks(groupId, factorIds);
+		}
+
+		public List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds)
+		{
+			var notNullFactorIds = factorIds.Where(x => x.HasValue).ToList();
+			if (groupId == null || notNullFactorIds.Count == 0)
+				return new List<OMMarkCatalog>();
+
+			return OMMarkCatalog.Where(x => notNullFactorIds.Contains(x.FactorId) && x.GroupId == groupId).SelectAll().Execute();
 		}
 
 		public OMMarkCatalog GetMarkById(long id)

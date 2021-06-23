@@ -61,6 +61,12 @@ namespace KadOzenka.Common.Tests.Builders.Task
 			return this;
 		}
 
+		public AUnitBuilder Group(long groupId)
+		{
+			_unit.GroupId = groupId;
+			return this;
+		}
+
 		public AUnitBuilder Object(OMMainObject gbuObject)
 		{
 			_unit.ObjectId = gbuObject.Id;
