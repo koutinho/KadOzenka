@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
 using Core.Register.RegisterEntities;
+using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.Integration._Builders.Task;
@@ -96,6 +97,53 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		}
 
 		[Test]
+		public void Can_Calculate_Price_With_One_Factor_Of_Default_MarkType_With_Two_Marks_With_Different_Values()
+		{
+			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
+
+			var factor = CreateFactorWithDefaultMark(out var mark);
+			var secondMark = new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
+				.Value(RandomGenerator.GetRandomString()).Metka(RandomGenerator.GenerateRandomDecimal())
+				.Build();
+
+			PerformCalculation(Task.Id, Group.Id);
+
+			var expectedCadastralCost = ModelA0 * GetExpectedCadastralConstForDefaulMark(mark, factor);
+			CheckCalculatedUnit(expectedCadastralCost);
+		}
+
+		[Test]
+		public void Can_Calculate_Price_With_One_Factor_Of_Default_MarkType_With_Two_Marks_With_TheSame_Values()
+		{
+			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
+
+			var factor = CreateFactorWithDefaultMark(out var firstMark);
+			var secondMark = new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
+				.Value(firstMark.ValueFactor)
+				//чтобы случайно не создать такое же значение, как в mark
+				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.MetkaFactor.GetValueOrDefault())
+				.Build();
+
+			PerformCalculation(Task.Id, Group.Id);
+
+			//В БД может быть несколько меток с одной и той же группой/фактором/значением
+			//когда выясниться, что таких значений быть не должно, тест можно удалить
+			var firstPossibleExpectedCadastralCost = ModelA0 * GetExpectedCadastralConstForDefaulMark(firstMark, factor);
+			var secondPossibleExpectedCadastralCost = ModelA0 * GetExpectedCadastralConstForDefaulMark(secondMark, factor);
+			
+			var unitWithCalculatedPrice = OMUnit.Where(x => x.Id == Unit.Id)
+				.Select(x => new { x.CadastralCost, x.Upks })
+				.ExecuteFirstOrDefault();
+
+			Assert.That(unitWithCalculatedPrice.CadastralCost,
+				Is.EqualTo(firstPossibleExpectedCadastralCost).Within(0.01)
+				.Or.EqualTo(secondPossibleExpectedCadastralCost).Within(0.01));
+
+			var expectedUpks = unitWithCalculatedPrice.CadastralCost / Unit.Square.GetValueOrDefault();
+			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
+		}
+
+		[Test]
 		public void Can_Calculate_Price_With_One_Factor_Of_Straight_MarkType()
 		{
 			//формула: свободный член * [(корректирующее_слагаемое + значение_фактора)/К + поправка]^коэффициент
@@ -168,7 +216,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			mark = new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
 				.Value(UnitFactorValue.ToString()).Metka(1)
 				.Build();
-			
+
 			return factor;
 		}
 
