@@ -32,6 +32,9 @@ namespace KadOzenka.Dal.Modeling
         private IModelFactorsService ModelFactorsService { get; set; }
         private RecycleBinService RecycleBinService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
+        
+        public static readonly string MarkTagInFormula = "метка";
+
 
         public ModelingService(IModelingRepository modelingRepository = null,
 			IModelObjectsRepository modelObjectsRepository = null,
@@ -595,7 +598,7 @@ namespace KadOzenka.Dal.Modeling
 							formula.Append($" * ({attributeName} + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						case MarkType.Default:
-							formula.Append($" * (метка({attributeName}) + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({MarkTagInFormula}({attributeName}) + {x.WeightInFormula})^{x.B0InFormula}");
 							break;
 						case MarkType.Straight:
 							formula.Append($" * (({attributeName} + {x.CorrectingTermInFormula}) / {x.KInFormula} + {x.WeightInFormula})^{x.B0InFormula}");

@@ -3,6 +3,7 @@ using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Builders.Cache;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
+using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Tours;
@@ -62,10 +63,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 				new UnitFactor(factorId) {Value = value}
 			};
 			var multiplier = 3;
-			var modelingInfo = GetModelingInfo(factorId, multiplier);
-			var attribute = new RegisterAttributeBuilder().Id(factorId).Type(RegisterAttributeType.DECIMAL).Build();
-
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factorId)).Returns(attribute);
+			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.DECIMAL, multiplier);
 
 			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog>());
 
@@ -82,11 +80,8 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 				new UnitFactor(factorId) {Value = value}
 			};
 			var multiplier = 3;
-			var modelingInfo = GetModelingInfo(factorId, multiplier);
-			var attribute = new RegisterAttributeBuilder().Id(factorId).Type(RegisterAttributeType.INTEGER).Build();
+			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.INTEGER, multiplier);
 			
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factorId)).Returns(attribute);
-
 			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value));
@@ -103,10 +98,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			};
 			var multiplier = 3;
 			var mark = new MarkBuilder().Factor(factorId).Value(value).Build();
-			var modelingInfo = GetModelingInfo(factorId, multiplier);
-			var attribute = new RegisterAttributeBuilder().Id(factorId).Type(RegisterAttributeType.STRING).Build();
-			
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factorId)).Returns(attribute);
+			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.STRING, multiplier);
 
 			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog> { mark });
 
@@ -119,29 +111,36 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var decimalFactorId = RandomGenerator.GenerateRandomInteger();
 			var longFactorId = RandomGenerator.GenerateRandomInteger();
 			var decimalValue = 2.1m;
-			var longValue = (long) 2;
+			var longValue = (long)2;
 			var unitFactors = new List<UnitFactor>
 			{
 				new UnitFactor(decimalFactorId) {Value = decimalValue},
 				new UnitFactor(longFactorId) {Value = longValue}
 			};
-
 			var firstMultiplier = 3;
 			var secondMultiplier = 4;
-			var modelingInfo = new CalculateCadastralPriceLongProcess.ModelingInfo()
+			var modelingInfo = new ModelingInfo()
 			{
 				Formula = $"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{decimalFactorId} * {firstMultiplier} + {CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{longFactorId} * {secondMultiplier}",
-				Factors = new List<OMModelFactor>
+				Factors = new List<FactorInfo>
 				{
-					new FactorBuilder().FactorId(decimalFactorId).MarkType(MarkType.None).Build(),
-					new FactorBuilder().FactorId(longFactorId).MarkType(MarkType.None).Build()
+					new()
+					{
+						FactorId = decimalFactorId,
+						MarkType = MarkType.None,
+						AttributeName = RandomGenerator.GetRandomString(),
+						AttributeType = RegisterAttributeType.DECIMAL
+					},
+					new()
+					{
+						FactorId = longFactorId,
+						MarkType = MarkType.None,
+						AttributeName = RandomGenerator.GetRandomString(),
+						AttributeType = RegisterAttributeType.INTEGER
+					}
 				}
 			};
-			var decimalAttribute = new RegisterAttributeBuilder().Id(decimalFactorId).Type(RegisterAttributeType.DECIMAL).Build();
-			var longAttribute = new RegisterAttributeBuilder().Id(longFactorId).Type(RegisterAttributeType.INTEGER).Build();
-			
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(decimalFactorId)).Returns(decimalAttribute);
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(longFactorId)).Returns(longAttribute);
+
 
 			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog>());
 
@@ -157,34 +156,38 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 		public void Can_Replace_Formula_With_Simple_Factors()
 		{
 			var model = new ModelBuilder().Build();
-			var factor = new FactorBuilder().MarkType(MarkType.None).Build();
-			var attribute = new RegisterAttributeBuilder().Id(factor.Id).Build();
+			var factor = new FactorInfo
+			{
+				FactorId = RandomGenerator.GenerateRandomInteger(),
+				MarkType = MarkType.None,
+				AttributeName = RandomGenerator.GetRandomString(),
+				AttributeType = RegisterAttributeType.DECIMAL
+			};
 			var formulaGeneralPart = $" * {RandomGenerator.GenerateRandomInteger()}";
-			
-			ModelFactorsService.Setup(x => x.GetFactors(model.Id, model.AlgoritmType_Code)).Returns(new List<OMModelFactor> {factor});
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(attribute);
-			ModelingService.Setup(x => x.GetFormula(model, model.AlgoritmType_Code)).Returns($"{attribute.Name}{formulaGeneralPart}");
-			
-			var modelingInfo = LongProcess.PrepareModelingInfo(model);
+			ModelingService.Setup(x => x.GetFormula(model, model.AlgoritmType_Code)).Returns($"{factor.AttributeName}{formulaGeneralPart}");
 
-			Assert.That(modelingInfo.Formula, Is.EqualTo($"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{factor.FactorId}{formulaGeneralPart}"));
+			var formula = LongProcess.PrepareFormula(model, new List<FactorInfo> { factor });
+
+			Assert.That(formula, Is.EqualTo($"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{factor.FactorId}{formulaGeneralPart}"));
 		}
 
 		[Test]
 		public void Can_Replace_Formula_With_Factor_Of_Default_MarkType()
 		{
 			var model = new ModelBuilder().Build();
-			var factor = new FactorBuilder().MarkType(MarkType.Default).Build();
-			var attribute = new RegisterAttributeBuilder().Id(factor.Id).Build();
+			var factor = new FactorInfo
+			{
+				FactorId = RandomGenerator.GenerateRandomInteger(),
+				MarkType = MarkType.Default,
+				AttributeName = RandomGenerator.GetRandomString(),
+				AttributeType = RegisterAttributeType.DECIMAL
+			};
 			var formulaGeneralPart = $" * {RandomGenerator.GenerateRandomInteger()}";
+			ModelingService.Setup(x => x.GetFormula(model, model.AlgoritmType_Code)).Returns($"{Dal.Modeling.ModelingService.MarkTagInFormula}({factor.AttributeName}){formulaGeneralPart}");
 
-			ModelFactorsService.Setup(x => x.GetFactors(model.Id, model.AlgoritmType_Code)).Returns(new List<OMModelFactor> { factor });
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(attribute);
-			ModelingService.Setup(x => x.GetFormula(model, model.AlgoritmType_Code)).Returns($"метка({attribute.Name}){formulaGeneralPart}");
+			var formula = LongProcess.PrepareFormula(model, new List<FactorInfo> { factor });
 
-			var modelingInfo = LongProcess.PrepareModelingInfo(model);
-
-			Assert.That(modelingInfo.Formula, Is.EqualTo($"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{factor.FactorId}{formulaGeneralPart}"));
+			Assert.That(formula, Is.EqualTo($"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{factor.FactorId}{formulaGeneralPart}"));
 		}
 
 		#endregion
@@ -192,12 +195,21 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 
 		#region Support Methods
 
-		private CalculateCadastralPriceLongProcess.ModelingInfo GetModelingInfo(int factorId, int multiplier)
+		private ModelingInfo GetModelingInfo(int factorId, RegisterAttributeType type, int multiplier)
 		{
-			return new CalculateCadastralPriceLongProcess.ModelingInfo
+			return new ModelingInfo
 			{
 				Formula = $"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{factorId} * {multiplier}",
-				Factors = new List<OMModelFactor> { new FactorBuilder().FactorId(factorId).MarkType(MarkType.None).Build() }
+				Factors = new List<FactorInfo>
+				{
+					new()
+					{
+						FactorId = factorId,
+						MarkType = MarkType.None,
+						AttributeName = RandomGenerator.GetRandomString(),
+						AttributeType = type
+					}
+				}
 			};
 		}
 

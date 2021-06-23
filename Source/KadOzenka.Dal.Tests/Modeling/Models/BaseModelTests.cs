@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Models
 {
-	[TestFixture]
 	public class BaseModelTests : BaseTests
 	{
 		protected ModelingService ModelingService => Provider.GetService<ModelingService>();

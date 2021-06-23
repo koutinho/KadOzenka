@@ -5,13 +5,13 @@ using System.Threading;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.LongProcessManagment;
-using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataComparing.StorageManagers;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Tasks;
@@ -112,10 +112,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					_log.Debug("Начата обработка группы '{GroupName}' (с ИД - {GroupId})", group.GroupName, group.Id);
 
 					var activeGroupModel = ModelingService.GetActiveModelEntityByGroupId(group.Id);
-					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel?.Name, activeGroupModel?.Id);
 					if (activeGroupModel == null)
 						throw new Exception($"Не найдена активная модель для группы '{group.GroupName}' (с ИД - {group.Id})");
 
+					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
 					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
 					{
 						//todo try/catch and report
@@ -141,11 +141,18 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private void CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, OMGroup group)
 		{
 			_log.Debug("Начат расчет через новую реализацию");
-			var modelInfo = PrepareModelingInfo(activeGroupModel);
 
-			var factorsWithDefaultMark = modelInfo.Factors.Where(x => x.MarkType_Code == MarkType.Default).ToList();
+			var modelFactors = PrepareModelFactors(activeGroupModel);
+			var formula = PrepareFormula(activeGroupModel, modelFactors);
+			var modelInfo = new ModelingInfo
+			{
+				Formula = formula,
+				Factors = modelFactors
+			};
+
+			var factorsWithDefaultMark = modelInfo.Factors.Where(x => x.MarkType == MarkType.Default).ToList();
 			//todo to dictionary
-			var marks = ModelFactorsService.GetMarks(group.Id, factorsWithDefaultMark.Select(x => x.FactorId).ToList());
+			var marks = ModelFactorsService.GetMarks(group.Id, factorsWithDefaultMark.Select(x => (long?) x.FactorId).ToList());
 
 			var units = GetUnits(settings, group.Id);
 
@@ -171,6 +178,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				unit.Upks = unit.CadastralCost / unit.Square.Value;
 				UnitRepository.Save(unit);
 			});
+
+			_log.Debug("Закончен расчет через новую реализацию");
 		}
 
 		private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
@@ -208,36 +217,51 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-		public ModelingInfo PrepareModelingInfo(OMModel activeGroupModel)
+		public List<FactorInfo> PrepareModelFactors(OMModel activeGroupModel)
 		{
 			var modelFactors = ModelFactorsService.GetFactors(activeGroupModel.Id, activeGroupModel.AlgoritmType_Code);
 			if (modelFactors.Count == 0)
 				throw new Exception($"У модели '{activeGroupModel.Name}' (С ИД - {activeGroupModel.Id}) нет факторов");
+			
 			_log.Debug("Загружено {FactorsCount} факторов модели", modelFactors.Count);
 
+			var factors = modelFactors.Select(factor =>
+			{
+				var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault());
+
+				return new FactorInfo
+				{
+					FactorId = factor.FactorId.GetValueOrDefault(),
+					MarkType = factor.MarkType_Code,
+					AttributeName = attribute.Name,
+					AttributeType = attribute.Type
+				};
+			}).ToList();
+
+			return factors;
+		}
+
+		public string PrepareFormula(OMModel activeGroupModel, List<FactorInfo> factors)
+		{
 			var formula = ModelingService.GetFormula(activeGroupModel, activeGroupModel.AlgoritmType_Code);
 			_log.Debug("Начальная формула: {Formula}", formula);
 
 			//имена факторов в формуле записываются через кавычки
 			formula = formula.Replace("\"", "");
-			modelFactors.ForEach(factor =>
+			factors.ForEach(factor =>
 			{
-				var attributeName = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name;
-				var factorNameInFormula = attributeName;
-				if (factor.MarkType_Code == MarkType.Default)
+				var factorNameInFormula = factor.AttributeName;
+				if (factor.MarkType == MarkType.Default)
 				{
-					//todo в паттерн
-					factorNameInFormula = $"метка({factorNameInFormula})";
+					factorNameInFormula = $"{Dal.Modeling.ModelingService.MarkTagInFormula}({factorNameInFormula})";
 				}
+
 				formula = formula.Replace(factorNameInFormula, $"{AttributePrefixInFormula}{factor.FactorId}");
 			});
-			_log.Debug("Обработанная формула: {Formula}", formula);
 
-			return new ModelingInfo
-			{
-				Formula = formula,
-				Factors = modelFactors
-			};
+			_log.Debug("Обработанная формула (для постановки чисел): {Formula}", formula);
+
+			return formula;
 		}
 
 		public double Calculate(ModelingInfo modelInfo, List<UnitFactor> unitsFactors, List<OMMarkCatalog> marks)
@@ -248,18 +272,16 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var currentUnitFactor = unitsFactors[i];
 				var factorId = currentUnitFactor.AttributeId;
 				var modelFactor = modelInfo.Factors.First(x => x.FactorId == factorId);
-				//TODO вынести кеш и имя в формуле в ModelingInfo
 				Argument argument;
-				var attribute = RegisterCacheWrapper.GetAttributeData(factorId);
 				var factorNameInFormula = $"{AttributePrefixInFormula}{factorId}";
-				if (modelFactor.MarkType_Code == MarkType.Default)
+				if (modelFactor.MarkType == MarkType.Default)
 				{
-					var metka = GetMetkaFromMarkCatalog(marks, currentUnitFactor, attribute);
+					var metka = GetMetkaFromMarkCatalog(marks, currentUnitFactor, modelFactor.AttributeName);
 					argument = new Argument(factorNameInFormula, (double)metka);
 				}
 				else
 				{
-					switch (attribute.Type)
+					switch (modelFactor.AttributeType)
 					{
 						case RegisterAttributeType.INTEGER:
 							argument = new Argument(factorNameInFormula, currentUnitFactor.LongValue.GetValueOrDefault());
@@ -268,7 +290,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 							argument = new Argument(factorNameInFormula, (double)currentUnitFactor.DecimalValue.GetValueOrDefault());
 							break;
 						default:
-							var metka = GetMetkaFromMarkCatalog(marks, currentUnitFactor, attribute);
+							var metka = GetMetkaFromMarkCatalog(marks, currentUnitFactor, modelFactor.AttributeName);
 							argument = new Argument(factorNameInFormula, (double)metka);
 							break;
 					}
@@ -278,22 +300,22 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 
 			var expression = new Expression(modelInfo.Formula, arguments);
-			var str = expression.getExpressionString();
+			//var str = expression.getExpressionString();
 			
 			return expression.calculate();
 		}
 
-		private decimal GetMetkaFromMarkCatalog(List<OMMarkCatalog> marks, UnitFactor currentUnitFactor, RegisterAttribute attribute)
+		private decimal GetMetkaFromMarkCatalog(List<OMMarkCatalog> marks, UnitFactor unitFactor, string attributeName)
 		{
-			var value = currentUnitFactor.GetValueInString();
-			
-			var mark = marks.FirstOrDefault(x => x.FactorId == attribute.Id && x.ValueFactor == value);
+			var value = unitFactor.GetValueInString();
+
+			var mark = marks.FirstOrDefault(x => x.FactorId == unitFactor.AttributeId && x.ValueFactor == value);
 			if (mark == null)
-				throw new NoInfoForCalculationException($"Не найдена метка для фактора '{attribute.Name}' со значением '{value}'");
-			
+				throw new NoInfoForCalculationException($"Не найдена метка для фактора '{attributeName}' со значением '{value}'");
+
 			return mark.MetkaFactor.GetValueOrDefault();
 		}
-		
+
 		private List<OMUnit> GetUnits(CadastralPriceCalculationSettions settings, long groupId)
 		{
 			//TODO one condition
@@ -357,18 +379,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			return reportService.GetUrlToDownloadFile(reportId);
 		}
-
-		#endregion
-
-		
-		#region Entities
-
-		public class ModelingInfo
-		{
-			public string Formula { get; set; }
-			public List<OMModelFactor> Factors { get; set; }
-		}
-
 
 		#endregion
 	}
