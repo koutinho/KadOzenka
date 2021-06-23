@@ -8,6 +8,7 @@ using KadOzenka.Dal.XmlParser;
 using ObjectModel.Directory;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 {
@@ -128,7 +129,14 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew
 
         protected override void SetAdditionalUnitProperties(OMUnit koUnit, xmlObjectBuild current)
         {
-	        koUnit.Square = current.Area.ParseToDecimal();
+	        if (!current.Area.TryParseToDecimal(out var value))
+	        {
+		        Log.ForContext("Unit", koUnit, true)
+			        .ForContext("xmlBuild", current, true)
+			        .Warning("SetAdditionalUnitProperties: Не удалось сконвертировать значение в десятичную дробь");
+	        }
+
+	        koUnit.Square = value;
         }
 	}
 }
