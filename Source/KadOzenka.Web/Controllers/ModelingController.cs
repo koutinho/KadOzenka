@@ -617,10 +617,10 @@ namespace KadOzenka.Web.Controllers
         {
             var model = ModelingService.GetModelEntityById(modelId);
 
-            model.AlgoritmType_Code = (KoAlgoritmType)algType;
-            var initialFormula = ModelingService.GetFormula(model);
+            var type =  (KoAlgoritmType)algType;
+            var initialFormula = ModelingService.GetFormula(model, type);
             var formula = initialFormula.Replace(',', '.');
-            var a0 = model.GetA0();
+            var a0 = model.GetA0(type);
 
             return Json(new { formula, a0 });
         }

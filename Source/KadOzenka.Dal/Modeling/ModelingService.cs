@@ -571,9 +571,9 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Formulas
 
-		public string GetFormula(OMModel model)
+		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+			if (algorithmType == KoAlgoritmType.Multi)
 			{
 				var formula = new StringBuilder();
 				var a0 = model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
@@ -581,8 +581,8 @@ namespace KadOzenka.Dal.Modeling
 
 				//для ручной модели существует один набор факторов под алгоритм самой модели
 				//для автоматической модели набор факторов разный под тип алгоритма
-				var algorithmType = model.Type_Code == KoModelType.Manual ? KoAlgoritmType.None : model.AlgoritmType_Code;
-				var factors = ModelFactorsService.GetFactors(model.Id, algorithmType);
+				//var algorithmType = model.Type_Code == KoModelType.Manual ? KoAlgoritmType.None : model.AlgoritmType_Code;
+				var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
 				if (factors.Count == 0)
 					throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
 
@@ -612,6 +612,7 @@ namespace KadOzenka.Dal.Modeling
 			}
 
 			//TODO другие типы будут реализованы позднее
+			model.AlgoritmType_Code = algorithmType;
 			return model.GetFormulaFull(true);
 		}
 

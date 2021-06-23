@@ -638,9 +638,10 @@ namespace ObjectModel.KO
 	    public string InternalName => $"model_{Id}";
 	    public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 
-	    public decimal? GetA0()
+	    public decimal? GetA0(KoAlgoritmType? type = null)
 	    {
-		    switch (AlgoritmType_Code)
+		    var resultType = type ?? AlgoritmType_Code;
+		    switch (resultType)
 		    {
 			    case KoAlgoritmType.Exp:
 				    return A0ForExponential;
