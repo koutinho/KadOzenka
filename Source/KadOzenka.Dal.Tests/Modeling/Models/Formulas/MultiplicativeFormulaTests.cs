@@ -77,7 +77,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		}
 
 		[Test]
-		public void Can_Create_Formula_With_Several_Factors()
+		public void Can_Create_Formula_With_All_Possible_Factors_MarkType()
 		{
 			var noneMarkTypeFactor = new FactorBuilder().MarkType(MarkType.None).Build();
 			var defaultMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Default).Build();

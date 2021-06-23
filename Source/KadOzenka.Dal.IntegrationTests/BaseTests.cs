@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.WebClients.ConfigurationManagers;
@@ -72,9 +74,11 @@ namespace KadOzenka.Dal.IntegrationTests
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 		}
 
-		protected void AddUnitFactor(RegisterData tourRegister, RegisterAttribute tourFactor, long unitId, object value)
+		protected void AddUnitFactor(RegisterData tourRegister, long unitId, List<RegisterAttribute> tourFactors, List<object> values)
 		{
-			var sql = $"insert into {tourRegister.QuantTable} (id, {tourFactor.ValueField}) values ({unitId}, {value})";
+			var sql = @$"insert into {tourRegister.QuantTable} 
+								(id, {string.Join(',', tourFactors.Select(x => x.ValueField))}) 
+								values ({unitId}, {string.Join(',', values)})";
 
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			DBMngr.Main.ExecuteNonQuery(command);
