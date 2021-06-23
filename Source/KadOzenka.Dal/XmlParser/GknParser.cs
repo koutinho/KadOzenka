@@ -300,22 +300,16 @@ namespace KadOzenka.Dal.XmlParser
 
                             if (typeobject != enTypeObject.toParcel)
                             {
-                                obj.Area = double.TryParse(xnChild.InnerText, out var valResult)
-                                    ? valResult
-                                    : (double?) null;
+                                obj.Area = xnChild.InnerText.ParseToDouble();
                             }
                             else
                             {
                                 foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                                 {
                                     if (xnChild1.Name == "Area")
-                                        obj.Area = double.TryParse(xnChild1.InnerText, out var valResult)
-                                            ? valResult
-                                            : (double?) null;
+                                        obj.Area = xnChild.InnerText.ParseToDouble();
                                     if (xnChild1.Name == "Inaccuracy")
-                                        obj.AreaInaccuracy = double.TryParse(xnChild1.InnerText, out var valResult)
-                                            ? valResult
-                                            : (double?) null;
+                                        obj.AreaInaccuracy = xnChild.InnerText.ParseToDouble();
                                 }
                             }
 
