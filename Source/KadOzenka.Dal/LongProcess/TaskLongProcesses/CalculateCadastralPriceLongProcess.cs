@@ -144,14 +144,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			var modelFactors = PrepareModelFactors(activeGroupModel);
 			var formula = PrepareFormula(activeGroupModel, modelFactors);
-			//todo убрать ModelingInfo?
-			var modelInfo = new ModelingInfo
-			{
-				Formula = formula,
-				Factors = modelFactors
-			};
 
-			var marks = GetMarks(group, modelInfo.Factors);
+			var marks = GetMarks(group, modelFactors);
 
 			var units = GetUnits(settings, group.Id);
 
@@ -164,13 +158,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var allUnitFactors = UnitService.GetUnitModelFactors(unit);
 				var notEmptyUnitFactors = allUnitFactors.Where(x => x.Value != null).ToList();
 				
-				if (notEmptyUnitFactors.Count != modelInfo.Factors.Count)
+				if (notEmptyUnitFactors.Count != modelFactors.Count)
 				{
 					var emptyFactors = allUnitFactors.Where(x => x.Value == null).ToList();
 					throw new NoInfoForCalculationException($"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
 				}
 
-				var price = Calculate(modelInfo, notEmptyUnitFactors, marks);
+				var price = Calculate(formula, modelFactors, notEmptyUnitFactors, marks);
 				//todo обработать конвертацию
 				unit.CadastralCost = (decimal?) price;
 				unit.Upks = unit.CadastralCost / unit.Square.Value;
@@ -288,7 +282,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return groupedMarks;
 		}
 
-		public double Calculate(ModelingInfo modelInfo, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
+		public double Calculate(string formula, List<FactorInfo> factors, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
 		{
 			var arguments = new PrimitiveElement[unitsFactors.Count];
 			for (var i = 0; i < unitsFactors.Count; i++)
@@ -296,7 +290,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var currentUnitFactor = unitsFactors[i];
 				var factorId = currentUnitFactor.AttributeId;
 				var unitFactorValue = currentUnitFactor.GetValueInString();
-				var modelFactor = modelInfo.Factors.First(x => x.FactorId == factorId);
+				var modelFactor =factors.First(x => x.FactorId == factorId);
 				
 				Argument argument;
 				var factorNameInFormula = $"{AttributePrefixInFormula}{factorId}";
@@ -325,7 +319,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				arguments[i] = argument;
 			}
 
-			var expression = new Expression(modelInfo.Formula, arguments);
+			var expression = new Expression(formula, arguments);
 			//var str = expression.getExpressionString();
 			
 			return expression.calculate();

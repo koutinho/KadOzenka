@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Builders.Cache;
@@ -65,7 +66,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var multiplier = 3;
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.DECIMAL, multiplier);
 
-			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog>());
+			var price = LongProcess.Calculate(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value).Within(0.1));
 		}
@@ -82,7 +83,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var multiplier = 3;
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.INTEGER, multiplier);
 			
-			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog>());
+			var price = LongProcess.Calculate(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value));
 		}
@@ -100,7 +101,11 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var mark = new MarkBuilder().Factor(factorId).Value(value).Build();
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.STRING, multiplier);
 
-			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog> { mark });
+			var price = LongProcess.Calculate(modelingInfo.Formula, modelingInfo.Factors, unitFactors,
+				new Dictionary<Tuple<long, string>, decimal?>
+				{
+					{Tuple.Create(mark.FactorId.GetValueOrDefault(), mark.ValueFactor), mark.MetkaFactor}
+				});
 
 			Assert.That(price, Is.EqualTo(multiplier * mark.MetkaFactor));
 		}
@@ -119,30 +124,27 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			};
 			var firstMultiplier = 3;
 			var secondMultiplier = 4;
-			var modelingInfo = new ModelingInfo()
+			var formula = $"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{decimalFactorId} * {firstMultiplier} + {CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{longFactorId} * {secondMultiplier}";
+			var factors = new List<FactorInfo>
 			{
-				Formula = $"{CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{decimalFactorId} * {firstMultiplier} + {CalculateCadastralPriceLongProcess.AttributePrefixInFormula}{longFactorId} * {secondMultiplier}",
-				Factors = new List<FactorInfo>
+				new()
 				{
-					new()
-					{
-						FactorId = decimalFactorId,
-						MarkType = MarkType.None,
-						AttributeName = RandomGenerator.GetRandomString(),
-						AttributeType = RegisterAttributeType.DECIMAL
-					},
-					new()
-					{
-						FactorId = longFactorId,
-						MarkType = MarkType.None,
-						AttributeName = RandomGenerator.GetRandomString(),
-						AttributeType = RegisterAttributeType.INTEGER
-					}
+					FactorId = decimalFactorId,
+					MarkType = MarkType.None,
+					AttributeName = RandomGenerator.GetRandomString(),
+					AttributeType = RegisterAttributeType.DECIMAL
+				},
+				new()
+				{
+					FactorId = longFactorId,
+					MarkType = MarkType.None,
+					AttributeName = RandomGenerator.GetRandomString(),
+					AttributeType = RegisterAttributeType.INTEGER
 				}
 			};
 
 
-			var price = LongProcess.Calculate(modelingInfo, unitFactors, new List<OMMarkCatalog>());
+			var price = LongProcess.Calculate(formula, factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
 
 			Assert.That(price, Is.EqualTo(firstMultiplier * decimalValue + longValue * secondMultiplier));
 		}
@@ -211,6 +213,17 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 					}
 				}
 			};
+		}
+
+		#endregion
+
+
+		#region Entities
+
+		private class ModelingInfo
+		{
+			public string Formula { get; set; }
+			public List<FactorInfo> Factors { get; set; }
 		}
 
 		#endregion
