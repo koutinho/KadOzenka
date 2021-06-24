@@ -195,7 +195,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 							throw new NoInfoForCalculationException($"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
 						}
 
-						var price = Calculate(formula, modelFactors, notEmptyUnitFactors, marks);
+						var price = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
 						//todo обработать конвертацию
 						currentUnit.CadastralCost = (decimal?)price;
 						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
@@ -330,7 +330,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return groupedMarks;
 		}
 
-		public double Calculate(string formula, List<FactorInfo> factors, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
+		public double CalculateCadastralCost(string formula, List<FactorInfo> factors, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
 		{
 			var arguments = new PrimitiveElement[unitsFactors.Count];
 			for (var i = 0; i < unitsFactors.Count; i++)
@@ -368,9 +368,21 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 
 			var expression = new org.mariuszgromada.math.mxparser.Expression(formula, arguments);
-			//var str = expression.getExpressionString();
-			
-			return expression.calculate();
+
+			try
+			{
+				//var str = expression.getExpressionString();
+				var price = expression.calculate();
+				if (price == 0 || double.IsNaN(price) || double.IsInfinity(price))
+					throw new Exception($"Сторонняя библиотека не смогла посчитала значение цены. Возвращенное значение '{price}'");
+
+				return price;
+			}
+			catch (Exception e)
+			{ 
+				_log.Error(e, "Ошибка при расчете по формуле");
+				throw new CalculationException(expression, factors);
+			}
 		}
 
 		private decimal GetMetkaFromMarkCatalog(Dictionary<Tuple<long, string>, decimal?> marks, FactorInfo unitFactor, string value)

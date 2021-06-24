@@ -65,9 +65,21 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AFactorBuilder Correction(decimal weight)
+		{
+			_factor.Weight = weight;
+			return this;
+		}
+
 		public AFactorBuilder Coefficient(double b0)
 		{
 			_factor.B0 = (decimal) b0;
+			return this;
+		}
+
+		public AFactorBuilder Coefficient(decimal b0)
+		{
+			_factor.B0 = b0;
 			return this;
 		}
 

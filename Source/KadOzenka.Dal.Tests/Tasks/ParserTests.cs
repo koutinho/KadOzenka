@@ -23,9 +23,22 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var d = new Argument("d", 4);
 			var e = new Expression(initialString, a, b, c, d);
 			var result = e.calculate();
-			mXparser.consolePrintln("Res 4: " + e.getExpressionString() + " = " + e.calculate());
+			mXparser.consolePrintln("Res 4: " + e.ToString() + " = " + e.calculate());
 
 			Assert.That(result, Is.EqualTo(777600));
+		}
+
+		[Test]
+		public void Test2()
+		{
+			var factorName = "factor_25023100";
+			var initialString = @$"2 * ({factorName} + (-1))^3";
+
+			var a = new Argument(factorName, 1);
+			var e = new Expression(initialString, a);
+			var result = e.calculate();
+
+			Assert.That(result, Is.EqualTo(0));
 		}
 	}
 }

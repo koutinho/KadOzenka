@@ -10,6 +10,7 @@ using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.Integration._Builders.Task;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
+using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using NUnit.Framework;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -212,6 +213,19 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			Assert.That(firstCalculatedUnit.CadastralCost, Is.EqualTo(firstUnitExpectedCadastralCost).Within(0.01));
 			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
+		}
+
+		[Test]
+		public void If_Price_Is_Not_A_Number_Throw_Exception()
+		{
+			new ModelFactorBuilder().FactorId(Tour2018OksFourthIntegerFactor.Id).Model(Model)
+				.MarkType(MarkType.None)
+				.Correction(RandomGenerator.GenerateRandomDecimal()).Coefficient(decimal.MaxValue)
+				.Build();
+
+			var exception = Assert.Throws<AggregateException>(() => PerformCalculation(Task.Id, Group.Id));
+
+			Assert.That(exception.InnerExceptions[0], Is.TypeOf<CalculationException>());
 		}
 
 

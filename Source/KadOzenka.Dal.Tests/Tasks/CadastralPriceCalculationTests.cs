@@ -66,7 +66,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var multiplier = 3;
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.DECIMAL, multiplier);
 
-			var price = LongProcess.Calculate(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
+			var price = LongProcess.CalculateCadastralCost(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value).Within(0.1));
 		}
@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var multiplier = 3;
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.INTEGER, multiplier);
 			
-			var price = LongProcess.Calculate(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
+			var price = LongProcess.CalculateCadastralCost(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value));
 		}
@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var mark = new MarkBuilder().Factor(factorId).Value(value).Build();
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.STRING, multiplier);
 
-			var price = LongProcess.Calculate(modelingInfo.Formula, modelingInfo.Factors, unitFactors,
+			var price = LongProcess.CalculateCadastralCost(modelingInfo.Formula, modelingInfo.Factors, unitFactors,
 				new Dictionary<Tuple<long, string>, decimal?>
 				{
 					{Tuple.Create(mark.FactorId.GetValueOrDefault(), mark.ValueFactor), mark.MetkaFactor}
@@ -144,7 +144,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			};
 
 
-			var price = LongProcess.Calculate(formula, factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
+			var price = LongProcess.CalculateCadastralCost(formula, factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
 
 			Assert.That(price, Is.EqualTo(firstMultiplier * decimalValue + longValue * secondMultiplier));
 		}
