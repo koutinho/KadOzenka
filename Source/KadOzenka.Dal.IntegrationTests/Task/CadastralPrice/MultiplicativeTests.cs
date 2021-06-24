@@ -9,6 +9,7 @@ using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.Integration._Builders.Task;
+using KadOzenka.Dal.LongProcess._Common;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using NUnit.Framework;
@@ -80,10 +81,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var factor = CreateFactorWithoutMark();
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -93,10 +95,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var factor = CreateFactorWithDefaultMark(out var mark);
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaulMark(mark, factor);
 			CheckCalculatedUnit(expectedCadastralCost);
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -109,10 +112,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				.Value(RandomGenerator.GetRandomString()).Metka(RandomGenerator.GenerateRandomDecimal())
 				.Build();
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaulMark(mark, factor);
 			CheckCalculatedUnit(expectedCadastralCost);
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -127,7 +131,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.MetkaFactor.GetValueOrDefault())
 				.Build();
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			//В БД может быть несколько меток с одной и той же группой/фактором/значением
 			//когда выясниться, что таких значений быть не должно, тест можно удалить
@@ -141,6 +145,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var expectedUpks = unitWithCalculatedPrice.CadastralCost / Unit.Square.GetValueOrDefault();
 			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -150,10 +155,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var factor = CreateFactorWithStraightMark();
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForStraightType(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -163,10 +169,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var factor = CreateFactorWithReverseMark();
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForReverseMark(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 
@@ -178,7 +185,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var factorWithStraightMark = CreateFactorWithStraightMark();
 			var factorWithReverseMark = CreateFactorWithReverseMark();
 
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * 
 			                            GetExpectedConstForNoneMark(factorWithoutMark) *
@@ -187,6 +194,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			                            GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
 			
 			CheckCalculatedUnit(expectedCadastralCost);
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -203,7 +211,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var factor = CreateFactorWithoutMark();
 
 			//TODO изменить параметры конфига в тесте, либо замокать метод в процессе
-			PerformCalculation(Task.Id, Group.Id);
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
 
 			var firstCalculatedUnit = GetUnitById(firstUnit.Id);
@@ -213,23 +221,25 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			Assert.That(firstCalculatedUnit.CadastralCost, Is.EqualTo(firstUnitExpectedCadastralCost).Within(0.01));
 			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
+			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
-		public void If_Price_Is_Not_A_Number_Throw_Exception()
+		public void If_Price_Is_Not_A_Number_Save_It_As_Error()
 		{
 			new ModelFactorBuilder().FactorId(Tour2018OksFourthIntegerFactor.Id).Model(Model)
 				.MarkType(MarkType.None)
 				.Correction(RandomGenerator.GenerateRandomDecimal()).Coefficient(decimal.MaxValue)
 				.Build();
 
-			var exception = Assert.Throws<AggregateException>(() => PerformCalculation(Task.Id, Group.Id));
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
-			Assert.That(exception.InnerExceptions[0], Is.TypeOf<CalculationException>());
+			Assert.That(errors.Count, Is.EqualTo(1));
+			StringAssert.Contains(Messages.CadastralPriceCalculationError, errors.First().Error);
 		}
 
 		[Test]
-		public void If_Price_Is_Zero_Throw_Exception()
+		public void If_Price_Is_Zero_Save_It_As_Error()
 		{
 			// формула: свободный член * [(значение_фактора + поправка) ^ коэффициент]
 
@@ -238,10 +248,10 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				.Correction((double)-UnitFactorValue).Coefficient(FactorCoefficient)
 				.Build();
 
-			var exception = Assert.Throws<AggregateException>(() => PerformCalculation(Task.Id, Group.Id));
-			var innerException = exception.InnerExceptions[0];
+			var errors = PerformCalculation(Task.Id, Group.Id);
 
-			Assert.That(innerException, Is.TypeOf<ZeroPriceException>(), innerException.Message);
+			Assert.That(errors.Count, Is.EqualTo(1));
+			StringAssert.Contains(Messages.ZeroCadastralPrice, errors.First().Error);
 		}
 
 
@@ -312,7 +322,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
 		}
 
-		private void PerformCalculation(long taskId, long groupId)
+		private List<CalcErrorItem> PerformCalculation(long taskId, long groupId)
 		{
 			var settings = new CadastralPriceCalculationSettions
 			{
@@ -321,7 +331,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				TaskIds = new List<long> { taskId }
 			};
 
-			new CalculateCadastralPriceLongProcess().PerformProc(settings, new CancellationToken());
+			return new CalculateCadastralPriceLongProcess().DoCalculation(settings, new CancellationToken());
 		}
 
 		private void CheckCalculatedUnit(decimal expectedCadastralCost)

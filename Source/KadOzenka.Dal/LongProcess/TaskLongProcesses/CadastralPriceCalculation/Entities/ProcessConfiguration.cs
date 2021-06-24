@@ -7,6 +7,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.
 	public class ProcessConfiguration : ParallelThreadsConfig
 	{
 		public int NumberOfPackages { get; set; }
+		public int MaxUnitsCount { get; set; }
 
 		public ParallelOptions ParallelOptions { get; set; }
 		public CancellationTokenSource CancellationTokenSource { get; set; }
@@ -15,7 +16,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.
 		{
 			PackageSize = packageSize;
 			ThreadsCount = threadsCount;
-			NumberOfPackages = generalUnitsCount / PackageSize + 1;
+			MaxUnitsCount = generalUnitsCount;
+			NumberOfPackages = MaxUnitsCount / PackageSize + 1;
 			
 			CancellationTokenSource = new CancellationTokenSource();
 			ParallelOptions = new ParallelOptions

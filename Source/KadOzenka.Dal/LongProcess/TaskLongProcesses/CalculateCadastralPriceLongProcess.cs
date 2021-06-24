@@ -34,20 +34,24 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
 	public class CalculateCadastralPriceLongProcess : LongProcess
 	{
+		public static string AttributePrefixInFormula = "factor_";
 		public const string LongProcessName = "CalculateCadastralPrice";
 		private static readonly int GroupColumn = 0;
 		private static readonly int TaskColumn = 1;
 		private static readonly int PropertyTypeColumn = 2;
 		private static readonly int KnColumn = 3;
 		private static readonly int ErrorColumn = 4;
+		private object _locker;
+		private OMQueue _queue;
 		private readonly ILogger _log = Log.ForContext<CalculateCadastralPriceLongProcess>();
+		
 		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
 		private IUnitService UnitService { get; }
 		private IModelingService ModelingService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IGroupService GroupService { get; }
 		private IUnitRepository UnitRepository { get; }
-		public static string AttributePrefixInFormula = "factor_";
+
 
 		public CalculateCadastralPriceLongProcess(IUnitRepository unitRepository = null,
 			IUnitService unitService = null, IModelingService modelingService = null,
@@ -61,6 +65,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			ModelingService = modelingService ?? new ModelingService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
 			GroupService = groupService ?? new GroupService();
+
+			_locker = new object();
 		}
 
 
@@ -77,13 +83,24 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			try
 			{
 				WorkerCommon.SetProgress(processQueue, 0);
+				_queue = processQueue;
 
 				var settings = processQueue.Parameters.DeserializeFromXml<CadastralPriceCalculationSettions>();
-				var urlToDownload = PerformProc(settings, cancellationToken);
+				var errorsDuringCalculation = DoCalculation(settings, cancellationToken);
+				
+				string urlToDownloadReport = null;
+				if (errorsDuringCalculation.Count > 0)
+				{
+					_log.Debug("Начато формирование отчета");
+					urlToDownloadReport = FormReport(errorsDuringCalculation);
+					_log.Debug("Закончено формирование отчета");
+				}
+				CompareData(settings.TaskIds);
 
 				WorkerCommon.SetProgress(processQueue, 100);
-				string message = "Операция успешно завершена." +
-				                 $@"<a href=""{urlToDownload}"">Скачать результат</a>";
+
+				var linkToReport = string.IsNullOrWhiteSpace(urlToDownloadReport) ? "" : $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
+				var message = "Операция успешно завершена." + linkToReport;
 				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", message);
 			}
 			catch (OperationCanceledException ex)
@@ -105,10 +122,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		#region Support Methods
 
-		public string PerformProc(CadastralPriceCalculationSettions settings, CancellationToken cancellationToken)
+		public List<CalcErrorItem> DoCalculation(CadastralPriceCalculationSettions settings, CancellationToken cancellationToken)
 		{
 			//группы с активной ручной-мультипликативной моделью считаем через новую реализацию. остальные - через старую
-			
+
 			var errorsDuringCalculation = new List<CalcErrorItem>();
 			if (settings.IsAllGroups)
 			{
@@ -128,8 +145,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
 					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
 					{
-						//todo try/catch and report
-						CalculateByNewRealization(settings, activeGroupModel, group, cancellationToken);
+						errorsDuringCalculation = CalculateByNewRealization(settings, activeGroupModel, group, cancellationToken);
 					}
 					else
 					{
@@ -139,16 +155,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				});
 			}
 
-			_log.Debug("Начато формирование отчета");
-			var urlToDownloadReport = FormReport(errorsDuringCalculation);
-			_log.Debug("Закончено формирование отчета");
-
-			CompareData(settings.TaskIds);
-
-			return urlToDownloadReport;
+			return errorsDuringCalculation;
 		}
 
-		private void CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, OMGroup group, CancellationToken cancellationToken)
+		private List<CalcErrorItem> CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, OMGroup group, CancellationToken cancellationToken)
 		{
 			_log.Debug("Начат расчет через новую реализацию");
 
@@ -159,8 +169,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			//если будут проблемы с производительностью вынески выгрузку ЕО в потоки
 			var units = GetUnits(settings, group.Id);
 
-			var processConfiguration = GetProcessConfiguration(units.Count);
+			var errorsDuringCalculation = new List<CalcErrorItem>();
+			var processedUnitsCount = 0;
 			var processedPackageCount = 0;
+			var processConfiguration = GetProcessConfiguration(units.Count);
 			Parallel.For(0, processConfiguration.NumberOfPackages, processConfiguration.ParallelOptions, (packageIndex, s) =>
 			{
 				CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
@@ -180,34 +192,60 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 					unitsWithTheSameTour.ForEach(currentUnit =>
 					{
-						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
-
-						if (currentUnit.Square == null)
-							throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
-
-						if(!allUnitsFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
-							throw new NoInfoForCalculationException("У ЕО нет факторов");
-
-						var notEmptyUnitFactors = currentUnitFactors.Where(x => x.Value != null).ToList();
-						if (notEmptyUnitFactors.Count != modelFactors.Count)
+						try
 						{
-							var emptyFactors = currentUnitFactors.Where(x => x.Value == null).ToList();
-							throw new NoInfoForCalculationException($"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
-						}
+							CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource,
+								processConfiguration.ParallelOptions);
 
-						var price = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
-						//todo обработать конвертацию
-						currentUnit.CadastralCost = (decimal?)price;
-						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
-						UnitRepository.Save(currentUnit);
+							if (currentUnit.Square == null)
+								throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
+
+							if (!allUnitsFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
+								throw new NoInfoForCalculationException("У ЕО нет факторов");
+
+							var notEmptyUnitFactors = currentUnitFactors.Where(x => x.Value != null).ToList();
+							if (notEmptyUnitFactors.Count != modelFactors.Count)
+							{
+								var emptyFactors = currentUnitFactors.Where(x => x.Value == null).ToList();
+								throw new NoInfoForCalculationException(
+									$"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
+							}
+
+							var price = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
+							currentUnit.CadastralCost = (decimal?) price;
+							currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
+							UnitRepository.Save(currentUnit);
+
+							Interlocked.Increment(ref processedUnitsCount);
+						}
+						catch (Exception e)
+						{
+							_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'", currentUnit.CadastralNumber);
+
+							lock (_locker)
+							{
+								errorsDuringCalculation.Add(new CalcErrorItem
+								{
+									CadastralNumber = currentUnit.CadastralNumber,
+									Error = e.Message,
+									GroupId = group.Id,
+									PropertyType = currentUnit.PropertyType_Code.GetEnumDescription(),
+									TaskId = currentUnit.TaskId
+								});
+
+								LongProcessProgressLogger.LogProgress(processConfiguration.MaxUnitsCount, processedUnitsCount, _queue);
+							}
+						}
 					});
 				});
 
 				Interlocked.Increment(ref processedPackageCount);
-				_log.Debug("Всего обработано пакетов {processedPackageCount} из {NumberOfPackages}", processedPackageCount, processConfiguration.NumberOfPackages);
+				_log.Debug("Всего обработано пакетов {ProcessedPackageCount} из {NumberOfPackages}. И {ProcessedUnitsCount} ЕО из {UnitsCount}", processedPackageCount, processConfiguration.NumberOfPackages, processedUnitsCount, processConfiguration.MaxUnitsCount);
 			});
 
 			_log.Debug("Закончен расчет через новую реализацию");
+
+			return errorsDuringCalculation;
 		}
 
 		private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
@@ -418,9 +456,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			var units = UnitRepository.GetEntitiesByCondition(lambda, x => new
 			{
-				x.GroupId,
-				//todo убрать полсе рефакторинг UnitService
+				x.CadastralNumber,
 				x.TourId,
+				x.TaskId,
 				x.PropertyType_Code,
 				x.Square,
 				x.CadastralCost,
