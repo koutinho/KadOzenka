@@ -13,7 +13,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			_model = new OMModel
 			{
 				GroupId = RandomGenerator.GenerateRandomInteger(),
-				Name = RandomGenerator.GetRandomString(),
+				Name = RandomGenerator.GetRandomString(maxNumberOfCharacters: 10),
 				Description = RandomGenerator.GetRandomString(),
 				Formula = RandomGenerator.GetRandomString(),
 				AlgoritmType = KoAlgoritmType.Line.GetEnumDescription(),

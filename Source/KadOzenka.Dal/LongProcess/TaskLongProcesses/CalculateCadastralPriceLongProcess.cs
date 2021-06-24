@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Register;
@@ -319,7 +320,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				arguments[i] = argument;
 			}
 
-			var expression = new Expression(formula, arguments);
+			var expression = new org.mariuszgromada.math.mxparser.Expression(formula, arguments);
 			//var str = expression.getExpressionString();
 			
 			return expression.calculate();
@@ -338,21 +339,29 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private List<OMUnit> GetUnits(CadastralPriceCalculationSettions settings, long groupId)
 		{
-			//TODO one condition
+			_log.Debug("Начато скачивание ЕО");
 
-			List<OMUnit> units;
-			if (settings.IsParcel)
+			Expression<Func<OMUnit, bool>> baseExpression = x => settings.TaskIds.Contains((long)x.TaskId) && x.GroupId == groupId;
+			
+			Expression<Func<OMUnit, bool>> typeCondition = settings.IsParcel
+				? x => x.PropertyType_Code == PropertyTypes.Stead
+				: x => x.PropertyType_Code != PropertyTypes.Stead;
+
+			var body = System.Linq.Expressions.Expression.AndAlso(baseExpression.Body, typeCondition.Body);
+			var lambda = System.Linq.Expressions.Expression.Lambda<Func<OMUnit, bool>>(body, baseExpression.Parameters[0]);
+
+			var units = UnitRepository.GetEntitiesByCondition(lambda, x => new
 			{
-				units = UnitRepository.GetEntitiesByCondition(
-					x => settings.TaskIds.Contains((long) x.TaskId) && x.GroupId == groupId &&
-					     x.PropertyType_Code == PropertyTypes.Stead, null);
-			}
-			else
-			{
-				units = UnitRepository.GetEntitiesByCondition(
-					x => settings.TaskIds.Contains((long) x.TaskId) && x.GroupId == groupId &&
-					     x.PropertyType_Code != PropertyTypes.Stead, null);
-			}
+				x.GroupId,
+				//todo убрать полсе рефакторинг UnitService
+				x.TourId,
+				x.PropertyType_Code,
+				x.Square,
+				x.CadastralCost,
+				x.Upks
+			});
+
+			_log.Debug("Выгружено {UnitsCount} ЕО", units.Count);
 
 			return units;
 		}
