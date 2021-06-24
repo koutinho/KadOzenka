@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using System.Threading;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using KadOzenka.Common.Tests;
@@ -131,10 +133,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var firstPossibleExpectedCadastralCost = ModelA0 * GetExpectedCadastralConstForDefaulMark(firstMark, factor);
 			var secondPossibleExpectedCadastralCost = ModelA0 * GetExpectedCadastralConstForDefaulMark(secondMark, factor);
 			
-			var unitWithCalculatedPrice = OMUnit.Where(x => x.Id == Unit.Id)
-				.Select(x => new { x.CadastralCost, x.Upks })
-				.ExecuteFirstOrDefault();
-
+			var unitWithCalculatedPrice = GetUnitById(Unit.Id);
 			Assert.That(unitWithCalculatedPrice.CadastralCost,
 				Is.EqualTo(firstPossibleExpectedCadastralCost).Within(0.01)
 				.Or.EqualTo(secondPossibleExpectedCadastralCost).Within(0.01));
@@ -188,6 +187,32 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			CheckCalculatedUnit(expectedCadastralCost);
 		}
 
+		[Test]
+		public void Can_Calculate_Price_With_One_Factor_Of_None_MarkType_In_Parallel()
+		{
+			//формула: свободный член * [(значение_фактора + поправка)^коэффициент]
+
+			var fistUnitValue = 2;
+			var secondUnitValue = 3;
+			var firstUnit = new UnitBuilder().Task(Task).Group(Group.Id).Type(PropertyTypes.Building).Build();
+			var secondUnit = new UnitBuilder().Task(Task).Group(Group.Id).Type(PropertyTypes.Building).Build();
+			AddUnitFactor(Tour2018OksRegister, firstUnit.Id, Tour2018OksFourthIntegerFactor, fistUnitValue);
+			AddUnitFactor(Tour2018OksRegister, secondUnit.Id, Tour2018OksFourthIntegerFactor, secondUnitValue);
+			var factor = CreateFactorWithoutMark();
+
+			
+			PerformCalculation(Task.Id, Group.Id);
+
+
+			var firstCalculatedUnit = GetUnitById(firstUnit.Id);
+			var secondCalculatedUnit = GetUnitById(secondUnit.Id);
+			var firstUnitExpectedCadastralCost = ModelA0 * GetExpectedConstForNoneMark(factor, fistUnitValue);
+			var secondUnitExpectedCadastralCost = ModelA0 * GetExpectedConstForNoneMark(factor, secondUnitValue);
+
+			Assert.That(firstCalculatedUnit.CadastralCost, Is.EqualTo(firstUnitExpectedCadastralCost).Within(0.01));
+			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
+		}
+
 
 		#region Support Methods
 
@@ -228,9 +253,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				.Build();
 		}
 
-		private decimal GetExpectedConstForNoneMark(OMModelFactor factor)
+		private decimal GetExpectedConstForNoneMark(OMModelFactor factor, int? unitFactorValue = null)
 		{
-			return (decimal)Math.Pow((double)(UnitFactorValue + factor.WeightInFormula), (double)factor.B0);
+			var factorValue = unitFactorValue ?? UnitFactorValue;
+			
+			return (decimal)Math.Pow((double)(factorValue + factor.WeightInFormula), (double)factor.B0);
 		}
 
 		private decimal GetExpectedCadastralConstForDefaulMark(OMMarkCatalog mark, OMModelFactor factor)
@@ -263,19 +290,24 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				TaskIds = new List<long> { taskId }
 			};
 
-			new CalculateCadastralPriceLongProcess().PerformProc(settings);
+			new CalculateCadastralPriceLongProcess().PerformProc(settings, new CancellationToken());
 		}
 
 		private void CheckCalculatedUnit(decimal expectedCadastralCost)
 		{
-			var unitWithCalculatedPrice = OMUnit.Where(x => x.Id == Unit.Id)
-				.Select(x => new { x.CadastralCost, x.Upks })
-				.ExecuteFirstOrDefault();
+			var unitWithCalculatedPrice = GetUnitById(Unit.Id);
 			
 			var expectedUpks = unitWithCalculatedPrice.CadastralCost / Unit.Square.GetValueOrDefault();
 
 			Assert.That(unitWithCalculatedPrice.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
 			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
+		}
+
+		private OMUnit GetUnitById(long unitId)
+		{
+			return OMUnit.Where(x => x.Id == unitId)
+				.Select(x => new { x.CadastralCost, x.Upks })
+				.ExecuteFirstOrDefault();
 		}
 
 		#endregion

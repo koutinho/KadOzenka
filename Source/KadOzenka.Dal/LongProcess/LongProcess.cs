@@ -2,8 +2,11 @@
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
+using System.Threading.Tasks;
 using Serilog;
 using KadOzenka.Dal.Logger;
+using KadOzenka.Dal.LongProcess._Common;
+using Microsoft.Extensions.Configuration;
 
 namespace KadOzenka.Dal.LongProcess
 {
@@ -60,6 +63,42 @@ namespace KadOzenka.Dal.LongProcess
             {
 				logger.Debug(message);
 			}
+        }
+
+        protected void CheckCancellationToken(CancellationToken processCancellationToken,
+	        CancellationTokenSource localCancellationToken, ParallelOptions options)
+        {
+	        if (!processCancellationToken.IsCancellationRequested)
+		        return;
+
+	        localCancellationToken.Cancel();
+	        options.CancellationToken.ThrowIfCancellationRequested();
+        }
+
+        protected ParallelThreadsConfig GetParallelThreadsConfig(string sectionName, int defaultPackageSize, int defaultThreadsCount)
+        {
+	        var fileName = "appsettings.json";
+	        _log.Debug("Поиск настроек конфигурации из файла {FileName}", fileName);
+
+	        var configuration = new ConfigurationBuilder()
+		        .AddJsonFile(path: fileName, optional: false, reloadOnChange: true)
+		        .Build();
+
+	        var config = new ParallelThreadsConfig();
+	        var fullSectionName = $"MainOperations:{sectionName}";
+	        configuration.GetSection(fullSectionName).Bind(config);
+	        _log.ForContext("Configs", config, true).Debug("Полученные настройки конфигурации для секции {SectionName}", fullSectionName);
+
+	        var packageSize = config.PackageSize == 0 ? defaultPackageSize : config.PackageSize;
+	        var threadsCountForObjects = config.ThreadsCount == 0 ? defaultThreadsCount : config.ThreadsCount;
+
+	        config.PackageSize = packageSize;
+	        config.ThreadsCount = threadsCountForObjects;
+
+	        _log.ForContext("ResultConfigs", config, true)
+		        .Debug("Итоговые настройки конфигурации для секции {SectionName}", fullSectionName);
+
+	        return config;
         }
 	}
 }

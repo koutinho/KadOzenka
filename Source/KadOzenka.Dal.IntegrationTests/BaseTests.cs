@@ -74,6 +74,11 @@ namespace KadOzenka.Dal.IntegrationTests
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 		}
 
+		protected void AddUnitFactor(RegisterData tourRegister, long unitId, RegisterAttribute tourFactor, object value)
+		{
+			AddUnitFactor(tourRegister, unitId, new List<RegisterAttribute> {tourFactor}, new List<object> {value});
+		}
+
 		protected void AddUnitFactor(RegisterData tourRegister, long unitId, List<RegisterAttribute> tourFactors, List<object> values)
 		{
 			var sql = @$"insert into {tourRegister.QuantTable} 
@@ -90,7 +95,7 @@ namespace KadOzenka.Dal.IntegrationTests
 		private void InitConfig()
 		{
 			var configuration = new ConfigurationBuilder()
-				.AddJsonFile("appsettings.test.json", optional: false)
+				.AddJsonFile("appsettings.json", optional: false)
 				.AddEnvironmentVariables()
 				.Build();
 

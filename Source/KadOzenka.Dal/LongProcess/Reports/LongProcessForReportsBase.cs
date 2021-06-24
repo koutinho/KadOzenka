@@ -23,16 +23,6 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		}
 
-		protected void CheckCancellationToken(CancellationToken processCancellationToken,
-	        CancellationTokenSource localCancellationToken, ParallelOptions options)
-        {
-	        if (!processCancellationToken.IsCancellationRequested)
-		        return;
-
-	        localCancellationToken.Cancel();
-	        options.CancellationToken.ThrowIfCancellationRequested();
-        }
-
 		protected ReportsConfig GetProcessConfigFromSettings(string reportSectionName, int defaultPackageSize,
 			int defaultThreadsCount)
 		{
