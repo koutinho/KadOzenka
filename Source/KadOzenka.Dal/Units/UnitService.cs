@@ -13,7 +13,6 @@ using KadOzenka.Dal.Units.Repositories;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using KadOzenka.Dal.Oks;
-using ObjectModel.Core.Register;
 
 namespace KadOzenka.Dal.Units
 {
@@ -73,27 +72,52 @@ namespace KadOzenka.Dal.Units
 
 		public List<UnitFactor> GetUnitFactors(OMUnit unit, List<long> attributes = null)
 		{
-			var tourRegisterId = TourFactorService.GetTourRegister(unit.TourId.GetValueOrDefault(),
-				unit.PropertyType_Code == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks)?.RegisterId;
-			if (tourRegisterId == null)
-				throw new Exception($"Не найден реестр факторов для тура с ИД {unit.TourId} для типа объекта {unit.PropertyType_Code.GetEnumDescription()}");
+			var tourAttributesInfo = GetTourRegisterInfo(unit.TourId, unit.PropertyType_Code, attributes);
 
-			var tourAttributes = RegisterAttributeService.GetActiveRegisterAttributes(tourRegisterId.Value, attributes)
-				.Where(x => !x.IsPrimaryKey.GetValueOrDefault())
-				.Select(x => x.Id)
-				.ToList();
-			if (tourAttributes.IsEmpty())
-				return new List<UnitFactor>();
+			return GetUnitFactors(unit.Id, tourAttributesInfo.RegisterId, tourAttributesInfo.AttributeIds);
+		}
 
-			return GetUnitFactors(unit, tourRegisterId.Value, tourAttributes);
+		public List<UnitFactor> GetUnitsFactors(List<long> unitIds, long tourId, PropertyTypes type, List<long> attributes = null)
+		{
+			var tourAttributesInfo = GetTourRegisterInfo(tourId, type, attributes);
+
+			return GetUnitFactors(unitIds, tourAttributesInfo.RegisterId, tourAttributesInfo.AttributeIds);
 		}
 
 
 		#region Support Methods
 
-		private List<UnitFactor> GetUnitFactors(OMUnit unit, long tourRegisterId, List<long> tourAttributeIds)
+		private TourInfo GetTourRegisterInfo(long? tourId, PropertyTypes type, List<long> attributes = null)
 		{
-			var query = GetUnitFactorsQuery(unit.Id, tourRegisterId);
+			var tourRegisterId = TourFactorService.GetTourRegister(tourId.GetValueOrDefault(),
+				type == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks)?.RegisterId;
+			if (tourRegisterId == null)
+				throw new Exception($"Не найден реестр факторов для тура с ИД {tourId} для типа объекта {type.GetEnumDescription()}");
+
+			var tourAttributes = RegisterAttributeService.GetActiveRegisterAttributes(tourRegisterId.Value, attributes)
+				.Where(x => !x.IsPrimaryKey.GetValueOrDefault())
+				.Select(x => x.Id)
+				.ToList();
+
+			return new TourInfo(tourRegisterId.Value, tourAttributes);
+		}
+
+		private List<UnitFactor> GetUnitFactors(long unitId, long tourRegisterId, List<long> tourAttributeIds)
+		{
+			var query = GetUnitFactorsQuery(unitId, tourRegisterId);
+
+			return GetUnitFactors(query, tourAttributeIds);
+		}
+
+		private List<UnitFactor> GetUnitFactors(List<long> unitIds, long tourRegisterId, List<long> tourAttributeIds)
+		{
+			var query = GetUnitFactorsQuery(unitIds, tourRegisterId);
+
+			return GetUnitFactors(query, tourAttributeIds);
+		}
+
+		private List<UnitFactor> GetUnitFactors(QSQuery query, List<long> tourAttributeIds)
+		{
 			foreach (var factorId in tourAttributeIds)
 			{
 				query.AddColumn(factorId, factorId.ToString());
@@ -115,27 +139,55 @@ namespace KadOzenka.Dal.Units
 			return results;
 		}
 
+		private QSQuery GetUnitFactorsQuery(List<long> unitIds, long tourRegisterId)
+		{
+			return GetUnitFactorsQuery(tourRegisterId, new QSColumnConstant(unitIds), QSConditionType.In);
+		}
+
 		private QSQuery GetUnitFactorsQuery(long unitId, long tourRegisterId)
         {
-	        var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
-		        .FirstOrDefault(x => x.RegisterId == tourRegisterId && x.IsPrimaryKey)?.Id;
-	        
-	        var qsConditionGroup = new QSConditionGroup(QSConditionGroupType.And);
-	        qsConditionGroup.Add(new QSConditionSimple
-	        {
-		        ConditionType = QSConditionType.Equal,
-		        LeftOperand = new QSColumnSimple(tourRegisterPrimaryKeyId.GetValueOrDefault()),
-		        RightOperand = new QSColumnConstant(unitId)
-	        });
+	        return GetUnitFactorsQuery(tourRegisterId, new QSColumnConstant(unitId), QSConditionType.Equal);
+		}
 
-	        var query = new QSQuery
-	        {
-		        MainRegisterID = (int)tourRegisterId,
-		        Condition = qsConditionGroup
-	        };
+		private QSQuery GetUnitFactorsQuery(long tourRegisterId, QSColumnConstant rightOperand,
+			QSConditionType conditionType)
+		{
+			var tourRegisterPrimaryKeyId = RegisterCache.RegisterAttributes.Values
+				.FirstOrDefault(x => x.RegisterId == tourRegisterId && x.IsPrimaryKey)?.Id;
 
-	        return query;
-        }
+			var qsConditionGroup = new QSConditionGroup(QSConditionGroupType.And);
+			qsConditionGroup.Add(new QSConditionSimple
+			{
+				ConditionType = conditionType,
+				LeftOperand = new QSColumnSimple(tourRegisterPrimaryKeyId.GetValueOrDefault()),
+				RightOperand = rightOperand
+			});
+
+			var query = new QSQuery
+			{
+				MainRegisterID = (int) tourRegisterId,
+				Condition = qsConditionGroup
+			};
+
+			return query;
+		}
+
+		#endregion
+
+
+		#region Entities
+
+		private class TourInfo
+		{
+			public long RegisterId { get; set; }
+			public List<long> AttributeIds { get; set; }
+
+			public TourInfo(long tourRegisterId, List<long> tourAttributes)
+			{
+				RegisterId = tourRegisterId;
+				AttributeIds = tourAttributes;
+			}
+		}
 
 		#endregion
 	}

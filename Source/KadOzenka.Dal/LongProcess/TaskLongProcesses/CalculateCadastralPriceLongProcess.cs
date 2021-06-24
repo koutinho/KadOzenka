@@ -164,10 +164,11 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			Parallel.For(0, processConfiguration.NumberOfPackages, processConfiguration.ParallelOptions, (packageIndex, s) =>
 			{
 				CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
-				_log.Debug("Начата работа с пакетом №{i} из {NumberOfPackages}", packageIndex, processConfiguration.NumberOfPackages);
 
-				var varUnitsPackage = units.Skip(packageIndex * processConfiguration.PackageSize).Take(processConfiguration.PackageSize).ToList();
-				varUnitsPackage.ForEach(unit =>
+				var unitsPackage = units.Skip(packageIndex * processConfiguration.PackageSize).Take(processConfiguration.PackageSize).ToList();
+				_log.Debug("Начата работа с пакетом №{i} из {NumberOfPackages}. В нем {UnitsInPackageCount} ЕО", packageIndex, processConfiguration.NumberOfPackages, unitsPackage.Count);
+
+				unitsPackage.ForEach(unit =>
 				{
 					CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
 
