@@ -72,14 +72,15 @@ namespace KadOzenka.Dal.Units
 
 		public List<UnitFactor> GetUnitFactors(OMUnit unit, List<long> attributes = null)
 		{
-			var tourAttributesInfo = GetTourRegisterInfo(unit.TourId, unit.PropertyType_Code, attributes);
+			var isParcel = unit.PropertyType_Code == PropertyTypes.Stead;
+			var tourAttributesInfo = GetTourRegisterInfo(unit.TourId, isParcel, attributes);
 
 			return GetUnitFactors(unit.Id, tourAttributesInfo.RegisterId, tourAttributesInfo.AttributeIds);
 		}
 
-		public List<UnitFactor> GetUnitsFactors(List<long> unitIds, long tourId, PropertyTypes type, List<long> attributes = null)
+		public List<UnitFactor> GetUnitsFactors(List<long> unitIds, long tourId, bool isParcel, List<long> attributes = null)
 		{
-			var tourAttributesInfo = GetTourRegisterInfo(tourId, type, attributes);
+			var tourAttributesInfo = GetTourRegisterInfo(tourId, isParcel, attributes);
 
 			return GetUnitFactors(unitIds, tourAttributesInfo.RegisterId, tourAttributesInfo.AttributeIds);
 		}
@@ -87,10 +88,10 @@ namespace KadOzenka.Dal.Units
 
 		#region Support Methods
 
-		private TourInfo GetTourRegisterInfo(long? tourId, PropertyTypes type, List<long> attributes = null)
+		private TourInfo GetTourRegisterInfo(long? tourId, bool isParcel, List<long> attributes = null)
 		{
-			var tourRegisterId = TourFactorService.GetTourRegister(tourId.GetValueOrDefault(),
-				type == PropertyTypes.Stead ? ObjectType.ZU : ObjectType.Oks)?.RegisterId;
+			var type = isParcel ? ObjectType.ZU : ObjectType.Oks;
+			var tourRegisterId = TourFactorService.GetTourRegister(tourId.GetValueOrDefault(), type)?.RegisterId;
 			if (tourRegisterId == null)
 				throw new Exception($"Не найден реестр факторов для тура с ИД {tourId} для типа объекта {type.GetEnumDescription()}");
 
