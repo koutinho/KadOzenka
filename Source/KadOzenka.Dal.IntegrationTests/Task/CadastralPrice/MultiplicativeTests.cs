@@ -228,6 +228,22 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			Assert.That(exception.InnerExceptions[0], Is.TypeOf<CalculationException>());
 		}
 
+		[Test]
+		public void If_Price_Is_Zero_Throw_Exception()
+		{
+			// формула: свободный член * [(значение_фактора + поправка) ^ коэффициент]
+
+			new ModelFactorBuilder().FactorId(Tour2018OksFourthIntegerFactor.Id).Model(Model)
+				.MarkType(MarkType.None)
+				.Correction((double)-UnitFactorValue).Coefficient(FactorCoefficient)
+				.Build();
+
+			var exception = Assert.Throws<AggregateException>(() => PerformCalculation(Task.Id, Group.Id));
+			var innerException = exception.InnerExceptions[0];
+
+			Assert.That(innerException, Is.TypeOf<ZeroPriceException>(), innerException.Message);
+		}
+
 
 		#region Support Methods
 

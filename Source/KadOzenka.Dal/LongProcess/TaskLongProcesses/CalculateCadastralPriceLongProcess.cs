@@ -369,20 +369,27 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			var expression = new org.mariuszgromada.math.mxparser.Expression(formula, arguments);
 
+			double price;
 			try
 			{
-				//var str = expression.getExpressionString();
-				var price = expression.calculate();
-				if (price == 0 || double.IsNaN(price) || double.IsInfinity(price))
-					throw new Exception($"Сторонняя библиотека не смогла посчитала значение цены. Возвращенное значение '{price}'");
-
-				return price;
+				price = expression.calculate();
 			}
 			catch (Exception e)
-			{ 
-				_log.Error(e, "Ошибка при расчете по формуле");
+			{
+				_log.Error(e, "Ошибка при расчете формулы через стороннюю библиотеку");
 				throw new CalculationException(expression, factors);
 			}
+
+			if (double.IsNaN(price) || double.IsInfinity(price))
+			{
+				_log.Error($"Сторонняя библиотека не смогла посчитать значение цены. Возвращенное значение '{price}'");
+				throw new CalculationException(expression, factors);
+			}
+
+			if (price == 0)
+				throw new ZeroPriceException(expression, factors);
+
+			return price;
 		}
 
 		private decimal GetMetkaFromMarkCatalog(Dictionary<Tuple<long, string>, decimal?> marks, FactorInfo unitFactor, string value)

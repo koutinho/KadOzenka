@@ -41,6 +41,21 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		}
 
 		[Test]
+		public void Can_Create_Formula_With_One_Factor_With_Negative_Parameters()
+		{
+			var factor = _factorBuilder.MarkType(MarkType.Straight)
+				.Correction(-1d).Coefficient(-2d)
+				.CorrectingTerm(-3d).K(-4d)
+				.Build();
+			MockDependencies(_model, factor, _cacheAttribute);
+
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
+
+			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(({CacheAttributeName}+({factor.CorrectingTermInFormula}))/({factor.KInFormula}) + ({factor.WeightInFormula}))^({factor.B0InFormula})";
+			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
+		}
+
+		[Test]
 		public void Can_Create_Formula_With_One_Factor_Of_Default_Mark()
 		{
 			var factor = _factorBuilder.MarkType(MarkType.Default).Build();

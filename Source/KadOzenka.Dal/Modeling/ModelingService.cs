@@ -592,19 +592,24 @@ namespace KadOzenka.Dal.Modeling
 				factors.ForEach(x =>
 				{
 					var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
+					var weightInFormula = ProcessNumber(x.WeightInFormula);
+					var b0InFormula = ProcessNumber(x.B0InFormula);
+					var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
+					var kInFormula = ProcessNumber(x.KInFormula);
+
 					switch (x.MarkType_Code)
 					{
 						case MarkType.None:
-							formula.Append($" * ({attributeName} + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({attributeName} + {weightInFormula})^{b0InFormula}");
 							break;
 						case MarkType.Default:
-							formula.Append($" * ({MarkTagInFormula}({attributeName}) + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({MarkTagInFormula}({attributeName}) + {weightInFormula})^{b0InFormula}");
 							break;
 						case MarkType.Straight:
-							formula.Append($" * (({attributeName} + {x.CorrectingTermInFormula}) / {x.KInFormula} + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * (({attributeName} + {correctingTermInFormula}) / {kInFormula} + {weightInFormula})^{b0InFormula}");
 							break;
 						case MarkType.Reverse:
-							formula.Append($" * ({x.KInFormula}/({attributeName}+{x.CorrectingTermInFormula}) + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({kInFormula}/({attributeName}+{correctingTermInFormula}) + {weightInFormula})^{b0InFormula}");
 							break;
 						default:
 							throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code}'");
@@ -618,6 +623,22 @@ namespace KadOzenka.Dal.Modeling
 			model.AlgoritmType_Code = algorithmType;
 			return model.GetFormulaFull(true);
 		}
+
+
+		#region Support Methods
+
+		private static string ProcessNumber(decimal number)
+		{
+			var numberInFormula = $"{number}";
+			if (number < 0)
+			{
+				numberInFormula = $"({numberInFormula})";
+			}
+
+			return numberInFormula;
+		}
+
+		#endregion
 
 		#endregion
 	}

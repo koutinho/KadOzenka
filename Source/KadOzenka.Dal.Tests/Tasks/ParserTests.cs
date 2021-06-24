@@ -32,13 +32,13 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 		public void Test2()
 		{
 			var factorName = "factor_25023100";
-			var initialString = @$"2 * ({factorName} + (-1))^3";
+			var initialString = @$"2 * ({factorName} + (-1))^(-3)";
 
-			var a = new Argument(factorName, 1);
+			var a = new Argument(factorName, 3);
 			var e = new Expression(initialString, a);
 			var result = e.calculate();
 
-			Assert.That(result, Is.EqualTo(0));
+			Assert.That(result, Is.EqualTo(0.25));
 		}
 	}
 }
