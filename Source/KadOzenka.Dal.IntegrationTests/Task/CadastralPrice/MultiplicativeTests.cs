@@ -201,7 +201,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			AddUnitFactor(Tour2018OksRegister, secondUnit.Id, Tour2018OksFourthIntegerFactor, secondUnitValue);
 			var factor = CreateFactorWithoutMark();
 
-			
+			//TODO изменить параметры конфига в тесте, либо замокать метод в процессе
 			PerformCalculation(Task.Id, Group.Id);
 
 

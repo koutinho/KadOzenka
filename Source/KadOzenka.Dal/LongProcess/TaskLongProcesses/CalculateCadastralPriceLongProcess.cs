@@ -156,7 +156,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var formula = PrepareFormula(activeGroupModel, modelFactors);
 
 			var marks = GetMarks(group, modelFactors);
-			//todo если будут проблемы с производительностью вынески выгрузку ЕО в потоки
+			//если будут проблемы с производительностью вынески выгрузку ЕО в потоки
 			var units = GetUnits(settings, group.Id);
 
 			var processConfiguration = GetProcessConfiguration(units.Count);

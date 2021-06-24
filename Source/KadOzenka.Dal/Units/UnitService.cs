@@ -13,6 +13,7 @@ using KadOzenka.Dal.Units.Repositories;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using KadOzenka.Dal.Oks;
+using ObjectModel.Core.Register;
 
 namespace KadOzenka.Dal.Units
 {
@@ -77,30 +78,35 @@ namespace KadOzenka.Dal.Units
 			if (tourRegisterId == null)
 				throw new Exception($"Не найден реестр факторов для тура с ИД {unit.TourId} для типа объекта {unit.PropertyType_Code.GetEnumDescription()}");
 
-			var tourAttributes = RegisterAttributeService.GetActiveRegisterAttributes(tourRegisterId.Value, attributes);
+			var tourAttributes = RegisterAttributeService.GetActiveRegisterAttributes(tourRegisterId.Value, attributes)
+				.Where(x => !x.IsPrimaryKey.GetValueOrDefault())
+				.Select(x => x.Id)
+				.ToList();
 			if (tourAttributes.IsEmpty())
 				return new List<UnitFactor>();
 
-			var query = GetUnitFactorsQuery(unit.Id, tourRegisterId.Value);
-			foreach (var factor in tourAttributes)
-			{
-				if (factor.IsPrimaryKey != null && factor.IsPrimaryKey.Value)
-					continue;
+			return GetUnitFactors(unit, tourRegisterId.Value, tourAttributes);
+		}
 
-				query.AddColumn(factor.Id, factor.Id.ToString());
+
+		#region Support Methods
+
+		private List<UnitFactor> GetUnitFactors(OMUnit unit, long tourRegisterId, List<long> tourAttributeIds)
+		{
+			var query = GetUnitFactorsQuery(unit.Id, tourRegisterId);
+			foreach (var factorId in tourAttributeIds)
+			{
+				query.AddColumn(factorId, factorId.ToString());
 			}
 
 			var results = new List<UnitFactor>();
 			var table = query.ExecuteQuery();
-			foreach (var factor in tourAttributes)
+			foreach (var factorId in tourAttributeIds)
 			{
-				if (factor.IsPrimaryKey != null && factor.IsPrimaryKey.Value)
-					continue;
-
-				var attr = new UnitFactor(factor.Id);
+				var attr = new UnitFactor(factorId);
 				if (table.Rows.Count > 0)
 				{
-					attr.SetFactorValue(table.Rows[0][factor.Id.ToString()].ParseToStringNullable());
+					attr.SetFactorValue(table.Rows[0][factorId.ToString()].ParseToStringNullable());
 				}
 
 				results.Add(attr);
@@ -108,9 +114,6 @@ namespace KadOzenka.Dal.Units
 
 			return results;
 		}
-
-
-		#region Support Methods
 
 		private QSQuery GetUnitFactorsQuery(long unitId, long tourRegisterId)
         {
