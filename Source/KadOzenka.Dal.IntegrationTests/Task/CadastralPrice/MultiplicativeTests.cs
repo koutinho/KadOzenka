@@ -189,7 +189,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		}
 
 		[Test]
-		public void Can_Calculate_Price_With_One_Factor_Of_None_MarkType_In_Parallel()
+		public void Can_Calculate_Price_Of_Several_Units_With_One_Factor_Of_None_MarkType()
 		{
 			//формула: свободный член * [(значение_фактора + поправка)^коэффициент]
 

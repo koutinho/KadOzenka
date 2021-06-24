@@ -168,26 +168,39 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var unitsPackage = units.Skip(packageIndex * processConfiguration.PackageSize).Take(processConfiguration.PackageSize).ToList();
 				_log.Debug("Начата работа с пакетом №{i} из {NumberOfPackages}. В нем {UnitsInPackageCount} ЕО", packageIndex, processConfiguration.NumberOfPackages, unitsPackage.Count);
 
-				unitsPackage.ForEach(unit =>
+				var unitsGroupedByTour = unitsPackage.GroupBy(x => x.TourId.GetValueOrDefault()).ToList();
+				unitsGroupedByTour.ForEach(unitGroup =>
 				{
-					CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
+					var unitsWithTheSameTour = unitGroup.ToList();
 
-					if (unit.Square == null)
-						throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
+					var unitIds = unitsWithTheSameTour.Select(x => x.Id).ToList();
+					var tourId = unitGroup.Key;
+					var allUnitsFactors = UnitService.GetUnitsFactors(unitIds, tourId, settings.IsParcel,
+						modelFactors.Select(x => x.FactorId).ToList());
 
-					var allUnitFactors = UnitService.GetUnitModelFactors(unit);
-					var notEmptyUnitFactors = allUnitFactors.Where(x => x.Value != null).ToList();
-					if (notEmptyUnitFactors.Count != modelFactors.Count)
+					unitsWithTheSameTour.ForEach(currentUnit =>
 					{
-						var emptyFactors = allUnitFactors.Where(x => x.Value == null).ToList();
-						throw new NoInfoForCalculationException($"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
-					}
+						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
 
-					var price = Calculate(formula, modelFactors, notEmptyUnitFactors, marks);
-					//todo обработать конвертацию
-					unit.CadastralCost = (decimal?)price;
-					unit.Upks = unit.CadastralCost / unit.Square.Value;
-					UnitRepository.Save(unit);
+						if (currentUnit.Square == null)
+							throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
+
+						if(!allUnitsFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
+							throw new NoInfoForCalculationException("У ЕО нет факторов");
+
+						var notEmptyUnitFactors = currentUnitFactors.Where(x => x.Value != null).ToList();
+						if (notEmptyUnitFactors.Count != modelFactors.Count)
+						{
+							var emptyFactors = currentUnitFactors.Where(x => x.Value == null).ToList();
+							throw new NoInfoForCalculationException($"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
+						}
+
+						var price = Calculate(formula, modelFactors, notEmptyUnitFactors, marks);
+						//todo обработать конвертацию
+						currentUnit.CadastralCost = (decimal?)price;
+						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
+						UnitRepository.Save(currentUnit);
+					});
 				});
 
 				Interlocked.Increment(ref processedPackageCount);

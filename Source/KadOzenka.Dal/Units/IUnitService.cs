@@ -9,6 +9,6 @@ namespace KadOzenka.Dal.Units
 		List<UnitFactor> GetUnitModelFactors(OMUnit unit);
 		List<UnitFactor> GetUnitGroupFactors(OMUnit unit);
 		List<UnitFactor> GetUnitFactors(OMUnit unit, List<long> attributes = null);
-		List<UnitFactor> GetUnitsFactors(List<long> unitIds, long tourId, bool isParcel, List<long> attributes = null);
+		Dictionary<long, List<UnitFactor>> GetUnitsFactors(List<long> unitIds, long tourId, bool isParcel, List<long> attributes = null);
 	}
 }

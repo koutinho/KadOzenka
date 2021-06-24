@@ -75,10 +75,17 @@ namespace KadOzenka.Dal.Units
 			var isParcel = unit.PropertyType_Code == PropertyTypes.Stead;
 			var tourAttributesInfo = GetTourRegisterInfo(unit.TourId, isParcel, attributes);
 
-			return GetUnitFactors(unit.Id, tourAttributesInfo.RegisterId, tourAttributesInfo.AttributeIds);
+			var unitFactors = GetUnitFactors(unit.Id, tourAttributesInfo.RegisterId, tourAttributesInfo.AttributeIds);
+
+			if (!unitFactors.TryGetValue(unit.Id, out var downloadedFactors))
+			{
+				return tourAttributesInfo.AttributeIds.Select(x => new UnitFactor(x)).ToList();
+			}
+
+			return downloadedFactors;
 		}
 
-		public List<UnitFactor> GetUnitsFactors(List<long> unitIds, long tourId, bool isParcel, List<long> attributes = null)
+		public Dictionary<long, List<UnitFactor>> GetUnitsFactors(List<long> unitIds, long tourId, bool isParcel, List<long> attributes = null)
 		{
 			var tourAttributesInfo = GetTourRegisterInfo(tourId, isParcel, attributes);
 
@@ -103,41 +110,49 @@ namespace KadOzenka.Dal.Units
 			return new TourInfo(tourRegisterId.Value, tourAttributes);
 		}
 
-		private List<UnitFactor> GetUnitFactors(long unitId, long tourRegisterId, List<long> tourAttributeIds)
+		private Dictionary<long, List<UnitFactor>> GetUnitFactors(long unitId, long tourRegisterId, List<long> tourAttributeIds)
 		{
 			var query = GetUnitFactorsQuery(unitId, tourRegisterId);
 
 			return GetUnitFactors(query, tourAttributeIds);
 		}
 
-		private List<UnitFactor> GetUnitFactors(List<long> unitIds, long tourRegisterId, List<long> tourAttributeIds)
+		private Dictionary<long, List<UnitFactor>> GetUnitFactors(List<long> unitIds, long tourRegisterId, List<long> tourAttributeIds)
 		{
 			var query = GetUnitFactorsQuery(unitIds, tourRegisterId);
 
 			return GetUnitFactors(query, tourAttributeIds);
 		}
 
-		private List<UnitFactor> GetUnitFactors(QSQuery query, List<long> tourAttributeIds)
+		private Dictionary<long, List<UnitFactor>> GetUnitFactors(QSQuery query, List<long> tourAttributeIds)
 		{
 			foreach (var factorId in tourAttributeIds)
 			{
 				query.AddColumn(factorId, factorId.ToString());
 			}
 
-			var results = new List<UnitFactor>();
+			var result = new Dictionary<long, List<UnitFactor>>();
 			var table = query.ExecuteQuery();
-			foreach (var factorId in tourAttributeIds)
+			for (var i = 0; i < table.Rows.Count; i++)
 			{
-				var attr = new UnitFactor(factorId);
-				if (table.Rows.Count > 0)
-				{
-					attr.SetFactorValue(table.Rows[0][factorId.ToString()].ParseToStringNullable());
-				}
+				var row = table.Rows[i];
+				var unitId = row["id"].ParseToLong();
 
-				results.Add(attr);
+				var currentUnitFactors = new List<UnitFactor>();
+				tourAttributeIds.ForEach(factorId =>
+				{
+					var attr = new UnitFactor(factorId);
+
+					var value = row[factorId.ToString()].ParseToStringNullable();
+					attr.SetFactorValue(value);
+
+					currentUnitFactors.Add(attr);
+				});
+
+				result.Add(unitId, currentUnitFactors);
 			}
 
-			return results;
+			return result;
 		}
 
 		private QSQuery GetUnitFactorsQuery(List<long> unitIds, long tourRegisterId)
