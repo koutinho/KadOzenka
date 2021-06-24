@@ -144,15 +144,14 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			var modelFactors = PrepareModelFactors(activeGroupModel);
 			var formula = PrepareFormula(activeGroupModel, modelFactors);
+			//todo убрать ModelingInfo?
 			var modelInfo = new ModelingInfo
 			{
 				Formula = formula,
 				Factors = modelFactors
 			};
 
-			var factorsWithDefaultMark = modelInfo.Factors.Where(x => x.MarkType == MarkType.Default).ToList();
-			//todo to dictionary
-			var marks = ModelFactorsService.GetMarks(group.Id, factorsWithDefaultMark.Select(x => (long?) x.FactorId).ToList());
+			var marks = GetMarks(group, modelInfo.Factors);
 
 			var units = GetUnits(settings, group.Id);
 
@@ -170,7 +169,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					var emptyFactors = allUnitFactors.Where(x => x.Value == null).ToList();
 					throw new NoInfoForCalculationException($"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
 				}
-
 
 				var price = Calculate(modelInfo, notEmptyUnitFactors, marks);
 				//todo обработать конвертацию
@@ -264,19 +262,47 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return formula;
 		}
 
-		public double Calculate(ModelingInfo modelInfo, List<UnitFactor> unitsFactors, List<OMMarkCatalog> marks)
+		private Dictionary<Tuple<long, string>, decimal?> GetMarks(OMGroup group, List<FactorInfo> factors)
+		{
+			var factorsWithDefaultMarkIds = factors.Where(x => x.MarkType == MarkType.Default)
+				.Select(x => (long?)x.FactorId).ToList();
+
+			_log.ForContext("FactorsWithDefaultMarkIds", factorsWithDefaultMarkIds, true)
+				.Debug("Начата выгрузка меток для {FactorsCount} факторов с меткой по умолчанию", factorsWithDefaultMarkIds.Count);
+
+			var marks = ModelFactorsService.GetMarks(group.Id, factorsWithDefaultMarkIds);
+			_log.Debug("Выгружено {MarksCount} меток", marks.Count);
+
+			var groupedMarks = marks
+				.GroupBy(x => Tuple.Create(x.FactorId.GetValueOrDefault(), x.ValueFactor))
+				.ToDictionary(x => x.Key, x =>
+				{
+					var marksInGroup = x.ToList();
+					if (marksInGroup.Count > 1)
+						_log.Warning("Найдено более одной метки для группы {GroupId}, фактора {FactorId}, значения {Value}", group.Id, x.Key.Item1, x.Key.Item2);
+					
+					return x.FirstOrDefault()?.MetkaFactor;
+				});
+			_log.Debug("Сформированы словари меток с {KeysCount} ключами по фактору и значению", groupedMarks.Count);
+
+			return groupedMarks;
+		}
+
+		public double Calculate(ModelingInfo modelInfo, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
 		{
 			var arguments = new PrimitiveElement[unitsFactors.Count];
 			for (var i = 0; i < unitsFactors.Count; i++)
 			{
 				var currentUnitFactor = unitsFactors[i];
 				var factorId = currentUnitFactor.AttributeId;
+				var unitFactorValue = currentUnitFactor.GetValueInString();
 				var modelFactor = modelInfo.Factors.First(x => x.FactorId == factorId);
+				
 				Argument argument;
 				var factorNameInFormula = $"{AttributePrefixInFormula}{factorId}";
 				if (modelFactor.MarkType == MarkType.Default)
 				{
-					var metka = GetMetkaFromMarkCatalog(marks, currentUnitFactor, modelFactor.AttributeName);
+					var metka = GetMetkaFromMarkCatalog(marks, modelFactor, unitFactorValue);
 					argument = new Argument(factorNameInFormula, (double)metka);
 				}
 				else
@@ -290,7 +316,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 							argument = new Argument(factorNameInFormula, (double)currentUnitFactor.DecimalValue.GetValueOrDefault());
 							break;
 						default:
-							var metka = GetMetkaFromMarkCatalog(marks, currentUnitFactor, modelFactor.AttributeName);
+							var metka = GetMetkaFromMarkCatalog(marks, modelFactor, unitFactorValue);
 							argument = new Argument(factorNameInFormula, (double)metka);
 							break;
 					}
@@ -305,15 +331,15 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return expression.calculate();
 		}
 
-		private decimal GetMetkaFromMarkCatalog(List<OMMarkCatalog> marks, UnitFactor unitFactor, string attributeName)
+		private decimal GetMetkaFromMarkCatalog(Dictionary<Tuple<long, string>, decimal?> marks, FactorInfo unitFactor, string value)
 		{
-			var value = unitFactor.GetValueInString();
+			if (!marks.TryGetValue(Tuple.Create(unitFactor.FactorId, value), out var metka))
+				throw new NoInfoForCalculationException($"Не найдена метка для фактора '{unitFactor.AttributeName}' (ИД {unitFactor.FactorId}) со значением '{value}'");
 
-			var mark = marks.FirstOrDefault(x => x.FactorId == unitFactor.AttributeId && x.ValueFactor == value);
-			if (mark == null)
-				throw new NoInfoForCalculationException($"Не найдена метка для фактора '{attributeName}' со значением '{value}'");
+			if (metka == null)
+				throw new NoInfoForCalculationException($"Метка для фактора '{unitFactor.AttributeName}' (ИД {unitFactor.FactorId}) пустая");
 
-			return mark.MetkaFactor.GetValueOrDefault();
+			return metka.Value;
 		}
 
 		private List<OMUnit> GetUnits(CadastralPriceCalculationSettions settings, long groupId)
