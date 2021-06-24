@@ -41,7 +41,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private static readonly int PropertyTypeColumn = 2;
 		private static readonly int KnColumn = 3;
 		private static readonly int ErrorColumn = 4;
-		private object _locker;
+		private readonly object _locker;
 		private OMQueue _queue;
 		private readonly ILogger _log = Log.ForContext<CalculateCadastralPriceLongProcess>();
 		
@@ -88,18 +88,18 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var settings = processQueue.Parameters.DeserializeFromXml<CadastralPriceCalculationSettions>();
 				var errorsDuringCalculation = DoCalculation(settings, cancellationToken);
 				
-				string urlToDownloadReport = null;
+				string linkToReport = null;
 				if (errorsDuringCalculation.Count > 0)
 				{
 					_log.Debug("Начато формирование отчета");
-					urlToDownloadReport = FormReport(errorsDuringCalculation);
+					var urlToDownloadReport = FormReport(errorsDuringCalculation);
+					linkToReport = string.IsNullOrWhiteSpace(urlToDownloadReport) ? string.Empty : $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
 					_log.Debug("Закончено формирование отчета");
 				}
 				CompareData(settings.TaskIds);
 
 				WorkerCommon.SetProgress(processQueue, 100);
 
-				var linkToReport = string.IsNullOrWhiteSpace(urlToDownloadReport) ? "" : $@"<a href=""{urlToDownloadReport}"">Скачать результат</a>";
 				var message = "Операция успешно завершена." + linkToReport;
 				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", message);
 			}
@@ -138,6 +138,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				{
 					_log.Debug("Начата обработка группы '{GroupName}' (с ИД - {GroupId})", group.GroupName, group.Id);
 
+					//todo отчет
 					var activeGroupModel = ModelingService.GetActiveModelEntityByGroupId(group.Id);
 					if (activeGroupModel == null)
 						throw new Exception($"Не найдена активная модель для группы '{group.GroupName}' (с ИД - {group.Id})");
@@ -145,7 +146,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
 					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
 					{
-						errorsDuringCalculation = CalculateByNewRealization(settings, activeGroupModel, group, cancellationToken);
+						errorsDuringCalculation = CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken);
 					}
 					else
 					{
@@ -158,20 +159,21 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return errorsDuringCalculation;
 		}
 
-		private List<CalcErrorItem> CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, OMGroup group, CancellationToken cancellationToken)
+		private List<CalcErrorItem> CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, 
+			long groupId, CancellationToken cancellationToken)
 		{
 			_log.Debug("Начат расчет через новую реализацию");
 
 			var modelFactors = PrepareModelFactors(activeGroupModel);
 			var formula = PrepareFormula(activeGroupModel, modelFactors);
 
-			var marks = GetMarks(group, modelFactors);
+			var marks = GetMarks(groupId, modelFactors);
 			//если будут проблемы с производительностью вынески выгрузку ЕО в потоки
-			var units = GetUnits(settings, group.Id);
+			var units = GetUnits(settings, groupId);
 
-			var errorsDuringCalculation = new List<CalcErrorItem>();
 			var processedUnitsCount = 0;
 			var processedPackageCount = 0;
+			var errorsDuringCalculation = new List<CalcErrorItem>();
 			var processConfiguration = GetProcessConfiguration(units.Count);
 			Parallel.For(0, processConfiguration.NumberOfPackages, processConfiguration.ParallelOptions, (packageIndex, s) =>
 			{
@@ -194,10 +196,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					{
 						try
 						{
-							CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource,
-								processConfiguration.ParallelOptions);
+							CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
 
-							if (currentUnit.Square == null)
+							if (currentUnit.Square.GetValueOrDefault() == 0)
 								throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
 
 							if (!allUnitsFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
@@ -211,8 +212,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 									$"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
 							}
 
-							var price = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
-							currentUnit.CadastralCost = (decimal?) price;
+							var cost = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
+							currentUnit.CadastralCost = (decimal?) cost;
 							currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
 							UnitRepository.Save(currentUnit);
 
@@ -228,7 +229,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 								{
 									CadastralNumber = currentUnit.CadastralNumber,
 									Error = e.Message,
-									GroupId = group.Id,
+									GroupId = groupId,
 									PropertyType = currentUnit.PropertyType_Code.GetEnumDescription(),
 									TaskId = currentUnit.TaskId
 								});
@@ -282,20 +283,17 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-
-		protected ProcessConfiguration GetProcessConfiguration(int unitsCount)
+		private ProcessConfiguration GetProcessConfiguration(int unitsCount)
 		{
 			var defaultPackageSize = 1000;
 			var defaultThreadsCount = 5;
 
-			var settingsFromConfig =
-				GetParallelThreadsConfig("CadastralPriceCalculation", defaultPackageSize, defaultThreadsCount);
+			var settingsFromConfig = GetParallelThreadsConfig("CadastralPriceCalculation", defaultPackageSize, defaultThreadsCount);
 
-			return new ProcessConfiguration(settingsFromConfig.PackageSize, settingsFromConfig.ThreadsCount,
-				unitsCount);
+			return new ProcessConfiguration(settingsFromConfig.PackageSize, settingsFromConfig.ThreadsCount, unitsCount);
 		}
 
-		public List<FactorInfo> PrepareModelFactors(OMModel activeGroupModel)
+		private List<FactorInfo> PrepareModelFactors(OMModel activeGroupModel)
 		{
 			var modelFactors = ModelFactorsService.GetFactors(activeGroupModel.Id, activeGroupModel.AlgoritmType_Code);
 			if (modelFactors.Count == 0)
@@ -342,7 +340,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return formula;
 		}
 
-		private Dictionary<Tuple<long, string>, decimal?> GetMarks(OMGroup group, List<FactorInfo> factors)
+		private Dictionary<Tuple<long, string>, decimal?> GetMarks(long groupId, List<FactorInfo> factors)
 		{
 			var factorsWithDefaultMarkIds = factors.Where(x => x.MarkType == MarkType.Default)
 				.Select(x => (long?)x.FactorId).ToList();
@@ -350,7 +348,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.ForContext("FactorsWithDefaultMarkIds", factorsWithDefaultMarkIds, true)
 				.Debug("Начата выгрузка меток для {FactorsCount} факторов с меткой по умолчанию", factorsWithDefaultMarkIds.Count);
 
-			var marks = ModelFactorsService.GetMarks(group.Id, factorsWithDefaultMarkIds);
+			var marks = ModelFactorsService.GetMarks(groupId, factorsWithDefaultMarkIds);
 			_log.Debug("Выгружено {MarksCount} меток", marks.Count);
 
 			var groupedMarks = marks
@@ -359,7 +357,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				{
 					var marksInGroup = x.ToList();
 					if (marksInGroup.Count > 1)
-						_log.Warning("Найдено более одной метки для группы {GroupId}, фактора {FactorId}, значения {Value}", group.Id, x.Key.Item1, x.Key.Item2);
+						_log.Warning("Найдено более одной метки для группы {GroupId}, фактора {FactorId}, значения {Value}", groupId, x.Key.Item1, x.Key.Item2);
 					
 					return x.FirstOrDefault()?.MetkaFactor;
 				});
