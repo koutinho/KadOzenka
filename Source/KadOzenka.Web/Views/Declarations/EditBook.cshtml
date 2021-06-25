@@ -11,7 +11,7 @@
             <div class="col-sm-2">
                 @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Декларации").Value((long)BookType.Declarations).Enable(Model.Id == -1))
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 @(Html.Kendo().RadioButtonFor(m => m.Type).Label("Уведомления").Value((long)BookType.Notifications).Enable(Model.Id == -1))
             </div>
         </div>
