@@ -303,17 +303,7 @@
         @Html.HiddenFor(m=>m.Level9.CodValueName)
     </div>
 </fieldset>
-<div class="form-group"></div>
-@(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
-{
-    IdAttributeResult = Model.IdAttributeResult,
-    IsNewAttribute = Model.IsNewAttribute,
-    NameNewAttribute = Model.NameNewAttribute,
-    RegistryId = Model.RegistryId,
-    TypeNewAttribute = Model.TypeNewAttribute,
-    PossibleAttributes = (List<DropDownTreeItemModel>)ViewBag.StringTreeAttributes
-}))
-<div class="form-group">
+    <div class="form-group">
     <div class="col-sm-7">
         @( await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
             {
@@ -322,7 +312,7 @@
                 SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObject)
             }))
         </div>
-
+    </div>
     </div>
     </div>
 }
