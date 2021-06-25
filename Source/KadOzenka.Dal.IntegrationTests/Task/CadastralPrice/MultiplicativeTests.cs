@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Threading;
 using Core.Register;
@@ -11,7 +10,6 @@ using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.Integration._Builders.Task;
 using KadOzenka.Dal.LongProcess._Common;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
-using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using NUnit.Framework;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -254,6 +252,26 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			StringAssert.Contains(Messages.ZeroCadastralPrice, errors.First().Error);
 		}
 
+		[Test]
+		public void If_Group_Has_No_Active_Model_Save_This_Units_As_Error_And_Calculate_Unit_With_Active_Group()
+		{
+			var group = new GroupBuilder().Build();
+			var unit = new UnitBuilder().Task(Task).Group(group.Id).Type(PropertyTypes.Building).Build();
+			var factor = CreateFactorWithoutMark();
+
+			
+			var errors = PerformCalculation(Task.Id, group.Id, Group.Id);
+
+
+			Assert.That(errors.Count, Is.EqualTo(1));
+			var error = errors.FirstOrDefault();
+			StringAssert.Contains(Messages.NoActiveModelInCadasralPriceCalculation, error.Error);
+			StringAssert.Contains(unit.CadastralNumber, error.CadastralNumber);
+
+			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor);
+			CheckCalculatedUnit(expectedCadastralCost);
+		}
+
 
 		#region Support Methods
 
@@ -322,12 +340,12 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
 		}
 
-		private List<CalcErrorItem> PerformCalculation(long taskId, long groupId)
+		private List<CalcErrorItem> PerformCalculation(long taskId, params long[] groupIds)
 		{
 			var settings = new CadastralPriceCalculationSettions
 			{
 				IsParcel = false,
-				SelectedGroupIds = new List<long> { groupId },
+				SelectedGroupIds = groupIds.ToList(),
 				TaskIds = new List<long> { taskId }
 			};
 

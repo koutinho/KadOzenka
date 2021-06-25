@@ -133,15 +133,21 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 			else
 			{
-				var groups = GroupService.GetGroupsByIds(settings.SelectedGroupIds);
+				var groups = GroupService.GetGroupsByIds(settings.SelectedGroupIds).ToList();
 				groups.ForEach(group =>
 				{
 					_log.Debug("Начата обработка группы '{GroupName}' (с ИД - {GroupId})", group.GroupName, group.Id);
 
-					//todo отчет
 					var activeGroupModel = ModelingService.GetActiveModelEntityByGroupId(group.Id);
 					if (activeGroupModel == null)
-						throw new Exception($"Не найдена активная модель для группы '{group.GroupName}' (с ИД - {group.Id})");
+					{
+						_log.Error($"Не найдена активная модель для группы '{group.GroupName}' (с ИД - {group.Id}). ЕО добавляются в отчет.");
+						
+						var units = GetUnits(settings, group.Id);
+						units.ForEach(x => AddError(x, group.Id, Messages.NoActiveModelInCadasralPriceCalculation, errorsDuringCalculation));
+						
+						return;
+					}
 
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
 					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
@@ -225,15 +231,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 							lock (_locker)
 							{
-								errorsDuringCalculation.Add(new CalcErrorItem
-								{
-									CadastralNumber = currentUnit.CadastralNumber,
-									Error = e.Message,
-									GroupId = groupId,
-									PropertyType = currentUnit.PropertyType_Code.GetEnumDescription(),
-									TaskId = currentUnit.TaskId
-								});
-
+								AddError(currentUnit, groupId, e.Message, errorsDuringCalculation);
 								LongProcessProgressLogger.LogProgress(processConfiguration.MaxUnitsCount, processedUnitsCount, _queue);
 							}
 						}
@@ -466,6 +464,18 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.Debug("Выгружено {UnitsCount} ЕО", units.Count);
 
 			return units;
+		}
+
+		private void AddError(OMUnit currentUnit, long groupId, string message, List<CalcErrorItem> errorsDuringCalculation)
+		{
+			errorsDuringCalculation.Add(new CalcErrorItem
+			{
+				CadastralNumber = currentUnit.CadastralNumber,
+				Error = message,
+				GroupId = groupId,
+				PropertyType = currentUnit.PropertyType_Code.GetEnumDescription(),
+				TaskId = currentUnit.TaskId
+			});
 		}
 
 		private static string FormReport(List<CalcErrorItem> result)

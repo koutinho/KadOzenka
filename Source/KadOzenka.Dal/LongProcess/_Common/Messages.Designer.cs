@@ -70,6 +70,15 @@ namespace KadOzenka.Dal.LongProcess._Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не найдена активная модель.
+        /// </summary>
+        public static string NoActiveModelInCadasralPriceCalculation {
+            get {
+                return ResourceManager.GetString("NoActiveModelInCadasralPriceCalculation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Установлена нулевая цена..
         /// </summary>
         public static string ZeroCadastralPrice {

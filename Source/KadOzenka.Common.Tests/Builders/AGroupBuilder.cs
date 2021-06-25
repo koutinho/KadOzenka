@@ -35,6 +35,18 @@ namespace KadOzenka.Common.Tests.Builders
 			};
 		}
 
+		public AGroupBuilder Number(int number)
+		{
+			_group.Number = number.ToString();
+			return this;
+		}
+
+		public AGroupBuilder Number(string number)
+		{
+			_group.Number = number;
+			return this;
+		}
+
 		public abstract OMGroup Build();
 	}
 }
