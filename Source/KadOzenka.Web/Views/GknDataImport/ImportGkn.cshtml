@@ -136,6 +136,17 @@
         data: [ ]
     });
 
+    function fileCheck(fileArray){
+        let tmpMessage = [];
+        let fileReader = new FileReader();
+        fileArray.forEach( function (file) {
+            fileReader.readAsArrayBuffer(file.slice(0,1));
+            if (fileReader.result == null){
+                tmpMessage+= "Файл не найден или изменён: " + file.name + "<br>";
+            }
+        });
+        return tmpMessage;
+    }
 
     $(document).ready(function() {
         var panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
@@ -156,6 +167,7 @@
                         var message = [];
                         var upload = $("#xmlFiles").data("kendoUpload");
                         var files = upload.getFiles();
+
                         $.each(files, (function (index, value) {
                             if ($.inArray(value.extension, generalAllowedFilesExtensions) === -1)
                                 message += 'Загружены файлы недопустимого формата (разрешенные форматы: .xml, .zip, .rar)<br>';
@@ -167,7 +179,13 @@
                         if ($('[name="NoteType"]').val() == 0) {
                             message += 'Необходимо заполнить тип статьи<br>';
                         }
-                        if (message.length != 0) {
+
+                        let check = fileCheck(files.map(x=>x.rawFile));
+                        if (check !== []){
+                            message += check + 'Пожалуйста выберите файлы заново<br>';
+                        }
+
+                        if (message.length !== 0) {
                             Common.ShowError(message);
                             return;
                         }
