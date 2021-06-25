@@ -7,6 +7,11 @@
 @using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.GroupingObjectFinalize;
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
+@if (ViewContext.HttpContext.Request.Query["useMasterPage"] == "true")
+{
+    <link rel="stylesheet" href="~/css/toolbars-top-menu.css"/>
+}
 <style>
     fieldset {
         border: 1px solid #c8c6cc;
@@ -47,7 +52,26 @@
 
 @using (Html.BeginForm("GroupingObjectFinalize", "GbuObject", FormMethod.Post))
 {
-    <div class="form-horizontal col-sm-12">
+    <div class="top-toolbar k-toolbar k-widget k-toolbar-resizable">
+        <div class="col-sm-7">
+            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+            {
+                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
+                Parameters = "formStorageType=" + (int) DataFormStorege.NormalisationFinal,
+                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObjectFinal)
+            }))
+        </div>
+
+        <div class="col-sm-1 col-sm-offset-1">
+            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
+        </div>
+        <div class="col-sm-3">
+            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right">
+                <span>Перейти к процессу</span>
+            </a>
+        </div>
+    </div>
+    <div class="bottom-main-content form-horizontal col-sm-12">
     @Html.RenderHelpButton()
     @* <div class="form-group"> *@
     @*     <div class="col-sm-2"> *@
@@ -195,28 +219,11 @@
         TypeNewAttribute = Model.TypeNewAttribute,
         PossibleAttributes = (List<DropDownTreeItemModel>) ViewBag.StringTreeAttributes
     }))
-    <div class="form-group">
-        <div class="col-sm-7">
-            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-            {
-                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
-                Parameters = "formStorageType=" + (int) DataFormStorege.NormalisationFinal,
-                SaveTemplateActionName = nameof(TemplateController.SaveTemplateGroupingObjectFinal)
-            }))
-        </div>
 
-        <div class="col-sm-1 col-sm-offset-1">
-            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
-        </div>
-        <div class="col-sm-3">
-            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right">
-                <span>Перейти к процессу</span>
-            </a>
-        </div>
-    </div>
     </div>
 }
 
+<script src="~/js/toolbars.js"></script>
 <script src="~/js/custom-filters.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script type="text/javascript">
