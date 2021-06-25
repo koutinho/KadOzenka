@@ -233,8 +233,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
-			Assert.That(errors.Count, Is.EqualTo(1));
-			StringAssert.Contains(Messages.CadastralPriceCalculationError, errors.First().Error);
+			CheckError(errors, Unit, Messages.CadastralPriceCalculationError);
 		}
 
 		[Test]
@@ -249,8 +248,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
-			Assert.That(errors.Count, Is.EqualTo(1));
-			StringAssert.Contains(Messages.ZeroCadastralPrice, errors.First().Error);
+			CheckError(errors, Unit, Messages.ZeroCadastralPrice);
 		}
 
 		[Test]
@@ -261,17 +259,35 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			new TourGroupBuilder().Group(group.Id).Tour(Task.TourId.GetValueOrDefault()).Build();
 			var factor = CreateFactorWithoutMark();
 
-			
 			var errors = PerformCalculation(Task.Id, group.Id, Group.Id);
-
-
-			Assert.That(errors.Count, Is.EqualTo(1));
-			var error = errors.FirstOrDefault();
-			StringAssert.Contains(Messages.NoActiveModelInCadasralPriceCalculation, error.Error);
-			StringAssert.Contains(unit.CadastralNumber, error.CadastralNumber);
 
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
+			CheckError(errors, unit, Messages.NoActiveModelInCadasralPriceCalculation);
+		}
+
+		[Test]
+		public void If_Unit_Has_Not_No_Factors_From_Formula_Save_It_As_Error()
+		{
+			var unit = new UnitBuilder().Task(Task).Group(Group.Id).CadastralCost(0).Upks(0).Type(PropertyTypes.Building).Build();
+			CreateFactorWithoutMark();
+
+			var errors = PerformCalculation(Task.Id, Group.Id);
+
+			CheckError(errors, unit, Messages.UnitDoesNotHaveFactorsToCalculateCandastralPrice);
+		}
+
+		[Test]
+		public void If_Unit_Has_Not_All_Factors_From_Formula_Save_It_As_Error()
+		{
+			var unit = new UnitBuilder().Task(Task).Group(Group.Id).CadastralCost(0).Upks(0).Type(PropertyTypes.Building).Build();
+			CreateFactorWithoutMark();
+			CreateFactorWithStraightMark();
+			AddUnitFactor(Tour2018OksRegister, unit.Id, Tour2018OksFourthIntegerFactor, 2);
+
+			var errors = PerformCalculation(Task.Id, Group.Id);
+
+			CheckError(errors, unit, Messages.NotAllUnitFactorsAreFullToCalculateCadastralPrice);
 		}
 
 
@@ -363,6 +379,15 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			Assert.That(unitWithCalculatedPrice.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
 			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
+		}
+
+		private static void CheckError(List<CalcErrorItem> errors, OMUnit unit, string message)
+		{
+			Assert.That(errors.Count, Is.EqualTo(1));
+
+			var error = errors.FirstOrDefault();
+			StringAssert.Contains(message, error.Error, error.Error);
+			StringAssert.Contains(unit.CadastralNumber, error.CadastralNumber);
 		}
 
 		private OMUnit GetUnitById(long unitId)

@@ -205,21 +205,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					{
 						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
 
-						if (currentUnit.Square.GetValueOrDefault() == 0)
-							throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
+						unitsPackageFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors);
+						ValidateUnitBeforeCalculation(currentUnit, currentUnitFactors, modelFactors);
 
-						if (!unitsPackageFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
-							throw new NoInfoForCalculationException("У ЕО нет факторов");
-
-						var notEmptyUnitFactors = currentUnitFactors.Where(x => x.Value != null).ToList();
-						if (notEmptyUnitFactors.Count != modelFactors.Count)
-						{
-							var emptyFactors = currentUnitFactors.Where(x => x.Value == null).ToList();
-							throw new NoInfoForCalculationException(
-								$"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
-						}
-
-						var cost = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
+						var cost = CalculateCadastralCost(formula, modelFactors, currentUnitFactors, marks);
 						currentUnit.CadastralCost = (decimal?)cost;
 						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
 						UnitRepository.Save(currentUnit);
@@ -243,6 +232,22 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			});
 
 			_log.Debug("Закончен расчет через новую реализацию");
+		}
+
+		private void ValidateUnitBeforeCalculation(OMUnit currentUnit, List<UnitFactor> unitFactors, List<FactorInfo> modelFactors)
+		{
+			if (currentUnit.Square.GetValueOrDefault() == 0)
+				throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
+
+			if (unitFactors.IsEmpty())
+				throw new NoInfoForCalculationException(Messages.UnitDoesNotHaveFactorsToCalculateCandastralPrice);
+
+			var notEmptyUnitFactors = unitFactors.Where(x => x.Value != null).ToList();
+			if (notEmptyUnitFactors.Count != modelFactors.Count)
+			{
+				var emptyFactors = unitFactors.Where(x => x.Value == null).ToList();
+				throw new NoInfoForCalculationException($"{Messages.NotAllUnitFactorsAreFullToCalculateCadastralPrice}: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
+			}
 		}
 
 		private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)

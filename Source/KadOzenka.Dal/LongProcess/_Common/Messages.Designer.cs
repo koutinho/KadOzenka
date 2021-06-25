@@ -79,6 +79,24 @@ namespace KadOzenka.Dal.LongProcess._Common {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to У ЕО не заполнены данные по атрибутам.
+        /// </summary>
+        public static string NotAllUnitFactorsAreFullToCalculateCadastralPrice {
+            get {
+                return ResourceManager.GetString("NotAllUnitFactorsAreFullToCalculateCadastralPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to У ЕО нет факторов.
+        /// </summary>
+        public static string UnitDoesNotHaveFactorsToCalculateCandastralPrice {
+            get {
+                return ResourceManager.GetString("UnitDoesNotHaveFactorsToCalculateCandastralPrice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Установлена нулевая цена.
         /// </summary>
         public static string ZeroCadastralPrice {

@@ -96,7 +96,7 @@ namespace KadOzenka.Dal.Logger
 
 		public void LogProgress(int maxCount, int currentCount, OMQueue processQueue)
 		{
-			if (maxCount <= 0 || currentCount <= 0)
+			if (maxCount <= 0 || currentCount <= 0 || processQueue == null)
 				return;
 
 			var newProgress = (long)Math.Round(((double)currentCount / maxCount) * 100);
