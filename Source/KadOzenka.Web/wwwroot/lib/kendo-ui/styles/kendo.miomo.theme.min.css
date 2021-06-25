@@ -94,7 +94,17 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 .panelbar span.k-header {
 	background-color: #e5efe1 !important;
 }
+
+.notification.error {
+  white-space: pre-wrap
+}
 /*end custom*/
+
+
+
+
+
+
 .k-theme-test-class,
 .ktb-theme-id-material {
   opacity: 0;
