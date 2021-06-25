@@ -346,7 +346,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			{
 				IsParcel = false,
 				SelectedGroupIds = groupIds.ToList(),
-				TaskIds = new List<long> { taskId }
+				TaskIds = new List<long> { taskId },
+				TourId = 2018
 			};
 
 			return new CalculateCadastralPriceLongProcess().DoCalculation(settings, new CancellationToken());

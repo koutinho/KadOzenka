@@ -188,54 +188,48 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var unitsPackage = units.Skip(packageIndex * processConfiguration.PackageSize).Take(processConfiguration.PackageSize).ToList();
 				_log.Debug("Начата работа с пакетом №{i} из {NumberOfPackages}. В нем {UnitsInPackageCount} ЕО", packageIndex, processConfiguration.NumberOfPackages, unitsPackage.Count);
 
-				var unitsGroupedByTour = unitsPackage.GroupBy(x => x.TourId.GetValueOrDefault()).ToList();
-				unitsGroupedByTour.ForEach(unitGroup =>
+				var unitIds = unitsPackage.Select(x => x.Id).ToList();
+				var modelFactorIds = modelFactors.Select(x => x.FactorId).ToList();
+				var unitsPackageFactors = UnitService.GetUnitsFactors(unitIds, settings.TourId, settings.IsParcel, modelFactorIds);
+				_log.Debug("Загружено {UnitFactorsCount} факторов ЕО", unitsPackageFactors.Count);
+
+				unitsPackage.ForEach(currentUnit =>
 				{
-					var unitsWithTheSameTour = unitGroup.ToList();
-
-					var unitIds = unitsWithTheSameTour.Select(x => x.Id).ToList();
-					var tourId = unitGroup.Key;
-					var allUnitsFactors = UnitService.GetUnitsFactors(unitIds, tourId, settings.IsParcel,
-						modelFactors.Select(x => x.FactorId).ToList());
-
-					unitsWithTheSameTour.ForEach(currentUnit =>
+					try
 					{
-						try
+						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
+
+						if (currentUnit.Square.GetValueOrDefault() == 0)
+							throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
+
+						if (!unitsPackageFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
+							throw new NoInfoForCalculationException("У ЕО нет факторов");
+
+						var notEmptyUnitFactors = currentUnitFactors.Where(x => x.Value != null).ToList();
+						if (notEmptyUnitFactors.Count != modelFactors.Count)
 						{
-							CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
-
-							if (currentUnit.Square.GetValueOrDefault() == 0)
-								throw new NoInfoForCalculationException("У ЕО не заполнена площадь");
-
-							if (!allUnitsFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors))
-								throw new NoInfoForCalculationException("У ЕО нет факторов");
-
-							var notEmptyUnitFactors = currentUnitFactors.Where(x => x.Value != null).ToList();
-							if (notEmptyUnitFactors.Count != modelFactors.Count)
-							{
-								var emptyFactors = currentUnitFactors.Where(x => x.Value == null).ToList();
-								throw new NoInfoForCalculationException(
-									$"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
-							}
-
-							var cost = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
-							currentUnit.CadastralCost = (decimal?) cost;
-							currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
-							UnitRepository.Save(currentUnit);
-
-							Interlocked.Increment(ref processedUnitsCount);
+							var emptyFactors = currentUnitFactors.Where(x => x.Value == null).ToList();
+							throw new NoInfoForCalculationException(
+								$"У ЕО не заполнены данные по атрибутам: {string.Join(',', emptyFactors.Select(x => x.AttributeData.Name))}");
 						}
-						catch (Exception e)
+
+						var cost = CalculateCadastralCost(formula, modelFactors, notEmptyUnitFactors, marks);
+						currentUnit.CadastralCost = (decimal?)cost;
+						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
+						UnitRepository.Save(currentUnit);
+
+						Interlocked.Increment(ref processedUnitsCount);
+					}
+					catch (Exception e)
+					{
+						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'", currentUnit.CadastralNumber);
+
+						lock (_locker)
 						{
-							_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'", currentUnit.CadastralNumber);
-
-							lock (_locker)
-							{
-								AddError(currentUnit, groupId, e.Message, errorsDuringCalculation);
-								LongProcessProgressLogger.LogProgress(processConfiguration.MaxUnitsCount, processedUnitsCount, _queue);
-							}
+							AddError(currentUnit, groupId, e.Message, errorsDuringCalculation);
+							LongProcessProgressLogger.LogProgress(processConfiguration.MaxUnitsCount, processedUnitsCount, _queue);
 						}
-					});
+					}
 				});
 
 				Interlocked.Increment(ref processedPackageCount);
@@ -453,7 +447,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var units = UnitRepository.GetEntitiesByCondition(lambda, x => new
 			{
 				x.CadastralNumber,
-				x.TourId,
 				x.TaskId,
 				x.PropertyType_Code,
 				x.Square,
