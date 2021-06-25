@@ -47,6 +47,25 @@ namespace KadOzenka.Common.Tests.Builders
 			return this;
 		}
 
+		public AGroupBuilder Algorithm(KoGroupAlgoritm algorithm)
+		{
+			_group.GroupAlgoritm_Code = algorithm;
+			_group.GroupAlgoritm = algorithm.GetEnumDescription();
+			return this;
+		}
+
+		public AGroupBuilder Parent(long parentId)
+		{
+			_group.ParentId = parentId;
+			return this;
+		}
+
+		public AGroupBuilder Parent(OMGroup parentGroup)
+		{
+			_group.ParentId = parentGroup.Id;
+			return this;
+		}
+
 		public abstract OMGroup Build();
 	}
 }

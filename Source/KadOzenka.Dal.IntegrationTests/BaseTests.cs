@@ -13,6 +13,7 @@ using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Task;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.TD;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
@@ -53,6 +54,21 @@ namespace KadOzenka.Dal.IntegrationTests
 					_tour = new TourBuilder().Build();
 
 				return _tour;
+			}
+		}
+
+		private OMGroup _oksParentGroup;
+		protected OMGroup Oks2018ParentGroup
+		{
+			get
+			{
+				if (_oksParentGroup == null)
+				{
+					_oksParentGroup = new GroupBuilder().Algorithm(KoGroupAlgoritm.MainOKS).Parent(-1).Build();
+					new TourGroupBuilder().Tour(2018).Group(_oksParentGroup.Id).Build();
+				}
+
+				return _oksParentGroup;
 			}
 		}
 
