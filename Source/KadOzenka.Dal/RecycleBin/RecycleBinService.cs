@@ -10,6 +10,7 @@ using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
+using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager;
 using KadOzenka.Dal.RecycleBin.Dto;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
@@ -18,6 +19,7 @@ using ObjectModel.Common;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.Shared;
 using ObjectModel.KO;
+using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 using Serilog;
 using SerilogTimings;
 
@@ -217,7 +219,8 @@ DELETE FROM {deletedTableName} dt WHERE dt.EVENT_ID={eventId};";
 			if (commands.Count == 0)
 				return;
 
-			NpgsqlConnection connection = new NpgsqlConnection(ConfigurationManager.ConnectionStrings["Main"]?.ConnectionString);
+			var connectionString = CoreConfigManager.GetConnectionStringSetting()?.ConnectionString;
+			var connection = new NpgsqlConnection(connectionString);
 			try
 			{
 				connection.Open();

@@ -13,13 +13,12 @@
 //using Npgsql;
 //using ObjectModel.Directory.Common;
 //using ObjectModel.Market;
+//using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 //namespace KadOzenka.Web.SignalR
 //{
 //	public class OutliersCheckingListenerService
 //	{
-//		static string ConnectionString() => ConfigurationManager.ConnectionStrings["Main"]?.ConnectionString;
-
 //		private readonly IHubContext<OutliersCheckingHub> _hubContext;
 //		private readonly IMemoryCache _cache;
 
@@ -39,7 +38,8 @@
 //			{
 //				try
 //				{
-//					NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
+//					var connectionString = CoreConfigManager.GetConnectionStringSetting()?.ConnectionString;
+//					NpgsqlConnection conn = new NpgsqlConnection(connectionString);
 //					conn.Open();
 //					var listenCommand = conn.CreateCommand();
 //					listenCommand.CommandText = "listen notify_market_outliers_checking_updating;";

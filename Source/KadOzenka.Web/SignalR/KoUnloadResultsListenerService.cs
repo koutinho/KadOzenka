@@ -12,6 +12,7 @@ using Npgsql;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.KO;
+using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 using Serilog;
 
 namespace KadOzenka.Web.SignalR
@@ -25,8 +26,6 @@ namespace KadOzenka.Web.SignalR
 		private ILogger _log = Log.ForContext<KoUnloadResultsListenerService>();
 
 		public bool IsListening { get; private set; }
-
-		static string ConnectionString() => ConfigurationManager.ConnectionStrings["Main"]?.ConnectionString;
 
 		public KoUnloadResultsListenerService(IHubContext<KoUnloadResultsProgressHub> hubContext)
 		{
@@ -67,7 +66,8 @@ namespace KadOzenka.Web.SignalR
 			{
 				try
 				{
-					NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
+					var connectionString = CoreConfigManager.GetConnectionStringSetting()?.ConnectionString;
+					var conn = new NpgsqlConnection(connectionString);
 					conn.Open();
 					var listenCommand = conn.CreateCommand();
 					listenCommand.CommandText = $"listen notify_ko_unload_result_proc_updating;";
