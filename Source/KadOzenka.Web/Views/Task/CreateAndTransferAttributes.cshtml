@@ -6,110 +6,116 @@
 @using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.Task.ExportAttributesModel
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
+@if (ViewContext.HttpContext.Request.Query["useMasterPage"] == "true")
+{
+    <link rel="stylesheet" href="~/css/toolbars-top-menu.css"/>
+}
+
 @using (Html.BeginForm("TransferAttributes", "Task", FormMethod.Post))
 {
-    <div class="form-horizontal col-sm-12" style="margin-top: 10px; padding: 2%">
-        @Html.HiddenFor(x => x.CreateAttributes)
-
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabel("Тур оценки")
-            </div>
-            <div class="col-sm-4">
-                @(Html.Kendo().DropDownListFor(x => x.RatingTour)
-                    .DataTextField("Text")
-                    .DataValueField("Value"))
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.TaskFilter)
-            </div>
-            <div class="col-sm-10">
-                @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
-                    .DataTextField("Text")
-                    .DataValueField("Value")
-                    .Filter(FilterType.Contains))
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(x => x.ObjectChangeStatus)
-            </div>
-            <div class="col-sm-10">
-                @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
-                    .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
-                    .Filter(FilterType.Contains))
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-9 col-sm-offset-2">
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.IsZu)
-                        .Label(ObjectTypeExtended.Zu.GetEnumDescription()))
-                </div>
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.IsOks)
-                        .Label(ObjectTypeExtended.Oks.GetEnumDescription()))
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group" id="additionalFiltersForOks" style="display: none; margin-left: 6%;">
-            <div class="col-sm-9 col-sm-offset-2">
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsBuildings)
-                        .Label(PropertyTypes.Building.GetEnumDescription()))
-                </div>
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsPlacements)
-                        .Label(PropertyTypes.Pllacement.GetEnumDescription())
-                        .HtmlAttributes(new
-                        {
-                            onchange = "showAdditionalFiltersForPlacements();"
-                        }))
-                </div>
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsUncompletedBuildings)
-                        .Label(PropertyTypes.UncompletedBuilding.GetEnumDescription()))
-                </div>
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsConstructions)
-                        .Label(PropertyTypes.Construction.GetEnumDescription()))
-                </div>
-            </div>
-            <div class="col-sm-9 col-sm-offset-3" id="additionalFiltersForPlacement" style="display: none; margin-top: 1%;">
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsLivePlacement)
-                        .Label(PlacementPurpose.Live.GetEnumDescription()))
-                </div>
-                <div class="radio-inline">
-                    @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsNotLivePlacement)
-                        .Label(PlacementPurpose.NotLive.GetEnumDescription()))
-                </div>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-sm-7 col-sm-offset-2">
-                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+    <div class="top-toolbar k-toolbar k-widget k-toolbar-resizable">
+        <div class="col-sm-7 col-sm-offset-2">
+            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
             {
                 GetTemplatesActionName = nameof(TemplateController.GetTemplatesForTransferAttributes),
                 Parameters = "isCreateMode=" + Model.CreateAttributes,
                 SaveTemplateActionName = Model.MethodToSaveTemplate
             }))
-            </div>
-            <div class="col-sm-2 col-sm-offset-1">
-                @(Html.Kendo().Button()
-                    .Name("execute")
-                    .Content("Выполнить").HtmlAttributes(new { @type = "button" }))
-            </div>
         </div>
+        <div class="col-sm-2 col-sm-offset-1">
+            @(Html.Kendo().Button()
+                .Name("execute")
+                .Content("Выполнить").HtmlAttributes(new {@type = "button"}))
+        </div>
+    </div>
+    <div class="bottom-main-content">
+        <div class="form-horizontal col-sm-12" style="padding: 1% 2%">
+            @Html.HiddenFor(x => x.CreateAttributes)
 
-        <div id="factorsTreeList"></div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Тур оценки")
+                </div>
+                <div class="col-sm-4">
+                    @(Html.Kendo().DropDownListFor(x => x.RatingTour)
+                        .DataTextField("Text")
+                        .DataValueField("Value"))
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.TaskFilter)
+                </div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Filter(FilterType.Contains))
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(x => x.ObjectChangeStatus)
+                </div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                        .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
+                        .Filter(FilterType.Contains))
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-9 col-sm-offset-2">
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.IsZu)
+                            .Label(ObjectTypeExtended.Zu.GetEnumDescription()))
+                    </div>
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.IsOks)
+                            .Label(ObjectTypeExtended.Oks.GetEnumDescription()))
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" id="additionalFiltersForOks" style="display: none; margin-left: 6%;">
+                <div class="col-sm-9 col-sm-offset-2">
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsBuildings)
+                            .Label(PropertyTypes.Building.GetEnumDescription()))
+                    </div>
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsPlacements)
+                            .Label(PropertyTypes.Pllacement.GetEnumDescription())
+                            .HtmlAttributes(new
+                            {
+                                onchange = "showAdditionalFiltersForPlacements();"
+                            }))
+                    </div>
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsUncompletedBuildings)
+                            .Label(PropertyTypes.UncompletedBuilding.GetEnumDescription()))
+                    </div>
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsConstructions)
+                            .Label(PropertyTypes.Construction.GetEnumDescription()))
+                    </div>
+                </div>
+                <div class="col-sm-9 col-sm-offset-3" id="additionalFiltersForPlacement" style="display: none; margin-top: 1%;">
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsLivePlacement)
+                            .Label(PlacementPurpose.Live.GetEnumDescription()))
+                    </div>
+                    <div class="radio-inline">
+                        @(Html.Kendo().CheckBoxFor(x => x.OksAdditionalFilters.IsNotLivePlacement)
+                            .Label(PlacementPurpose.NotLive.GetEnumDescription()))
+                    </div>
+                </div>
+            </div>
+            <div id="factorsTreeList"></div>
+        </div>
     </div>
 }
 
@@ -133,7 +139,7 @@
     }
 </style>
 
-
+<script src="~/js/toolbars.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
     $(document).ready(function () {

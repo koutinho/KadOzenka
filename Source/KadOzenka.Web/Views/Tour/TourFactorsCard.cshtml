@@ -2,10 +2,10 @@
 
 @Html.HiddenFor(m => m.RegisterFactorId)
 
-<div style="height: auto;">
+<div style="height: 100%;">
     <div class="ajax-data-loading" data-request-type="GET" data-url="@Url.Content("~/RegistersView/KoToursFactorsList?Transition=1&93100300=" + @Model.RegisterFactorId.GetValueOrDefault()) + "
          data-param-TourId="@Model.TourId" data-param-RegisterFactorId="@Model.RegisterFactorId" data-param-IsSteadObjectType="@Model.IsSteadObjectType" data-param-Pageable="true" data-param-Scrollable="true"
-         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid931"></div>
+         data-param-partialview="true" data-loader="true" data-onsuccess="resizeGrid931" style="height: 100%;"></div>
 </div>
 
 <style>

@@ -1,16 +1,20 @@
 ﻿@using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.Modeling.GeneralModelingModel
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 @using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
-    <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
-        @Html.RenderHelpButton()
-        @{
-            await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
-        }
-        <div class="form-group">
-            <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                @Html.KendoButton("saveModel", "Сохранить")
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
+            @Html.RenderHelpButton()
+            @{
+                await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
+            }
+            <div class="form-group">
+                <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
+                    @Html.KendoButton("saveModel", "Сохранить")
+                </div>
             </div>
         </div>
     </div>
@@ -18,49 +22,55 @@
 
 
 <script src="~/js/custom-validation.js"></script>
+<script src="~/js/toolbars.js"></script>
 <script>
     $(document).ready(function () {
+        $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'saveModel',
+                    text: 'Сохранить',
+                },
+                helperButtonForToolbar()]
+        });
         $("#saveModel").on('click', saveModel);
-	});
-
-
-
+    });
 
     function saveModel() {
-		kendo.ui.progress($('body'), true);
-		var form = $('#saveModelForm');
+        kendo.ui.progress($('body'), true);
+        var form = $('#saveModelForm');
         var formObject = Common.Functions.FormToObject(form);
         formObject.GroupId = $('#groups').data("kendoDropDownList").value();
-		$.ajax({
+        $.ajax({
             type: form.attr('method'),
-			url: form.attr('action'),
-			data: formObject,
+            url: form.attr('action'),
+            data: formObject,
             success: function (response) {
                 if (response.Errors) {
-					var errors = getErrors(response.Errors);
-					Common.ShowError(errors);
-					return;
-				} else {
-					Common.ShowMessage(response.Message);
-					closeMainWindow();
-				}
-			},
-			error: function (response) {
-				Common.ShowError(response.responseText);
-			},
-			complete: function () {
-				kendo.ui.progress($('body'), false);
-			}
-		});
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    Common.ShowMessage(response.Message);
+                    closeMainWindow();
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('body'), false);
+            }
+        });
     }
 
 
-	function closeMainWindow() {
-		setTimeout(function () {
-			//Common.UI.CloseWindow('registerModalWindow', window.parent);
-			window.parent.parent.location.reload();
-		}, 1000);
-	}
+    function closeMainWindow() {
+        setTimeout(function () {
+            //Common.UI.CloseWindow('registerModalWindow', window.parent);
+            window.parent.parent.location.reload();
+        }, 1000);
+    }
 
 </script>
-

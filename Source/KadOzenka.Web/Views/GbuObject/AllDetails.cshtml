@@ -5,6 +5,18 @@
 
 @model List<GbuObjectAttribute>
 
+<style>
+    /*Фиксирование шапки страницы путем ужатия грида с данными*/
+    div.k-grid-content.k-auto-scrollable {
+      height: calc(100% - 50px);
+    }
+    body > div.mainContent.page-content > div:nth-child(3) > div {
+      height: 100%;
+    }
+    body > div.mainContent.page-content > div:nth-child(3) {
+      height: calc(100% - 10px);
+    }
+</style>
 
 <div style="margin-bottom: 5px;">
 </div>
@@ -54,6 +66,11 @@
                 resizable: true,
                 scrollable: true
             });
+        });
+
+        // убираем автодобавляемый инлайн стиль (высоту) у грида для адекватного авторесайза
+        $(document).ready(function() {
+          $('.k-grid-content.k-auto-scrollable').removeAttr('style');
         });
     </script>
 </div>

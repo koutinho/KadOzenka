@@ -7,253 +7,261 @@
 @using ObjectModel.Directory.Common
 @model KadOzenka.Web.Models.GbuObject.HarmonizationViewModel
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
+@if (ViewContext.HttpContext.Request.Query["useMasterPage"] == "true")
+{
+    <link rel="stylesheet" href="~/css/toolbars-top-menu.css"/>
+}
+
 @using (Html.BeginForm("Harmonization", "GbuObject", FormMethod.Post))
 {
-    <div class="form-horizontal col-sm-12">
-        @Html.RenderHelpButton()
-        <div class="form-group"></div>
-        @(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
-        {
-            IdAttributeResult = Model.IdAttributeResult,
-            IsNewAttribute = Model.IsNewAttribute,
-            NameNewAttribute = Model.NameNewAttribute,
-            RegistryId = Model.RegistryId,
-            TypeNewAttribute = Model.TypeNewAttribute
-        }))
-        <div class="form-group">
-            <div class="col-sm-12">
-                @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Stead.GetEnumDescription()).Value((long) PropertyTypes.Stead))
-                <span>&nbsp;</span>
-                @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Building.GetEnumDescription()).Value((long) PropertyTypes.Building))
-                <span>&nbsp;</span>
-                @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Construction.GetEnumDescription()).Value((long) PropertyTypes.Construction))
-                <span>&nbsp;</span>
-                @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label("ОНС").Value((long) PropertyTypes.UncompletedBuilding))
-                <span>&nbsp;</span>
-                @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Pllacement.GetEnumDescription()).Value((long) PropertyTypes.Pllacement))
-            </div>
-        </div>
-        <div class="form-group" id="purposeForBuildings" style="display: none">
-            <div class="col-sm-1 col-sm-offset-1">
-                @(Html.Kendo().CheckBoxFor(x => x.IsLivingBuilding)
-                    .Label(BuildingPurpose.Live.GetEnumDescription()))
-            </div>
-            <div class="col-sm-1">
-                @(Html.Kendo().CheckBoxFor(x => x.IsNotLivingBuilding)
-                    .Label(BuildingPurpose.NotLive.GetEnumDescription())
-                    .HtmlAttributes(new { onchange = "disablePurposeForBuildingsCheckboxes();" }))
-
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().CheckBoxFor(x => x.IsApartmentHouse)
-                    .Label(BuildingPurpose.ApartmentHouse.GetEnumDescription()))
-
-            </div>
-        </div>
-        <div class="form-group" id="purposeForPlacement" style="display: none">
-            <div class="col-sm-1 col-sm-offset-1">
-                @(Html.Kendo().CheckBoxFor(x => x.IsLivingPlacement)
-                    .Label(PlacementPurpose.Live.GetEnumDescription())
-                    .HtmlAttributes(new { onchange = "livingPurposeForPlacementChanged();" }))
-            </div>
-            <div class="col-sm-1">
-                @(Html.Kendo().CheckBoxFor(x => x.IsNotLivingPlacement)
-                    .Label(PlacementPurpose.NotLive.GetEnumDescription())
-                    .HtmlAttributes(new { onchange = "notLivingPurposeForPlacementChanged();" }))
-
-            </div>
-            <div class="col-sm-2">
-                @(Html.Kendo().CheckBoxFor(x => x.IsParkingPlace)
-                    .Label(PlacementPurpose.ParkingPlace.GetEnumDescription())
-                    .HtmlAttributes(new { onchange = "parkingPlacePurposeForPlacementChanged();" }))
-
-            </div>
-        </div>
-        <fieldset class="filterFieldset">
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.SelectAllObject))
-                        Все объекты
-                    </label>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.IsValuesFilterUsed).Enable(!Model.SelectAllObject))
-                        По значению
-                    </label>
-                </div>
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(m => m.IdAttributeFilter)
-                </div>
-                <div class="col-sm-4">
-                    @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes, isReadonly: true)
-                </div>
-                <div class="col-sm-1">
-                    @Html.CustomLabelFor(m => m.ValuesFilter)
-                </div>
-                <div class="col-sm-3">
-                    <select id="valuesFilter" style="width: 100%;"></select>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.IsDataActualUsed).Enable(!Model.SelectAllObject))
-                        Дата актуализации
-                    </label>
-                </div>
-                <div class="col-sm-4">
-                    @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label>
-                        @(Html.Kendo().CheckBoxFor(m => m.IsTaskFilterUsed).Enable(!Model.SelectAllObject))
-                        Задания на оценку
-                    </label>
-                </div>
-                <div class="col-sm-10">
-                    @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
-                        .DataTextField("Text")
-                        .DataValueField("Value")
-                        .Filter("contains")
-                        .Enable(Model.IsTaskFilterUsed)
-                        .DataSource(source =>
-                        {
-                            source.Read(read =>
-                            {
-                                read.Action("GetTasksData", "GbuObject");
-                            })
-                                .ServerFiltering(false);
-                        }))
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.ObjectChangeStatus)
-                </div>
-                <div class="col-sm-10">
-                    @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
-                        .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
-                        .Filter(FilterType.Contains))
-                </div>
-            </div>
-        </fieldset>
-        <div id="levelsList">
-            <fieldset class="attrLevelFieldset">
-            <legend>1 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level1Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>2 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level2Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>3 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level3Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>4 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level4Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>5 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level5Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>6 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level6Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>7 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level7Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>8 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level8Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-        <fieldset class="attrLevelFieldset">
-            <legend>9 уровень</legend>
-            <div class="col-sm-2">
-                @Html.CustomLabel("Характеристика")
-            </div>
-            <div class="col-sm-10">
-                @Html.KendoDropDownListTreeWithButton(m => m.Level9Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-            </div>
-        </fieldset>
-            <fieldset class="attrLevelFieldset">
-                <legend>10 уровень</legend>
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Характеристика")
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
-                </div>
-            </fieldset>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-7">
-                @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
+    <div class="top-toolbar k-toolbar k-widget k-toolbar-resizable">
+        <div class="col-sm-7">
+            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
             {
                 GetTemplatesActionName = nameof(TemplateController.GetTemplates),
                 Parameters = "formStorageType=" + (int)DataFormStorege.Harmonization,
                 SaveTemplateActionName = nameof(TemplateController.SaveTemplateHarmonizationObject)
             }))
+        </div>
+        <div class="col-sm-1 col-sm-offset-1">
+            <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
+        </div>
+        <div class="col-sm-3">
+            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
+        </div>
+    </div>
+    <div class="bottom-main-content">
+        <div class="form-horizontal col-sm-12">
+            @Html.RenderHelpButton()
+            <div class="form-group"></div>
+            @(await Html.PartialAsync("Partials/PartialCharacteristic", new PartialCharacteristicViewModel
+            {
+                IdAttributeResult = Model.IdAttributeResult,
+                IsNewAttribute = Model.IsNewAttribute,
+                NameNewAttribute = Model.NameNewAttribute,
+                RegistryId = Model.RegistryId,
+                TypeNewAttribute = Model.TypeNewAttribute
+            }))
+            <div class="form-group">
+                <div class="col-sm-12">
+                    @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Stead.GetEnumDescription()).Value((long) PropertyTypes.Stead))
+                    <span>&nbsp;</span>
+                    @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Building.GetEnumDescription()).Value((long) PropertyTypes.Building))
+                    <span>&nbsp;</span>
+                    @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Construction.GetEnumDescription()).Value((long) PropertyTypes.Construction))
+                    <span>&nbsp;</span>
+                    @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label("ОНС").Value((long) PropertyTypes.UncompletedBuilding))
+                    <span>&nbsp;</span>
+                    @(Html.Kendo().RadioButtonFor(m => m.PropertyType).Label(PropertyTypes.Pllacement.GetEnumDescription()).Value((long) PropertyTypes.Pllacement))
+                </div>
             </div>
-            <div class="col-sm-1 col-sm-offset-1">
-                <button style="float: right" id="performHarmonization" class="k-button" type="button">Выполнить</button>
+            <div class="form-group" id="purposeForBuildings" style="display: none">
+                <div class="col-sm-1 col-sm-offset-1">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsLivingBuilding)
+                        .Label(BuildingPurpose.Live.GetEnumDescription()))
+                </div>
+                <div class="col-sm-1">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsNotLivingBuilding)
+                        .Label(BuildingPurpose.NotLive.GetEnumDescription())
+                        .HtmlAttributes(new { onchange = "disablePurposeForBuildingsCheckboxes();" }))
+
+                </div>
+                <div class="col-sm-2">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsApartmentHouse)
+                        .Label(BuildingPurpose.ApartmentHouse.GetEnumDescription()))
+
+                </div>
             </div>
-            <div class="col-sm-3">
-                <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"><span>Перейти к процессу</span></a>
+            <div class="form-group" id="purposeForPlacement" style="display: none">
+                <div class="col-sm-1 col-sm-offset-1">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsLivingPlacement)
+                        .Label(PlacementPurpose.Live.GetEnumDescription())
+                        .HtmlAttributes(new { onchange = "livingPurposeForPlacementChanged();" }))
+                </div>
+                <div class="col-sm-1">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsNotLivingPlacement)
+                        .Label(PlacementPurpose.NotLive.GetEnumDescription())
+                        .HtmlAttributes(new { onchange = "notLivingPurposeForPlacementChanged();" }))
+
+                </div>
+                <div class="col-sm-2">
+                    @(Html.Kendo().CheckBoxFor(x => x.IsParkingPlace)
+                        .Label(PlacementPurpose.ParkingPlace.GetEnumDescription())
+                        .HtmlAttributes(new { onchange = "parkingPlacePurposeForPlacementChanged();" }))
+
+                </div>
+            </div>
+            <fieldset class="filterFieldset">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <label>
+                            @(Html.Kendo().CheckBoxFor(m => m.SelectAllObject))
+                            Все объекты
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        <label>
+                            @(Html.Kendo().CheckBoxFor(m => m.IsValuesFilterUsed).Enable(!Model.SelectAllObject))
+                            По значению
+                        </label>
+                    </div>
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(m => m.IdAttributeFilter)
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.KendoDropDownListTreeWithButton(m => m.IdAttributeFilter, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes, isReadonly: true)
+                    </div>
+                    <div class="col-sm-1">
+                        @Html.CustomLabelFor(m => m.ValuesFilter)
+                    </div>
+                    <div class="col-sm-3">
+                        <select id="valuesFilter" style="width: 100%;"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        <label>
+                            @(Html.Kendo().CheckBoxFor(m => m.IsDataActualUsed).Enable(!Model.SelectAllObject))
+                            Дата актуализации
+                        </label>
+                    </div>
+                    <div class="col-sm-4">
+                        @(Html.Kendo().DatePickerFor(m => m.DataActual).Enable(Model.IsDataActualUsed))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        <label>
+                            @(Html.Kendo().CheckBoxFor(m => m.IsTaskFilterUsed).Enable(!Model.SelectAllObject))
+                            Задания на оценку
+                        </label>
+                    </div>
+                    <div class="col-sm-10">
+                        @(Html.Kendo().MultiSelectFor(m => m.TaskFilter)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter("contains")
+                            .Enable(Model.IsTaskFilterUsed)
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("GetTasksData", "GbuObject");
+                                })
+                                    .ServerFiltering(false);
+                            }))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-2">
+                        @Html.CustomLabelFor(x => x.ObjectChangeStatus)
+                    </div>
+                    <div class="col-sm-10">
+                        @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
+                            .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
+                            .Filter(FilterType.Contains))
+                    </div>
+                </div>
+            </fieldset>
+            <div id="levelsList">
+                <fieldset class="attrLevelFieldset">
+                <legend>1 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level1Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>2 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level2Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>3 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level3Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>4 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level4Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>5 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level5Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>6 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level6Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>7 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level7Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>8 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level8Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+            <fieldset class="attrLevelFieldset">
+                <legend>9 уровень</legend>
+                <div class="col-sm-2">
+                    @Html.CustomLabel("Характеристика")
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDropDownListTreeWithButton(m => m.Level9Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                </div>
+            </fieldset>
+                <fieldset class="attrLevelFieldset">
+                    <legend>10 уровень</legend>
+                    <div class="col-sm-2">
+                        @Html.CustomLabel("Характеристика")
+                    </div>
+                    <div class="col-sm-10">
+                        @Html.KendoDropDownListTreeWithButton(m => m.Level10Attribute, (IEnumerable<DropDownTreeItemModel>)ViewBag.TreeAttributes)
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <a href="#" class="k-button-icon k-button" id="addRow"><span class='fas fa-plus-circle'></span></a>
+                </div>
             </div>
         </div>
     </div>
@@ -293,6 +301,7 @@
 
 
 @section scripts {
+<script src="~/js/toolbars.js"></script>
 <script type="text/x-kendo-template" id="templateRow">
 	<div class="customLevelBlock-#: rowNumber #" style="display: none">
 	</div>
