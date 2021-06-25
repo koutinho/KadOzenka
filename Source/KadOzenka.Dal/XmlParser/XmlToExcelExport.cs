@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.XmlParser
         private readonly xmlObjectList _allObjects;
         private readonly int[] _config;
 
-        private readonly Dictionary<int, string> _listNames = new Dictionary<int, string>
+        private readonly Dictionary<int, string> _listNames = new()
         {
             {1, "ЗУ"},
             {2, "Здания"},
@@ -149,7 +149,8 @@ namespace KadOzenka.Dal.XmlParser
         {
             var valOffset = 0;
             sheet.Cells.Style.WrapText = true;
-            var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
+            const int initialRow = 5;
+            var converter = new XmlToExcelExportWorker(sheet, _config, initialRow, valOffset);
 
             foreach (var parcel in parcels)
             {
@@ -163,8 +164,9 @@ namespace KadOzenka.Dal.XmlParser
         {
             var valOffset = 200;
             sheet.Cells.Style.WrapText = true;
+            const int initialRow = 5;
 
-            var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
+            var converter = new XmlToExcelExportWorker(sheet, _config, initialRow, valOffset);
             foreach (var building in buildings)
             {
                 converter.AddBuild(building, 0);
@@ -177,8 +179,9 @@ namespace KadOzenka.Dal.XmlParser
         {
             var valOffset = 300;
             sheet.Cells.Style.WrapText = true;
+            const int initialRow = 5;
 
-            var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
+            var converter = new XmlToExcelExportWorker(sheet, _config, initialRow, valOffset);
             foreach (var building in constructions)
             {
                 converter.AddConstruction(building, 0);
@@ -191,8 +194,9 @@ namespace KadOzenka.Dal.XmlParser
         {
             var valOffset = 400;
             sheet.Cells.Style.WrapText = true;
+            const int initialRow = 3;
 
-            var converter = new XmlToExcelExportWorker(sheet, _config, 3, valOffset);
+            var converter = new XmlToExcelExportWorker(sheet, _config, initialRow, valOffset);
             foreach (var building in incompletedBuildings)
             {
                 converter.AddUncomplited(building, 0);
@@ -205,9 +209,9 @@ namespace KadOzenka.Dal.XmlParser
         {
             var valOffset = 500;
             sheet.Cells.Style.WrapText = true;
-            var curRow = 5;
+            const int initialRow = 5;
 
-            var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
+            var converter = new XmlToExcelExportWorker(sheet, _config, initialRow, valOffset);
             foreach (var flat in flats)
             {
                 converter.AddFlat(flat, 0);
@@ -220,32 +224,14 @@ namespace KadOzenka.Dal.XmlParser
         {
             var valOffset = 700;
             sheet.Cells.Style.WrapText = true;
-            var curRow = 3;
-            var converter = new XmlToExcelExportWorker(sheet, _config, 5, valOffset);
+            const int initialRow = 3;
+            var converter = new XmlToExcelExportWorker(sheet, _config, initialRow, valOffset);
             foreach (var carPlace in carPlaces)
             {
                 converter.AddCarPlace(carPlace, 0);
             }
 
             RemoveUncheckedColumns(sheet, valOffset, 66);
-        }
-
-        private static void AddEntry(ExcelWorksheet worksheet, string text, bool output, int column, int row,
-            int cols = 1, int rows = 1)
-        {
-            if (!output) return;
-            var range = worksheet.Cells
-                .GetSubrange(
-                    CellRange.RowColumnToPosition(row - 1, column - 1),
-                    CellRange.RowColumnToPosition(row + rows - 2, column + cols - 2));
-            range.Value = text;
-            range.Merged = true;
-        }
-
-        private static void DrawBorder(ExcelWorksheet sheet, int row, int widthInColumns)
-        {
-            for (var col = 0; col < widthInColumns; col++)
-                sheet.Cells[row - 1, col].Style.Borders[IndividualBorder.Top].LineStyle = LineStyle.Thin;
         }
 
         private void RemoveUncheckedColumns(ExcelWorksheet sheet, int valOffset, int colCount)
@@ -285,7 +271,7 @@ namespace KadOzenka.Dal.XmlParser
             }
         }
 
-        public class XmlToExcelExportWorker
+        private class XmlToExcelExportWorker
         {
             private readonly ExcelWorksheet _sheet;
             private int _curRow;
