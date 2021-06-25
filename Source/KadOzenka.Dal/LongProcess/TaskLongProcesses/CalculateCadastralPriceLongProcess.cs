@@ -134,6 +134,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			else
 			{
 				var groups = GroupService.GetGroupsByIds(settings.SelectedGroupIds).ToList();
+				var processedUnitsCount = 0;
+				var maxUnitsCount = GetMaxUnitsCount(settings);
 				groups.ForEach(group =>
 				{
 					_log.Debug("Начата обработка группы '{GroupName}' (с ИД - {GroupId})", group.GroupName, group.Id);
@@ -145,6 +147,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 						
 						var units = GetUnits(settings, group.Id);
 						units.ForEach(x => AddError(x, group.Id, Messages.NoActiveModelInCadasralPriceCalculation, errorsDuringCalculation));
+						processedUnitsCount += units.Count;
 						
 						return;
 					}
@@ -152,7 +155,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
 					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
 					{
-						errorsDuringCalculation = CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken);
+						errorsDuringCalculation = CalculateByNewRealization(settings, activeGroupModel, group.Id,
+							cancellationToken, maxUnitsCount, processedUnitsCount);
 					}
 					else
 					{
@@ -166,7 +170,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		}
 
 		private List<CalcErrorItem> CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, 
-			long groupId, CancellationToken cancellationToken)
+			long groupId, CancellationToken cancellationToken, int maxUnitsCount, int processedUnitsCount)
 		{
 			_log.Debug("Начат расчет через новую реализацию");
 
@@ -177,7 +181,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			//если будут проблемы с производительностью вынески выгрузку ЕО в потоки
 			var units = GetUnits(settings, groupId);
 
-			var processedUnitsCount = 0;
 			var processedPackageCount = 0;
 			var errorsDuringCalculation = new List<CalcErrorItem>();
 			var processConfiguration = GetProcessConfiguration(units.Count);
@@ -227,7 +230,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 						lock (_locker)
 						{
 							AddError(currentUnit, groupId, e.Message, errorsDuringCalculation);
-							LongProcessProgressLogger.LogProgress(processConfiguration.MaxUnitsCount, processedUnitsCount, _queue);
+							LongProcessProgressLogger.LogProgress(maxUnitsCount, processedUnitsCount, _queue);
 						}
 					}
 				});
@@ -435,14 +438,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			_log.Debug("Начато скачивание ЕО");
 
-			Expression<Func<OMUnit, bool>> baseExpression = x => settings.TaskIds.Contains((long)x.TaskId) && x.GroupId == groupId;
-			
-			Expression<Func<OMUnit, bool>> typeCondition = settings.IsParcel
-				? x => x.PropertyType_Code == PropertyTypes.Stead
-				: x => x.PropertyType_Code != PropertyTypes.Stead;
-
-			var body = System.Linq.Expressions.Expression.AndAlso(baseExpression.Body, typeCondition.Body);
-			var lambda = System.Linq.Expressions.Expression.Lambda<Func<OMUnit, bool>>(body, baseExpression.Parameters[0]);
+			var lambda = BuildExpressionForUnits(settings, new List<long> {groupId});
 
 			var units = UnitRepository.GetEntitiesByCondition(lambda, x => new
 			{
@@ -457,6 +453,33 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_log.Debug("Выгружено {UnitsCount} ЕО", units.Count);
 
 			return units;
+		}
+
+		private int GetMaxUnitsCount(CadastralPriceCalculationSettions settings)
+		{
+			_log.Debug("Начат расчет общего количества ЕО по всем группам");
+
+			var lambda = BuildExpressionForUnits(settings, settings.SelectedGroupIds);
+			var maxUnitsCount = UnitRepository.ExecuteCount(lambda);
+
+			_log.Debug("Общего число ЕО по всем группам - {MaxUnitsCount}", maxUnitsCount);
+
+			return maxUnitsCount;
+		}
+
+		private Expression<Func<OMUnit, bool>> BuildExpressionForUnits(CadastralPriceCalculationSettions settings, List<long> groupIds)
+		{
+			Expression<Func<OMUnit, bool>> baseExpression = x =>
+				settings.TaskIds.Contains((long) x.TaskId) && groupIds.Contains((long) x.GroupId);
+
+			Expression<Func<OMUnit, bool>> typeCondition = settings.IsParcel
+				? x => x.PropertyType_Code == PropertyTypes.Stead
+				: x => x.PropertyType_Code != PropertyTypes.Stead;
+
+			var body = System.Linq.Expressions.Expression.AndAlso(baseExpression.Body, typeCondition.Body);
+			var lambda = System.Linq.Expressions.Expression.Lambda<Func<OMUnit, bool>>(body, baseExpression.Parameters[0]);
+			
+			return lambda;
 		}
 
 		private void AddError(OMUnit currentUnit, long groupId, string message, List<CalcErrorItem> errorsDuringCalculation)

@@ -16,6 +16,8 @@ namespace KadOzenka.Dal.CommonFunctions
 			Expression<Func<TSource, object>> selectExpression);
 
 		bool IsExists(Expression<Func<TSource, bool>> whereExpression);
+		
+		int ExecuteCount(Expression<Func<TSource, bool>> whereExpression);
 
 		int Save(TSource entity);
 	}
