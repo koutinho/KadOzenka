@@ -55,9 +55,9 @@
                         Id: {editable: false, nullable: true},
                         GroupName: { type: "string", editable: false },
                         Priority: { type: "number", editable: false },
-                        Stage1: { type: "boolean", editable: true },
+                        /*Stage1: { type: "boolean", editable: true },
                         Stage2: { type: "boolean", editable: true },
-                        Stage3: { type: "boolean", editable: true }
+                        Stage3: { type: "boolean", editable: true }*/
                     }
                 }
             },
@@ -73,7 +73,7 @@
                     title: "Группа",
                     field: "GroupName"
                 },
-                {
+                /*{
                     title: "Предварительный расчет",
                     field: "Stage1",
                     template: '<input type="checkbox" #= Stage1 ? \'checked="checked"\' : "" # class="chkbx, stage1" />',
@@ -90,7 +90,7 @@
                     field: "Stage3",
                     template: '<input type="checkbox" #= Stage3 ? \'checked="checked"\' : "" # class="chkbx, stage3" />',
                     width: "10%"
-                }
+                }*/
             ],
             dataBound: function () {
                 var numberOfRecords = $("#grid").data('kendoGrid').dataSource.total();
