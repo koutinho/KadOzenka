@@ -87,6 +87,18 @@ namespace KadOzenka.Common.Tests.Builders.Task
 			return this;
 		}
 
+		public AUnitBuilder CadastralCost(decimal? cost)
+		{
+			_unit.CadastralCost = cost;
+			return this;
+		}
+
+		public AUnitBuilder Upks(decimal? upks)
+		{
+			_unit.Upks = upks;
+			return this;
+		}
+
 
 		public abstract OMUnit Build();
 		public abstract AUnitBuilder ShallowCopy();

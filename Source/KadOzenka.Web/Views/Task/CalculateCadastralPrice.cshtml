@@ -81,7 +81,7 @@
                     .Content("Настроить порядок расчета"))
         </div>
         <div class="col-sm-2">
-            @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Все группы").Value(true).Enable(false))
+            @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Все группы").Value(false).Enable(false))
         </div>
         <div class="col-sm-2">
             @(Html.Kendo().RadioButtonFor(m => m.IsAllGroups).Label("Список выбранных групп").Value(true).Checked(true))

@@ -56,10 +56,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		public void SetUp()
 		{
 			var modelA0 = 2;
-			Task = new TaskBuilder().Tour2018().Build();
+			Task = new TaskBuilder().Tour2018().Document(FirstDocument).Build();
 			Group = new GroupBuilder().Build();
+			new TourGroupBuilder().Group(Group.Id).Tour(Task.TourId.GetValueOrDefault()).Build();
 			Model = new ModelBuilder().Group(Group.Id).AlgorithmType(KoAlgoritmType.Multi).IsActive(true).A0(modelA0).Build();
-			Unit = new UnitBuilder().Task(Task).Group(Group.Id).Type(PropertyTypes.Building).Build();
+			Unit = new UnitBuilder().Task(Task).Group(Group.Id).CadastralCost(0).Upks(0).Type(PropertyTypes.Building).Build();
 
 			var factors = new List<RegisterAttribute>
 			{
@@ -256,7 +257,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		public void If_Group_Has_No_Active_Model_Save_This_Units_As_Error_And_Calculate_Unit_With_Active_Group()
 		{
 			var group = new GroupBuilder().Build();
-			var unit = new UnitBuilder().Task(Task).Group(group.Id).Type(PropertyTypes.Building).Build();
+			var unit = new UnitBuilder().Task(Task).Group(group.Id).CadastralCost(0).Upks(0).Type(PropertyTypes.Building).Build();
+			new TourGroupBuilder().Group(group.Id).Tour(Task.TourId.GetValueOrDefault()).Build();
 			var factor = CreateFactorWithoutMark();
 
 			

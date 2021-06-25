@@ -14,7 +14,6 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess._Common;
-using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using KadOzenka.Dal.Modeling;
@@ -22,7 +21,6 @@ using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
 using KadOzenka.Dal.Units.Repositories;
-using Microsoft.Extensions.Configuration;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -44,7 +42,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		private readonly object _locker;
 		private OMQueue _queue;
 		private readonly ILogger _log = Log.ForContext<CalculateCadastralPriceLongProcess>();
-		
+		private List<CalcErrorItem> _errorsDuringCalculation;
+
 		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
 		private IUnitService UnitService { get; }
 		private IModelingService ModelingService { get; }
@@ -67,6 +66,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			GroupService = groupService ?? new GroupService();
 
 			_locker = new object();
+			_errorsDuringCalculation = new List<CalcErrorItem>();
 		}
 
 
@@ -126,14 +126,16 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			//группы с активной ручной-мультипликативной моделью считаем через новую реализацию. остальные - через старую
 
-			var errorsDuringCalculation = new List<CalcErrorItem>();
 			if (settings.IsAllGroups)
 			{
-				errorsDuringCalculation = CalculateByOldRealization(settings);
+				_errorsDuringCalculation = CalculateByOldRealization(settings);
 			}
 			else
 			{
 				var groups = GroupService.GetGroupsByIds(settings.SelectedGroupIds).ToList();
+				if (groups.Count == 0)
+					throw new Exception($"Не найдено групп с ИД: {string.Join(',', settings.SelectedGroupIds)}");
+
 				var processedUnitsCount = 0;
 				var maxUnitsCount = GetMaxUnitsCount(settings);
 				groups.ForEach(group =>
@@ -146,7 +148,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 						_log.Error($"Не найдена активная модель для группы '{group.GroupName}' (с ИД - {group.Id}). ЕО добавляются в отчет.");
 						
 						var units = GetUnits(settings, group.Id);
-						units.ForEach(x => AddError(x, group.Id, Messages.NoActiveModelInCadasralPriceCalculation, errorsDuringCalculation));
+						units.ForEach(x => AddError(x, group.Id, Messages.NoActiveModelInCadasralPriceCalculation));
 						processedUnitsCount += units.Count;
 						
 						return;
@@ -155,21 +157,23 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
 					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
 					{
-						errorsDuringCalculation = CalculateByNewRealization(settings, activeGroupModel, group.Id,
-							cancellationToken, maxUnitsCount, processedUnitsCount);
+						CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken,
+							maxUnitsCount, processedUnitsCount);
 					}
 					else
 					{
 						settings.SelectedGroupIds = new List<long> {group.Id};
-						errorsDuringCalculation = CalculateByOldRealization(settings);
+						var errors = CalculateByOldRealization(settings);
+						_errorsDuringCalculation.AddRange(errors);
+
 					}
 				});
 			}
 
-			return errorsDuringCalculation;
+			return _errorsDuringCalculation;
 		}
 
-		private List<CalcErrorItem> CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, 
+		private void CalculateByNewRealization(CadastralPriceCalculationSettions settings, OMModel activeGroupModel, 
 			long groupId, CancellationToken cancellationToken, int maxUnitsCount, int processedUnitsCount)
 		{
 			_log.Debug("Начат расчет через новую реализацию");
@@ -182,7 +186,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var units = GetUnits(settings, groupId);
 
 			var processedPackageCount = 0;
-			var errorsDuringCalculation = new List<CalcErrorItem>();
 			var processConfiguration = GetProcessConfiguration(units.Count);
 			Parallel.For(0, processConfiguration.NumberOfPackages, processConfiguration.ParallelOptions, (packageIndex, s) =>
 			{
@@ -229,7 +232,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 						lock (_locker)
 						{
-							AddError(currentUnit, groupId, e.Message, errorsDuringCalculation);
+							AddError(currentUnit, groupId, e.Message);
 							LongProcessProgressLogger.LogProgress(maxUnitsCount, processedUnitsCount, _queue);
 						}
 					}
@@ -240,8 +243,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			});
 
 			_log.Debug("Закончен расчет через новую реализацию");
-
-			return errorsDuringCalculation;
 		}
 
 		private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
@@ -482,9 +483,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return lambda;
 		}
 
-		private void AddError(OMUnit currentUnit, long groupId, string message, List<CalcErrorItem> errorsDuringCalculation)
+		private void AddError(OMUnit currentUnit, long groupId, string message)
 		{
-			errorsDuringCalculation.Add(new CalcErrorItem
+			_errorsDuringCalculation.Add(new CalcErrorItem
 			{
 				CadastralNumber = currentUnit.CadastralNumber,
 				Error = message,
