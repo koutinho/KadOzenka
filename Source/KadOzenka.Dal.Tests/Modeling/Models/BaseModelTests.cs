@@ -36,7 +36,9 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 
 		protected string ProcessFormula(string str)
 		{
-			return Regex.Replace(str.ToLower(), @"\s+", "");
+			var formulaWithoutSpaces = Regex.Replace(str.ToLower(), @"\s+", "");
+			var formulaWithoutFloatNumbersSeparator = formulaWithoutSpaces.Replace(',', '|').Replace(',', '|');
+			return formulaWithoutFloatNumbersSeparator;
 		}
 	}
 }
