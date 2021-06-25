@@ -82,9 +82,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -96,9 +96,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaulMark(mark, factor);
 			CheckCalculatedUnit(expectedCadastralCost);
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -113,9 +113,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaulMark(mark, factor);
 			CheckCalculatedUnit(expectedCadastralCost);
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -144,7 +144,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var expectedUpks = unitWithCalculatedPrice.CadastralCost / Unit.Square.GetValueOrDefault();
 			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
-			Assert.That(errors.Count, Is.EqualTo(0));
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 		}
 
 		[Test]
@@ -156,9 +156,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForStraightType(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -170,9 +170,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForReverseMark(factor);
 			CheckCalculatedUnit(expectedCadastralCost);
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 
@@ -186,6 +186,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = Model.A0ForMultiplicativeInFormula * 
 			                            GetExpectedConstForNoneMark(factorWithoutMark) *
 			                            GetExpectedCadastralConstForDefaulMark(mark, factorWithDefaultMark) *
@@ -193,7 +194,6 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			                            GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
 			
 			CheckCalculatedUnit(expectedCadastralCost);
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -218,9 +218,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var firstUnitExpectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor, fistUnitValue);
 			var secondUnitExpectedCadastralCost = Model.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor, secondUnitValue);
 
+			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			Assert.That(firstCalculatedUnit.CadastralCost, Is.EqualTo(firstUnitExpectedCadastralCost).Within(0.01));
 			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
-			Assert.That(errors.Count, Is.EqualTo(0));
 		}
 
 		[Test]

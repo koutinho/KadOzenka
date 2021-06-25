@@ -618,8 +618,7 @@ namespace KadOzenka.Web.Controllers
             var model = ModelingService.GetModelEntityById(modelId);
 
             var type =  (KoAlgoritmType)algType;
-            var initialFormula = ModelingService.GetFormula(model, type);
-            var formula = initialFormula.Replace(',', '.');
+            var formula = ModelingService.GetFormula(model, type);
             var a0 = model.GetA0(type);
 
             return Json(new { formula, a0 });

@@ -118,12 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CadastralPriceCalculationError" xml:space="preserve">
-    <value>Не удалось расчитать цену.</value>
+    <value>Не удалось расчитать цену</value>
   </data>
   <data name="NoActiveModelInCadasralPriceCalculation" xml:space="preserve">
     <value>Не найдена активная модель</value>
   </data>
   <data name="ZeroCadastralPrice" xml:space="preserve">
-    <value>Установлена нулевая цена.</value>
+    <value>Установлена нулевая цена</value>
   </data>
 </root>

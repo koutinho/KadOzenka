@@ -61,7 +61,7 @@ namespace KadOzenka.Dal.LongProcess._Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не удалось расчитать цену..
+        ///   Looks up a localized string similar to Не удалось расчитать цену.
         /// </summary>
         public static string CadastralPriceCalculationError {
             get {
@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.LongProcess._Common {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Установлена нулевая цена..
+        ///   Looks up a localized string similar to Установлена нулевая цена.
         /// </summary>
         public static string ZeroCadastralPrice {
             get {

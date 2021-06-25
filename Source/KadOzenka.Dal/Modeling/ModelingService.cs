@@ -635,7 +635,9 @@ namespace KadOzenka.Dal.Modeling
 				numberInFormula = $"({numberInFormula})";
 			}
 
-			return numberInFormula;
+			//все стронние библиотеки (для отрисовки формулы и расчета) работают с ".",
+			//но разделить для культуры в приложении - ","
+			return numberInFormula.Replace(",", ".");
 		}
 
 		#endregion
