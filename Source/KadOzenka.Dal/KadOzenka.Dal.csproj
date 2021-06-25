@@ -26,7 +26,7 @@
     <PackageReference Include="NPetrovich" Version="1.2.0" />
     <PackageReference Include="Platform" Version="2.0.1-beta.2" />
     <PackageReference Include="Platform.Reports" Version="2.0.1-beta.1" />
-    <PackageReference Include="Platform.Web" Version="2.0.1-beta.4" />
+    <PackageReference Include="Platform.Web" Version="2.0.1-beta.6" />
     <PackageReference Include="PostgreSQLCopyHelper" Version="2.8.0" />
     <PackageReference Include="Selenium.Firefox.WebDriver" Version="0.27.0" />
     <PackageReference Include="Selenium.Support" Version="3.141.0" />
