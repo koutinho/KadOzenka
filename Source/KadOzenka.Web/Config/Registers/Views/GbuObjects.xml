@@ -23,11 +23,6 @@
       <Button Caption="Финальная нормализация" NavigateURL="~/GbuObject/GroupingObjectFinalize" WindowHeight="900" WindowWidth="1100" SRDFunctionTag="GBU.OBJECTS.GROUPING_OBJECT" Icon="fas fa-screwdriver">
       </Button>
 
-	    <Button Caption="Выборка из справочника ЦОД" NavigateURL="~/GbuObject/UnloadingFromDict" WindowHeight="600" WindowWidth="1150" SRDFunctionTag="GBU.OBJECTS.UNLOADING_FROM_DICT" Icon="fas fa-book">
-		    <Parameters>
-		    </Parameters>
-	    </Button>
-
 	    <Button Caption="Наследование" NavigateURL="~/GbuObject/Inheritance" WindowHeight="750" WindowWidth="1000" SRDFunctionTag="GBU.OBJECTS.INHERITANCE" Icon="fas fa-clone">
 		    <Parameters>
 		    </Parameters>

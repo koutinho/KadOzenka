@@ -83,18 +83,6 @@ namespace KadOzenka.Dal.GbuObject
             attributeValue.Save();
         }
 
-        private void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list,
-            GroupingItem item)
-        {
-            var codId = list?[0].IdCodjob;
-            _log.ForContext("ValueLevel", valueLevel, true)
-                .ForContext("DataLevel", dataLevel, true)
-                .ForContext("DictionaryId", codId)
-                .Verbose(
-                    "[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
-                    item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
-        }
-
         private static string ResolveCode(string[] orderedCodes, Filters[] orderedFilters, GbuObjectAttribute attr)
         {
             static bool? ConvertDbNumericToBoolNullable(decimal? val)

@@ -95,12 +95,6 @@ namespace KadOzenka.Web.Controllers
 					return Json(new { data = JsonConvert.SerializeObject(hObj) });
 				}
 
-				if (storage != null && storage.FormType_Code == DataFormStorege.UnloadingFromDict)
-				{
-					var unObj = storage.Data.DeserializeFromXml<UnloadingFromDicViewModel>();
-					return Json(new { data = JsonConvert.SerializeObject(unObj) });
-				}
-
 				if (storage != null && storage.FormType_Code == DataFormStorege.EstimatedGroup)
 				{
 					var unObj = storage.Data.DeserializeFromXml<EstimatedGroupViewModel>();
@@ -159,14 +153,6 @@ namespace KadOzenka.Web.Controllers
 		public JsonResult SaveTemplateHarmonizationObject(string nameTemplate, bool isCommon, [FromForm]HarmonizationViewModel viewModel, long? id = null)
 		{
 			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.Harmonization, viewModel.SerializeToXml(), id);
-		}
-
-		[HttpPost]
-		[JsonExceptionHandler]
-		[SRDFunction(Tag = SRDCoreFunctions.GBU_OBJECTS)]
-		public JsonResult SaveTemplateUnloading(string nameTemplate, bool isCommon, [FromForm]UnloadingFromDicViewModel viewModel, long? id = null)
-		{
-			return SaveTemplate(nameTemplate, isCommon, DataFormStorege.UnloadingFromDict, viewModel.SerializeToXml(), id);
 		}
 
 		[HttpPost]

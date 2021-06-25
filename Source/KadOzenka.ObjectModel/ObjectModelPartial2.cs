@@ -594,24 +594,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 214 Справочник ЦОД
-    /// </summary>
-    public partial class OMCodDictionary
-    {
-        /// <summary>
-        /// Ссылка на (200 Объекты недвижимости)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 216 Данные о кадастровой стоимости из Росреестра
     /// </summary>
     public partial class OMCostRosreestr

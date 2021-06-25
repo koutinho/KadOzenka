@@ -300,22 +300,16 @@ namespace KadOzenka.Dal.XmlParser
 
                             if (typeobject != enTypeObject.toParcel)
                             {
-                                obj.Area = double.TryParse(xnChild.InnerText, out var valResult)
-                                    ? valResult
-                                    : (double?) null;
+                                obj.Area = xnChild.InnerText.ParseToDouble();
                             }
                             else
                             {
                                 foreach (XmlNode xnChild1 in xnChild.ChildNodes)
                                 {
                                     if (xnChild1.Name == "Area")
-                                        obj.Area = double.TryParse(xnChild1.InnerText, out var valResult)
-                                            ? valResult
-                                            : (double?) null;
+                                        obj.Area = xnChild.InnerText.ParseToDouble();
                                     if (xnChild1.Name == "Inaccuracy")
-                                        obj.AreaInaccuracy = double.TryParse(xnChild1.InnerText, out var valResult)
-                                            ? valResult
-                                            : (double?) null;
+                                        obj.AreaInaccuracy = xnChild.InnerText.ParseToDouble();
                                 }
                             }
 
@@ -1103,17 +1097,12 @@ namespace KadOzenka.Dal.XmlParser
                                         if (xnChild2.Name == "Area")
                                         {
                                             if (xnChild2.FirstChild.Name == "Area")
-                                                subParcel.Area = double.TryParse(xnChild2.FirstChild.InnerText, out var valResult)
-                                                    ? valResult
-                                                    : (double?) null;
+                                                subParcel.Area = xnChild2.FirstChild.InnerText.ParseToDouble();
                                         }
 
                                         if (xnChild1.Name == "Inaccuracy")
                                         {
-                                            subParcel.AreaInaccuracy =
-                                                double.TryParse(xnChild2.InnerText, out var valResult)
-                                                    ? valResult
-                                                    : (double?) null;
+                                            subParcel.AreaInaccuracy = xnChild2.InnerText.ParseToDouble();
                                         }
 
                                         if (xnChild2.Name == "Encumbrances")
@@ -1158,10 +1147,7 @@ namespace KadOzenka.Dal.XmlParser
                                     {
                                         if (xnChild2.Name == "Area")
                                         {
-                                            subBuildingFlat.Area =
-                                                double.TryParse(xnChild2.InnerText, out var valResult)
-                                                    ? valResult
-                                                    : (double?) null;
+                                            subBuildingFlat.Area = xnChild2.InnerText.ParseToDouble();
                                         }
 
                                         if (xnChild2.Name == "Encumbrances")
@@ -1354,9 +1340,7 @@ namespace KadOzenka.Dal.XmlParser
                                                         if (xnChild6.Name == "Area")
                                                         {
                                                             encum.IdentifiedViolations.Area =
-                                                                double.TryParse(xnChild6.InnerText, out var areaResult)
-                                                                    ? areaResult
-                                                                    : (double?) null;
+                                                                xnChild6.InnerText.ParseToDouble();
                                                         }
                                                     }
                                                 }
@@ -1711,9 +1695,7 @@ namespace KadOzenka.Dal.XmlParser
             if (typeobject == enTypeObject.toParcel)
             {
                 obj.TypeRealty = "Земельный участок";
-                obj.Area = double.TryParse(row.Cells[2].Value.ToString(), out var valResult)
-                    ? valResult
-                    : (double?) null;
+                obj.Area = row.Cells[2].Value.ParseToDouble();
                 obj.NameParcel = new xmlCodeName()
                 {
                     Code = string.Empty,
@@ -1736,9 +1718,7 @@ namespace KadOzenka.Dal.XmlParser
             if (typeobject == enTypeObject.toBuilding)
             {
                 obj.TypeRealty = "Здание";
-                obj.Area = double.TryParse(row.Cells[2].Value.ToString(), out var valResult)
-                    ? valResult
-                    : (double?) null;
+                obj.Area = row.Cells[2].Value.ParseToDouble();
                 obj.CadastralNumberBlock = row.Cells[8].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[6].Value.ParseToString();
@@ -1857,10 +1837,7 @@ namespace KadOzenka.Dal.XmlParser
             if (typeobject == enTypeObject.toFlat)
             {
                 obj.TypeRealty = "Помещение";
-                obj.Area = double.TryParse(row.Cells[2].Value.ToString(), out var valResult)
-                    ? valResult
-                    : (double?) null;
-
+                obj.Area = row.Cells[2].Value.ParseToDouble();
                 obj.CadastralNumberBlock = row.Cells[9].Value.ParseToString();
                 obj.Adress = new xmlAdress();
                 obj.Adress.KLADR = row.Cells[6].Value.ParseToString();

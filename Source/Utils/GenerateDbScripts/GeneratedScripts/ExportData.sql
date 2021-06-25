@@ -3940,11 +3940,6 @@ insert into core_reference ("referenceid", "description", "readonly", "progid", 
         "Value": "Гармонизация"
     },
     {
-        "Id": 4,
-        "Name": "UnloadingFromDict",
-        "Value": "Выборка из справочника ЦОД"
-    },
-    {
         "Id": 5,
         "Name": "EstimatedGroup",
         "Value": "Проставление оценочной группы"
@@ -3986,11 +3981,6 @@ on conflict (referenceid) do update set
         "Id": 2,
         "Name": "Harmonization",
         "Value": "Гармонизация"
-    },
-    {
-        "Id": 4,
-        "Name": "UnloadingFromDict",
-        "Value": "Выборка из справочника ЦОД"
     },
     {
         "Id": 5,

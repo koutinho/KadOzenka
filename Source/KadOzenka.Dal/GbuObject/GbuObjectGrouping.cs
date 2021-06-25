@@ -103,19 +103,6 @@ namespace KadOzenka.Dal.GbuObject
                 .ToLower();
         }
 
-        private void LogNotFoundDictionaryValues(ValueItem valueLevel, DataLevel dataLevel, List<OMCodDictionary> list,
-            GroupingItem item)
-        {
-            var codId = list?[0].IdCodjob;
-            _log.ForContext("ValueLevel", valueLevel, true)
-                .ForContext("DataLevel", dataLevel, true)
-                .ForContext("DictionaryId", codId)
-                .Verbose(
-                    "[Нормализация] {CadastralNumber}: {AttributeName}. Значение: {Value} отсутствует в классификаторе",
-                    item.CadastralNumber, valueLevel.AttributeName, valueLevel.Value);
-        }
-
-
         public void SetPriorityGroup(GroupingSettings setting, List<DictRecord> dict,
             List<long> allAttributeIds, GroupingItem inputItem, DateTime dateActual,
             List<GbuObjectAttribute> objectAttributes, GbuReportService reportService)
