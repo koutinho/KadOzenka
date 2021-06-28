@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,7 +62,22 @@ namespace KadOzenka.Dal.Modeling
 			return model;
         }
 
-        public OMModel GetModelEntityById(long? modelId)
+		public List<OMModel> GetActiveModelsEntityByGroupId(long? groupId)
+		{
+			if (groupId == null)
+				throw new Exception("Не передан идентификатор Группы для поиска модели");
+
+			return OMModel.Where(x => x.GroupId == groupId)
+				.OrderByDescending(x => x.IsActive.Coalesce(false)).OrderBy(x => x.Name)
+				.Select(x => new
+				{
+					x.Id,
+					x.Name
+				})
+				.Execute();
+		}
+
+		public OMModel GetModelEntityById(long? modelId)
         {
 	        if (modelId.GetValueOrDefault() == 0)
 		        throw new Exception(Messages.EmptyModelId);
