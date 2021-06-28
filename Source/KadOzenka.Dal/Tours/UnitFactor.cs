@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.Tours
 	public class UnitFactor
 	{
 		public long AttributeId { get; }
-		public object Value  { get; private set; }
+		public object Value  { get; set; }
 
 		public decimal? DecimalValue
 		{
@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.Tours
 		public long? ReferenceItemId { get; private set; }
 
 		private RegisterAttribute _attributeData;
-		private RegisterAttribute AttributeData
+		public RegisterAttribute AttributeData
 		{
 			get
 			{
@@ -100,6 +100,9 @@ namespace KadOzenka.Dal.Tours
 					break;
 				case RegisterAttributeType.DATE:
 					value = val.ParseToDateTimeNullable();
+					break;
+				default:
+					value = val.ParseToStringNullable();
 					break;
 			}
 

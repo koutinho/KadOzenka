@@ -32,6 +32,9 @@ namespace KadOzenka.Dal.Modeling
         private IModelFactorsService ModelFactorsService { get; set; }
         private RecycleBinService RecycleBinService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
+        
+        public static readonly string MarkTagInFormula = "метка";
+
 
         public ModelingService(IModelingRepository modelingRepository = null,
 			IModelObjectsRepository modelObjectsRepository = null,
@@ -571,9 +574,9 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Formulas
 
-		public string GetFormula(OMModel model)
+		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			if (model.AlgoritmType_Code == KoAlgoritmType.Multi)
+			if (algorithmType == KoAlgoritmType.Multi)
 			{
 				var formula = new StringBuilder();
 				var a0 = model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
@@ -581,27 +584,32 @@ namespace KadOzenka.Dal.Modeling
 
 				//для ручной модели существует один набор факторов под алгоритм самой модели
 				//для автоматической модели набор факторов разный под тип алгоритма
-				var algorithmType = model.Type_Code == KoModelType.Manual ? KoAlgoritmType.None : model.AlgoritmType_Code;
-				var factors = ModelFactorsService.GetFactors(model.Id, algorithmType);
+				//var algorithmType = model.Type_Code == KoModelType.Manual ? KoAlgoritmType.None : model.AlgoritmType_Code;
+				var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
 				if (factors.Count == 0)
 					throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
 
 				factors.ForEach(x =>
 				{
 					var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
+					var weightInFormula = ProcessNumber(x.WeightInFormula);
+					var b0InFormula = ProcessNumber(x.B0InFormula);
+					var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
+					var kInFormula = ProcessNumber(x.KInFormula);
+
 					switch (x.MarkType_Code)
 					{
 						case MarkType.None:
-							formula.Append($" * ({attributeName} + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({attributeName} + {weightInFormula})^{b0InFormula}");
 							break;
 						case MarkType.Default:
-							formula.Append($" * (метка({attributeName}) + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({MarkTagInFormula}({attributeName}) + {weightInFormula})^{b0InFormula}");
 							break;
 						case MarkType.Straight:
-							formula.Append($" * (({attributeName} + {x.CorrectingTermInFormula}) / {x.KInFormula} + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * (({attributeName} + {correctingTermInFormula}) / {kInFormula} + {weightInFormula})^{b0InFormula}");
 							break;
 						case MarkType.Reverse:
-							formula.Append($" * ({x.KInFormula}/({attributeName}+{x.CorrectingTermInFormula}) + {x.WeightInFormula})^{x.B0InFormula}");
+							formula.Append($" * ({kInFormula}/({attributeName}+{correctingTermInFormula}) + {weightInFormula})^{b0InFormula}");
 							break;
 						default:
 							throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code}'");
@@ -612,8 +620,27 @@ namespace KadOzenka.Dal.Modeling
 			}
 
 			//TODO другие типы будут реализованы позднее
+			model.AlgoritmType_Code = algorithmType;
 			return model.GetFormulaFull(true);
 		}
+
+
+		#region Support Methods
+
+		private static string ProcessNumber(decimal number)
+		{
+			var numberInFormula = $"{number}";
+			if (number < 0)
+			{
+				numberInFormula = $"({numberInFormula})";
+			}
+
+			//все стронние библиотеки (для отрисовки формулы и расчета) работают с ".",
+			//но разделить для культуры в приложении - ","
+			return numberInFormula.Replace(",", ".");
+		}
+
+		#endregion
 
 		#endregion
 	}

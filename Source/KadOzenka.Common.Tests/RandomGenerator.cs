@@ -26,6 +26,11 @@ namespace KadOzenka.Common.Tests
 			return Random.Next(minNumber, maxNumber);
 		}
 
+		public static long GenerateRandomLong(int minNumber = 1, int maxNumber = 100)
+		{
+			return Random.Next(minNumber, maxNumber);
+		}
+
 		public static decimal GenerateRandomDecimal()
 		{
 			var integer = Random.Next();

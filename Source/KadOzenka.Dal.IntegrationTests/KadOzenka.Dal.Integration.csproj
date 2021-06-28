@@ -10,6 +10,7 @@
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Platform" Version="2.0.1-beta.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +23,7 @@
     <None Update="app.config">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.test.json">
+    <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Task\_Files\one_parcel_success.xlsx">

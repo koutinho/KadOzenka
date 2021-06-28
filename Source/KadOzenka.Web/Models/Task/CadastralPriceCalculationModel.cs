@@ -16,14 +16,14 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Тип объекта")]
         public bool IsParcel { get; set; }
 
-        [Display(Name = "Предварительный расчет")]
-        public bool IsEstimation { get; set; }
+        //[Display(Name = "Предварительный расчет")]
+        //public bool IsEstimation { get; set; }
 
-        [Display(Name = "Расчет поправок/коэффициентов")]
-        public bool IsCorrectionsOrCoefficients{ get; set; }
+        //[Display(Name = "Расчет поправок/коэффициентов")]
+        //public bool IsCorrectionsOrCoefficients{ get; set; }
 
-        [Display(Name = "Окончательный расчет")]
-        public bool IsFinalCalculation { get; set; }
+        //[Display(Name = "Окончательный расчет")]
+        //public bool IsFinalCalculation { get; set; }
 
         [Display(Name = "Все группы")]
         public bool IsAllGroups { get; set; }
@@ -31,18 +31,19 @@ namespace KadOzenka.Web.Models.Task
         public List<long> SubGroups { get; set; }
 
 
-        public static KOCalcSettings UnMap(CadastralPriceCalculationModel model)
+        public static CadastralPriceCalculationSettions UnMap(CadastralPriceCalculationModel model)
         {
-            return new KOCalcSettings
+            return new CadastralPriceCalculationSettions
             {
-                IdTour = model.TourId,
-                TaskFilter = model.TaskFilter,
-                CalcParcel = model.IsParcel,
-                CalcStage1 = model.IsEstimation,
-                CalcStage2 = model.IsCorrectionsOrCoefficients,
-                CalcStage3 = model.IsFinalCalculation,
-                CalcAllGroups = model.IsAllGroups,
-                CalcGroups = model.IsAllGroups ? null : model.SubGroups
+                TourId = model.TourId,
+                TaskIds = model.TaskFilter,
+                IsParcel = model.IsParcel,
+                //CalcStage1 = model.IsEstimation,
+                //CalcStage2 = model.IsCorrectionsOrCoefficients,
+                //CalcStage3 = model.IsFinalCalculation,
+                //IsAllGroups = model.IsAllGroups,
+                //SelectedGroupIds = model.IsAllGroups ? null : model.SubGroups
+                SelectedGroupIds = model.SubGroups
             };
         }
 

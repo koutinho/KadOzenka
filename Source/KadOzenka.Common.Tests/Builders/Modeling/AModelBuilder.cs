@@ -13,7 +13,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			_model = new OMModel
 			{
 				GroupId = RandomGenerator.GenerateRandomInteger(),
-				Name = RandomGenerator.GetRandomString(),
+				Name = RandomGenerator.GetRandomString(maxNumberOfCharacters: 10),
 				Description = RandomGenerator.GetRandomString(),
 				Formula = RandomGenerator.GetRandomString(),
 				AlgoritmType = KoAlgoritmType.Line.GetEnumDescription(),
@@ -41,6 +41,12 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 		public abstract OMModel Build();
 
+
+		public AModelBuilder Group(long groupId)
+		{
+			_model.GroupId = groupId;
+			return this;
+		}
 
 		public AModelBuilder IsActive(bool isActive)
 		{
@@ -73,7 +79,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 		public AModelBuilder A0(decimal a0)
 		{
-			_model.A0 = a0;
+			_model.SetA0(a0);
 			return this;
 		}
 

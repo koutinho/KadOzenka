@@ -9,13 +9,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using Npgsql;
+using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace KadOzenka.Web.SignalR
 {
 	public class GbuCurrentLongProcessesListenerService
 	{
-		static string ConnectionString() => ConfigurationManager.ConnectionStrings["Main"]?.ConnectionString;
-
 		private readonly IHubContext<GbuLongProcessesProgressBarHub> _hubContext;
 		private readonly IMemoryCache _cache;
 		private readonly GbuLongProcessesService _service;
@@ -37,7 +36,8 @@ namespace KadOzenka.Web.SignalR
 			{
 				try
 				{
-					NpgsqlConnection conn = new NpgsqlConnection(ConnectionString());
+					var connectionString = CoreConfigManager.GetConnectionStringSetting()?.ConnectionString;
+					var conn = new NpgsqlConnection(connectionString);
 					conn.Open();
 					var listenCommand = conn.CreateCommand();
 					listenCommand.CommandText = "listen notify_gbu_long_proc_updating;";

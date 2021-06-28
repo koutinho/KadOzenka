@@ -8,11 +8,14 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Groups
 {
-	public class GroupFactorService
+	public class GroupFactorService : IGroupFactorService
 	{
-		public List<GroupFactorDto> GetGroupFactors(long groupId)
+		public List<GroupFactorDto> GetGroupFactors(long? groupId)
 		{
-			var query = GetQueryForGroupFactor(new List<QSCondition> { new QSConditionSimple(OMGroupFactor.GetColumn(x => x.GroupId), QSConditionType.Equal, groupId) });
+			if (groupId == null)
+				throw new Exception("Не передан ИД группы");
+
+			var query = GetQueryForGroupFactor(new List<QSCondition> { new QSConditionSimple(OMGroupFactor.GetColumn(x => x.GroupId), QSConditionType.Equal, groupId.Value) });
 			return query.ExecuteQuery<GroupFactorDto>();
 		}
 

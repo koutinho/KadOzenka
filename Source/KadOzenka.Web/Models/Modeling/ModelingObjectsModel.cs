@@ -8,7 +8,7 @@ namespace KadOzenka.Web.Models.Modeling
 	public class ModelingObjectsModel 
     {
 	    public long Id { get; set; }
-	    public List<ModelAttributeRelationDto> Attributes { get; set; }
+	    public List<ModelAttributeRelationPure> Attributes { get; set; }
 
         [Display(Name = "Имя")]
         public string Name { get; set; }
@@ -21,7 +21,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 
 
-		public static ModelingObjectsModel ToModel(OMModel model, long? tourYear, List<ModelAttributeRelationDto> attributes)
+		public static ModelingObjectsModel ToModel(OMModel model, long? tourYear, List<ModelAttributeRelationPure> attributes)
 		{
 			return new ModelingObjectsModel
 			{
