@@ -91,7 +91,26 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
   outline: none;
 }
 
+.panelbar span.k-header {
+	background-color: #e5efe1 !important;
+}
+
+.notification.error {
+  white-space: pre-wrap
+}
+
+.dropdown-main-menu .main-menu-element {
+	width: 85px !important;
+}
+
+
 /*end custom*/
+
+
+
+
+
+
 .k-theme-test-class,
 .ktb-theme-id-material {
   opacity: 0;

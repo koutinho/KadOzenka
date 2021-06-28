@@ -353,38 +353,7 @@
             </li>
         }
 
-            <li id="Section_ScreenShots" data-expand>
-                <span>Скриншоты</span>
-                <div>
-                    <div class="form-horizontal col-sm-12">
-                        <div class="form-group"></div>
-                        @if (((List<(long, DateTime?)>)ViewBag.ScreenShots).IsNotEmpty())
-                        {
-                            <ol>
-                                @foreach (var screen in (List<(long, DateTime?)>)ViewBag.ScreenShots)
-                                {
-                                    <li>
-                                        <div class="form-group">
-                                            <div class="col-sm-2">
-                                                <label class="control-label">@screen.Item2.ParseToString()</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="col-sm-12">
-                                                <a href="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" data-fancybox="gallery" data-caption="@screen.Item2.Value">
-                                                    <img src="@(Url.Action("ShowFile", "MarketObjects") + "?id=" + screen.Item1)" alt="" style="height:92px; width:192px" />
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                }
-                            </ol>
-                        }
-                    </div>
-                </div>
-            </li>
-
-        <li id="Section_Reestr" data-expand>
+    <li id="Section_Reestr" data-expand>
             <span>Данные Росреестра</span>
             <div>
                 <div class="form-horizontal col-sm-12">
@@ -907,18 +876,9 @@
 						markers: {
 							visible: true,
 							size: function(point) {
-								if (point.dataItem.ScreenshotId) {
-									return 18;
-								}
-								return 6;
-							},
-							//background: function (point) {
-							//	if (!point.dataItem.ScreenshotId) {
-							//		return getPointColor(point);
-							//	}
-							//	return null;
-							//}
-						},
+                                return 6;
+							}
+                        },
 						color: function (point) {
 							return getPointColor(point);
 						},
@@ -937,19 +897,8 @@
 				tooltip: {
 					visible: true,
 					template: kendo.template($("#priceHistoryChartTooltip").html())
-				},
-				seriesClick: function(e) {
-					if (!e.dataItem.ScreenshotId) {
-						return;
-					}
-					$.fancybox.open({
-						src: '@(Url.Action("ShowFile", "MarketObjects") + "?id=")' + e.dataItem.ScreenshotId,
-						opts : {
-							caption: kendo.toString(new Date(e.dataItem.ChangingDate), "dd.MM.yyyy HH:mm:ss")
-						}
-					});
 				}
-			});
+            });
 		}
 
 		function getPointColor(point) {
