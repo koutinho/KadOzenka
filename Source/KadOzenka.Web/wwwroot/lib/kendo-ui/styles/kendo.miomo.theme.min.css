@@ -98,6 +98,12 @@ input[type="checkbox"]:focus, input[type="radio"]:focus {
 .notification.error {
   white-space: pre-wrap
 }
+
+.dropdown-main-menu .main-menu-element {
+	width: 85px !important;
+}
+
+
 /*end custom*/
 
 
