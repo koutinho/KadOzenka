@@ -52,24 +52,7 @@ namespace KadOzenka.Dal.Modeling
 			return OMModelFactor.Where(x => x.ModelId == modelId && types.Contains(x.AlgorithmType_Code)).SelectAll().Execute();
 		}
 
-		public List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type)
-		{
-			var types = new List<KoAlgoritmType>();
-			if (type == KoAlgoritmType.None)
-			{
-				types.Add(KoAlgoritmType.Line);
-				types.Add(KoAlgoritmType.Exp);
-				types.Add(KoAlgoritmType.Multi);
-			}
-			else
-			{
-				types.Add(type);
-			}
-
-			return types;
-		}
-
-		public List<ModelAttributeRelationDto> GetGeneralModelAttributes(long modelId)
+		public List<ModelAttributeRelationPure> GetGeneralModelAttributes(long modelId)
 		{
 			var query = GetModelFactorsQuery(modelId);
 
@@ -80,7 +63,7 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 
-			var attributes = new List<ModelAttributeRelationDto>();
+			var attributes = new List<ModelAttributeRelationPure>();
 			var table = query.ExecuteQuery();
 			for (var i = 0; i < table.Rows.Count; i++)
 			{
@@ -98,7 +81,7 @@ namespace KadOzenka.Dal.Modeling
 				
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 
-				attributes.Add(new ModelAttributeRelationDto
+				attributes.Add(new ModelAttributeRelationPure
 				{
 					Id = id,
 					RegisterId = registerId,
@@ -115,6 +98,7 @@ namespace KadOzenka.Dal.Modeling
 			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
 		}
 
+		//TODO разделить на получение факторов для Ручной и Автоматический моделей
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
 			var dictionaryJoin = new QSJoin
@@ -525,6 +509,23 @@ namespace KadOzenka.Dal.Modeling
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
 
+		private List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type)
+		{
+			var types = new List<KoAlgoritmType>();
+			if (type == KoAlgoritmType.None)
+			{
+				types.Add(KoAlgoritmType.Line);
+				types.Add(KoAlgoritmType.Exp);
+				types.Add(KoAlgoritmType.Multi);
+			}
+			else
+			{
+				types.Add(type);
+			}
+
+			return types;
+		}
+
 		//private void RecalculateFormula(long? generalModelId)
 		//{
 		//	var model = OMModel.Where(x => x.Id == generalModelId).SelectAll().ExecuteFirstOrDefault();
@@ -543,7 +544,18 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<OMMarkCatalog> GetMarks(long? groupId, long? factorId)
 		{
-			return OMMarkCatalog.Where(x => x.FactorId == factorId && x.GroupId == groupId).SelectAll().Execute();
+			var factorIds = new List<long?> {factorId};
+
+			return GetMarks(groupId, factorIds);
+		}
+
+		public List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds)
+		{
+			var notNullFactorIds = factorIds.Where(x => x.HasValue).ToList();
+			if (groupId == null || notNullFactorIds.Count == 0)
+				return new List<OMMarkCatalog>();
+
+			return OMMarkCatalog.Where(x => notNullFactorIds.Contains(x.FactorId) && x.GroupId == groupId).SelectAll().Execute();
 		}
 
 		public OMMarkCatalog GetMarkById(long id)

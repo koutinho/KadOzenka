@@ -23,6 +23,7 @@
     <PackageReference Include="GemBox.Spreadsheet" Version="43.0.0.1084" />
     <PackageReference Include="Ionic.Zip" Version="1.9.1.8" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
+    <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
     <PackageReference Include="NPetrovich" Version="1.2.0" />
     <PackageReference Include="Platform" Version="2.0.1-beta.2" />
     <PackageReference Include="Platform.Reports" Version="2.0.1-beta.1" />
@@ -123,6 +124,11 @@
     <Compile Update="FastReports\StatisticalData\NumberOfObjectsByZoneAndSubgroups\NumberOfObjectsByZoneAndSubgroupsZuReport.cs" />
     <Compile Update="FastReports\StatisticalData\ResultsForApproval\ResultsForApprovalUpksAverageReport.cs" />
     <Compile Update="LongProcess\Reports\CadastralCostDeterminationResults\CadastralCostDeterminationResultsMainReport.cs" />
+    <Compile Update="LongProcess\_Common\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Update="Modeling\Resources\Messages.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -149,6 +155,10 @@
     <EmbeddedResource Update="CodDictionary\Resources\CodMessages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>CodMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="LongProcess\_Common\Messages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Modeling\Resources\Messages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

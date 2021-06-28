@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace KadOzenka.Web.UnitTests.Tours
 {
-	[TestFixture]
 	public class BaseTourTests : BaseTests
 	{
 		protected TourController TourController => Provider.GetService<TourController>();

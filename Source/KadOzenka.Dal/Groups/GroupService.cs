@@ -18,10 +18,10 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Groups
 {
-    public class GroupService
+    public class GroupService : IGroupService
     {
-        public ModelingService ModelingService { get; }
-        public RecycleBinService RecycleBinService { get; }
+        private ModelingService ModelingService { get; }
+        private RecycleBinService RecycleBinService { get; }
 
         public GroupService()
         {

@@ -11,7 +11,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 {
-	public class MultiplicativeFormulaTests : BaseModelTests
+	public class MultiplicativeTests : BaseModelTests
 	{
 		private OMModel _model;
 		private FactorBuilder _factorBuilder;
@@ -34,9 +34,24 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = _factorBuilder.MarkType(MarkType.None).Build();
 			MockDependencies(_model, factor, _cacheAttribute);
 
-			var formula = ModelingService.GetFormula(_model);
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
 
 			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*({CacheAttributeName}+{factor.WeightInFormula})^{factor.B0InFormula}";
+			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
+		}
+
+		[Test]
+		public void Can_Create_Formula_With_One_Factor_With_Negative_Parameters()
+		{
+			var factor = _factorBuilder.MarkType(MarkType.Straight)
+				.Correction(-1d).Coefficient(-2d)
+				.CorrectingTerm(-3d).K(-4d)
+				.Build();
+			MockDependencies(_model, factor, _cacheAttribute);
+
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
+
+			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(({CacheAttributeName}+({factor.CorrectingTermInFormula}))/({factor.KInFormula}) + ({factor.WeightInFormula}))^({factor.B0InFormula})";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -46,7 +61,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = _factorBuilder.MarkType(MarkType.Default).Build();
 			MockDependencies(_model, factor, _cacheAttribute);
 
-			var formula = ModelingService.GetFormula(_model);
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
 
 			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(метка({CacheAttributeName})+{factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
@@ -58,7 +73,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = _factorBuilder.MarkType(MarkType.Straight).Build();
 			MockDependencies(_model, factor, _cacheAttribute);
 
-			var formula = ModelingService.GetFormula(_model);
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
 
 			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*(({CacheAttributeName}+{factor.CorrectingTermInFormula})/{factor.KInFormula} + {factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
@@ -70,14 +85,14 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = _factorBuilder.MarkType(MarkType.Reverse).Build();
 			MockDependencies(_model, factor, _cacheAttribute);
 
-			var formula = ModelingService.GetFormula(_model);
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
 
 			var expectedFormula = $"{_model.A0ForMultiplicativeInFormula}*({factor.KInFormula}/({CacheAttributeName}+{factor.CorrectingTermInFormula})+{factor.WeightInFormula})^{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
 		[Test]
-		public void Can_Create_Formula_With_Several_Factors()
+		public void Can_Create_Formula_With_All_Possible_Factors_MarkType()
 		{
 			var noneMarkTypeFactor = new FactorBuilder().MarkType(MarkType.None).Build();
 			var defaultMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Default).Build();
@@ -96,7 +111,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(straightMarkTypeFactor.FactorId.Value)).Returns(straightMarkTypeAttribute);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(reverseMarkTypeFactor.FactorId.Value)).Returns(reverseMarkTypeAttribute);
 
-			var formula = ModelingService.GetFormula(_model);
+			var formula = ModelingService.GetFormula(_model, KoAlgoritmType.Multi);
 
 			var baseFormulaPart = $"{_model.A0ForMultiplicativeInFormula}";
 			var noneMarkTypeFormulaPart = $"*(\"{noneMarkTypeAttribute.Name}\"+{noneMarkTypeFactor.WeightInFormula})^{noneMarkTypeFactor.B0InFormula}";
@@ -116,8 +131,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			ModelFactorsService.Setup(x => x.GetFactors(model.Id, It.IsAny<KoAlgoritmType>()))
 				.Returns(new List<OMModelFactor> { factor });
 
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value))
-				.Returns(cacheAttribute);
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(cacheAttribute);
 		}
 
 		#endregion

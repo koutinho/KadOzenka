@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Core.Register.RegisterEntities;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.WebClients.ConfigurationManagers;
 using Microsoft.AspNetCore;
@@ -8,7 +11,9 @@ using NUnit.Framework;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Task;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.TD;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
@@ -52,10 +57,25 @@ namespace KadOzenka.Dal.IntegrationTests
 			}
 		}
 
+		private OMGroup _oksParentGroup;
+		protected OMGroup Oks2018ParentGroup
+		{
+			get
+			{
+				if (_oksParentGroup == null)
+				{
+					_oksParentGroup = new GroupBuilder().Algorithm(KoGroupAlgoritm.MainOKS).Parent(-1).Build();
+					new TourGroupBuilder().Tour(2018).Group(_oksParentGroup.Id).Build();
+				}
+
+				return _oksParentGroup;
+			}
+		}
+
 		private static bool _initialized;
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public void BaseOneTimeSetUp()
 		{
 			//костыль для вызова метода один раз перед запуском любых тестов
 			//nUnit позволяет определить OneTimeSetUp только для классов в одном namespace
@@ -70,13 +90,28 @@ namespace KadOzenka.Dal.IntegrationTests
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 		}
 
+		protected void AddUnitFactor(RegisterData tourRegister, long unitId, RegisterAttribute tourFactor, object value)
+		{
+			AddUnitFactor(tourRegister, unitId, new List<RegisterAttribute> {tourFactor}, new List<object> {value});
+		}
+
+		protected void AddUnitFactor(RegisterData tourRegister, long unitId, List<RegisterAttribute> tourFactors, List<object> values)
+		{
+			var sql = @$"insert into {tourRegister.QuantTable} 
+								(id, {string.Join(',', tourFactors.Select(x => x.ValueField))}) 
+								values ({unitId}, {string.Join(',', values)})";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			DBMngr.Main.ExecuteNonQuery(command);
+		}
+
 
 		#region Support Methods
 
 		private void InitConfig()
 		{
 			var configuration = new ConfigurationBuilder()
-				.AddJsonFile("appsettings.test.json", optional: false)
+				.AddJsonFile("appsettings.json", optional: false)
 				.AddEnvironmentVariables()
 				.Build();
 

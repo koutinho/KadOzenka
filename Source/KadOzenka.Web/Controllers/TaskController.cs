@@ -37,6 +37,7 @@ using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Dal.Units;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
@@ -56,8 +57,8 @@ namespace KadOzenka.Web.Controllers
     {
         private readonly ILogger _log = Log.ForContext<TaskController>();
         public TaskService TaskService { get; set; }
+        public IUnitService UnitService { get; set; }
         public DataImporterService DataImporterService { get; set; }
-        public GbuObjectService GbuObjectService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public GroupService GroupService { get; set; }
         public GroupCalculationSettingsService GroupCalculationSettingsService { get; set; }
@@ -67,18 +68,18 @@ namespace KadOzenka.Web.Controllers
         public FactorSettingsService FactorSettingsService { get; set; }
 
         public TaskController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
-	        IGbuObjectService gbuObjectService)
+	        IGbuObjectService gbuObjectService, IUnitService unitService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TaskService = new TaskService();
             DataImporterService = new DataImporterService();
-            GbuObjectService = new GbuObjectService();
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             GroupCalculationSettingsService = new GroupCalculationSettingsService();
             RegisterAttributeService = new RegisterAttributeService();
             SystemAttributeSettingsService = new SystemAttributeSettingsService();
             TemplateService = templateService;
+            UnitService = unitService;
             FactorSettingsService = new FactorSettingsService();
         }
 
@@ -462,31 +463,17 @@ namespace KadOzenka.Web.Controllers
 
             if (unit != null)
             {
-                List<UnitFactor> factorsValues = new List<UnitFactor>();
+                List<UnitFactor> factorsValues;
                 switch (unitFactorsShowType)
                 {
                     case UnitFactorsShowType.ModelFactors:
-                        var model = new ModelingService().GetActiveModelEntityByGroupId(unit.GroupId);
-                        if (model != null)
-                        {
-                            var modelFactorIds = OMModelFactor.Where(x => x.ModelId == model.Id && x.FactorId != null)
-                                .Select(x => x.FactorId)
-                                .Execute()
-                                .Select(x => x.FactorId.GetValueOrDefault()).ToList();
-                            if(!modelFactorIds.IsEmpty())
-                                factorsValues = TourFactorService.GetUnitFactorValues(unit, modelFactorIds);
-                        }
+	                    factorsValues = UnitService.GetUnitModelFactors(unit);
                         break;
                     case UnitFactorsShowType.GroupFactors:
-                        var groupFactorIds = OMGroupFactor.Where(x => x.GroupId == unit.GroupId && x.FactorId != null)
-                            .Select(x => x.FactorId)
-                            .Execute()
-                            .Select(x => x.FactorId.GetValueOrDefault()).ToList();
-                        if(!groupFactorIds.IsEmpty())
-                            factorsValues = TourFactorService.GetUnitFactorValues(unit, groupFactorIds);
+	                    factorsValues = UnitService.GetUnitGroupFactors(unit);
                         break;
                     default:
-                        factorsValues = TourFactorService.GetUnitFactorValues(unit);
+                        factorsValues = UnitService.GetUnitFactors(unit);
                         break;
                 }
 

@@ -61,6 +61,12 @@ namespace KadOzenka.Common.Tests.Builders.Task
 			return this;
 		}
 
+		public AUnitBuilder Group(long groupId)
+		{
+			_unit.GroupId = groupId;
+			return this;
+		}
+
 		public AUnitBuilder Object(OMMainObject gbuObject)
 		{
 			_unit.ObjectId = gbuObject.Id;
@@ -78,6 +84,18 @@ namespace KadOzenka.Common.Tests.Builders.Task
 		public AUnitBuilder CreationDate(DateTime date)
 		{
 			_unit.CreationDate = date;
+			return this;
+		}
+
+		public AUnitBuilder CadastralCost(decimal? cost)
+		{
+			_unit.CadastralCost = cost;
+			return this;
+		}
+
+		public AUnitBuilder Upks(decimal? upks)
+		{
+			_unit.Upks = upks;
 			return this;
 		}
 

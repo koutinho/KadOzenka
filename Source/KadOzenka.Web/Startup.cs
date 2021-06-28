@@ -46,6 +46,7 @@ using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Repositories;
+using KadOzenka.Dal.Units;
 using KadOzenka.Web.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -158,6 +159,9 @@ namespace CIPJS
             services.AddTransient(typeof(IMarketObjectsRepository), typeof(MarketObjectsRepository));
             services.AddTransient(typeof(IMarketObjectService), typeof(MarketObjectService));
             services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
+            services.AddTransient(typeof(IUnitService), typeof(UnitService));
+            services.AddTransient(typeof(ITourFactorService), typeof(TourFactorService));
+            services.AddTransient(typeof(IGroupFactorService), typeof(GroupFactorService));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 
             services.AddSingleton<BackgroundProcessWidgetService>();

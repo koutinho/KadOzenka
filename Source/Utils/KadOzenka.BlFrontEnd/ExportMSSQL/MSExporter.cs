@@ -2426,17 +2426,17 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
         }
         public static void GetCalcGroup()
         {
-            ObjectModel.KO.KOCalcSettings ks = new ObjectModel.KO.KOCalcSettings();
-            ks.CalcParcel = false;
+            ObjectModel.KO.CadastralPriceCalculationSettions ks = new ObjectModel.KO.CadastralPriceCalculationSettions();
+            ks.IsParcel = false;
             ks.CalcStage1 = true;
             ks.CalcStage2 = true;
             ks.CalcStage3 = true;
-            ks.IdTour = 2018;
-            ks.CalcAllGroups = false;
-            ks.CalcGroups = new List<long>();
-            ks.CalcGroups.Add(100012);//200003  100044
-            ks.TaskFilter = new List<long>();
-            ks.TaskFilter.Add(36731960);//36661332  3663016
+            ks.TourId = 2018;
+            ks.IsAllGroups = false;
+            ks.SelectedGroupIds = new List<long>();
+            ks.SelectedGroupIds.Add(100012);//200003  100044
+            ks.TaskIds = new List<long>();
+            ks.TaskIds.Add(36731960);//36661332  3663016
 
             ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
         }

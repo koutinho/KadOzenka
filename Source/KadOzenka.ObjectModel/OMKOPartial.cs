@@ -638,9 +638,10 @@ namespace ObjectModel.KO
 	    public string InternalName => $"model_{Id}";
 	    public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 
-	    public decimal? GetA0()
+	    public decimal? GetA0(KoAlgoritmType? type = null)
 	    {
-		    switch (AlgoritmType_Code)
+		    var resultType = type ?? AlgoritmType_Code;
+		    switch (resultType)
 		    {
 			    case KoAlgoritmType.Exp:
 				    return A0ForExponential;
@@ -653,7 +654,26 @@ namespace ObjectModel.KO
 		    return null;
 	    }
 
-	    public decimal? GetA0ForPreviousTour()
+	    public void SetA0(decimal? a0)
+	    {
+		    switch (AlgoritmType_Code)
+		    {
+			    case KoAlgoritmType.Exp:
+				    A0ForExponential = a0;
+                    break;
+			    case KoAlgoritmType.Line:
+				    A0 = a0;
+				    break;
+			    case KoAlgoritmType.Multi:
+				    A0ForMultiplicative = a0;
+                    break;
+                default:
+	                A0 = a0;
+                    break;
+		    }
+	    }
+
+        public decimal? GetA0ForPreviousTour()
 	    {
 		    switch (AlgoritmType_Code)
 		    {
@@ -3041,14 +3061,14 @@ namespace ObjectModel.KO
 
 
 
-        public static List<CalcErrorItem> CalculateSelectGroup(KOCalcSettings setting)
+        public static List<CalcErrorItem> CalculateSelectGroup(CadastralPriceCalculationSettions setting)
         {
             List<CalcErrorItem> result = new List<CalcErrorItem>();
-            if (setting.CalcAllGroups)
+            if (setting.IsAllGroups)
             {
 	            _log.Debug("Выбран расчет по всем группам");
 
-                List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.IdTour, setting.CalcParcel);
+                List<ObjectModel.KO.OMAutoCalculationSettings> RobotCalcGroups = GetListGroupRobot(setting.TourId, setting.IsParcel);
                 var maxCalculationSettingsCount = RobotCalcGroups.Count;
                 _log.ForContext("TableName", "KO_AUTO_CALCULATION_SETTINGS").ForContext("RegisterId", "260")
 	                .Debug("В реестре с настройками автоматического расчета найдено {count} записей для Тура", maxCalculationSettingsCount);
@@ -3064,9 +3084,9 @@ namespace ObjectModel.KO
 	                        _log.Debug("Начата обработка группы с ИД '{GroupId}' №{CurrentCount} из {MaxCount}", CalcGroup.Id, counter, maxCalculationSettingsCount);
 
                             List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
-                            foreach (long taskId in setting.TaskFilter)
+                            foreach (long taskId in setting.TaskIds)
                             {
-                                if (setting.CalcParcel)
+                                if (setting.IsParcel)
                                 {
                                     Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                                 }
@@ -3114,11 +3134,11 @@ namespace ObjectModel.KO
             }
             else
             {
-	            _log.ForContext("GroupIds", setting.CalcGroups, true)
-	                .Debug("Выбран расчет по конкретным группам ({Count} штуки)", setting.CalcGroups.Count);
+	            _log.ForContext("GroupIds", setting.SelectedGroupIds, true)
+	                .Debug("Выбран расчет по конкретным группам ({Count} штуки)", setting.SelectedGroupIds.Count);
 
                 List<ObjectModel.KO.OMGroup> CalcGroups = new List<OMGroup>();
-                foreach (long idGroup in setting.CalcGroups)
+                foreach (long idGroup in setting.SelectedGroupIds)
                 {
                     var group = ObjectModel.KO.OMGroup.Where(x => x.Id == idGroup).SelectAll().ExecuteFirstOrDefault();
                     if (group != null) CalcGroups.Add(group);
@@ -3132,9 +3152,9 @@ namespace ObjectModel.KO
 	                    _log.Debug("Начата обработка группы с ИД '{GroupId}' №{CurrentCount} из {MaxCount}", CalcGroup.Id, counter, CalcGroups.Count);
 
                         List<ObjectModel.KO.OMUnit> Units = new List<ObjectModel.KO.OMUnit>();
-                        foreach (long taskId in setting.TaskFilter)
+                        foreach (long taskId in setting.TaskIds)
                         {
-                            if (setting.CalcParcel)
+                            if (setting.IsParcel)
                             {
                                 Units.AddRange(ObjectModel.KO.OMUnit.Where(x => x.PropertyType_Code == PropertyTypes.Stead && x.TaskId == taskId && x.GroupId == CalcGroup.Id).SelectAll().Execute());
                             }
@@ -3333,20 +3353,20 @@ namespace ObjectModel.KO
     /// <summary>
     /// Настройки расчета
     /// </summary>
-    public struct KOCalcSettings
+    public struct CadastralPriceCalculationSettions
     {
         /// <summary>
         /// Тур оценки
         /// </summary>
-        public long IdTour;
+        public long TourId;
         /// <summary>
         /// Список заданий на оценку
         /// </summary>
-        public List<long> TaskFilter;
+        public List<long> TaskIds;
         /// <summary>
         /// Объекты расчета: true-Земельный участок, false-ОКС
         /// </summary>
-        public bool CalcParcel;
+        public bool IsParcel;
         /// <summary>
         /// Предварительный расчет
         /// </summary>
@@ -3362,11 +3382,11 @@ namespace ObjectModel.KO
         /// <summary>
         /// Признак расчета всех групп: true - все группы, false - список выбранных групп
         /// </summary>
-        public bool CalcAllGroups;
+        public bool IsAllGroups;
         /// <summary>
         /// Список выбранных групп
         /// </summary>
-        public List<long> CalcGroups;
+        public List<long> SelectedGroupIds;
     }
 
     /// <summary>
