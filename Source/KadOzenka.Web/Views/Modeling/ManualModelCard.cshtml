@@ -209,7 +209,8 @@
                 },
                 {
                     field: 'CorrectingTerm',
-                    title: 'Корректирующее слагаемое'
+                    title: 'Корректирующее слагаемое',
+                    headerAttributes: { style: "word-wrap: break-word;" }
                 },
                 {
                     field: 'K',
@@ -381,7 +382,7 @@
 
     function addFactor() {
         var modelType = $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').value();
-        Common.UI.ShowWindow('Редактирование фактора',
+        Common.UI.ShowWindow('Добавление фактора',
             '@Url.Action("EditManualModelFactor", "Modeling")' + '?generalModelId=@Model.Id' + '&type=' + modelType,
             'editFactorWindow',
             function (e, param) {
