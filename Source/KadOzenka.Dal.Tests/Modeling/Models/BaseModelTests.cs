@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using KadOzenka.Dal.Modeling;
+﻿using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,14 +30,6 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			container.AddTransient(typeof(IModelingRepository), sp => ModelingRepository.Object);
 			container.AddTransient(typeof(IModelObjectsRepository), sp => ModelObjectsRepository.Object);
 			container.AddTransient(typeof(IModelFactorsService), sp => ModelFactorsService.Object);
-		}
-
-
-		protected string ProcessFormula(string str)
-		{
-			var formulaWithoutSpaces = Regex.Replace(str.ToLower(), @"\s+", "");
-			var formulaWithoutFloatNumbersSeparator = formulaWithoutSpaces.Replace(',', '|').Replace('.', '|');
-			return formulaWithoutFloatNumbersSeparator;
 		}
 	}
 }

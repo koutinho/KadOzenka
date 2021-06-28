@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace KadOzenka.Web.UnitTests.Modeling
 {
-	[TestFixture]
 	public class BaseModelingTests : BaseTests
 	{
 		protected ModelingController ModelingController => Provider.GetService<ModelingController>();
