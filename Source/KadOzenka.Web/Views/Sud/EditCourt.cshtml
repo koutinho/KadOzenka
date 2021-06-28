@@ -5,114 +5,123 @@
 @model KadOzenka.Web.Models.Sud.CourtModel
 
 @section styles{
-	<style>
+    <style>
 		.hidden {
 			display: none;
 		}
 	</style>
 }
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 @using (Html.BeginForm("EditCourt", "Sud", FormMethod.Post))
 {
-	@Html.HiddenFor(m => m.Id)
-    <div class="form-horizontal col-sm-12">
-        @Html.RenderHelpButton()
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Name)
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        @Html.HiddenFor(m => m.Id)
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Name)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextAreaFor(m => m.Name, 5, 0, new {@class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px"})
+                </div>
             </div>
-            <div class="col-sm-10">
-                @Html.TextAreaFor(m => m.Name, 5, 0, new {@class = "k-textbox", @style = "width: 100%; resize: none;padding: 10px"})
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Number)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Number, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Number)
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Date)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDatePickerFor(m => m.Date, isReadonly: false)
+                </div>
             </div>
-            <div class="col-sm-10">
-                @Html.TextBoxFor(m => m.Number, new {@class = "k-textbox", @style = "width: 100%;"})
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.SudDate)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDatePickerFor(m => m.SudDate, isReadonly: false)
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Date)
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.AppealNumber)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.AppealNumber, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-            <div class="col-sm-10">
-                @Html.KendoDatePickerFor(m => m.Date, isReadonly: false)
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.AppealDate)
+                </div>
+                <div class="col-sm-10">
+                    @Html.KendoDatePickerFor(m => m.AppealDate, isReadonly: false)
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.SudDate)
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.ArchiveNumber)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.ArchiveNumber, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
             </div>
-            <div class="col-sm-10">
-                @Html.KendoDatePickerFor(m => m.SudDate, isReadonly: false)
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Status)
+                </div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.None.GetEnumDescription()).Value((long) CourtStatus.None))
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.Denied.GetEnumDescription()).Value((long) CourtStatus.Denied))
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.Satisfied.GetEnumDescription()).Value((long) CourtStatus.Satisfied))
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.Paused.GetEnumDescription()).Value((long) CourtStatus.Paused))
+                </div>
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                    @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.PartiallySatisfied.GetEnumDescription()).Value((long) CourtStatus.PartiallySatisfied))
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.AppealNumber)
-            </div>
-            <div class="col-sm-10">
-                @Html.TextBoxFor(m => m.AppealNumber, new {@class = "k-textbox", @style = "width: 100%;"})
-            </div>
-        </div>
-	    <div class="form-group">
-	        <div class="col-sm-2">
-	            @Html.CustomLabelFor(m => m.AppealDate)
-	        </div>
-	        <div class="col-sm-10">
-	            @Html.KendoDatePickerFor(m => m.AppealDate, isReadonly: false)
-	        </div>
-	    </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.ArchiveNumber)
-            </div>
-            <div class="col-sm-10">
-                @Html.TextBoxFor(m => m.ArchiveNumber, new {@class = "k-textbox", @style = "width: 100%;"})
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-2">
-                @Html.CustomLabelFor(m => m.Status)
-            </div>
-            <div class="col-sm-10">
-                @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.None.GetEnumDescription()).Value((long) CourtStatus.None))
-            </div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-10">
-                @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.Denied.GetEnumDescription()).Value((long) CourtStatus.Denied))
-            </div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-10">
-                @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.Satisfied.GetEnumDescription()).Value((long) CourtStatus.Satisfied))
-            </div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-10">
-                @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.Paused.GetEnumDescription()).Value((long) CourtStatus.Paused))
-            </div>
-            <div class="col-sm-2"></div>
-            <div class="col-sm-10">
-                @(Html.Kendo().RadioButtonFor(m => m.Status).Label(CourtStatus.PartiallySatisfied.GetEnumDescription()).Value((long) CourtStatus.PartiallySatisfied))
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="attachment-court @(Model.Id == -1 ? "hidden" : "")">
-                @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
-                    new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-12">
-                <button disabled="@(!Model.IsEditCourt)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
+            <div class="form-group">
+                <div class="attachment-court @(Model.Id == -1 ? "hidden" : "")">
+                    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                        new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
+                </div>
             </div>
         </div>
     </div>
 }
-
+<script src="~/js/toolbars.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
+	    let saveEnabled = "@(Model.IsEditCourt)" === "True";
+	    $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'save',
+                    text: 'Сохранить',
+                    enable: saveEnabled
+                },
+                helperButtonForToolbar()]
+        });
 		$('#save').on('click',
 			function () {
 				debugger;

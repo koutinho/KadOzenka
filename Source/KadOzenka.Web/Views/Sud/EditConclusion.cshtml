@@ -3,263 +3,275 @@
 @using Platform.Web.Models.CoreAttachment
 @model KadOzenka.Web.Models.Sud.ConclusionModel
 
-
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 @section styles {
-	<style>
-		.k-checkbox-label {
-			font-family: 'Roboto' !important;
-			padding-top: 5px;
-		}
+    <style>
+        .k-checkbox-label {
+            font-family: 'Roboto' !important;
+            padding-top: 5px;
+        }
 
-		.hidden {
-			display: none;
-		}
-	</style>
+        .hidden {
+            display: none;
+        }
+    </style>
 }
+
 @using (Html.BeginForm("EditConclusion", "Sud", FormMethod.Post))
 {
-	@Html.HiddenFor(m => m.Id)
-	@Html.HiddenFor(m => m.Fio)
-	@Html.HiddenFor(m => m.Org)
-	@Html.HiddenFor(m => m.Sro)
-	<div class="form-horizontal col-sm-12">
-        @Html.RenderHelpButton()
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor("Номер заключения", true)
-			</div>
-			<div class="col-sm-10">
-				@Html.TextBoxFor(m => m.Number, new { @class = "k-textbox", @style = "width: 100%;" })
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor("Дата составления", true)
-			</div>
-			<div class="col-sm-4">
-				@Html.KendoDatePickerFor(m => m.CreateDate, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.Org)
-			</div>
-			<div class="col-sm-10">
-				<input id="IdOrg" name="IdOrg" value="@(Model.IdOrg)" editmode="true" />
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.Fio)
-			</div>
-			<div class="col-sm-10">
-				<input id="IdFio" name="IdFio" value="@(Model.IdFio)" editmode="true" />
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor("СРО", true)
-			</div>
-			<div class="col-sm-10">
-				<input id="IdSro" name="IdSro" value="@(Model.IdSro)" editmode="true" />
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.RecDate)
-			</div>
-			<div class="col-sm-4">
-				@Html.KendoDatePickerFor(m => m.RecDate, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.RecUser)
-			</div>
-			<div class="col-sm-10">
-				@Html.TextBoxFor(m => m.RecUser, new { @class = "k-textbox", @style = "width: 100%;" })
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-2">
-				@Html.CustomLabelFor(m => m.RecLetter)
-			</div>
-			<div class="col-sm-10">
-				@Html.TextBoxFor(m => m.RecLetter, new { @class = "k-textbox", @style = "width: 100%;" })
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-10 col-sm-offset-2">
-				@Html.KendoCheckBox("Предварительная рецензия", "RecAfter", Model.RecAfter, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-10 col-sm-offset-2">
-				@Html.KendoCheckBox("Рецензия после анализа", "RecBefore", Model.RecBefore, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-10 col-sm-offset-2">
-				@Html.KendoCheckBox("Утверждено", "RecSoglas", Model.RecSoglas, false)
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="attachment-conclusion @(Model.Id == -1 ? "hidden" : "")">
-				@await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
-					new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
-			</div>
-		</div>
-		<div class="form-group">
-			<div class="col-sm-12">
-				<button disabled="@(!Model.IsEditConclusion)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
-			</div>
-		</div>
-	</div>
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.Fio)
+        @Html.HiddenFor(m => m.Org)
+        @Html.HiddenFor(m => m.Sro)
+        <div class="form-horizontal col-sm-12">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor("Номер заключения", true)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.Number, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor("Дата составления", true)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoDatePickerFor(m => m.CreateDate, false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Org)
+                </div>
+                <div class="col-sm-10">
+                    <input id="IdOrg" name="IdOrg" value="@(Model.IdOrg)" editmode="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.Fio)
+                </div>
+                <div class="col-sm-10">
+                    <input id="IdFio" name="IdFio" value="@(Model.IdFio)" editmode="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor("СРО", true)
+                </div>
+                <div class="col-sm-10">
+                    <input id="IdSro" name="IdSro" value="@(Model.IdSro)" editmode="true"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.RecDate)
+                </div>
+                <div class="col-sm-4">
+                    @Html.KendoDatePickerFor(m => m.RecDate, false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.RecUser)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.RecUser, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-2">
+                    @Html.CustomLabelFor(m => m.RecLetter)
+                </div>
+                <div class="col-sm-10">
+                    @Html.TextBoxFor(m => m.RecLetter, new {@class = "k-textbox", @style = "width: 100%;"})
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    @Html.KendoCheckBox("Предварительная рецензия", "RecAfter", Model.RecAfter, false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    @Html.KendoCheckBox("Рецензия после анализа", "RecBefore", Model.RecBefore, false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    @Html.KendoCheckBox("Утверждено", "RecSoglas", Model.RecSoglas, false)
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="attachment-conclusion @(Model.Id == -1 ? "hidden" : "")">
+                    @await Html.PartialAsync("~/Views/CoreAttachment/AttachPartialGrid.cshtml",
+                        new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
+                </div>
+            </div>
+        </div>
+    </div>
 }
+
+<script src="~/js/toolbars.js"></script>
 <script type="text/javascript">
-		$(document).ready(function () {
-			var isEmptySro = "@(Model.IdSro == null)" === "True";
-			var isEmptyFio = "@(Model.IdFio == null)" === "True";
-			var isEmptyOrg = "@(Model.IdOrg == null)" === "True";
-			console.log(isEmptySro, isEmptyFio, isEmptyOrg);
+    $(document).ready(function () {
+        let saveEnabled = "@(Model.IsEditConclusion)" === "True";
+        $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'save',
+                    text: 'Сохранить',
+                    enable: saveEnabled
+                },
+                helperButtonForToolbar()]
+        });
 
-		$('#files').kendoUpload({
-			multiple: false,
-			localization: {
-				select: 'Загрузить Файл'
-			},
-			async: {
-				autoUpload: false
-			},
-			validation: {
-				allowedExtensions: []
-			}
-		}).data('kendoUpload');
+        var isEmptySro = "@(Model.IdSro == null)" === "True";
+        var isEmptyFio = "@(Model.IdFio == null)" === "True";
+        var isEmptyOrg = "@(Model.IdOrg == null)" === "True";
+        console.log(isEmptySro, isEmptyFio, isEmptyOrg);
 
-		$('#IdOrg').kendoDropDownList({
-			filter: "contains",
-			dataTextField: 'Name',
-			dataValueField: 'Id',
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetDictionary", "Sud")',
-						data: {
-							type: @((int)OmDictionaryEnum.Org)
-						},
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				}
-			},
-			dataBound: function () {
-				if (isEmptyOrg) {
-					$("#IdOrg").data("kendoDropDownList").value(-1);
-				}
-			}
-		});
+        $('#files').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить Файл'
+            },
+            async: {
+                autoUpload: false
+            },
+            validation: {
+                allowedExtensions: []
+            }
+        }).data('kendoUpload');
 
-		$('#IdFio').kendoDropDownList({
-			filter: "contains",
-			dataTextField: 'Name',
-			dataValueField: 'Id',
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetDictionary", "Sud")',
-						data: {
-							type: @((int)OmDictionaryEnum.Fio)
-						},
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				}
-			},
-			dataBound: function () {
-				if (isEmptyFio) {
-					$("#IdFio").data("kendoDropDownList").value(-1);
-				}
-			}
-		});
+        $('#IdOrg').kendoDropDownList({
+            filter: "contains",
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDictionary", "Sud")',
+                        data: {
+                            type: @((int) OmDictionaryEnum.Org)
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            dataBound: function () {
+                if (isEmptyOrg) {
+                    $("#IdOrg").data("kendoDropDownList").value(-1);
+                }
+            }
+        });
 
-		$('#IdSro').kendoDropDownList({
-			filter: "contains",
-			dataTextField: 'Name',
-			dataValueField: 'Id',
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetDictionary", "Sud")',
-						data: {
-							type: @((int)OmDictionaryEnum.Sro)
-						},
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				}
-			},
-			dataBound: function () {
-				if (isEmptySro)
-				{
-					$("#IdSro").data("kendoDropDownList").value(-1);
-				}
-			}
-		});
-	});
+        $('#IdFio').kendoDropDownList({
+            filter: "contains",
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDictionary", "Sud")',
+                        data: {
+                            type: @((int) OmDictionaryEnum.Fio)
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            dataBound: function () {
+                if (isEmptyFio) {
+                    $("#IdFio").data("kendoDropDownList").value(-1);
+                }
+            }
+        });
 
-	function distinctErrors(errors) {
-		var result = [];
-		$.each(errors, function(index, event) {
-			var events = $.grep(result, function (e) {
-				return event.Message === e.Message;
-			});
-			if (events.length === 0) {
-				result.push(event);
-			}
-		});
+        $('#IdSro').kendoDropDownList({
+            filter: "contains",
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDictionary", "Sud")',
+                        data: {
+                            type: @((int) OmDictionaryEnum.Sro)
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            },
+            dataBound: function () {
+                if (isEmptySro)
+                {
+                    $("#IdSro").data("kendoDropDownList").value(-1);
+                }
+            }
+        });
+    });
 
-		return result;
-	}
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors, function(index, event) {
+            var events = $.grep(result, function (e) {
+                return event.Message === e.Message;
+            });
+            if (events.length === 0) {
+                result.push(event);
+            }
+        });
 
-	$('#save').on('click',
-		function() {
-			var form = $('form');
-			var formObject = Common.Functions.FormToObject(form);
+        return result;
+    }
 
-			formObject.Fio = $("#IdFio").data("kendoDropDownList").text();
-			formObject.Sro = $("#IdSro").data("kendoDropDownList").text();
-			formObject.Org = $("#IdOrg").data("kendoDropDownList").text();
+    $('#save').on('click',
+        function() {
+            var form = $('form');
+            var formObject = Common.Functions.FormToObject(form);
 
-			console.log('formObject', formObject);
+            formObject.Fio = $("#IdFio").data("kendoDropDownList").text();
+            formObject.Sro = $("#IdSro").data("kendoDropDownList").text();
+            formObject.Org = $("#IdOrg").data("kendoDropDownList").text();
 
-			kendo.ui.progress($('body'), true);
+            console.log('formObject', formObject);
 
-			$.post(form.attr('action'), formObject).done(function (response) {
-				kendo.ui.progress($('body'), false);
-				if (response.Errors) {
-					var errors = $.map(distinctErrors(response.Errors),
-						function(el) {
-							return el.Message;
-						});
-					Common.ShowError(errors);
-					return;
-				}
+            kendo.ui.progress($('body'), true);
 
-				if (response.Success && response.data) {
-					var oldId = $('#@Html.IdFor(m => m.Id)').val();
-					$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
-					$('.attachment-conclusion').removeClass('hidden');
+            $.post(form.attr('action'), formObject).done(function (response) {
+                kendo.ui.progress($('body'), false);
+                if (response.Errors) {
+                    var errors = $.map(distinctErrors(response.Errors),
+                        function(el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
 
-					//uploadData - объект из частичного представления AttachPartialGrid
-					if (uploadData && oldId === '-1') {
-						uploadData.setObjectId(response.data.Id);
-						var grid = $('#AttachmentGrid').data('kendoGrid');
-						var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
-						grid.dataSource.transport.options.read.url = url;
-					}
+                if (response.Success && response.data) {
+                    var oldId = $('#@Html.IdFor(m => m.Id)').val();
+                    $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                    $('.attachment-conclusion').removeClass('hidden');
 
-					Common.ShowMessage(response.Success);
-				}
-			});
-		});
+                    //uploadData - объект из частичного представления AttachPartialGrid
+                    if (uploadData && oldId === '-1') {
+                        uploadData.setObjectId(response.data.Id);
+                        var grid = $('#AttachmentGrid').data('kendoGrid');
+                        var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
+                        grid.dataSource.transport.options.read.url = url;
+                    }
+
+                    Common.ShowMessage(response.Success);
+                }
+            });
+        });
 </script>

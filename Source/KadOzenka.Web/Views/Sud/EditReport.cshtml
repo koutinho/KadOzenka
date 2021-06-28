@@ -3,30 +3,32 @@
 @using Platform.Web.Models.CoreAttachment
 @model KadOzenka.Web.Models.Sud.ReportModel
 
-
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 @section styles {
-	<style>
-		.k-checkbox-label[for="Claim"] {
-			font-family: 'Roboto' !important;
-			padding-top: 5px;
-		}
-		.hidden {
-			display: none;
-		}
-		#ls_panelbar {
-			width: 99% !important;
-			border: none !important;
-		}
-	</style>
+    <style>
+        .k-checkbox-label[for="Claim"] {
+            font-family: 'Roboto' !important;
+            padding-top: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        #ls_panelbar {
+            width: 99% !important;
+            border: none !important;
+        }
+    </style>
 }
-	@using (Html.BeginForm("EditReport", "Sud", FormMethod.Post, htmlAttributes: new { @id = "reportForm" }))
-	{
-		@Html.HiddenFor(m => m.Id)
-		@Html.HiddenFor(m => m.Fio)
-		@Html.HiddenFor(m => m.Org)
-		@Html.HiddenFor(m => m.Sro)
-	    <div class="form-horizontal col-sm-12">
-            @Html.RenderHelpButton()
+
+@using (Html.BeginForm("EditReport", "Sud", FormMethod.Post, htmlAttributes: new {@id = "reportForm"}))
+{
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
+        @Html.HiddenFor(m => m.Id)
+        @Html.HiddenFor(m => m.Fio)
+        @Html.HiddenFor(m => m.Org)
+        @Html.HiddenFor(m => m.Sro)
+        <div class="form-horizontal col-sm-12">
             <div class="form-group">
                 <div class="col-sm-2">
                     @Html.CustomLabelFor("Номер отчета", true)
@@ -84,152 +86,161 @@
                         new AttachmentPartialModel {ObjectId = (int) Model.Id, RegisterId = Model.RegisterId})
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <button disabled="@(!Model.IsEditReport)" style="float: right" id="save" class="k-button" type="button">Сохранить</button>
-                </div>
-            </div>
         </div>
-	}
+    </div>
+}
+
+<script src="~/js/toolbars.js"></script>
 <script type="text/javascript">
-		$(document).ready(function () {
-			$('#ls_panelbar').kendoPanelBar();
+    $(document).ready(function () {
+        let saveEnabled = "@(Model.IsEditReport)" === "True";
+        $("#toolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'save',
+                    text: 'Сохранить',
+                    enable: saveEnabled
+                },
+                helperButtonForToolbar()]
+        });
+        $('#ls_panelbar').kendoPanelBar();
 
-			var isEmptySro = "@(Model.IdSro == null)" === "True";
-			var isEmptyFio = "@(Model.IdFio == null)" === "True";
-			var isEmptyOrg = "@(Model.IdOrg == null)" === "True";
-			console.log(isEmptySro, isEmptyFio, isEmptyOrg);
+        var isEmptySro = "@(Model.IdSro == null)" === "True";
+        var isEmptyFio = "@(Model.IdFio == null)" === "True";
+        var isEmptyOrg = "@(Model.IdOrg == null)" === "True";
+        console.log(isEmptySro, isEmptyFio, isEmptyOrg);
 
-		$('#files').kendoUpload({
-			multiple: false,
-			localization: {
-				select: 'Загрузить Файл'
-			},
-			async: {
-				autoUpload: false
-			},
-			validation: {
-				allowedExtensions: []
-			}
-		}).data('kendoUpload');
+        $('#files').kendoUpload({
+            multiple: false,
+            localization: {
+                select: 'Загрузить Файл'
+            },
+            async: {
+                autoUpload: false
+            },
+            validation: {
+                allowedExtensions: []
+            }
+        }).data('kendoUpload');
 
-		$('#IdOrg').kendoDropDownList({
-			filter: "contains",
-			dataTextField: 'Name',
-			dataValueField: 'Id',
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetDictionary", "Sud")',
-						data: {
-							type: @((int)OmDictionaryEnum.Org)
-						},
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				}
-			}
-		});
-			if (isEmptyOrg) {
-				$("#IdOrg").data("kendoDropDownList").value(-1);
-			}
+        $('#IdOrg').kendoDropDownList({
+            filter: "contains",
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDictionary", "Sud")',
+                        data: {
+                            type: @((int) OmDictionaryEnum.Org)
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+        });
+            if (isEmptyOrg) {
+                $("#IdOrg").data("kendoDropDownList").value(-1);
+            }
 
-			$('#IdFio').kendoDropDownList({
-			filter: "contains",
-			dataTextField: 'Name',
-			dataValueField: 'Id',
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetDictionary", "Sud")',
-						data: {
-							type: @((int)OmDictionaryEnum.Fio)
-						},
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				}
-			}
-			});
-			if (isEmptyFio) {
-				$("#IdFio").data("kendoDropDownList").value(-1);
-			}
+            $('#IdFio').kendoDropDownList({
+            filter: "contains",
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDictionary", "Sud")',
+                        data: {
+                            type: @((int) OmDictionaryEnum.Fio)
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+            });
+            if (isEmptyFio) {
+                $("#IdFio").data("kendoDropDownList").value(-1);
+            }
 
-		$('#IdSro').kendoDropDownList({
-			filter: "contains",
-			dataTextField: 'Name',
-			dataValueField: 'Id',
-			dataSource: {
-				transport: {
-					read: {
-						url: '@Url.Action("GetDictionary", "Sud")',
-						data: {
-							type: @((int)OmDictionaryEnum.Sro)
-						},
-						contentType: 'application/json; charset=utf-8',
-						dataType: 'json'
-					}
-				}
-			}
-		});
-			if (isEmptySro)
-			{
-				$("#IdSro").data("kendoDropDownList").value(-1);
-			}
-	});
+        $('#IdSro').kendoDropDownList({
+            filter: "contains",
+            dataTextField: 'Name',
+            dataValueField: 'Id',
+            dataSource: {
+                transport: {
+                    read: {
+                        url: '@Url.Action("GetDictionary", "Sud")',
+                        data: {
+                            type: @((int) OmDictionaryEnum.Sro)
+                        },
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json'
+                    }
+                }
+            }
+        });
+            if (isEmptySro)
+            {
+                $("#IdSro").data("kendoDropDownList").value(-1);
+            }
+    });
 
-	function distinctErrors(errors) {
-		var result = [];
-		$.each(errors, function(index, event) {
-			var events = $.grep(result, function (e) {
-				return event.Message === e.Message;
-			});
-			if (events.length === 0) {
-				result.push(event);
-			}
-		});
+    function distinctErrors(errors) {
+        var result = [];
+        $.each(errors, function(index, event) {
+            var events = $.grep(result, function (e) {
+                return event.Message === e.Message;
+            });
+            if (events.length === 0) {
+                result.push(event);
+            }
+        });
 
-		return result;
-	}
+        return result;
+    }
 
-	$('#save').on('click',
-		function() {
-			var form = $('form');
-			var formObject = Common.Functions.FormToObject(form);
+    $('#save').on('click',
+        function() {
+            var form = $('form');
+            var formObject = Common.Functions.FormToObject(form);
 
-			formObject.Fio = $("#IdFio").data("kendoDropDownList").text();
-			formObject.Sro = $("#IdSro").data("kendoDropDownList").text();
-			formObject.Org = $("#IdOrg").data("kendoDropDownList").text();
+            formObject.Fio = $("#IdFio").data("kendoDropDownList").text();
+            formObject.Sro = $("#IdSro").data("kendoDropDownList").text();
+            formObject.Org = $("#IdOrg").data("kendoDropDownList").text();
 
-			console.log('formObject', formObject);
+            console.log('formObject', formObject);
 
-			kendo.ui.progress($('body'), true);
+            kendo.ui.progress($('body'), true);
 
-			$.post(form.attr('action'), formObject).done(function (response) {
-				kendo.ui.progress($('body'), false);
-				if (response.Errors) {
-					var errors = $.map(distinctErrors(response.Errors),
-						function(el) {
-							return el.Message;
-						});
-					Common.ShowError(errors);
-					return;
-				}
+            $.post(form.attr('action'), formObject).done(function (response) {
+                kendo.ui.progress($('body'), false);
+                if (response.Errors) {
+                    var errors = $.map(distinctErrors(response.Errors),
+                        function(el) {
+                            return el.Message;
+                        });
+                    Common.ShowError(errors);
+                    return;
+                }
 
-				if (response.Success && response.data) {
-					var oldId = $('#@Html.IdFor(m => m.Id)').val();
-					$('#@Html.IdFor(m => m.Id)').val(response.data.Id);
-					$('.attachment-report').removeClass('hidden');
+                if (response.Success && response.data) {
+                    var oldId = $('#@Html.IdFor(m => m.Id)').val();
+                    $('#@Html.IdFor(m => m.Id)').val(response.data.Id);
+                    $('.attachment-report').removeClass('hidden');
 
-					//uploadData - объект из частичного представления AttachPartialGrid
-					if (uploadData && oldId === '-1') {
-						uploadData.setObjectId(response.data.Id);
-						var grid = $('#AttachmentGrid').data('kendoGrid');
-						var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
-						grid.dataSource.transport.options.read.url = url;
-					}
-					Common.ShowMessage(response.Success);
-				}
-			});
-		});
+                    //uploadData - объект из частичного представления AttachPartialGrid
+                    if (uploadData && oldId === '-1') {
+                        uploadData.setObjectId(response.data.Id);
+                        var grid = $('#AttachmentGrid').data('kendoGrid');
+                        var url = grid.dataSource.transport.options.read.url.replace('objectId=-1', `objectId=${response.data.Id}`);
+                        grid.dataSource.transport.options.read.url = url;
+                    }
+                    Common.ShowMessage(response.Success);
+                }
+            });
+        });
 </script>

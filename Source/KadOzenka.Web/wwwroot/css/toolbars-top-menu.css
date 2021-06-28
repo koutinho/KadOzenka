@@ -1,0 +1,14 @@
+#top-head-menu{
+    display: table;
+    width: 100%;
+    z-index: 101;
+    position: fixed;
+}
+.mainContent{
+    /*margin-top: 73px;*/
+}
+.top-toolbar{
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-top: 73px;
+}

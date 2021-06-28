@@ -7,8 +7,11 @@
 
 @model KadOzenka.Web.Models.Declarations.DeclarationModel
 
+<link rel="stylesheet" href="~/css/toolbars.css"/>
 @using (Html.BeginForm("EditDeclaration", "Declarations", FormMethod.Post))
 {
+    <div id="toolbar" class="top-toolbar"></div>
+    <div class="bottom-main-content">
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.OwnerId)
     @Html.HiddenFor(m => m.AgentId)
@@ -18,7 +21,6 @@
     @Html.HiddenFor(m => m.SpdAppName)
     @Html.HiddenFor(m => m.SpdAppDate)
     @Html.HiddenFor(m => m.FromSpd)
-    @Html.RenderHelpButton(true)
     <ul id="ls_panelbar" class="panelbar">
         <li id="Section_Making_Declaration" data-expand>
             <span>Подача декларации</span>
@@ -232,12 +234,7 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-sm-12">
-            <button disabled="@(Model.Id == -1 ? !Model.IsCreateDeclaration : !Model.IsEditDeclaration)" style="float: right" class="k-button" id="save" type="button">Сохранить</button>
-        </div>
     </div>
-    <div class="form-group"></div>
 }
 
 @section styles {
@@ -263,9 +260,21 @@
 }
 
 @section scripts {
+    <script src="~/js/toolbars.js"></script>
     <script src="~/js/custom-validation.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            let saveEnabled = "@(Model.Id == -1 ? !Model.IsCreateDeclaration : !Model.IsEditDeclaration)" !== "True";
+            $("#toolbar").kendoToolBar({
+                items: [
+                    {
+                        type: 'button',
+                        id: 'save',
+                        text: 'Сохранить',
+                        enable: saveEnabled
+                    },
+                    helperButtonForToolbar()]
+            });
             const panelbar = $('#ls_panelbar').kendoPanelBar().data('kendoPanelBar');
             panelbar.expand('li[data-expand]');
 

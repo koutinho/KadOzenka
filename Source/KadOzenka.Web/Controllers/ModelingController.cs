@@ -4,9 +4,7 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Reflection;
 using Core.ErrorManagment;
-using Core.ObjectModel.CustomAttribute;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Register.QuerySubsystem;
@@ -23,14 +21,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ObjectModel.Core.Register;
-using ObjectModel.Market;
 using KadOzenka.Dal.Registers;
 using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
-using System.Threading;
-using Core.Register.RegisterEntities;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -45,11 +40,8 @@ using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Helpers;
-using MarketPlaceBusiness;
 using Microsoft.Practices.ObjectBuilder2;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Core.Shared;
-using ObjectModel.Directory.Core.LongProcess;
+using Npgsql;
 using ObjectModel.Ko;
 using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
@@ -124,7 +116,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [JsonExceptionHandler(Message = "Модель с заданным именем уже существует")]
+        [JsonExceptionOverwrite(ExceptionType = nameof(PostgresException), ExceptionCode = PostgresErrorCodes.UniqueViolation, Message = "Модель с заданным именем уже существует")]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_ADD_MODEL)]
         public JsonResult AddModel(GeneralModelingModel modelingModel)
         {
