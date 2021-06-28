@@ -180,10 +180,10 @@
                             message += 'Необходимо заполнить тип статьи<br>';
                         }
 
-                        let check = fileCheck(files.map(x=>x.rawFile));
-                        if (check !== []){
-                            message += check + 'Пожалуйста выберите файлы заново<br>';
-                        }
+                        // let check = fileCheck(files.map(x=>x.rawFile));
+                        // if (check !== []){
+                        //     message += check + 'Пожалуйста выберите файлы заново<br>';
+                        // }
 
                         if (message.length !== 0) {
                             Common.ShowError(message);
