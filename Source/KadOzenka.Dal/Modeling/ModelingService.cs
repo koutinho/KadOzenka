@@ -592,47 +592,24 @@ namespace KadOzenka.Dal.Modeling
 
 		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			if (algorithmType == KoAlgoritmType.Multi)
+			//для ручной модели существует один набор факторов под алгоритм самой модели
+			//для автоматической модели набор факторов разный под тип алгоритма
+			var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
+			if (factors.Count == 0)
+				throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
+
+			switch (algorithmType)
 			{
-				var formula = new StringBuilder();
-				var a0 = model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
-				formula.Append($"{a0}");
-
-				//для ручной модели существует один набор факторов под алгоритм самой модели
-				//для автоматической модели набор факторов разный под тип алгоритма
-				//var algorithmType = model.Type_Code == KoModelType.Manual ? KoAlgoritmType.None : model.AlgoritmType_Code;
-				var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
-				if (factors.Count == 0)
-					throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
-
-				factors.ForEach(x =>
-				{
-					var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
-					var weightInFormula = ProcessNumber(x.WeightInFormula);
-					var b0InFormula = ProcessNumber(x.B0InFormula);
-					var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
-					var kInFormula = ProcessNumber(x.KInFormula);
-
-					switch (x.MarkType_Code)
-					{
-						case MarkType.None:
-							formula.Append($" * ({attributeName} + {weightInFormula})^{b0InFormula}");
-							break;
-						case MarkType.Default:
-							formula.Append($" * ({MarkTagInFormula}({attributeName}) + {weightInFormula})^{b0InFormula}");
-							break;
-						case MarkType.Straight:
-							formula.Append($" * (({attributeName} + {correctingTermInFormula}) / {kInFormula} + {weightInFormula})^{b0InFormula}");
-							break;
-						case MarkType.Reverse:
-							formula.Append($" * ({kInFormula}/({attributeName}+{correctingTermInFormula}) + {weightInFormula})^{b0InFormula}");
-							break;
-						default:
-							throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code}'");
-					}
-				});
-
-				return formula.ToString();
+				case KoAlgoritmType.None:
+					throw new FormulaCreationException("Не передан тип алгоритма расчета модели");
+				case KoAlgoritmType.Exp:
+					break;
+				case KoAlgoritmType.Line:
+					break;
+				case KoAlgoritmType.Multi:
+					return GetFormulaForMultiplicativeModel(model, factors);
+				default:
+					throw new FormulaCreationException($"Передан неизвестный тип алгоритма расчета модели: '{algorithmType.GetEnumDescription()}'");
 			}
 
 			//TODO другие типы будут реализованы позднее
@@ -654,6 +631,44 @@ namespace KadOzenka.Dal.Modeling
 			//все стронние библиотеки (для отрисовки формулы и расчета) работают с ".",
 			//но разделить для культуры в приложении - ","
 			return numberInFormula.Replace(",", ".");
+		}
+
+		private string GetFormulaForMultiplicativeModel(OMModel model, List<OMModelFactor> factors)
+		{
+			var formula = new StringBuilder();
+			var a0 = model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
+			formula.Append($"{a0}");
+
+			factors.ForEach(x =>
+			{
+				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
+				var weightInFormula = ProcessNumber(x.WeightInFormula);
+				var b0InFormula = ProcessNumber(x.B0InFormula);
+				var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
+				var kInFormula = ProcessNumber(x.KInFormula);
+
+				switch (x.MarkType_Code)
+				{
+					case MarkType.None:
+						formula.Append($" * ({attributeName} + {weightInFormula})^{b0InFormula}");
+						break;
+					case MarkType.Default:
+						formula.Append($" * ({MarkTagInFormula}({attributeName}) + {weightInFormula})^{b0InFormula}");
+						break;
+					case MarkType.Straight:
+						formula.Append(
+							$" * (({attributeName} + {correctingTermInFormula}) / {kInFormula} + {weightInFormula})^{b0InFormula}");
+						break;
+					case MarkType.Reverse:
+						formula.Append(
+							$" * ({kInFormula}/({attributeName}+{correctingTermInFormula}) + {weightInFormula})^{b0InFormula}");
+						break;
+					default:
+						throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code.GetEnumDescription()}'");
+				}
+			});
+
+			return formula.ToString();
 		}
 
 		#endregion
