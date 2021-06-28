@@ -181,7 +181,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            GroupService.UpdateGroupToMarketSegmentRelation(model.GroupId, model.MarketSegment, model.TerritoryType);
+            GroupService.UpdateGroupToMarketSegmentRelation(model.GroupId, model.MarketSegment);
 
             return new JsonResult(new {Message = "Обновление выполнено"});
         }

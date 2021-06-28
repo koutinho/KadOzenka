@@ -497,14 +497,14 @@ namespace KadOzenka.Dal.Groups
             return GetOMGroupToMarketSegmentRelationByGroupId(groupId);
         }
 
-        public void UpdateGroupToMarketSegmentRelation(long groupId, MarketSegment segment, TerritoryType territoryType)
+        public void UpdateGroupToMarketSegmentRelation(long groupId, MarketSegment segment)
         {
             var setting = GetOMGroupToMarketSegmentRelationByGroupId(groupId);
             if (setting == null)
                 setting = new OMGroupToMarketSegmentRelation {GroupId = groupId};
 
             setting.MarketSegment_Code = segment;
-            setting.TerritoryType_Code = territoryType;
+            setting.TerritoryType_Code = TerritoryType.No;
             setting.Save();
         }
 

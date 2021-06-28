@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.Groups
 		void DeleteGroups(long tourId, bool isOks, long? eventId = null);
 		void DeleteGroup(long groupId, long? tourYear=null, long? eventId = null);
 		OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation(long groupId);
-		void UpdateGroupToMarketSegmentRelation(long groupId, MarketSegment segment, TerritoryType territoryType);
+		void UpdateGroupToMarketSegmentRelation(long groupId, MarketSegment segment);
 		GroupExplanationSettingsDto GetGroupExplanationSettings(long groupId);
 		void UpdateGroupExplanationSettings(GroupExplanationSettingsDto dto);
 		GroupCadastralCostDefinitionActSettingsDto GetGroupCadastralCostDefinitionActSettings(long groupId);

@@ -16,31 +16,13 @@ namespace KadOzenka.Web.UnitTests.Tours
 			var model = new GroupSegmentSettingsModel
 			{
 				GroupId = RandomGenerator.GenerateRandomInteger(),
-				MarketSegment = MarketSegment.None,
-				TerritoryType = TerritoryType.Main
+				MarketSegment = MarketSegment.None
 			};
 
 			var errors = ModelValidator.Validate(model);
 
 			Assert.That(errors.Count, Is.EqualTo(1));
 			Assert.IsTrue(errors.First().ErrorMessage.Contains(GroupSegmentSettingsModel.NoSegmentErrorMessage),
-				errors.GetAllErrorMessagesAsOneString());
-		}
-
-		[Test]
-		public void CanNot_Save_Relation_If_Territory_Is_Empty()
-		{
-			var model = new GroupSegmentSettingsModel
-			{
-				GroupId = RandomGenerator.GenerateRandomInteger(),
-				MarketSegment = MarketSegment.Bed,
-				TerritoryType = TerritoryType.None
-			};
-
-			var errors = ModelValidator.Validate(model);
-
-			Assert.That(errors.Count, Is.EqualTo(1));
-			Assert.IsTrue(errors.First().ErrorMessage.Contains(GroupSegmentSettingsModel.NoTerritoryErrorMessage),
 				errors.GetAllErrorMessagesAsOneString());
 		}
 
