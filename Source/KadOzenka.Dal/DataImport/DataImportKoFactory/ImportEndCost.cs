@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,13 +59,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							if (unit != null)
 							{
 								findObj = true;
-								if (decimal.TryParse(cadastralCost, out var cost))
+								if (cadastralCost.TryParseToDecimal(out var cost))
 								{
 									unit.CadastralCost = cost;
 									setCost = true;
 								}
 
-								if (decimal.TryParse(upks, out var upksDecimal))
+								if (upks.TryParseToDecimal(out var upksDecimal))
 								{
 									unit.Upks = upksDecimal;
 									setUpks = true;
@@ -187,13 +186,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							if (unit != null)
 							{
 								findObj = true;
-								if (decimal.TryParse(cadastralCost, out var cost))
+								if (cadastralCost.TryParseToDecimal(out var cost))
 								{
 									unit.CadastralCost = cost;
 									setCost = true;
 								}
 
-								if (decimal.TryParse(upks, out var upksDecimal))
+								if (upks.TryParseToDecimal(out var upksDecimal))
 								{
 									unit.Upks = upksDecimal;
 									setUpks = true;
