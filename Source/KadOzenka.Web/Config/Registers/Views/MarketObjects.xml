@@ -26,12 +26,6 @@
           </Parameters>
       </Button>
 
-      <Button Caption="Выгрузить скриншоты" NavigateURL="~/MarketObjects/UnloadScreenshots" OpenInNewWindow="true" SRDFunctionTag="MARKET.UNLOAD_SCREENSHOTS" Icon="fas fa-images" >
-      <Parameters>
-        <Parameter Key="ObjectId" Value="[ObjectID]" />        
-      </Parameters>
-    </Button>
-
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="MARKET.EXPORT_TO_EXCEL" />
 
     <!--<Button Caption="Присвоить округа, районы, зоны" NavigateURL="~/MarketObjects/ActivateProcess" WindowHeight="110" WindowWidth="700" Icon="fas fa-object-group" SRDFunctionTag="MARKET.ACTIVATE_PROCESS"/>-->

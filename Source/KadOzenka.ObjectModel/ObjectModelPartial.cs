@@ -611,30 +611,6 @@ namespace ObjectModel.Market
 namespace ObjectModel.Market
 {
     /// <summary>
-    /// 104 Таблица, содержащая информацию о скриншотах
-    /// </summary>
-    public partial class OMScreenshots
-    {
-
-        public OMScreenshots()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMScreenshots(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.Market
-{
-    /// <summary>
     /// 106 Таблица, содержащая информацию о проведённых проверках на дублирование
     /// </summary>
     public partial class OMDuplicatesHistory

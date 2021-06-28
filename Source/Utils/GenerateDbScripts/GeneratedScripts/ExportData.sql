@@ -312,12 +312,6 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
-(104, 'Market.Screenshots', 'Таблица, содержащая информацию о скриншотах', NULL, NULL, 'MARKET_SCREENSHOTS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
-on conflict (registerid) do update set
-"registername"='Market.Screenshots', "registerdescription"='Таблица, содержащая информацию о скриншотах', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='MARKET_SCREENSHOTS', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
-
---<DO>--
-insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
 (105, 'Market.PriceHistory', 'Таблица, содержащая ретроспективу цен по объектам', NULL, NULL, 'MARKET_PRICE_HISTORY', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
 on conflict (registerid) do update set
 "registername"='Market.PriceHistory', "registerdescription"='Таблица, содержащая ретроспективу цен по объектам', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='MARKET_PRICE_HISTORY', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
