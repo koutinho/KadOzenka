@@ -9,7 +9,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 {
-	public class CalculationTests : BaseCadastralPriceCalculationTests
+	public class MultiplicativeTests : BaseCadastralPriceCalculationTests
 	{
 		protected OMModel MultiplicativeModel { get; set; }
 
