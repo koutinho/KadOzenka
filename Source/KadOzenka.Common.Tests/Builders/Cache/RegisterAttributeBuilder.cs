@@ -52,6 +52,12 @@ namespace KadOzenka.Common.Tests.Builders.Cache
 			return this;
 		}
 
+		public RegisterAttributeBuilder Name(string name)
+		{
+			_attribute.Name = name;
+			return this;
+		}
+
 		public RegisterAttributeBuilder Type(RegisterAttributeType type)
 		{
 			_attribute.Type = type;

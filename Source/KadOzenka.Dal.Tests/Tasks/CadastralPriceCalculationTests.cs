@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using Core.Register;
 using KadOzenka.Common.Tests;
-using KadOzenka.Common.Tests.Builders.Cache;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Formulas;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
 using KadOzenka.Dal.Units.Repositories;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
-using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
-using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests.Tasks
 {
@@ -185,7 +183,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 				AttributeType = RegisterAttributeType.DECIMAL
 			};
 			var formulaGeneralPart = $" * {RandomGenerator.GenerateRandomInteger()}";
-			ModelingService.Setup(x => x.GetFormula(model, model.AlgoritmType_Code)).Returns($"{Dal.Modeling.ModelingService.MarkTagInFormula}({factor.AttributeName}){formulaGeneralPart}");
+			ModelingService.Setup(x => x.GetFormula(model, model.AlgoritmType_Code)).Returns($"{BaseFormula.MarkTagInFormula}({factor.AttributeName}){formulaGeneralPart}");
 
 			var formula = LongProcess.PrepareFormula(model, new List<FactorInfo> { factor });
 

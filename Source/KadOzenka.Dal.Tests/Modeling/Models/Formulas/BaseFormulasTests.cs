@@ -11,18 +11,19 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 {
-	public class BaseFormulasTests : BaseModelTests
+	public abstract class BaseFormulasTests : BaseModelTests
 	{
 		protected OMModel Model;
 		protected FactorBuilder FactorBuilder;
 		protected RegisterAttribute CacheAttribute;
 		protected string CacheAttributeName => $"\"{CacheAttribute.Name}\"";
+		protected abstract KoAlgoritmType AlgorithmType { get; }
 
 
 		[SetUp]
 		public void SetUp()
 		{
-			Model = new ModelBuilder().Manual().AlgorithmType(KoAlgoritmType.Multi).Build();
+			Model = new ModelBuilder().Manual().AlgorithmType(AlgorithmType).Build();
 			FactorBuilder = new FactorBuilder();
 			CacheAttribute = new RegisterAttributeBuilder().Id(FactorBuilder.Id).Build();
 		}

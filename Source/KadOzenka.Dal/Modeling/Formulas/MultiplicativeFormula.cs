@@ -6,10 +6,6 @@ namespace KadOzenka.Dal.Modeling.Formulas
 	{
 		public override string FactorsSeparator => "*";
 
-		public override decimal GetA0(OMModel model)
-		{
-			return model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
-		}
 
 		public override string GetPartForNoneMarkType(ModelInfoForFormula modelInfo)
 		{
@@ -29,6 +25,12 @@ namespace KadOzenka.Dal.Modeling.Formulas
 		public override string GetPartForReverseMarkType(ModelInfoForFormula modelInfo)
 		{
 			return $"({modelInfo.KInFormula}/({modelInfo.AttributeName}+{modelInfo.CorrectingTermInFormula}) + {modelInfo.WeightInFormula})^{modelInfo.B0InFormula}";
+		}
+
+		public override string GetBaseFormulaPart(OMModel model, string factors)
+		{
+			var a0 = model.A0ForMultiplicative == null ? 1 : model.A0ForMultiplicativeInFormula;
+			return $"{a0} * {factors}";
 		}
 	}
 }

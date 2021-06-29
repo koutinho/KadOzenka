@@ -35,8 +35,6 @@ namespace KadOzenka.Dal.Modeling
         private RecycleBinService RecycleBinService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
-        public static readonly string MarkTagInFormula = "метка";
-
 
         public ModelingService(IModelingRepository modelingRepository = null,
 			IModelObjectsRepository modelObjectsRepository = null,
@@ -593,7 +591,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			if(algorithmType == KoAlgoritmType.Multi)
+			if (algorithmType == KoAlgoritmType.Multi || algorithmType == KoAlgoritmType.Exp)
 			{
 				//для ручной модели существует один набор факторов под алгоритм самой модели
 				//для автоматической модели набор факторов разный под тип алгоритма
@@ -603,8 +601,7 @@ namespace KadOzenka.Dal.Modeling
 
 				var formulaCreator = GetFormulaCreator(algorithmType);
 
-				var formula = new StringBuilder();
-				formula.Append($"{formulaCreator.GetA0(model)}");
+				var factorsInFormula = new StringBuilder();
 
 				factors.ForEach(x =>
 				{
@@ -616,27 +613,29 @@ namespace KadOzenka.Dal.Modeling
 					var modelInfo = new ModelInfoForFormula(attributeName, weightInFormula, b0InFormula,
 						correctingTermInFormula, kInFormula);
 
-					formula.Append(formulaCreator.FactorsSeparator);
 					switch (x.MarkType_Code)
 					{
 						case MarkType.None:
-							formula.Append(formulaCreator.GetPartForNoneMarkType(modelInfo));
+							factorsInFormula.Append(formulaCreator.GetPartForNoneMarkType(modelInfo));
 							break;
 						case MarkType.Default:
-							formula.Append(formulaCreator.GetPartForDefaultMarkType(modelInfo));
+							factorsInFormula.Append(formulaCreator.GetPartForDefaultMarkType(modelInfo));
 							break;
 						case MarkType.Straight:
-							formula.Append(formulaCreator.GetPartForStraightMarkType(modelInfo));
+							factorsInFormula.Append(formulaCreator.GetPartForStraightMarkType(modelInfo));
 							break;
 						case MarkType.Reverse:
-							formula.Append(formulaCreator.GetPartForReverseMarkType(modelInfo));
+							factorsInFormula.Append(formulaCreator.GetPartForReverseMarkType(modelInfo));
 							break;
 						default:
 							throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code.GetEnumDescription()}'");
 					}
+
+					factorsInFormula.Append(formulaCreator.FactorsSeparator);
 				});
 
-				return formula.ToString();
+				var processedFactors = factorsInFormula.ToString().TrimEnd(formulaCreator.FactorsSeparator);
+				return formulaCreator.GetBaseFormulaPart(model, processedFactors);
 			}
 			
 			//TODO другие типы будут реализованы позднее
@@ -653,8 +652,8 @@ namespace KadOzenka.Dal.Modeling
 			{
 				case KoAlgoritmType.None:
 					throw new FormulaCreationException("Не передан тип алгоритма расчета модели");
-				//case KoAlgoritmType.Exp:
-				//	break;
+				case KoAlgoritmType.Exp:
+					return new ExponentialFormula();
 				//case KoAlgoritmType.Line:
 				//	break;
 				case KoAlgoritmType.Multi:

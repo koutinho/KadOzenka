@@ -11,6 +11,10 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 {
 	public class MultiplicativeTests : BaseFormulasTests
 	{
+		protected override KoAlgoritmType AlgorithmType => KoAlgoritmType.Multi;
+
+
+
 		[Test]
 		public void Can_Create_Formula_With_One_Factor_Without_Mark()
 		{
@@ -81,10 +85,11 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var defaultMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Default).Build();
 			var straightMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Straight).Build();
 			var reverseMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Reverse).Build();
-			var noneMarkTypeAttribute = new RegisterAttributeBuilder().Id(noneMarkTypeFactor.Id).Build();
-			var defaultMarkTypeAttribute = new RegisterAttributeBuilder().Id(defaultMarkTypeFactor.Id).Build();
-			var straightMarkTypeAttribute = new RegisterAttributeBuilder().Id(straightMarkTypeFactor.Id).Build();
-			var reverseMarkTypeAttribute = new RegisterAttributeBuilder().Id(reverseMarkTypeFactor.Id).Build();
+
+			var noneMarkTypeAttribute = new RegisterAttributeBuilder().Id(noneMarkTypeFactor.Id).Name("none").Build();
+			var defaultMarkTypeAttribute = new RegisterAttributeBuilder().Id(defaultMarkTypeFactor.Id).Name("def").Build();
+			var straightMarkTypeAttribute = new RegisterAttributeBuilder().Id(straightMarkTypeFactor.Id).Name("straight").Build();
+			var reverseMarkTypeAttribute = new RegisterAttributeBuilder().Id(reverseMarkTypeFactor.Id).Name("reverse").Build();
 
 			ModelFactorsService.Setup(x => x.GetFactors(Model.Id, It.IsAny<KoAlgoritmType>()))
 				.Returns(new List<OMModelFactor> { noneMarkTypeFactor, defaultMarkTypeFactor, straightMarkTypeFactor, reverseMarkTypeFactor });

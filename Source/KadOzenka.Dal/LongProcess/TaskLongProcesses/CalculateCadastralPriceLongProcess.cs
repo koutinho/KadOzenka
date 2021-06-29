@@ -17,6 +17,7 @@ using KadOzenka.Dal.LongProcess._Common;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Formulas;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
@@ -330,7 +331,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				var factorNameInFormula = factor.AttributeName;
 				if (factor.MarkType == MarkType.Default)
 				{
-					factorNameInFormula = $"{Dal.Modeling.ModelingService.MarkTagInFormula}({factorNameInFormula})";
+					factorNameInFormula = $"{BaseFormula.MarkTagInFormula}({factorNameInFormula})";
 				}
 
 				formula = formula.Replace(factorNameInFormula, $"{AttributePrefixInFormula}{factor.FactorId}");
