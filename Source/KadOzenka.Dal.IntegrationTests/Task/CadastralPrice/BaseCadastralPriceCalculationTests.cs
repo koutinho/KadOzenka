@@ -38,15 +38,14 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			Tour2018OksRegister = RegisterCache.GetRegisterData(250);
 
-			var possibleFactors = RegisterCache.RegisterAttributes.Where(x =>
-				x.Value.RegisterId == Tour2018OksRegister.Id && x.Value.Type == RegisterAttributeType.INTEGER &&
-				!x.Value.IsPrimaryKey).Take(4).Select(x => x.Value).ToList();
+			var possibleFactors = Get2018TourFactorAttributes(RegisterAttributeType.INTEGER, 4);
 
 			Tour2018OksFirstIntegerFactor = possibleFactors[0];
 			Tour2018OksSecondIntegerFactor = possibleFactors[1];
 			Tour2018OksThirdIntegerFactor = possibleFactors[2];
 			Tour2018OksFourthIntegerFactor = possibleFactors[3];
 		}
+
 
 		[SetUp]
 		public void CadastralPriceCalculationSetUp()
@@ -133,6 +132,13 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return OMUnit.Where(x => x.Id == unitId)
 				.Select(x => new { x.CadastralCost, x.Upks, x.Square })
 				.ExecuteFirstOrDefault();
+		}
+
+		protected List<RegisterAttribute> Get2018TourFactorAttributes(RegisterAttributeType type, int count)
+		{
+			return RegisterCache.RegisterAttributes.Where(x =>
+				x.Value.RegisterId == Tour2018OksRegister.Id && x.Value.Type == type &&
+				!x.Value.IsPrimaryKey).Take(count).Select(x => x.Value).ToList();
 		}
 	}
 }
