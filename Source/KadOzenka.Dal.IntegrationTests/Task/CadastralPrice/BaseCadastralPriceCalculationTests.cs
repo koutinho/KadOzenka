@@ -123,11 +123,6 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return new CalculateCadastralPriceLongProcess().DoCalculation(settings, new CancellationToken());
 		}
 
-		protected decimal GetExpectedConstForNoneMark(OMModelFactor factor, decimal unitFactorValue)
-		{
-			return (decimal)Math.Pow((double)(unitFactorValue + factor.WeightInFormula), (double)factor.B0);
-		}
-
 
 		protected void CheckCalculatedUnit(long unitId, decimal expectedCadastralCost)
 		{

@@ -47,12 +47,12 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			var groupWithoutActiveModel = new GroupBuilder().Parent(Oks2018ParentGroup).Build();
 			var unitWithoutActiveGroup = new UnitBuilder().Task(Task).Group(groupWithoutActiveModel.Id).CadastralCost(0).Upks(0).Type(PropertyTypes.Building).Build();
-			var factor = CreateFactorWithoutMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel);
+			CreateFactorWithoutMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel);
 
 			var errors = PerformCalculation(Task.Id, groupWithoutActiveModel.Id, Group.Id);
 
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedConstForNoneMark(factor, UnitFactorValue);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var calculatedUnit = GetUnitById(Unit.Id);
+			Assert.That(calculatedUnit.CadastralCost, Is.Not.Zero);
 			CheckError(errors, unitWithoutActiveGroup, Messages.NoActiveModelInCadasralPriceCalculation);
 		}
 
