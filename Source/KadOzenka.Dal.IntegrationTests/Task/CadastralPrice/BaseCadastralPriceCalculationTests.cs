@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Core.Register;
@@ -18,16 +17,15 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 	public class BaseCadastralPriceCalculationTests : BaseTaskTests
 	{
 		//забиваем маленькими константами, чтобы можно было легко посчитать/починить тест
+		protected const int UnitFactorValue = 1;
 		private const double FactorCorrection = 2.1;
 		private const double FactorCoefficient = 3.2;
 		private const double FactorK = 4.2;
 		private const double FactorCorrectionTerm = 5.2;
-		protected const int UnitFactorValue = 1;
 
 		protected OMTask Task { get; set; }
 		protected OMUnit Unit { get; set; }
 		protected OMGroup Group { get; set; }
-		protected OMModel MultiplicativeModel { get; set; }
 		protected RegisterData Tour2018OksRegister { get; set; }
 		protected RegisterAttribute Tour2018OksFirstIntegerFactor { get; set; }
 		protected RegisterAttribute Tour2018OksSecondIntegerFactor { get; set; }
@@ -36,7 +34,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 
 		[OneTimeSetUp]
-		public void OneTimeSetUp()
+		public void CadastralPriceCalculationOneTimeSetUp()
 		{
 			Tour2018OksRegister = RegisterCache.GetRegisterData(250);
 
@@ -50,17 +48,13 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			Tour2018OksFourthIntegerFactor = possibleFactors[3];
 		}
 
-
 		[SetUp]
-		public void SetUp()
+		public void CadastralPriceCalculationSetUp()
 		{
-			var modelA0 = 2;
 			Task = new TaskBuilder().Tour2018().Document(FirstDocument).Build();
 			Group = new GroupBuilder().Parent(Oks2018ParentGroup).Build();
 			new TourGroupBuilder().Group(Group.Id).Tour(Task.TourId.GetValueOrDefault()).Build();
-			MultiplicativeModel = new ModelBuilder().Group(Group.Id).AlgorithmType(KoAlgoritmType.Multi).IsActive(true).A0(modelA0).Build();
 			Unit = new UnitBuilder().Task(Task).Group(Group.Id).CadastralCost(0).Upks(0).Type(PropertyTypes.Building).Build();
-
 			var factors = new List<RegisterAttribute>
 			{
 				Tour2018OksFirstIntegerFactor, Tour2018OksSecondIntegerFactor,

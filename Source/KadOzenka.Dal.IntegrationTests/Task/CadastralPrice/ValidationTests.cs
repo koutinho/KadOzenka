@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Core.Register.RegisterEntities;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders;
 using KadOzenka.Dal.Integration._Builders.Model;
@@ -14,6 +15,19 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 {
 	public class ValidationTests : BaseCadastralPriceCalculationTests
 	{
+		protected OMModel MultiplicativeModel { get; set; }
+
+
+		[SetUp]
+		public void SetUp()
+		{
+			var modelA0 = 2;
+			MultiplicativeModel = new ModelBuilder().Group(Group.Id).IsActive(true)
+				.AlgorithmType(KoAlgoritmType.Multi).A0(modelA0).Build();
+		}
+
+
+
 		[Test]
 		public void If_Price_Is_Not_A_Number_Save_It_As_Error()
 		{

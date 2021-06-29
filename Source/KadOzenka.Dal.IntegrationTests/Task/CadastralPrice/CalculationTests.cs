@@ -11,6 +11,19 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 {
 	public class CalculationTests : BaseCadastralPriceCalculationTests
 	{
+		protected OMModel MultiplicativeModel { get; set; }
+
+
+		[SetUp]
+		public void SetUp()
+		{
+			var modelA0 = 2;
+			MultiplicativeModel = new ModelBuilder().Group(Group.Id).IsActive(true)
+				.AlgorithmType(KoAlgoritmType.Multi).A0(modelA0).Build();
+		}
+
+
+
 		[Test]
 		public void Can_Calculate_Price_By_Mult_Model_With_One_Factor_Of_None_MarkType()
 		{
