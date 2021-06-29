@@ -156,7 +156,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					}
 
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
-					if (activeGroupModel.Type_Code == KoModelType.Manual && activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi)
+					if (activeGroupModel.Type_Code == KoModelType.Manual &&
+					    (activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi ||
+					     activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Exp))
 					{
 						CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken,
 							maxUnitsCount, processedUnitsCount);

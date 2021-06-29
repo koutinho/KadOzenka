@@ -180,7 +180,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		protected decimal GetExpectedCostForNoneMark(OMModelFactor factor, decimal unitFactorValue)
 		{
-			return (decimal)Math.Pow((double)(unitFactorValue + factor.WeightInFormula), (double)factor.B0);
+			return (decimal)Math.Pow((double)(unitFactorValue + factor.WeightInFormula), (double)factor.B0InFormula);
 		}
 
 		private decimal GetExpectedCadastralConstForDefaultMark(OMMarkCatalog mark, OMModelFactor factor)
@@ -192,7 +192,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)
 		{
-			var formulaPart = (factor.CorrectingTermInFormula + UnitFactorValue) / factor.K + factor.WeightInFormula;
+			var formulaPart = (factor.CorrectingTermInFormula + UnitFactorValue) / factor.KInFormula + factor.WeightInFormula;
 			
 			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
 		}
