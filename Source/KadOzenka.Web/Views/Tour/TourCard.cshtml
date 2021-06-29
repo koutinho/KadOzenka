@@ -111,7 +111,7 @@
                     <button type="button" id="deleteGroupOrTourButton"><span class="k-icon k-i-delete"></span></button>
                 </div>
             </div>
-            <div id="tabs" class="col-sm-6" style="display: none">
+            <div id="tabs" class="col-sm-7" style="display: none">
                 @(Html.Kendo().TabStrip()
                     .Name("tabStrip")
                     .Animation(false)
@@ -122,6 +122,12 @@
                             .Selected(true)
                             .Content(@<text>
                                          <div id="mainContent" style="width: 98%">
+                                         </div>
+                                      </text>);
+                        tabstrip.Add().Text("Настройка группировки")
+                            .HtmlAttributes(new {id="groupingSettingsTab"})
+                            .Content(@<text>
+                                         <div id="groupingSettings" style="width: 98%">
                                          </div>
                                       </text>);
                         tabstrip.Add().Text("Настройка сегмента")
@@ -186,6 +192,9 @@
             var data = GetDataFromRowInTree(row);
             if (row.length > 0) {
                 switch (selectedTabId) {
+                    case "groupingSettingsTab":
+                        $('#groupingSettings').load(data.UrlForGroupingSettings);
+                        break;
                     case "segmentSettingsTab":
                         $('#segmentSettings').load(data.UrlForSegmentSettings);
                         break;
@@ -680,7 +689,7 @@
         }
 
         .flex-tree-list {
-            margin: 10px;
+            /*margin: 10px;*/
             flex-grow: 1;
             flex-shrink: 1;
             flex-basis: auto;

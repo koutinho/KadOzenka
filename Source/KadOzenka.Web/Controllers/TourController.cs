@@ -2,18 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Transactions;
 using Core.ErrorManagment;
-using Core.Main.FileStorages;
 using Core.Register;
-using Core.Register.Enums;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using Core.SRD;
-using GemBox.Spreadsheet;
 using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -22,12 +16,8 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
-using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Oks;
-using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
-using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.Tour;
 using KadOzenka.Web.Models.Tour.EstimateGroup;
@@ -35,13 +25,10 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Practices.ObjectBuilder2;
 using Newtonsoft.Json;
-using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
-using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
@@ -451,6 +438,32 @@ namespace KadOzenka.Web.Controllers
         }
 
         #endregion Настройки атрибутов тура
+
+        #region Настройка для группировки
+
+        [HttpGet]
+        //[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+        public ActionResult TourGroupGroupingSettings(long groupId)
+        {
+            ViewData["KoAttributes"] = new List<DropDownTreeItemModel>();
+            var settings = GroupService.GetGroupExplanationSettings(groupId);
+            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml",
+                new TourGroupGroupingSettingsModel());
+        }
+
+        [HttpPost]
+        //[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
+        public JsonResult TourGroupGroupingSettings(TourGroupGroupingSettingsModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            //GroupService.UpdateGroupExplanationSettings(model.ToDto());
+
+            return new JsonResult(new {Message = "Обновление выполнено"});
+        }
+
+        #endregion
 
         #region Туры
 

@@ -1,0 +1,70 @@
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Tour.TourGroupGroupingSettingsModel
+
+<link rel="stylesheet" href="~/css/toolbars.css"/>
+@using (Html.BeginForm("TourGroupGroupingSettings", "Tour", FormMethod.Post, new {id = "updateGroupingSettingsForm", enctype = "multipart/form-data"}))
+{
+    <div id="groupingSettingToolbar" class="top-toolbar" style="margin-top:35px; width:55%"></div>
+    <div class="bottom-main-content">
+    @for (var i = 0; i < Model.GroupFilters.Count; i++)
+    {
+        <div class="form-group">
+            <div class="col-sm-3">
+                @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+            </div>
+            <div class="col-sm-8">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
+            </div>
+            <div class="col-sm-1"><a href="#" class="k-button-icon k-button" id="delRow_@i"><span class='fas fa-minus'></span></a></div>
+        </div>
+    }
+    </div>
+}
+
+<script src="~/js/toolbars.js"></script>
+<script src="~/js/custom-filters.js"></script>
+<script src="~/js/custom-validation.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#groupingSettingToolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'save',
+                    icon: 'save',
+                    text: 'Сохранить'
+                },
+                {
+                    type: 'button',
+                    id: 'add',
+                    icon: 'plus',
+                    text: 'Добавить условие'
+                }]
+        });
+    });
+
+    function save() {
+        kendo.ui.progress($('body'), true);
+        var form = $('#updateGroupingSettingsForm');
+        var formObject = Common.Functions.FormToObject(form);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                }
+                Common.ShowMessage(response.Message);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+</script>
