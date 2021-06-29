@@ -25,7 +25,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
-		public AMarkBuilder Group(long groupId)
+		public AMarkBuilder Group(long? groupId)
 		{
 			_mark.GroupId = groupId;
 			return this;
