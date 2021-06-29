@@ -28,7 +28,7 @@
         </div>
         <div id="correctItemBlock" class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabelFor(x => x.CorrectItem)
+                @Html.LabelFor(x => x.CorrectItem, new { @class = "control-label required"})
             </div>
             <div class="col-sm-9">
                 @Html.KendoNumericTextBoxFor(x => x.CorrectItem, precision: 5, isReadonly: false)
@@ -36,7 +36,7 @@
         </div>
         <div id="kBlock" class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabelFor(x => x.K)
+                @Html.LabelFor(x => x.K, new { @class = "control-label required"})
             </div>
             <div class="col-sm-9">
                 @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: false)

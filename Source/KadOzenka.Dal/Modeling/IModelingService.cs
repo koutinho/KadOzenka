@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Directory;
@@ -32,5 +33,6 @@ namespace KadOzenka.Dal.Modeling
 		Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type);
 
 		string GetFormula(OMModel model, KoAlgoritmType algorithmType);
+		List<OMModel> GetActiveModelsEntityByGroupId(long? groupId);
 	}
 }

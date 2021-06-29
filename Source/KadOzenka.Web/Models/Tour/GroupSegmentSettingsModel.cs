@@ -14,29 +14,20 @@ namespace KadOzenka.Web.Models.Tour
 
         [Display(Name="Сегмент")]
         public MarketSegment MarketSegment { get; set; }
-        [Display(Name = "Территория")]
-        public TerritoryType TerritoryType { get; set; }
 
 
         public static GroupSegmentSettingsModel FromEntity(OMGroupToMarketSegmentRelation entity)
         {
             return new GroupSegmentSettingsModel
             {
-                MarketSegment = entity.MarketSegment_Code,
-                TerritoryType = entity.TerritoryType_Code
+                MarketSegment = entity.MarketSegment_Code
             };
         }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var errors = new List<ValidationResult>();
-
-            if(MarketSegment == MarketSegment.None)
-                errors.Add(new ValidationResult(NoSegmentErrorMessage));
-            if (TerritoryType == TerritoryType.None)
-                errors.Add(new ValidationResult(NoTerritoryErrorMessage));
-
-            return errors;
+	        if (MarketSegment == MarketSegment.None)
+		        yield return new ValidationResult(NoSegmentErrorMessage);
         }
     }
 }

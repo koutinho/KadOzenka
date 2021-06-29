@@ -41,9 +41,10 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
         public GroupFactorService GroupFactorService { get; set; }
+        public IModelingService ModelingService { get; set; }
 
         public TourController(ITourService tourService, IGbuObjectService gbuObjectService,
-	        IRegisterCacheWrapper registerCacheWrapper)
+	        IRegisterCacheWrapper registerCacheWrapper, IModelingService modelingService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TourFactorService = new TourFactorService();
@@ -51,6 +52,7 @@ namespace KadOzenka.Web.Controllers
             TourService = tourService;
             TourComplianceImportService = new TourComplianceImportService();
             GroupFactorService = new GroupFactorService();
+            ModelingService = modelingService;
         }
 
         #region Карточка тура
@@ -133,14 +135,7 @@ namespace KadOzenka.Web.Controllers
             var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            groupModel.Models = OMModel.Where(x => x.GroupId == groupId)
-                .OrderByDescending(x => x.IsActive.Coalesce(false)).OrderBy(x => x.Name)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.Name
-                })
-                .Execute()
+            groupModel.Models = ModelingService.GetActiveModelsEntityByGroupId(groupId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -173,7 +168,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            GroupService.UpdateGroupToMarketSegmentRelation(model.GroupId, model.MarketSegment, model.TerritoryType);
+            GroupService.UpdateGroupToMarketSegmentRelation(model.GroupId, model.MarketSegment);
 
             return new JsonResult(new {Message = "Обновление выполнено"});
         }

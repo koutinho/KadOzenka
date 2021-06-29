@@ -367,19 +367,19 @@ namespace ObjectModel.Directory
         [ShortTitle("Доля в квартире")]
         FlatShare = 17,
 		/// <summary>
-		/// Квартира в новостройке (17)
+		/// Квартира в новостройке (18)
 		/// </summary>
 		[Description("Квартира в новостройке")]
-        [EnumCode("17")]
+        [EnumCode("18")]
         [ShortTitle("Квартира в новостройке")]
-        NewBuildingFlat = 17,
+        NewBuildingFlat = 18,
 		/// <summary>
-		/// Участок (18)
+		/// Участок (19)
 		/// </summary>
 		[Description("Участок")]
-        [EnumCode("18")]
+        [EnumCode("19")]
         [ShortTitle("Участок")]
-        Land = 18,
+        Land = 19,
     }
 }
 

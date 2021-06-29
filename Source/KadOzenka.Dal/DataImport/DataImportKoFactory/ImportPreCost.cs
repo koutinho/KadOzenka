@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +19,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 		public ImportPreCost()
 		{
 		}
+
 
 		public Stream ImportDataFromExcelByUnitStatus(ExcelFile excelFile, ImportDataFromExcelDto settings, OMImportDataLog import)
 		{
@@ -65,13 +65,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							if (unit != null)
 							{
 								findObj = true;
-								if (decimal.TryParse(preCadastralCost, out var preCost))
+								if (preCadastralCost.TryParseToDecimal(out var preCost))
 								{
 									unit.CadastralCostPre = preCost;
 									setPreCost = true;
 								}
 
-								if (decimal.TryParse(preUpks, out var preUpksDecimal))
+								if (preUpks.TryParseToDecimal(out var preUpksDecimal))
 								{
 									unit.UpksPre = preUpksDecimal;
 									setPreUpks = true;
@@ -194,13 +194,13 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 							if (unit != null)
 							{
 								findObj = true;
-								if (decimal.TryParse(preCadastralCost, out var preCost))
+								if (preCadastralCost.TryParseToDecimal(out var preCost))
 								{
 									unit.CadastralCostPre = preCost;
 									setPreCost = true;
 								}
 
-								if (decimal.TryParse(preUpks, out var preUpksDecimal))
+								if (preUpks.TryParseToDecimal(out var preUpksDecimal))
 								{
 									unit.UpksPre = preUpksDecimal;
 									setPreUpks = true;
