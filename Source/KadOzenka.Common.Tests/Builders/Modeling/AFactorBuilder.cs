@@ -19,8 +19,8 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 			_factor = new OMModelFactor
 			{
-				ModelId = RandomGenerator.GenerateRandomInteger(),
-				FactorId = RandomGenerator.GenerateRandomInteger(),
+				ModelId = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue),
+				FactorId = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
 				Weight = RandomGenerator.GenerateRandomDecimal(),
 				B0 = RandomGenerator.GenerateRandomDecimal(),
