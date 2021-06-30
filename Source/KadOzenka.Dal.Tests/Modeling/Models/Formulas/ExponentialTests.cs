@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using DevExpress.Office.Utils;
 using KadOzenka.Common.Tests.Builders.Cache;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
-using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -76,7 +76,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var straightMarkTypeAttribute = new RegisterAttributeBuilder().Id(straightMarkTypeFactor.Id).Name("straight").Build();
 			var reverseMarkTypeAttribute = new RegisterAttributeBuilder().Id(reverseMarkTypeFactor.Id).Name("reverse").Build();
 
-			ModelFactorsService.Setup(x => x.GetFactors(Model.Id, It.IsAny<KoAlgoritmType>()))
+			ModelFactorsService.Setup(x => x.GetFactors(Model.Id, Model.AlgoritmType_Code))
 				.Returns(new List<OMModelFactor> { noneMarkTypeFactor, defaultMarkTypeFactor, straightMarkTypeFactor, reverseMarkTypeFactor });
 
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(noneMarkTypeFactor.FactorId.Value)).Returns(noneMarkTypeAttribute);
@@ -84,7 +84,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(straightMarkTypeFactor.FactorId.Value)).Returns(straightMarkTypeAttribute);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(reverseMarkTypeFactor.FactorId.Value)).Returns(reverseMarkTypeAttribute);
 
-			var formula = ModelingService.GetFormula(Model, KoAlgoritmType.Exp);
+			var formula = ModelingService.GetFormula(Model, Model.AlgoritmType_Code);
 
 			var baseFormulaPart = $"{Model.A0ForExponentialInFormula}*exp";
 			var noneMarkTypeFormulaPart = $"\"{noneMarkTypeAttribute.Name}\"*{noneMarkTypeFactor.B0InFormula}";

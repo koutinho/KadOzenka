@@ -591,56 +591,50 @@ namespace KadOzenka.Dal.Modeling
 
 		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			if (algorithmType == KoAlgoritmType.Multi || algorithmType == KoAlgoritmType.Exp)
+			//для ручной модели существует один набор факторов под алгоритм самой модели
+			//для автоматической модели набор факторов разный под тип алгоритма
+			var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
+			if (factors.Count == 0)
+				throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
+
+			var formulaCreator = GetFormulaCreator(algorithmType);
+
+			var factorsInFormula = new StringBuilder();
+
+			factors.ForEach(x =>
 			{
-				//для ручной модели существует один набор факторов под алгоритм самой модели
-				//для автоматической модели набор факторов разный под тип алгоритма
-				var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
-				if (factors.Count == 0)
-					throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
+				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
+				var weightInFormula = ProcessNumber(x.WeightInFormula);
+				var b0InFormula = ProcessNumber(x.B0InFormula);
+				var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
+				var kInFormula = ProcessNumber(x.KInFormula);
+				var modelInfo = new ModelInfoForFormula(attributeName, weightInFormula, b0InFormula,
+					correctingTermInFormula, kInFormula);
 
-				var formulaCreator = GetFormulaCreator(algorithmType);
-
-				var factorsInFormula = new StringBuilder();
-
-				factors.ForEach(x =>
+				switch (x.MarkType_Code)
 				{
-					var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
-					var weightInFormula = ProcessNumber(x.WeightInFormula);
-					var b0InFormula = ProcessNumber(x.B0InFormula);
-					var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
-					var kInFormula = ProcessNumber(x.KInFormula);
-					var modelInfo = new ModelInfoForFormula(attributeName, weightInFormula, b0InFormula,
-						correctingTermInFormula, kInFormula);
+					case MarkType.None:
+						factorsInFormula.Append(formulaCreator.GetPartForNoneMarkType(modelInfo));
+						break;
+					case MarkType.Default:
+						factorsInFormula.Append(formulaCreator.GetPartForDefaultMarkType(modelInfo));
+						break;
+					case MarkType.Straight:
+						factorsInFormula.Append(formulaCreator.GetPartForStraightMarkType(modelInfo));
+						break;
+					case MarkType.Reverse:
+						factorsInFormula.Append(formulaCreator.GetPartForReverseMarkType(modelInfo));
+						break;
+					default:
+						throw new FormulaCreationException(
+							$"Передан неизвестный тип метки: '{x.MarkType_Code.GetEnumDescription()}'");
+				}
 
-					switch (x.MarkType_Code)
-					{
-						case MarkType.None:
-							factorsInFormula.Append(formulaCreator.GetPartForNoneMarkType(modelInfo));
-							break;
-						case MarkType.Default:
-							factorsInFormula.Append(formulaCreator.GetPartForDefaultMarkType(modelInfo));
-							break;
-						case MarkType.Straight:
-							factorsInFormula.Append(formulaCreator.GetPartForStraightMarkType(modelInfo));
-							break;
-						case MarkType.Reverse:
-							factorsInFormula.Append(formulaCreator.GetPartForReverseMarkType(modelInfo));
-							break;
-						default:
-							throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code.GetEnumDescription()}'");
-					}
+				factorsInFormula.Append(formulaCreator.FactorsSeparator);
+			});
 
-					factorsInFormula.Append(formulaCreator.FactorsSeparator);
-				});
-
-				var processedFactors = factorsInFormula.ToString().TrimEnd(formulaCreator.FactorsSeparator);
-				return formulaCreator.GetBaseFormulaPart(model, processedFactors);
-			}
-			
-			//TODO другие типы будут реализованы позднее
-			model.AlgoritmType_Code = algorithmType;
-			return model.GetFormulaFull(true);
+			var processedFactors = factorsInFormula.ToString().TrimEnd(formulaCreator.FactorsSeparator);
+			return formulaCreator.GetBaseFormulaPart(model, processedFactors);
 		}
 
 
@@ -654,19 +648,16 @@ namespace KadOzenka.Dal.Modeling
 					throw new FormulaCreationException("Не передан тип алгоритма расчета модели");
 				case KoAlgoritmType.Exp:
 					return new ExponentialFormula();
-				//case KoAlgoritmType.Line:
-				//	break;
+				case KoAlgoritmType.Line:
+					return new LinearFormula();
 				case KoAlgoritmType.Multi:
 					return new MultiplicativeFormula();
-				//todo раскомментировать после реализации линейного алгоритма
-				//default:
-				//	throw new FormulaCreationException($"Передан неизвестный тип алгоритма расчета модели: '{algorithmType.GetEnumDescription()}'");
+				default:
+					throw new FormulaCreationException($"Передан неизвестный тип алгоритма расчета модели: '{algorithmType.GetEnumDescription()}'");
 			}
-
-			return null;
 		}
 
-		private static string ProcessNumber(decimal number)
+		private string ProcessNumber(decimal number)
 		{
 			var numberInFormula = $"{number}";
 			if (number < 0)

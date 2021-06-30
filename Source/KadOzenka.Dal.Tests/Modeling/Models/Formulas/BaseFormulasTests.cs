@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 		protected void MockDependencies(OMModel model, OMModelFactor factor, RegisterAttribute cacheAttribute)
 		{
-			ModelFactorsService.Setup(x => x.GetFactors(model.Id, It.IsAny<KoAlgoritmType>()))
+			ModelFactorsService.Setup(x => x.GetFactors(model.Id, model.AlgoritmType_Code))
 				.Returns(new List<OMModelFactor> { factor });
 
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(cacheAttribute);
