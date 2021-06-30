@@ -156,9 +156,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					}
 
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
-					if (activeGroupModel.Type_Code == KoModelType.Manual &&
-					    (activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Multi ||
-					     activeGroupModel.AlgoritmType_Code == KoAlgoritmType.Exp))
+					if (activeGroupModel.Type_Code == KoModelType.Manual)
 					{
 						CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken,
 							maxUnitsCount, processedUnitsCount);
@@ -168,7 +166,6 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 						settings.SelectedGroupIds = new List<long> {group.Id};
 						var errors = CalculateByOldRealization(settings);
 						_errorsDuringCalculation.AddRange(errors);
-
 					}
 				});
 			}
