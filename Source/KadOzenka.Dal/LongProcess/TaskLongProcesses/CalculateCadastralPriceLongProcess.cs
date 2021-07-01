@@ -70,6 +70,20 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_errorsDuringCalculation = new List<CalcErrorItem>();
 		}
 
+		//служба длительных процессов основана на конструкторе без параметров
+		public CalculateCadastralPriceLongProcess()
+		{
+			UnitRepository = new UnitRepository();
+			UnitService = new UnitService();
+			RegisterCacheWrapper = new RegisterCacheWrapper();
+			ModelingService = new ModelingService();
+			ModelFactorsService = new ModelFactorsService();
+			GroupService = new GroupService();
+
+			_locker = new object();
+			_errorsDuringCalculation = new List<CalcErrorItem>();
+		}
+
 
 
 		public static long AddProcessToQueue(CadastralPriceCalculationSettions settings)
