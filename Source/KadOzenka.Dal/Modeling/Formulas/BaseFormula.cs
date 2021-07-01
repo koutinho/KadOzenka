@@ -18,5 +18,18 @@ namespace KadOzenka.Dal.Modeling.Formulas
 		public abstract string GetPartForReverseMarkType(ModelInfoForFormula modelInfo);
 
 		public abstract string GetBaseFormulaPart(OMModel model, string factors);
+
+		public string ProcessNumber(decimal number)
+		{
+			var numberInFormula = $"{number}";
+			if (number < 0)
+			{
+				numberInFormula = $"({numberInFormula})";
+			}
+
+			//все стронние библиотеки (для отрисовки формулы и расчета) работают с ".",
+			//но разделить для культуры в приложении - ","
+			return numberInFormula.Replace(",", ".");
+		}
 	}
 }

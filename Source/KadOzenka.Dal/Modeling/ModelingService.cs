@@ -604,10 +604,10 @@ namespace KadOzenka.Dal.Modeling
 			factors.ForEach(x =>
 			{
 				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
-				var weightInFormula = ProcessNumber(x.WeightInFormula);
-				var b0InFormula = ProcessNumber(x.B0InFormula);
-				var correctingTermInFormula = ProcessNumber(x.CorrectingTermInFormula);
-				var kInFormula = ProcessNumber(x.KInFormula);
+				var weightInFormula = formulaCreator.ProcessNumber(x.WeightInFormula);
+				var b0InFormula = formulaCreator.ProcessNumber(x.B0InFormula);
+				var correctingTermInFormula = formulaCreator.ProcessNumber(x.CorrectingTermInFormula);
+				var kInFormula = formulaCreator.ProcessNumber(x.KInFormula);
 				var modelInfo = new ModelInfoForFormula(attributeName, weightInFormula, b0InFormula,
 					correctingTermInFormula, kInFormula);
 
@@ -626,8 +626,7 @@ namespace KadOzenka.Dal.Modeling
 						factorsInFormula.Append(formulaCreator.GetPartForReverseMarkType(modelInfo));
 						break;
 					default:
-						throw new FormulaCreationException(
-							$"Передан неизвестный тип метки: '{x.MarkType_Code.GetEnumDescription()}'");
+						throw new FormulaCreationException($"Передан неизвестный тип метки: '{x.MarkType_Code.GetEnumDescription()}'");
 				}
 
 				factorsInFormula.Append(formulaCreator.FactorsSeparator);
@@ -655,19 +654,6 @@ namespace KadOzenka.Dal.Modeling
 				default:
 					throw new FormulaCreationException($"Передан неизвестный тип алгоритма расчета модели: '{algorithmType.GetEnumDescription()}'");
 			}
-		}
-
-		private string ProcessNumber(decimal number)
-		{
-			var numberInFormula = $"{number}";
-			if (number < 0)
-			{
-				numberInFormula = $"({numberInFormula})";
-			}
-
-			//все стронние библиотеки (для отрисовки формулы и расчета) работают с ".",
-			//но разделить для культуры в приложении - ","
-			return numberInFormula.Replace(",", ".");
 		}
 
 		#endregion

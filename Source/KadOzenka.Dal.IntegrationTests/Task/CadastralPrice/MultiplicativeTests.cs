@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.Integration._Builders.Task;
@@ -174,6 +175,27 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			Assert.That(firstCalculatedUnit.CadastralCost, Is.EqualTo(firstUnitExpectedCadastralCost).Within(0.01));
 			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
 		}
+
+		[Test]
+		public void Can_Calculate_Price_By_Mult_Model_If_Unit_Factor_Is_Decimal_Type()
+		{
+			//формула: свободный член * [(значение_фактора + поправка)^коэффициент]
+
+			var fistUnitValue = 2.2m;
+			var firstUnit = new UnitBuilder().Task(Task).Group(Group.Id).Type(PropertyTypes.Building).Build();
+			var tour2018OksDecimalFactor = Get2018TourFactorAttributes(RegisterAttributeType.DECIMAL, 1).First();
+			AddUnitFactor(Tour2018OksRegister, firstUnit.Id, tour2018OksDecimalFactor, fistUnitValue);
+			var factor = CreateFactorWithoutMark(tour2018OksDecimalFactor, MultiplicativeModel);
+
+
+			PerformCalculation(Task.Id, Group.Id);
+
+
+			var calculatedUnit = GetUnitById(firstUnit.Id);
+			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, fistUnitValue);
+			Assert.That(calculatedUnit.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
+		}
+
 
 
 		#region Support Methods
