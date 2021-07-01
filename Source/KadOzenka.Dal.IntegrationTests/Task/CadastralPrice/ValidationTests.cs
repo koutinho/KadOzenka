@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			new ModelFactorBuilder().FactorId(Tour2018OksFirstIntegerFactor.Id).Model(MultiplicativeModel)
 				.MarkType(MarkType.None)
-				.Correction((double)-UnitFactorValue).Coefficient((double)RandomGenerator.GenerateRandomInteger( maxNumber:3))
+				.Correction((double)-UnitFactorValueForIntegerFactor).Coefficient((double)RandomGenerator.GenerateRandomInteger( maxNumber:3))
 				.Build();
 
 			var errors = PerformCalculation(Task.Id, Group.Id);

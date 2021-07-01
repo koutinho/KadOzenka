@@ -26,14 +26,14 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		public void Can_Calculate_Price_By_Lin_Model_With_All_Possible_Factors_MarkType()
 		{
 			var factorWithoutMark = CreateFactorWithoutMark(Tour2018OksFirstIntegerFactor, LinearModel);
-			var factorWithDefaultMark = CreateFactorWithDefaultMark(Tour2018OksSecondIntegerFactor, LinearModel, UnitFactorValue, out var mark);
+			var factorWithDefaultMark = CreateFactorWithDefaultMark(Tour2018OksSecondIntegerFactor, LinearModel, UnitFactorValueForIntegerFactor, out var mark);
 			var factorWithStraightMark = CreateFactorWithStraightMark(Tour2018OksThirdIntegerFactor, LinearModel);
 			var factorWithReverseMark = CreateFactorWithReverseMark(Tour2018OksFourthIntegerFactor, LinearModel);
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = LinearModel.A0ForLinearInFormula + GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValue) +
+			var expectedCadastralCost = LinearModel.A0ForLinearInFormula + GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValueForIntegerFactor) +
 			                            GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) +
 			                            GetExpectedCadastralCostForStraightType(factorWithStraightMark) +
 			                            GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
@@ -55,12 +55,12 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)
 		{
-			return (factor.CorrectingTermInFormula + UnitFactorValue) / factor.KInFormula * factor.B0InFormula;
+			return (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula * factor.B0InFormula;
 		}
 
 		private decimal GetExpectedCadastralCostForReverseMark(OMModelFactor factor)
 		{
-			return factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValue) * factor.B0InFormula;
+			return factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) * factor.B0InFormula;
 		}
 
 		#endregion
