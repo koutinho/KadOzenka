@@ -2,22 +2,30 @@
 @model KadOzenka.Web.Models.Tour.TourGroupGroupingSettingsModel
 
 <link rel="stylesheet" href="~/css/toolbars.css"/>
+<style>
+    fieldset{
+        border: none;
+    }
+</style>
 @using (Html.BeginForm("TourGroupGroupingSettings", "Tour", FormMethod.Post, new {id = "updateGroupingSettingsForm", enctype = "multipart/form-data"}))
 {
-    <div id="groupingSettingToolbar" class="top-toolbar" style="margin-top:35px; width:55%"></div>
+    <div id="groupingSettingToolbar" class="top-toolbar" style="margin-top: 35px; width: 55%"></div>
     <div class="bottom-main-content">
-    @for (var i = 0; i < Model.GroupFilters.Count; i++)
-    {
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+
+        @Html.HiddenFor(m => m.GroupId)
+        @for (var i = 0; i < Model.GroupFilters.Count; i++)
+        {
+            <fieldset>
+            <div id="groupFilter_@i" class="form-group">
+                <div class="col-sm-3">
+                    @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+                </div>
+                <div class="col-sm-9">
+                    @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
+                </div>
             </div>
-            <div class="col-sm-8">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
-            </div>
-            <div class="col-sm-1"><a href="#" class="k-button-icon k-button" id="delRow_@i"><span class='fas fa-minus'></span></a></div>
-        </div>
-    }
+            </fieldset>
+        }
     </div>
 }
 
@@ -25,6 +33,7 @@
 <script src="~/js/custom-filters.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
+
     $(document).ready(function () {
         $("#groupingSettingToolbar").kendoToolBar({
             items: [
@@ -32,16 +41,30 @@
                     type: 'button',
                     id: 'save',
                     icon: 'save',
-                    text: 'Сохранить'
+                    text: 'Сохранить',
+                    click: save
                 },
-                {
-                    type: 'button',
-                    id: 'add',
-                    icon: 'plus',
-                    text: 'Добавить условие'
-                }]
+                // {
+                //     type: 'button',
+                //     id: 'add',
+                //     icon: 'plus',
+                //     text: 'Добавить условие',
+                //     click: addCondition
+                // }
+                ]
         });
+
+        bindEvents();
     });
+
+    function bindEvents(){
+        let currentRow = @Model.GroupFilters.Count;
+        for (let i=0; i<currentRow; i++){
+            bindAttributeSelectorEvents('#KoAttributes_'+i.toString()+'_');
+            bindUnusedFieldHider('GroupFilters['+i.toString()+']');
+            $('#GroupFilters_'+i.toString()+'__Type').change();
+        }
+    }
 
     function save() {
         kendo.ui.progress($('body'), true);
@@ -66,5 +89,9 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+    function addCondition(){
+
     }
 </script>

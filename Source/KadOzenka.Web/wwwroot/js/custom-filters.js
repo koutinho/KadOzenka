@@ -3,50 +3,59 @@
 }
 
 function getFilterTypeField(prefix) {
-    return "#" + prefix + "_Type";
+    return '#' + replaceBrackets(prefix) + '_Type';
 }
 
 function getStringFilterContainerSelector(prefix) {
-    return '#' + prefix + '_stringFilterContainer';
+    return '#' + escapeBrackets(prefix) + '_stringFilterContainer';
 }
 
 function getStringFilteringTypeSelector(prefix) {
-    return '#' + prefix + '_StringFilter_FilteringType';
+    return '#' + replaceBrackets(prefix) + '_StringFilter_FilteringType';
 }
 
 function getNumberFilterContainerSelector(prefix) {
-    return '#' + prefix + '_numberFilterContainer';
+    return '#' + escapeBrackets(prefix) + '_numberFilterContainer';
 }
 
 function getNumberFilteringTypeSelector(prefix) {
-    return '#' + prefix + '_NumberFilter_FilteringType';
+    return '#' + replaceBrackets(prefix) + '_NumberFilter_FilteringType';
 }
 
 function getRefContainerSelector(prefix) {
-    return '#' + prefix + '_refFilterContainer';
+    return '#' + escapeBrackets(prefix) + '_refFilterContainer';
 }
 
 function getRefFilteringTypeSelector(prefix) {
-    return '#' + prefix + '_ReferenceFilter_FilteringType';
+    return '#' + replaceBrackets(prefix) + '_ReferenceFilter_FilteringType';
 }
 
 function getBoolContainerSelector(prefix) {
-    return '#' + prefix + '_boolFilterContainer';
+    return '#' + escapeBrackets(prefix) + '_boolFilterContainer';
 }
 
 function getBoolFilteringTypeSelector(prefix) {
-    return '#' + prefix + '_BoolFilter_FilteringType';
+    return '#' + replaceBrackets(prefix) + '_BoolFilter_FilteringType';
 }
 
 function getDateContainerSelector(prefix) {
-    return '#' + prefix + '_dateFilterContainer';
+    return '#' + escapeBrackets(prefix) + '_dateFilterContainer';
 }
 
 function getDateFilteringTypeSelector(prefix) {
-    return '#' + prefix + '_DateFilter_FilteringType';
+    return '#' + replaceBrackets(prefix) + '_DateFilter_FilteringType';
+}
+
+function escapeBrackets(prefix){
+    return prefix.replace('[','\\[').replace(']','\\]');
+}
+
+function replaceBrackets(prefix){
+    return prefix.replace('[','_').replace(']','_');
 }
 
 function bindUnusedFieldHider(prefix) {
+    console.log(prefix);
     hideAllFilterContainers(prefix);
 
     $(getFilterTypeField(prefix)).bind('change', () => onTypeChange(prefix));
@@ -80,7 +89,7 @@ function onTypeChange(prefix) {
 function onStringFilterChange(prefix) {
     let stringFilterTypeField = getStringFilteringTypeSelector(prefix);
     let stringFilterTypeValue = $(stringFilterTypeField).data('kendoDropDownList').text();
-    let stringFilterValueContainer = '#' + prefix + '_stringFilterValueContainer';
+    let stringFilterValueContainer = '#' + escapeBrackets(prefix) + '_stringFilterValueContainer';
     switch (stringFilterTypeValue) {
         case "Пусто":
         case "Не пусто":
@@ -97,8 +106,8 @@ function onStringFilterChange(prefix) {
 function onDateFilterChange(prefix) {
     let dateFilterTypeField = getDateFilteringTypeSelector(prefix);
     let dateFilterTypeValue = $(dateFilterTypeField).data('kendoDropDownList').text();
-    let dateFilterValueContainer = '#' + prefix + '_dateFilterValueContainer';
-    let dateFilterValue2Container = '#' + prefix + '_dateFilterValue2Container';
+    let dateFilterValueContainer = '#' + escapeBrackets(prefix) + '_dateFilterValueContainer';
+    let dateFilterValue2Container = '#' + escapeBrackets(prefix) + '_dateFilterValue2Container';
     switch (dateFilterTypeValue) {
         case "IsNull":
         case "IsNotNull":
@@ -127,8 +136,8 @@ function onDateFilterChange(prefix) {
 function onNumberFilterChange(prefix) {
     let numberFilterTypeField = getNumberFilteringTypeSelector(prefix);
     let numberFilterTypeValue = $(numberFilterTypeField).data('kendoDropDownList').text();
-    let numberFilterValueContainer = '#' + prefix + '_numberFilterValueContainer';
-    let numberFilterValue2Container = '#' + prefix + '_numberFilterValue2Container';
+    let numberFilterValueContainer = '#' + escapeBrackets(prefix) + '_numberFilterValueContainer';
+    let numberFilterValue2Container = '#' + escapeBrackets(prefix) + '_numberFilterValue2Container';
     switch (numberFilterTypeValue) {
         case "Пусто":
         case "Не пусто":
@@ -157,7 +166,7 @@ function onNumberFilterChange(prefix) {
 function onRefFilterChange(prefix){
     let refFilterTypeField = getRefFilteringTypeSelector(prefix);
     let refFilterTypeValue = $(refFilterTypeField).data('kendoDropDownList').text();
-    let refFilterValueContainer = '#' + prefix + '_referenceFilterValueContainer';
+    let refFilterValueContainer = '#' + escapeBrackets(prefix) + '_referenceFilterValueContainer';
     switch (refFilterTypeValue) {
         case "Пусто":
         case "Не пусто": {
@@ -174,7 +183,7 @@ function onRefFilterChange(prefix){
 function onBoolFilterChange(prefix){
     let boolFilterTypeField = getBoolFilteringTypeSelector(prefix);
     let boolFilterTypeValue = $(boolFilterTypeField).data('kendoDropDownList').text();
-    let boolFilterValueContainer = '#' + prefix + '_referenceFilterValueContainer';
+    let boolFilterValueContainer = '#' + escapeBrackets(prefix) + '_referenceFilterValueContainer';
     switch (boolFilterTypeValue) {
         case "Пусто":
         case "Не пусто":
@@ -205,18 +214,19 @@ function hideAllFilterContainers(prefix) {
 }
 
 function resetAllFields(prefix){
-    $('#'+prefix+'\\.StringFilter\\.Value').val(null);
+    $('#'+replaceBrackets(prefix)+'\\.StringFilter\\.Value').val(null);
 
-    $('#'+prefix+'_NumberFilter_Value').data('kendoNumericTextBox').value(null);
-    $('#'+prefix+'_NumberFilter_Value2').data('kendoNumericTextBox').value(null);
+    $('#'+replaceBrackets(prefix)+'_NumberFilter_Value').data('kendoNumericTextBox').value(null);
+    $('#'+replaceBrackets(prefix)+'_NumberFilter_Value2').data('kendoNumericTextBox').value(null);
 
-    $('#'+prefix+'_DateFilter_Value').data('kendoDatePicker').value(null);
-    $('#'+prefix+'_DateFilter_Value2').data('kendoDatePicker').value(null);
+    $('#'+replaceBrackets(prefix)+'_DateFilter_Value').data('kendoDatePicker').value(null);
+    $('#'+replaceBrackets(prefix)+'_DateFilter_Value2').data('kendoDatePicker').value(null);
 
-    //$('#'+prefix+'_RefFilter_Value').data('').value(null);
+    //$('#'+replaceBrackets(prefix)+'_RefFilter_Value').data('').value(null);
 }
 
 function bindAttributeSelectorEvents(field){
+    console.log(field);
     $(field).data('kendoDropDownTree').bind('change', (e)=> getAttributeInfo(e));
 }
 

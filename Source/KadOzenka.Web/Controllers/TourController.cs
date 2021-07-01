@@ -16,6 +16,9 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
+using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Models.Filters;
+using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Web.Attributes;
@@ -436,14 +439,113 @@ namespace KadOzenka.Web.Controllers
 
         #region Настройка для группировки
 
+        //TODO: Split and move to services
+        private List<DropDownTreeItemModel> GetKoAttributes(long groupId)
+        {
+            void FillTreeItemModel(DropDownTreeItemModel treeItemModel, List<OMAttribute> omAttributes, long attrId)
+            {
+                treeItemModel.Items.AddRange(omAttributes.Where(x => x.RegisterId == attrId).Select(x => new DropDownTreeItemModel
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }).ToList());
+            }
+
+            DropDownTreeItemModel CreateModel(string name)
+            {
+                return new DropDownTreeItemModel
+                {
+                    Text = name,
+                    Value = null,
+                    Items = new List<DropDownTreeItemModel>()
+                };
+            }
+
+            var groupDto = GroupService.GetGroupById(groupId);
+
+            var tourGroupRec = OMTourGroup.Where(x => x.GroupId == groupId).SelectAll().Execute().FirstOrDefault();
+
+            var tourId = tourGroupRec?.TourId ?? 0;
+
+            var tourGroupsInfo = GroupService.GetTourGroupsInfo(tourId, ObjectTypeExtended.Both);
+
+            var Oks = tourGroupsInfo.OksSubGroups.FirstOrDefault(x => x.Id == groupId);
+            var Zu = tourGroupsInfo.ZuSubGroups.FirstOrDefault(x => x.Id == groupId);
+            ObjectTypeExtended objectType = ObjectTypeExtended.Both;
+            if (Oks != null)
+            {
+                objectType = ObjectTypeExtended.Oks;
+            }
+            else if (Zu != null)
+            {
+                objectType = ObjectTypeExtended.Zu;
+            }
+
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType);
+
+            var regIds = koAttributes.Select(x => x.RegisterId).Distinct().ToList();
+            if (regIds.Count > 1)
+            {
+                var oks = CreateModel("ОКС");
+                var zu = CreateModel("ЗУ");
+
+                foreach (var id in regIds)
+                {
+                    var type = OMTourFactorRegister.Where(x => x.RegisterId == id).SelectAll().ExecuteFirstOrDefault()
+                        .ObjectType_Code;
+                    FillTreeItemModel(type == PropertyTypes.Stead ? zu : oks, koAttributes, id);
+                }
+                var list = new List<DropDownTreeItemModel>{zu, oks};
+                return list;
+            }
+
+            var models = koAttributes.Select(x => new DropDownTreeItemModel
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            }).AsEnumerable().ToList();
+            return models;
+        }
+
+        private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
+        {
+            ViewData["KoAttributes"] = GetKoAttributes(groupId);
+
+            var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == groupId).SelectAll().Execute();
+
+            var model = new TourGroupGroupingSettingsModel();
+            model.GroupId = groupId;
+
+            foreach (var groupSetting in groupingSettingsList)
+            {
+                model.KoAttributes.Add(groupSetting.KoAttributeId);
+                model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
+            }
+
+            // TODO: Пофиксить добавление записи
+            for (int i = model.GroupFilters.Count; i < 10; i++)
+            {
+                model.GroupFilters.Add(new Filters());
+                model.KoAttributes.Add(new long());
+            }
+
+            return model;
+        }
+
         [HttpGet]
         //[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public ActionResult TourGroupGroupingSettings(long groupId)
         {
-            ViewData["KoAttributes"] = new List<DropDownTreeItemModel>();
-            var settings = GroupService.GetGroupExplanationSettings(groupId);
-            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml",
-                new TourGroupGroupingSettingsModel());
+            var model = GetTourGroupSettingsModel(groupId);
+
+            return View("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml", model);
+        }
+
+        [HttpGet]
+        public ActionResult TourGroupGroupingSettingsPartial(long groupId)
+        {
+            var model = GetTourGroupSettingsModel(groupId);
+            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml", model);
         }
 
         [HttpPost]
@@ -453,7 +555,12 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            //GroupService.UpdateGroupExplanationSettings(model.ToDto());
+            var objectModel = model.ToObjectModel();
+            var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
+
+            // TODO: Поменять логику создания
+            groupingSettingsList.ForEach(x=>x.Destroy());
+            objectModel.ForEach(x=>x.Save());
 
             return new JsonResult(new {Message = "Обновление выполнено"});
         }

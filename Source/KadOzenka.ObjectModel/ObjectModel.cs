@@ -10278,6 +10278,98 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 269 Реестр условий группировки (KO_GROUP_GROUPING_SETTINGS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 269)]
+    [Serializable]
+    public partial class OMTourGroupGroupingSettings : OMBaseClass<OMTourGroupGroupingSettings>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 26900100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 26900100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long? _groupid;
+        /// <summary>
+        /// 26900200 Идентификатор группы (GROUP_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900200)]
+        public long? GroupId
+        {
+            get
+            {
+                CheckPropertyInited("GroupId");
+                return _groupid;
+            }
+            set
+            {
+                _groupid = value;
+                NotifyPropertyChanged("GroupId");
+            }
+        }
+
+
+        private long? _koattributeid;
+        /// <summary>
+        /// 26900300 Идентификатор атрибута (KO_ATTRIBUTE_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900300)]
+        public long? KoAttributeId
+        {
+            get
+            {
+                CheckPropertyInited("KoAttributeId");
+                return _koattributeid;
+            }
+            set
+            {
+                _koattributeid = value;
+                NotifyPropertyChanged("KoAttributeId");
+            }
+        }
+
+
+        private string _filter;
+        /// <summary>
+        /// 26900400 Фильтр (FILTER)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900400)]
+        public string Filter
+        {
+            get
+            {
+                CheckPropertyInited("Filter");
+                return _filter;
+            }
+            set
+            {
+                _filter = value;
+                NotifyPropertyChanged("Filter");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

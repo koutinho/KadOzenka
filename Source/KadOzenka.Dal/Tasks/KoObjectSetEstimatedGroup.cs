@@ -13,6 +13,8 @@ using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Entities;
+using KadOzenka.Dal.Groups;
+using KadOzenka.Dal.Models.Filters;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
 using ObjectModel.Gbu;
@@ -69,6 +71,8 @@ namespace KadOzenka.Dal.KoObject
 	{
 		private static readonly ILogger Logger = Log.ForContext<KoObjectSetEstimatedGroup>();
 		private GbuObjectService GbuObjectService { get; }
+
+		private GroupCalculationSettingsService GroupCalculationSettingsService { get; }
 		private object locked;
 
 		public int CountAllUnits { get; private set; }
@@ -76,6 +80,7 @@ namespace KadOzenka.Dal.KoObject
 
 		public KoObjectSetEstimatedGroup()
 		{
+			GroupCalculationSettingsService = new GroupCalculationSettingsService();
 			GbuObjectService = new GbuObjectService();
 		}
 
@@ -307,6 +312,21 @@ namespace KadOzenka.Dal.KoObject
 	{
 		public string CadastralNumber { get; set; }
 		public string PropertyType { get; set; }
+	}
+
+	public class EstimatedGroupSettings
+	{
+		public long GroupId { get; set; }
+
+		public long Priority { get; set; }
+
+		public List<GroupingSetting> GroupingSettings { get; set; }
+	}
+
+	public class GroupingSetting
+	{
+		public Filters Filters { get; set; }
+		public long KoAttributeId { get; set; }
 	}
 
 	public class EstimatedGroupAffixingUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>
