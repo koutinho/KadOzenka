@@ -32,7 +32,7 @@ namespace KadOzenka.Web.Models.Tour
                 TourId = tree.TourId,
                 GroupType = tree.GroupType,
                 UrlForEdit = urlHelper.Action("GroupSubCard", "Tour", new {groupId = tree.Id, tourId = tree.TourId}),
-                UrlForGroupingSettings = urlHelper.Action("TourGroupGroupingSettings", "Tour", new { groupId = tree.Id }),
+                UrlForGroupingSettings = urlHelper.Action("TourGroupGroupingSettingsPartial", "Tour", new { groupId = tree.Id }),
                 UrlForSegmentSettings = urlHelper.Action("GroupSegmentSettingsSubCard", "Tour", new { groupId = tree.Id }),
                 UrlForExplanationSettings = urlHelper.Action("GroupExplanationSettingsSubCard", "Tour", new { groupId = tree.Id }),
                 UrlForCadastralCostDefinitionActSettings = urlHelper.Action("GroupCadastralCostDefinitionActSettingsSubCard", "Tour", new { groupId = tree.Id }),

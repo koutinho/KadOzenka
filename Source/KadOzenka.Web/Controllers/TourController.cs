@@ -560,7 +560,7 @@ namespace KadOzenka.Web.Controllers
 
             // TODO: Поменять логику создания
             groupingSettingsList.ForEach(x=>x.Destroy());
-            objectModel.ForEach(x=>x.Save());
+            objectModel.Where(x=>x.KoAttributeId != 0).ToList().ForEach(x=>x.Save());
 
             return new JsonResult(new {Message = "Обновление выполнено"});
         }
