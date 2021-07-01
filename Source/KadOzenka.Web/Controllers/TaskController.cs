@@ -1041,9 +1041,9 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetFactorSettings(long tourId)
+        public JsonResult GetFactorSettings(long tourId, ObjectTypeExtended objectType)
         {
-	        var tourAttributes = TourFactorService.GetTourAttributes(tourId, ObjectTypeExtended.Both)
+	        var tourAttributes = TourFactorService.GetTourAttributes(tourId, objectType)
 		        .Select(x => x.Id).ToList();
 
 	        var factorSettings = FactorSettingsService.GetFactorSettings(tourAttributes)
