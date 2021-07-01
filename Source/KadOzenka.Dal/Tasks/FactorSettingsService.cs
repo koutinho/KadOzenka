@@ -1,77 +1,53 @@
-﻿using System.Collections.Generic;
-using Core.Register.QuerySubsystem;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Tasks.Dto;
-using ObjectModel.Core.Register;
-using ObjectModel.Directory.KO;
 using ObjectModel.KO;
+using Serilog;
 
 namespace KadOzenka.Dal.Tasks
 {
 	public class FactorSettingsService
 	{
-		public List<FactorSettingsDto> GetFactorSettings()
+		private static readonly ILogger Logger = Log.ForContext<FactorSettingsService>();
+
+
+		public List<FactorSettingsDto> GetFactorSettings(List<long> tourAttributes)
 		{
-			var query = new QSQuery
-			{
-				MainRegisterID = OMFactorSettings.GetRegisterId(),
-				Joins = new List<QSJoin>
-				{
-					new QSJoin
-					{
-						RegisterId = OMAttribute.GetRegisterId(),
-						JoinCondition = new QSConditionSimple
-						{
-							ConditionType = QSConditionType.Equal,
-							LeftOperand = OMFactorSettings.GetColumn(x => x.FactorId),
-							RightOperand = OMAttribute.GetColumn(x => x.Id)
-						},
-						JoinType = QSJoinType.Inner
-					}
-				}
-			};
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(FactorSettingsDto.FactorName)));
-			query.AddColumn(OMFactorSettings.GetColumn(x => x.Id, nameof(FactorSettingsDto.Id)));
-			query.AddColumn(OMFactorSettings.GetColumn(x => x.Source, nameof(FactorSettingsDto.Source)));
-			query.AddColumn(OMFactorSettings.GetColumn(x => x.Inheritance_Code, nameof(FactorSettingsDto.FactorInheritance)));
+			if (tourAttributes.IsEmpty())
+				return new List<FactorSettingsDto>();
 
-			var correctFactorNameSubQuery = new QSQuery(OMAttribute.GetRegisterId())
+			var factors = OMFactorSettings.Where(x => tourAttributes.Contains((long) x.FactorId) || tourAttributes.Contains((long) x.CorrectFactorId)).SelectAll().Execute();
+			
+			return factors.Select(x => new FactorSettingsDto
 			{
-				Columns = new List<QSColumn>
-				{
-					OMAttribute.GetColumn(x => x.Name)
-				},
-				Condition = new QSConditionGroup(QSConditionGroupType.And)
-				{
-					Conditions = new List<QSCondition>
-					{
-						new QSConditionSimple(
-							OMAttribute.GetColumn(x => x.Id),
-							QSConditionType.Equal,
-							OMFactorSettings.GetColumn(x => x.CorrectFactorId)){
-							RightOperandLevel = 1
-						}
-					}
-				}
-			};
-			query.AddColumn(correctFactorNameSubQuery, nameof(FactorSettingsDto.CorrectFactorName));
+				Id = x.Id,
+				FactorName = GetAttributeNameSafety(x.FactorId),
+				FactorInheritance = x.Inheritance_Code,
+				Source = x.Source,
+				CorrectFactorName = GetAttributeNameSafety(x.CorrectFactorId)
+			}).ToList();
+		}
 
-			var result = new List<FactorSettingsDto>();
-			var table = query.ExecuteQuery();
-			for (var i = 0; i < table.Rows.Count; i++)
+		
+		#region Support Methods
+
+		private string GetAttributeNameSafety(long? attributeId)
+		{
+			try
 			{
-				var row = table.Rows[i];
-				result.Add(new FactorSettingsDto
-				{
-					Id = row[nameof(FactorSettingsDto.Id)].ParseToLong(),
-					FactorName = row[nameof(FactorSettingsDto.FactorName)].ParseToStringNullable(),
-					FactorInheritance = (FactorInheritance)row[nameof(FactorSettingsDto.FactorInheritance)].ParseToLong(),
-					Source = row[nameof(FactorSettingsDto.Source)].ParseToStringNullable(),
-					CorrectFactorName = row[nameof(FactorSettingsDto.CorrectFactorName)].ParseToStringNullable(),
-				});
+				return RegisterCache.GetAttributeData(attributeId.GetValueOrDefault()).Name;
+			}
+			catch (Exception e)
+			{
+				Logger.Warning(e, "В кеше не найден атрибут с ИД {AttributeId}", attributeId);
 			}
 
-			return result;
+			return string.Empty;
 		}
+
+		#endregion
 	}
 }

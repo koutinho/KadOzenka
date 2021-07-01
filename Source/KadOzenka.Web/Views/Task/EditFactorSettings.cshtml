@@ -1,0 +1,178 @@
+﻿@*@model KadOzenka.Web.Models.Task.FactorSettingsModel
+
+@using (Html.BeginForm("EditFactorSettings", "Task", FormMethod.Post, new {id = "updateFactorForm"}))
+{
+    @Html.HiddenFor(x => x.Id)
+    
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FactorId)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(x => x.FactorId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .OptionLabel("--Выберите фактор--")
+                .Filter(FilterType.Contains)
+                .Height(175)
+                .Events(e => e.Open("hideOptionalLabel"))
+                .DataSource(source =>
+                {
+                    source.Read(read => read.Action("GetDictionaries", "Modeling"));
+                }))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FactorInheritanceTypeCode)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoEnumDropDownListFor(x => x.FactorInheritanceTypeCode, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(x => x.Source)
+        </div>
+        <div class="col-sm-8 col-sm-offset-1">
+            @Html.TextAreaFor(x => x.Source, new { @class = "k-textbox col-sm-8", id = "source", style = "padding: 1%; resize: none; width: 100%;", rows = 3 })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.CorrectFactorId)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(x => x.CorrectFactorId)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .OptionLabel("--Выберите фактор--")
+                .Filter(FilterType.Contains)
+                .Height(175)
+                .Events(e => e.Open("hideOptionalLabel"))
+                .DataSource(source =>
+                {
+                    source.Read(read => read.Action("GetDictionaries", "Modeling"));
+                }))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-8">
+            <button class="btn btn-default btn-block" id="cancel">Отмена</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default btn-block" id="save">Сохранить</button>
+        </div>
+    </div>
+</div>
+}
+
+
+<script>
+    $(document).ready(function () {
+        $('#save').on('click', saveFactor);
+        $('#cancel').on('click', closeWindow);
+
+        //initAttributes();
+    });
+
+    //иногда лейбл загораживает значение в списке и это значение невозможно выбрать
+    function hideOptionalLabel() {
+        $(".k-list-optionlabel").hide();
+    }
+
+
+
+
+    /*function saveFactor(e) {
+        e.preventDefault();
+        kendo.ui.progress($('body'), true);
+        var form = $('#updateFactorForm');
+        var formObject = Common.Functions.FormToObject(form);
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                var timeout = 2000;
+                if (response) {
+                    timeout = 3500;
+                    Common.ShowMessage("Данные сохранены. Процесс сбора данных для нового фактора поставлен в очередь.");
+                } else {
+                    Common.ShowMessage('Сохранение выполнено');
+                }
+                setTimeout(closeWindow, timeout);
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function initAttributes() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetAllAttributes", "Modeling")',
+            data: { modelId: '@Model.Id' },
+            dataType: "json",
+            traditional: true,
+            success: function(response) {
+                var data = response.map(function(item) {
+                    return {
+                        Text: item.Text,
+                        Value: item.Value,
+                        items: item.Items.map(function(i) {
+                            return {
+                                Text: i.Text,
+                                Value: i.Value
+                            }
+                        })
+                    }
+                });
+                var attribute = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
+                if (attribute) {
+                    attribute.setDataSource(data);
+                    attribute.value('');
+                } else {
+                    attribute = $('#@nameof(Model.FactorId)').kendoDropDownTree({
+                        dataTextField: 'Text',
+                        dataValueField: 'Value',
+                        dataSource: data,
+                        filter: "contains"
+                    }).data("kendoDropDownTree");
+                    //нельзя выбирать корневой элемент дерева (таблицу)
+                    var attributeTableTreeSelect = function(e){
+                        if(e.sender.dataItem(e.node).hasChildren) {
+                            e.preventDefault();
+                        }
+                    };
+                    attribute.treeview.bind("select", attributeTableTreeSelect);
+                }
+                var factorId = '@Model.FactorId';
+                if (factorId)
+                    attribute.value(factorId);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }*/
+
+
+    function closeWindow() {
+        Common.UI.CloseWindow('editFactorWindow', window.parent, true);
+    }
+
+</script>
+*@
