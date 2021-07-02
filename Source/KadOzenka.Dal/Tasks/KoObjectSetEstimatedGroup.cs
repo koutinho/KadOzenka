@@ -172,10 +172,10 @@ namespace KadOzenka.Dal.KoObject
             CountAllUnits = unitsGetter.GetItemsCount();
             Logger.Debug("Всего в БД {MaxUnitsCount} ЕО", CountAllUnits);
 
-            var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
-            var codeGroupAttribute = RegisterCache.GetAttributeData((int) param.IdCodeGroup);
+            //var estimatedSubGroupAttribute = RegisterCache.GetAttributeData((int) param.IdEstimatedSubGroup);
+            //var codeGroupAttribute = RegisterCache.GetAttributeData((int) param.IdCodeGroup);
             var tourId = OMTask.Where(x => x.Id == param.IdTask).Select(x => x.TourId).ExecuteFirstOrDefault().TourId;
-            var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
+            //var allComplianceGuidesInTour = GetAllComplianceGuidesInTour(tourId);
 
             var packageSize = 100000;
             var numberOfPackages = CountAllUnits / packageSize + 1;
@@ -240,6 +240,8 @@ namespace KadOzenka.Dal.KoObject
 
                     var unitFactors = UnitService.GetUnitFactors(unit, GatherFactorsForGrouping(settingsList));
 
+                    string groupForReport = "";
+
                     foreach (var estSetting in settingsList)
                     {
                         bool assignToGroup = true;
@@ -252,59 +254,69 @@ namespace KadOzenka.Dal.KoObject
 
                         if (!assignToGroup) continue;
 
+                        groupForReport = estSetting.GroupNumber;
                         unit.GroupId = estSetting.GroupId;
                         unit.Save();
                         break;
                     }
+
+                    if (groupForReport != "")
+                    {
+                        AddRowToReport(unitPure.CadastralNumber, groupForReport, reportService);
+                    }
+                    else
+                    {
+                        AddErrorRow(unitPure.CadastralNumber, $"Не найдено подходящей группы по условиям", reportService);
+                    }
                 }
 
-                var cancelTokenSource = new CancellationTokenSource();
-                var options = new ParallelOptions
-                {
-                    CancellationToken = cancelTokenSource.Token,
-                    MaxDegreeOfParallelism = 10
-                };
-                Logger.Debug("Начата обработка каждого юнита");
-                Parallel.ForEach(currentUnitsPartition, options, item =>
-                {
-                    lock (_locked)
-                    {
-                        CurrentCount++;
-                    }
-
-
-                    //codeGroups.TryGetValue(item.ObjectId, out var codeGroup);
-                    // if (string.IsNullOrEmpty(codeGroup.Value))
-                    // {
-                    // 	AddErrorRow(item.CadastralNumber, $"Не заполнен код в атрибуте '{codeGroupAttribute.Name}'", reportService);
-                    // 	return;
-                    // }
-                    //
-                    // var codeGroupValue = codeGroup.Value;
-                    // var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroupValue && x.TypeProperty == item.PropertyType).ToList());
-                    // if (complianceGuides.IsEmpty())
-                    // {
-                    // 	AddErrorRow(item.CadastralNumber, $"В таблице сопоставления не найдено значение с кодом '{codeGroupValue}' и типом '{item.PropertyType}'", reportService);
-                    // }
-                    // else if (complianceGuides.Count == 1)
-                    // {
-                    // 	var value = complianceGuides[0].Group;
-                    // 	AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
-                    // 	AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
-                    // }
-                    // else
-                    // {
-                    // 	var complianceGuidesStr = new StringBuilder();
-                    // 	complianceGuides.ForEach(x => complianceGuidesStr.AppendLine(x.ToString()));
-                    // 	AddErrorRow(item.CadastralNumber, $"Найдено несколько соответсвий: {complianceGuidesStr}", reportService);
-                    // }
-                });
-
-                Logger.Debug("Закончена обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i,
-                    numberOfPackages);
-                //попытка принудительно освободить память
-                currentUnitsPartition = null;
-                GC.Collect();
+                // var cancelTokenSource = new CancellationTokenSource();
+                // var options = new ParallelOptions
+                // {
+                //     CancellationToken = cancelTokenSource.Token,
+                //     MaxDegreeOfParallelism = 10
+                // };
+                // Logger.Debug("Начата обработка каждого юнита");
+                // Parallel.ForEach(currentUnitsPartition, options, item =>
+                // {
+                //     lock (_locked)
+                //     {
+                //         CurrentCount++;
+                //     }
+                //
+                //
+                //     //codeGroups.TryGetValue(item.ObjectId, out var codeGroup);
+                //     // if (string.IsNullOrEmpty(codeGroup.Value))
+                //     // {
+                //     // 	AddErrorRow(item.CadastralNumber, $"Не заполнен код в атрибуте '{codeGroupAttribute.Name}'", reportService);
+                //     // 	return;
+                //     // }
+                //     //
+                //     // var codeGroupValue = codeGroup.Value;
+                //     // var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroupValue && x.TypeProperty == item.PropertyType).ToList());
+                //     // if (complianceGuides.IsEmpty())
+                //     // {
+                //     // 	AddErrorRow(item.CadastralNumber, $"В таблице сопоставления не найдено значение с кодом '{codeGroupValue}' и типом '{item.PropertyType}'", reportService);
+                //     // }
+                //     // else if (complianceGuides.Count == 1)
+                //     // {
+                //     // 	var value = complianceGuides[0].Group;
+                //     // 	AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
+                //     // 	AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
+                //     // }
+                //     // else
+                //     // {
+                //     // 	var complianceGuidesStr = new StringBuilder();
+                //     // 	complianceGuides.ForEach(x => complianceGuidesStr.AppendLine(x.ToString()));
+                //     // 	AddErrorRow(item.CadastralNumber, $"Найдено несколько соответсвий: {complianceGuidesStr}", reportService);
+                //     // }
+                // });
+                //
+                // Logger.Debug("Закончена обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i,
+                //     numberOfPackages);
+                // //попытка принудительно освободить память
+                // currentUnitsPartition = null;
+                // GC.Collect();
             }
             //);
 
@@ -514,18 +526,18 @@ namespace KadOzenka.Dal.KoObject
             }
         }
 
-        private void AddRowToReport(string kn, long inputAttributeId, long sourceAttributeId, string value,
+        private void AddRowToReport(string kn, string value,
             GbuReportService reportService)
         {
             lock (_locked)
             {
                 var rowReport = reportService.GetCurrentRow();
-                var inputAttributeName = GbuObjectService.GetAttributeNameById(inputAttributeId);
-                var sourceAttributeName = GbuObjectService.GetAttributeNameById(sourceAttributeId);
+                //var inputAttributeName = GbuObjectService.GetAttributeNameById(inputAttributeId);
+                //var sourceAttributeName = GbuObjectService.GetAttributeNameById(sourceAttributeId);
                 reportService.AddValue(kn, (int) ReportColumns.KnColumn, rowReport);
-                reportService.AddValue(inputAttributeName, (int) ReportColumns.InputFieldColumn, rowReport);
+                //reportService.AddValue(inputAttributeName, (int) ReportColumns.InputFieldColumn, rowReport);
                 reportService.AddValue(value, (int) ReportColumns.ValueColumn, rowReport);
-                reportService.AddValue(sourceAttributeName, (int) ReportColumns.OutputFieldColumn, rowReport);
+                //reportService.AddValue(sourceAttributeName, (int) ReportColumns.OutputFieldColumn, rowReport);
                 reportService.AddValue(string.Empty, (int) ReportColumns.ErrorColumn, rowReport);
             }
         }
