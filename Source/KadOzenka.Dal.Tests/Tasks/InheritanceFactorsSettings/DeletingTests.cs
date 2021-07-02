@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 			var settingId = RandomGenerator.GenerateRandomId();
 			FactorSettingsRepository.Setup(x => x.GetById(settingId, null)).Returns((OMFactorSettings) null);
 
-			Assert.Throws<InheritanceFactorNotFoundException>(() => InheritanceInheritanceFactorSettingsService.DeleteSetting(settingId));
+			Assert.Throws<InheritanceFactorNotFoundException>(() => InheritanceInheritanceFactorSettingsService.Delete(settingId));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}

@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(setting.Id, setting.CorrectFactorId)).Returns(false);
 			TourFactorService.Setup(x => x.GetAllTourAttributes(setting.TourId)).Returns(new TourAttributesDto());
 
-			Assert.Throws<InheritanceFactorNotFoundException>(() => InheritanceInheritanceFactorSettingsService.UpdateFactor(setting));
+			Assert.Throws<InheritanceFactorNotFoundException>(() => InheritanceInheritanceFactorSettingsService.Update(setting));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}

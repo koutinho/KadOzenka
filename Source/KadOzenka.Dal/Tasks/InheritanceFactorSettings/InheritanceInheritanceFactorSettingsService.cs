@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			return FactorSettingsRepository.Save(newFactor);
 		}
 
-		public void UpdateFactor(InheritanceFactorSettingDto settingDto)
+		public void Update(InheritanceFactorSettingDto settingDto)
 		{
 			ValidateFactor(settingDto);
 
@@ -91,7 +91,7 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			FactorSettingsRepository.Save(setting);
 		}
 
-		public void DeleteSetting(long? settingId)
+		public void Delete(long? settingId)
 		{
 			var setting = GetById(settingId);
 			setting.Destroy();

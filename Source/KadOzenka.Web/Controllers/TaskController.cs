@@ -1100,7 +1100,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			else
 			{
-				InheritanceFactorSettingsService.UpdateFactor(dto);
+				InheritanceFactorSettingsService.Update(dto);
 			}
 
 			return Ok();
@@ -1110,7 +1110,7 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
 		public ActionResult DeleteInheritanceFactorSetting(long? id)
 		{
-			InheritanceFactorSettingsService.DeleteSetting(id);
+			InheritanceFactorSettingsService.Delete(id);
 
             return Ok();
 		}
