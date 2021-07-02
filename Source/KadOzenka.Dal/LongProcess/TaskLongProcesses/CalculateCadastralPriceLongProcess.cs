@@ -198,6 +198,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var marks = GetMarks(groupId, modelFactors);
 			//если будут проблемы с производительностью вынески выгрузку ЕО в потоки
 			var units = GetUnits(settings, groupId);
+			if (units.Count == 0)
+				return;
 
 			var processedPackageCount = 0;
 			var processConfiguration = GetProcessConfiguration(units.Count);
