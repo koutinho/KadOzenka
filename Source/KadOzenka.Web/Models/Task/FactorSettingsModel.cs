@@ -29,6 +29,7 @@ namespace KadOzenka.Web.Models.Task
 		public string CorrectFactorName { get; set; }
 
 		public List<SelectListItem> TourFactors { get; set; }
+		public long TourId { get; set; }
 
 
 
@@ -61,7 +62,8 @@ namespace KadOzenka.Web.Models.Task
 				FactorId = FactorId,
 				FactorInheritance = FactorInheritanceTypeCode,
 				Source = Source,
-				CorrectFactorId = CorrectFactorId
+				CorrectFactorId = CorrectFactorId,
+				TourId = TourId
 			};
 		}
 	}

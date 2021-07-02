@@ -1,10 +1,12 @@
-﻿using Core.Register.RegisterEntities;
+﻿using System.Collections.Generic;
+using Core.Register.RegisterEntities;
 using KadOzenka.Common.Tests;
-using KadOzenka.Common.Tests.Builders.Cache;
 using KadOzenka.Common.Tests.Builders.Task;
 using KadOzenka.Dal.Tasks.Exceptions;
+using KadOzenka.Dal.Tours.Dto;
 using Moq;
 using NUnit.Framework;
+using ObjectModel.Core.Register;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
@@ -70,11 +72,48 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		}
 
 		[Test]
+		public void CanNot_Create_Setting_If_Factor_Is_Oks_And_CorrectingFactor_Is_Zu()
+		{
+			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			var tourAttributes = new TourAttributesDto
+			{
+				Oks = new List<OMAttribute> { new() { Id = factor.FactorId} },
+				Zu = new List<OMAttribute> { new() { Id = factor.CorrectFactorId} }
+			};
+			TourFactorService.Setup(x => x.GetAllTourAttributes(factor.TourId)).Returns(tourAttributes);
+
+			Assert.Throws<InheritanceFactorsTypeMismatchException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
+
+			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
+		}
+
+		[Test]
+		public void CanNot_Create_Setting_If_Factor_Is_Zu_And_CorrectingFactor_Is_Oks()
+		{
+			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			var tourAttributes = new TourAttributesDto
+			{
+				Oks = new List<OMAttribute> { new() { Id = factor.CorrectFactorId } },
+				Zu = new List<OMAttribute> { new() { Id = factor.FactorId } }
+			};
+			TourFactorService.Setup(x => x.GetAllTourAttributes(factor.TourId)).Returns(tourAttributes);
+
+			Assert.Throws<InheritanceFactorsTypeMismatchException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
+
+			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
+		}
+
+		[Test]
 		public void Can_Create_Setting()
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			TourFactorService.Setup(x => x.GetAllTourAttributes(factor.TourId)).Returns(new TourAttributesDto());
 
 			InheritanceInheritanceFactorSettingsService.Add(factor);
 

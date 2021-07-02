@@ -1074,6 +1074,7 @@ namespace KadOzenka.Web.Controllers
 
 			var model = new FactorSettingsModel
 			{
+                TourId = tourId,
 				TourFactors = tourFactors
             };
 

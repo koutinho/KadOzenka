@@ -104,5 +104,14 @@ namespace KadOzenka.Dal.Tasks.Resources {
                 return ResourceManager.GetString("InheritanceFactorsAreTheSame", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Типы факторов не совпадают. Один - ЗУ, второй ОКС.
+        /// </summary>
+        public static string InheritanceFactorsTypeMismatch {
+            get {
+                return ResourceManager.GetString("InheritanceFactorsTypeMismatch", resourceCulture);
+            }
+        }
     }
 }

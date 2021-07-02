@@ -132,4 +132,7 @@
   <data name="InheritanceFactorsAreTheSame" xml:space="preserve">
     <value>Базовый и Корректируемый факторы должны быть разными</value>
   </data>
+  <data name="InheritanceFactorsTypeMismatch" xml:space="preserve">
+    <value>Типы факторов не совпадают. Один - ЗУ, второй ОКС</value>
+  </data>
 </root>

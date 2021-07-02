@@ -11,5 +11,7 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto
 		public string Source { get; set; }
 		public long CorrectFactorId { get; set; }
 		public string CorrectFactorName { get; set; }
+
+		public long TourId { get; set; }
 	}
 }

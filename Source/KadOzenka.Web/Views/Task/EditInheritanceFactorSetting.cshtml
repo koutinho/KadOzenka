@@ -2,7 +2,8 @@
 
 @using (Html.BeginForm("EditInheritanceFactorSetting", "Task", FormMethod.Post, new {id = "updateFactorForm"}))
 {
-    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.Id) 
+    @Html.HiddenFor(x => x.TourId)
     
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group">

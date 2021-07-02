@@ -1,5 +1,4 @@
-﻿using KadOzenka.Dal.Tasks.Dto;
-using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
+﻿using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
 using ObjectModel.Directory.KO;
 
 namespace KadOzenka.Common.Tests.Builders.Task
@@ -18,7 +17,8 @@ namespace KadOzenka.Common.Tests.Builders.Task
 				FactorInheritance = FactorInheritance.ftKvartal,
 				Source = RandomGenerator.GetRandomString(),
 				CorrectFactorId = RandomGenerator.GenerateRandomId(),
-				CorrectFactorName = RandomGenerator.GetRandomString()
+				CorrectFactorName = RandomGenerator.GetRandomString(),
+				TourId = RandomGenerator.GenerateRandomId()
 			};
 		}
 

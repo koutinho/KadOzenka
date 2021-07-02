@@ -9,6 +9,7 @@ using KadOzenka.Dal.Tasks.Exceptions;
 using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
 using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories;
 using KadOzenka.Dal.Tasks.Resources;
+using KadOzenka.Dal.Tours;
 using ObjectModel.KO;
 using Serilog;
 
@@ -19,14 +20,16 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 		private static readonly ILogger Logger = Log.ForContext<InheritanceInheritanceFactorSettingsService>();
 		public IFactorSettingsRepository FactorSettingsRepository { get; set; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; set; }
+		public ITourFactorService TourFactorService { get; set; }
 
 
 
 		public InheritanceInheritanceFactorSettingsService(IFactorSettingsRepository factorSettingsRepository,
-			IRegisterCacheWrapper registerCacheWrapper)
+			IRegisterCacheWrapper registerCacheWrapper, ITourFactorService tourFactorService)
 		{
 			FactorSettingsRepository = factorSettingsRepository;
 			RegisterCacheWrapper = registerCacheWrapper;
+			TourFactorService = tourFactorService;
 		}
 
 
@@ -99,7 +102,12 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			if (isCorrectFactorExists)
 				throw new InheritanceCorrectingFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(inheritanceFactor.CorrectFactorId).Name);
 
-			//todo both oks\zu
+			var tourFactors = TourFactorService.GetAllTourAttributes(inheritanceFactor.TourId);
+			var oksIds = tourFactors.Oks.Select(x => x.Id).ToList();
+			var zuIds = tourFactors.Zu.Select(x => x.Id).ToList();
+			if ((oksIds.Contains(inheritanceFactor.FactorId) && zuIds.Contains(inheritanceFactor.CorrectFactorId)) ||
+			    oksIds.Contains(inheritanceFactor.CorrectFactorId) && zuIds.Contains(inheritanceFactor.FactorId))
+				throw new InheritanceFactorsTypeMismatchException();
 		}
 
 		#endregion
