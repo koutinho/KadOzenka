@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 	public class BaseCadastralPriceCalculationTests : BaseTaskTests
 	{
 		//забиваем маленькими константами, чтобы можно было легко посчитать/починить тест
-		protected const int UnitFactorValue = 1;
+		protected const int UnitFactorValueForIntegerFactor = 1;
 		private const double FactorCorrection = 2.1;
 		private const double FactorCoefficient = 3.2;
 		private const double FactorK = 4.2;
@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 				Tour2018OksFirstIntegerFactor, Tour2018OksSecondIntegerFactor,
 				Tour2018OksThirdIntegerFactor, Tour2018OksFourthIntegerFactor
 			};
-			var unitValues = Enumerable.Repeat((object)UnitFactorValue, factors.Count).ToList();
+			var unitValues = Enumerable.Repeat((object)UnitFactorValueForIntegerFactor, factors.Count).ToList();
 			AddUnitFactor(Tour2018OksRegister, Unit.Id, factors, unitValues);
 		}
 

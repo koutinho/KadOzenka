@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.Modeling.Formulas
 
 		public override string GetBaseFormulaPart(OMModel model, string factors)
 		{
-			var a0 = model.A0 == null ? 1 : model.A0ForLinearInFormula;
+			var a0 = ProcessNumber(model.A0 == null ? 1 : model.A0ForLinearInFormula);
 			
 			return $"{a0} + {factors}";
 		}

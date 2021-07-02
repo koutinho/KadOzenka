@@ -70,6 +70,20 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_errorsDuringCalculation = new List<CalcErrorItem>();
 		}
 
+		//служба длительных процессов основана на конструкторе без параметров
+		public CalculateCadastralPriceLongProcess()
+		{
+			UnitRepository = new UnitRepository();
+			UnitService = new UnitService();
+			RegisterCacheWrapper = new RegisterCacheWrapper();
+			ModelingService = new ModelingService();
+			ModelFactorsService = new ModelFactorsService();
+			GroupService = new GroupService();
+
+			_locker = new object();
+			_errorsDuringCalculation = new List<CalcErrorItem>();
+		}
+
 
 
 		public static long AddProcessToQueue(CadastralPriceCalculationSettions settings)
@@ -201,29 +215,37 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				unitsPackage.ForEach(currentUnit =>
 				{
+					double cost = 0;
 					try
 					{
-						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource, processConfiguration.ParallelOptions);
+						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource,
+							processConfiguration.ParallelOptions);
 
 						unitsPackageFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors);
 						ValidateUnitBeforeCalculation(currentUnit, currentUnitFactors, modelFactors);
 
-						var cost = CalculateCadastralCost(formula, modelFactors, currentUnitFactors, marks);
-						currentUnit.CadastralCost = (decimal?)cost;
+						cost = CalculateCadastralCost(formula, modelFactors, currentUnitFactors, marks);
+						currentUnit.CadastralCost = (decimal?) cost;
 						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
 						UnitRepository.Save(currentUnit);
 
 						Interlocked.Increment(ref processedUnitsCount);
+						lock (_locker)
+						{
+							LongProcessProgressLogger.LogProgress(maxUnitsCount, processedUnitsCount, _queue);
+						}
+					}
+					catch (OverflowException e)
+					{
+						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'. Переполнение decimal. Рассчитанная КС равна '{CalculatedCost}'", currentUnit.CadastralNumber, cost);
+
+						AddError(currentUnit, groupId, $"Рассчитанная КС невалидна (слишком большое, либо слишком маленькое число). {cost}");
 					}
 					catch (Exception e)
 					{
-						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'", currentUnit.CadastralNumber);
+						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'. Рассчитанная КС равна '{CalculatedCost}'", currentUnit.CadastralNumber, cost);
 
-						lock (_locker)
-						{
-							AddError(currentUnit, groupId, e.Message);
-							LongProcessProgressLogger.LogProgress(maxUnitsCount, processedUnitsCount, _queue);
-						}
+						AddError(currentUnit, groupId, e.Message);
 					}
 				});
 
@@ -490,14 +512,17 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private void AddError(OMUnit currentUnit, long groupId, string message)
 		{
-			_errorsDuringCalculation.Add(new CalcErrorItem
+			lock (_locker)
 			{
-				CadastralNumber = currentUnit.CadastralNumber,
-				Error = message,
-				GroupId = groupId,
-				PropertyType = currentUnit.PropertyType_Code.GetEnumDescription(),
-				TaskId = currentUnit.TaskId
-			});
+				_errorsDuringCalculation.Add(new CalcErrorItem
+				{
+					CadastralNumber = currentUnit.CadastralNumber,
+					Error = message,
+					GroupId = groupId,
+					PropertyType = currentUnit.PropertyType_Code.GetEnumDescription(),
+					TaskId = currentUnit.TaskId
+				});
+			}
 		}
 
 		private static string FormReport(List<CalcErrorItem> result)

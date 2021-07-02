@@ -26,14 +26,14 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		public void Can_Calculate_Price_By_Exp_Model_With_All_Possible_Factors_MarkType()
 		{
 			var factorWithoutMark = CreateFactorWithoutMark(Tour2018OksFirstIntegerFactor, ExponentialModel);
-			var factorWithDefaultMark = CreateFactorWithDefaultMark(Tour2018OksSecondIntegerFactor, ExponentialModel, UnitFactorValue, out var mark);
+			var factorWithDefaultMark = CreateFactorWithDefaultMark(Tour2018OksSecondIntegerFactor, ExponentialModel, UnitFactorValueForIntegerFactor, out var mark);
 			var factorWithStraightMark = CreateFactorWithStraightMark(Tour2018OksThirdIntegerFactor, ExponentialModel);
 			var factorWithReverseMark = CreateFactorWithReverseMark(Tour2018OksFourthIntegerFactor, ExponentialModel);
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var factorsSum = GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValue) +
+			var factorsSum = GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValueForIntegerFactor) +
 							 GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) +
 							 GetExpectedCadastralCostForStraightType(factorWithStraightMark) +
 							 GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
@@ -56,12 +56,12 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)
 		{
-			return (factor.CorrectingTermInFormula + UnitFactorValue) / factor.KInFormula * factor.B0InFormula;
+			return (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula * factor.B0InFormula;
 		}
 
 		private decimal GetExpectedCadastralCostForReverseMark(OMModelFactor factor)
 		{
-			return factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValue) * factor.B0InFormula;
+			return factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) * factor.B0InFormula;
 		}
 
 		#endregion

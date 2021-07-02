@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.Integration._Builders.Task;
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, UnitFactorValue);
+			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, UnitFactorValueForIntegerFactor);
 			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
 		}
 
@@ -43,7 +44,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
 
-			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValue, out var mark);
+			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var mark);
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
@@ -57,7 +58,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
 
-			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValue, out var mark);
+			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var mark);
 			new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
 				.Value(RandomGenerator.GetRandomString()).Metka(RandomGenerator.GenerateRandomDecimal())
 				.Build();
@@ -76,7 +77,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
 
-			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValue, out var firstMark);
+			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var firstMark);
 			var secondMark = new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
 				.Value(firstMark.ValueFactor)
 				//чтобы случайно не создать такое же значение, как в mark
@@ -132,7 +133,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		public void Can_Calculate_Price_By_Mult_Model_With_All_Possible_Factors_MarkType()
 		{
 			var factorWithoutMark = CreateFactorWithoutMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel);
-			var factorWithDefaultMark = CreateFactorWithDefaultMark(Tour2018OksSecondIntegerFactor, MultiplicativeModel, UnitFactorValue, out var mark);
+			var factorWithDefaultMark = CreateFactorWithDefaultMark(Tour2018OksSecondIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var mark);
 			var factorWithStraightMark = CreateFactorWithStraightMark(Tour2018OksThirdIntegerFactor, MultiplicativeModel);
 			var factorWithReverseMark = CreateFactorWithReverseMark(Tour2018OksFourthIntegerFactor, MultiplicativeModel);
 
@@ -140,7 +141,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * 
-			                            GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValue) *
+			                            GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValueForIntegerFactor) *
 			                            GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) *
 			                            GetExpectedCadastralCostForStraightType(factorWithStraightMark) *
 			                            GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
@@ -175,6 +176,27 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
 		}
 
+		[Test]
+		public void Can_Calculate_Price_By_Mult_Model_If_Unit_Factor_Is_Decimal_Type()
+		{
+			//формула: свободный член * [(значение_фактора + поправка)^коэффициент]
+
+			var fistUnitValue = 2.2m;
+			var firstUnit = new UnitBuilder().Task(Task).Group(Group.Id).Type(PropertyTypes.Building).Build();
+			var tour2018OksDecimalFactor = Get2018TourFactorAttributes(RegisterAttributeType.DECIMAL, 1).First();
+			AddUnitFactor(Tour2018OksRegister, firstUnit.Id, tour2018OksDecimalFactor, fistUnitValue);
+			var factor = CreateFactorWithoutMark(tour2018OksDecimalFactor, MultiplicativeModel);
+
+
+			PerformCalculation(Task.Id, Group.Id);
+
+
+			var calculatedUnit = GetUnitById(firstUnit.Id);
+			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, fistUnitValue);
+			Assert.That(calculatedUnit.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
+		}
+
+
 
 		#region Support Methods
 
@@ -192,14 +214,14 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)
 		{
-			var formulaPart = (factor.CorrectingTermInFormula + UnitFactorValue) / factor.KInFormula + factor.WeightInFormula;
+			var formulaPart = (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula + factor.WeightInFormula;
 			
 			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
 		}
 
 		private decimal GetExpectedCadastralCostForReverseMark(OMModelFactor factor)
 		{
-			var formulaPart = factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValue) + factor.WeightInFormula;
+			var formulaPart = factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) + factor.WeightInFormula;
 			
 			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
 		}
