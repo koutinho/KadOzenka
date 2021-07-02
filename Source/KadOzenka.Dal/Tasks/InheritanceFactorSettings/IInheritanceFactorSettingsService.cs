@@ -10,5 +10,6 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 		int Add(InheritanceFactorSettingDto factor);
 		void UpdateFactor(InheritanceFactorSettingDto settingDto);
 		OMFactorSettings GetById(long? id);
+		void DeleteSetting(long? settingId);
 	}
 }

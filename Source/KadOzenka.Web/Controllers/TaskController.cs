@@ -1110,6 +1110,15 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
+		[HttpDelete]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		public ActionResult DeleteInheritanceFactorSetting(long? id)
+		{
+			InheritanceFactorSettingsService.DeleteSetting(id);
+
+            return Ok();
+		}
+
         #endregion Просмотр настроек факторов для Наследования
 
 

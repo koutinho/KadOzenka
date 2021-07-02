@@ -92,6 +92,12 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			FactorSettingsRepository.Save(setting);
 		}
 
+		public void DeleteSetting(long? settingId)
+		{
+			var setting = GetById(settingId);
+			setting.Destroy();
+		}
+
 
 		#region Support Methods
 

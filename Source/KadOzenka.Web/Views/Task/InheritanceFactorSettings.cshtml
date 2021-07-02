@@ -206,15 +206,15 @@
                         icon: 'edit',
                         click: edit
                     },
-                    /*{
+                    {
                         type: 'button',
                         id: 'deleteBtn',
                         className: "k-state-disabled",
                         text: '',
                         attributes: { title: "Удалить" },
                         icon: 'delete',
-                        click: deleteFactor
-                    }*/
+                        click: deleteSetting
+                    }
                 ]
             });
         }
@@ -226,6 +226,8 @@
 
         function edit() {
             var selectedRow = getSelectedRowInGrid();
+            if (!selectedRow)
+                Common.ShowError("Выбирите строку");
             showModalWithSetting("Редактирование фактора", selectedRow.Id);
         }
 
@@ -241,20 +243,45 @@
         }
 
 
-        /*function deleteFactor() {
+        function deleteSetting() {
+            var selectedRowData = getSelectedRowInGrid();
+            if (!selectedRowData)
+                return;
+            Common.UI.ShowConfirm({
+                title: 'Удаление настройки',
+                content: `Удалить настройку с источником '${selectedRowData.Source ?? ""}'?`,
+                onSuccess: function () {
+                    kendo.ui.progress($('body'), true);
+                    $.ajax({
+                        url: '@Url.Action("DeleteInheritanceFactorSetting", "Task")',
+                        type: 'DELETE',
+                        data: { id: selectedRowData.Id },
+                        success: function () {
+                            Common.ShowMessage("Удаление выполнено");
+                            reloadGrid();
+                        },
+                        error: function (response) {
+                            Common.ShowError(response.responseText);
+                        },
+                        complete: function() {
+                            kendo.ui.progress($('body'), false);
+                        }
+                    });
+                }
+            });
+        }
 
-        }*/
 
 
         function changeToolBarButtonsClass() {
             var row = getSelectedRowInGrid();
             if (row) {
                 $('#editBtn').removeClass('k-state-disabled');
-                //$('#deleteBtn').removeClass('k-state-disabled');
+                $('#deleteBtn').removeClass('k-state-disabled');
             }
             else {
                 $('#editBtn').addClass('k-state-disabled');
-                //$('#deleteBtn').addClass('k-state-disabled');
+                $('#deleteBtn').addClass('k-state-disabled');
             }
         }
 
