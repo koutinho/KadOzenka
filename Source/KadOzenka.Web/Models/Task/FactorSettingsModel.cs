@@ -57,10 +57,10 @@ namespace KadOzenka.Web.Models.Task
 		public void FromEntity(OMFactorSettings entity)
 		{
 			Id = entity.Id;
-			FactorId = entity.FactorId.GetValueOrDefault();
+			FactorId = entity.FactorId;
 			FactorInheritanceTypeCode = entity.Inheritance_Code;
 			Source = entity.Source;
-			CorrectFactorId = entity.CorrectFactorId.GetValueOrDefault();
+			CorrectFactorId = entity.CorrectFactorId;
 		}
 
 		public InheritanceFactorSettingDto ToDto()
