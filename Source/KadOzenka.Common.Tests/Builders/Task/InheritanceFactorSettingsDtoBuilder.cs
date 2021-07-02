@@ -23,16 +23,21 @@ namespace KadOzenka.Common.Tests.Builders.Task
 		}
 
 
-
-		public InheritanceFactorSettingsDtoBuilder FactorId(long factorId)
+		public InheritanceFactorSettingsDtoBuilder Id(long id)
 		{
-			_inheritanceFactor.FactorId = factorId;
+			_inheritanceFactor.Id = id;
 			return this;
 		}
 
-		public InheritanceFactorSettingsDtoBuilder CorrectFactorId(long correctFactorId)
+		public InheritanceFactorSettingsDtoBuilder FactorId(long? factorId)
 		{
-			_inheritanceFactor.CorrectFactorId = correctFactorId;
+			_inheritanceFactor.FactorId = factorId.GetValueOrDefault();
+			return this;
+		}
+
+		public InheritanceFactorSettingsDtoBuilder CorrectFactorId(long? correctFactorId)
+		{
+			_inheritanceFactor.CorrectFactorId = correctFactorId.GetValueOrDefault();
 			return this;
 		}
 

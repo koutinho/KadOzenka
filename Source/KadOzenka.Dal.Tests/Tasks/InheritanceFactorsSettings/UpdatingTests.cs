@@ -13,13 +13,13 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		[Test]
 		public void CanNot_Update_NotExisting_Setting()
 		{
-			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
-			FactorSettingsRepository.Setup(x => x.GetById(factor.Id, null)).Returns((OMFactorSettings) null);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
-			TourFactorService.Setup(x => x.GetAllTourAttributes(factor.TourId)).Returns(new TourAttributesDto());
+			var setting = new InheritanceFactorSettingsDtoBuilder().Build();
+			FactorSettingsRepository.Setup(x => x.GetById(setting.Id, null)).Returns((OMFactorSettings) null);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(setting.Id, setting.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(setting.Id, setting.CorrectFactorId)).Returns(false);
+			TourFactorService.Setup(x => x.GetAllTourAttributes(setting.TourId)).Returns(new TourAttributesDto());
 
-			Assert.Throws<InheritanceFactorNotFoundException>(() => InheritanceInheritanceFactorSettingsService.UpdateFactor(factor));
+			Assert.Throws<InheritanceFactorNotFoundException>(() => InheritanceInheritanceFactorSettingsService.UpdateFactor(setting));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}

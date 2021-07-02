@@ -18,9 +18,9 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories
 			return x => x.Id == id;
 		}
 
-		public bool IsFactorExists(long factorId)
+		public bool IsFactorExists(long settingId, long factorId)
 		{
-			return OMFactorSettings.Where(x => x.CorrectFactorId == factorId || x.FactorId == factorId).ExecuteExists();
+			return OMFactorSettings.Where(x => x.Id != settingId && (x.CorrectFactorId == factorId || x.FactorId == factorId)).ExecuteExists();
 		}
 	}
 }

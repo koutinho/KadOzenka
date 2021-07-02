@@ -5,6 +5,6 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories
 {
 	public interface IFactorSettingsRepository : IGenericRepository<OMFactorSettings>
 	{
-		bool IsFactorExists(long factorId);
+		bool IsFactorExists(long settingId, long factorId);
 	}
 }

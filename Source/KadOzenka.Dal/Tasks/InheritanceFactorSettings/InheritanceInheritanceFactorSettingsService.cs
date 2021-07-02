@@ -125,11 +125,11 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			if (inheritanceFactor.FactorId == inheritanceFactor.CorrectFactorId)
 				throw new InheritanceFactorInSettingAreTheSameException();
 
-			var isFactorExists = FactorSettingsRepository.IsFactorExists(inheritanceFactor.FactorId);
+			var isFactorExists = FactorSettingsRepository.IsFactorExists(inheritanceFactor.Id, inheritanceFactor.FactorId);
 			if (isFactorExists)
 				throw new InheritanceFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(inheritanceFactor.FactorId).Name);
 
-			var isCorrectFactorExists = FactorSettingsRepository.IsFactorExists(inheritanceFactor.CorrectFactorId);
+			var isCorrectFactorExists = FactorSettingsRepository.IsFactorExists(inheritanceFactor.Id, inheritanceFactor.CorrectFactorId);
 			if (isCorrectFactorExists)
 				throw new InheritanceCorrectingFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(inheritanceFactor.CorrectFactorId).Name);
 

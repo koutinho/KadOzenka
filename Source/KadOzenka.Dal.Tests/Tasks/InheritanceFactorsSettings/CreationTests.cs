@@ -49,8 +49,8 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		public void CanNot_Create_Setting_If_Factor_Already_Was_Added()
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(true);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.FactorId)).Returns(true);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.CorrectFactorId)).Returns(false);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId)).Returns(new RegisterAttribute());
 
 			Assert.Throws<InheritanceFactorAlreadyExistsException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
@@ -62,8 +62,8 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		public void CanNot_Create_Setting_If_CorrectingFactor_Already_Was_Added()
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(true);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.CorrectFactorId)).Returns(true);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.CorrectFactorId)).Returns(new RegisterAttribute());
 
 			Assert.Throws<InheritanceCorrectingFactorAlreadyExistsException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
@@ -75,8 +75,8 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		public void CanNot_Create_Setting_If_Factor_Is_Oks_And_CorrectingFactor_Is_Zu()
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.CorrectFactorId)).Returns(false);
 			var tourAttributes = new TourAttributesDto
 			{
 				Oks = new List<OMAttribute> { new() { Id = factor.FactorId} },
@@ -93,8 +93,8 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		public void CanNot_Create_Setting_If_Factor_Is_Zu_And_CorrectingFactor_Is_Oks()
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.CorrectFactorId)).Returns(false);
 			var tourAttributes = new TourAttributesDto
 			{
 				Oks = new List<OMAttribute> { new() { Id = factor.CorrectFactorId } },
@@ -111,8 +111,8 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		public void Can_Create_Setting()
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().Build();
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
-			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.FactorId)).Returns(false);
+			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.Id, factor.CorrectFactorId)).Returns(false);
 			TourFactorService.Setup(x => x.GetAllTourAttributes(factor.TourId)).Returns(new TourAttributesDto());
 
 			InheritanceInheritanceFactorSettingsService.Add(factor);
