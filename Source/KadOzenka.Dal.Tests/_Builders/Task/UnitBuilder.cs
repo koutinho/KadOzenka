@@ -1,4 +1,5 @@
-﻿using KadOzenka.Common.Tests.Builders.Task;
+﻿using KadOzenka.Common.Tests;
+using KadOzenka.Common.Tests.Builders.Task;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests._Builders.Task
@@ -21,6 +22,7 @@ namespace KadOzenka.Dal.UnitTests._Builders.Task
 
 		public override OMUnit Build()
 		{
+			_unit.Id = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue);
 			return _unit;
 		}
 	}

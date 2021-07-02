@@ -1,10 +1,11 @@
-﻿//using NUnit.Framework;
+﻿//using System;
+//using NUnit.Framework;
 //using org.mariuszgromada.math.mxparser;
 
 //namespace KadOzenka.Dal.UnitTests.Tasks
 //{
 //	/// <summary>
-//	/// Класс с примерами работы со сторонней библиотекой из расчета Кадастровой Стоимость
+//	/// Класс с примерами работы со сторонней библиотекой из расчета Кадастровой Стоимости
 //	/// </summary>
 //	[TestFixture]
 //	public class ParserTests : BaseTasksTests
@@ -38,7 +39,6 @@
 //			Assert.That(result, Is.EqualTo(0.25));
 //		}
 
-
 //		[Test]
 //		public void How_To_Calculate_Float_Numbers()
 //		{
@@ -50,6 +50,17 @@
 //			var result = e.calculate();
 
 //			Assert.That(result, Is.EqualTo(74.71).Within(0.01));
+//		}
+
+//		[Test]
+//		public void How_To_Calculate_Exponent()
+//		{
+//			var initialString = "exp(2)";
+
+//			var e = new Expression(initialString);
+//			var result = e.calculate();
+
+//			Assert.That(result, Is.EqualTo(Math.Exp(2)).Within(0.01));
 //		}
 //	}
 //}
