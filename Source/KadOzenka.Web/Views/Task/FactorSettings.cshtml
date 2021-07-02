@@ -36,6 +36,7 @@
         </div>
     </div>
     <div class="form-group"></div>
+    <div id="toolBar"></div>
     <div id="factorSettingsGrid"></div>
 </div>
 
@@ -47,6 +48,7 @@
             tourDropDownList.bind('change', reloadGrid);
             $('[name="objectType"]').on('change', reloadGrid);
 
+            initToolBar();
 
             var dataSource = new kendo.data.DataSource({
                 transport: {
@@ -181,6 +183,60 @@
         });
 
 
+        
+        function initToolBar() {
+            $('#toolBar').kendoToolBar({
+                items: [
+                    {
+                        type: 'button',
+                        id: 'addAttributeBtn',
+                        text: '',
+                        attributes: { title: "Добавить" },
+                        icon: 'add',
+                        click: add
+                    },
+                    /*{
+                        type: 'button',
+                        id: 'editAttributeBtn',
+                        text: '',
+                        attributes: { title: "Изменить" },
+                        icon: 'edit',
+                        click: edit
+                    },
+                    {
+                        type: 'button',
+                        id: 'deleteAttributeBtn',
+                        className: "k-state-disabled",
+                        text: '',
+                        attributes: { title: "Удалить" },
+                        icon: 'delete',
+                        click: deleteFactor
+                    }*/
+                ]
+            });
+        }
+
+
+        function add() {
+            var tourId = $('#tourId').val();
+            var objectType = $('input[name="objectType"]:checked').val();
+            Common.UI.ShowWindow('Добавление фактора',
+                '@Url.Action("EditFactorSettings", "Task")' + `?tourId=${tourId}&objectType=${objectType}`,
+                'editFactorWindow',
+                reloadGrid,
+                800, 450);
+        }
+
+
+        /*function edit() {
+
+        }
+
+
+        function deleteFactor() {
+
+        }*/
+        
         function reloadGrid() {
             $('#factorSettingsGrid').data('kendoGrid').dataSource.read();
         }

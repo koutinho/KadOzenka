@@ -65,10 +65,10 @@ namespace KadOzenka.Web.Controllers
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public SystemAttributeSettingsService SystemAttributeSettingsService { get; set; }
         public TemplateService TemplateService { get; set; }
-        public FactorSettingsService FactorSettingsService { get; set; }
+        public IFactorSettingsService FactorSettingsService { get; set; }
 
         public TaskController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
-	        IGbuObjectService gbuObjectService, IUnitService unitService)
+	        IGbuObjectService gbuObjectService, IUnitService unitService, IFactorSettingsService factorSettingsService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TaskService = new TaskService();
@@ -80,7 +80,7 @@ namespace KadOzenka.Web.Controllers
             SystemAttributeSettingsService = new SystemAttributeSettingsService();
             TemplateService = templateService;
             UnitService = unitService;
-            FactorSettingsService = new FactorSettingsService();
+            FactorSettingsService = factorSettingsService;
         }
 
 
@@ -1046,7 +1046,7 @@ namespace KadOzenka.Web.Controllers
 	        var tourAttributes = TourFactorService.GetTourAttributes(tourId, objectType)
 		        .Select(x => x.Id).ToList();
 
-	        var factorSettings = FactorSettingsService.GetFactorSettings(tourAttributes)
+	        var factorSettings = FactorSettingsService.Get(tourAttributes)
                 .Select(FactorSettingsModel.FromDto).ToList();
 
             return Json(factorSettings);
@@ -1056,14 +1056,60 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetFactorInheritanceTypes()
         {
             var types = Helpers.EnumExtensions.GetSelectList(typeof(FactorInheritance));
+            
             return Json(types);
         }
 
-        #endregion Просмотр настроек факторов
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		public ActionResult EditFactorSettings(long? id, long tourId, ObjectTypeExtended objectType)
+		{
+			var tourFactors = TourFactorService.GetTourAttributes(tourId, objectType).Select(x => new SelectListItem
+			{
+				Value = x.Id.ToString(),
+				Text = x.Name
+			}).ToList();
 
-        #region Сравнение данных
+			var model = new FactorSettingsModel
+			{
+				TourFactors = tourFactors
+            };
 
-        [HttpGet]
+            if (id.HasValue)
+            {
+	            
+            }
+			else
+            {
+	            model.Id = -1;
+            }
+
+            return View(model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		public ActionResult EditFactorSettings(FactorSettingsModel model)
+		{
+			var dto = model.ToDto();
+
+			if (model.IsNew)
+			{
+				FactorSettingsService.Add(dto);
+			}
+			else
+			{
+				//FactorSettingsService.UpdateFactor(dto);
+			}
+
+			return Ok();
+		}
+
+		#endregion Просмотр настроек факторов
+
+		#region Сравнение данных
+
+		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public FileResult DownloadTaskChangesDataComparingResult(long taskId)
 		{
