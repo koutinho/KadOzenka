@@ -718,7 +718,7 @@ namespace KadOzenka.Web.Controllers
 
             if (tourGroup != null)
             {
-                var tourAllAttributes = TourFactorService.GetTourAllAttributes(tourGroup.TourId);
+                var tourAllAttributes = TourFactorService.GetTourAttributes(tourGroup.TourId, ObjectTypeExtended.Both);
                 var result = tourAllAttributes.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),

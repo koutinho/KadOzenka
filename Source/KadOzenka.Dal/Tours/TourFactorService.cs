@@ -6,7 +6,6 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
@@ -67,14 +66,6 @@ namespace KadOzenka.Dal.Tours
             return OMAttribute
                 .Where(x => registerIds.Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false &&
                             x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
-        }
-
-        public List<OMAttribute> GetTourAllAttributes(long tourId)
-        {
-            var result = GetTourAttributes(tourId, ObjectTypeExtended.Oks);
-            result.AddRange(GetTourAttributes(tourId, ObjectTypeExtended.Zu));
-
-            return result;
         }
 
         public OMRegister GetTourRegister(long tourId, ObjectType objectType)

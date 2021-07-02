@@ -17,7 +17,6 @@ namespace KadOzenka.Dal.Tours
 		RegisterAttributeService RegisterAttributeService { get; set; }
 		RecycleBinService RecycleBinService { get; }
 		List<OMAttribute> GetTourAttributes(long tourId, ObjectTypeExtended objectType);
-		List<OMAttribute> GetTourAllAttributes(long tourId);
 		OMRegister GetTourRegister(long tourId, ObjectType objectType);
 		OMRegister CreateTourFactorRegister(long tourId, bool isStead);
 		void RemoveTourFactorRegistersLogically(long tourId, long eventId);
