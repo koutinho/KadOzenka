@@ -1,0 +1,1 @@
+delete from core_srd_function where id=666;

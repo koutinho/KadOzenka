@@ -1036,13 +1036,13 @@ namespace KadOzenka.Web.Controllers
 
         #region Просмотр настроек факторов для Наследования
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
         public ActionResult InheritanceFactorSettings()
         {
             return View();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
         public JsonResult GetInheritanceFactorSettings(long tourId, ObjectTypeExtended objectType)
         {
 	        var tourAttributes = TourFactorService.GetTourAttributes(tourId, objectType)
@@ -1054,7 +1054,7 @@ namespace KadOzenka.Web.Controllers
             return Json(factorSettings);
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
         public JsonResult GetFactorInheritanceTypes()
         {
             var types = Helpers.EnumExtensions.GetSelectList(typeof(FactorInheritance));
@@ -1063,7 +1063,7 @@ namespace KadOzenka.Web.Controllers
         }
 
 		[HttpGet]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
 		public ActionResult EditInheritanceFactorSetting(long? id, long tourId, ObjectTypeExtended objectType)
 		{
 			var tourFactors = TourFactorService.GetTourAttributes(tourId, objectType)
@@ -1093,7 +1093,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpPost]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
 		public ActionResult EditInheritanceFactorSetting(FactorSettingsModel model)
 		{
 			var dto = model.ToDto();
@@ -1111,7 +1111,7 @@ namespace KadOzenka.Web.Controllers
 		}
 
 		[HttpDelete]
-		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
 		public ActionResult DeleteInheritanceFactorSetting(long? id)
 		{
 			InheritanceFactorSettingsService.DeleteSetting(id);
