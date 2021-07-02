@@ -595,7 +595,7 @@ namespace KadOzenka.Dal.Modeling
 			//для автоматической модели набор факторов разный под тип алгоритма
 			var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
 			if (factors.Count == 0)
-				throw new FormulaCreationException("Невозможно сформировать формулу, т.к. у модели нет факторов");
+				return "Y = 0";
 
 			var formulaCreator = GetFormulaCreator(algorithmType);
 
