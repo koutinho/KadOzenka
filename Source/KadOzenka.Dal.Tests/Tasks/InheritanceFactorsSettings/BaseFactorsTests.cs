@@ -1,5 +1,6 @@
 ﻿using KadOzenka.Dal.Tasks;
-using KadOzenka.Dal.Tasks.Repositories;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories;
 using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -9,7 +10,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 {
 	public class BaseFactorsTests : BaseTests
 	{
-		protected FactorSettingsService FactorSettingsService => Provider.GetService<FactorSettingsService>();
+		protected InheritanceInheritanceFactorSettingsService InheritanceInheritanceFactorSettingsService => Provider.GetService<InheritanceInheritanceFactorSettingsService>();
 		protected Mock<IFactorSettingsRepository> FactorSettingsRepository { get; set; }
 
 		[SetUp]
@@ -20,7 +21,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
-			container.AddTransient<FactorSettingsService>();
+			container.AddTransient<InheritanceInheritanceFactorSettingsService>();
 			container.AddTransient(typeof(IFactorSettingsRepository), x => FactorSettingsRepository.Object);
 		}
 	}

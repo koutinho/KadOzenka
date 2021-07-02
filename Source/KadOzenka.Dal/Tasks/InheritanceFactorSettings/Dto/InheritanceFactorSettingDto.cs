@@ -1,8 +1,8 @@
 ﻿using ObjectModel.Directory.KO;
 
-namespace KadOzenka.Dal.Tasks.Dto
+namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto
 {
-	public class FactorSettingsDto
+	public class InheritanceFactorSettingDto
 	{
 		public long Id { get; set; }
 		public long FactorId { get; set; }

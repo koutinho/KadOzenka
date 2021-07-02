@@ -6,22 +6,23 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tasks.Exceptions;
-using KadOzenka.Dal.Tasks.Repositories;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories;
 using KadOzenka.Dal.Tasks.Resources;
 using ObjectModel.KO;
 using Serilog;
 
-namespace KadOzenka.Dal.Tasks
+namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 {
-	public class FactorSettingsService : IFactorSettingsService
+	public class InheritanceInheritanceFactorSettingsService : IInheritanceFactorSettingsService
 	{
-		private static readonly ILogger Logger = Log.ForContext<FactorSettingsService>();
+		private static readonly ILogger Logger = Log.ForContext<InheritanceInheritanceFactorSettingsService>();
 		public IFactorSettingsRepository FactorSettingsRepository { get; set; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; set; }
 
 
 
-		public FactorSettingsService(IFactorSettingsRepository factorSettingsRepository,
+		public InheritanceInheritanceFactorSettingsService(IFactorSettingsRepository factorSettingsRepository,
 			IRegisterCacheWrapper registerCacheWrapper)
 		{
 			FactorSettingsRepository = factorSettingsRepository;
@@ -30,14 +31,14 @@ namespace KadOzenka.Dal.Tasks
 
 
 
-		public List<FactorSettingsDto> Get(List<long> tourAttributes)
+		public List<InheritanceFactorSettingDto> Get(List<long> tourAttributes)
 		{
 			if (tourAttributes.IsEmpty())
-				return new List<FactorSettingsDto>();
+				return new List<InheritanceFactorSettingDto>();
 
 			var factors = OMFactorSettings.Where(x => tourAttributes.Contains((long) x.FactorId) || tourAttributes.Contains((long) x.CorrectFactorId)).SelectAll().Execute();
 			
-			return factors.Select(x => new FactorSettingsDto
+			return factors.Select(x => new InheritanceFactorSettingDto
 			{
 				Id = x.Id,
 				FactorName = GetAttributeNameSafety(x.FactorId),
@@ -47,16 +48,16 @@ namespace KadOzenka.Dal.Tasks
 			}).ToList();
 		}
 
-		public int Add(FactorSettingsDto factor)
+		public int Add(InheritanceFactorSettingDto inheritanceFactor)
 		{
-			ValidateFactor(factor);
+			ValidateFactor(inheritanceFactor);
 
 			var newFactor = new OMFactorSettings
 			{
-				FactorId = factor.FactorId,
-				Inheritance_Code = factor.FactorInheritance,
-				Source = factor.Source,
-				CorrectFactorId = factor.CorrectFactorId
+				FactorId = inheritanceFactor.FactorId,
+				Inheritance_Code = inheritanceFactor.FactorInheritance,
+				Source = inheritanceFactor.Source,
+				CorrectFactorId = inheritanceFactor.CorrectFactorId
 			};
 
 			return FactorSettingsRepository.Save(newFactor);
@@ -80,23 +81,23 @@ namespace KadOzenka.Dal.Tasks
 			return string.Empty;
 		}
 
-		private void ValidateFactor(FactorSettingsDto factor)
+		private void ValidateFactor(InheritanceFactorSettingDto inheritanceFactor)
 		{
-			if (factor.FactorId == 0)
+			if (inheritanceFactor.FactorId == 0)
 				throw new InheritanceEmptyFactorException(Messages.InheritanceFactorIsEmpty);
-			if (factor.CorrectFactorId == 0)
+			if (inheritanceFactor.CorrectFactorId == 0)
 				throw new InheritanceEmptyFactorException(Messages.InheritanceCorrectingFactorIsEmpty);
 
-			if (factor.FactorId == factor.CorrectFactorId)
+			if (inheritanceFactor.FactorId == inheritanceFactor.CorrectFactorId)
 				throw new InheritanceFactorInSettingAreTheSameException();
 
-			var isFactorExists = FactorSettingsRepository.IsFactorExists(factor.FactorId);
+			var isFactorExists = FactorSettingsRepository.IsFactorExists(inheritanceFactor.FactorId);
 			if (isFactorExists)
-				throw new InheritanceFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(factor.FactorId).Name);
+				throw new InheritanceFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(inheritanceFactor.FactorId).Name);
 
-			var isCorrectFactorExists = FactorSettingsRepository.IsFactorExists(factor.CorrectFactorId);
+			var isCorrectFactorExists = FactorSettingsRepository.IsFactorExists(inheritanceFactor.CorrectFactorId);
 			if (isCorrectFactorExists)
-				throw new InheritanceCorrectingFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(factor.CorrectFactorId).Name);
+				throw new InheritanceCorrectingFactorAlreadyExistsException(RegisterCacheWrapper.GetAttributeData(inheritanceFactor.CorrectFactorId).Name);
 
 			//todo both oks\zu
 		}

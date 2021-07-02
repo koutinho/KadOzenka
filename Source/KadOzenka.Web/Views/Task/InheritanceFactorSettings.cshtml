@@ -53,7 +53,7 @@
             var dataSource = new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: '@Html.Raw(Url.Action("GetFactorSettings", "Task"))',
+                        url: '@Html.Raw(Url.Action("GetInheritanceFactorSettings", "Task"))',
                         contentType: 'application/json; charset=utf-8',
                         dataType: 'json',
                         data: function () {
@@ -221,7 +221,7 @@
             var tourId = $('#tourId').val();
             var objectType = $('input[name="objectType"]:checked').val();
             Common.UI.ShowWindow('Добавление фактора',
-                '@Url.Action("EditFactorSettings", "Task")' + `?tourId=${tourId}&objectType=${objectType}`,
+                '@Url.Action("EditInheritanceFactorSetting", "Task")' + `?tourId=${tourId}&objectType=${objectType}`,
                 'editFactorWindow',
                 reloadGrid,
                 800, 450);

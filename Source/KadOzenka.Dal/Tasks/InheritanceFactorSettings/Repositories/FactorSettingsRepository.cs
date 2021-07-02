@@ -4,7 +4,7 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Tasks.Repositories
+namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories
 {
 	public class FactorSettingsRepository : GenericRepository<OMFactorSettings>, IFactorSettingsRepository
 	{

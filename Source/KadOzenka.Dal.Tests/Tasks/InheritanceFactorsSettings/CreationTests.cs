@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().FactorId(0).Build();
 
-			Assert.Throws<InheritanceEmptyFactorException>(() => FactorSettingsService.Add(factor));
+			Assert.Throws<InheritanceEmptyFactorException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}
@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 		{
 			var factor = new InheritanceFactorSettingsDtoBuilder().CorrectFactorId(0).Build();
 
-			Assert.Throws<InheritanceEmptyFactorException>(() => FactorSettingsService.Add(factor));
+			Assert.Throws<InheritanceEmptyFactorException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}
@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 			var id = RandomGenerator.GenerateRandomInteger();
 			var factor = new InheritanceFactorSettingsDtoBuilder().FactorId(id).CorrectFactorId(id).Build();
 
-			Assert.Throws<InheritanceFactorInSettingAreTheSameException>(() => FactorSettingsService.Add(factor));
+			Assert.Throws<InheritanceFactorInSettingAreTheSameException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}
@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId)).Returns(new RegisterAttribute());
 
-			Assert.Throws<InheritanceFactorAlreadyExistsException>(() => FactorSettingsService.Add(factor));
+			Assert.Throws<InheritanceFactorAlreadyExistsException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}
@@ -64,7 +64,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(true);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.CorrectFactorId)).Returns(new RegisterAttribute());
 
-			Assert.Throws<InheritanceCorrectingFactorAlreadyExistsException>(() => FactorSettingsService.Add(factor));
+			Assert.Throws<InheritanceCorrectingFactorAlreadyExistsException>(() => InheritanceInheritanceFactorSettingsService.Add(factor));
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Never);
 		}
@@ -76,7 +76,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks.InheritanceFactorsSettings
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.FactorId)).Returns(false);
 			FactorSettingsRepository.Setup(x => x.IsFactorExists(factor.CorrectFactorId)).Returns(false);
 
-			FactorSettingsService.Add(factor);
+			InheritanceInheritanceFactorSettingsService.Add(factor);
 
 			FactorSettingsRepository.Verify(x => x.Save(It.IsAny<OMFactorSettings>()), Times.Once);
 		}

@@ -1,15 +1,16 @@
 ﻿using KadOzenka.Dal.Tasks.Dto;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
 using ObjectModel.Directory.KO;
 
 namespace KadOzenka.Common.Tests.Builders.Task
 {
 	public class InheritanceFactorSettingsDtoBuilder
 	{
-		private FactorSettingsDto _factor;
+		private InheritanceFactorSettingDto _inheritanceFactor;
 
 		public InheritanceFactorSettingsDtoBuilder()
 		{
-			_factor = new FactorSettingsDto
+			_inheritanceFactor = new InheritanceFactorSettingDto
 			{
 				Id = RandomGenerator.GenerateRandomId(),
 				FactorId = RandomGenerator.GenerateRandomId(),
@@ -25,19 +26,19 @@ namespace KadOzenka.Common.Tests.Builders.Task
 
 		public InheritanceFactorSettingsDtoBuilder FactorId(long factorId)
 		{
-			_factor.FactorId = factorId;
+			_inheritanceFactor.FactorId = factorId;
 			return this;
 		}
 
 		public InheritanceFactorSettingsDtoBuilder CorrectFactorId(long correctFactorId)
 		{
-			_factor.CorrectFactorId = correctFactorId;
+			_inheritanceFactor.CorrectFactorId = correctFactorId;
 			return this;
 		}
 
-		public FactorSettingsDto Build()
+		public InheritanceFactorSettingDto Build()
 		{
-			return _factor;
+			return _inheritanceFactor;
 		}
 	}
 }

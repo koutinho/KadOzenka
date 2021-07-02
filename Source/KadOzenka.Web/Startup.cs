@@ -45,7 +45,8 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
 using KadOzenka.Dal.RecycleBin;
-using KadOzenka.Dal.Tasks.Repositories;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories;
 using KadOzenka.Dal.Tours.Repositories;
 using KadOzenka.Dal.Units;
 using KadOzenka.Web.Attributes;
@@ -163,7 +164,7 @@ namespace CIPJS
             services.AddTransient(typeof(IUnitService), typeof(UnitService));
             services.AddTransient(typeof(ITourFactorService), typeof(TourFactorService));
             services.AddTransient(typeof(IGroupFactorService), typeof(GroupFactorService));
-            services.AddTransient(typeof(IFactorSettingsService), typeof(FactorSettingsService));
+            services.AddTransient(typeof(IInheritanceFactorSettingsService), typeof(InheritanceInheritanceFactorSettingsService));
             services.AddTransient(typeof(IFactorSettingsRepository), typeof(FactorSettingsRepository));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 

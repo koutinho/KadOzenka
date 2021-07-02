@@ -36,6 +36,7 @@ using ObjectModel.Core.Register;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
 using KadOzenka.Web.Attributes;
@@ -65,10 +66,10 @@ namespace KadOzenka.Web.Controllers
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public SystemAttributeSettingsService SystemAttributeSettingsService { get; set; }
         public TemplateService TemplateService { get; set; }
-        public IFactorSettingsService FactorSettingsService { get; set; }
+        public IInheritanceFactorSettingsService InheritanceFactorSettingsService { get; set; }
 
         public TaskController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
-	        IGbuObjectService gbuObjectService, IUnitService unitService, IFactorSettingsService factorSettingsService)
+	        IGbuObjectService gbuObjectService, IUnitService unitService, IInheritanceFactorSettingsService inheritanceFactorSettingsService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TaskService = new TaskService();
@@ -80,7 +81,7 @@ namespace KadOzenka.Web.Controllers
             SystemAttributeSettingsService = new SystemAttributeSettingsService();
             TemplateService = templateService;
             UnitService = unitService;
-            FactorSettingsService = factorSettingsService;
+            InheritanceFactorSettingsService = inheritanceFactorSettingsService;
         }
 
 
@@ -1032,21 +1033,22 @@ namespace KadOzenka.Web.Controllers
             return Json(list);
         }
 
-        #region Просмотр настроек факторов
+
+        #region Просмотр настроек факторов для Наследования
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public ActionResult FactorSettings()
+        public ActionResult InheritanceFactorSettings()
         {
             return View();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetFactorSettings(long tourId, ObjectTypeExtended objectType)
+        public JsonResult GetInheritanceFactorSettings(long tourId, ObjectTypeExtended objectType)
         {
 	        var tourAttributes = TourFactorService.GetTourAttributes(tourId, objectType)
 		        .Select(x => x.Id).ToList();
 
-	        var factorSettings = FactorSettingsService.Get(tourAttributes)
+	        var factorSettings = InheritanceFactorSettingsService.Get(tourAttributes)
                 .Select(FactorSettingsModel.FromDto).ToList();
 
             return Json(factorSettings);
@@ -1062,7 +1064,7 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public ActionResult EditFactorSettings(long? id, long tourId, ObjectTypeExtended objectType)
+		public ActionResult EditInheritanceFactorSetting(long? id, long tourId, ObjectTypeExtended objectType)
 		{
 			var tourFactors = TourFactorService.GetTourAttributes(tourId, objectType).Select(x => new SelectListItem
 			{
@@ -1089,13 +1091,13 @@ namespace KadOzenka.Web.Controllers
 
 		[HttpPost]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-		public ActionResult EditFactorSettings(FactorSettingsModel model)
+		public ActionResult EditInheritanceFactorSetting(FactorSettingsModel model)
 		{
 			var dto = model.ToDto();
 
 			if (model.IsNew)
 			{
-				FactorSettingsService.Add(dto);
+				InheritanceFactorSettingsService.Add(dto);
 			}
 			else
 			{
@@ -1105,11 +1107,12 @@ namespace KadOzenka.Web.Controllers
 			return Ok();
 		}
 
-		#endregion Просмотр настроек факторов
+        #endregion Просмотр настроек факторов для Наследования
 
-		#region Сравнение данных
 
-		[HttpGet]
+        #region Сравнение данных
+
+        [HttpGet]
 		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
 		public FileResult DownloadTaskChangesDataComparingResult(long taskId)
 		{

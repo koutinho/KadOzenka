@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Tasks.Dto;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory.KO;
 
@@ -38,7 +39,7 @@ namespace KadOzenka.Web.Models.Task
 
 
 
-		public static FactorSettingsModel FromDto(FactorSettingsDto dto)
+		public static FactorSettingsModel FromDto(InheritanceFactorSettingDto dto)
 		{
 			return new FactorSettingsModel
 			{
@@ -52,9 +53,9 @@ namespace KadOzenka.Web.Models.Task
 			};
 		}
 
-		public FactorSettingsDto ToDto()
+		public InheritanceFactorSettingDto ToDto()
 		{
-			return new FactorSettingsDto
+			return new InheritanceFactorSettingDto
 			{
 				Id = Id,
 				FactorId = FactorId,
