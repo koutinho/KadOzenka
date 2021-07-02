@@ -165,10 +165,13 @@
                     mode: "row"
                 },
                 dataSource: dataSource,
+                dataBound: changeToolBarButtonsClass,
+                change: changeToolBarButtonsClass,
                 autoBind: false,
                 pageable: true,
                 sortable: true,
-                resizable: true
+                resizable: true,
+                selectable: true
             });
 
             $("#factorSettingsGrid").data("kendoGrid").tbody.kendoTooltip({
@@ -189,23 +192,23 @@
                 items: [
                     {
                         type: 'button',
-                        id: 'addAttributeBtn',
+                        id: 'addBtn',
                         text: '',
                         attributes: { title: "Добавить" },
                         icon: 'add',
                         click: add
                     },
-                    /*{
+                    {
                         type: 'button',
-                        id: 'editAttributeBtn',
+                        id: 'editBtn',
                         text: '',
                         attributes: { title: "Изменить" },
                         icon: 'edit',
                         click: edit
                     },
-                    {
+                    /*{
                         type: 'button',
-                        id: 'deleteAttributeBtn',
+                        id: 'deleteBtn',
                         className: "k-state-disabled",
                         text: '',
                         attributes: { title: "Удалить" },
@@ -218,26 +221,56 @@
 
 
         function add() {
+            showModalWithSetting("Добавление фактора", null);
+        }
+
+        function edit() {
+            var selectedRow = getSelectedRowInGrid();
+            showModalWithSetting("Редактирование фактора", selectedRow.Id);
+        }
+
+        function showModalWithSetting(modalTitle, settingId) {
             var tourId = $('#tourId').val();
             var objectType = $('input[name="objectType"]:checked').val();
-            Common.UI.ShowWindow('Добавление фактора',
-                '@Url.Action("EditInheritanceFactorSetting", "Task")' + `?tourId=${tourId}&objectType=${objectType}`,
+            Common.UI.ShowWindow(modalTitle,
+                '@Url.Action("EditInheritanceFactorSetting", "Task")' + `?id=${settingId}&tourId=${tourId}&objectType=${objectType}`,
                 'editFactorWindow',
                 reloadGrid,
-                800, 450);
+                800,
+                450);
         }
 
 
-        /*function edit() {
-
-        }
-
-
-        function deleteFactor() {
+        /*function deleteFactor() {
 
         }*/
-        
+
+
+        function changeToolBarButtonsClass() {
+            var row = getSelectedRowInGrid();
+            if (row) {
+                $('#editBtn').removeClass('k-state-disabled');
+                //$('#deleteBtn').removeClass('k-state-disabled');
+            }
+            else {
+                $('#editBtn').addClass('k-state-disabled');
+                //$('#deleteBtn').addClass('k-state-disabled');
+            }
+        }
+
+
         function reloadGrid() {
             $('#factorSettingsGrid').data('kendoGrid').dataSource.read();
+        }
+
+
+        function getSelectedRowInGrid() {
+            var grid = $("#factorSettingsGrid").data("kendoGrid");
+            var row = grid.select();
+            if (row.length > 0) {
+                var data = grid.dataItem(row);
+                return data;
+            }
+            return undefined;
         }
 </script>

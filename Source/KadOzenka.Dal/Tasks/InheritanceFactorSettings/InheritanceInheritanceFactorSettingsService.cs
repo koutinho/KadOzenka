@@ -51,19 +51,45 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			}).ToList();
 		}
 
-		public int Add(InheritanceFactorSettingDto inheritanceFactor)
+		public OMFactorSettings GetById(long? id)
 		{
-			ValidateFactor(inheritanceFactor);
+			if (id == null)
+				throw new Exception("Не передан ИД настройки факторов");
+
+			var setting = FactorSettingsRepository.GetById(id.Value, null);
+			if (setting == null)
+				throw new InheritanceFactorNotFoundException(id.Value);
+
+			return setting;
+		}
+
+
+		public int Add(InheritanceFactorSettingDto setting)
+		{
+			ValidateFactor(setting);
 
 			var newFactor = new OMFactorSettings
 			{
-				FactorId = inheritanceFactor.FactorId,
-				Inheritance_Code = inheritanceFactor.FactorInheritance,
-				Source = inheritanceFactor.Source,
-				CorrectFactorId = inheritanceFactor.CorrectFactorId
+				FactorId = setting.FactorId,
+				Inheritance_Code = setting.FactorInheritance,
+				Source = setting.Source,
+				CorrectFactorId = setting.CorrectFactorId
 			};
 
 			return FactorSettingsRepository.Save(newFactor);
+		}
+
+		public void UpdateFactor(InheritanceFactorSettingDto settingDto)
+		{
+			ValidateFactor(settingDto);
+
+			var setting = GetById(settingDto.Id);
+			setting.FactorId = settingDto.FactorId;
+			setting.Inheritance_Code = settingDto.FactorInheritance;
+			setting.Source = settingDto.Source;
+			setting.CorrectFactorId = settingDto.CorrectFactorId;
+
+			FactorSettingsRepository.Save(setting);
 		}
 
 

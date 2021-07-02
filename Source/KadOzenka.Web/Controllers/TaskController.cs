@@ -1066,11 +1066,12 @@ namespace KadOzenka.Web.Controllers
 		[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
 		public ActionResult EditInheritanceFactorSetting(long? id, long tourId, ObjectTypeExtended objectType)
 		{
-			var tourFactors = TourFactorService.GetTourAttributes(tourId, objectType).Select(x => new SelectListItem
-			{
-				Value = x.Id.ToString(),
-				Text = x.Name
-			}).ToList();
+			var tourFactors = TourFactorService.GetTourAttributes(tourId, objectType)
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.Name
+				}).ToList();
 
 			var model = new FactorSettingsModel
 			{
@@ -1080,7 +1081,8 @@ namespace KadOzenka.Web.Controllers
 
             if (id.HasValue)
             {
-	            
+	            var setting = InheritanceFactorSettingsService.GetById(id);
+                model.FromEntity(setting);
             }
 			else
             {
@@ -1102,7 +1104,7 @@ namespace KadOzenka.Web.Controllers
 			}
 			else
 			{
-				//FactorSettingsService.UpdateFactor(dto);
+				InheritanceFactorSettingsService.UpdateFactor(dto);
 			}
 
 			return Ok();

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Tasks.Dto;
 using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory.KO;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Task
 {
@@ -52,6 +52,15 @@ namespace KadOzenka.Web.Models.Task
 				CorrectFactorName = dto.CorrectFactorName,
 				CorrectFactorId = dto.CorrectFactorId
 			};
+		}
+
+		public void FromEntity(OMFactorSettings entity)
+		{
+			Id = entity.Id;
+			FactorId = entity.FactorId.GetValueOrDefault();
+			FactorInheritanceTypeCode = entity.Inheritance_Code;
+			Source = entity.Source;
+			CorrectFactorId = entity.CorrectFactorId.GetValueOrDefault();
 		}
 
 		public InheritanceFactorSettingDto ToDto()
