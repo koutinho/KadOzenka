@@ -15,7 +15,7 @@ namespace KadOzenka.Web.Models.GbuObject
         [Display(Name = "Статус")]
         public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
-		[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]
+		//[Required(ErrorMessage = "Атрибут для проставления оценочной группы обязательный")]
 		public long? IdEstimatedSubGroup { get; set; }
 
         public EstimatedGroupModel ToGroupModel(TourEstimatedGroupAttributeParamsDto paramsDto)

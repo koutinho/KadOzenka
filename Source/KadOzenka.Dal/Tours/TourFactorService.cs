@@ -270,24 +270,24 @@ namespace KadOzenka.Dal.Tours
                 throw new Exception($"Не найден тур для задания на оценку с ИД {taskId}");
             }
 
-            var tourKoAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tour.Id)
-                .SelectAll().Execute();
-            if (tourKoAttributeSettings.IsEmpty())
-            {
-                throw new Exception($"Для тура {tour.Year} не заданы настройки использования заданных атрибутов");
-            }
+            // var tourKoAttributeSettings = OMTourAttributeSettings.Where(x => x.TourId == tour.Id)
+            //     .SelectAll().Execute();
+            // if (tourKoAttributeSettings.IsEmpty())
+            // {
+            //     throw new Exception($"Для тура {tour.Year} не заданы настройки использования заданных атрибутов");
+            // }
 
             var paramsDto = new TourEstimatedGroupAttributeParamsDto();
-            var tourCodeGroupAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
-                    x.AttributeUsingType_Code == KoAttributeUsingType.CodeGroupAttribute && x.AttributeId.HasValue)
-                ?.AttributeId;
-            if (!tourCodeGroupAttributeId.HasValue)
-            {
-                throw new Exception(
-                    $"Для тура {tour.Year} не задан {KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}");
-            }
-
-            paramsDto.IdCodeGroup = tourCodeGroupAttributeId.Value;
+            // var tourCodeGroupAttributeId = tourKoAttributeSettings.FirstOrDefault(x =>
+            //         x.AttributeUsingType_Code == KoAttributeUsingType.CodeGroupAttribute && x.AttributeId.HasValue)
+            //     ?.AttributeId;
+            // if (!tourCodeGroupAttributeId.HasValue)
+            // {
+            //     throw new Exception(
+            //         $"Для тура {tour.Year} не задан {KoAttributeUsingType.CodeGroupAttribute.GetEnumDescription()}");
+            // }
+            //
+            // paramsDto.IdCodeGroup = tourCodeGroupAttributeId.Value;
 
             return paramsDto;
         }

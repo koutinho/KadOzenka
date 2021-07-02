@@ -61,24 +61,24 @@
                         }))
                 </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabel("Атрибут для проставления оценочной группы", alignCenter: false)
-                </div>
-                <div class="col-sm-10">
-                    @Html.KendoDropDownListTreeWithButton(m => m.IdEstimatedSubGroup, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"])
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.ObjectChangeStatus)
-                </div>
-                <div class="col-sm-10">
-                    @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus)
-                        .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus)))
-                        .Filter(FilterType.Contains))
-                </div>
-            </div>
+            @* <div class="form-group"> *@
+            @*     <div class="col-sm-2"> *@
+            @*         @Html.CustomLabel("Атрибут для проставления оценочной группы", alignCenter: false) *@
+            @*     </div> *@
+            @*     <div class="col-sm-10"> *@
+            @*         @Html.KendoDropDownListTreeWithButton(m => m.IdEstimatedSubGroup, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"]) *@
+            @*     </div> *@
+            @* </div> *@
+            @* <div class="form-group"> *@
+            @*     <div class="col-sm-2"> *@
+            @*         @Html.CustomLabelFor(x => x.ObjectChangeStatus) *@
+            @*     </div> *@
+            @*     <div class="col-sm-10"> *@
+            @*         @(Html.Kendo().MultiSelectFor(m => m.ObjectChangeStatus) *@
+            @*             .BindTo(KadOzenka.Web.Helpers.EnumExtensions.GetSelectList(typeof(ObjectChangeStatus))) *@
+            @*             .Filter(FilterType.Contains)) *@
+            @*     </div> *@
+            @* </div> *@
 
         </div>
     </div>
