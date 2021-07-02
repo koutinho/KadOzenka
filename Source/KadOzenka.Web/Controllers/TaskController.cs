@@ -36,6 +36,7 @@ using ObjectModel.Core.Register;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks.Dto;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
 using KadOzenka.Web.Attributes;
@@ -65,10 +66,10 @@ namespace KadOzenka.Web.Controllers
         public RegisterAttributeService RegisterAttributeService { get; set; }
         public SystemAttributeSettingsService SystemAttributeSettingsService { get; set; }
         public TemplateService TemplateService { get; set; }
-        public FactorSettingsService FactorSettingsService { get; set; }
+        public IInheritanceFactorSettingsService InheritanceFactorSettingsService { get; set; }
 
         public TaskController(TemplateService templateService, IRegisterCacheWrapper registerCacheWrapper,
-	        IGbuObjectService gbuObjectService, IUnitService unitService)
+	        IGbuObjectService gbuObjectService, IUnitService unitService, IInheritanceFactorSettingsService inheritanceFactorSettingsService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TaskService = new TaskService();
@@ -80,7 +81,7 @@ namespace KadOzenka.Web.Controllers
             SystemAttributeSettingsService = new SystemAttributeSettingsService();
             TemplateService = templateService;
             UnitService = unitService;
-            FactorSettingsService = new FactorSettingsService();
+            InheritanceFactorSettingsService = inheritanceFactorSettingsService;
         }
 
 
@@ -1032,31 +1033,90 @@ namespace KadOzenka.Web.Controllers
             return Json(list);
         }
 
-        #region Просмотр настроек факторов
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public ActionResult FactorSettings()
+        #region Просмотр настроек факторов для Наследования
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
+        public ActionResult InheritanceFactorSettings()
         {
             return View();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetFactorSettings()
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
+        public JsonResult GetInheritanceFactorSettings(long tourId, ObjectTypeExtended objectType)
         {
-            var factorSettings = FactorSettingsService.GetFactorSettings()
+	        var tourAttributes = TourFactorService.GetTourAttributes(tourId, objectType)
+		        .Select(x => x.Id).ToList();
+
+	        var factorSettings = InheritanceFactorSettingsService.Get(tourAttributes)
                 .Select(FactorSettingsModel.FromDto).ToList();
 
             return Json(factorSettings);
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
         public JsonResult GetFactorInheritanceTypes()
         {
             var types = Helpers.EnumExtensions.GetSelectList(typeof(FactorInheritance));
+            
             return Json(types);
         }
 
-        #endregion Просмотр настроек факторов
+		[HttpGet]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
+		public ActionResult EditInheritanceFactorSetting(long? id, long tourId, ObjectTypeExtended objectType)
+		{
+			var tourFactors = TourFactorService.GetTourAttributes(tourId, objectType)
+				.Select(x => new SelectListItem
+				{
+					Value = x.Id.ToString(),
+					Text = x.Name
+				}).ToList();
+
+			var model = new FactorSettingsModel
+			{
+                TourId = tourId,
+				TourFactors = tourFactors
+            };
+
+            if (id.HasValue)
+            {
+	            var setting = InheritanceFactorSettingsService.GetById(id);
+                model.FromEntity(setting);
+            }
+
+            return View(model);
+		}
+
+		[HttpPost]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
+		public ActionResult EditInheritanceFactorSetting(FactorSettingsModel model)
+		{
+			var dto = model.ToDto();
+
+			if (model.IsNew)
+			{
+				InheritanceFactorSettingsService.Add(dto);
+			}
+			else
+			{
+				InheritanceFactorSettingsService.Update(dto);
+			}
+
+			return Ok();
+		}
+
+		[HttpDelete]
+		[SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_INHERITANCE_FACTOR_SETTINGS)]
+		public ActionResult DeleteInheritanceFactorSetting(long? id)
+		{
+			InheritanceFactorSettingsService.Delete(id);
+
+            return Ok();
+		}
+
+        #endregion Просмотр настроек факторов для Наследования
+
 
         #region Сравнение данных
 

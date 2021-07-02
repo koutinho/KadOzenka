@@ -551,6 +551,9 @@ namespace ObjectModel.SRD
               // Календарь рабочих дней (665)
               public const string CORE_HOLIDAYS_VIEW = "CORE.HOLIDAYS.VIEW";
                 
+              // Настройка факторов для Наследования (666)
+              public const string KO_TASKS_INHERITANCE_FACTOR_SETTINGS = "KO.TASKS.INHERITANCE_FACTOR_SETTINGS";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 
