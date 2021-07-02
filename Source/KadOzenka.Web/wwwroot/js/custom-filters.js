@@ -55,7 +55,7 @@ function replaceBrackets(prefix){
 }
 
 function bindUnusedFieldHider(prefix) {
-    console.log(prefix);
+    //console.log(prefix);
     hideAllFilterContainers(prefix);
 
     $(getFilterTypeField(prefix)).bind('change', () => onTypeChange(prefix));
@@ -67,7 +67,7 @@ function bindUnusedFieldHider(prefix) {
 
 function onTypeChange(prefix) {
     hideAllFilterContainers(prefix);
-    resetAllFields(prefix);
+    //resetAllFields(prefix);
     let filterType = getFilterTypeField(prefix);
     let filterTypeValue = $(filterType).data('kendoDropDownList').text();
     switch (filterTypeValue) {
@@ -226,7 +226,7 @@ function resetAllFields(prefix){
 }
 
 function bindAttributeSelectorEvents(field){
-    console.log(field);
+    //console.log(field);
     $(field).data('kendoDropDownTree').bind('change', (e)=> getAttributeInfo(e));
 }
 
