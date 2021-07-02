@@ -11,7 +11,7 @@ namespace KadOzenka.Web.Models.Task
 	public class FactorSettingsModel
 	{
 		public long Id { get; set; }
-		public bool IsNew => Id == -1;
+		public bool IsNew => Id == 0;
 		
 		[Display(Name = "Фактор")]
 		public long FactorId { get; set; }

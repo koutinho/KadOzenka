@@ -1084,10 +1084,6 @@ namespace KadOzenka.Web.Controllers
 	            var setting = InheritanceFactorSettingsService.GetById(id);
                 model.FromEntity(setting);
             }
-			else
-            {
-	            model.Id = -1;
-            }
 
             return View(model);
 		}
