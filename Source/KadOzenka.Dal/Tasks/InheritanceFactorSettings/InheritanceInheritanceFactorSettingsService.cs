@@ -4,9 +4,8 @@ using System.Linq;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.Tasks.Dto;
-using KadOzenka.Dal.Tasks.Exceptions;
 using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Dto;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Exceptions;
 using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Repositories;
 using KadOzenka.Dal.Tasks.Resources;
 using KadOzenka.Dal.Tours;
@@ -51,29 +50,29 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 			}).ToList();
 		}
 
-		public OMFactorSettings GetById(long? id)
+		public OMFactorSettings GetById(long? settingId)
 		{
-			if (id == null)
+			if (settingId == null)
 				throw new Exception("Не передан ИД настройки факторов");
 
-			var setting = FactorSettingsRepository.GetById(id.Value, null);
+			var setting = FactorSettingsRepository.GetById(settingId.Value, null);
 			if (setting == null)
-				throw new InheritanceFactorNotFoundException(id.Value);
+				throw new InheritanceFactorNotFoundException(settingId.Value);
 
 			return setting;
 		}
 
 
-		public int Add(InheritanceFactorSettingDto setting)
+		public int Add(InheritanceFactorSettingDto settingDto)
 		{
-			ValidateFactor(setting);
+			ValidateFactor(settingDto);
 
 			var newFactor = new OMFactorSettings
 			{
-				FactorId = setting.FactorId,
-				Inheritance_Code = setting.FactorInheritance,
-				Source = setting.Source,
-				CorrectFactorId = setting.CorrectFactorId
+				FactorId = settingDto.FactorId,
+				Inheritance_Code = settingDto.FactorInheritance,
+				Source = settingDto.Source,
+				CorrectFactorId = settingDto.CorrectFactorId
 			};
 
 			return FactorSettingsRepository.Save(newFactor);

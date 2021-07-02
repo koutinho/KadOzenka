@@ -7,9 +7,9 @@ namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings
 	public interface IInheritanceFactorSettingsService
 	{
 		List<InheritanceFactorSettingDto> Get(List<long> tourAttributes);
-		int Add(InheritanceFactorSettingDto factor);
+		int Add(InheritanceFactorSettingDto settingDto);
 		void UpdateFactor(InheritanceFactorSettingDto settingDto);
-		OMFactorSettings GetById(long? id);
+		OMFactorSettings GetById(long? settingId);
 		void DeleteSetting(long? settingId);
 	}
 }

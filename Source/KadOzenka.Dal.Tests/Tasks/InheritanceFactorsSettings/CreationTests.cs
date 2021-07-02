@@ -2,7 +2,7 @@
 using Core.Register.RegisterEntities;
 using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Builders.Task;
-using KadOzenka.Dal.Tasks.Exceptions;
+using KadOzenka.Dal.Tasks.InheritanceFactorSettings.Exceptions;
 using KadOzenka.Dal.Tours.Dto;
 using Moq;
 using NUnit.Framework;

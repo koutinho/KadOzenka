@@ -1,7 +1,7 @@
 ﻿using System;
 using KadOzenka.Dal.Tasks.Resources;
 
-namespace KadOzenka.Dal.Tasks.Exceptions
+namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Exceptions
 {
 	public class InheritanceFactorAlreadyExistsException : Exception
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.Tasks.Exceptions
+namespace KadOzenka.Dal.Tasks.InheritanceFactorSettings.Exceptions
 {
 	public class InheritanceFactorNotFoundException : Exception
 	{
