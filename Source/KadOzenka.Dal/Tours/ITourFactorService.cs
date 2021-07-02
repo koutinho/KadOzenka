@@ -29,5 +29,6 @@ namespace KadOzenka.Dal.Tours
 		List<AttributeSettingsDto> GetTourAttributesFromSettings(long tourId);
 		RegisterAttribute GetTourAttributeFromSettings(long tourId, KoAttributeUsingType type);
 		TourEstimatedGroupAttributeParamsDto GetEstimatedGroupModelParamsForTask(long taskId);
+		TourAttributesDto GetAllTourAttributes(long tourId);
 	}
 }

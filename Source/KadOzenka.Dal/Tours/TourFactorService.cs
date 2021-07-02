@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Transactions;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -36,23 +37,20 @@ namespace KadOzenka.Dal.Tours
 
         public List<OMAttribute> GetTourAttributes(long tourId, ObjectTypeExtended objectType)
         {
-            List<OMTourFactorRegister> existedTourFactorRegisters;
+            List<long> existedTourFactorRegisters;
             switch (objectType)
             {
                 case ObjectTypeExtended.Oks:
-                    existedTourFactorRegisters = OMTourFactorRegister
-                        .Where(x => x.TourId == tourId && x.ObjectType_Code != PropertyTypes.Stead)
-                        .SelectAll().Execute();
+                    existedTourFactorRegisters = GetTourRegisterIds(tourId, true);
                     break;
                 case ObjectTypeExtended.Zu:
-                    existedTourFactorRegisters = OMTourFactorRegister
-                        .Where(x => x.TourId == tourId && x.ObjectType_Code == PropertyTypes.Stead)
-                        .SelectAll().Execute();
+                    existedTourFactorRegisters = GetTourRegisterIds(tourId, false);
                     break;
                 case ObjectTypeExtended.Both:
                     existedTourFactorRegisters = OMTourFactorRegister
-                        .Where(x => x.TourId == tourId)
-                        .SelectAll().Execute();
+                        .Where(x => x.TourId == tourId && x.RegisterId != null)
+                        .Select(x => x.RegisterId).Execute()
+                        .Select(x => x.RegisterId.Value).Distinct().ToList();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(objectType), objectType, null);
@@ -61,11 +59,22 @@ namespace KadOzenka.Dal.Tours
             if (existedTourFactorRegisters.Count == 0)
                 return new List<OMAttribute>();
 
-            var registerIds = existedTourFactorRegisters.Select(x => x.RegisterId).Distinct().ToList();
+            return GetTourRegistersAttributes(existedTourFactorRegisters);
+        }
 
-            return OMAttribute
-                .Where(x => registerIds.Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false &&
-                            x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
+        public TourAttributesDto GetAllTourAttributes(long tourId)
+        {
+	        var oksRegisterIds = GetTourRegisterIds(tourId, true);
+	        var zuRegisterIds = GetTourRegisterIds(tourId, false);
+
+	        if (oksRegisterIds.Count == 0 && zuRegisterIds.Count == 0)
+		        return new TourAttributesDto();
+
+	        return new TourAttributesDto
+	        {
+		        Oks = GetTourRegistersAttributes(oksRegisterIds),
+		        Zu = GetTourRegistersAttributes(zuRegisterIds)
+            };
         }
 
         public OMRegister GetTourRegister(long tourId, ObjectType objectType)
@@ -295,6 +304,33 @@ namespace KadOzenka.Dal.Tours
             omTourFactorRegister.RegisterId = registerId;
             omTourFactorRegister.ObjectType_Code = propertyType;
             omTourFactorRegister.Save();
+        }
+
+        private List<OMAttribute> GetTourRegistersAttributes(List<long> registerIds)
+        {
+	        if (registerIds.Count == 0)
+		        return new List<OMAttribute>();
+
+	        return OMAttribute
+		        .Where(x => registerIds.Contains(x.RegisterId) && x.IsDeleted.Coalesce(false) == false &&
+		                    x.IsPrimaryKey.Coalesce(false) == false).OrderBy(x => x.Name).SelectAll().Execute();
+        }
+
+        private List<long> GetTourRegisterIds(long tourId, bool isOks)
+        {
+	        Expression<Func<OMTourFactorRegister, bool>> baseExpression = x => x.TourId == tourId && x.RegisterId != null;
+
+	        Expression<Func<OMTourFactorRegister, bool>> typeCondition = isOks
+		        ? x => x.ObjectType_Code != PropertyTypes.Stead
+		        : x => x.ObjectType_Code == PropertyTypes.Stead;
+
+	        var body = Expression.AndAlso(baseExpression.Body, typeCondition.Body);
+	        var lambda = Expression.Lambda<Func<OMTourFactorRegister, bool>>(body, baseExpression.Parameters[0]);
+
+	        return OMTourFactorRegister
+		        .Where(lambda)
+		        .Select(x => x.RegisterId)
+		        .Execute().Select(x => x.RegisterId.Value).Distinct().ToList();
         }
 
         #endregion
