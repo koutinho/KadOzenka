@@ -143,7 +143,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			if (settings.IsAllGroups)
 			{
-				_errorsDuringCalculation = CalculateByOldRealization(settings);
+				throw new Exception("Расчет не поддерживается");
 			}
 			else
 			{
@@ -177,9 +177,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					}
 					else
 					{
-						settings.SelectedGroupIds = new List<long> {group.Id};
-						var errors = CalculateByOldRealization(settings);
-						_errorsDuringCalculation.AddRange(errors);
+						throw new Exception($"Расчет для модели '{activeGroupModel.Name}' не поддерживается");
+						//settings.SelectedGroupIds = new List<long> {group.Id};
+						//var errors = CalculateByOldRealization(settings);
+						//_errorsDuringCalculation.AddRange(errors);
 					}
 				});
 			}
@@ -274,14 +275,14 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-		private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
-		{
-			_log.Debug("Начат расчет по старой реализации");
-			var errorsDuringCalculation = OMGroup.CalculateSelectGroup(settings);
-			_log.ForContext("Result", errorsDuringCalculation, true).Debug("Закончен расчет. Возвращенное значение.");
+		//private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
+		//{
+		//	_log.Debug("Начат расчет по старой реализации");
+		//	var errorsDuringCalculation = OMGroup.CalculateSelectGroup(settings);
+		//	_log.ForContext("Result", errorsDuringCalculation, true).Debug("Закончен расчет. Возвращенное значение.");
 			
-			return errorsDuringCalculation;
-		}
+		//	return errorsDuringCalculation;
+		//}
 
 		private void CompareData(List<long> taskIds)
 		{

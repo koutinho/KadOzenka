@@ -199,7 +199,7 @@ namespace KadOzenka.BlFrontEnd
 			consoleHelper.AddCommand("274", "Импорт данных ГБУ(БД) Новые факторы Дата (Помещения)", MSExporter.DoLoadBd2018Unit_Dop_Data_F);
 
 			consoleHelper.AddCommand("290", "Формула 2016", MSExporter.GetFormulaText);
-			consoleHelper.AddCommand("291", "Рассчет", MSExporter.GetCalcGroup);
+			//consoleHelper.AddCommand("291", "Рассчет", MSExporter.GetCalcGroup);
 			consoleHelper.AddCommand("292", "История", () =>
 			{ //36855837
 

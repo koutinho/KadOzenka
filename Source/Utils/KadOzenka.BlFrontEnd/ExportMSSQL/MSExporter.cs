@@ -2424,22 +2424,22 @@ namespace KadOzenka.BlFrontEnd.ExportMSSQL
         {
             GetFormula(7977502);
         }
-        public static void GetCalcGroup()
-        {
-            ObjectModel.KO.CadastralPriceCalculationSettions ks = new ObjectModel.KO.CadastralPriceCalculationSettions();
-            ks.IsParcel = false;
-            ks.CalcStage1 = true;
-            ks.CalcStage2 = true;
-            ks.CalcStage3 = true;
-            ks.TourId = 2018;
-            ks.IsAllGroups = false;
-            ks.SelectedGroupIds = new List<long>();
-            ks.SelectedGroupIds.Add(100012);//200003  100044
-            ks.TaskIds = new List<long>();
-            ks.TaskIds.Add(36731960);//36661332  3663016
+        //public static void GetCalcGroup()
+        //{
+        //    ObjectModel.KO.CadastralPriceCalculationSettions ks = new ObjectModel.KO.CadastralPriceCalculationSettions();
+        //    ks.IsParcel = false;
+        //    ks.CalcStage1 = true;
+        //    ks.CalcStage2 = true;
+        //    ks.CalcStage3 = true;
+        //    ks.TourId = 2018;
+        //    ks.IsAllGroups = false;
+        //    ks.SelectedGroupIds = new List<long>();
+        //    ks.SelectedGroupIds.Add(100012);//200003  100044
+        //    ks.TaskIds = new List<long>();
+        //    ks.TaskIds.Add(36731960);//36661332  3663016
 
-            ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
-        }
+        //    ObjectModel.KO.OMGroup.CalculateSelectGroup(ks);
+        //}
         //public static void ImportXml2016(long idTour, long idTask)
         //{
         //    ObjectModel.KO.OMTask task = ObjectModel.KO.OMTask.Where(x => x.Id == idTask).SelectAll().ExecuteFirstOrDefault();
