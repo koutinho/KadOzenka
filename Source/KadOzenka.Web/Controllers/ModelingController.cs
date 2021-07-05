@@ -42,6 +42,7 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Npgsql;
+using ObjectModel.Directory.ES;
 using ObjectModel.Ko;
 using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
@@ -629,6 +630,11 @@ namespace KadOzenka.Web.Controllers
                 var factor = ModelFactorsService.GetFactorById(id);
 
                 manualFactorDto = ManualFactorModel.ToModel(generalModelId, factor);
+                if (factor.DictionaryId != null)
+                {
+	                var dictionary = DictionaryService.GetDictionaryById(factor.DictionaryId.Value);
+	                manualFactorDto.DictionaryName = dictionary.Name;
+                }
             }
             else
             {
@@ -640,8 +646,6 @@ namespace KadOzenka.Web.Controllers
                     MarkerId = -1
                 };
             }
-
-            manualFactorDto.Dictionaries = GetDictionariesInternal();
 
             return View(manualFactorDto);
         }
@@ -657,6 +661,8 @@ namespace KadOzenka.Web.Controllers
 
             if (manualFactorModel.Id == -1)
             {
+                //todo type
+	            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, ReferenceItemCodeType.String);
                 ModelFactorsService.AddManualFactor(dto);
             }
             else
@@ -1485,26 +1491,16 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
         public JsonResult GetDictionaries()
         {
-	        var dictionaries = GetDictionariesInternal();
+	        var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+	        {
+		        Text = x.Name,
+		        Value = x.Id.ToString()
+	        }).ToList();
 
 	        dictionaries.Insert(0, new SelectListItem("", ""));
 
             return Json(dictionaries);
         }
-
-
-        #region Support Methods
-
-        private List<SelectListItem> GetDictionariesInternal()
-        {
-	        return DictionaryService.GetDictionaries().Select(x => new SelectListItem
-	        {
-		        Text = x.Name,
-		        Value = x.Id.ToString()
-	        }).ToList();
-        }
-
-        #endregion
 
         #endregion
 

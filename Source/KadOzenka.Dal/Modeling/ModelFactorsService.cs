@@ -310,7 +310,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public int AddManualFactor(ManualModelFactorDto dto)
 		{
-			ValidateManualFactor(dto);
+			ValidateManualFactorBeforeAddition(dto);
 
 			var newFactor = new OMModelFactor
 			{
@@ -350,7 +350,6 @@ namespace KadOzenka.Dal.Modeling
 			factor.SignDiv = dto.SignDiv;
 			factor.SignAdd = dto.SignAdd;
 			factor.MarkType_Code = dto.MarkType;
-			factor.DictionaryId = dto.DictionaryId;
 
 			if (IsSpecialMarkType(dto.MarkType))
 			{
@@ -411,6 +410,14 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
+		private void ValidateManualFactorBeforeAddition(ManualModelFactorDto factorDto)
+		{
+			ValidateManualFactor(factorDto);
+
+			if (factorDto.MarkType == MarkType.Default && factorDto.DictionaryId.GetValueOrDefault() == 0)
+				throw new EmptyDictionaryForFactorWithDefaultMarkException();
+		}
+
 		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
 			ValidateBaseFactor(factorDto.Id, factorDto.GeneralModelId, factorDto.FactorId, factorDto.Type);
@@ -434,9 +441,6 @@ namespace KadOzenka.Dal.Modeling
 				if (factorDto.MarkType == MarkType.Straight && factorDto.K.GetValueOrDefault() == 0)
 					throw new EmptyKForFactorWithStraightMarkException();
 			}
-
-			if (factorDto.MarkType == MarkType.Default && factorDto.DictionaryId.GetValueOrDefault() == 0)
-				throw new EmptyDictionaryForFactorWithDefaultMarkException();
 		}
 
 		private bool IsSpecialMarkType(MarkType markType)

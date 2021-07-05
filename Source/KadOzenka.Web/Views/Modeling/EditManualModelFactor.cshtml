@@ -44,16 +44,10 @@
         </div>
         <div id="dictionaryBlock" class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabelFor(x => x.DictionaryId)
+                @Html.CustomLabelFor(x => x.DictionaryName)
             </div>
             <div class="col-sm-9">
-                @(Html.Kendo().DropDownListFor(x => x.DictionaryId)
-                    .BindTo(Model.Dictionaries)
-                    .DataTextField("Text")
-                    .DataValueField("Value")
-                    .OptionLabel("--Выберите cловарь--")
-                    .Filter(FilterType.Contains)
-                    .Height(175))
+                @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: !Model.IsNewFactor)
             </div>
         </div>
         <div class="form-group">

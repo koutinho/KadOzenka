@@ -34,8 +34,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public decimal? K { get; set; }
 
 		[Display(Name = "Словарь")]
-		public long? DictionaryId { get; set; }
-		public List<SelectListItem> Dictionaries { get; set; }
+		public string DictionaryName { get; set; }
 
 
 		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
@@ -53,8 +52,7 @@ namespace KadOzenka.Web.Models.Modeling
 				SignAdd = factor.SignAdd,
 				MarkType = factor.MarkType_Code,
 				CorrectItem = factor.CorrectingTerm,
-				K = factor.K,
-				DictionaryId = factor.DictionaryId
+				K = factor.K
 			};
 		}
 
@@ -73,8 +71,7 @@ namespace KadOzenka.Web.Models.Modeling
 				SignAdd = SignAdd,
 				MarkType = MarkType,
 				CorrectItem = CorrectItem,
-				K = K,
-				DictionaryId = DictionaryId
+				K = K
 			};
 		}
 	}
