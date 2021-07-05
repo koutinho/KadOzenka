@@ -868,14 +868,7 @@ namespace ObjectModel.KO
 		public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 		public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 
-		[Obsolete]
-        public void FillMarkCatalogs(OMModel model)
-        {
-            MarkCatalogs = new List<OMMarkCatalog>();
-            MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == model.GroupId && x.FactorId == this.FactorId).SelectAll().Execute());
-        }
-
-        public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
+		public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
         {
             MarkCatalogs = new List<OMMarkCatalog>();
             MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
