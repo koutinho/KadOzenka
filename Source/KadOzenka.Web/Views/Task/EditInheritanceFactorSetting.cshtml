@@ -1,0 +1,117 @@
+﻿@model KadOzenka.Web.Models.Task.FactorSettingsModel
+
+@using (Html.BeginForm("EditInheritanceFactorSetting", "Task", FormMethod.Post, new {id = "updateFactorForm"}))
+{
+    @Html.HiddenFor(x => x.Id) 
+    @Html.HiddenFor(x => x.TourId)
+    
+<div class="form-horizontal col-sm-12" style="margin-top: 10px">
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FactorId)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(x => x.FactorId)
+                .BindTo(Model.TourFactors)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .OptionLabel("--Выберите фактор--")
+                .Filter(FilterType.Contains)
+                .Height(175)
+                .Events(e => e.Open("hideOptionalLabel")))
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.FactorInheritanceTypeCode, NotSetRequired: true)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoEnumDropDownListFor(x => x.FactorInheritanceTypeCode, isReadonly: false)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(x => x.Source)
+        </div>
+        <div class="col-sm-8 col-sm-offset-1">
+            @Html.TextAreaFor(x => x.Source, new { @class = "k-textbox col-sm-8", id = "Source", style = "padding: 1%; resize: none; width: 100%;", rows = 3 })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.CorrectFactorId)
+        </div>
+        <div class="col-sm-9">
+            @(Html.Kendo().DropDownListFor(x => x.CorrectFactorId)
+                .BindTo(Model.TourFactors)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .OptionLabel("--Выберите фактор--")
+                .Filter(FilterType.Contains)
+                .Height(175)
+                .Events(e => e.Open("hideOptionalLabel")))
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-2 col-sm-offset-8">
+            <button class="btn btn-default btn-block" id="cancel">Отмена</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-default btn-block" id="save">Сохранить</button>
+        </div>
+    </div>
+</div>
+}
+
+
+<script>
+    $(document).ready(function () {
+        $('#save').on('click', saveFactor);
+        $('#cancel').on('click', closeWindow);
+    });
+
+
+
+
+    function saveFactor(e) {
+        e.preventDefault();
+        kendo.ui.progress($('body'), true);
+        var form = $('#updateFactorForm');
+        var formObject = Common.Functions.FormToObject(form);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: formObject,
+            success: function (response) {
+                if (response.Errors) {
+                    var errors = getErrors(response.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    var timeout = 2000;
+                    Common.ShowMessage('Сохранение выполнено');
+                    setTimeout(closeWindow, timeout);
+                }
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function closeWindow() {
+        Common.UI.CloseWindow('editFactorWindow', window.parent, true);
+    }
+
+
+    //иногда лейбл загораживает значение в списке и это значение невозможно выбрать
+    function hideOptionalLabel() {
+        $(".k-list-optionlabel").hide();
+    }
+
+</script>

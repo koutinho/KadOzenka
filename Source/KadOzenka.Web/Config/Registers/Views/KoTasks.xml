@@ -43,7 +43,7 @@
             </DropDownButtons>
         </Button>
 
-        <Button Caption="Просмотр настроек факторов" NavigateURL="/Task/FactorSettings" OpenInRadWindow="true" WindowHeight="750" WindowWidth="1200" SRDFunctionTag="KO.TASKS" Icon="fas fa-eye" />
+        <Button Caption="Просмотр настроек факторов для Наследования" NavigateURL="/Task/InheritanceFactorSettings" OpenInRadWindow="true" WindowHeight="750" WindowWidth="1200" SRDFunctionTag="KO.TASKS.INHERITANCE_FACTOR_SETTINGS" Icon="fas fa-eye" />
 
         <Button Caption="Перенос оценочной группы" SRDFunctionTag="KO.TASKS" Icon="fas fa-angle-right" OpenInRadWindow="false" Type="DropDown">
           <DropDownButtons>

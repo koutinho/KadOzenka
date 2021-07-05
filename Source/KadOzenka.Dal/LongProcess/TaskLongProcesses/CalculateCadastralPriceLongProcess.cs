@@ -192,12 +192,14 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			_log.Debug("Начат расчет через новую реализацию");
 
-			var modelFactors = PrepareModelFactors(activeGroupModel);
+			var modelFactors = GetModelFactors(activeGroupModel);
 			var formula = PrepareFormula(activeGroupModel, modelFactors);
 
 			var marks = GetMarks(groupId, modelFactors);
 			//если будут проблемы с производительностью вынески выгрузку ЕО в потоки
 			var units = GetUnits(settings, groupId);
+			if (units.Count == 0)
+				return;
 
 			var processedPackageCount = 0;
 			var processConfiguration = GetProcessConfiguration(units.Count);
@@ -316,7 +318,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return new ProcessConfiguration(settingsFromConfig.PackageSize, settingsFromConfig.ThreadsCount, unitsCount);
 		}
 
-		private List<FactorInfo> PrepareModelFactors(OMModel activeGroupModel)
+		private List<FactorInfo> GetModelFactors(OMModel activeGroupModel)
 		{
 			var modelFactors = ModelFactorsService.GetFactors(activeGroupModel.Id, activeGroupModel.AlgoritmType_Code);
 			if (modelFactors.Count == 0)

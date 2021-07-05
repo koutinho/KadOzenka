@@ -9688,12 +9688,12 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _factorid;
+        private long _factorid;
         /// <summary>
         /// 26300200 Идентификатор фактора (FACTOR_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 26300200)]
-        public long? FactorId
+        public long FactorId
         {
             get
             {
@@ -9783,12 +9783,12 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _correctfactorid;
+        private long _correctfactorid;
         /// <summary>
         /// 26300500 Идентификатор корректируемого фактора (CORRECT_FACTOR_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 26300500)]
-        public long? CorrectFactorId
+        public long CorrectFactorId
         {
             get
             {
