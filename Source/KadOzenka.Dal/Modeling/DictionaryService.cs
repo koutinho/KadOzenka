@@ -19,6 +19,7 @@ using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.ES;
+using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
@@ -78,7 +79,7 @@ namespace KadOzenka.Dal.Modeling
 	        return dictionary;
         }
 
-        public long CreateDictionary(string name, ReferenceItemCodeType valueType)
+        public long CreateDictionary(string name, ModelDictionaryType valueType)
         {
 	        ValidateDictionary(name, -1);
 
@@ -89,7 +90,7 @@ namespace KadOzenka.Dal.Modeling
 	        }.Save();
         }
 
-        public void UpdateDictionary(long id, string newName, ReferenceItemCodeType newValueType)
+        public void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType)
         {
 	        var dictionary = GetDictionaryById(id);
 
@@ -126,7 +127,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (dictionary == null)
 		        return 0;
 
-	        if (dictionary.Type_Code == ReferenceItemCodeType.String)
+	        if (dictionary.Type_Code == ModelDictionaryType.String)
 	        {
 		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
 
@@ -141,7 +142,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (dictionary == null || date == null)
 		        return 0;
 
-	        if (dictionary.Type_Code == ReferenceItemCodeType.Date)
+	        if (dictionary.Type_Code == ModelDictionaryType.Date)
 	        {
 		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
 
@@ -159,7 +160,7 @@ namespace KadOzenka.Dal.Modeling
 	        if (dictionary == null || number == null)
 		        return number ?? 0;
 
-	        if (dictionary.Type_Code == ReferenceItemCodeType.Number)
+	        if (dictionary.Type_Code == ModelDictionaryType.Number)
 	        {
 		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
 
@@ -252,10 +253,10 @@ namespace KadOzenka.Dal.Modeling
         {
 	        var isEmptyValue = string.IsNullOrWhiteSpace(value);
 
-            var canParseToNumber = !isEmptyValue && dictionary.Type_Code == ReferenceItemCodeType.Number && decimal.TryParse(value, out _);
-	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ReferenceItemCodeType.Date && DateTime.TryParse(value, out _);
+            var canParseToNumber = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Number && decimal.TryParse(value, out _);
+	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && DateTime.TryParse(value, out _);
 
-	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && dictionary.Type_Code != ReferenceItemCodeType.String)
+	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && dictionary.Type_Code != ModelDictionaryType.String)
 		        throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
 
 	        var isExistsTheSameDictionaryValue = OMModelingDictionariesValues
@@ -439,7 +440,7 @@ namespace KadOzenka.Dal.Modeling
 	        return stream;
         }
 
-        private string GetValueFromExcelCell(ReferenceItemCodeType valueType, object cellValue)
+        private string GetValueFromExcelCell(ModelDictionaryType valueType, object cellValue)
         {
 	        if (cellValue == null)
 		        return null;
@@ -447,15 +448,15 @@ namespace KadOzenka.Dal.Modeling
 	        string valueString = null;
 	        switch (valueType)
 	        {
-		        case ReferenceItemCodeType.Number:
+		        case ModelDictionaryType.Number:
 			        if (!cellValue.TryParseToDecimal(out var number))
 				        throw new Exception($"Значение '{cellValue}' не может быть приведено к типу 'Число'");
 			        valueString = number.ToString();
 			        break;
-		        case ReferenceItemCodeType.String:
+		        case ModelDictionaryType.String:
 			        valueString = cellValue.ToString();
 			        break;
-		        case ReferenceItemCodeType.Date:
+		        case ModelDictionaryType.Date:
 			        if (!cellValue.TryParseToDateTime(out var date))
 				        throw new Exception($"Значение '{cellValue}'не может быть приведено к типу 'Дата'");
 			        valueString = date.ToString(CultureInfo.CurrentCulture);

@@ -17,6 +17,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.ES;
 using ObjectModel.Directory.Ko;
+using ObjectModel.Directory.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -483,14 +484,14 @@ namespace KadOzenka.Dal.Modeling
 				{
 					case RegisterAttributeType.STRING:
 						{
-							if (dictionary.Type_Code != ReferenceItemCodeType.String)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.String));
+							if (dictionary.Type_Code != ModelDictionaryType.String)
+								errors.Add(GenerateMessage(attribute.Name, ModelDictionaryType.String));
 							break;
 						}
 					case RegisterAttributeType.DATE:
 						{
-							if (dictionary.Type_Code != ReferenceItemCodeType.Date)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.Date));
+							if (dictionary.Type_Code != ModelDictionaryType.Date)
+								errors.Add(GenerateMessage(attribute.Name, ModelDictionaryType.Date));
 							break;
 						}
 				}
@@ -513,7 +514,7 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}
 
-		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
+		private string GenerateMessage(string attributeName, ModelDictionaryType dictionaryType)
 		{
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}

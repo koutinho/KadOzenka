@@ -1,4 +1,5 @@
 ﻿@using ObjectModel.Directory.ES
+@using ObjectModel.Directory.KO
 @model KadOzenka.Web.Models.Modeling.DictionaryValueModel
 
 @using (Html.BeginForm("DictionaryValueCard", "Modeling", FormMethod.Post))
@@ -16,7 +17,7 @@
             @Html.KendoTextBoxFor(m => m.DictionaryName, isReadonly: true)
         </div>
     </div>
-    <div class="form-group" style="@(Model.ValueType == ReferenceItemCodeType.Number ? "" :"display: none")">
+    <div class="form-group" style="@(Model.ValueType == ModelDictionaryType.Number ? "" :"display: none")">
         <div class="col-sm-2">
             @Html.CustomLabelFor(m => m.Value)
         </div>
@@ -24,7 +25,7 @@
             @Html.Kendo().NumericTextBoxFor(m => m.NumberValue).Spinners(false).Format($"N{2}").HtmlAttributes(new { style = "width: 100%;" })
         </div>
     </div>
-    <div class="form-group" style="@(Model.ValueType == ReferenceItemCodeType.Date ? "" : "display: none")">
+    <div class="form-group" style="@(Model.ValueType == ModelDictionaryType.Date ? "" : "display: none")">
         <div class="col-sm-2">
             @Html.CustomLabelFor(m => m.Value)
         </div>
@@ -32,7 +33,7 @@
             @Html.KendoDatePickerFor(x => x.DateTimeValue, isReadonly: false)
         </div>
     </div>
-    <div class="form-group" style="@(Model.ValueType == ReferenceItemCodeType.String ? "" :"display: none")">
+    <div class="form-group" style="@(Model.ValueType == ModelDictionaryType.String ? "" :"display: none")">
         <div class="col-sm-2">
             @Html.CustomLabelFor(m => m.Value)
         </div>

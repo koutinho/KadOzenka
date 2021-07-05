@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Core.SRD;
 using ObjectModel.Directory.ES;
+using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -15,7 +16,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 		[Display(Name = "Тип данных")]
 		[Required(ErrorMessage = "Поле 'Тип данных' значений справочника обязательное")]
-		public ReferenceItemCodeType ValueType { get; set; } = ReferenceItemCodeType.String;
+		public ModelDictionaryType ValueType { get; set; } = ModelDictionaryType.String;
 
 		public bool ValueTypeCanBeChanged { get; set; }
 		public bool ShowItems { get; set; }
@@ -33,7 +34,7 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				Id = entity?.Id ?? -1,
 				Name = entity?.Name,
-				ValueType = entity?.Type_Code ?? ReferenceItemCodeType.String,
+				ValueType = entity?.Type_Code ?? ModelDictionaryType.String,
 				ShowItems = showItems,
 				ValueTypeCanBeChanged = hasValues,
 				IsEdit = isEditAvailable

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ObjectModel.Directory.ES;
+using ObjectModel.Directory.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -15,7 +16,7 @@ namespace KadOzenka.Web.Models.Modeling
 
         [Display(Name = "Тип данных")]
         [Required(ErrorMessage = "Поле 'Тип данных' значения справочника обязательное")]
-        public ReferenceItemCodeType ValueType { get; set; } = ReferenceItemCodeType.String;
+        public ModelDictionaryType ValueType { get; set; } = ModelDictionaryType.String;
 
         [Display(Name = "Справочник")]
         public PartialDictionaryModel Dictionary { get; set; } = new PartialDictionaryModel();

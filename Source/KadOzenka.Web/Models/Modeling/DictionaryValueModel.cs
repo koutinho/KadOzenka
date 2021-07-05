@@ -4,6 +4,7 @@ using System.Globalization;
 using Core.SRD;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory.ES;
+using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -24,7 +25,7 @@ namespace KadOzenka.Web.Models.Modeling
 
         public string DictionaryName { get; set; }
 
-        public ReferenceItemCodeType ValueType { get; set; }
+        public ModelDictionaryType ValueType { get; set; }
 
         public decimal? NumberValue { get; set; }
 
@@ -38,15 +39,15 @@ namespace KadOzenka.Web.Models.Modeling
         {
 	        var isEmptyValue = string.IsNullOrWhiteSpace(value?.Value);
 
-            var stringValue = dictionary.Type_Code == ReferenceItemCodeType.String && !isEmptyValue
+            var stringValue = dictionary.Type_Code == ModelDictionaryType.String && !isEmptyValue
                 ? value.Value
                 : null;
 
-            var numberValue = dictionary.Type_Code == ReferenceItemCodeType.Number && !isEmptyValue
+            var numberValue = dictionary.Type_Code == ModelDictionaryType.Number && !isEmptyValue
                 ? decimal.TryParse(value.Value, out var number) ? number : (decimal?)null
                 : null;
 
-            var dateValue = dictionary.Type_Code == ReferenceItemCodeType.Date && !isEmptyValue
+            var dateValue = dictionary.Type_Code == ModelDictionaryType.Date && !isEmptyValue
                 ? DateTime.TryParse(value.Value, out var date) ? date : (DateTime?)null
                 : null;
 
@@ -82,10 +83,10 @@ namespace KadOzenka.Web.Models.Modeling
 	        string value;
             switch (ValueType)
 	        {
-		        case ReferenceItemCodeType.Date:
+		        case ModelDictionaryType.Date:
 			        value = DateTimeValue?.Date.ToString(CultureInfo.CurrentCulture);
 			        break;
-		        case ReferenceItemCodeType.Number:
+		        case ModelDictionaryType.Number:
 			        value = NumberValue?.ToString();
 			        break;
 		        default:

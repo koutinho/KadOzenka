@@ -9875,12 +9875,12 @@ namespace ObjectModel.KO
         }
 
 
-        private ObjectModel.Directory.ES.ReferenceItemCodeType _type_Code;
+        private ObjectModel.Directory.KO.ModelDictionaryType _type_Code;
         /// <summary>
         /// 26400300 Тип (справочный код) (TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 26400300)]
-        public ObjectModel.Directory.ES.ReferenceItemCodeType Type_Code
+        public ObjectModel.Directory.KO.ModelDictionaryType Type_Code
         {
             get
             {

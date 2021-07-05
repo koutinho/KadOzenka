@@ -4,6 +4,7 @@ using System.IO;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Directory.ES;
+using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
@@ -17,8 +18,8 @@ namespace KadOzenka.Dal.Modeling
 		List<OMModelingDictionary> GetDictionaries();
 		List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true);
 		OMModelingDictionary GetDictionaryById(long id);
-		long CreateDictionary(string name, ReferenceItemCodeType valueType);
-		void UpdateDictionary(long id, string newName, ReferenceItemCodeType newValueType);
+		long CreateDictionary(string name, ModelDictionaryType valueType);
+		void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType);
 		void DeleteDictionary(long id);
 		decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary);
 		decimal GetCoefficientFromDateFactor(DateTime? date, OMModelingDictionary dictionary);

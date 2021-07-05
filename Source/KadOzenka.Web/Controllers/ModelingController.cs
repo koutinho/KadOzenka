@@ -43,6 +43,7 @@ using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Npgsql;
 using ObjectModel.Directory.ES;
+using ObjectModel.Directory.KO;
 using ObjectModel.Ko;
 using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
@@ -662,7 +663,7 @@ namespace KadOzenka.Web.Controllers
             if (manualFactorModel.Id == -1)
             {
                 //todo type
-	            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, ReferenceItemCodeType.String);
+	            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, ModelDictionaryType.String);
                 ModelFactorsService.AddManualFactor(dto);
             }
             else
