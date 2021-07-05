@@ -37,12 +37,14 @@
         </div>
 
         <div style="border: 1px solid #cccdcf; padding: 1%;">
+            @Html.HiddenFor(x => x.Formula)
             <div class="form-group">
-                <div class="col-sm-2">
-                    @Html.CustomLabelFor(x => x.Formula)
-                </div>
-                <div class="col-sm-10">
-                    @Html.TextBoxAreaFor(x => x.Formula, colCount: 1, rowCount: 4, isReadonly: true)
+                <div class="col-sm-1 col-sm-offset-11">
+                    @(Html.Kendo().Button()
+                        .Name("copyFormulaBtn")
+                        .Icon("k-icon k-i-copy")
+                        .HtmlAttributes(new { style = "float: right;" })
+                        .Events(x => x.Click("copyFormula")))
                 </div>
             </div>
             <div class="form-group">
@@ -90,6 +92,11 @@
     $(document).ready(function () {
         $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
         $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
+        $("#copyFormulaBtn").kendoTooltip({
+            filter: "span",
+            position: "top",
+            content: "Скопировано"
+        }).data("kendoTooltip");
 
         if (isReadOnly){
             $('#SectionMainData').switchClass('toolbarVisible', 'toolbarHidden', 0);
@@ -486,6 +493,15 @@
                 }
             });
         }
+    }
+
+
+    function copyFormula(btn) {
+        btn.preventDefault();
+        var formula = $("#Formula").val();
+        navigator.clipboard.writeText(formula);
+        var tooltip = $("#copyFormulaBtn").data("kendoTooltip");
+        tooltip.show();
     }
 
 </script>
