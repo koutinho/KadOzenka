@@ -203,7 +203,7 @@ namespace KadOzenka.Dal.KoObject
             var ZuGroups = groupsInfo.ZuSubGroups.Select(x => x.Id);
             var ZuSettings = OMTourGroupGroupingSettings.Where(x => ZuGroups.Contains(x.GroupId)).SelectAll().Execute();
             var convertedZuSettings =
-                EnrichGroupSettings(ConvertToEstimateSetting(ZuSettings), calcSettingsZu, groupsInfo.ZuGroups)
+                EnrichGroupSettings(ConvertToEstimateSetting(ZuSettings), calcSettingsZu, groupsInfo.ZuSubGroups)
                     .OrderBy(x => x.Priority).ToList();
 
             for (int i = 0; i < numberOfPackages; i++)
@@ -240,8 +240,7 @@ namespace KadOzenka.Dal.KoObject
 
                     var unitFactors = UnitService.GetUnitFactors(unit, GatherFactorsForGrouping(settingsList));
 
-                    string groupForReport = "";
-
+                    bool groupForReport = false;
                     foreach (var estSetting in settingsList)
                     {
                         bool assignToGroup = true;
@@ -254,17 +253,14 @@ namespace KadOzenka.Dal.KoObject
 
                         if (!assignToGroup) continue;
 
-                        groupForReport = estSetting.GroupNumber;
+                        groupForReport = true;
+                        AddRowToReport(unitPure.CadastralNumber, estSetting.GroupNumber, reportService);
                         unit.GroupId = estSetting.GroupId;
                         unit.Save();
                         break;
                     }
 
-                    if (groupForReport != "")
-                    {
-                        AddRowToReport(unitPure.CadastralNumber, groupForReport, reportService);
-                    }
-                    else
+                    if (!groupForReport)
                     {
                         AddErrorRow(unitPure.CadastralNumber, $"Не найдено подходящей группы по условиям", reportService);
                     }

@@ -17,6 +17,8 @@
                 <Parameter Key="ObjectId" Value="[ObjectID]" />
             </Parameters>
         </Button>
+        <Button Caption="Присвоить оценочную группу" NavigateURL="/GbuObject/SetEstimatedGroup" SRDFunctionTag="GBU.OBJECTS.SET_ESTIMATED_GROUP" Icon="fas fa-donate" WindowHeight="400" WindowWidth="1100">
+        </Button>
         <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" SRDFunctionTag="KO.TASKS.EXPORT_TO_EXCEL" OpenInRadWindow="false" />
         <Button Caption="Загрузка графических факторов из ИС РЕОН" NavigateURL="/Task/DownloadGraphicFactorsFromReon" SRDFunctionTag="KO.TASKS.DOWNLOAD_GRAPHIC_FACTORS_FROM_REON" Icon="fas fa-arrow-down" WindowHeight="750" WindowWidth="700">
             <Parameters>
