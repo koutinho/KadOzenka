@@ -868,12 +868,12 @@ namespace ObjectModel.KO
 		public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 		public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 
-		public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
-        {
-            MarkCatalogs = new List<OMMarkCatalog>();
-            MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
-            //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
-        }
+		//public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
+  //      {
+  //          MarkCatalogs = new List<OMMarkCatalog>();
+  //          MarkCatalogs.AddRange(list.Where(x => x.GroupId == groupId && x.FactorId == this.FactorId));
+  //          //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
+  //      }
 
         public void FillMarkCatalogsFromList(Dictionary<long?, List<OMMarkCatalog>> dict)
         {
