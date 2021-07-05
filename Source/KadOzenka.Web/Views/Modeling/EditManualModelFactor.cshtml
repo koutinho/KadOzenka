@@ -42,6 +42,20 @@
                 @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: false)
             </div>
         </div>
+        <div id="dictionaryBlock" class="form-group">
+            <div class="col-sm-3">
+                @Html.CustomLabelFor(x => x.DictionaryId)
+            </div>
+            <div class="col-sm-9">
+                @(Html.Kendo().DropDownListFor(x => x.DictionaryId)
+                    .BindTo(Model.Dictionaries)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .OptionLabel("--Выберите cловарь--")
+                    .Filter(FilterType.Contains)
+                    .Height(175))
+            </div>
+        </div>
         <div class="form-group">
             <div class="col-sm-3">
                 @Html.CustomLabel("Коэффициент")
@@ -157,12 +171,19 @@
         var selectedMarkType = $('#@nameof(Model.MarkType)').data('kendoDropDownList').value();
         var correctItemBlock = $("#correctItemBlock");
         var kBlock = $("#kBlock");
+        var dictionaryBlock = $("#dictionaryBlock");
         if (selectedMarkType === '@((long)MarkType.Straight)' || selectedMarkType === '@((long)MarkType.Reverse)') {
             correctItemBlock.show();
             kBlock.show();
         } else {
             correctItemBlock.hide();
             kBlock.hide();
+        }
+        if (selectedMarkType === '@((long)MarkType.Default)') {
+            dictionaryBlock.show();
+        }
+        else {
+            dictionaryBlock.hide();
         }
     }
 

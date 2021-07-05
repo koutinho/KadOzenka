@@ -9,6 +9,7 @@ namespace KadOzenka.Dal.Modeling.Dto.Factors
 		public long? GeneralModelId { get; set; }
 		public KoAlgoritmType Type { get; set; }
 		public long? FactorId { get; set; }
+		public long? DictionaryId { get; set; }
 		public string Factor { get; set; }
 		public long? MarkerId { get; set; }
 		public decimal Weight { get; set; }

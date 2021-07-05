@@ -316,6 +316,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				ModelId = dto.GeneralModelId,
 				FactorId = dto.FactorId,
+				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
 				Weight = dto.Weight,
 				B0 = dto.B0,
@@ -349,6 +350,7 @@ namespace KadOzenka.Dal.Modeling
 			factor.SignDiv = dto.SignDiv;
 			factor.SignAdd = dto.SignAdd;
 			factor.MarkType_Code = dto.MarkType;
+			factor.DictionaryId = dto.DictionaryId;
 
 			if (IsSpecialMarkType(dto.MarkType))
 			{
@@ -432,6 +434,9 @@ namespace KadOzenka.Dal.Modeling
 				if (factorDto.MarkType == MarkType.Straight && factorDto.K.GetValueOrDefault() == 0)
 					throw new EmptyKForFactorWithStraightMarkException();
 			}
+
+			if (factorDto.MarkType == MarkType.Default && factorDto.DictionaryId.GetValueOrDefault() == 0)
+				throw new EmptyDictionaryForFactorWithDefaultMarkException();
 		}
 
 		private bool IsSpecialMarkType(MarkType markType)

@@ -641,6 +641,8 @@ namespace KadOzenka.Web.Controllers
                 };
             }
 
+            manualFactorDto.Dictionaries = GetDictionariesInternal();
+
             return View(manualFactorDto);
         }
 
@@ -1483,16 +1485,26 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
         public JsonResult GetDictionaries()
         {
-            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }).ToList();
+	        var dictionaries = GetDictionariesInternal();
 
-            dictionaries.Insert(0, new SelectListItem("", ""));
+	        dictionaries.Insert(0, new SelectListItem("", ""));
 
             return Json(dictionaries);
         }
+
+
+        #region Support Methods
+
+        private List<SelectListItem> GetDictionariesInternal()
+        {
+	        return DictionaryService.GetDictionaries().Select(x => new SelectListItem
+	        {
+		        Text = x.Name,
+		        Value = x.Id.ToString()
+	        }).ToList();
+        }
+
+        #endregion
 
         #endregion
 
