@@ -35,8 +35,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, UnitFactorValueForIntegerFactor);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, UnitFactorValueForIntegerFactor);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		[Test]
@@ -49,8 +49,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(mark, factor);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(mark, factor);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		[Test]
@@ -66,8 +66,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(mark, factor);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(mark, factor);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		[Test]
@@ -87,16 +87,14 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			
-			var firstPossibleExpectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(firstMark, factor);
-			var secondPossibleExpectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(secondMark, factor);
+			var firstPossibleExpectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(firstMark, factor);
+			var secondPossibleExpectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(secondMark, factor);
 			
 			var unitWithCalculatedPrice = GetUnitById(Unit.Id);
-			Assert.That(unitWithCalculatedPrice.CadastralCost,
-				Is.EqualTo(firstPossibleExpectedCadastralCost).Within(0.01)
-				.Or.EqualTo(secondPossibleExpectedCadastralCost).Within(0.01));
+			Assert.That(unitWithCalculatedPrice.Upks,
+				Is.EqualTo(firstPossibleExpectedUpks).Within(0.01)
+				.Or.EqualTo(secondPossibleExpectedUpks).Within(0.01));
 
-			var expectedUpks = unitWithCalculatedPrice.CadastralCost / Unit.Square.GetValueOrDefault();
-			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
 		}
 
@@ -110,8 +108,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForStraightType(factor);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForStraightType(factor);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		[Test]
@@ -124,8 +122,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForReverseMark(factor);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralCostForReverseMark(factor);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 
@@ -140,13 +138,13 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * 
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * 
 			                            GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValueForIntegerFactor) *
 			                            GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) *
 			                            GetExpectedCadastralCostForStraightType(factorWithStraightMark) *
 			                            GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
 			
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		[Test]
@@ -168,12 +166,12 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			var firstCalculatedUnit = GetUnitById(firstUnit.Id);
 			var secondCalculatedUnit = GetUnitById(secondUnit.Id);
-			var firstUnitExpectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, fistUnitValue);
-			var secondUnitExpectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, secondUnitValue);
+			var firstUnitExpectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, fistUnitValue);
+			var secondUnitExpectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, secondUnitValue);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			Assert.That(firstCalculatedUnit.CadastralCost, Is.EqualTo(firstUnitExpectedCadastralCost).Within(0.01));
-			Assert.That(secondCalculatedUnit.CadastralCost, Is.EqualTo(secondUnitExpectedCadastralCost).Within(0.01));
+			Assert.That(firstCalculatedUnit.Upks, Is.EqualTo(firstUnitExpectedUpks).Within(0.01));
+			Assert.That(secondCalculatedUnit.Upks, Is.EqualTo(secondUnitExpectedUpks).Within(0.01));
 		}
 
 		[Test]
@@ -192,8 +190,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 
 			var calculatedUnit = GetUnitById(firstUnit.Id);
-			var expectedCadastralCost = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, fistUnitValue);
-			Assert.That(calculatedUnit.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
+			var expectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCostForNoneMark(factor, fistUnitValue);
+			Assert.That(calculatedUnit.Upks, Is.EqualTo(expectedUpks).Within(0.01));
 		}
 
 

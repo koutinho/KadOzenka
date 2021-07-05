@@ -117,11 +117,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		}
 
 
-		protected void CheckCalculatedUnit(long unitId, decimal expectedCadastralCost)
+		protected void CheckCalculatedUnit(long unitId, decimal expectedUpks)
 		{
 			var unitWithCalculatedPrice = GetUnitById(unitId);
 
-			var expectedUpks = unitWithCalculatedPrice.CadastralCost / unitWithCalculatedPrice.Square.GetValueOrDefault();
+			var expectedCadastralCost = unitWithCalculatedPrice.Upks * unitWithCalculatedPrice.Square.GetValueOrDefault();
 
 			Assert.That(unitWithCalculatedPrice.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
 			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));
