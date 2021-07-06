@@ -696,8 +696,9 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
-        public ActionResult MarksGrid(long dictionaryId)
+        public ActionResult MarksGrid(bool isReadOnly, long dictionaryId)
         {
+	        ViewBag.IsReadOnly = isReadOnly;
 	        ViewBag.DictionaryId = dictionaryId;
 
 	        return View();
@@ -859,13 +860,19 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult ModelDictionaries(long modelId)
+        public ActionResult ModelDictionaries(long modelId, KoModelType modelType)
         {
-	        var modelFactors = ModelFactorsService.GetGeneralModelAttributes(modelId)
-		        .Where(x => x.IsNormalized).Select(GeneralModelAttributeModel.ToModel)
+	        var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId)
+		        .Where(x => x.IsNormalized).Select(ModelAttributeModel.ToModel)
 		        .ToList();
 
-	        return View(modelFactors);
+            var model = new GeneralModelAttributeModel
+            {
+                IsReadOnly = modelType == KoModelType.Automatic,
+                GeneralModelAttributes = modelAttributes
+            };
+
+            return View(model);
         }
 
         #endregion

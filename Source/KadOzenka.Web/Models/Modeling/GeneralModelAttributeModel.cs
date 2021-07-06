@@ -1,9 +1,16 @@
-﻿using Core.Register;
+﻿using System.Collections.Generic;
+using Core.Register;
 using KadOzenka.Dal.Modeling.Dto;
 
 namespace KadOzenka.Web.Models.Modeling
 {
 	public class GeneralModelAttributeModel
+	{
+		public bool IsReadOnly { get; set; }
+		public List<ModelAttributeModel> GeneralModelAttributes { get; set; }
+	}
+
+	public class ModelAttributeModel
 	{
 		/// <summary>
 		/// ID строки из ko_model_factor
@@ -20,9 +27,9 @@ namespace KadOzenka.Web.Models.Modeling
 		public bool IsActive { get; set; }
 
 
-		public static GeneralModelAttributeModel ToModel(ModelAttributeRelationPure dto)
+		public static ModelAttributeModel ToModel(ModelAttributeRelationPure dto)
 		{
-			return new GeneralModelAttributeModel
+			return new ModelAttributeModel
 			{
 				Id = dto.Id,
 				RegisterId = dto.RegisterId,

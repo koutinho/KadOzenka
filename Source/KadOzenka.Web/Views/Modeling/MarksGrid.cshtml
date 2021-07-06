@@ -8,6 +8,10 @@
 
 
 <script>
+
+    var isReadOnly = '@ViewBag.IsReadOnly' === "True";
+
+
     $(document).ready(function () {
 
         var markGridDataSource = new kendo.data.DataSource({
@@ -93,7 +97,7 @@
             pageSize: 10
         });
 
-
+        var buttonsClassName = isReadOnly ? "k-state-disabled" : "";
         $('#markGrid').kendoGrid({
             dataSource: markGridDataSource,
             columns: [
@@ -121,9 +125,17 @@
                         tooltipElement.appendTo(container);
                     }
                 },
-                { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
+                { 
+                    command: 
+                    [
+                        {name: "edit", className: buttonsClassName}, 
+                        {name:"destroy", className: buttonsClassName}
+                    ], 
+                    title: "&nbsp;", 
+                    width: "250px"
+                }
             ],
-            toolbar: ["create"],
+            toolbar: [{name: "create", className: buttonsClassName}],
             scrollable: true,
             pageable: true,
             editable: "inline",

@@ -1,5 +1,5 @@
 ﻿@using KadOzenka.Web.Helpers
-@model List<KadOzenka.Web.Models.Modeling.GeneralModelAttributeModel>
+@model KadOzenka.Web.Models.Modeling.GeneralModelAttributeModel
 
 
 <!-- Модальное окно для загрузки справочника меток -->
@@ -15,12 +15,20 @@
             .Name("dictionaryCommandsToolBar")
             .Items(items => 
             {
-                items.Add().Type(CommandType.Button).Icon("clock").Click("showMarks").HtmlAttributes(new { id="show-marks", title = "Просмотреть метки" });
-                items.Add().Type(CommandType.Button).Icon("download").Click("downloadMarksCatalog").HtmlAttributes(new { id="download-marks-catalog", title = "Выгрузить справочник меток" });
-                items.Add().Type(CommandType.Button).Icon("upload").Click("showModalToUploadMarksCatalog").HtmlAttributes(new { id="upload-marks-catalog", title = "Загрузить справочник меток" });
+                items.Add().Type(CommandType.Button)
+                    .Icon("clock").Click("showMarks")
+                    .HtmlAttributes(new { id="show-marks", title = "Просмотреть метки" });
+                
+                items.Add().Type(CommandType.Button)
+                    .Icon("download").Click("downloadMarksCatalog")
+                    .HtmlAttributes(new { id="download-marks-catalog", title = "Выгрузить справочник меток" });
+                
+                items.Add().Type(CommandType.Button)
+                    .Icon("upload").Enable(!Model.IsReadOnly).Click("showModalToUploadMarksCatalog")
+                    .HtmlAttributes(new { id="upload-marks-catalog", title = "Загрузить справочник меток" });
             }))
 
-        @(Html.Kendo().Grid(Model)
+        @(Html.Kendo().Grid(Model.GeneralModelAttributes)
             .Name("grid")
             .Columns(columns =>
             {
@@ -77,7 +85,7 @@
         if (selectedRowData) {
             var dictionaryId = selectedRowData.DictionaryId;
             Common.UI.ShowWindow('Метки',
-                '@Url.Action("MarksGrid", "Modeling")' + '?dictionaryId=' + dictionaryId,
+                '@Url.Action("MarksGrid", "Modeling", new {isReadOnly = Model.IsReadOnly})' + '&dictionaryId=' + dictionaryId,
                 'marksWindow',
                 function (e) {},
                 800, 400);
