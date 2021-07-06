@@ -26,6 +26,7 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
+using System.Threading;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -42,6 +43,8 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Npgsql;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.ES;
 using ObjectModel.Directory.KO;
 using ObjectModel.Ko;
@@ -414,6 +417,11 @@ namespace KadOzenka.Web.Controllers
            var factor = ModelFactorsService.GetFactorById(id);
 
            var model = AutomaticFactorModel.ToModel(factor);
+           if (factor.DictionaryId != null)
+           {
+	           var dictionary = DictionaryService.GetDictionaryById(factor.DictionaryId.Value);
+	           model.DictionaryName = dictionary.Name;
+           }
 
             return View(model);
         }
@@ -438,6 +446,11 @@ namespace KadOzenka.Web.Controllers
                     throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
                 }
 
+                if (!string.IsNullOrWhiteSpace(factorModel.DictionaryName))
+                {
+	                var attribute = RegisterCacheWrapper.GetAttributeData(factorModel.FactorId.GetValueOrDefault());
+	                dto.DictionaryId = DictionaryService.CreateDictionary(factorModel.DictionaryName, attribute.Type);
+                }
                 ModelFactorsService.AddAutomaticFactor(dto);
                 ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
@@ -662,9 +675,12 @@ namespace KadOzenka.Web.Controllers
 
             if (manualFactorModel.Id == -1)
             {
-	            var attribute = RegisterCacheWrapper.GetAttributeData(manualFactorModel.FactorId.GetValueOrDefault());
-	            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
-                ModelFactorsService.AddManualFactor(dto);
+	            if (!string.IsNullOrWhiteSpace(manualFactorModel.DictionaryName))
+	            {
+		            var attribute = RegisterCacheWrapper.GetAttributeData(manualFactorModel.FactorId.GetValueOrDefault());
+		            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
+                }
+	            ModelFactorsService.AddManualFactor(dto);
             }
             else
             {

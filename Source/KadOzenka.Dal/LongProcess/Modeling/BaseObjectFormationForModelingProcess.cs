@@ -75,7 +75,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return GetCoefficients(registerId, registerPrimaryKeyColumn, unitIds, dictionaries, modelAttributes);
 		}
 
-		protected void CreateMarkCatalog(long? groupId, List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
+		protected void CreateMarkCatalog(List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
 		{
 			using (Logger.TimeOperation("Формирование каталога меток"))
 			{
@@ -83,10 +83,10 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				using (Logger.TimeOperation("Удаление всех предыдущих меток"))
 				{
-					attributes.ForEach(attribute =>
+					attributes.Where(x => x.DictionaryId != null).ForEach(attribute =>
 					{
-						var deletedMarksCount = ModelFactorsService.DeleteMarks(groupId, attribute.AttributeId);
-						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для фактора '{AttributeName}' (ИД {AttributeId})", deletedMarksCount, attribute.AttributeName, attribute.AttributeId);
+						var deletedMarksCount = DictionaryService.DeleteDictionaryValues(attribute.DictionaryId.Value);
+						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для словаря c ИД '{DictionaryId}'", deletedMarksCount, attribute.DictionaryId);
 					});
 				}
 
@@ -108,7 +108,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 							var value = objectCoefficient.Value.Replace(',', '.');
 							var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
-							rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {groupId}, {attribute.AttributeId}, '{value}', {metka}),");
+							rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {attribute.DictionaryId}, '{value}', {metka}),");
 
 							//добавляем метки пакетом по 1000 записей
 							marksCounter++;
@@ -137,7 +137,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			//убираем последний перевод строки и знак ','
 			rowsToInsertSql.TrimLastLine().Length--;
 
-			var sql = @$"INSERT INTO ko_mark_catalog (id, group_id, factor_id, value_factor, metka_factor)
+			var sql = @$"INSERT INTO ko_modeling_dictionaries_values (id, dictionary_id, value, calculation_value)
 							VALUES
 							{rowsToInsertSql}";
 

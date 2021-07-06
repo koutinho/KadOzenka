@@ -17,6 +17,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Modeling.Dto;
+using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
@@ -220,16 +221,12 @@ namespace KadOzenka.Dal.Modeling
 			return dictionaryType;
 		}
 
-		private void DeleteDictionaryValues(long dictionaryId)
+		public int DeleteDictionaryValues(long dictionaryId)
         {
-	        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
-	        {
-				var dictionaryValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
-				dictionaryValues.ForEach(x => x.Destroy());
+	        var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
 
-				ts.Complete();
-	        }
-			
+	        var command = DBMngr.Main.GetSqlStringCommand(sql);
+	        return DBMngr.Main.ExecuteNonQuery(command);
         }
 
 		#endregion

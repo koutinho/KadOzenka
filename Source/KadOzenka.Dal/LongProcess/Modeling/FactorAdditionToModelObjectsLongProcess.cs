@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				SaveCoefficient(objects, coefficients);
 				AddLog(Queue, "Закончено сохранение коэффициентов.", logger: Logger);
 
-				CreateMarkCatalog(Model.GroupId, objects, attributes, Queue);
+				CreateMarkCatalog(objects, attributes, Queue);
 
 				SaveStatistic(objects, allModelAttributes, Model, Queue);
 

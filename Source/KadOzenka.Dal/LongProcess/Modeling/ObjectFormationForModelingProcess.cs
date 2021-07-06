@@ -86,7 +86,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 var processedMarketObjectsCount = PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: Logger);
 
-                CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
+                CreateMarkCatalog(ModelObjects, modelAttributes, Queue);
 
                 SaveStatistic(ModelObjects, modelAttributes, Model, Queue);
 

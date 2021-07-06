@@ -47,20 +47,10 @@
     </div>
     <div class="form-group">
         <div class="col-sm-3">
-            @Html.CustomLabelFor(x => x.DictionaryId)
+            @Html.CustomLabelFor(x => x.DictionaryName)
         </div>
         <div class="col-sm-9">
-            @(Html.Kendo().DropDownListFor(x => x.DictionaryId)
-                .DataTextField("Text")
-                .DataValueField("Value")
-                .OptionLabel("--Выберите cловарь--")
-                .Filter(FilterType.Contains)
-                .Height(175)
-                .Events(e => e.Open("hideOptionalLabel"))
-                .DataSource(source =>
-                {
-                    source.Read(read => read.Action("GetDictionaries", "Modeling"));
-                }))
+            @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: !Model.IsNewFactor)
         </div>
     </div>
     <div class="form-group">
@@ -114,7 +104,6 @@
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
         formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
-        formObject.DictionaryId = $('#@nameof(Model.DictionaryId)').data("kendoDropDownList").value();
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),

@@ -4,7 +4,6 @@ using System.IO;
 using Core.Register;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
-using ObjectModel.Directory.ES;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
@@ -37,5 +36,7 @@ namespace KadOzenka.Dal.Modeling
 
 		void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool deleteOldValues, OMImportDataLog import);
+
+		int DeleteDictionaryValues(long dictionaryId);
 	}
 }

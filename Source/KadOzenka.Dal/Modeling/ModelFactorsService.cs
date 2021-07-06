@@ -279,18 +279,16 @@ namespace KadOzenka.Dal.Modeling
 			var mustResetTrainingResult = false;
 			using (var ts = new TransactionScope())
 			{
-				if (factor.DictionaryId != dto.DictionaryId || factor.IsActive.GetValueOrDefault() != dto.IsActive)
+				if (factor.IsActive.GetValueOrDefault() != dto.IsActive)
 				{
 					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
 						.Select(x => new
 						{
-							x.DictionaryId,
 							x.IsActive
 						}).Execute();
 					
 					factors.ForEach(x =>
 					{
-						x.DictionaryId = dto.DictionaryId;
 						x.IsActive = dto.IsActive;
 						ModelFactorsRepository.Save(x);
 					});
