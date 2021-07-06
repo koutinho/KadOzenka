@@ -603,11 +603,11 @@ namespace KadOzenka.Web.Controllers
         #endregion
 
 
-        #region Загрузка графических факторов из РЕОН
+        #region Загрузка геогграфических факторов из РГИС
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
-        public ActionResult DownloadGraphicFactorsFromReon(long taskId)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS)]
+        public ActionResult DownloadGeographicFactorsFromRgis(long taskId)
         {
             var model = new GraphicFactorsFromReonModel
             {
@@ -620,7 +620,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS)]
         public JsonResult GetReonRegisterAttributes()
         {
             var availableAttributeTypes = new[]
@@ -679,8 +679,8 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON)]
-        public JsonResult DownloadGraphicFactorsFromReon(GraphicFactorsFromReonModel model)
+        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS)]
+        public JsonResult DownloadGeographicFactorsFromRgis(GraphicFactorsFromReonModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
