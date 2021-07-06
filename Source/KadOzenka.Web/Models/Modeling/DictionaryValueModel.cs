@@ -43,7 +43,7 @@ namespace KadOzenka.Web.Models.Modeling
                 ? value.Value
                 : null;
 
-            var numberValue = dictionary.Type_Code == ModelDictionaryType.Number && !isEmptyValue
+            var numberValue = (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && !isEmptyValue
                 ? decimal.TryParse(value.Value, out var number) ? number : (decimal?)null
                 : null;
 
@@ -86,7 +86,8 @@ namespace KadOzenka.Web.Models.Modeling
 		        case ModelDictionaryType.Date:
 			        value = DateTimeValue?.Date.ToString(CultureInfo.CurrentCulture);
 			        break;
-		        case ModelDictionaryType.Number:
+		        case ModelDictionaryType.Decimal:
+		        case ModelDictionaryType.Integer:
 			        value = NumberValue?.ToString();
 			        break;
 		        default:

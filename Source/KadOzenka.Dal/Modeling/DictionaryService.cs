@@ -163,7 +163,8 @@ namespace KadOzenka.Dal.Modeling
 	        if (dictionary == null || number == null)
 		        return number ?? 0;
 
-	        if (dictionary.Type_Code == ModelDictionaryType.Number)
+			//todo separate
+	        if (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal)
 	        {
 		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
 
@@ -194,10 +195,11 @@ namespace KadOzenka.Dal.Modeling
 			ModelDictionaryType dictionaryType;
 			switch (factorType)
 			{
-				//todo
 				case RegisterAttributeType.INTEGER:
+					dictionaryType = ModelDictionaryType.Integer;
+					break;
 				case RegisterAttributeType.DECIMAL:
-					dictionaryType = ModelDictionaryType.Number;
+					dictionaryType = ModelDictionaryType.Decimal;
 					break;
 				case RegisterAttributeType.BOOLEAN:
 					dictionaryType = ModelDictionaryType.Boolean;
@@ -209,7 +211,7 @@ namespace KadOzenka.Dal.Modeling
 					dictionaryType = ModelDictionaryType.Date;
 					break;
 				case RegisterAttributeType.REFERENCE:
-					dictionaryType = ModelDictionaryType.REFERENCE;
+					dictionaryType = ModelDictionaryType.Reference;
 					break;
 				default:
 					throw new ArgumentOutOfRangeException(
@@ -286,7 +288,7 @@ namespace KadOzenka.Dal.Modeling
         {
 	        var isEmptyValue = string.IsNullOrWhiteSpace(value);
 
-            var canParseToNumber = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Number && decimal.TryParse(value, out _);
+            var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && decimal.TryParse(value, out _);
 	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && DateTime.TryParse(value, out _);
 
 	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && dictionary.Type_Code != ModelDictionaryType.String)
@@ -482,7 +484,8 @@ namespace KadOzenka.Dal.Modeling
 	        string valueString = null;
 	        switch (valueType)
 	        {
-		        case ModelDictionaryType.Number:
+		        case ModelDictionaryType.Integer:
+		        case ModelDictionaryType.Decimal:
 			        if (!cellValue.TryParseToDecimal(out var number))
 				        throw new Exception($"Значение '{cellValue}' не может быть приведено к типу 'Число'");
 			        valueString = number.ToString();

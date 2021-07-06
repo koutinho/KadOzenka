@@ -1,29 +1,34 @@
-INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values) 
+INSERT INTO core_reference (referenceid, description, readonly, progid, istree, defaultvalue, name, register_id, simple_values)
 VALUES (227, 'Тип данных для словаря моделирования', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', null, null, 'KO.ModelDictionaryType', null, '[
 	{
 		"Id": 1,
-		"Value": "Число",
-		"Name": "Number"
-	},
+		"Value": "Целое число",
+		"Name": "Integer"
+	},	
 	{
 		"Id": 2,
+		"Value": "Десятичное число",
+		"Name": "Decimal"
+	},
+	{
+		"Id": 3,
 		"Value": "Логическое значение",
 		"Name": "Boolean"
 	},
 	{
-		"Id": 3,
+		"Id": 4,
 		"Value": "Строка",
 		"Name": "String"
 	},
 	{
-		"Id": 4,
+		"Id": 5,
 		"Value": "Дата и время",
 		"Name": "Date"
 	},
 	{
-		"Id": 5,
+		"Id": 6,
 		"Value": "Значение из справочника",
-		"Name": "REFERENCE"
+		"Name": "Reference"
 	}
 ]');
 

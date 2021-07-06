@@ -6187,40 +6187,47 @@ namespace ObjectModel.Directory.KO
     public enum ModelDictionaryType : long
     {
 		/// <summary>
-		/// Число (1)
+		/// Целое число (1)
 		/// </summary>
-		[Description("Число")]
+		[Description("Целое число")]
         [EnumCode("1")]
-        [ShortTitle("Число")]
-        Number = 1,
+        [ShortTitle("Целое число")]
+        Integer = 1,
 		/// <summary>
-		/// Логическое значение (2)
+		/// Десятичное число (2)
+		/// </summary>
+		[Description("Десятичное число")]
+        [EnumCode("2")]
+        [ShortTitle("Десятичное число")]
+        Decimal = 2,
+		/// <summary>
+		/// Логическое значение (3)
 		/// </summary>
 		[Description("Логическое значение")]
-        [EnumCode("2")]
+        [EnumCode("3")]
         [ShortTitle("Логическое значение")]
-        Boolean = 2,
+        Boolean = 3,
 		/// <summary>
-		/// Строка (3)
+		/// Строка (4)
 		/// </summary>
 		[Description("Строка")]
-        [EnumCode("3")]
+        [EnumCode("4")]
         [ShortTitle("Строка")]
-        String = 3,
+        String = 4,
 		/// <summary>
-		/// Дата и время (4)
+		/// Дата и время (5)
 		/// </summary>
 		[Description("Дата и время")]
-        [EnumCode("4")]
+        [EnumCode("5")]
         [ShortTitle("Дата и время")]
-        Date = 4,
+        Date = 5,
 		/// <summary>
-		/// Значение из справочника (5)
+		/// Значение из справочника (6)
 		/// </summary>
 		[Description("Значение из справочника")]
-        [EnumCode("5")]
+        [EnumCode("6")]
         [ShortTitle("Значение из справочника")]
-        REFERENCE = 5,
+        Reference = 6,
     }
 }
 
