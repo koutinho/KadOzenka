@@ -851,7 +851,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult ModelMarks(long modelId)
+        public ActionResult ModelDictionaries(long modelId)
         {
 	        var modelFactors = ModelFactorsService.GetGeneralModelAttributes(modelId)
 		        .Where(x => x.IsNormalized).Select(GeneralModelAttributeModel.ToModel)
