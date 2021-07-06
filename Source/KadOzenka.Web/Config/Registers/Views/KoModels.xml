@@ -53,6 +53,12 @@
                 <Parameter Key="ModelId" Value="[ObjectId]"/>
             </Parameters>
         </Tab>
+
+        <Tab Caption="Метки" NavigateURL="/Modeling/ModelMarks">
+          <Parameters>
+            <Parameter Key="ModelId" Value="[ObjectId]"/>
+          </Parameters>
+        </Tab>
     </Tabs>
 
 </RegisterView>

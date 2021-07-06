@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.Modeling
 		List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type);
 		List<ModelAttributeRelationPure> GetGeneralModelAttributes(long modelId);
 		List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type);
-		QSQuery GetModelFactorsQuery(long modelId, QSJoin additionalJoin = null, QSCondition additionalCondition = null);
+		QSQuery GetModelFactorsQuery(long modelId, QSCondition additionalCondition = null);
 		void AddAutomaticFactor(AutomaticModelFactorDto dto);
 		bool UpdateAutomaticFactor(AutomaticModelFactorDto dto);
 		int AddManualFactor(ManualModelFactorDto dto);

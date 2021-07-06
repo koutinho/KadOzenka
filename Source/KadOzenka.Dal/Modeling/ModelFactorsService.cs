@@ -15,7 +15,6 @@ using KadOzenka.Dal.Modeling.Exceptions.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
-using ObjectModel.Directory.ES;
 using ObjectModel.Directory.Ko;
 using ObjectModel.Directory.KO;
 
@@ -61,7 +60,8 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 
 			var attributes = new List<ModelAttributeRelationPure>();
@@ -79,6 +79,7 @@ namespace KadOzenka.Dal.Modeling
 				var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
 
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToStringNullable();
 				
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 
@@ -90,6 +91,7 @@ namespace KadOzenka.Dal.Modeling
 					AttributeName = attributeName,
 					AttributeType = attributeType,
 					DictionaryId = dictionaryId,
+					DictionaryName = dictionaryName,
 					IsActive = isActive.GetValueOrDefault()
 				});
 			}
@@ -102,18 +104,6 @@ namespace KadOzenka.Dal.Modeling
 		//TODO разделить на получение факторов для Ручной и Автоматический моделей
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
-			var dictionaryJoin = new QSJoin
-			{
-				RegisterId = OMModelingDictionary.GetRegisterId(),
-				JoinCondition = new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
-					RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
-				},
-				JoinType = QSJoinType.Left
-			};
-
 			//для совместимости с уже ранее созданными моделями (не через блок "Справочники моделей")
 			QSConditionSimple typeCondition = null;
 			var isFactorsWithSpecificTypeExist = OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).ExecuteExists();
@@ -122,7 +112,7 @@ namespace KadOzenka.Dal.Modeling
 				typeCondition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.AlgorithmType_Code), QSConditionType.Equal, (int)type);
 			}
 
-			var query = GetModelFactorsQuery(modelId, dictionaryJoin, typeCondition);
+			var query = GetModelFactorsQuery(modelId, typeCondition);
 
 			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
@@ -196,7 +186,7 @@ namespace KadOzenka.Dal.Modeling
 			return attributes;
 		}
 
-		public QSQuery GetModelFactorsQuery(long modelId, QSJoin additionalJoin = null, QSCondition additionalCondition = null)
+		public QSQuery GetModelFactorsQuery(long modelId, QSCondition additionalCondition = null)
 		{
 			var conditions = new List<QSCondition>
 			{
@@ -225,6 +215,17 @@ namespace KadOzenka.Dal.Modeling
 							RightOperand = OMAttribute.GetColumn(x => x.Id)
 						},
 						JoinType = QSJoinType.Inner
+					},
+					new QSJoin
+					{
+						RegisterId = OMModelingDictionary.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
+							RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Left
 					}
 				},
 				OrderBy = new List<QSOrder>
@@ -236,9 +237,6 @@ namespace KadOzenka.Dal.Modeling
 					}
 				}
 			};
-
-			if (additionalJoin != null)
-				query.Joins.Add(additionalJoin);
 
 			return query;
 		}

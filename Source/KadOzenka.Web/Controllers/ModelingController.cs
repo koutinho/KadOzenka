@@ -811,6 +811,17 @@ namespace KadOzenka.Web.Controllers
             return File(fileContent, contentType, fileName);
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult ModelMarks(long modelId)
+        {
+	        var modelFactors = ModelFactorsService.GetGeneralModelAttributes(modelId)
+		        .Where(x => x.IsNormalized).Select(GeneralModelAttributeModel.ToModel)
+		        .ToList();
+
+	        return View(modelFactors);
+        }
+
         #endregion
 
         #endregion

@@ -1,0 +1,98 @@
+﻿@using KadOzenka.Web.Helpers
+@model List<KadOzenka.Web.Models.Modeling.GeneralModelAttributeModel>
+
+
+<!-- Модальное окно для загрузки справочника меток -->
+<div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
+</div>
+
+<div class="form-horizontal" style="padding: 3%">
+    @Html.RenderHelpButton()
+
+
+    <div class="form-group">
+        @(Html.Kendo().ToolBar()
+            .Name("dictionaryCommandsToolBar")
+            .Items(items => 
+            {
+                items.Add().Type(CommandType.Button).Icon("clock").Click("showMarks").HtmlAttributes(new { id="show-marks", title = "Просмотреть метки" });
+                items.Add().Type(CommandType.Button).Icon("download").Click("downloadMarksCatalog").HtmlAttributes(new { id="download-marks-catalog", title = "Выгрузить справочник меток" });
+                items.Add().Type(CommandType.Button).Icon("upload").Click("showModalToUploadMarksCatalog").HtmlAttributes(new { id="upload-marks-catalog", title = "Загрузить справочник меток" });
+            }))
+
+        @(Html.Kendo().Grid(Model)
+            .Name("grid")
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.AttributeName).Title("Фактор");
+                columns.Bound(x => x.DictionaryName).Title("Словарь");
+            })
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .Model(x =>
+                {
+                    x.Id(p => p.Id);
+                    x.Field(c => c.AttributeName).Editable(false);
+                    x.Field(c => c.AttributeId).Editable(false);
+                    x.Field(c => c.DictionaryName).Editable(false);
+                }))
+            .Events(x => x.DataBound("changeButtonsAbility").Change("changeButtonsAbility"))
+            .Selectable()
+            .HtmlAttributes(new {@class = "normalized-factors-grid"}))
+    </div>
+</div>
+
+
+
+<script src="~/js/custom-validation.js"></script>
+<script src="~/js/toolbars.js"></script>
+<script>
+    $(document).ready(function () {
+
+    });
+
+
+
+
+
+    function changeButtonsAbility() {
+        var selectedRowData = getSelectedRowInGrid();
+        if (selectedRowData) {
+            $('#show-marks').removeClass('k-state-disabled');
+            $('#download-marks-catalog').removeClass('k-state-disabled');
+            $('#upload-marks-catalog').removeClass('k-state-disabled');
+        }
+        else {
+            $('#show-marks').addClass('k-state-disabled');
+            $('#download-marks-catalog').addClass('k-state-disabled');
+            $('#upload-marks-catalog').addClass('k-state-disabled');
+        }
+    }
+
+
+    function showMarks() {
+       
+    }
+
+
+    function showModalToUploadMarksCatalog() {
+
+    }
+
+    
+    function downloadMarksCatalog() {
+       
+    }
+
+
+    function getSelectedRowInGrid() {
+        var grid = $("#grid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length > 0) {
+            var data = grid.dataItem(row);
+            return data;
+        }
+        return null;
+    }
+</script>
