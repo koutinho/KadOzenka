@@ -522,8 +522,7 @@ namespace KadOzenka.Web.Controllers
                 model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
             }
 
-            // TODO: Пофиксить добавление записи
-            for (int i = model.GroupFilters.Count; i < 10; i++)
+            for (int i = model.GroupFilters.Count; i < 1; i++)
             {
                 model.GroupFilters.Add(new Filters());
                 model.KoAttributes.Add(new long());
@@ -546,6 +545,14 @@ namespace KadOzenka.Web.Controllers
         {
             var model = GetTourGroupSettingsModel(groupId);
             return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml", model);
+        }
+
+        [HttpGet]
+        public ActionResult TourGroupGroupingSettingsPartialRow(int groupId, int index)
+        {
+            ViewData["KoAttributes"] = GetKoAttributes(groupId);
+            var model = new TourGroupGroupingSettingsPartialModel {Index = index};
+            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
         }
 
         [HttpPost]

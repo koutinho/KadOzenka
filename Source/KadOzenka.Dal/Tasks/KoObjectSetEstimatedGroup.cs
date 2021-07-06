@@ -265,54 +265,6 @@ namespace KadOzenka.Dal.KoObject
                         AddErrorRow(unitPure.CadastralNumber, $"Не найдено подходящей группы по условиям", reportService);
                     }
                 }
-
-                // var cancelTokenSource = new CancellationTokenSource();
-                // var options = new ParallelOptions
-                // {
-                //     CancellationToken = cancelTokenSource.Token,
-                //     MaxDegreeOfParallelism = 10
-                // };
-                // Logger.Debug("Начата обработка каждого юнита");
-                // Parallel.ForEach(currentUnitsPartition, options, item =>
-                // {
-                //     lock (_locked)
-                //     {
-                //         CurrentCount++;
-                //     }
-                //
-                //
-                //     //codeGroups.TryGetValue(item.ObjectId, out var codeGroup);
-                //     // if (string.IsNullOrEmpty(codeGroup.Value))
-                //     // {
-                //     // 	AddErrorRow(item.CadastralNumber, $"Не заполнен код в атрибуте '{codeGroupAttribute.Name}'", reportService);
-                //     // 	return;
-                //     // }
-                //     //
-                //     // var codeGroupValue = codeGroup.Value;
-                //     // var complianceGuides = GetComplianceGuides(currentComplianceGuides.Where(x => x.Code == codeGroupValue && x.TypeProperty == item.PropertyType).ToList());
-                //     // if (complianceGuides.IsEmpty())
-                //     // {
-                //     // 	AddErrorRow(item.CadastralNumber, $"В таблице сопоставления не найдено значение с кодом '{codeGroupValue}' и типом '{item.PropertyType}'", reportService);
-                //     // }
-                //     // else if (complianceGuides.Count == 1)
-                //     // {
-                //     // 	var value = complianceGuides[0].Group;
-                //     // 	AddValueFactor(item.ObjectId, estimatedSubGroupAttribute.Id, codeGroup.IdDocument, DateTime.Now, value);
-                //     // 	AddRowToReport(item.CadastralNumber, estimatedSubGroupAttribute.Id, codeGroupAttribute.Id, value, reportService);
-                //     // }
-                //     // else
-                //     // {
-                //     // 	var complianceGuidesStr = new StringBuilder();
-                //     // 	complianceGuides.ForEach(x => complianceGuidesStr.AppendLine(x.ToString()));
-                //     // 	AddErrorRow(item.CadastralNumber, $"Найдено несколько соответсвий: {complianceGuidesStr}", reportService);
-                //     // }
-                // });
-                //
-                // Logger.Debug("Закончена обработка пакета юнитов №{PackageIndex} из {MaxPackageIndex}", i,
-                //     numberOfPackages);
-                // //попытка принудительно освободить память
-                // currentUnitsPartition = null;
-                // GC.Collect();
             }
             //);
 

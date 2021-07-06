@@ -1,0 +1,15 @@
+@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Tour.TourGroupGroupingSettingsPartialModel
+
+
+<fieldset>
+<div id="groupFilter_@Model.Index" class="form-group">
+    <div class="col-sm-3">
+        @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idSuffix:$"[{Model.Index}]")
+    </div>
+    <div class="col-sm-9">
+        @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters,  idSuffix:$"[{Model.Index}]"); }
+    </div>
+</div>
+</fieldset>
+

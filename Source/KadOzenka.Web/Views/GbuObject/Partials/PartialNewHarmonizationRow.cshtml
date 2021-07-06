@@ -9,6 +9,6 @@
         @Html.CustomLabel("Характеристика")
     </div>
     <div class="col-sm-10">
-        @Html.KendoDropDownListTreeWithButton(m => m.AttributeId, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + Model.RowNumber)
+        @Html.KendoDropDownListTreeWithButton(m => m.AttributeId, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idSuffix: "_" + Model.RowNumber)
     </div>
 </fieldset>
