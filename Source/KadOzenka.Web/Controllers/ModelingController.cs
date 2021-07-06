@@ -696,28 +696,35 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
-        public ActionResult MarksGrid(long groupId, long factorId)
+        public ActionResult MarksGrid(long dictionaryId)
         {
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
+	        ViewBag.DictionaryId = dictionaryId;
 
-            return View();
+	        return View();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public JsonResult GetMarkCatalog(long groupId, long factorId)
+        public JsonResult GetMarkCatalog2(long dictionaryId)
         {
-            if (groupId == 0 || factorId == 0)
-                return Json(new List<MarkModel>());
+	        var marks = DictionaryService.GetDictionaryValues(dictionaryId).Select(MarkModel.ToModel).ToList();
 
-            var marks = ModelFactorsService.GetMarks(groupId, factorId);
-
-            var markModels = marks.Select(MarkModel.ToModel).ToList();
-
-            return Json(markModels);
+            return Json(marks);
         }
 
-        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+		public JsonResult GetMarkCatalog(long groupId, long factorId)
+		{
+			if (groupId == 0 || factorId == 0)
+				return Json(new List<MarkModel>());
+
+			var marks = ModelFactorsService.GetMarks(groupId, factorId);
+
+			var markModels = marks.Select(MarkModel.ToModel).ToList();
+
+			return Json(markModels);
+		}
+
+		[HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult CreateMark(MarkModel markCatalog)
         {
@@ -725,6 +732,18 @@ namespace KadOzenka.Web.Controllers
             markCatalog.Id = id;
 
             return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult CreateMark2(long dictionaryId, MarkModel markCatalog)
+        {
+	        var dto = markCatalog.ToDto(dictionaryId);
+	        
+	        var id = DictionaryService.CreateDictionaryValue(dto);
+	        markCatalog.Id = id;
+
+	        return Json(markCatalog);
         }
 
         [HttpPost]
@@ -738,9 +757,28 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult UpdateMark2(long dictionaryId, MarkModel markCatalog)
+        {
+	        var dto = markCatalog.ToDto(dictionaryId);
+	        DictionaryService.UpdateDictionaryValue(dto);
+
+            return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult DeleteMark(MarkModel markCatalog)
         {
             ModelFactorsService.DeleteMark(markCatalog.Id);
+
+            return Json(markCatalog);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public ActionResult DeleteMark2(MarkModel markCatalog)
+        {
+	        DictionaryService.DeleteDictionaryValue(markCatalog.Id);
 
             return Json(markCatalog);
         }

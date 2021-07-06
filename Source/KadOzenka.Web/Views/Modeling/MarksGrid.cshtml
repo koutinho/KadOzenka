@@ -13,23 +13,25 @@
         var markGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog", "Modeling")',
+                    url: '@Url.Action("GetMarkCatalog2", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
-                    data: { groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark", "Modeling")',                         
+                    url: '@Url.Action("CreateMark2", "Modeling")',
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark", "Modeling")',                    
+                    url: '@Url.Action("UpdateMark2", "Modeling")',
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark", "Modeling")',                        
+                    url: '@Url.Action("DeleteMark2", "Modeling")',                        
                     type: 'POST',
                     dataType: 'json'
                 }
@@ -52,8 +54,6 @@
                     id: "Id",
                     fields: {
                         Id: { editable: false, nullable: true },
-                        GroupId: { editable: false},
-                        FactorId: { editable: false },
                         Value: { validation: {
                             valuefactorvalidation: function (input) {
                                 if (input.is("[name='Value']") && input.val() == "") {
@@ -92,6 +92,7 @@
             },
             pageSize: 10
         });
+
 
         $('#markGrid').kendoGrid({
             dataSource: markGridDataSource,
@@ -139,12 +140,6 @@
                         gte: "Больше",
                         lte: "Меньше"
                     }
-                }
-            },
-            beforeEdit: function (e) {
-                if (e.model.isNew()) {
-                    e.model.GroupId = '@ViewBag.GroupId';
-                    e.model.FactorId = '@ViewBag.FactorId';
                 }
             },
             save: function (e) {

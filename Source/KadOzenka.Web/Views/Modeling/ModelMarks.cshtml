@@ -34,8 +34,8 @@
                 {
                     x.Id(p => p.Id);
                     x.Field(c => c.AttributeName).Editable(false);
-                    x.Field(c => c.AttributeId).Editable(false);
                     x.Field(c => c.DictionaryName).Editable(false);
+                    x.Field(c => c.DictionaryId).Editable(false);
                 }))
             .Events(x => x.DataBound("changeButtonsAbility").Change("changeButtonsAbility"))
             .Selectable()
@@ -72,7 +72,15 @@
 
 
     function showMarks() {
-       
+        var selectedRowData = getSelectedRowInGrid();
+        if (selectedRowData) {
+            var dictionaryId = selectedRowData.DictionaryId;
+            Common.UI.ShowWindow('Метки',
+                '@Url.Action("MarksGrid", "Modeling")' + '?dictionaryId=' + dictionaryId,
+                'marksWindow',
+                function (e) {},
+                800, 400);
+        }
     }
 
 
