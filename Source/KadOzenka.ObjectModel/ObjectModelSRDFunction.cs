@@ -458,8 +458,8 @@ namespace ObjectModel.SRD
               // Выгрузка в Excel (629)
               public const string KO_TASKS_EXPORT_TO_EXCEL = "KO.TASKS.EXPORT_TO_EXCEL";
                 
-              // Загрузка графических факторов из ИС РЕОН (630)
-              public const string KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON = "KO.TASKS.DOWNLOAD_GRAPHIC_FACTORS_FROM_REON";
+              // Загрузка географических факторов из ИС РГИС (630)
+              public const string KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS = "KO.TASKS.DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS";
                 
               // Все данные (631)
               public const string KO_OBJECTS_ALL_DATA = "KO.OBJECTS.ALL_DATA";

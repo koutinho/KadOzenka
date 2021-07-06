@@ -405,6 +405,24 @@ namespace ObjectModel.KO
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 25 Источник: РГИС - геофакторы ОКС
+    /// </summary>
+    public partial class OMSource25
+    {
+        /// <summary>
+        /// Ссылка на (200 Объекты недвижимости)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.Gbu.OMMainObject ParentMainObject { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 81 Реестр хранения настроек гбу атрибута
     /// </summary>
     public partial class OMAttributeSettings

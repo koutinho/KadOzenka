@@ -342,6 +342,30 @@ namespace ObjectModel.KO
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 25 Источник: РГИС - геофакторы ОКС (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 25)]
+    [Serializable]
+    public partial class OMSource25 : OMBaseClass<OMSource25>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 26 Источник: РГИС - геофакторы ЗУ (GBU_MAIN_OBJECT)
+    /// </summary>
+    [RegisterInfo(RegisterID = 26)]
+    [Serializable]
+    public partial class OMSource26 : OMBaseClass<OMSource26>
+    {
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 80 Справочник кадастровых кварталов (GBU_KADASTR_KVARTAL)
     /// </summary>
     [RegisterInfo(RegisterID = 80)]

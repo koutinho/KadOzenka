@@ -515,6 +515,50 @@ namespace ObjectModel.KO
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 25 Источник: РГИС - геофакторы ОКС
+    /// </summary>
+    public partial class OMSource25
+    {
+
+        public OMSource25()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource25(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
+    /// 26 Источник: РГИС - геофакторы ЗУ
+    /// </summary>
+    public partial class OMSource26
+    {
+
+        public OMSource26()
+        {
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMSource26(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 80 Справочник кадастровых кварталов
     /// </summary>
     public partial class OMKadastrKvartal
@@ -768,6 +812,12 @@ namespace ObjectModel.Gbu
         public List<ObjectModel.Gbu.OMSource23> Source23 { get; set; }
 
         /// <summary>
+        /// Ссылка на (25 Источник: РГИС - геофакторы ОКС)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.Gbu.OMSource25> Source25 { get; set; }
+
+        /// <summary>
         /// Ссылка на (201 Единица оценки)
         /// </summary>
         [Reference]
@@ -821,6 +871,8 @@ namespace ObjectModel.Gbu
             Source22 = new List<ObjectModel.Gbu.OMSource22>();
 
             Source23 = new List<ObjectModel.Gbu.OMSource23>();
+
+            Source25 = new List<ObjectModel.Gbu.OMSource25>();
 
             Unit = new List<ObjectModel.KO.OMUnit>();
 
