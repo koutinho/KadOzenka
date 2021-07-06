@@ -9,6 +9,7 @@ using System.Transactions;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
+using Core.Register;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
@@ -79,15 +80,17 @@ namespace KadOzenka.Dal.Modeling
 	        return dictionary;
         }
 
-        public long CreateDictionary(string name, ModelDictionaryType valueType)
+        public long CreateDictionary(string name, RegisterAttributeType factorType)
         {
 	        ValidateDictionary(name, -1);
+
+	        var dictionaryType = MapDictionaryType(factorType);
 
 	        return new OMModelingDictionary
 	        {
 		        Name = name, 
-		        Type_Code = valueType
-	        }.Save();
+		        Type_Code = dictionaryType
+			}.Save();
         }
 
         public void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType)
@@ -186,7 +189,37 @@ namespace KadOzenka.Dal.Modeling
 		        throw new Exception($"Справочник '{name}' уже существует");
         }
 
-        private void DeleteDictionaryValues(long dictionaryId)
+		private ModelDictionaryType MapDictionaryType(RegisterAttributeType factorType)
+		{
+			ModelDictionaryType dictionaryType;
+			switch (factorType)
+			{
+				//todo
+				case RegisterAttributeType.INTEGER:
+				case RegisterAttributeType.DECIMAL:
+					dictionaryType = ModelDictionaryType.Number;
+					break;
+				case RegisterAttributeType.BOOLEAN:
+					dictionaryType = ModelDictionaryType.Boolean;
+					break;
+				case RegisterAttributeType.STRING:
+					dictionaryType = ModelDictionaryType.String;
+					break;
+				case RegisterAttributeType.DATE:
+					dictionaryType = ModelDictionaryType.Date;
+					break;
+				case RegisterAttributeType.REFERENCE:
+					dictionaryType = ModelDictionaryType.REFERENCE;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(
+						$"Для фактора с типом '{factorType.GetEnumDescription()}' нельзя создать словарь меток");
+			}
+
+			return dictionaryType;
+		}
+
+		private void DeleteDictionaryValues(long dictionaryId)
         {
 	        var dictionaryValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
 	        dictionaryValues.ForEach(x => x.Destroy());
@@ -275,7 +308,8 @@ namespace KadOzenka.Dal.Modeling
         public long CreateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 	        string newDictionaryName, OMImportDataLog import)
         {
-	        var dictionaryId = CreateDictionary(newDictionaryName, fileImportInfo.ValueType);
+			//todo fileImportInfo.ValueType
+			var dictionaryId = CreateDictionary(newDictionaryName, RegisterAttributeType.STRING);
 	        var dictionary = GetDictionaryById(dictionaryId);
 
 	        ImportDictionaryValues(fileStream, dictionary, fileImportInfo, import);

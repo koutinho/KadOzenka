@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Core.Register;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Directory.ES;
@@ -18,7 +19,7 @@ namespace KadOzenka.Dal.Modeling
 		List<OMModelingDictionary> GetDictionaries();
 		List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true);
 		OMModelingDictionary GetDictionaryById(long id);
-		long CreateDictionary(string name, ModelDictionaryType valueType);
+		long CreateDictionary(string name, RegisterAttributeType factorType);
 		void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType);
 		void DeleteDictionary(long id);
 		decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary);

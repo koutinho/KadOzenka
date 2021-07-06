@@ -662,8 +662,8 @@ namespace KadOzenka.Web.Controllers
 
             if (manualFactorModel.Id == -1)
             {
-                //todo type
-	            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, ModelDictionaryType.String);
+	            var attribute = RegisterCacheWrapper.GetAttributeData(manualFactorModel.FactorId.GetValueOrDefault());
+	            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
                 ModelFactorsService.AddManualFactor(dto);
             }
             else
@@ -1290,10 +1290,10 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
 
             var id = viewModel.Id;
-            if (id == -1)
-                id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
-            else
-                DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
+            //if (id == -1)
+            //    id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
+            //else
+            //    DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
 
             return Json(new { Success = "Сохранено успешно", Id = id });
         }
