@@ -800,6 +800,14 @@ namespace KadOzenka.Web.Controllers
             return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public FileResult DownloadMarksCatalog2(long dictionaryId)
+        {
+	        var fileStream = DataExporterKO.ExportMarkerListToExcel(dictionaryId);
+
+	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
+        }
+
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult UploadMarksCatalog(long groupId, long factorId)

@@ -90,7 +90,11 @@
 
     
     function downloadMarksCatalog() {
-       
+        var selectedRowData = getSelectedRowInGrid();
+        if (selectedRowData) {
+            var dictionaryId = selectedRowData.DictionaryId;
+            window.open('@Url.Action("DownloadMarksCatalog2", "Modeling")' + '?dictionaryId=' + dictionaryId);
+        }
     }
 
 
