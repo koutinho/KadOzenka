@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using KadOzenka.Dal.Enum;
 using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Gbu.GroupingAlgoritm;
@@ -49,6 +50,10 @@ namespace KadOzenka.Web.Models.GbuObject
 		[Display(Name = "Справочник")]
 		[Required(ErrorMessage = "Заполните справочник")]
 		public int? IdCodJob { get; set; }
+
+		[Display(Name = "Код по умолчанию")]
+		[Required(ErrorMessage = "Заполните значение кода по умолчанию")]
+		public string CodeDefault { get; set; }
 
 		/// <summary>
 		/// Выборка по всем объектам
@@ -145,9 +150,8 @@ namespace KadOzenka.Web.Models.GbuObject
 			return new GroupingSettings
 			{
 				IdCodJob = IdCodJob,
-				//IdAttributeDocument = IdAttributeDocument,
+				CodeDefault = CodeDefault,
 				IdAttributeResult = IdAttributeResult,
-				//IdAttributeSource = IdAttributeSource,
 				Level1 = Level1.ConvertToLevelItem(),
 				Level2 = Level2.ConvertToLevelItem(),
 				Level3 = Level3.ConvertToLevelItem(),
@@ -215,6 +219,12 @@ namespace KadOzenka.Web.Models.GbuObject
 					new ValidationResult(errorMessage: "Заполните результирующую характеристику",
 						memberNames: new[] { nameof(IdAttributeResult) });
 			}
+
+		    // Паттерн для кода вида ХХ:ХХХ[/XX:XXX][/XX:XXX], где X - цифра, а части в скобках опциональные
+		    Regex regex = new Regex(@"\d{2}:\d{3}(?:\/\d{2}:\d{3}){0,2}");
+		    var match = regex.IsMatch(CodeDefault);
+		    if (!match)
+			    yield return new ValidationResult("Код по умолчанию не соответствует формату");
 
 		}
 	}

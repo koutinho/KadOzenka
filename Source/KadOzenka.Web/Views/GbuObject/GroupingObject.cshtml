@@ -131,6 +131,7 @@
                     .Filter(FilterType.Contains))
             </div>
         </div>
+
     </fieldset>
 <fieldset id="level1cod" class="wrap-level codJobParam">
     <legend></legend>
@@ -313,6 +314,14 @@
     TypeNewAttribute = Model.TypeNewAttribute,
     PossibleAttributes = (List<DropDownTreeItemModel>)ViewBag.StringTreeAttributes
 }))
+    <div class="form-group">
+        <div class="col-sm-2">
+            @Html.CustomLabelFor(x => x.CodeDefault)
+        </div>
+        <div class="col-sm-10">
+            @(Html.Kendo().TextBoxFor(m => m.CodeDefault).Placeholder("01:234/02:345"))
+        </div>
+    </div>
     </div>
     </div>
 }

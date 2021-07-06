@@ -18,6 +18,11 @@ namespace KadOzenka.Dal.GbuObject.Dto
         /// Выборка по всем объектам
         /// </summary>
         public bool SelectAllObject;
+
+        /// <summary>
+        /// Код по умолчанию
+        /// </summary>
+        public string CodeDefault;
         /// <summary>
         /// Список заданий на оценку
         /// </summary>
