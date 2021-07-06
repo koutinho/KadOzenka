@@ -1389,101 +1389,67 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryImport()
+        public IActionResult DictionaryImport(long dictionaryId)
         {
-            ViewData["References"] = OMModelingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
-            {
-                Text = x.Name,
-                Value = x.Id
-            }).ToList();
+	        var model = new DictionaryImportModel
+	        {
+		        DictionaryId = dictionaryId
+	        };
 
-            return View(new DictionaryImportModel());
+            return PartialView(model);
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel viewModel)
+        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            long? dictionaryId = null;
-            object returnedData;
-            try
+            var isViaLongProcess = false;
+            using (var fileStream = file.OpenReadStream())
             {
-                using (var fileStream = file.OpenReadStream())
+                var importInfo = new DictionaryImportFileInfoDto
                 {
-                    var importInfo = new DictionaryImportFileInfoDto
-                    {
-                        FileName = file.FileName,
-                        ValueColumnName = viewModel.Value,
-                        CalcValueColumnName = viewModel.CalcValue,
-                        ValueType = viewModel.ValueType
-                    };
+                    FileName = file.FileName,
+                    ValueColumnName = model.Value,
+                    CalcValueColumnName = model.CalcValue
+                };
+                var import = DictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
+                fileStream.Seek(0, SeekOrigin.Begin);
 
-                    var import = DictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
+                if (DictionaryService.MustUseLongProcess(fileStream))
+                {
                     fileStream.Seek(0, SeekOrigin.Begin);
-                    if (DictionaryService.MustUseLongProcess(fileStream))
+                    var inputParameters = new DictionaryImportFileFromExcelDto
                     {
-                        fileStream.Seek(0, SeekOrigin.Begin);
-                        var inputParameters = new DictionaryImportFileFromExcelDto
-                        {
-                            DeleteOldValues = viewModel.Dictionary.DeleteOldValues,
-                            FileInfo = importInfo,
-                            DictionaryId = viewModel.Dictionary.DictionaryId.GetValueOrDefault(),
-                            IsNewDictionary = viewModel.Dictionary.IsNewDictionary,
-                            NewDictionaryName = viewModel.Dictionary.NewDictionaryName
-                        };
-                        ////TODO для тестирования
-                        //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
-                        //{
-                        //	Status_Code = Status.Added,
-                        //	UserId = SRDSession.GetCurrentUserId(),
-                        //	ObjectId = import.Id,
-                        //	Parameters = inputParameters.SerializeToXml()
-                        //}, new CancellationToken());
+                        DeleteOldValues = model.IsDeleteOldValues,
+                        FileInfo = importInfo,
+                        DictionaryId = model.DictionaryId
+                    };
+                    ////TODO для тестирования
+                    //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                    //{
+                    //	Status_Code = Status.Added,
+                    //	UserId = SRDSession.GetCurrentUserId(),
+                    //	ObjectId = import.Id,
+                    //	Parameters = inputParameters.SerializeToXml()
+                    //}, new CancellationToken());
 
-                        ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
+                    ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
 
-                        returnedData = new
-                        {
-                            Success = true,
-                            message = "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.",
-                            isLongProcess = true
-                        };
-                    }
-                    else
-                    {
-                        fileStream.Seek(0, SeekOrigin.Begin);
+                    isViaLongProcess = true;
+                }
+                else
+                {
+                    fileStream.Seek(0, SeekOrigin.Begin);
 
-                        var dictionary = viewModel.Dictionary;
-                        if (dictionary.IsNewDictionary)
-                        {
-                            dictionaryId = DictionaryService.CreateDictionaryFromExcel(fileStream, importInfo,
-                                dictionary.NewDictionaryName, import);
-                        }
-                        else
-                        {
-                            DictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
-                                dictionary.DictionaryId.GetValueOrDefault(-1), dictionary.DeleteOldValues, import);
-                        }
-
-                        returnedData = new
-                        {
-                            Success = true,
-                            message = "Справочник успешно импортирован",
-                            newDictionaryId = viewModel.Dictionary.IsNewDictionary ? dictionaryId : null,
-                        };
-                    }
+                    DictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
+	                    model.DictionaryId, model.IsDeleteOldValues, import);
                 }
             }
-            catch (Exception ex)
-            {
-                ErrorManager.LogError(ex);
-                return SendErrorMessage(ex.Message);
-            }
 
-            return Json(returnedData);
+            return Json(new { isViaLongProcess });
         }
 
         [HttpGet]

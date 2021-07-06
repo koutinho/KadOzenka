@@ -19,7 +19,6 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
-using ObjectModel.Directory.ES;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
@@ -223,8 +222,14 @@ namespace KadOzenka.Dal.Modeling
 
 		private void DeleteDictionaryValues(long dictionaryId)
         {
-	        var dictionaryValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
-	        dictionaryValues.ForEach(x => x.Destroy());
+	        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+	        {
+				var dictionaryValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).Execute();
+				dictionaryValues.ForEach(x => x.Destroy());
+
+				ts.Complete();
+	        }
+			
         }
 
 		#endregion
@@ -323,23 +328,13 @@ namespace KadOzenka.Dal.Modeling
 	        long dictionaryId, bool deleteOldValues, OMImportDataLog import)
         {
 	        var existedDictionary = GetDictionaryById(dictionaryId);
-	        if (existedDictionary.Type_Code != fileImportInfo.ValueType && !deleteOldValues)
-		        throw new Exception("Нельзя изменить тип справочника без удаления старых значений");
 
 	        if (deleteOldValues)
 	        {
-		        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
-		        {
-			        DeleteDictionaryValues(existedDictionary.Id);
-
-			        existedDictionary.Type_Code = fileImportInfo.ValueType;
-			        existedDictionary.Save();
-
-			        ts.Complete();
-		        }
+				DeleteDictionaryValues(existedDictionary.Id);
 	        }
 
-	        ImportDictionaryValues(fileStream, existedDictionary, fileImportInfo, import);
+			ImportDictionaryValues(fileStream, existedDictionary, fileImportInfo, import);
         }
 
         public static OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
@@ -403,46 +398,56 @@ namespace KadOzenka.Dal.Modeling
 	        fileStream.Seek(0, SeekOrigin.Begin);
 	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 	        var mainWorkSheet = excelFile.Worksheets[0];
-
-	        RowsCount = mainWorkSheet.Rows.Count;
-	        var cancelTokenSource = new CancellationTokenSource();
-	        var options = new ParallelOptions
+	        RowsCount = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+	        
+			var maxColumnsCount = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
+			var resultColumnIndex = maxColumnsCount + 1;
+			var valueIndex = -1;
+			var metkaIndex = -1;
+	        for (var i = 0; i <= maxColumnsCount; i++)
 	        {
-		        CancellationToken = cancelTokenSource.Token,
-		        MaxDegreeOfParallelism = 1
-	        };
-	        var locked = new object();
-
-			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-			var columnNames = new List<string>();
-	        for (var i = 0; i < maxColumns; i++)
-	        {
-		        if (mainWorkSheet.Rows[0].Cells[i].Value != null)
-					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
+		        if (mainWorkSheet.Rows[0].Cells[i].Value == null) 
+			        continue;
+		        var columnName = mainWorkSheet.Rows[0].Cells[i].Value.ToString();
+		        
+		        if (columnName == fileImportInfo.ValueColumnName)
+		        {
+			        valueIndex = i;
+		        }
+		        if (columnName == fileImportInfo.CalcValueColumnName)
+		        {
+			        metkaIndex = i;
+		        }
 	        }
-            
-	        mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
-	        var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
-			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= lastUsedRowIndex).ToList();
 
-	        Parallel.ForEach(dataRows, options, row =>
+	        var cancelTokenSource = new CancellationTokenSource();
+			var options = new ParallelOptions
+			{
+				CancellationToken = cancelTokenSource.Token,
+				MaxDegreeOfParallelism = 10
+			};
+			var locked = new object();
+			var existedValues = GetDictionaryValues(dictionary.Id);
+			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= RowsCount).ToList();
+			mainWorkSheet.Rows[0].Cells[resultColumnIndex].SetValue("Результат сохранения");
+			Parallel.ForEach(dataRows, options, row =>
 	        {
 		        try
 		        {
-			        var value = mainWorkSheet.Rows[row.Index].Cells[columnNames.IndexOf(fileImportInfo.ValueColumnName)].Value;
-			        var calculationValue = mainWorkSheet.Rows[row.Index].Cells[columnNames.IndexOf(fileImportInfo.CalcValueColumnName)].Value;
+			        var value = row.Cells[valueIndex].Value;
+			        var calculationValue = row.Cells[metkaIndex].Value;
 
 			        if (!calculationValue.TryParseToDecimal(out var calcValue))
-				        throw new Exception($"Значение '{value}' не может быть приведено к числу");
+				        throw new Exception($"Значение '{calculationValue}' не может быть приведено к числу");
 
-			        var valueString = GetValueFromExcelCell(fileImportInfo.ValueType, value);
-			        var obj = OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionary.Id && x.Value == valueString)
-				        .SelectAll().ExecuteFirstOrDefault();
-			        if (obj != null && obj.CalculationValue != calcValue)
+			        var valueString = GetValueFromExcelCell(dictionary.Type_Code, value);
+			        var currentDictionaryValue = existedValues.FirstOrDefault(x => x.Value == valueString);
+			        if (currentDictionaryValue != null && currentDictionaryValue.CalculationValue != calcValue)
 			        {
-				        obj.CalculationValue = calcValue;
-						obj.Save();
-						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно обновлено");
+				        currentDictionaryValue.CalculationValue = calcValue;
+				        currentDictionaryValue.Save();
+
+				        row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
 			        }
 			        else
 			        {
@@ -452,19 +457,21 @@ namespace KadOzenka.Dal.Modeling
 							Value = valueString,
 							CalculationValue = calcValue
 						}.Save();
-						mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue("Значение успешно создано");
+
+						row.Cells[resultColumnIndex].SetValue("Значение успешно создано");
 			        }
-			        lock(locked)
+
+			        lock (locked)
 			        {
 				        CurrentRow++;
 			        }
 		        }
 		        catch (Exception ex)
 		        {
-			        mainWorkSheet.Rows[row.Index].Cells[maxColumns].SetValue($"Ошибка: {ex.Message}");
-			        for (var i = 0; i < maxColumns; i++)
+			        row.Cells[resultColumnIndex].SetValue($"Ошибка: {ex.Message}");
+			        for (var i = 0; i < maxColumnsCount; i++)
 			        {
-				        mainWorkSheet.Rows[row.Index].Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+				        row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
 			        }
 		        }
 	        });

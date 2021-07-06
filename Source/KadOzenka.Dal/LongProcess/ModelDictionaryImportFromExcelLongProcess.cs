@@ -78,17 +78,8 @@ namespace KadOzenka.Dal.LongProcess
 				var fileStream = FileStorageManagerWrapper.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 					import.DataFileName);
 
-				_log.ForContext("IsNewDictionary", settings.IsNewDictionary).Verbose("Создание или обновление словаря.");
-				if (settings.IsNewDictionary)
-				{
-					DictionaryService.CreateDictionaryFromExcel(fileStream, settings.FileInfo,
-						settings.NewDictionaryName, import);
-				}
-				else
-				{
-					DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
-						settings.DeleteOldValues, import);
-				}
+				DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
+					settings.DeleteOldValues, import);
 			}
 			catch (Exception e)
 			{

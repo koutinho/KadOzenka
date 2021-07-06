@@ -45,6 +45,7 @@
 
 
 
+<script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script src="~/js/toolbars.js"></script>
 <script>
@@ -85,7 +86,27 @@
 
 
     function showModalToUploadMarksCatalog() {
-
+        var selectedRowData = getSelectedRowInGrid();
+        if (selectedRowData) {
+            var dictionaryId = selectedRowData.DictionaryId;
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                url: '@Url.Action("DictionaryImport", "Modeling")',
+                type: 'GET',
+                data: { dictionaryId: dictionaryId },
+                success: function (response) {
+                    var modal = $("#uploadMarksCatalogModal");
+                    modal.html(response);
+                    ShowModal(modal, '80%', '60%', "Загрузка меток");
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
     }
 
     
