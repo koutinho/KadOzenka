@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
+using Core.Register;
 using KadOzenka.Web.Models.Task;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -614,7 +615,7 @@ namespace KadOzenka.Web.Controllers
                 TaskId = taskId
             };
 
-            _log.Debug("Загрузка графических факторов из РЕОН {TaskId}", taskId);
+            _log.Debug("Загрузка географических факторов из РГИС {TaskId}", taskId);
 
             return View(model);
         }
@@ -623,59 +624,89 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS)]
         public JsonResult GetReonRegisterAttributes()
         {
-            var availableAttributeTypes = new[]
-            {
-                Consts.IntegerAttributeType, Consts.DecimalAttributeType
+            //TODO move to service
+	        int oksRgisId = 25;
+	        int zuRgisId = 26;
+
+	        var res = new List<DropDownTreeItemModel>
+	        {
+		        new()
+		        {
+			        Value = Guid.NewGuid().ToString(),
+			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == oksRgisId)?.Name,
+			        Items = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == oksRgisId).Select(x =>
+				        new DropDownTreeItemModel
+				        {
+					        Value = x.Id.ToString(),
+					        Text = x.Name
+				        }).ToList()
+		        },
+		        new()
+		        {
+			        Value = Guid.NewGuid().ToString(),
+			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == zuRgisId)?.Name,
+			        Items = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == oksRgisId).Select(x =>
+				        new DropDownTreeItemModel
+				        {
+					        Value = x.Id.ToString(),
+					        Text = x.Name
+				        }).ToList()
+		        }
             };
-            var numericRegisterAttributes = RegisterAttributeService
-                .GetActiveRegisterAttributes(KoFactorsFromReon.ReonSourceRegisterId)
-                .Where(x => availableAttributeTypes.Contains(x.Type) && !string.IsNullOrWhiteSpace(x.Name))
-                .Select(x =>
-                {
-                    var lastSeparatorIndex = x.Name.LastIndexOf(KoFactorsFromReon.AttributeNameSeparator);
-                    if (lastSeparatorIndex == -1)
-                    {
-                        return new
-                        {
-                            Id = x.Id,
-                            Category = x.Name,
-                            Name = string.Empty
-                        };
-                    }
-                    var category = x.Name.Substring(0, lastSeparatorIndex).Trim();
-                    var nameStartPosition = lastSeparatorIndex + KoFactorsFromReon.AttributeNameSeparator.Length;
-                    var name = x.Name.Substring(nameStartPosition, x.Name.Length - nameStartPosition).Trim();
-                    return new
-                    {
-                        Id = x.Id,
-                        Category = category,
-                        Name = name
-                    };
-                })
-                .GroupBy(x => x.Category)
-                .Select(x =>
-                {
-                    var factorsInGroup = x.ToList();
-                    return new DropDownTreeItemModel
-                    {
-                        Value = Guid.NewGuid().ToString(),
-                        Text = x.Key,
-                        HasChildren = factorsInGroup.Count > 0,
-                        Items = factorsInGroup.Select(y => new DropDownTreeItemModel
-                        {
-                            Value = y.Id.ToString(),
-                            Text = y.Name
-                        }).ToList()
-                    };
-                }).ToList();
 
-            if (numericRegisterAttributes.ElementAtOrDefault(0) != null)
-            {
-                _log.ForContext("RegisterAttributes0", JsonConvert.SerializeObject(numericRegisterAttributes.ElementAtOrDefault(0)))
-                    .Debug("Получение списка атрибутов ({AttributesCount}) из РЕОН", numericRegisterAttributes.Count);
-            }
+            // var availableAttributeTypes = new[]
+            // {
+            //     Consts.IntegerAttributeType, Consts.DecimalAttributeType
+            // };
+            // var numericRegisterAttributes = RegisterAttributeService
+            //     .GetActiveRegisterAttributes(KoFactorsFromReon.ReonSourceRegisterId)
+            //     .Where(x => availableAttributeTypes.Contains(x.Type) && !string.IsNullOrWhiteSpace(x.Name))
+            //     .Select(x =>
+            //     {
+            //         var lastSeparatorIndex = x.Name.LastIndexOf(KoFactorsFromReon.AttributeNameSeparator);
+            //         if (lastSeparatorIndex == -1)
+            //         {
+            //             return new
+            //             {
+            //                 Id = x.Id,
+            //                 Category = x.Name,
+            //                 Name = string.Empty
+            //             };
+            //         }
+            //         var category = x.Name.Substring(0, lastSeparatorIndex).Trim();
+            //         var nameStartPosition = lastSeparatorIndex + KoFactorsFromReon.AttributeNameSeparator.Length;
+            //         var name = x.Name.Substring(nameStartPosition, x.Name.Length - nameStartPosition).Trim();
+            //         return new
+            //         {
+            //             Id = x.Id,
+            //             Category = category,
+            //             Name = name
+            //         };
+            //     })
+            //     .GroupBy(x => x.Category)
+            //     .Select(x =>
+            //     {
+            //         var factorsInGroup = x.ToList();
+            //         return new DropDownTreeItemModel
+            //         {
+            //             Value = Guid.NewGuid().ToString(),
+            //             Text = x.Key,
+            //             HasChildren = factorsInGroup.Count > 0,
+            //             Items = factorsInGroup.Select(y => new DropDownTreeItemModel
+            //             {
+            //                 Value = y.Id.ToString(),
+            //                 Text = y.Name
+            //             }).ToList()
+            //         };
+            //     }).ToList();
+            //
+            // if (numericRegisterAttributes.ElementAtOrDefault(0) != null)
+            // {
+            //     _log.ForContext("RegisterAttributes0", JsonConvert.SerializeObject(numericRegisterAttributes.ElementAtOrDefault(0)))
+            //         .Debug("Получение списка атрибутов ({AttributesCount}) из РЕОН", numericRegisterAttributes.Count);
+            // }
 
-            return new JsonResult(numericRegisterAttributes);
+            return new JsonResult(res);
         }
 
         [HttpPost]
