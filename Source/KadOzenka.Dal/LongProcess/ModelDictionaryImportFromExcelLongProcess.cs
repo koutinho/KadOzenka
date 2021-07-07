@@ -22,7 +22,7 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		private readonly ILogger _log = Log.ForContext<ModelDictionaryImportFromExcelLongProcess>();
 		private string MessageSubject => "Загрузка справочника для моделирования";
-		private IDictionaryService DictionaryService { get; }
+		private IModelDictionaryService ModelDictionaryService { get; }
 		private IImportDataLogRepository ImportDataLogRepository { get; }
 		private IWorkerCommonWrapper Worker { get; }
 		private IFileStorageManagerWrapper FileStorageManagerWrapper { get; }
@@ -31,13 +31,13 @@ namespace KadOzenka.Dal.LongProcess
 		/// <summary>
 		/// Конструктор для юнит-тестов
 		/// </summary>
-		public ModelDictionaryImportFromExcelLongProcess(IDictionaryService dictionaryService,
+		public ModelDictionaryImportFromExcelLongProcess(IModelDictionaryService modelDictionaryService,
 			IImportDataLogRepository importDataLogRepository, INotificationSender notificationSender, 
 			IWorkerCommonWrapper worker, IFileStorageManagerWrapper fileStorageManagerWrapper,
 			ILongProcessProgressLogger logger)
 			: base(notificationSender, logger)
 		{
-			DictionaryService = dictionaryService;
+			ModelDictionaryService = modelDictionaryService;
 			ImportDataLogRepository = importDataLogRepository;
 			Worker = worker;
 			FileStorageManagerWrapper = fileStorageManagerWrapper;
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.LongProcess
 
 		public ModelDictionaryImportFromExcelLongProcess()
 		{
-			DictionaryService = new DictionaryService();
+			ModelDictionaryService = new ModelDictionaryService();
 			ImportDataLogRepository = new ImportDataLogRepository();
 			Worker = new WorkerCommonWrapper();
 			FileStorageManagerWrapper = new FileStorageManagerWrapper();
@@ -73,12 +73,12 @@ namespace KadOzenka.Dal.LongProcess
 				}
 
 				var settings = processQueue.Parameters.DeserializeFromXml<DictionaryImportFileFromExcelDto>();
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => DictionaryService.RowsCount, () => DictionaryService.CurrentRow);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelDictionaryService.RowsCount, () => ModelDictionaryService.CurrentRow);
 
 				var fileStream = FileStorageManagerWrapper.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 					import.DataFileName);
 
-				DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
+				ModelDictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
 					settings.DeleteOldValues, import);
 			}
 			catch (Exception e)

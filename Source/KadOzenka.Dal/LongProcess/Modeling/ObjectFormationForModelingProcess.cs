@@ -229,7 +229,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value)
                 .Distinct().ToList();
 
-            return DictionaryService.GetDictionaries(dictionaryIds);
+            return ModelDictionaryService.GetDictionaries(dictionaryIds);
         }
 
         private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()

@@ -24,16 +24,16 @@ namespace KadOzenka.Dal.Modeling
 	public class ModelFactorsService : IModelFactorsService
 	{
 		private IModelFactorsRepository ModelFactorsRepository { get; }
-		private IDictionaryService DictionaryService { get; }
+		private IModelDictionaryService ModelDictionaryService { get; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
 
 		public ModelFactorsService(IModelFactorsRepository modelFactorsRepository = null,
-			IDictionaryService dictionaryService = null,
+			IModelDictionaryService modelDictionaryService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelFactorsRepository = modelFactorsRepository ?? new ModelFactorsRepository();
-			DictionaryService = dictionaryService ?? new DictionaryService();
+			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
@@ -371,7 +371,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				factor.Destroy();
 
-				DictionaryService.DeleteDictionary(factor.DictionaryId);
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
 
 				//RecalculateFormula(factor.ModelId);
 
@@ -392,7 +392,7 @@ namespace KadOzenka.Dal.Modeling
 			{
 				allFactors.ForEach(x => x.Destroy());
 
-				DictionaryService.DeleteDictionary(factor.DictionaryId);
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
 
 				ts.Complete();
 			}

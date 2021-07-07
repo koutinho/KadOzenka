@@ -25,7 +25,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class DictionaryService : IDictionaryService
+	public class ModelDictionaryService : IModelDictionaryService
 	{
 	    public int RowsCount { get; set; } = 1;
 		public int CurrentRow { get; set; }

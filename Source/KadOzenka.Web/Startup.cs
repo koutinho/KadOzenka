@@ -125,7 +125,7 @@ namespace CIPJS
 	        services.AddTransient<DocumentService>();
 	        services.AddSingleton<KoUnloadResultsListenerService>();
             //services.AddSingleton<OutliersCheckingListenerService>();
-            services.AddSingleton<DictionaryService>();
+            services.AddSingleton<ModelDictionaryService>();
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
             services.AddSingleton<StatisticalDataService>();

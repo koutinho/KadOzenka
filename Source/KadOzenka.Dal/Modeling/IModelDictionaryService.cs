@@ -9,7 +9,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public interface IDictionaryService
+	public interface IModelDictionaryService
 	{
 		int RowsCount { get; set; }
 		int CurrentRow { get; set; }

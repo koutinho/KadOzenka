@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	{
 		protected readonly ILogger Logger;
 
-		protected DictionaryService DictionaryService { get; set; }
+		protected ModelDictionaryService ModelDictionaryService { get; set; }
 		protected ModelingService ModelingService { get; set; }
 		protected ModelFactorsService ModelFactorsService { get; set; }
 		protected IModelObjectsService ModelObjectsService { get; set; }
@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			Logger = logger;
 			ModelingService = new ModelingService();
-			DictionaryService = new DictionaryService();
+			ModelDictionaryService = new ModelDictionaryService();
 			ModelFactorsService = new ModelFactorsService();
 			ModelObjectsService = new ModelObjectsService();
 		}
@@ -85,7 +85,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				{
 					attributes.Where(x => x.DictionaryId != null).ForEach(attribute =>
 					{
-						var deletedMarksCount = DictionaryService.DeleteDictionary(attribute.DictionaryId.Value);
+						var deletedMarksCount = ModelDictionaryService.DeleteDictionary(attribute.DictionaryId.Value);
 						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для словаря c ИД '{DictionaryId}'", deletedMarksCount, attribute.DictionaryId);
 					});
 				}
@@ -259,7 +259,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 						var stringValue = value?.ParseToString();
 						resultValue = stringValue;
-						resultCoefficient = DictionaryService.GetCoefficientFromStringFactor(stringValue, dictionary);
+						resultCoefficient = ModelDictionaryService.GetCoefficientFromStringFactor(stringValue, dictionary);
 						break;
 					}
 				case RegisterAttributeType.DATE:
@@ -269,7 +269,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 						var dateValue = value?.ParseToDateTimeNullable();
 						resultValue = dateValue?.ToShortDateString();
-						resultCoefficient = DictionaryService.GetCoefficientFromDateFactor(dateValue, dictionary);
+						resultCoefficient = ModelDictionaryService.GetCoefficientFromDateFactor(dateValue, dictionary);
 						break;
 					}
 				case RegisterAttributeType.INTEGER:
@@ -277,7 +277,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					{
 						var numberValue = value?.ParseToDecimalNullable();
 
-						var number = DictionaryService.GetCoefficientFromNumberFactor(numberValue, dictionary);
+						var number = ModelDictionaryService.GetCoefficientFromNumberFactor(numberValue, dictionary);
 						resultValue = number.ToString();
 						resultCoefficient = number;
 						break;

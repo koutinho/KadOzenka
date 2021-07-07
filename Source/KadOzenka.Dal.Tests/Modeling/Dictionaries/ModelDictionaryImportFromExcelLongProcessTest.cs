@@ -22,14 +22,14 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 	public class ModelDictionaryImportFromExcelLongProcessTest : BaseLongProcessTests
 	{
 		private ModelDictionaryImportFromExcelLongProcess LongProcess => Provider.GetService<ModelDictionaryImportFromExcelLongProcess>();
-		private Mock<IDictionaryService> DictionaryService { get; set; }
+		private Mock<IModelDictionaryService> DictionaryService { get; set; }
 		private Mock<IImportDataLogRepository> ImportDataLogRepository { get; set; }
 
 
 		[SetUp]
 		public void SetUp()
 		{
-			DictionaryService = new Mock<IDictionaryService>();
+			DictionaryService = new Mock<IModelDictionaryService>();
 			ImportDataLogRepository = new Mock<IImportDataLogRepository>();
 		}
 
@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 
 			container.AddTransient<ModelDictionaryImportFromExcelLongProcess>();
 
-			container.AddTransient(typeof(IDictionaryService), sp => DictionaryService.Object);
+			container.AddTransient(typeof(IModelDictionaryService), sp => DictionaryService.Object);
 			container.AddTransient(typeof(IImportDataLogRepository), sp => ImportDataLogRepository.Object);
 		}
 

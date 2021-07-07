@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			ModelingService = new ModelingService();
 			ModelFactorsService = new ModelFactorsService();
-			DictionaryService = new DictionaryService();
+			ModelDictionaryService = new ModelDictionaryService();
 		}
 
 
@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				var dictionaries = Attribute.DictionaryId == null
 					? new List<OMModelingDictionary>()
-					: DictionaryService.GetDictionaries(new List<long> { Attribute.DictionaryId.Value });
+					: ModelDictionaryService.GetDictionaries(new List<long> { Attribute.DictionaryId.Value });
 				AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибута.", logger: Logger);
 
 				var objects = ModelObjectsService.GetModelObjects(inputParameters.ModelId);

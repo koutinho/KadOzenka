@@ -60,7 +60,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsService ModelObjectsService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public IRegisterAttributeService RegisterAttributeService { get; set; }
-        public DictionaryService DictionaryService { get; set; }
+        public ModelDictionaryService ModelDictionaryService { get; set; }
         public IModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
@@ -69,7 +69,7 @@ namespace KadOzenka.Web.Controllers
 
 
         public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
-	        IRegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+	        IRegisterAttributeService registerAttributeService, ModelDictionaryService modelDictionaryService,
 	        IModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
@@ -79,7 +79,7 @@ namespace KadOzenka.Web.Controllers
             ModelingService = modelingService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
-            DictionaryService = dictionaryService;
+            ModelDictionaryService = modelDictionaryService;
             ModelFactorsService = modelFactorsService;
             GroupService = groupService;
             ModelObjectsRepository = modelObjectsRepository;
@@ -419,7 +419,7 @@ namespace KadOzenka.Web.Controllers
            var model = AutomaticFactorModel.ToModel(factor);
            if (factor.DictionaryId != null)
            {
-	           var dictionary = DictionaryService.GetDictionaryById(factor.DictionaryId.Value);
+	           var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);
 	           model.DictionaryName = dictionary.Name;
            }
 
@@ -449,7 +449,7 @@ namespace KadOzenka.Web.Controllers
                 if (!string.IsNullOrWhiteSpace(factorModel.DictionaryName))
                 {
 	                var attribute = RegisterCacheWrapper.GetAttributeData(factorModel.FactorId.GetValueOrDefault());
-	                dto.DictionaryId = DictionaryService.CreateDictionary(factorModel.DictionaryName, attribute.Type);
+	                dto.DictionaryId = ModelDictionaryService.CreateDictionary(factorModel.DictionaryName, attribute.Type);
                 }
                 ModelFactorsService.AddAutomaticFactor(dto);
                 ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
@@ -646,7 +646,7 @@ namespace KadOzenka.Web.Controllers
                 manualFactorDto = ManualFactorModel.ToModel(generalModelId, factor);
                 if (factor.DictionaryId != null)
                 {
-	                var dictionary = DictionaryService.GetDictionaryById(factor.DictionaryId.Value);
+	                var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);
 	                manualFactorDto.DictionaryName = dictionary.Name;
                 }
             }
@@ -678,7 +678,7 @@ namespace KadOzenka.Web.Controllers
 	            if (!string.IsNullOrWhiteSpace(manualFactorModel.DictionaryName))
 	            {
 		            var attribute = RegisterCacheWrapper.GetAttributeData(manualFactorModel.FactorId.GetValueOrDefault());
-		            dto.DictionaryId = DictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
+		            dto.DictionaryId = ModelDictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
                 }
 	            ModelFactorsService.AddManualFactor(dto);
             }
@@ -723,7 +723,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetMarkCatalog2(long dictionaryId)
         {
-	        var marks = DictionaryService.GetDictionaryValues(dictionaryId).Select(MarkModel.ToModel).ToList();
+	        var marks = ModelDictionaryService.GetDictionaryValues(dictionaryId).Select(MarkModel.ToModel).ToList();
 
             return Json(marks);
         }
@@ -757,7 +757,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var dto = markCatalog.ToDto(dictionaryId);
 	        
-	        var id = DictionaryService.CreateDictionaryValue(dto);
+	        var id = ModelDictionaryService.CreateDictionaryValue(dto);
 	        markCatalog.Id = id;
 
 	        return Json(markCatalog);
@@ -777,7 +777,7 @@ namespace KadOzenka.Web.Controllers
         public ActionResult UpdateMark2(long dictionaryId, MarkModel markCatalog)
         {
 	        var dto = markCatalog.ToDto(dictionaryId);
-	        DictionaryService.UpdateDictionaryValue(dto);
+	        ModelDictionaryService.UpdateDictionaryValue(dto);
 
             return Json(markCatalog);
         }
@@ -795,7 +795,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult DeleteMark2(MarkModel markCatalog)
         {
-	        DictionaryService.DeleteDictionaryValue(markCatalog.Id);
+	        ModelDictionaryService.DeleteDictionaryValue(markCatalog.Id);
 
             return Json(markCatalog);
         }
@@ -1384,7 +1384,7 @@ namespace KadOzenka.Web.Controllers
         {
             try
             {
-                var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+                var dictionary = ModelDictionaryService.GetDictionaryById(dictionaryId);
 
                 return View(DictionaryModel.ToModel(dictionary));
             }
@@ -1400,7 +1400,7 @@ namespace KadOzenka.Web.Controllers
         {
             try
             {
-                DictionaryService.DeleteDictionary(dictionaryId);
+                ModelDictionaryService.DeleteDictionary(dictionaryId);
             }
             catch (Exception ex)
             {
@@ -1438,10 +1438,10 @@ namespace KadOzenka.Web.Controllers
                     ValueColumnName = model.Value,
                     CalcValueColumnName = model.CalcValue
                 };
-                var import = DictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
+                var import = ModelDictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
                 fileStream.Seek(0, SeekOrigin.Begin);
 
-                if (DictionaryService.MustUseLongProcess(fileStream))
+                if (ModelDictionaryService.MustUseLongProcess(fileStream))
                 {
                     fileStream.Seek(0, SeekOrigin.Begin);
                     var inputParameters = new DictionaryImportFileFromExcelDto
@@ -1467,7 +1467,7 @@ namespace KadOzenka.Web.Controllers
                 {
                     fileStream.Seek(0, SeekOrigin.Begin);
 
-                    DictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
+                    ModelDictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
 	                    model.DictionaryId, model.IsDeleteOldValues, import);
                 }
             }
@@ -1481,7 +1481,7 @@ namespace KadOzenka.Web.Controllers
         {
             var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
             dictionaryId = dictionaryValue == null ? dictionaryId : dictionaryValue.DictionaryId;
-            var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+            var dictionary = ModelDictionaryService.GetDictionaryById(dictionaryId);
 
             return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
         }
@@ -1495,9 +1495,9 @@ namespace KadOzenka.Web.Controllers
 
             var id = viewModel.Id;
             if (id == -1)
-                id = DictionaryService.CreateDictionaryValue(viewModel.ToDto());
+                id = ModelDictionaryService.CreateDictionaryValue(viewModel.ToDto());
             else
-                DictionaryService.UpdateDictionaryValue(viewModel.ToDto());
+                ModelDictionaryService.UpdateDictionaryValue(viewModel.ToDto());
 
             return Json(new { Success = "Сохранено успешно", Id = id });
         }
@@ -1508,8 +1508,8 @@ namespace KadOzenka.Web.Controllers
         {
             try
             {
-                var dictionaryValue = DictionaryService.GetDictionaryValueById(dictionaryValueId);
-                var dictionary = DictionaryService.GetDictionaryById(dictionaryValue.DictionaryId);
+                var dictionaryValue = ModelDictionaryService.GetDictionaryValueById(dictionaryValueId);
+                var dictionary = ModelDictionaryService.GetDictionaryById(dictionaryValue.DictionaryId);
 
                 return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
             }
@@ -1525,7 +1525,7 @@ namespace KadOzenka.Web.Controllers
         {
             try
             {
-                DictionaryService.DeleteDictionaryValue(dictionaryValueId);
+                ModelDictionaryService.DeleteDictionaryValue(dictionaryValueId);
             }
             catch (Exception ex)
             {
@@ -1538,7 +1538,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
         public JsonResult GetDictionaries()
         {
-	        var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+	        var dictionaries = ModelDictionaryService.GetDictionaries().Select(x => new SelectListItem
 	        {
 		        Text = x.Name,
 		        Value = x.Id.ToString()
