@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace KadOzenka.Web.UnitTests.Modeling.Marks
 {
-	public class GettingTests : BaseModelingTests
+	public class GettingTests : BaseMarksTests
 	{
 		[Test]
 		public void Can_Get_View_With_Marks_Grid()

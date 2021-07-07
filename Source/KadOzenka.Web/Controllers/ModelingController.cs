@@ -38,6 +38,7 @@ using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Web.Exceptions;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Npgsql;
@@ -57,6 +58,7 @@ namespace KadOzenka.Web.Controllers
         public TourFactorService TourFactorService { get; set; }
         public IRegisterAttributeService RegisterAttributeService { get; set; }
         public ModelDictionaryService ModelDictionaryService { get; set; }
+        public IModelFactorsRepository ModelFactorsRepository { get; set; }
         public IModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
@@ -69,7 +71,8 @@ namespace KadOzenka.Web.Controllers
 	        IModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
-	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
+	        IModelFactorsRepository modelFactorsRepository)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelingService = modelingService;
@@ -82,7 +85,9 @@ namespace KadOzenka.Web.Controllers
             ModelingRepository = modelingRepository;
             ModelObjectsService = modelObjectsService;
             LongProcessService = longProcessService;
+            ModelFactorsRepository = modelFactorsRepository;
         }
+
 
 
         [HttpGet]
@@ -751,6 +756,8 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult CreateMark2(long dictionaryId, MarkModel markCatalog)
         {
+	        ValidateMarkModification(dictionaryId);
+
 	        var dto = markCatalog.ToDto(dictionaryId);
 	        
 	        var id = ModelDictionaryService.CreateDictionaryValue(dto);
@@ -772,7 +779,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult UpdateMark2(long dictionaryId, MarkModel markCatalog)
         {
-	        var dto = markCatalog.ToDto(dictionaryId);
+	        ValidateMarkModification(dictionaryId);
+
+            var dto = markCatalog.ToDto(dictionaryId);
 	        ModelDictionaryService.UpdateDictionaryValue(dto);
 
             return Json(markCatalog);
@@ -789,9 +798,11 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DeleteMark2(MarkModel markCatalog)
+        public ActionResult DeleteMark2(long dictionaryId, MarkModel markCatalog)
         {
-	        ModelDictionaryService.DeleteDictionaryValue(markCatalog.Id);
+	        ValidateMarkModification(dictionaryId);
+
+            ModelDictionaryService.DeleteDictionaryValue(markCatalog.Id);
 
             return Json(markCatalog);
         }
@@ -890,6 +901,19 @@ namespace KadOzenka.Web.Controllers
 
 	        return Json(modelAttributes.ToDataSourceResult(request));
         }
+
+
+        #region Support Methods
+
+        private void ValidateMarkModification(long dictionaryId)
+        {
+	        var factor = ModelFactorsRepository.GetFactorByDictionary(dictionaryId);
+	        var model = ModelingService.GetModelById(factor.ModelId.GetValueOrDefault());
+	        if (model.Type == KoModelType.Automatic)
+		        throw new AutomaticModelMarkModificationException();
+        }
+
+        #endregion
 
         #endregion
 
@@ -1414,7 +1438,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public IActionResult DictionaryImport(long dictionaryId)
         {
-	        var model = new DictionaryImportModel
+	        ValidateMarkModification(dictionaryId);
+
+            var model = new DictionaryImportModel
 	        {
 		        DictionaryId = dictionaryId
 	        };
@@ -1428,6 +1454,8 @@ namespace KadOzenka.Web.Controllers
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
+           
+            ValidateMarkModification(model.DictionaryId);
 
             var isViaLongProcess = false;
             using (var fileStream = file.OpenReadStream())

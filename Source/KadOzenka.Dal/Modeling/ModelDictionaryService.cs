@@ -292,16 +292,18 @@ namespace KadOzenka.Dal.Modeling
 	        dictionaryValue.Destroy();
         }
 
+
         #region Support Methods
 
-        public void ValidateDictionaryValue(OMModelingDictionary dictionary, string value, long dictionaryValueId)
+        private void ValidateDictionaryValue(OMModelingDictionary dictionary, string value, long dictionaryValueId)
         {
 	        var isEmptyValue = string.IsNullOrWhiteSpace(value);
 
-            var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && decimal.TryParse(value, out _);
-	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && DateTime.TryParse(value, out _);
+            var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
+	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
+	        var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
 
-	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && dictionary.Type_Code != ModelDictionaryType.String)
+	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
 		        throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
 
 	        var isExistsTheSameDictionaryValue = OMModelingDictionariesValues
@@ -314,6 +316,7 @@ namespace KadOzenka.Dal.Modeling
         #endregion
 
         #endregion
+
 
         #region Import from Excel
 

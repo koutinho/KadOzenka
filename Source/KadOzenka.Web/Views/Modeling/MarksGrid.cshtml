@@ -35,7 +35,8 @@
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark2", "Modeling")',                        
+                    url: '@Url.Action("DeleteMark2", "Modeling")',    
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 }

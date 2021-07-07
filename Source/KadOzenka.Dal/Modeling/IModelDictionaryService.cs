@@ -29,7 +29,6 @@ namespace KadOzenka.Dal.Modeling
 		long CreateDictionaryValue(DictionaryValueDto dto);
 		void UpdateDictionaryValue(DictionaryValueDto dto);
 		void DeleteDictionaryValue(long id);
-		void ValidateDictionaryValue(OMModelingDictionary dictionary, string value, long dictionaryValueId);
 
 		void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool deleteOldValues, OMImportDataLog import);
