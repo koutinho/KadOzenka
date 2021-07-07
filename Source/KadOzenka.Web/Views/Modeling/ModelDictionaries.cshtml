@@ -1,6 +1,6 @@
 ﻿@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.Modeling.GeneralModelAttributeModel
-
+@using KadOzenka.Web.Models.DataImport
+@using KadOzenka.Web.Models.Modeling
 
 <!-- Модальное окно для загрузки справочника меток -->
 <div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
@@ -16,6 +16,10 @@
             .Items(items => 
             {
                 items.Add().Type(CommandType.Button)
+                    .Icon("refresh").Click("reloadGrid")
+                    .HtmlAttributes(new { title = "Обновить" });
+
+                items.Add().Type(CommandType.Button)
                     .Icon("clock").Click("showMarks")
                     .HtmlAttributes(new { id="show-marks", title = "Просмотреть метки" });
                 
@@ -24,11 +28,11 @@
                     .HtmlAttributes(new { id="download-marks-catalog", title = "Выгрузить справочник меток" });
                 
                 items.Add().Type(CommandType.Button)
-                    .Icon("upload").Enable(!Model.IsReadOnly).Click("showModalToUploadMarksCatalog")
+                    .Icon("upload").Enable(!ViewBag.IsReadOnly).Click("showModalToUploadMarksCatalog")
                     .HtmlAttributes(new { id="upload-marks-catalog", title = "Загрузить справочник меток" });
             }))
 
-        @(Html.Kendo().Grid(Model.GeneralModelAttributes)
+        @(Html.Kendo().Grid<GeneralModelAttributeModel>()
             .Name("grid")
             .Columns(columns =>
             {
@@ -37,7 +41,7 @@
             })
             .DataSource(dataSource => dataSource
                 .Ajax()
-                .ServerOperation(false)
+                .Read(read => read.Action("GetModelDictionaries", "Modeling", new {modelId = ViewBag.ModelId}).Type(HttpVerbs.Get))
                 .Model(x =>
                 {
                     x.Id(p => p.Id);
@@ -57,12 +61,9 @@
 <script src="~/js/custom-validation.js"></script>
 <script src="~/js/toolbars.js"></script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
 
     });
-
-
-
 
 
     function changeButtonsAbility() {
@@ -71,12 +72,16 @@
             $('#show-marks').removeClass('k-state-disabled');
             $('#download-marks-catalog').removeClass('k-state-disabled');
             $('#upload-marks-catalog').removeClass('k-state-disabled');
-        }
-        else {
+        } else {
             $('#show-marks').addClass('k-state-disabled');
             $('#download-marks-catalog').addClass('k-state-disabled');
             $('#upload-marks-catalog').addClass('k-state-disabled');
         }
+    }
+
+
+    function reloadGrid() {
+        $('#grid').data('kendoGrid').dataSource.read();
     }
 
 
@@ -85,7 +90,7 @@
         if (selectedRowData) {
             var dictionaryId = selectedRowData.DictionaryId;
             Common.UI.ShowWindow('Метки',
-                '@Url.Action("MarksGrid", "Modeling", new {isReadOnly = Model.IsReadOnly})' + '&dictionaryId=' + dictionaryId,
+                '@Url.Action("MarksGrid", "Modeling", new {isReadOnly = ViewBag.IsReadOnly})' + '&dictionaryId=' + dictionaryId,
                 'marksWindow',
                 function (e) {},
                 800, 400);

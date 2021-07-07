@@ -4,7 +4,6 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Register.QuerySubsystem;
@@ -26,7 +25,6 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
-using System.Threading;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -43,14 +41,12 @@ using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Npgsql;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory.Core.LongProcess;
-using ObjectModel.Directory.ES;
-using ObjectModel.Directory.KO;
 using ObjectModel.Ko;
 using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
+using Kendo.Mvc.Extensions;
+using StringExtensions = Core.Shared.Extensions.StringExtensions;
 
 namespace KadOzenka.Web.Controllers
 {
@@ -878,17 +874,21 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult ModelDictionaries(long modelId, KoModelType modelType)
         {
+	        ViewBag.ModelId = modelId;
+	        ViewBag.IsReadOnly = modelType == KoModelType.Automatic;
+
+            return View();
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
+        public JsonResult GetModelDictionaries([DataSourceRequest] DataSourceRequest request, long modelId)
+        {
 	        var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId)
-		        .Where(x => x.IsNormalized).Select(ModelAttributeModel.ToModel)
+		        .Where(x => x.IsNormalized).Select(GeneralModelAttributeModel.ToModel)
 		        .ToList();
 
-            var model = new GeneralModelAttributeModel
-            {
-                IsReadOnly = modelType == KoModelType.Automatic,
-                GeneralModelAttributes = modelAttributes
-            };
-
-            return View(model);
+	        return Json(modelAttributes.ToDataSourceResult(request));
         }
 
         #endregion
