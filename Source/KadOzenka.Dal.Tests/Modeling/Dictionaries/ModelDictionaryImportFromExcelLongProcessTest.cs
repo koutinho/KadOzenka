@@ -54,21 +54,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 
 			StartProcess(importDataLogId, null);
 
-			CheckCreateDictionaryWasCalled(Times.Never());
 			CheckUpdateDictionaryWasCalled(Times.Never());
 			NotificationSender.Verify(foo => foo.SendNotification(It.IsAny<OMQueue>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-		}
-
-		[Test]
-		public void Can_Create_New_Dictionary()
-		{
-			var importDataLogId = RandomGenerator.GenerateRandomInteger();
-			MoqImportDataLog(importDataLogId, new OMImportDataLog());
-
-			StartProcess(importDataLogId, new DictionaryImportFileFromExcelDto {IsNewDictionary = true});
-
-			CheckCreateDictionaryWasCalled(Times.Once());
-			CheckUpdateDictionaryWasCalled(Times.Never());
 		}
 
 		[Test]
@@ -77,9 +64,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 			var importDataLogId = RandomGenerator.GenerateRandomInteger();
 			MoqImportDataLog(importDataLogId, new OMImportDataLog());
 
-			StartProcess(importDataLogId, new DictionaryImportFileFromExcelDto { IsNewDictionary = false });
+			StartProcess(importDataLogId, new DictionaryImportFileFromExcelDto());
 
-			CheckCreateDictionaryWasCalled(Times.Never());
 			CheckUpdateDictionaryWasCalled(Times.Once());
 		}
 
@@ -92,13 +78,6 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 			ImportDataLogRepository
 				.Setup(x => x.GetById(importDataLogId, It.IsAny<Expression<Func<OMImportDataLog, object>>>()))
 				.Returns(output);
-		}
-
-		private void CheckCreateDictionaryWasCalled(Times times)
-		{
-			DictionaryService.Verify(x => x.CreateDictionaryFromExcel(It.IsAny<Stream>(),
-				It.IsAny<DictionaryImportFileInfoDto>(),
-				It.IsAny<string>(), It.IsAny<OMImportDataLog>()), times);
 		}
 
 		private void CheckUpdateDictionaryWasCalled(Times times)

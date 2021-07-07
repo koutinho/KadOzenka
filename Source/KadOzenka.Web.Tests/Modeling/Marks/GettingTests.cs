@@ -9,15 +9,15 @@ namespace KadOzenka.Web.UnitTests.Modeling.Marks
 		[Test]
 		public void Can_Get_View_With_Marks_Grid()
 		{
-			var groupId = RandomGenerator.GenerateRandomInteger();
-			var factorId = RandomGenerator.GenerateRandomInteger();
+			var isReadOnly = true;
+			var dictionaryId = RandomGenerator.GenerateRandomInteger();
 
-			var result = ModelingController.MarksGrid(groupId, factorId);
+			var result = ModelingController.MarksGrid(isReadOnly, dictionaryId);
 			var view = result as ViewResult;
 
 			Assert.IsNotNull(view);
-			Assert.That(view.ViewData["GroupId"], Is.EqualTo(groupId));
-			Assert.That(view.ViewData["FactorId"], Is.EqualTo(factorId));
+			Assert.That(view.ViewData["IsReadOnly"], Is.EqualTo(isReadOnly));
+			Assert.That(view.ViewData["DictionaryId"], Is.EqualTo(dictionaryId));
 		}
 	}
 }

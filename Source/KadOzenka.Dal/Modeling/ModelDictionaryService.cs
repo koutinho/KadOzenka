@@ -317,18 +317,6 @@ namespace KadOzenka.Dal.Modeling
 
         #region Import from Excel
 
-        public long CreateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
-	        string newDictionaryName, OMImportDataLog import)
-        {
-			//todo fileImportInfo.ValueType
-			var dictionaryId = CreateDictionary(newDictionaryName, RegisterAttributeType.STRING);
-	        var dictionary = GetDictionaryById(dictionaryId);
-
-	        ImportDictionaryValues(fileStream, dictionary, fileImportInfo, import);
-
-	        return dictionaryId;
-        }
-
         public void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 	        long dictionaryId, bool deleteOldValues, OMImportDataLog import)
         {
