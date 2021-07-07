@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Transactions;
-using Core.ErrorManagment;
+﻿using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
 using Core.Register;
@@ -22,26 +14,34 @@ using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelDictionaryService : IModelDictionaryService
 	{
-	    public int RowsCount { get; set; } = 1;
+		public int RowsCount { get; set; } = 1;
 		public int CurrentRow { get; set; }
 
-        private const long MaxRowInFileDuringImport = 1000;
-        private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
-        private static readonly string RegisterViewId = "ModelingDictionaries";
+		private const long MaxRowInFileDuringImport = 1000;
+		private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
+		private static readonly string RegisterViewId = "ModelingDictionaries";
 
-        public bool MustUseLongProcess(Stream fileStream)
-        {
-	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-	        
-	        var mainWorkSheet = excelFile.Worksheets[0];
+		public bool MustUseLongProcess(Stream fileStream)
+		{
+			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 
-	        return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
-        }
+			var mainWorkSheet = excelFile.Worksheets[0];
+
+			return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
+		}
 
 		#region Dictionary
 
@@ -60,140 +60,140 @@ namespace KadOzenka.Dal.Modeling
 			if (!withItems)
 				return dictionaries;
 
-			var dictionariesItems = OMModelingDictionariesValues.Where(x => dictionaryIds.Contains(x.DictionaryId)).SelectAll()
+			var marks = OMModelingDictionariesValues.Where(x => dictionaryIds.Contains(x.DictionaryId)).SelectAll()
 				.Execute().ToList();
 
 			dictionaries.ForEach(dictionary =>
 			{
-				dictionary.ModelingDictionariesValues = dictionariesItems.Where(item => item.DictionaryId == dictionary.Id).ToList();
+				dictionary.ModelingDictionariesValues = marks.Where(item => item.DictionaryId == dictionary.Id).ToList();
 			});
 
 			return dictionaries;
 		}
 
 		public OMModelingDictionary GetDictionaryById(long id)
-        {
-	        var dictionary = OMModelingDictionary.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-	        if (dictionary == null)
-		        throw new Exception($"Не найден справочник с ИД {id}");
+		{
+			var dictionary = OMModelingDictionary.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			if (dictionary == null)
+				throw new Exception($"Не найден справочник с ИД {id}");
 
-	        return dictionary;
-        }
+			return dictionary;
+		}
 
-        public long CreateDictionary(string name, RegisterAttributeType factorType)
-        {
-	        ValidateDictionary(name, -1);
+		public long CreateDictionary(string name, RegisterAttributeType factorType)
+		{
+			ValidateDictionary(name, -1);
 
-	        var dictionaryType = MapDictionaryType(factorType);
+			var dictionaryType = MapDictionaryType(factorType);
 
-	        return new OMModelingDictionary
-	        {
-		        Name = name, 
-		        Type_Code = dictionaryType
+			return new OMModelingDictionary
+			{
+				Name = name,
+				Type_Code = dictionaryType
 			}.Save();
-        }
+		}
 
-        public void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType)
-        {
-	        var dictionary = GetDictionaryById(id);
+		//public void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType)
+		//{
+		//	var dictionary = GetDictionaryById(id);
 
-	        ValidateDictionary(newName, id);
+		//	ValidateDictionary(newName, id);
 
-	        if (dictionary.Type_Code != newValueType)
-	        {
-		        var hasValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).ExecuteExists();
-		        if (hasValues)
-			        throw new Exception("Нельзя изменить тип для непустого справочника");
-	        }
+		//	if (dictionary.Type_Code != newValueType)
+		//	{
+		//		var hasValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).ExecuteExists();
+		//		if (hasValues)
+		//			throw new Exception("Нельзя изменить тип для непустого справочника");
+		//	}
 
-	        dictionary.Name = newName;
-	        dictionary.Type_Code = newValueType;
-	        dictionary.Save();
-        }
+		//	dictionary.Name = newName;
+		//	dictionary.Type_Code = newValueType;
+		//	dictionary.Save();
+		//}
 
-        public int DeleteDictionary(long? id)
-        {
-	        if (id == null)
-		        return 0;
+		public int DeleteDictionary(long? id)
+		{
+			if (id == null)
+				return 0;
 
-	        int deletedValuesCount;
+			int deletedMarksCount;
 			var dictionary = GetDictionaryById(id.Value);
 			using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
-	        {
-		        deletedValuesCount = DeleteDictionaryValues(id);
+			{
+				deletedMarksCount = DeleteMarks(id);
 
 				dictionary.Destroy();
 
 				ts.Complete();
-	        }
+			}
 
-			return deletedValuesCount;
-        }
+			return deletedMarksCount;
+		}
 
-        public decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary)
-        {
-	        if (dictionary == null)
-		        return 0;
+		public decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary)
+		{
+			if (dictionary == null)
+				return 0;
 
-	        if (dictionary.Type_Code == ModelDictionaryType.String)
-	        {
-		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
+			if (dictionary.Type_Code == ModelDictionaryType.String)
+			{
+				var referenceItems = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
 
-		        return referenceItems?.FirstOrDefault(x => x.Value == stringValue)?.CalculationValue ?? 1;
-	        }
+				return referenceItems?.FirstOrDefault(x => x.Value == stringValue)?.CalculationValue ?? 1;
+			}
 
-	        return 0;
-        }
+			return 0;
+		}
 
-        public decimal GetCoefficientFromDateFactor(DateTime? date, OMModelingDictionary dictionary)
-        {
-	        if (dictionary == null || date == null)
-		        return 0;
+		public decimal GetCoefficientFromDateFactor(DateTime? date, OMModelingDictionary dictionary)
+		{
+			if (dictionary == null || date == null)
+				return 0;
 
-	        if (dictionary.Type_Code == ModelDictionaryType.Date)
-	        {
-		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
+			if (dictionary.Type_Code == ModelDictionaryType.Date)
+			{
+				var referenceItems = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
 
-		        return referenceItems?.Select(x => new
-		        {
-			        Key = DateTime.TryParse(x.Value, out var parsedDate) ? parsedDate : (DateTime?) null,
-			        Value = x.CalculationValue
-		        }).FirstOrDefault(x => x.Key == date)?.Value ?? 1;
-	        }
-	        return 0;
-        }
+				return referenceItems?.Select(x => new
+				{
+					Key = DateTime.TryParse(x.Value, out var parsedDate) ? parsedDate : (DateTime?)null,
+					Value = x.CalculationValue
+				}).FirstOrDefault(x => x.Key == date)?.Value ?? 1;
+			}
+			return 0;
+		}
 
-        public decimal GetCoefficientFromNumberFactor(decimal? number, OMModelingDictionary dictionary)
-        {
-	        if (dictionary == null || number == null)
-		        return number ?? 0;
+		public decimal GetCoefficientFromNumberFactor(decimal? number, OMModelingDictionary dictionary)
+		{
+			if (dictionary == null || number == null)
+				return number ?? 0;
 
 			//todo separate
-	        if (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal)
-	        {
-		        var referenceItems = dictionary.ModelingDictionariesValues ?? GetDictionaryValues(dictionary.Id);
+			if (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal)
+			{
+				var referenceItems = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
 
-		        return referenceItems?.Select(x => new
-		        {
-			        Key = decimal.TryParse(x.Value, out var res) ? res : decimal.Zero,
-			        Value = x.CalculationValue
-		        }).FirstOrDefault(x => x.Key == number)?.Value ?? 1;
-	        }
-	        return 0;
-        }
+				return referenceItems?.Select(x => new
+				{
+					Key = decimal.TryParse(x.Value, out var res) ? res : decimal.Zero,
+					Value = x.CalculationValue
+				}).FirstOrDefault(x => x.Key == number)?.Value ?? 1;
+			}
+			return 0;
+		}
 
 
 		#region Support Methods
 
 		private void ValidateDictionary(string name, long id)
-        {
-	        if (string.IsNullOrWhiteSpace(name))
-		        throw new Exception("Невозможно создать справочник с пустым именем");
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				throw new Exception("Невозможно создать справочник с пустым именем");
 
-	        var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
-	        if (isExistsDictionaryWithTheSameName)
-		        throw new Exception($"Справочник '{name}' уже существует");
-        }
+			var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
+			if (isExistsDictionaryWithTheSameName)
+				throw new Exception($"Справочник '{name}' уже существует");
+		}
 
 		private ModelDictionaryType MapDictionaryType(RegisterAttributeType factorType)
 		{
@@ -226,140 +226,140 @@ namespace KadOzenka.Dal.Modeling
 			return dictionaryType;
 		}
 
-		public int DeleteDictionaryValues(long? dictionaryId)
+		#endregion
+
+		#endregion
+
+
+		#region Marks
+
+		public List<OMModelingDictionariesValues> GetMarks(long dictionaryId)
+		{
+			return OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).SelectAll().Execute();
+		}
+
+		public OMModelingDictionariesValues GetMark(long id)
+		{
+			var mark = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			if (mark == null)
+				throw new Exception($"Не найдено значение с ИД = '{id}'");
+
+			return mark;
+		}
+
+		public long CreateMark(DictionaryMarkDto dto)
+		{
+			var dictionary = GetDictionaryById(dto.DictionaryId);
+
+			ValidateMark(dictionary, dto.Value, -1);
+
+			return new OMModelingDictionariesValues
+			{
+				DictionaryId = dto.DictionaryId,
+				Value = dto.Value,
+				CalculationValue = dto.CalcValue
+			}.Save();
+		}
+
+		public void UpdateMark(DictionaryMarkDto dto)
+		{
+			var mark = GetMark(dto.Id);
+
+			var dictionary = GetDictionaryById(dto.DictionaryId);
+
+			ValidateMark(dictionary, dto.Value, dto.Id);
+
+			mark.Value = dto.Value;
+			mark.CalculationValue = dto.CalcValue;
+			mark.Save();
+		}
+
+		public void DeleteMark(long markId)
+		{
+			var mark = GetMark(markId);
+
+			mark.Destroy();
+		}
+
+		public int DeleteMarks(long? dictionaryId)
 		{
 			if (dictionaryId == null)
 				return 0;
 
 			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
 
-	        var command = DBMngr.Main.GetSqlStringCommand(sql);
-	        return DBMngr.Main.ExecuteNonQuery(command);
-        }
-
-		#endregion
-
-		#endregion
-
-
-		#region Values
-
-		public List<OMModelingDictionariesValues> GetDictionaryValues(long dictionaryId)
-		{
-			return OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).SelectAll().Execute();
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			return DBMngr.Main.ExecuteNonQuery(command);
 		}
 
-		public OMModelingDictionariesValues GetDictionaryValueById(long id)
-        {
-	        var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-            if (dictionaryValue == null)
-		        throw new Exception($"Не найдено значение с ИД = '{id}'");
-
-	        return dictionaryValue;
-        }
-
-        public long CreateDictionaryValue(DictionaryValueDto dto)
-        {
-	        var dictionary = GetDictionaryById(dto.DictionaryId);
-
-	        ValidateDictionaryValue(dictionary, dto.Value, -1);
-
-	        return new OMModelingDictionariesValues
-            {
-                DictionaryId = dto.DictionaryId,
-                Value = dto.Value,
-                CalculationValue = dto.CalcValue
-            }.Save();
-        }
-
-        public void UpdateDictionaryValue(DictionaryValueDto dto)
-        {
-	        var dictionaryValue = GetDictionaryValueById(dto.Id);
-
-            var dictionary = GetDictionaryById(dto.DictionaryId);
-
-            ValidateDictionaryValue(dictionary, dto.Value, dto.Id);
-
-            dictionaryValue.Value = dto.Value;
-            dictionaryValue.CalculationValue = dto.CalcValue;
-            dictionaryValue.Save();
-        }
-
-        public void DeleteDictionaryValue(long id)
-        {
-	        var dictionaryValue = GetDictionaryValueById(id);
-
-	        dictionaryValue.Destroy();
-        }
-
-
-        #region Support Methods
-
-        private void ValidateDictionaryValue(OMModelingDictionary dictionary, string value, long dictionaryValueId)
-        {
-	        var isEmptyValue = string.IsNullOrWhiteSpace(value);
-
-            var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
-	        var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
-	        var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
-
-	        if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
-		        throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
-
-	        var isExistsTheSameDictionaryValue = OMModelingDictionariesValues
-		        .Where(x => x.Id != dictionaryValueId && x.DictionaryId == dictionary.Id && x.Value == value)
-		        .ExecuteExists();
-	        if (isExistsTheSameDictionaryValue)
-		        throw new Exception($"Значение '{value}' в справочнике '{dictionary.Name}' уже существует.");
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region Import from Excel
-
-        public void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
-	        long dictionaryId, bool deleteOldValues, OMImportDataLog import)
-        {
-	        var existedDictionary = GetDictionaryById(dictionaryId);
-
-	        if (deleteOldValues)
-	        {
-				DeleteDictionaryValues(existedDictionary.Id);
-	        }
-
-			ImportDictionaryValues(fileStream, existedDictionary, fileImportInfo, import);
-        }
-
-        public static OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
-        {
-	        var currentTime = DateTime.Now;
-	        var fileName = $"{DataImporterCommon.GetDataFileTitle(inputFileName)} ({currentTime.GetString().Replace(":", "_")})";
-
-	        var import = new OMImportDataLog
-	        {
-		        UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
-		        DateCreated = currentTime,
-		        Status_Code = ImportStatus.Added,
-		        DataFileTitle = fileName,
-		        FileExtension = DataImporterCommon.GetFileExtension(inputFileName),
-		        MainRegisterId = MainRegisterId,
-		        RegisterViewId = RegisterViewId
-	        };
-	        import.Save();
-
-	        import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
-	        FileStorageManager.Save(fileStream, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
-	        import.Save();
-
-	        return import;
-        }
 
 		#region Support Methods
 
-		private void ImportDictionaryValues(Stream fileStream, OMModelingDictionary dictionary,
+		private void ValidateMark(OMModelingDictionary dictionary, string value, long markId)
+		{
+			var isEmptyValue = string.IsNullOrWhiteSpace(value);
+
+			var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
+			var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
+			var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
+
+			if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
+				throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
+
+			var isTheSameMarkExists = OMModelingDictionariesValues
+				.Where(x => x.Id != markId && x.DictionaryId == dictionary.Id && x.Value == value)
+				.ExecuteExists();
+			if (isTheSameMarkExists)
+				throw new Exception($"Значение '{value}' в справочнике '{dictionary.Name}' уже существует.");
+		}
+
+		#endregion
+
+		#endregion
+
+
+		#region Import from Excel
+
+		public void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
+			long dictionaryId, bool isDeleteExistedMarks, OMImportDataLog import)
+		{
+			var existedDictionary = GetDictionaryById(dictionaryId);
+
+			if (isDeleteExistedMarks)
+			{
+				DeleteMarks(existedDictionary.Id);
+			}
+
+			ImportDictionaryMarks(fileStream, existedDictionary, fileImportInfo, import);
+		}
+
+		public static OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
+		{
+			var currentTime = DateTime.Now;
+			var fileName = $"{DataImporterCommon.GetDataFileTitle(inputFileName)} ({currentTime.GetString().Replace(":", "_")})";
+
+			var import = new OMImportDataLog
+			{
+				UserId = SRDSession.GetCurrentUserId().GetValueOrDefault(),
+				DateCreated = currentTime,
+				Status_Code = ImportStatus.Added,
+				DataFileTitle = fileName,
+				FileExtension = DataImporterCommon.GetFileExtension(inputFileName),
+				MainRegisterId = MainRegisterId,
+				RegisterViewId = RegisterViewId
+			};
+			import.Save();
+
+			import.DataFileName = DataImporterCommon.GetStorageDataFileName(import.Id);
+			FileStorageManager.Save(fileStream, DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+			import.Save();
+
+			return import;
+		}
+
+		#region Support Methods
+
+		private void ImportDictionaryMarks(Stream fileStream, OMModelingDictionary dictionary,
 			DictionaryImportFileInfoDto fileImportInfo, OMImportDataLog import)
 		{
 			try
@@ -368,7 +368,7 @@ namespace KadOzenka.Dal.Modeling
 				import.DateStarted = DateTime.Now;
 				import.Save();
 
-				var resFileStream = ProcessDictionaryValuesInExcel(fileStream, dictionary, fileImportInfo);
+				var resFileStream = ProcessDictionaryMarksInExcel(fileStream, dictionary, fileImportInfo);
 				SaveResultFile(import, resFileStream);
 
 				import.Status_Code = ImportStatus.Completed;
@@ -388,72 +388,72 @@ namespace KadOzenka.Dal.Modeling
 			}
 		}
 
-		private Stream ProcessDictionaryValuesInExcel(Stream fileStream, OMModelingDictionary dictionary,
-	        DictionaryImportFileInfoDto fileImportInfo)
-        {
-	        fileStream.Seek(0, SeekOrigin.Begin);
-	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-	        var mainWorkSheet = excelFile.Worksheets[0];
-	        RowsCount = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
-	        
+		private Stream ProcessDictionaryMarksInExcel(Stream fileStream, OMModelingDictionary dictionary,
+			DictionaryImportFileInfoDto fileImportInfo)
+		{
+			fileStream.Seek(0, SeekOrigin.Begin);
+			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+			var mainWorkSheet = excelFile.Worksheets[0];
+			RowsCount = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+
 			var maxColumnsCount = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
 			var metkaIndex = -1;
-	        for (var i = 0; i <= maxColumnsCount; i++)
-	        {
-		        if (mainWorkSheet.Rows[0].Cells[i].Value == null) 
-			        continue;
-		        var columnName = mainWorkSheet.Rows[0].Cells[i].Value.ToString();
-		        
-		        if (columnName == fileImportInfo.ValueColumnName)
-		        {
-			        valueIndex = i;
-		        }
-		        if (columnName == fileImportInfo.CalcValueColumnName)
-		        {
-			        metkaIndex = i;
-		        }
-	        }
+			for (var i = 0; i <= maxColumnsCount; i++)
+			{
+				if (mainWorkSheet.Rows[0].Cells[i].Value == null)
+					continue;
+				var columnName = mainWorkSheet.Rows[0].Cells[i].Value.ToString();
 
-	        var cancelTokenSource = new CancellationTokenSource();
+				if (columnName == fileImportInfo.ValueColumnName)
+				{
+					valueIndex = i;
+				}
+				if (columnName == fileImportInfo.CalcValueColumnName)
+				{
+					metkaIndex = i;
+				}
+			}
+
+			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
 			{
 				CancellationToken = cancelTokenSource.Token,
 				MaxDegreeOfParallelism = 1
 			};
 			var locked = new object();
-			var existedValues = GetDictionaryValues(dictionary.Id);
+			var existedValues = GetMarks(dictionary.Id);
 			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= RowsCount).ToList();
 			mainWorkSheet.Rows[0].Cells[resultColumnIndex].SetValue("Результат сохранения");
 			Parallel.ForEach(dataRows, options, row =>
-	        {
-		        try
-		        {
-			        var value = row.Cells[valueIndex].Value;
-			        var calculationValue = row.Cells[metkaIndex].Value;
+			{
+				try
+				{
+					var value = row.Cells[valueIndex].Value;
+					var calculationValue = row.Cells[metkaIndex].Value;
 
-			        if (!calculationValue.TryParseToDecimal(out var calcValue))
-				        throw new Exception($"Значение '{calculationValue}' не может быть приведено к числу");
+					if (!calculationValue.TryParseToDecimal(out var calcValue))
+						throw new Exception($"Значение '{calculationValue}' не может быть приведено к числу");
 
-			        var valueString = GetValueFromExcelCell(dictionary.Type_Code, value);
-			        var currentDictionaryValue = existedValues.FirstOrDefault(x => x.Value == valueString);
-			        if (currentDictionaryValue != null)
-			        {
-				        if (currentDictionaryValue.CalculationValue != calcValue)
-				        {
-					        currentDictionaryValue.CalculationValue = calcValue;
-					        currentDictionaryValue.Save();
+					var valueString = GetValueFromExcelCell(dictionary.Type_Code, value);
+					var currentMark = existedValues.FirstOrDefault(x => x.Value == valueString);
+					if (currentMark != null)
+					{
+						if (currentMark.CalculationValue != calcValue)
+						{
+							currentMark.CalculationValue = calcValue;
+							currentMark.Save();
 
-					        row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
-				        }
-				        else
-				        {
-					        row.Cells[resultColumnIndex].SetValue("Значение было добавлено ранее");
-				        }
+							row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
+						}
+						else
+						{
+							row.Cells[resultColumnIndex].SetValue("Значение было добавлено ранее");
+						}
 					}
-			        else
-			        {
+					else
+					{
 						new OMModelingDictionariesValues
 						{
 							DictionaryId = dictionary.Id,
@@ -462,84 +462,84 @@ namespace KadOzenka.Dal.Modeling
 						}.Save();
 
 						row.Cells[resultColumnIndex].SetValue("Значение успешно создано");
-			        }
+					}
 
-			        lock (locked)
-			        {
-				        CurrentRow++;
-			        }
-		        }
-		        catch (Exception ex)
-		        {
-			        row.Cells[resultColumnIndex].SetValue($"Ошибка: {ex.Message}");
-			        for (var i = 0; i < maxColumnsCount; i++)
-			        {
-				        row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
-			        }
-		        }
-	        });
+					lock (locked)
+					{
+						CurrentRow++;
+					}
+				}
+				catch (Exception ex)
+				{
+					row.Cells[resultColumnIndex].SetValue($"Ошибка: {ex.Message}");
+					for (var i = 0; i < maxColumnsCount; i++)
+					{
+						row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+					}
+				}
+			});
 
-	        var stream = new MemoryStream();
-	        excelFile.Save(stream, SaveOptions.XlsxDefault);
-	        stream.Seek(0, SeekOrigin.Begin);
+			var stream = new MemoryStream();
+			excelFile.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
 
-	        return stream;
-        }
+			return stream;
+		}
 
-        private string GetValueFromExcelCell(ModelDictionaryType valueType, object cellValue)
-        {
-	        if (cellValue == null)
-		        return null;
+		private string GetValueFromExcelCell(ModelDictionaryType valueType, object cellValue)
+		{
+			if (cellValue == null)
+				return null;
 
-	        string valueString = null;
-	        switch (valueType)
-	        {
-		        case ModelDictionaryType.Integer:
-		        case ModelDictionaryType.Decimal:
-			        if (!cellValue.TryParseToDecimal(out var number))
-				        throw new Exception($"Значение '{cellValue}' не может быть приведено к типу 'Число'");
-			        valueString = number.ToString();
-			        break;
-		        case ModelDictionaryType.String:
-			        valueString = cellValue.ToString();
-			        break;
-		        case ModelDictionaryType.Date:
-			        if (!cellValue.TryParseToDateTime(out var date))
-				        throw new Exception($"Значение '{cellValue}'не может быть приведено к типу 'Дата'");
-			        valueString = date.ToString(CultureInfo.CurrentCulture);
-			        break;
-	        }
+			string valueString = null;
+			switch (valueType)
+			{
+				case ModelDictionaryType.Integer:
+				case ModelDictionaryType.Decimal:
+					if (!cellValue.TryParseToDecimal(out var number))
+						throw new Exception($"Значение '{cellValue}' не может быть приведено к типу 'Число'");
+					valueString = number.ToString();
+					break;
+				case ModelDictionaryType.String:
+					valueString = cellValue.ToString();
+					break;
+				case ModelDictionaryType.Date:
+					if (!cellValue.TryParseToDateTime(out var date))
+						throw new Exception($"Значение '{cellValue}'не может быть приведено к типу 'Дата'");
+					valueString = date.ToString(CultureInfo.CurrentCulture);
+					break;
+			}
 
-	        return valueString;
-        }
+			return valueString;
+		}
 
-        private void SaveResultFile(OMImportDataLog import, Stream streamResult)
-        {
-	        import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
-	        import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
-	        import.DateFinished = DateTime.Now;
-	        FileStorageManager.Save(streamResult, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
-	        import.Save();
-        }
+		private void SaveResultFile(OMImportDataLog import, Stream streamResult)
+		{
+			import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
+			import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
+			import.DateFinished = DateTime.Now;
+			FileStorageManager.Save(streamResult, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
+			import.Save();
+		}
 
-        private void SendImportResultNotification(string dictionaryName, string fileName, long importId)
-        {
-	        new MessageService().SendMessages(new MessageDto
-	        {
-		        Addressers =
-			        new MessageAddressersDto {UserIds = new long[] {SRDSession.GetCurrentUserId().GetValueOrDefault()}},
-		        Subject = $"Результат загрузки данных в справочник: {dictionaryName} от ({DateTime.Now.GetString()})",
-		        Message = $@"Загрузка файла ""{fileName}"" была завершена.
-<a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
-<a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
-		        IsUrgent = true,
-		        IsEmail = true,
-		        ExpireDate = DateTime.Now.AddHours(2)
-	        });
-        }
-
-		#endregion
+		private void SendImportResultNotification(string dictionaryName, string fileName, long importId)
+		{
+			new MessageService().SendMessages(new MessageDto
+			{
+				Addressers =
+					new MessageAddressersDto { UserIds = new long[] { SRDSession.GetCurrentUserId().GetValueOrDefault() } },
+				Subject = $"Результат загрузки данных в справочник: {dictionaryName} от ({DateTime.Now.GetString()})",
+				Message = $@"Загрузка файла ""{fileName}"" была завершена.
+					<a href=""/DataImport/DownloadImportResultFile?importId={importId}"">Скачать результат</a>
+					<a href=""/DataImport/DownloadImportDataFile?importId={importId}"">Скачать исходный файл</a>",
+				IsUrgent = true,
+				IsEmail = true,
+				ExpireDate = DateTime.Now.AddHours(2)
+			});
+		}
 
 		#endregion
-    }
+
+		#endregion
+	}
 }

@@ -19,20 +19,20 @@ namespace KadOzenka.Dal.Modeling
 		List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true);
 		OMModelingDictionary GetDictionaryById(long id);
 		long CreateDictionary(string name, RegisterAttributeType factorType);
-		void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType);
+		//void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType);
 		int DeleteDictionary(long? id);
 		decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary);
 		decimal GetCoefficientFromDateFactor(DateTime? date, OMModelingDictionary dictionary);
 		decimal GetCoefficientFromNumberFactor(decimal? number, OMModelingDictionary dictionary);
-		List<OMModelingDictionariesValues> GetDictionaryValues(long dictionaryId);
-		OMModelingDictionariesValues GetDictionaryValueById(long id);
-		long CreateDictionaryValue(DictionaryValueDto dto);
-		void UpdateDictionaryValue(DictionaryValueDto dto);
-		void DeleteDictionaryValue(long id);
+		List<OMModelingDictionariesValues> GetMarks(long dictionaryId);
+		OMModelingDictionariesValues GetMark(long id);
+		long CreateMark(DictionaryMarkDto dto);
+		void UpdateMark(DictionaryMarkDto dto);
+		void DeleteMark(long markId);
 
 		void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
-			long dictionaryId, bool deleteOldValues, OMImportDataLog import);
+			long dictionaryId, bool isDeleteExistedMarks, OMImportDataLog import);
 
-		int DeleteDictionaryValues(long? dictionaryId);
+		int DeleteMarks(long? dictionaryId);
 	}
 }

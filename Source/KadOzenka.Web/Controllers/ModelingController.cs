@@ -724,7 +724,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetMarkCatalog2(long dictionaryId)
         {
-	        var marks = ModelDictionaryService.GetDictionaryValues(dictionaryId).Select(MarkModel.ToModel).ToList();
+	        var marks = ModelDictionaryService.GetMarks(dictionaryId).Select(MarkModel.ToModel).ToList();
 
             return Json(marks);
         }
@@ -760,7 +760,7 @@ namespace KadOzenka.Web.Controllers
 
 	        var dto = markCatalog.ToDto(dictionaryId);
 	        
-	        var id = ModelDictionaryService.CreateDictionaryValue(dto);
+	        var id = ModelDictionaryService.CreateMark(dto);
 	        markCatalog.Id = id;
 
 	        return Json(markCatalog);
@@ -782,7 +782,7 @@ namespace KadOzenka.Web.Controllers
 	        ValidateMarkModification(dictionaryId);
 
             var dto = markCatalog.ToDto(dictionaryId);
-	        ModelDictionaryService.UpdateDictionaryValue(dto);
+	        ModelDictionaryService.UpdateMark(dto);
 
             return Json(markCatalog);
         }
@@ -802,7 +802,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        ValidateMarkModification(dictionaryId);
 
-            ModelDictionaryService.DeleteDictionaryValue(markCatalog.Id);
+            ModelDictionaryService.DeleteMark(markCatalog.Id);
 
             return Json(markCatalog);
         }
@@ -902,6 +902,74 @@ namespace KadOzenka.Web.Controllers
 	        return Json(modelAttributes.ToDataSourceResult(request));
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult DictionaryImport(long dictionaryId)
+        {
+            ValidateMarkModification(dictionaryId);
+
+            var model = new DictionaryImportModel
+            {
+                DictionaryId = dictionaryId
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            ValidateMarkModification(model.DictionaryId);
+
+            var isViaLongProcess = false;
+            using (var fileStream = file.OpenReadStream())
+            {
+                var importInfo = new DictionaryImportFileInfoDto
+                {
+                    FileName = file.FileName,
+                    ValueColumnName = model.Value,
+                    CalcValueColumnName = model.CalcValue
+                };
+                var import = ModelDictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
+                fileStream.Seek(0, SeekOrigin.Begin);
+
+                if (ModelDictionaryService.MustUseLongProcess(fileStream))
+                {
+                    fileStream.Seek(0, SeekOrigin.Begin);
+                    var inputParameters = new DictionaryImportFileFromExcelDto
+                    {
+                        DeleteOldValues = model.IsDeleteOldValues,
+                        FileInfo = importInfo,
+                        DictionaryId = model.DictionaryId
+                    };
+                    ////TODO для тестирования
+                    //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                    //{
+                    //	Status_Code = Status.Added,
+                    //	UserId = SRDSession.GetCurrentUserId(),
+                    //	ObjectId = import.Id,
+                    //	Parameters = inputParameters.SerializeToXml()
+                    //}, new CancellationToken());
+
+                    ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
+
+                    isViaLongProcess = true;
+                }
+                else
+                {
+                    fileStream.Seek(0, SeekOrigin.Begin);
+
+                    ModelDictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
+                        model.DictionaryId, model.IsDeleteOldValues, import);
+                }
+            }
+
+            return Json(new { isViaLongProcess });
+        }
 
         #region Support Methods
 
@@ -1369,94 +1437,6 @@ namespace KadOzenka.Web.Controllers
             ModelingProcess.AddProcessToQueue(inputRequest);
 
             return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь. Результат будет отправлен на почту."});
-        }
-
-        #endregion
-
-
-        #region Словари моделирования
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryImport(long dictionaryId)
-        {
-	        ValidateMarkModification(dictionaryId);
-
-            var model = new DictionaryImportModel
-	        {
-		        DictionaryId = dictionaryId
-	        };
-
-            return PartialView(model);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel model)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-           
-            ValidateMarkModification(model.DictionaryId);
-
-            var isViaLongProcess = false;
-            using (var fileStream = file.OpenReadStream())
-            {
-                var importInfo = new DictionaryImportFileInfoDto
-                {
-                    FileName = file.FileName,
-                    ValueColumnName = model.Value,
-                    CalcValueColumnName = model.CalcValue
-                };
-                var import = ModelDictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
-                fileStream.Seek(0, SeekOrigin.Begin);
-
-                if (ModelDictionaryService.MustUseLongProcess(fileStream))
-                {
-                    fileStream.Seek(0, SeekOrigin.Begin);
-                    var inputParameters = new DictionaryImportFileFromExcelDto
-                    {
-                        DeleteOldValues = model.IsDeleteOldValues,
-                        FileInfo = importInfo,
-                        DictionaryId = model.DictionaryId
-                    };
-                    ////TODO для тестирования
-                    //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
-                    //{
-                    //	Status_Code = Status.Added,
-                    //	UserId = SRDSession.GetCurrentUserId(),
-                    //	ObjectId = import.Id,
-                    //	Parameters = inputParameters.SerializeToXml()
-                    //}, new CancellationToken());
-
-                    ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
-
-                    isViaLongProcess = true;
-                }
-                else
-                {
-                    fileStream.Seek(0, SeekOrigin.Begin);
-
-                    ModelDictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
-	                    model.DictionaryId, model.IsDeleteOldValues, import);
-                }
-            }
-
-            return Json(new { isViaLongProcess });
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
-        public JsonResult GetDictionaries()
-        {
-	        var dictionaries = ModelDictionaryService.GetDictionaries().Select(x => new SelectListItem
-	        {
-		        Text = x.Name,
-		        Value = x.Id.ToString()
-	        }).ToList();
-
-	        dictionaries.Insert(0, new SelectListItem("", ""));
-
-            return Json(dictionaries);
         }
 
         #endregion

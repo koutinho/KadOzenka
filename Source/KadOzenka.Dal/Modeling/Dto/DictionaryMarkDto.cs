@@ -1,6 +1,6 @@
 ﻿namespace KadOzenka.Dal.Modeling.Dto
 {
-    public class DictionaryValueDto
+    public class DictionaryMarkDto
     {
         public long Id { get; set; }
         public long DictionaryId { get; set; }

@@ -41,7 +41,7 @@ namespace KadOzenka.Dal.DataExport
 		    DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
 
 		    var row = 1;
-		    var markers = new ModelDictionaryService().GetDictionaryValues(dictionaryId);
+		    var markers = new ModelDictionaryService().GetMarks(dictionaryId);
 
 		    foreach (var marker in markers)
 		    {

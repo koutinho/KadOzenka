@@ -33,9 +33,9 @@ namespace KadOzenka.Web.Models.Modeling
 			};
 		}
 
-		public DictionaryValueDto ToDto(long dictionaryId)
+		public DictionaryMarkDto ToDto(long dictionaryId)
 		{
-			return new DictionaryValueDto
+			return new DictionaryMarkDto
 			{
 				Id = Id,
 				DictionaryId = dictionaryId,
