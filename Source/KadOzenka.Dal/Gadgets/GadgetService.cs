@@ -282,8 +282,6 @@ namespace KadOzenka.Dal.Gadgets
                 data.Rows.Add("/RegistersView/KoApprovedModels", "Утвержденные модели", string.Empty);
             }
 
-            data.Rows.Add("/RegistersView/ModelingDictionaries", "Перейти к справочникам для моделирования",
-                string.Empty);
             data.Rows.Add("/Task/TransferAttributes?useMasterPage=true", "Перенос атрибутов", _moveToPageSymbol);
             data.Rows.Add("/Task/CreateAndTransferAttributes?useMasterPage=true", "Перенос и создание атрибутов",
                 _moveToPageSymbol);

@@ -1377,64 +1377,6 @@ namespace KadOzenka.Web.Controllers
         #region Словари моделирования
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
-        public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
-        {
-            var dictionary = OMModelingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
-            var model = DictionaryModel.ToModel(dictionary, showItems);
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public ActionResult DictionaryCard(DictionaryModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-
-            var id = viewModel.Id;
-            //if (id == -1)
-            //    id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
-            //else
-            //    DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
-
-            return Json(new { Success = "Сохранено успешно", Id = id });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryDelete(long dictionaryId)
-        {
-            try
-            {
-                var dictionary = ModelDictionaryService.GetDictionaryById(dictionaryId);
-
-                return View(DictionaryModel.ToModel(dictionary));
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-        }
-
-        [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DeleteDictionary(long dictionaryId)
-        {
-            try
-            {
-                ModelDictionaryService.DeleteDictionary(dictionaryId);
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-
-            return Json(new { Success = true });
-        }
-
-        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
         public IActionResult DictionaryImport(long dictionaryId)
         {
@@ -1501,66 +1443,6 @@ namespace KadOzenka.Web.Controllers
             }
 
             return Json(new { isViaLongProcess });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES)]
-        public ActionResult DictionaryValueCard(long dictionaryValueId, long dictionaryId)
-        {
-            var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
-            dictionaryId = dictionaryValue == null ? dictionaryId : dictionaryValue.DictionaryId;
-            var dictionary = ModelDictionaryService.GetDictionaryById(dictionaryId);
-
-            return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
-        public ActionResult DictionaryValueCard(DictionaryValueModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-
-            var id = viewModel.Id;
-            if (id == -1)
-                id = ModelDictionaryService.CreateDictionaryValue(viewModel.ToDto());
-            else
-                ModelDictionaryService.UpdateDictionaryValue(viewModel.ToDto());
-
-            return Json(new { Success = "Сохранено успешно", Id = id });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
-        public IActionResult DictionaryValueDelete(long dictionaryValueId)
-        {
-            try
-            {
-                var dictionaryValue = ModelDictionaryService.GetDictionaryValueById(dictionaryValueId);
-                var dictionary = ModelDictionaryService.GetDictionaryById(dictionaryValue.DictionaryId);
-
-                return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-        }
-
-        [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
-        public IActionResult DeleteDictionaryValue(long dictionaryValueId)
-        {
-            try
-            {
-                ModelDictionaryService.DeleteDictionaryValue(dictionaryValueId);
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-
-            return Json(new { Success = true });
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]

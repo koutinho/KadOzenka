@@ -33,3 +33,7 @@ VALUES (227, '“ип данных дл€ словар€ моделировани€', 1, 'Core.RefLib.Executors.R
 ]');
 
 update core_register_attribute set referenceid=227 where id=26400300;
+
+-- ”даление раскадки дл€ справочников моделировани€
+delete from core_layout_details where layoutid=1000264;
+delete from core_layout where layoutid=1000264;
