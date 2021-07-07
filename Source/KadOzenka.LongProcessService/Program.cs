@@ -61,7 +61,7 @@ namespace KadOzenka.LongProcessService
                 .UseSerilog()
                 .StartWorkerChecker(config)
                 .UseKoConfigManager(config)
-                .UseReonConfigManager(config)
+                .UseWebClientsConfigManager(config)
                 .UseCoreConfigManager(config)
                 .UseStartup<Startup>();
     }

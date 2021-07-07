@@ -231,7 +231,7 @@ namespace KadOzenka.WebClients.ReonClient.Api
         /// <returns></returns>
         public RosreestrDataApi()
         {
-            Configuration = new Configuration { BasePath = ReonServiceConfig.Current.BaseUrl };
+            Configuration = new Configuration { BasePath = WebClientsConfig.Current.BaseUrl };
 
             ExceptionFactory = Configuration.DefaultExceptionFactory;
         }

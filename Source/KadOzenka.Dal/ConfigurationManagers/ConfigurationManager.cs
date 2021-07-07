@@ -9,7 +9,7 @@ namespace KadOzenka.Dal.ConfigurationManagers
 	{
 		public static KoConfigManager KoConfig => ConfigurationSubscriber.GetCurrentKoConfiguration();
 
-		public static ReonServiceConfig ReonConfig => ReonServiceConfig.Current;
+		public static WebClientsConfig ReonConfig => WebClientsConfig.Current;
 
 		public static ICoreConfig Core => CoreManager.CoreCurrent;
 

@@ -56,7 +56,7 @@ namespace CIPJS
                 .UseSerilog()
                 .UseStartup<Startup>()
                 .UseKoConfigManager(config)
-                .UseReonConfigManager(config)
+                .UseWebClientsConfigManager(config)
                 .UseCoreConfigManager(config)
                 .Build();
 

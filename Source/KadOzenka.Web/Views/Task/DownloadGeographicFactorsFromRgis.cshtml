@@ -1,7 +1,7 @@
 ﻿@model KadOzenka.Web.Models.Task.GraphicFactorsFromReonModel
 
 <link rel="stylesheet" href="~/css/toolbars.css" />
-@using (Html.BeginForm("DownloadGraphicFactorsFromReon", "Task", FormMethod.Post, new {id = "downloadFactorsForm"}))
+@using (Html.BeginForm("DownloadGeographicFactorsFromRgis", "Task", FormMethod.Post, new {id = "downloadFactorsForm"}))
 {
     <div id="toolbar" class="top-toolbar"></div>
     <div class="bottom-main-content">
@@ -49,7 +49,7 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
-            url: "@Url.Action("GetReonRegisterAttributes", "Task")",
+            url: "@Url.Action("GetRgisnRegisterAttributes", "Task")",
             dataType: "json",
             success: function(response) {
                 var data = response.map(function(factorBase) {

@@ -130,7 +130,7 @@ namespace KadOzenka.Dal.IntegrationTests
 		private IWebHost BuildWebHost(string[] args, IConfigurationRoot config) =>
 			WebHost.CreateDefaultBuilder(args)
 				.UseKoConfigManager(config)
-				.UseReonConfigManager(config)
+				.UseWebClientsConfigManager(config)
 				.UseCoreConfigManager(config)
 				.Build();
 

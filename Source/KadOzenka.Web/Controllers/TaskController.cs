@@ -44,6 +44,8 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
 using KadOzenka.Web.Models.Unit;
+using KadOzenka.WebClients.RgisClient.Api;
+using KadOzenka.WebClients.RgisClient.Client;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -622,7 +624,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS)]
-        public JsonResult GetReonRegisterAttributes()
+        public JsonResult GetRgisnRegisterAttributes()
         {
             //TODO move to service
 	        int oksRgisId = 25;
@@ -633,7 +635,7 @@ namespace KadOzenka.Web.Controllers
 		        new()
 		        {
 			        Value = Guid.NewGuid().ToString(),
-			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == oksRgisId)?.Name,
+			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == oksRgisId)?.Description,
 			        Items = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == oksRgisId).Select(x =>
 				        new DropDownTreeItemModel
 				        {
@@ -644,7 +646,7 @@ namespace KadOzenka.Web.Controllers
 		        new()
 		        {
 			        Value = Guid.NewGuid().ToString(),
-			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == zuRgisId)?.Name,
+			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == zuRgisId)?.Description,
 			        Items = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == oksRgisId).Select(x =>
 				        new DropDownTreeItemModel
 				        {
@@ -654,59 +656,8 @@ namespace KadOzenka.Web.Controllers
 		        }
             };
 
-            // var availableAttributeTypes = new[]
-            // {
-            //     Consts.IntegerAttributeType, Consts.DecimalAttributeType
-            // };
-            // var numericRegisterAttributes = RegisterAttributeService
-            //     .GetActiveRegisterAttributes(KoFactorsFromReon.ReonSourceRegisterId)
-            //     .Where(x => availableAttributeTypes.Contains(x.Type) && !string.IsNullOrWhiteSpace(x.Name))
-            //     .Select(x =>
-            //     {
-            //         var lastSeparatorIndex = x.Name.LastIndexOf(KoFactorsFromReon.AttributeNameSeparator);
-            //         if (lastSeparatorIndex == -1)
-            //         {
-            //             return new
-            //             {
-            //                 Id = x.Id,
-            //                 Category = x.Name,
-            //                 Name = string.Empty
-            //             };
-            //         }
-            //         var category = x.Name.Substring(0, lastSeparatorIndex).Trim();
-            //         var nameStartPosition = lastSeparatorIndex + KoFactorsFromReon.AttributeNameSeparator.Length;
-            //         var name = x.Name.Substring(nameStartPosition, x.Name.Length - nameStartPosition).Trim();
-            //         return new
-            //         {
-            //             Id = x.Id,
-            //             Category = category,
-            //             Name = name
-            //         };
-            //     })
-            //     .GroupBy(x => x.Category)
-            //     .Select(x =>
-            //     {
-            //         var factorsInGroup = x.ToList();
-            //         return new DropDownTreeItemModel
-            //         {
-            //             Value = Guid.NewGuid().ToString(),
-            //             Text = x.Key,
-            //             HasChildren = factorsInGroup.Count > 0,
-            //             Items = factorsInGroup.Select(y => new DropDownTreeItemModel
-            //             {
-            //                 Value = y.Id.ToString(),
-            //                 Text = y.Name
-            //             }).ToList()
-            //         };
-            //     }).ToList();
-            //
-            // if (numericRegisterAttributes.ElementAtOrDefault(0) != null)
-            // {
-            //     _log.ForContext("RegisterAttributes0", JsonConvert.SerializeObject(numericRegisterAttributes.ElementAtOrDefault(0)))
-            //         .Debug("Получение списка атрибутов ({AttributesCount}) из РЕОН", numericRegisterAttributes.Count);
-            // }
-
-            return new JsonResult(res);
+            _log.ForContext("factors", res, true).Debug("Найденные факторы для импорта из РГИС");
+	        return new JsonResult(res);
         }
 
         [HttpPost]
@@ -716,11 +667,22 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            var inputParameters = new KoFactorsFromReonInputParameters
+
+
+            var RgisDataApi = new RgisDataApi();
+            RgisDataApi.GetDistanceFactorsValue(new RequestData
             {
-                TaskId = model.TaskId,
-                AttributeIds = model.AttributeIds
-            };
+                Kn = "50:11:0020501:2154",
+                Layers = new List<string>
+                {
+                    "BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903"
+                }
+            });
+            //var inputParameters = new KoFactorsFromReonInputParameters
+            //{
+            //    TaskId = model.TaskId,
+            //    AttributeIds = model.AttributeIds
+            //};
             ////TODO код для отладки
             //new KoFactorsFromReon().StartProcess(new OMProcessType(), new OMQueue
             //{
@@ -729,10 +691,10 @@ namespace KadOzenka.Web.Controllers
             //    Parameters = inputParameters.SerializeToXml()
             //}, new CancellationToken());
 
-            KoFactorsFromReon.AddProcessToQueue(inputParameters);
-            _log.ForContext("TaskId", inputParameters.TaskId)
-                .ForContext("AttributeIds", inputParameters.AttributeIds)
-                .Information("Процесс {SRDCoreFunctions} поставлен в очередь", "KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON");
+            //KoFactorsFromReon.AddProcessToQueue(inputParameters);
+            //_log.ForContext("TaskId", inputParameters.TaskId)
+            //    .ForContext("AttributeIds", inputParameters.AttributeIds)
+            //    .Information("Процесс {SRDCoreFunctions} поставлен в очередь", "KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON");
 
             return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
         }
