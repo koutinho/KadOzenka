@@ -17,19 +17,19 @@
             {
                 items.Add().Type(CommandType.Button)
                     .Icon("refresh").Click("reloadGrid")
-                    .HtmlAttributes(new { title = "Обновить" });
+                    .HtmlAttributes(new { id="reloadGridBtnId", title = "Обновить" });
 
                 items.Add().Type(CommandType.Button)
                     .Icon("clock").Click("showMarks")
-                    .HtmlAttributes(new { id="show-marks", title = "Просмотреть метки" });
+                    .HtmlAttributes(new { id="showMarksBtnId", title = "Просмотреть метки" });
                 
                 items.Add().Type(CommandType.Button)
                     .Icon("download").Click("downloadMarksCatalog")
-                    .HtmlAttributes(new { id="download-marks-catalog", title = "Выгрузить справочник меток" });
+                    .HtmlAttributes(new { id="downloadMarksCatalogId", title = "Выгрузить справочник меток" });
                 
                 items.Add().Type(CommandType.Button)
                     .Icon("upload").Enable(!ViewBag.IsReadOnly).Click("showModalToUploadMarksCatalog")
-                    .HtmlAttributes(new { id="upload-marks-catalog", title = "Загрузить справочник меток" });
+                    .HtmlAttributes(new { id="uploadMarksCatalogId", title = "Загрузить справочник меток" });
             }))
 
         @(Html.Kendo().Grid<GeneralModelAttributeModel>()
@@ -61,21 +61,34 @@
 <script src="~/js/custom-validation.js"></script>
 <script src="~/js/toolbars.js"></script>
 <script>
+    var isReadOnly = '@ViewBag.IsReadOnly' === "True";
+    
     $(document).ready(function() {
-
     });
 
 
+
+
     function changeButtonsAbility() {
+        var showMarksSelector = $('#showMarksBtnId');
+        var downloadMarksSelector = $('#downloadMarksCatalogId');
+        var uploadMarksSelector = $('#uploadMarksCatalogId');
+        $("#reloadGridBtnId").removeAttr('disabled');
         var selectedRowData = getSelectedRowInGrid();
         if (selectedRowData) {
-            $('#show-marks').removeClass('k-state-disabled');
-            $('#download-marks-catalog').removeClass('k-state-disabled');
-            $('#upload-marks-catalog').removeClass('k-state-disabled');
+            showMarksSelector.removeClass('k-state-disabled');
+            showMarksSelector.removeAttr('disabled');
+            downloadMarksSelector.removeClass('k-state-disabled');
+            downloadMarksSelector.removeAttr('disabled');
+            if(!isReadOnly)
+            {
+                uploadMarksSelector.removeClass('k-state-disabled');
+                uploadMarksSelector.removeAttr('disabled');
+            }
         } else {
-            $('#show-marks').addClass('k-state-disabled');
-            $('#download-marks-catalog').addClass('k-state-disabled');
-            $('#upload-marks-catalog').addClass('k-state-disabled');
+            showMarksSelector.addClass('k-state-disabled');
+            downloadMarksSelector.addClass('k-state-disabled');
+            uploadMarksSelector.addClass('k-state-disabled');
         }
     }
 

@@ -97,45 +97,11 @@
             pageSize: 10
         });
 
-        var buttonsClassName = isReadOnly ? "k-state-disabled" : "";
+
         $('#markGrid').kendoGrid({
             dataSource: markGridDataSource,
-            columns: [
-                {
-                    field: 'Value',
-                    title: 'Значение',
-                    headerAttributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'Metka',
-                    title: 'Метка',
-                    headerAttributes: { style: "text-align: center;" },
-                    //по умолчанию точность новой метки - 2 знака после запятой, 
-                    //переопределяем это
-                    editor: function (container, options) {
-                        $('<input name="' + options.field + '"/>')
-                            .appendTo(container)
-                            .kendoNumericTextBox({
-                                format: "{0:n14}",
-                                decimals: 14,
-                                step: 0.1
-                            });
-                        //In case the custom editor is a widget, the developer should customize the validation warning tooltip position in order to avoid visual issues
-                        var tooltipElement = $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>');
-                        tooltipElement.appendTo(container);
-                    }
-                },
-                { 
-                    command: 
-                    [
-                        {name: "edit", className: buttonsClassName}, 
-                        {name:"destroy", className: buttonsClassName}
-                    ], 
-                    title: "&nbsp;", 
-                    width: "250px"
-                }
-            ],
-            toolbar: [{name: "create", className: buttonsClassName}],
+            columns: getGridColumns(),
+            toolbar: isReadOnly ? [] : [{name: "create"}],
             scrollable: true,
             pageable: true,
             editable: "inline",
@@ -163,6 +129,51 @@
             }
         });
     });
+
+
+
+    function getGridColumns() {
+        var columns = [
+            {
+                field: 'Value',
+                title: 'Значение',
+                headerAttributes: { style: "text-align: center;" }
+            },
+            {
+                field: 'Metka',
+                title: 'Метка',
+                headerAttributes: { style: "text-align: center;" },
+                //по умолчанию точность новой метки - 2 знака после запятой, 
+                //переопределяем это
+                editor: function(container, options) {
+                    $('<input name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoNumericTextBox({
+                            format: "{0:n14}",
+                            decimals: 14,
+                            step: 0.1
+                        });
+                    //In case the custom editor is a widget, the developer should customize the validation warning tooltip position in order to avoid visual issues
+                    var tooltipElement = $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>');
+                    tooltipElement.appendTo(container);
+                }
+            }
+        ];
+
+        if (!isReadOnly) {
+            columns.push({
+                command:
+                [
+                    { name: "edit" },
+                    { name: "destroy" }
+                ],
+                title: "&nbsp;",
+                width: "250px"
+            });
+        }
+
+        return columns;
+    }
 
 </script>
 
