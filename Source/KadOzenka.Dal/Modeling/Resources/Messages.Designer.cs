@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Для фактора с типом метки &apos;По умолчанию&apos; обязательно нужно выбрать словарь.
+        ///   Looks up a localized string similar to Для фактора с типом метки &apos;По умолчанию&apos; обязательно нужно заполнить имя словаря.
         /// </summary>
         public static string EmptyDictionaryForFactorWithDefaultMark {
             get {

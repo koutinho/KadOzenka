@@ -429,7 +429,7 @@ namespace KadOzenka.Dal.Modeling
 			var options = new ParallelOptions
 			{
 				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 10
+				MaxDegreeOfParallelism = 1
 			};
 			var locked = new object();
 			var existedValues = GetDictionaryValues(dictionary.Id);
@@ -447,13 +447,20 @@ namespace KadOzenka.Dal.Modeling
 
 			        var valueString = GetValueFromExcelCell(dictionary.Type_Code, value);
 			        var currentDictionaryValue = existedValues.FirstOrDefault(x => x.Value == valueString);
-			        if (currentDictionaryValue != null && currentDictionaryValue.CalculationValue != calcValue)
+			        if (currentDictionaryValue != null)
 			        {
-				        currentDictionaryValue.CalculationValue = calcValue;
-				        currentDictionaryValue.Save();
+				        if (currentDictionaryValue.CalculationValue != calcValue)
+				        {
+					        currentDictionaryValue.CalculationValue = calcValue;
+					        currentDictionaryValue.Save();
 
-				        row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
-			        }
+					        row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
+				        }
+				        else
+				        {
+					        row.Cells[resultColumnIndex].SetValue("Значение было добавлено ранее");
+				        }
+					}
 			        else
 			        {
 						new OMModelingDictionariesValues
