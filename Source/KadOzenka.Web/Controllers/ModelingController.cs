@@ -692,11 +692,11 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult DeleteModelFactor(long? id)
+        public ActionResult DeleteManualModelFactor(long? id)
         {
             ModelFactorsService.DeleteManualModelFactor(id);
 
-            return Json(new { Success = "Удаление выполненно" });
+            return Ok();
         }
 
         #endregion

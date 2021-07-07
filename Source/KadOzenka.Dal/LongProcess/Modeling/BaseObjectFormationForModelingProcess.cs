@@ -85,7 +85,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				{
 					attributes.Where(x => x.DictionaryId != null).ForEach(attribute =>
 					{
-						var deletedMarksCount = DictionaryService.DeleteDictionaryValues(attribute.DictionaryId.Value);
+						var deletedMarksCount = DictionaryService.DeleteDictionary(attribute.DictionaryId.Value);
 						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для словаря c ИД '{DictionaryId}'", deletedMarksCount, attribute.DictionaryId);
 					});
 				}

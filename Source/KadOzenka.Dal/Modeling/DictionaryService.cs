@@ -111,18 +111,23 @@ namespace KadOzenka.Dal.Modeling
 	        dictionary.Save();
         }
 
-        public void DeleteDictionary(long id)
+        public int DeleteDictionary(long? id)
         {
-	        var dictionary = GetDictionaryById(id);
+	        if (id == null)
+		        return 0;
 
-	        using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+	        int deletedValuesCount;
+			var dictionary = GetDictionaryById(id.Value);
+			using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
 	        {
-		        DeleteDictionaryValues(id);
+		        deletedValuesCount = DeleteDictionaryValues(id);
 
 				dictionary.Destroy();
 
 				ts.Complete();
 	        }
+
+			return deletedValuesCount;
         }
 
         public decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary)
@@ -221,9 +226,12 @@ namespace KadOzenka.Dal.Modeling
 			return dictionaryType;
 		}
 
-		public int DeleteDictionaryValues(long dictionaryId)
-        {
-	        var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
+		public int DeleteDictionaryValues(long? dictionaryId)
+		{
+			if (dictionaryId == null)
+				return 0;
+
+			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
 
 	        var command = DBMngr.Main.GetSqlStringCommand(sql);
 	        return DBMngr.Main.ExecuteNonQuery(command);

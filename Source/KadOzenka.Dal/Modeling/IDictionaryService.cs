@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.Modeling
 		OMModelingDictionary GetDictionaryById(long id);
 		long CreateDictionary(string name, RegisterAttributeType factorType);
 		void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType);
-		void DeleteDictionary(long id);
+		int DeleteDictionary(long? id);
 		decimal GetCoefficientFromStringFactor(string stringValue, OMModelingDictionary dictionary);
 		decimal GetCoefficientFromDateFactor(DateTime? date, OMModelingDictionary dictionary);
 		decimal GetCoefficientFromNumberFactor(decimal? number, OMModelingDictionary dictionary);
@@ -37,6 +37,6 @@ namespace KadOzenka.Dal.Modeling
 		void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool deleteOldValues, OMImportDataLog import);
 
-		int DeleteDictionaryValues(long dictionaryId);
+		int DeleteDictionaryValues(long? dictionaryId);
 	}
 }

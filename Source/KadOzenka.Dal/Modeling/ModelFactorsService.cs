@@ -9,6 +9,7 @@ using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Misc;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions.Factors;
@@ -23,13 +24,16 @@ namespace KadOzenka.Dal.Modeling
 	public class ModelFactorsService : IModelFactorsService
 	{
 		private IModelFactorsRepository ModelFactorsRepository { get; }
+		private IDictionaryService DictionaryService { get; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
 
 		public ModelFactorsService(IModelFactorsRepository modelFactorsRepository = null,
+			IDictionaryService dictionaryService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelFactorsRepository = modelFactorsRepository ?? new ModelFactorsRepository();
+			DictionaryService = dictionaryService ?? new DictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
@@ -363,13 +367,21 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var factor = GetFactorById(id);
 
-			factor.Destroy();
+			using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+			{
+				factor.Destroy();
 
-			//RecalculateFormula(factor.ModelId);
+				DictionaryService.DeleteDictionary(factor.DictionaryId);
+
+				//RecalculateFormula(factor.ModelId);
+
+				ts.Complete();
+			}
 		}
 
 		public void DeleteAutomaticModelFactor(long? id)
 		{
+			//todo инжектить нельзя, вынести в отдельный сервис?
 			var modelingService = new ModelingService();
 			var factor = GetFactorById(id);
 
@@ -379,6 +391,8 @@ namespace KadOzenka.Dal.Modeling
 			using (var ts = new TransactionScope())
 			{
 				allFactors.ForEach(x => x.Destroy());
+
+				DictionaryService.DeleteDictionary(factor.DictionaryId);
 
 				ts.Complete();
 			}
@@ -401,8 +415,6 @@ namespace KadOzenka.Dal.Modeling
 				model.ObjectsStatistic = statistic.SerializeToXml();
 				model.Save();
 			}
-
-			DeleteMarks(model?.GroupId, factor.FactorId);
 		}
 
 		#region Support Methods
