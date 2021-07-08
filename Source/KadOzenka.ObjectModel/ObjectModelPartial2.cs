@@ -517,13 +517,6 @@ namespace ObjectModel.KO
         public ObjectModel.KO.OMModel ParentModel { get; set; }
 
         /// <summary>
-        /// Ссылка на (211 Справочник меток)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMMarkCatalog ParentMarkCatalog { get; set; }
-
-        /// <summary>
         /// Ссылка на (264 Моделирование. Справочники)
         /// </summary>
         [ParentRegister]

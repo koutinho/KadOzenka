@@ -11,17 +11,6 @@ namespace KadOzenka.Web.Models.Modeling
 		public string Value { get; set; }
 		public decimal? Metka { get; set; }
 
-		public static MarkModel ToModel(OMMarkCatalog entity)
-		{
-			return new MarkModel
-			{
-				Id = entity.Id,
-				FactorId = entity.FactorId,
-				GroupId = entity.GroupId,
-				Value = entity.ValueFactor,
-				Metka = entity.MetkaFactor
-			};
-		}
 
 		public static MarkModel ToModel(OMModelingDictionariesValues entity)
 		{

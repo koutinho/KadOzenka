@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.Modeling
 		}
 
 
-		#region Факторы
+
 
 		public OMModelFactor GetFactorById(long? id)
 		{
@@ -553,22 +553,6 @@ namespace KadOzenka.Dal.Modeling
 		//	model.Formula = model.GetFormulaFull(true);
 		//	model.Save();
 		//}
-
-		#endregion
-
-		#endregion
-
-		#region Метки
-
-
-		public List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds)
-		{
-			var notNullFactorIds = factorIds.Where(x => x.HasValue).ToList();
-			if (groupId == null || notNullFactorIds.Count == 0)
-				return new List<OMMarkCatalog>();
-
-			return OMMarkCatalog.Where(x => notNullFactorIds.Contains(x.FactorId) && x.GroupId == groupId).SelectAll().Execute();
-		}
 
 		#endregion
 	}

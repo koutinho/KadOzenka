@@ -858,7 +858,7 @@ namespace ObjectModel.KO
     public partial class OMModelFactor
     {
         static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
-        public List<OMMarkCatalog> MarkCatalogs { get; set; }
+        public List<OMModelingDictionariesValues> MarkCatalogs { get; set; }
 
         /// <summary>
         /// Поправка
@@ -878,10 +878,10 @@ namespace ObjectModel.KO
   //          //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
   //      }
 
-        public void FillMarkCatalogsFromList(Dictionary<long?, List<OMMarkCatalog>> dict)
+        public void FillMarkCatalogsFromList(Dictionary<long, List<OMModelingDictionariesValues>> dict)
         {
             var success = dict.TryGetValue(FactorId.GetValueOrDefault(), out var marks);
-            MarkCatalogs = success ? marks : new List<OMMarkCatalog>();
+            MarkCatalogs = success ? marks : new List<OMModelingDictionariesValues>();
             //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
         }
     }

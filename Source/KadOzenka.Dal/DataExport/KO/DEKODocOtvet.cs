@@ -12,6 +12,7 @@ using GemBox.Document;
 using GemBox.Document.Tables;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Entities;
+using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -909,19 +910,22 @@ namespace KadOzenka.Dal.DataExport
                     #region Если есть метка, получаем результирущий коэффициент в подставляемое значение
                     if (_sign_market.ParseToBoolean())
                     {
-                        List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
-                        MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == _group.Id && x.FactorId == factor_item.FactorId).SelectAll().Execute());
+	                    var marks = new List<OMModelingDictionariesValues>();
+	                    var dictionaryId = new ModelingService().GetDictionaryId(_group.Id, factor_item.FactorId);
+                        if(dictionaryId == null)
+                            return;
+                        
+	                    marks.AddRange(new ModelDictionaryService().GetMarks(dictionaryId.Value));
 
-                        OMMarkCatalog mc = null;
-                        string temp_val = attr_value;
-                        mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == temp_val.ToUpper().Replace('.', ','));
-                        if (mc == null)
-                            mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == temp_val.ToUpper().Replace(',', '.'));
+	                    string temp_val = attr_value;
+	                    var mc = marks.Find(x => x.Value.ToUpper() == temp_val.ToUpper().Replace('.', ','));
+	                    if (mc == null)
+		                    mc = marks.Find(x => x.Value.ToUpper() == temp_val.ToUpper().Replace(',', '.'));
 
-                        if (mc != null)
-                        {
-                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(',', '.').Replace(".00000000000000000000", ".00") + ")";
-                        }
+	                    if (mc != null)
+	                    {
+		                    attr_value = attr_value + " (подставляемое значение: " + mc.CalculationValue.ToString().Replace(',', '.').Replace(".00000000000000000000", ".00") + ")";
+	                    }
                     }
                     #endregion
                 }

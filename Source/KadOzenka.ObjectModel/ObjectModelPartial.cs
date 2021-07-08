@@ -1123,38 +1123,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 211 Справочник меток
-    /// </summary>
-    public partial class OMMarkCatalog
-    {
-
-
-        /// <summary>
-        /// Ссылка на (210 Факторы модели)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMModelFactor> ModelFactor { get; set; }
-        public OMMarkCatalog()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-            ModelFactor = new List<ObjectModel.KO.OMModelFactor>();
-
-        }
-        public OMMarkCatalog(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 212 Группы тура
     /// </summary>
     public partial class OMTourGroup
