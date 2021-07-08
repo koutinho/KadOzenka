@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, Log.ForContext<Training>())
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
             ModelAttributes = new List<ModelAttributeRelationPure>();
             ModelDictionaryService = new ModelDictionaryService();
@@ -172,7 +172,7 @@ namespace KadOzenka.Dal.Modeling
 		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
 		            notReturnedTypes.ForEach(x =>
 		            {
-			            ModelingService.ResetTrainingResults(GeneralModel, x);
+			            ModelService.ResetTrainingResults(GeneralModel, x);
                     });
                 }
             }
@@ -184,7 +184,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void RollBackResult()
         {
-	        ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
+	        ModelService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
         }
 
         protected override void SendSuccessNotification(OMQueue processQueue)
@@ -326,7 +326,7 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveImagesToDb(KoAlgoritmType type, TrainingResponse trainingResult)
         {
-	        var existedImages = ModelingService.GetModelImages(GeneralModel.Id, type);
+	        var existedImages = ModelService.GetModelImages(GeneralModel.Id, type);
 	        if (existedImages == null)
 	        {
 		        existedImages = new OMModelTrainingResultImages

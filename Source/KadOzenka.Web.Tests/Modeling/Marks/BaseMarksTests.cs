@@ -11,7 +11,7 @@ namespace KadOzenka.Web.UnitTests.Modeling.Marks
 		{
 			var modelId = RandomGenerator.GenerateRandomId();
 			ModelFactorsRepository.Setup(x => x.GetFactorByDictionary(dictionaryId)).Returns(new OMModelFactor { ModelId = modelId });
-			ModelingService.Setup(x => x.GetModelById(modelId)).Returns(new ModelingModelDto { Type = KoModelType.Automatic });
+			ModelService.Setup(x => x.GetModelById(modelId)).Returns(new ModelingModelDto { Type = KoModelType.Automatic });
 		}
 	}
 }

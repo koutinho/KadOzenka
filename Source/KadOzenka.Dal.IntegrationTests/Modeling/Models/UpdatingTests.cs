@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 				A0 = RandomGenerator.GenerateRandomDecimal(),
 				A0ForPreviousTour = RandomGenerator.GenerateRandomDecimal()
 			};
-			ModelingService.UpdateAutomaticModel(updatingModelDto);
+			ModelService.UpdateAutomaticModel(updatingModelDto);
 
 			var updatedModel = OMModel.Where(x => x.Id == existedModel.Id).SelectAll().ExecuteFirstOrDefault();
 			Assert.That(updatedModel.Name, Is.EqualTo(updatingModelDto.Name));

@@ -5,13 +5,13 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling
 {
 	public class BaseGbuObjectTests : BaseTests
 	{
-		protected IModelingService ModelingService { get; set; }
+		protected IModelService ModelService { get; set; }
 
 
 		[OneTimeSetUp]
 		protected void OneTimeSetUpForModeling()
 		{
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
 		}
 	}
 }

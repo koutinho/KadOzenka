@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Units
 		//TODO подумать - как убрать зависимости от сервисов, но без копи-пасты
 		private ITourFactorService TourFactorService { get; }
 		private IRegisterAttributeService RegisterAttributeService { get; }
-		private IModelingService ModelingService { get; }
+		private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IUnitRepository UnitRepository { get; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
@@ -29,14 +29,14 @@ namespace KadOzenka.Dal.Units
 
 		public UnitService(ITourFactorService tourFactorService = null, 
 			IRegisterAttributeService registerAttributeService = null,
-			IModelingService modelingService = null,
+			IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
 			IUnitRepository unitRepository = null, 
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			TourFactorService = tourFactorService ?? new TourFactorService();
 			RegisterAttributeService = registerAttributeService ?? new RegisterAttributeService();
-			ModelingService = modelingService ?? new ModelingService();
+			ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
 			UnitRepository = unitRepository ?? new UnitRepository();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.Units
 		public List<UnitFactor> GetUnitModelFactors(OMUnit unit)
 		{
 			var factorsValues = new List<UnitFactor>();
-			var model = ModelingService.GetActiveModelEntityByGroupId(unit.GroupId);
+			var model = ModelService.GetActiveModelEntityByGroupId(unit.GroupId);
 			if (model != null)
 			{
 				var modelFactorIds = ModelFactorsService.GetGeneralModelAttributes(model.Id).Select(x => x.AttributeId).ToList();

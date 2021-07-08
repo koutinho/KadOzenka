@@ -7,7 +7,7 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public interface IModelingService
+	public interface IModelService
 	{
 		OMModel GetActiveModelEntityByGroupId(long? groupId);
 		OMModel GetModelEntityById(long? modelId);

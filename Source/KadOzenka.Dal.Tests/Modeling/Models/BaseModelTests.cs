@@ -9,7 +9,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 {
 	public class BaseModelTests : BaseTests
 	{
-		protected ModelingService ModelingService => Provider.GetService<ModelingService>();
+		protected ModelService ModelService => Provider.GetService<ModelService>();
 		protected Mock<IModelFactorsService> ModelFactorsService { get; set; }
 		protected Mock<IModelingRepository> ModelingRepository { get; set; }
 		protected Mock<IModelObjectsRepository> ModelObjectsRepository { get; set; }
@@ -26,7 +26,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
-			container.AddTransient<ModelingService>();
+			container.AddTransient<ModelService>();
 			container.AddTransient(typeof(IModelingRepository), sp => ModelingRepository.Object);
 			container.AddTransient(typeof(IModelObjectsRepository), sp => ModelObjectsRepository.Object);
 			container.AddTransient(typeof(IModelFactorsService), sp => ModelFactorsService.Object);

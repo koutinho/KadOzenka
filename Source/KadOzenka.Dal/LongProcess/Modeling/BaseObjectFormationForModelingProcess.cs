@@ -27,14 +27,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		protected readonly ILogger Logger;
 
 		protected ModelDictionaryService ModelDictionaryService { get; set; }
-		protected ModelingService ModelingService { get; set; }
+		protected ModelService ModelService { get; set; }
 		protected ModelFactorsService ModelFactorsService { get; set; }
 		protected IModelObjectsService ModelObjectsService { get; set; }
 
 		public BaseObjectFormationForModelingProcess(ILogger logger)
 		{
 			Logger = logger;
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
 			ModelDictionaryService = new ModelDictionaryService();
 			ModelFactorsService = new ModelFactorsService();
 			ModelObjectsService = new ModelObjectsService();

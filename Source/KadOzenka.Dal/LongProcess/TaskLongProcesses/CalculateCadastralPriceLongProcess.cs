@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
 		private IUnitService UnitService { get; }
-		private IModelingService ModelingService { get; }
+		private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IModelDictionaryService ModelDictionaryService { get; }
 		private IGroupService GroupService { get; }
@@ -55,7 +55,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 
 		public CalculateCadastralPriceLongProcess(IUnitRepository unitRepository = null,
-			IUnitService unitService = null, IModelingService modelingService = null,
+			IUnitService unitService = null, IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
 			IModelDictionaryService modelDictionaryService = null,
 			IGroupService groupService = null,
@@ -64,7 +64,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			UnitRepository = unitRepository ?? new UnitRepository();
 			UnitService = unitService ?? new UnitService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
-			ModelingService = modelingService ?? new ModelingService();
+			ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
 			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			GroupService = groupService ?? new GroupService();
@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			UnitRepository = new UnitRepository();
 			UnitService = new UnitService();
 			RegisterCacheWrapper = new RegisterCacheWrapper();
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
 			ModelFactorsService = new ModelFactorsService();
 			ModelDictionaryService = new ModelDictionaryService();
 			GroupService = new GroupService();
@@ -161,7 +161,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 				{
 					_log.Debug("Начата обработка группы '{GroupName}' (с ИД - {GroupId})", group.GroupName, group.Id);
 
-					var activeGroupModel = ModelingService.GetActiveModelEntityByGroupId(group.Id);
+					var activeGroupModel = ModelService.GetActiveModelEntityByGroupId(group.Id);
 					if (activeGroupModel == null)
 					{
 						_log.Error($"Не найдена активная модель для группы '{group.GroupName}' (с ИД - {group.Id}). ЕО добавляются в отчет.");
@@ -350,7 +350,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		public string PrepareFormula(OMModel activeGroupModel, List<FactorInfo> factors)
 		{
-			var formula = ModelingService.GetFormula(activeGroupModel, activeGroupModel.AlgoritmType_Code);
+			var formula = ModelService.GetFormula(activeGroupModel, activeGroupModel.AlgoritmType_Code);
 			_log.Debug("Начальная формула: {Formula}", formula);
 
 			//имена факторов в формуле записываются через кавычки

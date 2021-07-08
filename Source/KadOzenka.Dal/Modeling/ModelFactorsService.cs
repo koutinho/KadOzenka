@@ -382,7 +382,7 @@ namespace KadOzenka.Dal.Modeling
 		public void DeleteAutomaticModelFactor(long? id)
 		{
 			//todo инжектить нельзя, вынести в отдельный сервис?
-			var modelingService = new ModelingService();
+			var modelService = new ModelService();
 			var factor = GetFactorById(id);
 
 			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
@@ -397,7 +397,7 @@ namespace KadOzenka.Dal.Modeling
 				ts.Complete();
 			}
 
-			modelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
+			modelService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId)
 				.Select(x => new

@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 		private FactorsService FactorsService { get; }
 		private RosreestrRegisterService RosreestrRegisterService { get; }
 		private GbuCodRegisterService GbuCodRegisterService { get; }
-		private ModelingService ModelingService { get; }
+		private ModelService ModelService { get; }
 		private string TaskIdsStr { get; set; }
 		private string BaseUnitsCondition { get; set; }
 		private string BaseSql { get; set; }
@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			FactorsService = new FactorsService();
 			RosreestrRegisterService = new RosreestrRegisterService();
 			GbuCodRegisterService = new GbuCodRegisterService();
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
 		}
 
 
@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.CalculationParams
 			TaskIdsStr = string.Join(',', inputParameters.TaskIds);
 
 			GroupId = inputParameters.GroupId;
-			ModelId = ModelingService.GetActiveModelEntityByGroupId(GroupId)?.Id;
+			ModelId = ModelService.GetActiveModelEntityByGroupId(GroupId)?.Id;
 
 			GroupedFactors = ModelId == null
 				? new List<FactorsService.PricingFactors>()

@@ -43,17 +43,17 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
-        public IModelingService ModelingService { get; set; }
+        public IModelService ModelService { get; set; }
 
         public TourController(ITourService tourService, IGbuObjectService gbuObjectService,
-	        IRegisterCacheWrapper registerCacheWrapper, IModelingService modelingService)
+	        IRegisterCacheWrapper registerCacheWrapper, IModelService modelService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             TourService = tourService;
             TourComplianceImportService = new TourComplianceImportService();
-            ModelingService = modelingService;
+            ModelService = modelService;
         }
 
         #region Карточка тура
@@ -136,7 +136,7 @@ namespace KadOzenka.Web.Controllers
             var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            groupModel.Models = ModelingService.GetGroupModels(groupId)
+            groupModel.Models = ModelService.GetGroupModels(groupId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),

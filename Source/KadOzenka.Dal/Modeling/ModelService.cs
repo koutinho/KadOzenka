@@ -26,9 +26,9 @@ using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.Modeling
 {
-	public class ModelingService : IModelingService
+	public class ModelService : IModelService
 	{
-		private readonly ILogger _log = Log.ForContext<ModelingService>();
+		private readonly ILogger _log = Log.ForContext<ModelService>();
         private IModelingRepository ModelingRepository { get; set; }
         private IModelObjectsRepository ModelObjectsRepository { get; set; }
         private IModelFactorsService ModelFactorsService { get; set; }
@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.Modeling
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
 
-        public ModelingService(IModelingRepository modelingRepository = null,
+        public ModelService(IModelingRepository modelingRepository = null,
 			IModelObjectsRepository modelObjectsRepository = null,
 			IModelFactorsService modelFactorsService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)

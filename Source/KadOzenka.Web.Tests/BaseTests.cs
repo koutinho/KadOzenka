@@ -31,7 +31,7 @@ namespace KadOzenka.Web.UnitTests
 	{
 		protected ServiceProvider Provider { get; set; }
 		protected Mock<ITourService> TourService { get; set; }
-		protected Mock<IModelingService> ModelingService { get; set; }
+		protected Mock<IModelService> ModelService { get; set; }
 		protected Mock<IModelFactorsRepository> ModelFactorsRepository { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
 		protected Mock<ILongProcessService> LongProcessService { get; set; }
@@ -48,7 +48,7 @@ namespace KadOzenka.Web.UnitTests
 		public void BaseTestsSetUp()
 		{
 			TourService = new Mock<ITourService>();
-			ModelingService = new Mock<IModelingService>();
+			ModelService = new Mock<IModelService>();
 			ModelFactorsRepository = new Mock<IModelFactorsRepository>();
 			GbuObjectService = new Mock<IGbuObjectService>();
 			LongProcessService = new Mock<ILongProcessService>();
@@ -105,7 +105,7 @@ namespace KadOzenka.Web.UnitTests
 			//container.AddTransient<ExpressScoreService>();
 			//container.AddTransient<ExpressScoreReferenceService>();
 			container.AddTransient<ViewRenderService>();
-			container.AddTransient<ModelingService>();
+			container.AddTransient<ModelService>();
 			container.AddTransient<MapBuildingService>();
 			container.AddTransient<DashboardWidgetService>();
 			container.AddTransient<StatisticsReportsWidgetService>();
@@ -126,7 +126,7 @@ namespace KadOzenka.Web.UnitTests
 			container.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
 			container.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
-			container.AddTransient(typeof(IModelingService), sp => ModelingService.Object);
+			container.AddTransient(typeof(IModelService), sp => ModelService.Object);
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
 			container.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
 			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));

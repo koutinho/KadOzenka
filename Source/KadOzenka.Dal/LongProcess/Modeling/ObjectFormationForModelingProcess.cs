@@ -73,8 +73,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
             try
 			{
-				Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
-				Tour = ModelingService.GetModelTour(Model.GroupId);
+				Model = ModelService.GetModelEntityById(InputParameters.ModelId);
+				Tour = ModelService.GetModelTour(Model.GroupId);
 
 				if (LongProcessService.HasOtherActiveProcessInQueue(Queue.Id, ProcessId, Model.Id))
 					throw new Exception("Процесс сбора данных уже был запущен ранее");

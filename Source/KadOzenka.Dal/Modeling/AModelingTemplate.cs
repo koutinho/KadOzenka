@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.Modeling
     public abstract class AModelingTemplate
     {
         private static HttpClient _httpClient;
-        protected ModelingService ModelingService { get; set; }
+        protected ModelService ModelService { get; set; }
         protected IModelObjectsRepository ModelObjectsRepository { get; set; }
         protected ModelFactorsService ModelFactorsService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.Modeling
         protected AModelingTemplate(OMQueue processQueue, ILogger logger)
         {
 	        ModelObjectsRepository = new ModelObjectsRepository();
-            ModelingService = new ModelingService();
+            ModelService = new ModelService();
             ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;
             Logger = logger;

@@ -20,12 +20,12 @@ namespace KadOzenka.Dal.Groups
 {
     public class GroupService : IGroupService
     {
-        private ModelingService ModelingService { get; }
+        private ModelService ModelService { get; }
         private RecycleBinService RecycleBinService { get; }
 
         public GroupService()
         {
-	        ModelingService = new ModelingService();
+	        ModelService = new ModelService();
 	        RecycleBinService = new RecycleBinService();
         }
 
@@ -469,7 +469,7 @@ namespace KadOzenka.Dal.Groups
 
 		        foreach (var model in models)
 		        {
-			        ModelingService.DeleteModelLogically(model.Id, eventId.Value);
+			        ModelService.DeleteModelLogically(model.Id, eventId.Value);
 		        }
 
 

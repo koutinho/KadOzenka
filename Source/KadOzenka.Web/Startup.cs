@@ -113,7 +113,7 @@ namespace CIPJS
 			//services.AddTransient<ExpressScoreService>();
 			//services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
-	        services.AddTransient<ModelingService>();
+	        services.AddTransient<ModelService>();
 	        services.AddTransient<MapBuildingService>();
 	        services.AddTransient<DashboardWidgetService>();
 	        services.AddTransient<StatisticsReportsWidgetService>();
@@ -131,7 +131,7 @@ namespace CIPJS
             services.AddSingleton<StatisticalDataService>();
             services.AddSingleton<CustomReportsService>();
             services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
-            services.AddTransient(typeof(IModelingService), typeof(ModelingService));
+            services.AddTransient(typeof(IModelService), typeof(ModelService));
             services.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
             services.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));
             services.AddTransient(typeof(ITourRepository), typeof(TourRepository));

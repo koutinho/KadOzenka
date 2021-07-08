@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		public FactorAdditionToModelObjectsLongProcess() : base(Log.ForContext<FactorAdditionToModelObjectsLongProcess>())
 		{
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
 			ModelFactorsService = new ModelFactorsService();
 			ModelDictionaryService = new ModelDictionaryService();
 		}
@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			try
 			{
-				Model = ModelingService.GetModelEntityById(inputParameters.ModelId);
+				Model = ModelService.GetModelEntityById(inputParameters.ModelId);
 				var allModelAttributes = GetGeneralModelAttributes(Model.Id);
 
 				Attribute = allModelAttributes.First(x => x.AttributeId == inputParameters.AttributeId);
