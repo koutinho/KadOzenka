@@ -705,6 +705,10 @@ namespace KadOzenka.Web.Controllers
 
         #region Метки
 
+        /// <summary>
+        /// Метод из левого меню в Турах
+        /// </summary>
+        /// <returns></returns>
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult MarkCatalog()
         {
@@ -738,39 +742,16 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public JsonResult GetMarkCatalog2(long dictionaryId)
+        public JsonResult GetMarks(long dictionaryId)
         {
 	        var marks = ModelDictionaryService.GetMarks(dictionaryId).Select(MarkModel.ToModel).ToList();
 
             return Json(marks);
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-		public JsonResult GetMarkCatalog(long groupId, long factorId)
-		{
-			if (groupId == 0 || factorId == 0)
-				return Json(new List<MarkModel>());
-
-			var marks = ModelFactorsService.GetMarks(groupId, factorId);
-
-			var markModels = marks.Select(MarkModel.ToModel).ToList();
-
-			return Json(markModels);
-		}
-
-		[HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult CreateMark(MarkModel markCatalog)
-        {
-            var id = ModelFactorsService.CreateMark(markCatalog.Value, markCatalog.Metka, markCatalog.FactorId, markCatalog.GroupId);
-            markCatalog.Id = id;
-
-            return Json(markCatalog);
-        }
-
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult CreateMark2(long dictionaryId, MarkModel markCatalog)
+        public ActionResult CreateMark(long dictionaryId, MarkModel markCatalog)
         {
 	        ValidateMarkModification(dictionaryId);
 
@@ -784,16 +765,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UpdateMark(MarkModel markCatalog)
-        {
-            ModelFactorsService.UpdateMark(markCatalog.Id, markCatalog.Value, markCatalog.Metka);
-
-            return Json(markCatalog);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UpdateMark2(long dictionaryId, MarkModel markCatalog)
+        public ActionResult UpdateMark(long dictionaryId, MarkModel markCatalog)
         {
 	        ValidateMarkModification(dictionaryId);
 
@@ -805,16 +777,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DeleteMark(MarkModel markCatalog)
-        {
-            ModelFactorsService.DeleteMark(markCatalog.Id);
-
-            return Json(markCatalog);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DeleteMark2(long dictionaryId, MarkModel markCatalog)
+        public ActionResult DeleteMark(long dictionaryId, MarkModel markCatalog)
         {
 	        ValidateMarkModification(dictionaryId);
 
@@ -824,77 +787,11 @@ namespace KadOzenka.Web.Controllers
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult MarksCatalogUploading(long groupId, long factorId)
-        {
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
-
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public FileResult DownloadMarksCatalog(long groupId, long factorId)
-        {
-            var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
-
-            return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public FileResult DownloadMarksCatalog2(long dictionaryId)
+        public FileResult DownloadMarks(long dictionaryId)
         {
 	        var fileStream = DataExporterKO.ExportMarkerListToExcel(dictionaryId);
 
 	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UploadMarksCatalog(long groupId, long factorId)
-        {
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
-
-            return PartialView();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
-        {
-            if (file == null)
-                throw new Exception("Не выбран файл для загрузки");
-            if (!(file.FileName.EndsWith(".xlsx") || file.FileName.EndsWith(".xls")))
-                throw new Exception("Загружен файл неправильного формата. Допустимые форматы: .xlsx и .xls");
-
-            using (var stream = file.OpenReadStream())
-            {
-                var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-                excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
-
-                var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
-                    OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
-
-                var fileName = "Справочник меток (загрузка) " + file.FileName;
-                HttpContext.Session.Set(fileName, fileStream.ToByteArray());
-
-                return Content(JsonConvert.SerializeObject(new { success = true, fileName }), "application/json");
-            }
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DownloadExcelFile(string fileName)
-        {
-            var fileContent = HttpContext.Session.Get(fileName);
-            if (fileContent == null)
-            {
-                return new EmptyResult();
-            }
-
-            HttpContext.Session.Remove(fileName);
-            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
-
-            return File(fileContent, contentType, fileName);
         }
 
         [HttpGet]

@@ -20,12 +20,7 @@ namespace KadOzenka.Dal.Modeling
 		void UpdateManualFactor(ManualModelFactorDto dto);
 		void DeleteManualModelFactor(long? id);
 		void DeleteAutomaticModelFactor(long? id);
-		List<OMMarkCatalog> GetMarks(long? groupId, long? factorId);
-		OMMarkCatalog GetMarkById(long id);
-		int CreateMark(string value, decimal? metka, long? factorId, long? groupId);
-		void UpdateMark(long id, string value, decimal? metka);
-		void DeleteMark(long id);
-		int DeleteMarks(long? groupId, long? factorId);
+
 		List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds);
 	}
 }

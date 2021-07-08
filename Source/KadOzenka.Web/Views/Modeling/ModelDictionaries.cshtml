@@ -173,7 +173,7 @@
         var selectedRowData = getSelectedRowInDictionariesGrid();
         if (selectedRowData) {
             var dictionaryId = selectedRowData.DictionaryId;
-            window.open('@Url.Action("DownloadMarksCatalog2", "Modeling")' + '?dictionaryId=' + dictionaryId);
+            window.open('@Url.Action("DownloadMarks", "Modeling")' + '?dictionaryId=' + dictionaryId);
         }
     }
 

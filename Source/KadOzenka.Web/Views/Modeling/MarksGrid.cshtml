@@ -17,25 +17,25 @@
         var marksGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog2", "Modeling")',
+                    url: '@Url.Action("GetMarks", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
                     data: { dictionaryId: '@ViewBag.DictionaryId' },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark2", "Modeling")',
+                    url: '@Url.Action("CreateMark", "Modeling")',
                     data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark2", "Modeling")',
+                    url: '@Url.Action("UpdateMark", "Modeling")',
                     data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 },
                 destroy: {
-                    url: '@Url.Action("DeleteMark2", "Modeling")',    
+                    url: '@Url.Action("DeleteMark", "Modeling")',    
                     data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'

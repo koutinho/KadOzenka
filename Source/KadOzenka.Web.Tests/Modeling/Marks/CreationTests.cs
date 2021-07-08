@@ -13,7 +13,7 @@ namespace KadOzenka.Web.UnitTests.Modeling.Marks
 			var dictionaryId = RandomGenerator.GenerateRandomId();
 			MockFactorForAutomaticModel(dictionaryId);
 
-			Assert.Throws<AutomaticModelMarkModificationException>(() => ModelingController.CreateMark2(dictionaryId, new MarkModel()));
+			Assert.Throws<AutomaticModelMarkModificationException>(() => ModelingController.CreateMark(dictionaryId, new MarkModel()));
 		}
 	}
 }

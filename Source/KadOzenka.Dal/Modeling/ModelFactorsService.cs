@@ -560,12 +560,6 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Метки
 
-		public List<OMMarkCatalog> GetMarks(long? groupId, long? factorId)
-		{
-			var factorIds = new List<long?> {factorId};
-
-			return GetMarks(groupId, factorIds);
-		}
 
 		public List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds)
 		{
@@ -575,76 +569,6 @@ namespace KadOzenka.Dal.Modeling
 
 			return OMMarkCatalog.Where(x => notNullFactorIds.Contains(x.FactorId) && x.GroupId == groupId).SelectAll().Execute();
 		}
-
-		public OMMarkCatalog GetMarkById(long id)
-		{
-			var mark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-			if (mark == null)
-				throw new Exception($"Не найдена метка с ИД {id}");
-
-			return mark;
-		}
-
-		public int CreateMark(string value, decimal? metka, long? factorId, long? groupId)
-		{
-			ValidateMark(groupId, value, metka);
-
-			return new OMMarkCatalog
-			{
-				GroupId = groupId,
-				FactorId = factorId,
-				MetkaFactor = metka,
-				ValueFactor = value
-			}.Save();
-		}
-
-		public void UpdateMark(long id, string value, decimal? metka)
-		{
-			var mark = GetMarkById(id);
-
-			ValidateMark(mark.GroupId, value, metka);
-
-			mark.ValueFactor = value;
-			mark.MetkaFactor = metka;
-
-			mark.Save();
-		}
-
-		public void DeleteMark(long id)
-		{
-			var mark = GetMarkById(id);
-
-			mark.Destroy();
-		}
-
-		public int DeleteMarks(long? groupId, long? factorId)
-		{
-			//реализовано удаление по фактору, чтобы было более подробное логирование
-			//сделано не через ОРМ для улучшения производительности
-			//можно ускорить, если удалять сразу по группе
-
-			var sql = $"delete from ko_mark_catalog where group_id = {groupId} and factor_id = {factorId}";
-
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			return DBMngr.Main.ExecuteNonQuery(command);
-		}
-
-
-		#region Support Methods
-
-		private void ValidateMark(long? groupId, string value, decimal? metka)
-		{
-			if (string.IsNullOrWhiteSpace(value))
-				throw new Exception("Нельзя сохранить пустое значение");
-			if (metka == null)
-				throw new Exception("Нельзя сохранить пустую метку");
-			if (metka.GetValueOrDefault() == 0)
-				throw new Exception("Нельзя сохранить нулевую метку");
-			if (groupId == null)
-				throw new Exception("Не переден ИД группы");
-		}
-
-		#endregion
 
 		#endregion
 	}
