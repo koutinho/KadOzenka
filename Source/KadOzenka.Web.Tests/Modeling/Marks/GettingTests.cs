@@ -13,7 +13,7 @@ namespace KadOzenka.Web.UnitTests.Modeling.Marks
 			var dictionaryId = RandomGenerator.GenerateRandomInteger();
 
 			var result = ModelingController.MarksGrid(isReadOnly, dictionaryId);
-			var view = result as ViewResult;
+			var view = result as PartialViewResult;
 
 			Assert.IsNotNull(view);
 			Assert.That(view.ViewData["IsReadOnly"], Is.EqualTo(isReadOnly));

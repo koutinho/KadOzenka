@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
 
 			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var mark);
-			new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
+			new MarkBuilder().Dictionary(factor.DictionaryId)
 				.Value(RandomGenerator.GetRandomString()).Metka(RandomGenerator.GenerateRandomDecimal())
 				.Build();
 
@@ -78,10 +78,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
 
 			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var firstMark);
-			var secondMark = new MarkBuilder().Factor(factor.FactorId).Group(Group.Id)
-				.Value(firstMark.ValueFactor)
+			var secondMark = new MarkBuilder().Dictionary(factor.DictionaryId).Value(firstMark.Value)
 				//чтобы случайно не создать такое же значение, как в mark
-				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.MetkaFactor.GetValueOrDefault())
+				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.CalculationValue.GetValueOrDefault())
 				.Build();
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
@@ -203,10 +202,10 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return (decimal)Math.Pow((double)(unitFactorValue + factor.WeightInFormula), (double)factor.B0InFormula);
 		}
 
-		private decimal GetExpectedCadastralConstForDefaultMark(OMMarkCatalog mark, OMModelFactor factor)
+		private decimal GetExpectedCadastralConstForDefaultMark(OMModelingDictionariesValues mark, OMModelFactor factor)
 		{
 			return (decimal) Math.Pow(
-				       (double) (mark.MetkaFactor.GetValueOrDefault() + factor.WeightInFormula),
+				       (double) (mark.CalculationValue.GetValueOrDefault() + factor.WeightInFormula),
 				       (double) factor.B0InFormula);
 		}
 

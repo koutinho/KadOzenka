@@ -238,6 +238,14 @@ namespace KadOzenka.Dal.Modeling
 			return OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).SelectAll().Execute();
 		}
 
+		public List<OMModelingDictionariesValues> GetMarks(List<long?> dictionaryIds)
+		{
+			if (dictionaryIds.IsEmpty())
+				return new List<OMModelingDictionariesValues>();
+
+			return OMModelingDictionariesValues.Where(x => dictionaryIds.Contains(x.DictionaryId)).SelectAll().Execute();
+		}
+
 		public OMModelingDictionariesValues GetMark(long id)
 		{
 			var mark = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();

@@ -64,7 +64,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var multiplier = 3;
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.DECIMAL, multiplier);
 
-			var price = LongProcess.CalculateUpks(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
+			var price = LongProcess.CalculateUpks(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<string, decimal?>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value).Within(0.1));
 		}
@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			var multiplier = 3;
 			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.INTEGER, multiplier);
 			
-			var price = LongProcess.CalculateUpks(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
+			var price = LongProcess.CalculateUpks(modelingInfo.Formula, modelingInfo.Factors, unitFactors, new Dictionary<string, decimal?>());
 
 			Assert.That(price, Is.EqualTo(multiplier * value));
 		}
@@ -89,23 +89,23 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 		[Test]
 		public void Can_Calculate_Price_With_One_String_Factor()
 		{
-			var factorId = RandomGenerator.GenerateRandomInteger();
+			var dictionaryId = RandomGenerator.GenerateRandomInteger();
 			var value = RandomGenerator.GetRandomString();
 			var unitFactors = new List<UnitFactor>
 			{
-				new UnitFactor(factorId) {Value = value}
+				new UnitFactor(dictionaryId) {Value = value}
 			};
 			var multiplier = 3;
-			var mark = new MarkBuilder().Factor(factorId).Value(value).Build();
-			var modelingInfo = GetModelingInfo(factorId, RegisterAttributeType.STRING, multiplier);
+			var mark = new MarkBuilder().Dictionary(dictionaryId).Value(value).Build();
+			var modelingInfo = GetModelingInfo(dictionaryId, RegisterAttributeType.STRING, multiplier);
 
 			var price = LongProcess.CalculateUpks(modelingInfo.Formula, modelingInfo.Factors, unitFactors,
-				new Dictionary<Tuple<long, string>, decimal?>
+				new Dictionary<string, decimal?>
 				{
-					{Tuple.Create(mark.FactorId.GetValueOrDefault(), mark.ValueFactor), mark.MetkaFactor}
+					{mark.Value, mark.CalculationValue}
 				});
 
-			Assert.That(price, Is.EqualTo(multiplier * mark.MetkaFactor));
+			Assert.That(price, Is.EqualTo(multiplier * mark.CalculationValue));
 		}
 
 		[Test]
@@ -142,7 +142,7 @@ namespace KadOzenka.Dal.UnitTests.Tasks
 			};
 
 
-			var price = LongProcess.CalculateUpks(formula, factors, unitFactors, new Dictionary<Tuple<long, string>, decimal?>());
+			var price = LongProcess.CalculateUpks(formula, factors, unitFactors, new Dictionary<string, decimal?>());
 
 			Assert.That(price, Is.EqualTo(firstMultiplier * decimalValue + longValue * secondMultiplier));
 		}

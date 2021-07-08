@@ -4,46 +4,39 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 {
 	public abstract class AMarkBuilder
 	{
-		protected readonly OMMarkCatalog _mark;
+		protected readonly OMModelingDictionariesValues _mark;
 
 
 		protected AMarkBuilder()
 		{
-			_mark = new OMMarkCatalog
+			_mark = new OMModelingDictionariesValues
 			{
-				GroupId = RandomGenerator.GenerateRandomInteger(),
-				FactorId = RandomGenerator.GenerateRandomInteger(),
-				ValueFactor = RandomGenerator.GetRandomString(),
-				MetkaFactor = RandomGenerator.GenerateRandomDecimal()
+				DictionaryId = RandomGenerator.GenerateRandomId(),
+				Value = RandomGenerator.GetRandomString(),
+				CalculationValue = RandomGenerator.GenerateRandomInteger()
 			};
 		}
 
 
-		public AMarkBuilder Factor(long? factorId)
+		public AMarkBuilder Dictionary(long? dictionaryId)
 		{
-			_mark.FactorId = factorId.GetValueOrDefault();
-			return this;
-		}
-
-		public AMarkBuilder Group(long? groupId)
-		{
-			_mark.GroupId = groupId;
+			_mark.DictionaryId = dictionaryId.GetValueOrDefault();
 			return this;
 		}
 
 		public AMarkBuilder Value(string value)
 		{
-			_mark.ValueFactor = value;
+			_mark.Value = value;
 			return this;
 		}
 
 		public AMarkBuilder Metka(decimal metka)
 		{
-			_mark.MetkaFactor = metka;
+			_mark.CalculationValue = metka;
 			return this;
 		}
 
 
-		public abstract OMMarkCatalog Build();
+		public abstract OMModelingDictionariesValues Build();
 	}
 }

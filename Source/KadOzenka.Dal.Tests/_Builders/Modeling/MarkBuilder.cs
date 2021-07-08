@@ -6,9 +6,9 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling
 {
 	public class MarkBuilder : AMarkBuilder
 	{
-		public override OMMarkCatalog Build()
+		public override OMModelingDictionariesValues Build()
 		{
-			_mark.Id = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue);
+			_mark.Id = RandomGenerator.GenerateRandomId();
 			return _mark;
 		}
 	}
