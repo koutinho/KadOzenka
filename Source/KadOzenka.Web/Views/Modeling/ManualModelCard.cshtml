@@ -37,8 +37,7 @@
                     @(Html.Kendo().Button()
                         .Name("copyFormulaBtn")
                         .Icon("k-icon k-i-copy")
-                        .HtmlAttributes(new { style = "float: right;" })
-                        .Events(x => x.Click("copyFormula")))
+                        .HtmlAttributes(new { style = "float: right;" }))
                 </div>
             </div>
             <div class="form-group">
@@ -86,6 +85,8 @@
     $(document).ready(function () {
         $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
         $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
+        $("#copyFormulaBtn").data("kendoButton").bind("click", copyFormula);
+
         $("#copyFormulaBtn").kendoTooltip({
             filter: "span",
             position: "top",
