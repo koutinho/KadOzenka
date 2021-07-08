@@ -172,7 +172,7 @@ namespace KadOzenka.Dal.Modeling
 		            var notReturnedTypes = list.Where(x => x != KoAlgoritmType.None).Except(returnedResultType).ToList(); 
 		            notReturnedTypes.ForEach(x =>
 		            {
-			            ModelService.ResetTrainingResults(GeneralModel, x);
+			            ModelingService.ResetTrainingResults(GeneralModel, x);
                     });
                 }
             }
@@ -184,7 +184,7 @@ namespace KadOzenka.Dal.Modeling
 
         protected override void RollBackResult()
         {
-	        ModelService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
+	        ModelingService.ResetTrainingResults(GeneralModel, InputParameters.ModelType);
         }
 
         protected override void SendSuccessNotification(OMQueue processQueue)
@@ -326,7 +326,7 @@ namespace KadOzenka.Dal.Modeling
 
         private void SaveImagesToDb(KoAlgoritmType type, TrainingResponse trainingResult)
         {
-	        var existedImages = ModelService.GetModelImages(GeneralModel.Id, type);
+	        var existedImages = ModelingService.GetModelImages(GeneralModel.Id, type);
 	        if (existedImages == null)
 	        {
 		        existedImages = new OMModelTrainingResultImages

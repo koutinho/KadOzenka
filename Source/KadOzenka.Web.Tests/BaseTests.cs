@@ -138,6 +138,7 @@ namespace KadOzenka.Web.UnitTests
 				sp => ObjectsCharacteristicsSourceService.Object);
 			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
 			container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
+			container.AddTransient(typeof(IModelingService), typeof(ModelingService));
 
 			AddServicesToContainer(container);
 

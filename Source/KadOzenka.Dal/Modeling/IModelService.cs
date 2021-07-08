@@ -10,6 +10,7 @@ namespace KadOzenka.Dal.Modeling
 	public interface IModelService
 	{
 		OMModel GetActiveModelEntityByGroupId(long? groupId);
+		List<OMModel> GetGroupModels(long? groupId);
 		OMModel GetModelEntityById(long? modelId);
 		ModelingModelDto GetModelById(long modelId);
 		bool IsModelGroupExist(long modelId);
@@ -21,18 +22,6 @@ namespace KadOzenka.Dal.Modeling
 		void MakeModelActive(long modelId);
 		void DeleteModel(long modelId);
 		void DeleteModelLogically(long modelId, long eventId);
-
-		void ResetTrainingResults(long? modelId, KoAlgoritmType type);
-
-		void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type);
-
-		void UpdateTrainingQualityInfo(long modelId, KoAlgoritmType type, QualityControlInfo newQualityControlInfo);
-
-		TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type);
-
-		Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type);
-
 		string GetFormula(OMModel model, KoAlgoritmType algorithmType);
-		List<OMModel> GetGroupModels(long? groupId);
 	}
 }

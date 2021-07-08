@@ -54,6 +54,7 @@ namespace KadOzenka.Web.Controllers
     public class ModelingController : KoBaseController
     {
         public IModelService ModelService { get; set; }
+        public IModelingService ModelingService { get; set; }
         public IModelObjectsService ModelObjectsService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public IRegisterAttributeService RegisterAttributeService { get; set; }
@@ -72,7 +73,8 @@ namespace KadOzenka.Web.Controllers
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
-	        IModelFactorsRepository modelFactorsRepository)
+	        IModelFactorsRepository modelFactorsRepository,
+            IModelingService modelingService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelService = modelService;
@@ -86,6 +88,7 @@ namespace KadOzenka.Web.Controllers
             ModelObjectsService = modelObjectsService;
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
+            ModelingService = modelingService;
         }
 
 
@@ -453,7 +456,7 @@ namespace KadOzenka.Web.Controllers
 	                dto.DictionaryId = ModelDictionaryService.CreateDictionary(factorModel.DictionaryName, attribute.Type);
                 }
                 ModelFactorsService.AddAutomaticFactor(dto);
-                ModelService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+                ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
                 if (hasFormedObjectArray)
                 {
@@ -479,7 +482,7 @@ namespace KadOzenka.Web.Controllers
                 var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
                 if (mustResetTrainingResult)
                 {
-                    ModelService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+	                ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
                 }
             }
 
@@ -945,7 +948,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelTrainingResult(long modelId, KoAlgoritmType type)
         {
-            var trainingResult = ModelService.GetTrainingResult(modelId, type);
+            var trainingResult = ModelingService.GetTrainingResult(modelId, type);
 
             var model = TrainingDetailsModel.ToModel(trainingResult);
 
@@ -958,7 +961,7 @@ namespace KadOzenka.Web.Controllers
         {
             var dto = model.TrainingQualityInfoModel.FromModel();
 
-            ModelService.UpdateTrainingQualityInfo(model.ModelId, model.Type, dto);
+            ModelingService.UpdateTrainingQualityInfo(model.ModelId, model.Type, dto);
 
             return Ok();
         }
@@ -967,7 +970,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportTrainingResultToExcel(long modelId, KoAlgoritmType type)
         {
-            var fileStream = ModelService.ExportQualityInfoToExcel(modelId, type);
+            var fileStream = ModelingService.ExportQualityInfoToExcel(modelId, type);
 
             HttpContext.Session.Set(modelId.ToString(), fileStream.ToByteArray());
 

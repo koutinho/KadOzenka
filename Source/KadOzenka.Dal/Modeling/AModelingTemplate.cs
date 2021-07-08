@@ -18,6 +18,7 @@ namespace KadOzenka.Dal.Modeling
     {
         private static HttpClient _httpClient;
         protected ModelService ModelService { get; set; }
+        protected IModelingService ModelingService { get; set; }
         protected IModelObjectsRepository ModelObjectsRepository { get; set; }
         protected ModelFactorsService ModelFactorsService { get; set; }
         protected OMQueue ProcessQueue { get; set; }
@@ -28,6 +29,7 @@ namespace KadOzenka.Dal.Modeling
         {
 	        ModelObjectsRepository = new ModelObjectsRepository();
             ModelService = new ModelService();
+            ModelingService = new ModelingService();
             ModelFactorsService = new ModelFactorsService();
             ProcessQueue = processQueue;
             Logger = logger;
