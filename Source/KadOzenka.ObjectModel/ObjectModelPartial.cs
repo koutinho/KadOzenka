@@ -607,6 +607,30 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 82 Таблица, содержащая список слоев для факторов из РГИС
+    /// </summary>
+    public partial class OMRgisLayers
+    {
+
+        public OMRgisLayers()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMRgisLayers(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 102 Адреса в формате Росреестра
     /// </summary>
     public partial class OMAddressRosreestr

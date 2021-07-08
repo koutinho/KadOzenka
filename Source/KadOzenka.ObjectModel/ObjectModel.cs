@@ -590,6 +590,58 @@ namespace ObjectModel.Gbu
 namespace ObjectModel.Gbu
 {
     /// <summary>
+    /// 82 Таблица, содержащая список слоев для факторов из РГИС (GBU_RGIS_LAYERS)
+    /// </summary>
+    [RegisterInfo(RegisterID = 82)]
+    [Serializable]
+    public partial class OMRgisLayers : OMBaseClass<OMRgisLayers>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 8200100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 8200100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _layername;
+        /// <summary>
+        /// 8200200 Название слоя (LAYER_NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 8200200)]
+        public string LayerName
+        {
+            get
+            {
+                CheckPropertyInited("LayerName");
+                return _layername;
+            }
+            set
+            {
+                _layername = value;
+                NotifyPropertyChanged("LayerName");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.Gbu
+{
+    /// <summary>
     /// 102 Адреса в формате Росреестра (GBU_ADDRESS_ROSREESTR)
     /// </summary>
     [RegisterInfo(RegisterID = 102)]
