@@ -1,14 +1,10 @@
-﻿@using KadOzenka.Web.Helpers
-@using KadOzenka.Web.Models.Modeling
+﻿@using KadOzenka.Web.Models.Modeling
 
 <!-- Модальное окно для загрузки справочника меток -->
 <div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
 </div>
 
 <div class="form-horizontal" style="padding: 3%">
-    @Html.RenderHelpButton()
-
-
     <div class="form-group">
         <div id="dictionaryCommandsToolBar"></div>
 
@@ -19,18 +15,20 @@
                 columns.Bound(x => x.AttributeName).Title("Фактор");
                 columns.Bound(x => x.DictionaryName).Title("Словарь");
             })
+            .Selectable()
+            .Pageable()
+            .Sortable()
             .DataSource(dataSource => dataSource
                 .Ajax()
                 .Read(read => read.Action("GetModelDictionaries", "Modeling", new {modelId = ViewBag.ModelId}).Type(HttpVerbs.Get))
+                .PageSize(15)
                 .Model(x =>
                 {
                     x.Id(p => p.Id);
                     x.Field(c => c.AttributeName).Editable(false);
                     x.Field(c => c.DictionaryName).Editable(false);
                     x.Field(c => c.DictionaryId).Editable(false);
-                }))
-            .Selectable()
-            .HtmlAttributes(new {@class = "normalized-factors-grid"}))
+                })))
     </div>
 </div>
 
