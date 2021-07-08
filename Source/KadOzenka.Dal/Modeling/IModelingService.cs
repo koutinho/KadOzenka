@@ -18,5 +18,7 @@ namespace KadOzenka.Dal.Modeling
 
 		Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type);
 		OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type);
+		
+		long? GetDictionaryId(long? groupId, long? factorId);
 	}
 }

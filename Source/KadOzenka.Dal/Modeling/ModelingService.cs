@@ -1,59 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Transactions;
-using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using ObjectModel.KO;
-using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Exceptions;
-using KadOzenka.Dal.Modeling.Repositories;
-using KadOzenka.Dal.Modeling.Resources;
 using Serilog;
-using System.Linq.Expressions;
 using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.Modeling.Formulas;
-using KadOzenka.Dal.RecycleBin;
 using Newtonsoft.Json;
-using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelingService : IModelingService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
-        private IModelService ModelService { get; set; }
-        private IModelingRepository ModelingRepository { get; set; }
-        private IModelObjectsRepository ModelObjectsRepository { get; set; }
-        private IModelFactorsService ModelFactorsService { get; set; }
-        private RecycleBinService RecycleBinService { get; }
+        private IModelService ModelService { get; }
+        private IModelFactorsService ModelFactorsService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
 
-        public ModelingService(IModelingRepository modelingRepository = null,
-	        IModelService modelService = null,
-			IModelObjectsRepository modelObjectsRepository = null,
+        public ModelingService(IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
         {
 	        ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
-			ModelingRepository = modelingRepository ?? new ModelingRepository();
-			RecycleBinService = new RecycleBinService();
-			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
 
 
-        public TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type)
+        public long? GetDictionaryId(long? groupId, long? factorId)
+        {
+	        if (groupId.GetValueOrDefault() == 0 || factorId.GetValueOrDefault() == 0)
+		        return null;
+
+	        var activeModel = ModelService.GetActiveModelEntityByGroupId(groupId);
+	        if (activeModel == null)
+		        return null;
+
+	        var modelFactors = ModelFactorsService.GetGeneralModelAttributes(activeModel.Id);
+	        var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
+
+	        return dictionaryId;
+        }
+
+		public TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type)
         {
 	        var model = ModelService.GetModelEntityById(modelId);
 

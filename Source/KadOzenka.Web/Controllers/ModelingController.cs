@@ -721,17 +721,9 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public JsonResult GetDictionaryId(long groupId, long factorId)
         {
-            if (groupId == 0 || factorId == 0)
-                return new JsonResult(0);
+	        var dictionaryId = ModelingService.GetDictionaryId(groupId, factorId);
 
-            var activeModel = ModelService.GetActiveModelEntityByGroupId(groupId);
-	        if (activeModel == null)
-		        return new JsonResult(0);
-
-	        var modelFactors = ModelFactorsService.GetGeneralModelAttributes(activeModel.Id);
-	        var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
-
-	        return new JsonResult(dictionaryId);
+            return new JsonResult(dictionaryId);
         }
 
         [HttpGet]
