@@ -507,9 +507,19 @@ namespace KadOzenka.Web.Controllers
             return models;
         }
 
+        private List<DropDownTreeItemModel> GetMergedAttributes(long groupId)
+        {
+            var mergedAttributes = new List<DropDownTreeItemModel>();
+            var koAttributes = GetKoAttributes(groupId);
+            mergedAttributes.AddRange(koAttributes);
+            var gbuAttributes = GetGbuAttributesTree();
+            mergedAttributes.AddRange(gbuAttributes);
+            return mergedAttributes;
+        }
+
         private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
         {
-            ViewData["KoAttributes"] = GetKoAttributes(groupId);
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
 
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == groupId).SelectAll().Execute();
 
@@ -550,7 +560,7 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         public ActionResult TourGroupGroupingSettingsPartialRow(int groupId, int index)
         {
-            ViewData["KoAttributes"] = GetKoAttributes(groupId);
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
             var model = new TourGroupGroupingSettingsPartialModel {Index = index};
             return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
         }
