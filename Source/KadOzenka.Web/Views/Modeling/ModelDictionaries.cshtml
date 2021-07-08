@@ -1,5 +1,4 @@
 ﻿@using KadOzenka.Web.Helpers
-@using KadOzenka.Web.Models.DataImport
 @using KadOzenka.Web.Models.Modeling
 
 <!-- Модальное окно для загрузки справочника меток -->
@@ -11,29 +10,10 @@
 
 
     <div class="form-group">
-        @(Html.Kendo().ToolBar()
-            .Name("dictionaryCommandsToolBar")
-            .Items(items => 
-            {
-                items.Add().Type(CommandType.Button)
-                    .Icon("refresh").Click("reloadGrid")
-                    .HtmlAttributes(new { id="reloadGridBtnId", title = "Обновить" });
-
-                items.Add().Type(CommandType.Button)
-                    .Icon("clock").Click("showMarks")
-                    .HtmlAttributes(new { id="showMarksBtnId", title = "Просмотреть метки" });
-                
-                items.Add().Type(CommandType.Button)
-                    .Icon("download").Click("downloadMarksCatalog")
-                    .HtmlAttributes(new { id="downloadMarksCatalogId", title = "Выгрузить справочник меток" });
-                
-                items.Add().Type(CommandType.Button)
-                    .Icon("upload").Enable(!ViewBag.IsReadOnly).Click("showModalToUploadMarksCatalog")
-                    .HtmlAttributes(new { id="uploadMarksCatalogId", title = "Загрузить справочник меток" });
-            }))
+        <div id="dictionaryCommandsToolBar"></div>
 
         @(Html.Kendo().Grid<GeneralModelAttributeModel>()
-            .Name("grid")
+            .Name("modelDictionariesGrid")
             .Columns(columns =>
             {
                 columns.Bound(x => x.AttributeName).Title("Фактор");
@@ -49,7 +29,6 @@
                     x.Field(c => c.DictionaryName).Editable(false);
                     x.Field(c => c.DictionaryId).Editable(false);
                 }))
-            .Events(x => x.DataBound("changeButtonsAbility").Change("changeButtonsAbility"))
             .Selectable()
             .HtmlAttributes(new {@class = "normalized-factors-grid"}))
     </div>
@@ -62,18 +41,58 @@
 <script src="~/js/toolbars.js"></script>
 <script>
     var isReadOnly = '@ViewBag.IsReadOnly' === "True";
-    
+
+
     $(document).ready(function() {
+
+        initToolBar();
+
+        var grid = $("#modelDictionariesGrid").data("kendoGrid");
+        grid.bind("dataBound", changeButtonsAbility);
+        grid.bind("change", changeButtonsAbility);
     });
 
 
 
 
+    function initToolBar() {
+        $("#dictionaryCommandsToolBar").kendoToolBar({
+            items: [
+                {
+                    type: "button",
+                    icon: "refresh",
+                    click: reloadGrid,
+                    attributes: { "id": "reloadGridBtn", "title": "Обновить" }
+                },
+                {
+                    type: "button",
+                    icon: "clock",
+                    click: showMarks,
+                    attributes: { "id": "showMarksBtn", "title": "Просмотреть метки" }
+                },
+                {
+                    type: "button",
+                    icon: "download",
+                    click: downloadMarksCatalog,
+                    attributes: { "id": "downloadMarksCatalogBtn", "title": "Выгрузить справочник меток" }
+                },
+                {
+                    type: "button",
+                    icon: "upload",
+                    click: showModalToUploadMarksCatalog,
+                    enable: '@ViewBag.IsReadOnly' === "False",
+                        attributes: { "id": "uploadMarksCatalogBtn", "title": "Выгрузить справочник меток" }
+                    }
+                ]
+            });
+        }
+
+    
     function changeButtonsAbility() {
-        var showMarksSelector = $('#showMarksBtnId');
-        var downloadMarksSelector = $('#downloadMarksCatalogId');
-        var uploadMarksSelector = $('#uploadMarksCatalogId');
-        $("#reloadGridBtnId").removeAttr('disabled');
+        var showMarksSelector = $('#showMarksBtn');
+        var downloadMarksSelector = $('#downloadMarksCatalogBtn');
+        var uploadMarksSelector = $('#uploadMarksCatalogBtn');
+        $("#reloadGridBtn").removeAttr('disabled');
         var selectedRowData = getSelectedRowInGrid();
         if (selectedRowData) {
             showMarksSelector.removeClass('k-state-disabled');
@@ -94,7 +113,7 @@
 
 
     function reloadGrid() {
-        $('#grid').data('kendoGrid').dataSource.read();
+        $('#modelDictionariesGrid').data('kendoGrid').dataSource.read();
     }
 
 
@@ -146,7 +165,7 @@
 
 
     function getSelectedRowInGrid() {
-        var grid = $("#grid").data("kendoGrid");
+        var grid = $("#modelDictionariesGrid").data("kendoGrid");
         var row = grid.select();
         if (row.length > 0) {
             var data = grid.dataItem(row);

@@ -883,10 +883,15 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult ModelDictionaries(long modelId, KoModelType modelType)
+        public ActionResult ModelDictionaries(long modelId, bool isPartial = false)
         {
-	        ViewBag.ModelId = modelId;
-	        ViewBag.IsReadOnly = modelType == KoModelType.Automatic;
+	        var model = ModelingService.GetModelById(modelId);
+
+	        ViewBag.ModelId = model.ModelId;
+	        ViewBag.IsReadOnly = model.Type == KoModelType.Automatic;
+
+	        if (isPartial)
+		        return PartialView();
 
             return View();
         }

@@ -61,7 +61,7 @@ namespace KadOzenka.Dal.Modeling
 			return model;
         }
 
-		public List<OMModel> GetActiveModelsEntityByGroupId(long? groupId)
+		public List<OMModel> GetGroupModels(long? groupId)
 		{
 			if (groupId == null)
 				throw new Exception("Не передан идентификатор Группы для поиска модели");
@@ -116,6 +116,8 @@ namespace KadOzenka.Dal.Modeling
 	        };
 	        
 	        var model = ModelingRepository.GetById(modelId, selectExpression);
+	        if (model == null)
+		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
 
 			var tour = GetModelTour(model.GroupId);
 

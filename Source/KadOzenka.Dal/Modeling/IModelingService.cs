@@ -33,6 +33,6 @@ namespace KadOzenka.Dal.Modeling
 		Stream ExportQualityInfoToExcel(long modelId, KoAlgoritmType type);
 
 		string GetFormula(OMModel model, KoAlgoritmType algorithmType);
-		List<OMModel> GetActiveModelsEntityByGroupId(long? groupId);
+		List<OMModel> GetGroupModels(long? groupId);
 	}
 }

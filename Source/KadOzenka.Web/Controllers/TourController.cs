@@ -136,7 +136,7 @@ namespace KadOzenka.Web.Controllers
             var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            groupModel.Models = ModelingService.GetActiveModelsEntityByGroupId(groupId)
+            groupModel.Models = ModelingService.GetGroupModels(groupId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),

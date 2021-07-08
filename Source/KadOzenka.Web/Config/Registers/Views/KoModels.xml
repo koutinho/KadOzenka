@@ -57,7 +57,6 @@
         <Tab Caption="Метки" NavigateURL="/Modeling/ModelDictionaries">
           <Parameters>
             <Parameter Key="ModelId" Value="[ObjectId]"/>
-            <Parameter Key="ModelType" Value="[20601500]" ByRef="true"/>
           </Parameters>
         </Tab>
     </Tabs>
