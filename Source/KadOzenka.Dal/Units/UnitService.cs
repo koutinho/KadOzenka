@@ -23,7 +23,6 @@ namespace KadOzenka.Dal.Units
 		private IRegisterAttributeService RegisterAttributeService { get; }
 		private IModelingService ModelingService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
-		private IGroupFactorService GroupFactorService { get; }
 		private IUnitRepository UnitRepository { get; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
@@ -32,7 +31,6 @@ namespace KadOzenka.Dal.Units
 			IRegisterAttributeService registerAttributeService = null,
 			IModelingService modelingService = null,
 			IModelFactorsService modelFactorsService = null,
-			IGroupFactorService groupFactorService = null,
 			IUnitRepository unitRepository = null, 
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
@@ -40,7 +38,6 @@ namespace KadOzenka.Dal.Units
 			RegisterAttributeService = registerAttributeService ?? new RegisterAttributeService();
 			ModelingService = modelingService ?? new ModelingService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
-			GroupFactorService = groupFactorService ?? new GroupFactorService();
 			UnitRepository = unitRepository ?? new UnitRepository();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
@@ -56,16 +53,6 @@ namespace KadOzenka.Dal.Units
 				if (!modelFactorIds.IsEmpty())
 					factorsValues = GetUnitFactors(unit, modelFactorIds);
 			}
-
-			return factorsValues;
-		}
-
-		public List<UnitFactor> GetUnitGroupFactors(OMUnit unit)
-		{
-			var factorsValues = new List<UnitFactor>();
-			var groupFactorIds = GroupFactorService.GetGroupFactors(unit.GroupId).Select(x => x.FactorId).ToList();
-			if (!groupFactorIds.IsEmpty())
-				factorsValues = GetUnitFactors(unit, groupFactorIds);
 
 			return factorsValues;
 		}

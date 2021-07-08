@@ -522,32 +522,6 @@ namespace KadOzenka.Dal.DataExport
                                     true, false);
                             }
                         }
-                        List<OMGroupFactor> group_factors = OMGroupFactor.Where(x => x.GroupId == calc_group.Id).SelectAll().Execute();
-                        foreach (OMGroupFactor factor in group_factors)
-                        {
-                            string attribute_name = "-";
-                            long attribute_id = -1;
-                            string attribute_value = "-";
-                            string attribute_source = "-";
-
-                            GetAttributeValue(_unit, group_unit, task, factor.FactorId, (bool)factor.SignMarket,
-                                out attribute_id,
-                                out attribute_name,
-                                out attribute_value,
-                                out attribute_source);
-
-                            pp++;
-                            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                            DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                                "2.3." + pp.ToString(),
-                                attribute_name,
-                                attribute_value,
-                                attribute_source,
-                                12,
-                                HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                                true, false);
-                        }
-
                     }
                 }
                 #endregion
@@ -585,31 +559,6 @@ namespace KadOzenka.Dal.DataExport
                     }
                 }
 
-                List<OMGroupFactor> gr_factors = OMGroupFactor.Where(x => x.GroupId == group_unit.Id).SelectAll().Execute();
-                foreach (OMGroupFactor factor in gr_factors)
-                {
-                    string attribute_name = "-";
-                    long attribute_id = -1;
-                    string attribute_value = "-";
-                    string attribute_source = "-";
-
-                    GetAttributeValue(_unit, group_unit, task, factor.FactorId, (bool)factor.SignMarket,
-                        out attribute_id,
-                        out attribute_name,
-                        out attribute_value,
-                        out attribute_source);
-
-                    pp++;
-                    idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                    DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                        "2.3." + pp.ToString(),
-                        attribute_name,
-                        attribute_value,
-                        attribute_source,
-                        12,
-                        HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                        true, false);
-                }
                 #endregion
 
                 #endregion

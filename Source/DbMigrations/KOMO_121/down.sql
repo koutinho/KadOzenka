@@ -28,3 +28,35 @@ VALUES (1000264, 'Основная раскладка для представления Справочников Моделировани
   <LoadRelations>false</LoadRelations>
 </QSQuery>', 0, null, null, 1, null, 0, 'ModelingDictionaries', null, null, 0);
 
+
+
+
+
+INSERT INTO core_register (registerid, registername, registerdescription, allpri_table, object_table, quant_table, track_changes_column, storage_type, object_sequence, is_virtual, contains_quant_in_future, db_connection_name, track_changes_userid, track_changes_date, is_deleted, allpri_partitioning, main_register) 
+VALUES (208, 'KO.GroupFactor', 'Факторы группы', null, null, 'KO_GROUP_FACTOR', null, 4, 'REG_OBJECT_SEQ', 0, 0, null, null, null, 0, null, null);
+
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (20800100, 'Идентификатор', 208, 1, null, null, 'ID', null, null, 1, null, null, 'Id', 0, null, null, null, 0, null, null, 0);
+
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (20800200, 'Идентификатор группы', 208, 1, null, null, 'GROUP_ID', null, null, null, null, null, 'GroupId', 1, null, null, null, 0, null, null, 0);
+
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (20800300, 'Идентификатор фактора', 208, 1, null, null, 'FACTOR_ID', null, null, null, null, null, 'FactorId', 1, null, null, null, 0, null, null, 0);
+
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (20800400, 'Признак использования метки', 208, 3, null, null, 'SIGN_NARKET', null, null, null, null, null, 'SignMarket', 1, null, null, null, 0, null, null, 0);
+
+create table ko_group_factor
+(
+    id          bigint not null
+        constraint reg_208_q_pk
+            primary key,
+    group_id    bigint not null,
+    factor_id   bigint not null,
+    sign_narket smallint
+);
+
+alter table ko_group_factor
+    owner to postgres;
+

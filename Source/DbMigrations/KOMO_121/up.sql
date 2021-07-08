@@ -37,3 +37,9 @@ update core_register_attribute set referenceid=227 where id=26400300;
 -- ”даление раскадки дл€ справочников моделировани€
 delete from core_layout_details where layoutid=1000264;
 delete from core_layout where layoutid=1000264;
+
+--удаление таблицы с факторами группы
+delete from core_register_attribute where registerid=208;
+delete from core_register where registerid=208;
+DROP TABLE KO_GROUP_FACTOR;
+

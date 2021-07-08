@@ -505,31 +505,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 208 Факторы группы
-    /// </summary>
-    public partial class OMGroupFactor
-    {
-        /// <summary>
-        /// Ссылка на (205 Группы/Подгруппы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
-
-        /// <summary>
-        /// Ссылка на (931 Список показателей реестра)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 210 Факторы модели
     /// </summary>
     public partial class OMModelFactor

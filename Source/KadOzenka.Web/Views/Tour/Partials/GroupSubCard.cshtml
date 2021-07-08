@@ -80,7 +80,7 @@
             </div>
         </div>
     </li>
-    <li id="Section_GroupFactors" data-expand>
+    @*<li id="Section_GroupFactors" data-expand>
         <span>Факторы группы</span>
         <div>
             <div class="row">
@@ -93,7 +93,7 @@
                 </div>
             </div>
         </div>
-    </li>
+    </li>*@
     <li id="Section_GroupFactors" data-expand>
         <span>Группы, на основе которых считается текущая группа</span>
         <div>
@@ -350,7 +350,7 @@
             }
         });
 
-        kendo.ui.progress($('#groupFactorsContent'), true);
+        /*kendo.ui.progress($('#groupFactorsContent'), true);
         $.ajax({
             type: 'GET',
             url: '@Url.Action("GroupFactors", "Tour")',
@@ -364,7 +364,7 @@
             complete: function() {
                 kendo.ui.progress($('#groupFactorsContent'), false);
             }
-        });
+        });*/
     }
 
     function initModelCard() {

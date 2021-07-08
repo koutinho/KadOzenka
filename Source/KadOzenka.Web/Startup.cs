@@ -163,7 +163,6 @@ namespace CIPJS
             services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
             services.AddTransient(typeof(IUnitService), typeof(UnitService));
             services.AddTransient(typeof(ITourFactorService), typeof(TourFactorService));
-            services.AddTransient(typeof(IGroupFactorService), typeof(GroupFactorService));
             services.AddTransient(typeof(IInheritanceFactorSettingsService), typeof(InheritanceInheritanceFactorSettingsService));
             services.AddTransient(typeof(IFactorSettingsRepository), typeof(FactorSettingsRepository));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));

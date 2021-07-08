@@ -1014,12 +1014,6 @@ namespace ObjectModel.KO
         public List<ObjectModel.KO.OMModel> Model { get; set; }
 
         /// <summary>
-        /// Ссылка на (208 Факторы группы)
-        /// </summary>
-        [Reference]
-        public List<ObjectModel.KO.OMGroupFactor> GroupFactor { get; set; }
-
-        /// <summary>
         /// Ссылка на (212 Группы тура)
         /// </summary>
         [Reference]
@@ -1047,8 +1041,6 @@ namespace ObjectModel.KO
             Unit = new List<ObjectModel.KO.OMUnit>();
 
             Model = new List<ObjectModel.KO.OMModel>();
-
-            GroupFactor = new List<ObjectModel.KO.OMGroupFactor>();
 
             TourGroup = new List<ObjectModel.KO.OMTourGroup>();
 
@@ -1098,30 +1090,6 @@ namespace ObjectModel.KO
 
         }
         public OMModel(bool trackPropertyChanging) : this()
-        {
-            CollectPropertyChanged = trackPropertyChanging;
-        }
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 208 Факторы группы
-    /// </summary>
-    public partial class OMGroupFactor
-    {
-
-        public OMGroupFactor()
-        {
-
-            Id = -1;
-
-            CollectPropertyChanged = true;
-            PropertyChangedList = new HashSet<String>();
-
-        }
-        public OMGroupFactor(bool trackPropertyChanging) : this()
         {
             CollectPropertyChanged = trackPropertyChanging;
         }

@@ -7,8 +7,6 @@ namespace KadOzenka.Web.Models.Unit
 		[Description("Все факторы")]
 		AllFactors,
 		[Description("Факторы модели")]
-		ModelFactors,
-		[Description("Факторы группы")]
-		GroupFactors
+		ModelFactors
 	}
 }

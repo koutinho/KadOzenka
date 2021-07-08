@@ -3205,17 +3205,17 @@ namespace ObjectModel.KO
             string res = string.Empty;
             if (_parent_group == null) return res;
 
-            if (_parent_group.GroupFactor.Count == 0)
-                _parent_group.GroupFactor = OMGroupFactor.Where(x => x.GroupId == _parent_group.Id).SelectAll().Execute();
-            foreach (OMGroupFactor koeff in _parent_group.GroupFactor)
-            {
-                RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(koeff.FactorId));
-                if (attributeData != null)
-                {
-                    res += ((/*koeff.IS_METKA*/true ? ("Корректировка(" + attributeData.Name + ")") : (attributeData.Name)) + "*");
-                }
+            //if (_parent_group.GroupFactor.Count == 0)
+            //    _parent_group.GroupFactor = OMGroupFactor.Where(x => x.GroupId == _parent_group.Id).SelectAll().Execute();
+            //foreach (OMGroupFactor koeff in _parent_group.GroupFactor)
+            //{
+            //    RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(koeff.FactorId));
+            //    if (attributeData != null)
+            //    {
+            //        res += ((/*koeff.IS_METKA*/true ? ("Корректировка(" + attributeData.Name + ")") : (attributeData.Name)) + "*");
+            //    }
 
-            }
+            //}
             if (res.Length > 1)
             {
                 res = res.TrimEnd('*');
