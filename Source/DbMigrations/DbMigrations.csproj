@@ -5,4 +5,10 @@
     <Configurations>Debug;Release;Local</Configurations>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Update="**\*.sql" CopyToOutputDirectory="PreserveNewest" />
+	<None Update="*.yml" CopyToOutputDirectory="PreserveNewest" />
+	<None Update="**\Dockerfile*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

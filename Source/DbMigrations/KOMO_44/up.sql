@@ -1,1 +1,0 @@
-﻿update core_layout_details set attributeid=20102500, headertext='Дата оценки' where id=1002351;
