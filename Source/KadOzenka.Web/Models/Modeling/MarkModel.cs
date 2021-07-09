@@ -28,7 +28,7 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				Id = Id,
 				DictionaryId = dictionaryId,
-				CalcValue = Metka,
+				CalculationValue = Metka,
 				Value = Value
 			};
 		}

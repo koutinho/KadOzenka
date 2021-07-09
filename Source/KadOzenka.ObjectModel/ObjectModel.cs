@@ -9778,12 +9778,12 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _calculationvalue;
+        private decimal _calculationvalue;
         /// <summary>
         /// 26500400 Значение для расчета (CALCULATION_VALUE)
         /// </summary>
         [RegisterAttribute(AttributeID = 26500400)]
-        public decimal? CalculationValue
+        public decimal CalculationValue
         {
             get
             {

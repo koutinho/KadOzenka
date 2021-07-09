@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		private decimal GetExpectedCadastralConstForDefaultMark(OMModelingDictionariesValues mark, OMModelFactor factor)
 		{
-			return mark.CalculationValue.GetValueOrDefault() * factor.B0InFormula;
+			return mark.CalculationValue * factor.B0InFormula;
 		}
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)

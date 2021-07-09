@@ -656,7 +656,7 @@ namespace KadOzenka.Dal.KoObject
                         .Execute();
                     var dictStringValues = setting.DictionaryValues.Split(",");
                     var dictFilterValues = dictStringValues.Select(x => x.ParseToDecimal()).Distinct().ToList();
-                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.CalculationValue.GetValueOrDefault())).Select(x=>x.Value).ToList();
+                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.CalculationValue)).Select(x=>x.Value).ToList();
                     listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), QSConditionType.In, dictFilter));
                     continue;
                 }

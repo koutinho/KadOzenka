@@ -80,7 +80,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var firstMark);
 			var secondMark = new MarkBuilder().Dictionary(factor.DictionaryId).Value(firstMark.Value)
 				//чтобы случайно не создать такое же значение, как в mark
-				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.CalculationValue.GetValueOrDefault())
+				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.CalculationValue)
 				.Build();
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
@@ -205,7 +205,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		private decimal GetExpectedCadastralConstForDefaultMark(OMModelingDictionariesValues mark, OMModelFactor factor)
 		{
 			return (decimal) Math.Pow(
-				       (double) (mark.CalculationValue.GetValueOrDefault() + factor.WeightInFormula),
+				       (double) (mark.CalculationValue + factor.WeightInFormula),
 				       (double) factor.B0InFormula);
 		}
 

@@ -259,13 +259,13 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var dictionary = GetDictionaryById(dto.DictionaryId);
 
-			ValidateMark(dictionary, dto.Value, -1);
+			ValidateMark(dictionary, dto);
 
 			return new OMModelingDictionariesValues
 			{
 				DictionaryId = dto.DictionaryId,
 				Value = dto.Value,
-				CalculationValue = dto.CalcValue
+				CalculationValue = dto.CalculationValue.GetValueOrDefault()
 			}.Save();
 		}
 
@@ -275,10 +275,10 @@ namespace KadOzenka.Dal.Modeling
 
 			var dictionary = GetDictionaryById(dto.DictionaryId);
 
-			ValidateMark(dictionary, dto.Value, dto.Id);
+			ValidateMark(dictionary, dto);
 
 			mark.Value = dto.Value;
-			mark.CalculationValue = dto.CalcValue;
+			mark.CalculationValue = dto.CalculationValue.GetValueOrDefault();
 			mark.Save();
 		}
 
@@ -303,22 +303,26 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateMark(OMModelingDictionary dictionary, string value, long markId)
+		private void ValidateMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
 		{
-			var isEmptyValue = string.IsNullOrWhiteSpace(value);
+			var isEmptyValue = string.IsNullOrWhiteSpace(mark.Value);
+			if (isEmptyValue)
+				throw new Exception("Значение может быть пустым");
+			if(mark.CalculationValue == null)
+				throw new Exception("Метка не может быть пустой");
 
-			var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
-			var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
-			var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
+			var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && mark.Value.TryParseToDecimal(out _);
+			var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && mark.Value.TryParseToDateTime(out _);
+			var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && mark.Value.TryParseToBoolean(out _);
 
 			if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
-				throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}' (тип фактора, к которому привязан словарь)");
+				throw new Exception($"Значение '{mark.Value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}' (тип фактора, к которому привязан словарь)");
 
 			var isTheSameMarkExists = OMModelingDictionariesValues
-				.Where(x => x.Id != markId && x.DictionaryId == dictionary.Id && x.Value == value)
+				.Where(x => x.Id != mark.Id && x.DictionaryId == dictionary.Id && x.Value == mark.Value)
 				.ExecuteExists();
 			if (isTheSameMarkExists)
-				throw new Exception($"Значение '{value}' в справочнике '{dictionary.Name}' уже существует.");
+				throw new Exception($"Значение '{mark.Value}' в справочнике '{dictionary.Name}' уже существует.");
 		}
 
 		#endregion
