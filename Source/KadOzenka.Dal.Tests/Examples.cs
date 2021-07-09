@@ -28,7 +28,6 @@ namespace KadOzenka.Dal.Tests
 
 
 			//примеры тестов для длительных процессов
-			tmp = nameof(ModelDictionaryImportFromExcelLongProcessTest); //простой
 			tmp = nameof(TaskForCodLongProcessTest); //сложнее, возможно, подобный код не нужно тестить
 		}
 	}

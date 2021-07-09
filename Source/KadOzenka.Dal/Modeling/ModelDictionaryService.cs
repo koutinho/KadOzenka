@@ -459,7 +459,7 @@ namespace KadOzenka.Dal.Modeling
 			var options = new ParallelOptions
 			{
 				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 1
+				MaxDegreeOfParallelism = 5
 			};
 			var locked = new object();
 			var existedValues = GetMarks(dictionary.Id);
