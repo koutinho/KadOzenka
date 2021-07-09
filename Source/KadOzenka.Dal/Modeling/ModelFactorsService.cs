@@ -348,6 +348,7 @@ namespace KadOzenka.Dal.Modeling
 			if (factor.DictionaryId != null && dto.MarkType != MarkType.Default)
 			{
 				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+				factor.DictionaryId = null;
 			}
 
 			factor.Weight = dto.Weight;
