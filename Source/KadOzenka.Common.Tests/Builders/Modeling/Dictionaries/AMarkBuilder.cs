@@ -1,6 +1,6 @@
 ﻿using ObjectModel.KO;
 
-namespace KadOzenka.Common.Tests.Builders.Modeling
+namespace KadOzenka.Common.Tests.Builders.Modeling.Dictionaries
 {
 	public abstract class AMarkBuilder
 	{

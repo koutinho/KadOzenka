@@ -166,6 +166,8 @@ namespace CIPJS
             services.AddTransient(typeof(IInheritanceFactorSettingsService), typeof(InheritanceInheritanceFactorSettingsService));
             services.AddTransient(typeof(IFactorSettingsRepository), typeof(FactorSettingsRepository));
             services.AddTransient(typeof(IModelingService), typeof(ModelingService));
+            services.AddTransient(typeof(IModelDictionaryRepository), typeof(ModelDictionaryRepository));
+            services.AddTransient(typeof(IModelMarksRepository), typeof(ModelMarksRepository));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 
             services.AddSingleton<BackgroundProcessWidgetService>();

@@ -11,6 +11,7 @@ using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
 using KadOzenka.Dal.Units.Repositories;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
+using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;

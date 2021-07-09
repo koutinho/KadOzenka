@@ -22,6 +22,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using KadOzenka.Dal.Modeling.Exceptions.Dictionaries;
+using KadOzenka.Dal.Modeling.Repositories;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -29,10 +31,22 @@ namespace KadOzenka.Dal.Modeling
 	{
 		public int RowsCount { get; set; } = 1;
 		public int CurrentRow { get; set; }
+		private IModelDictionaryRepository ModelDictionaryRepository { get; }
+		private IModelMarksRepository ModelMarksRepository { get; }
 
 		private const long MaxRowInFileDuringImport = 1000;
 		private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
 		private static readonly string RegisterViewId = "ModelingDictionaries";
+
+
+		public ModelDictionaryService(IModelDictionaryRepository modelDictionaryRepository = null,
+			IModelMarksRepository modelMarksRepository = null)
+		{
+			ModelDictionaryRepository = modelDictionaryRepository ?? new ModelDictionaryRepository();
+			ModelMarksRepository = modelMarksRepository ?? new ModelMarksRepository();
+		}
+		
+
 
 		public bool MustUseLongProcess(Stream fileStream)
 		{
@@ -42,6 +56,8 @@ namespace KadOzenka.Dal.Modeling
 
 			return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
 		}
+
+
 
 		#region Dictionary
 
@@ -73,7 +89,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public OMModelingDictionary GetDictionaryById(long id)
 		{
-			var dictionary = OMModelingDictionary.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			var dictionary = ModelDictionaryRepository.GetById(id, null);
 			if (dictionary == null)
 				throw new Exception($"Не найден справочник с ИД {id}");
 
@@ -261,12 +277,14 @@ namespace KadOzenka.Dal.Modeling
 
 			ValidateMark(dictionary, dto);
 
-			return new OMModelingDictionariesValues
+			var mark = new OMModelingDictionariesValues
 			{
 				DictionaryId = dto.DictionaryId,
 				Value = dto.Value,
 				CalculationValue = dto.CalculationValue.GetValueOrDefault()
-			}.Save();
+			};
+
+			return ModelMarksRepository.Save(mark);
 		}
 
 		public void UpdateMark(DictionaryMarkDto dto)
@@ -307,22 +325,20 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var isEmptyValue = string.IsNullOrWhiteSpace(mark.Value);
 			if (isEmptyValue)
-				throw new Exception("Значение может быть пустым");
-			if(mark.CalculationValue == null)
-				throw new Exception("Метка не может быть пустой");
+				throw new EmptyMarkValueException();
+			if (mark.CalculationValue == null)
+				throw new EmptyMarkCalculationValueException();
 
-			var canParseToNumber = !isEmptyValue && (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && mark.Value.TryParseToDecimal(out _);
-			var canParseToDate = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Date && mark.Value.TryParseToDateTime(out _);
-			var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && mark.Value.TryParseToBoolean(out _);
+			var canParseToNumber = (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && mark.Value.TryParseToDecimal(out _);
+			var canParseToDate = dictionary.Type_Code == ModelDictionaryType.Date && mark.Value.TryParseToDateTime(out _);
+			var canParseToBoolean = dictionary.Type_Code == ModelDictionaryType.Boolean && mark.Value.TryParseToBoolean(out _);
 
 			if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
 				throw new Exception($"Значение '{mark.Value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}' (тип фактора, к которому привязан словарь)");
 
-			var isTheSameMarkExists = OMModelingDictionariesValues
-				.Where(x => x.Id != mark.Id && x.DictionaryId == dictionary.Id && x.Value == mark.Value)
-				.ExecuteExists();
+			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
 			if (isTheSameMarkExists)
-				throw new Exception($"Значение '{mark.Value}' в справочнике '{dictionary.Name}' уже существует.");
+				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
 		}
 
 		#endregion

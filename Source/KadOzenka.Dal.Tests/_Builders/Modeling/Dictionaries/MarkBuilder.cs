@@ -1,8 +1,8 @@
 ﻿using KadOzenka.Common.Tests;
-using KadOzenka.Common.Tests.Builders.Modeling;
+using KadOzenka.Common.Tests.Builders.Modeling.Dictionaries;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.UnitTests._Builders.Modeling
+namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries
 {
 	public class MarkBuilder : AMarkBuilder
 	{
