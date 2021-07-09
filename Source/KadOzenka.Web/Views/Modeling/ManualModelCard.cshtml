@@ -500,7 +500,16 @@
     function copyFormula(btn) {
         btn.preventDefault();
         var formula = $("#Formula").val();
-        navigator.clipboard.writeText(formula);
+        //работает только через https
+        //navigator.clipboard.writeText(formula);
+        var proxy = document.createElement('textarea');
+        $(proxy).val(formula)
+            .prop('readonly', true)
+            .css({"position" : "absolute", "left": "9999px"})
+            .appendTo($('body'));
+        proxy.select();
+        document.execCommand('copy');
+        $(proxy).remove();
         var tooltip = $("#copyFormulaBtn").data("kendoTooltip");
         tooltip.show();
     }
