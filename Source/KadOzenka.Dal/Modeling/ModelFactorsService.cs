@@ -345,6 +345,10 @@ namespace KadOzenka.Dal.Modeling
 			ValidateManualFactor(dto);
 
 			var factor = GetFactorById(dto.Id);
+			if (factor.DictionaryId != null && dto.MarkType != MarkType.Default)
+			{
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+			}
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
