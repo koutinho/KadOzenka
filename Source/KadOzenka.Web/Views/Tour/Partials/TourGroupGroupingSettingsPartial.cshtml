@@ -22,7 +22,7 @@
                     .DataValueField("Value").DataTextField("Text")
                     .DataSource(source =>
                     {
-                        source.Read(read => { read.Action("GetDictionaries", "Modeling"); })
+                        source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
                             .ServerFiltering(false);
                     }))
             </div>

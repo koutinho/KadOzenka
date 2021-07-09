@@ -1,0 +1,4 @@
+﻿<RootElement>
+    <ControlElement Caption="Значение" ID="item_value" OwnType="Text" AttributeNumber="27100300" QueryOperation="Like" />
+    <ControlElement Caption="Код" ID="item_calc_value" OwnType="Text" AttributeNumber="27100400" QueryOperation="Equal" />
+</RootElement>

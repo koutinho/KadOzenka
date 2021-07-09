@@ -1892,6 +1892,62 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 270 Справочники группировки
+    /// </summary>
+    public partial class OMGroupingDictionary
+    {
+
+
+        /// <summary>
+        /// Ссылка на (271 Справочники группировки. Значения справочников)
+        /// </summary>
+        [Reference]
+        public List<ObjectModel.KO.OMGroupingDictionariesValues> GroupingDictionariesValues { get; set; }
+        public OMGroupingDictionary()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+            GroupingDictionariesValues = new List<ObjectModel.KO.OMGroupingDictionariesValues>();
+
+        }
+        public OMGroupingDictionary(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 271 Справочники группировки. Значения справочников
+    /// </summary>
+    public partial class OMGroupingDictionariesValues
+    {
+
+        public OMGroupingDictionariesValues()
+        {
+
+            Id = -1;
+
+            CollectPropertyChanged = true;
+            PropertyChangedList = new HashSet<String>();
+
+        }
+        public OMGroupingDictionariesValues(bool trackPropertyChanging) : this()
+        {
+            CollectPropertyChanged = trackPropertyChanging;
+        }
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>
