@@ -137,9 +137,9 @@ namespace KadOzenka.Dal.Modeling
 
 			if (dictionary.Type_Code == ModelDictionaryType.String)
 			{
-				var referenceItems = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
+				var marks = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
 
-				return referenceItems?.FirstOrDefault(x => x.Value == stringValue)?.CalculationValue ?? 1;
+				return marks?.FirstOrDefault(x => x.Value == stringValue)?.CalculationValue ?? 1;
 			}
 
 			return 0;
@@ -152,11 +152,11 @@ namespace KadOzenka.Dal.Modeling
 
 			if (dictionary.Type_Code == ModelDictionaryType.Date)
 			{
-				var referenceItems = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
+				var marks = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
 
-				return referenceItems?.Select(x => new
+				return marks?.Select(x => new
 				{
-					Key = DateTime.TryParse(x.Value, out var parsedDate) ? parsedDate : (DateTime?)null,
+					Key = x.Value.TryParseToDateTime(out var parsedDate) ? parsedDate : (DateTime?)null,
 					Value = x.CalculationValue
 				}).FirstOrDefault(x => x.Key == date)?.Value ?? 1;
 			}
@@ -171,11 +171,11 @@ namespace KadOzenka.Dal.Modeling
 			//todo separate
 			if (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal)
 			{
-				var referenceItems = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
+				var marks = dictionary.ModelingDictionariesValues ?? GetMarks(dictionary.Id);
 
-				return referenceItems?.Select(x => new
+				return marks?.Select(x => new
 				{
-					Key = decimal.TryParse(x.Value, out var res) ? res : decimal.Zero,
+					Key = x.Value.TryParseToDecimal(out var res) ? res : 0,
 					Value = x.CalculationValue
 				}).FirstOrDefault(x => x.Key == number)?.Value ?? 1;
 			}
