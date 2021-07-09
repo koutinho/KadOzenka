@@ -1,0 +1,154 @@
+-- Точно необходимы
+CREATE SEQUENCE public.core_srd_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+ALTER SEQUENCE public.core_srd_seq RESTART WITH 62645;
+
+
+CREATE SEQUENCE public.dashboards_dashboard_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 1000000000 START 1
+  CACHE 1;
+ALTER SEQUENCE public.dashboards_dashboard_seq RESTART WITH 10000710;
+
+
+CREATE SEQUENCE public.reg_object_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+ALTER SEQUENCE public.reg_object_seq RESTART WITH 56175416;
+
+
+CREATE SEQUENCE public.core_error_log_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+ALTER SEQUENCE public.core_error_log_seq RESTART WITH 6777186;
+
+
+--для колонок раскладки
+CREATE SEQUENCE public.core_layout_det_id_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9999999999999 START 2
+  CACHE 1;
+ALTER SEQUENCE public.core_layout_det_id_seq RESTART WITH 1588;
+
+
+--для мягкого удаления
+CREATE SEQUENCE public.common_recycle_bin_id_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 1
+  CACHE 1;
+ALTER SEQUENCE public.common_recycle_bin_id_seq RESTART WITH 1;
+
+
+CREATE SEQUENCE public.core_diagnostics_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+ALTER SEQUENCE public.core_diagnostics_seq RESTART WITH 113523;
+
+
+CREATE SEQUENCE public.core_layout_id_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9999999999999 START 2
+  CACHE 1;
+ALTER SEQUENCE public.core_layout_id_seq RESTART WITH 130;
+
+
+CREATE SEQUENCE public.qry_qryid_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+ALTER SEQUENCE public.qry_qryid_seq RESTART WITH 25;
+
+
+CREATE SEQUENCE public.qryfilter_qryfilterid_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+
+
+CREATE SEQUENCE public.reference_id_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+
+-- Требуется для загрузки файлов по списку и добавлении документа
+CREATE SEQUENCE public.seq_core_td
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+ALTER SEQUENCE public.seq_core_td RESTART WITH 1489;
+
+
+CREATE SEQUENCE public.treehelper_id_seq
+  INCREMENT 1 MINVALUE 1
+  MAXVALUE 9223372036854775807 START 2
+  CACHE 1;
+
+-- Требуется для сохранение значений в алпри таблицы
+ CREATE SEQUENCE public.reg_allpri_seq
+   INCREMENT 1 MINVALUE 1
+   MAXVALUE 9223372036854775807 START 2
+   CACHE 1;
+ ALTER SEQUENCE public.reg_allpri_seq RESTART WITH 1;
+
+
+-- Возможно потребуется
+
+-- CREATE SEQUENCE public.core_reg_attachments_id_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9223372036854775807 START 2
+--   CACHE 1;
+
+
+
+-- CREATE SEQUENCE public.core_updstru_log_id_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9999999999999 START 2
+--   CACHE 1;
+
+-- CREATE SEQUENCE public.gbu_kadastr_kvartal_id_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9223372036854775807 START 1
+--   CACHE 1;
+-- ALTER SEQUENCE public.gbu_kadastr_kvartal_id_seq RESTART WITH 2;
+
+-- CREATE SEQUENCE public.ko_compliance_guide_id_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 2147483647 START 1
+--   CACHE 1;
+-- ALTER SEQUENCE public.ko_compliance_guide_id_seq RESTART WITH 4503;
+
+-- CREATE SEQUENCE public.market_coeff_for_outliers_checking_id_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9223372036854775807 START 1
+--   CACHE 1;
+-- ALTER SEQUENCE public.market_coeff_for_outliers_checking_id_seq RESTART WITH 183;
+
+-- CREATE SEQUENCE public.reg_quant_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9223372036854775807 START 2
+--   CACHE 1;
+
+-- CREATE SEQUENCE public.regnomsequences_id_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9223372036854775807 START 2
+--   CACHE 1;
+
+-- CREATE SEQUENCE public.sud_dopanaliz_log_id_seq
+--   INCREMENT 1 MINVALUE 0
+--   MAXVALUE 9223372036854775807 START 0
+--   CACHE 1;
+-- ALTER SEQUENCE public.sud_dopanaliz_log_id_seq RESTART WITH 703298;
+
+-- CREATE SEQUENCE public.system_daily_stat_file_stor_seq
+--   INCREMENT 1 MINVALUE 1
+--   MAXVALUE 9223372036854775807 START 1
+--   CACHE 1;
+-- ALTER SEQUENCE public.system_daily_stat_file_stor_seq RESTART WITH 3546;
+
+
+

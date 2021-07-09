@@ -11,63 +11,7 @@ namespace KadOzenka.Dal.DataExport
 {
     public static class DataExporterKO
     {
-        /// <summary>
-        /// Выгрузка значений меток по фактору и группе в формате Excel
-        /// </summary>
-        public static Stream ExportMarkerToExcel(long groupId, long factorId)
-        {
-            ExcelFile excelTemplate = new ExcelFile();
-
-            var mainWorkSheet = excelTemplate.Worksheets.Add("Метки");
-
-            DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
-
-            List<ObjectModel.KO.OMMarkCatalog> objs = ObjectModel.KO.OMMarkCatalog.Where(x => x.GroupId == groupId && x.FactorId == factorId).SelectAll().Execute();
-            int curIndex = 0;
-            if (objs.Count > 0)
-            {
-                CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-                ParallelOptions options = new ParallelOptions
-                {
-                    CancellationToken = cancelTokenSource.Token,
-                    MaxDegreeOfParallelism = 20
-                };
-
-                object locked = new object();
-                List<List<object>> values = new List<List<object>>();
-
-                Parallel.ForEach(objs, options, obj =>
-                {
-                    curIndex++;
-                    if (curIndex % 40 == 0) Console.WriteLine(curIndex);
-
-                    #region Заголовок объекта
-                    List<object> value = new List<object>();
-                    value.Add(obj.ValueFactor);
-                    value.Add(obj.MetkaFactor);
-                    #endregion
-
-                    lock (locked)
-                    {
-                        values.Add(value);
-                    }
-                });
-
-                int row = 1;
-                foreach (List<object> value in values)
-                {
-                    DataExportCommon.AddRow(mainWorkSheet, row, value.ToArray());
-                    row++;
-                }
-                Console.WriteLine(values.Count);
-            }
-
-            MemoryStream stream = new MemoryStream();
-            excelTemplate.Save(stream, GemBox.Spreadsheet.SaveOptions.XlsxDefault);
-            stream.Seek(0, SeekOrigin.Begin);
-            return stream;
-        }
-        /// <summary>
+	    /// <summary>
         /// Выгрузка списка значений по фактору и группе в формате Excel
         /// </summary>
         public static Stream ExportMarkerListToExcel(long groupId, long factorId)

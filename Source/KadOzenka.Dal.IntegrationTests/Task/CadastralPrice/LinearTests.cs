@@ -33,11 +33,11 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			var errors = PerformCalculation(Task.Id, Group.Id);
 
 			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-			var expectedCadastralCost = LinearModel.A0ForLinearInFormula + GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValueForIntegerFactor) +
-			                            GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) +
-			                            GetExpectedCadastralCostForStraightType(factorWithStraightMark) +
-			                            GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = LinearModel.A0ForLinearInFormula + GetExpectedCostForNoneMark(factorWithoutMark, UnitFactorValueForIntegerFactor) +
+			                   GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) +
+			                   GetExpectedCadastralCostForStraightType(factorWithStraightMark) +
+			                   GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		

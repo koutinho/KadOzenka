@@ -37,8 +37,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 							 GetExpectedCadastralConstForDefaultMark(mark, factorWithDefaultMark) +
 							 GetExpectedCadastralCostForStraightType(factorWithStraightMark) +
 							 GetExpectedCadastralCostForReverseMark(factorWithReverseMark);
-			var expectedCadastralCost = ExponentialModel.A0ForExponentialInFormula * (decimal)Math.Exp((double)factorsSum);
-			CheckCalculatedUnit(Unit.Id, expectedCadastralCost);
+			var expectedUpks = ExponentialModel.A0ForExponentialInFormula * (decimal)Math.Exp((double)factorsSum);
+			CheckCalculatedUnit(Unit.Id, expectedUpks);
 		}
 
 		

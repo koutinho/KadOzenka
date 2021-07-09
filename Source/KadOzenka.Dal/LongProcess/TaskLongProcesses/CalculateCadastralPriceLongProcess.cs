@@ -143,7 +143,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			if (settings.IsAllGroups)
 			{
-				_errorsDuringCalculation = CalculateByOldRealization(settings);
+				throw new Exception("Расчет не поддерживается");
 			}
 			else
 			{
@@ -177,9 +177,10 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					}
 					else
 					{
-						settings.SelectedGroupIds = new List<long> {group.Id};
-						var errors = CalculateByOldRealization(settings);
-						_errorsDuringCalculation.AddRange(errors);
+						throw new Exception($"Расчет для модели '{activeGroupModel.Name}' не поддерживается");
+						//settings.SelectedGroupIds = new List<long> {group.Id};
+						//var errors = CalculateByOldRealization(settings);
+						//_errorsDuringCalculation.AddRange(errors);
 					}
 				});
 			}
@@ -217,7 +218,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				unitsPackage.ForEach(currentUnit =>
 				{
-					double cost = 0;
+					decimal upks = 0;
 					try
 					{
 						CheckCancellationToken(cancellationToken, processConfiguration.CancellationTokenSource,
@@ -226,9 +227,9 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 						unitsPackageFactors.TryGetValue(currentUnit.Id, out var currentUnitFactors);
 						ValidateUnitBeforeCalculation(currentUnit, currentUnitFactors, modelFactors);
 
-						cost = CalculateCadastralCost(formula, modelFactors, currentUnitFactors, marks);
-						currentUnit.CadastralCost = (decimal?) cost;
-						currentUnit.Upks = currentUnit.CadastralCost / currentUnit.Square.Value;
+						upks = (decimal) CalculateUpks(formula, modelFactors, currentUnitFactors, marks);
+						currentUnit.Upks = upks;
+						currentUnit.CadastralCost = upks * currentUnit.Square.Value;
 						UnitRepository.Save(currentUnit);
 
 						Interlocked.Increment(ref processedUnitsCount);
@@ -239,13 +240,13 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					}
 					catch (OverflowException e)
 					{
-						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'. Переполнение decimal. Рассчитанная КС равна '{CalculatedCost}'", currentUnit.CadastralNumber, cost);
+						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'. Переполнение decimal. Рассчитанная УПКС равна '{CalculatedCost}'", currentUnit.CadastralNumber, upks);
 
-						AddError(currentUnit, groupId, $"Рассчитанная КС невалидна (слишком большое, либо слишком маленькое число). {cost}");
+						AddError(currentUnit, groupId, $"Рассчитанная УПКС невалидна (слишком большое, либо слишком маленькое число). {upks}");
 					}
 					catch (Exception e)
 					{
-						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'. Рассчитанная КС равна '{CalculatedCost}'", currentUnit.CadastralNumber, cost);
+						_log.Error(e, "Ошибка по время обработки ЕО с КН '{CadastralNumber}'. Рассчитанная УПКС равна '{CalculatedCost}'", currentUnit.CadastralNumber, upks);
 
 						AddError(currentUnit, groupId, e.Message);
 					}
@@ -274,14 +275,14 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-		private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
-		{
-			_log.Debug("Начат расчет по старой реализации");
-			var errorsDuringCalculation = OMGroup.CalculateSelectGroup(settings);
-			_log.ForContext("Result", errorsDuringCalculation, true).Debug("Закончен расчет. Возвращенное значение.");
+		//private List<CalcErrorItem> CalculateByOldRealization(CadastralPriceCalculationSettions settings)
+		//{
+		//	_log.Debug("Начат расчет по старой реализации");
+		//	var errorsDuringCalculation = OMGroup.CalculateSelectGroup(settings);
+		//	_log.ForContext("Result", errorsDuringCalculation, true).Debug("Закончен расчет. Возвращенное значение.");
 			
-			return errorsDuringCalculation;
-		}
+		//	return errorsDuringCalculation;
+		//}
 
 		private void CompareData(List<long> taskIds)
 		{
@@ -391,7 +392,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			return groupedMarks;
 		}
 
-		public double CalculateCadastralCost(string formula, List<FactorInfo> factors, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
+		public double CalculateUpks(string formula, List<FactorInfo> factors, List<UnitFactor> unitsFactors, Dictionary<Tuple<long, string>, decimal?> marks)
 		{
 			var arguments = new PrimitiveElement[unitsFactors.Count];
 			for (var i = 0; i < unitsFactors.Count; i++)
