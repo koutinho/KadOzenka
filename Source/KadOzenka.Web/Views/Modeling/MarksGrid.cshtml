@@ -59,16 +59,20 @@
                     id: "Id",
                     fields: {
                         Id: { editable: false, nullable: true },
-                        Value: { validation: {
+                        Value: { 
+                            /*validation: {
                             valuefactorvalidation: function (input) {
                                 if (input.is("[name='Value']") && input.val() == "") {
                                     input.attr("data-valuefactorvalidation-msg", "Значение фактора обязательно");
                                     return false;
                                 }
                                 return true;
-                            }
-                        } },
-                        Metka: { validation: {
+                            } 
+                            }*/
+                            type: "string", nullable: false
+                        },
+                        Metka: { 
+                            /*validation: {
                             metkafactorvalidation: function (input) {
                                 if (input.is("[name='Metka']") && input.val() == "") {
                                     input.attr("data-metkafactorvalidation-msg", "Значение метки обязательно");
@@ -76,7 +80,9 @@
                                 }
                                 return true;
                             }
-                        }, type: "number", nullable: true   }
+                            }, */
+                            type: "number", nullable: false
+                        }
                     }
                 }
             },
@@ -124,6 +130,8 @@
             save: function (e) {
                 //из-за неправильного разделителя значение в контроллер приходит пустое
                 //была попытка установить culture для kendoNumericTextBox - не сработало
+                if (!e.model.Metka)
+                    return;
                 var initialValue = e.model.Metka.toString();
                 var replacedValue = initialValue.replace(".", ",");
                 e.model.Metka = replacedValue;
