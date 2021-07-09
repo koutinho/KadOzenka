@@ -21,6 +21,12 @@ namespace KadOzenka.Common.Tests.Builders.Modeling.Dictionaries
 		}
 
 
+		public ADictionaryBuilder Type(ModelDictionaryType type)
+		{
+			_dictionary.Type_Code = type;
+			_dictionary.Type = type.GetEnumDescription();
+			return this;
+		}
 
 		public abstract OMModelingDictionary Build();
 	}

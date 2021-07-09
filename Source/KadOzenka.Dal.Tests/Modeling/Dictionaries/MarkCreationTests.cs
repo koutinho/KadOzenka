@@ -4,6 +4,7 @@ using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using KadOzenka.Dal.UnitTests.Modeling.Models;
 using Moq;
 using NUnit.Framework;
+using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
@@ -46,6 +47,19 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 			ModelMarksRepository.Setup(x => x.IsTheSameMarkExists(markDto.DictionaryId, markDto.Id, markDto.Value)).Returns(true);
 
 			Assert.Throws<TheSameMarkExistsException>(() => ModelDictionaryService.CreateMark(markDto));
+
+			ModelMarksRepository.Verify(foo => foo.Save(It.IsAny<OMModelingDictionariesValues>()), Times.Never);
+		}
+
+		[Test]
+		public void CanNot_Create_Mark_If_Value_Have_Different_Type_Then_Dictionary()
+		{
+			var dictionary = new DictionaryBuilder().Type(ModelDictionaryType.Integer).Build();
+			var markDto = new MarkDtoBuilder().Dictionary(dictionary).Build();
+			ModelDictionaryRepository.Setup(x => x.GetById(markDto.DictionaryId, null)).Returns(dictionary);
+			ModelMarksRepository.Setup(x => x.IsTheSameMarkExists(markDto.DictionaryId, markDto.Id, markDto.Value)).Returns(false);
+
+			Assert.Throws<MarkValueConvertingException>(() => ModelDictionaryService.CreateMark(markDto));
 
 			ModelMarksRepository.Verify(foo => foo.Save(It.IsAny<OMModelingDictionariesValues>()), Times.Never);
 		}

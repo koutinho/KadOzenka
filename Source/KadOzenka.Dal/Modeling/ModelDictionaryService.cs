@@ -333,8 +333,8 @@ namespace KadOzenka.Dal.Modeling
 			var canParseToDate = dictionary.Type_Code == ModelDictionaryType.Date && mark.Value.TryParseToDateTime(out _);
 			var canParseToBoolean = dictionary.Type_Code == ModelDictionaryType.Boolean && mark.Value.TryParseToBoolean(out _);
 
-			if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
-				throw new Exception($"Значение '{mark.Value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}' (тип фактора, к которому привязан словарь)");
+			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
+				throw new MarkValueConvertingException(mark.Value, dictionary.Type_Code);
 
 			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
 			if (isTheSameMarkExists)
