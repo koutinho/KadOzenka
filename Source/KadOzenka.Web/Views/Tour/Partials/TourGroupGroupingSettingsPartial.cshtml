@@ -3,13 +3,38 @@
 
 
 <fieldset>
-<div id="groupFilter_@Model.Index" class="form-group">
-    <div class="col-sm-3">
-        @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idSuffix:$"[{Model.Index}]")
+    <div id="groupFilter_@Model.Index" class="form-group">
+         <div class="row">
+            <div class="col-sm-3">
+                @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idSuffix: $"[{Model.Index}]")
+            </div>
+            <div class="col-sm-9">
+                @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters, idSuffix: $"[{Model.Index}]"); }
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-2">
+                @Html.Label("", "Использовать справочник")
+            </div>
+            <div class="col-sm-3">
+                @(Html.Kendo().DropDownList()
+                    .Name(nameof(Model.DictionaryId)+$"[{Model.Index}]")
+                    .DataValueField("Value").DataTextField("Text")
+                    .DataSource(source =>
+                    {
+                        source.Read(read => { read.Action("GetDictionaries", "Modeling"); })
+                            .ServerFiltering(false);
+                    }))
+            </div>
+            <div class="col-sm-2">
+                @Html.Label("", "Значения")
+            </div>
+            <div class="col-sm-3">
+                @(Html.Kendo().TextBox()
+                    .Name(nameof(Model.DictionaryValue)+$"[{Model.Index}]")
+                    .Placeholder("1,2,3"))
+            </div>
+        </div>
     </div>
-    <div class="col-sm-9">
-        @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters,  idSuffix:$"[{Model.Index}]"); }
-    </div>
-</div>
 </fieldset>
 

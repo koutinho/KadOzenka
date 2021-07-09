@@ -5,6 +5,10 @@
 <style>
     fieldset{
         border: none;
+        margin: 2px;
+    }
+    .row {
+        margin-bottom: 5px;
     }
 </style>
 @using (Html.BeginForm("TourGroupGroupingSettings", "Tour", FormMethod.Post, new {id = "updateGroupingSettingsForm", enctype = "multipart/form-data"}))
@@ -16,14 +20,35 @@
         @for (var i = 0; i < Model.GroupFilters.Count; i++)
         {
             <fieldset>
-            <div id="groupFilter_@i" class="form-group">
-                <div class="col-sm-3">
-                    @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+                <div id="groupFilter_@i" class="form-group">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+                        </div>
+                        <div class="col-sm-9">
+                            @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            @Html.Label("","Использовать справочник")
+                        </div>
+                        <div class="col-sm-3">
+                            @(Html.Kendo().DropDownListFor(m=>m.DictionaryId[i])
+                                .DataValueField("Value").DataTextField("Text")
+                                .DataSource(source =>
+                                {
+                                    source.Read(read => { read.Action("GetDictionaries", "Modeling"); })
+                                        .ServerFiltering(false);}))
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.Label("","Значения")
+                        </div>
+                        <div class="col-sm-3">
+                            @(Html.Kendo().TextBoxFor(m=>m.DictionaryValue[i]).Placeholder("1,2,3"))
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
-                </div>
-            </div>
             </fieldset>
         }
 

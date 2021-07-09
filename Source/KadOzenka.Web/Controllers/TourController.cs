@@ -517,9 +517,24 @@ namespace KadOzenka.Web.Controllers
             return mergedAttributes;
         }
 
+        private List<SelectListItem> GetDictionaries()
+        {
+            var DictionaryService = new DictionaryService();
+            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            }).ToList();
+
+            dictionaries.Insert(0, new SelectListItem("", ""));
+            return dictionaries;
+        }
+
         private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
         {
             ViewData["KoAttributes"] = GetMergedAttributes(groupId);
+
+            ViewData["Dictionaries"] = GetDictionaries();
 
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == groupId).SelectAll().Execute();
 
@@ -530,6 +545,8 @@ namespace KadOzenka.Web.Controllers
             {
                 model.KoAttributes.Add(groupSetting.KoAttributeId);
                 model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
+                model.DictionaryId.Add(groupSetting.DictionaryId);
+                model.DictionaryValue.Add(groupSetting.DictionaryValues);
             }
 
             for (int i = model.GroupFilters.Count; i < 1; i++)
@@ -572,7 +589,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            var objectModel = model.ToObjectModel();
+            var objectModel = model.ToObjectModel().Where(x=>x.KoAttributeId != null);
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
 
             // TODO: Поменять логику создания

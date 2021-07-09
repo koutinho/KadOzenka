@@ -110,7 +110,9 @@ namespace KadOzenka.Dal.KoObject
                 return new()
                 {
                     KoAttributeId = setting.KoAttributeId.GetValueOrDefault(),
-                    Filters = setting.Filter.DeserializeFromXml<Filters>()
+                    Filters = setting.Filter.DeserializeFromXml<Filters>(),
+                    DictionaryId = setting.DictionaryId,
+                    DictionaryValues = setting.DictionaryValues
                 };
             }
 
@@ -370,6 +372,9 @@ namespace KadOzenka.Dal.KoObject
                 var toAssign = query.ExecuteQuery<IdHolder>().Select(x => x.Id);
                 var intersect = unitIds.Intersect(toAssign).ToList();
 
+                if (intersect.Count == 0) continue;
+
+                var sqlString = query.GetSql();
                 var commaSeparatedIdList = intersect.Select(x => x.ToString()).Aggregate((acc, item) => acc + "," + item);
                 unitIds = unitIds.Except(intersect).ToList();
 
@@ -644,6 +649,18 @@ namespace KadOzenka.Dal.KoObject
 
             foreach (var setting in GroupingSettings)
             {
+                if (setting.DictionaryId != null)
+                {
+                    var dictValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == setting.DictionaryId
+                        && x.CalculationValue != null).SelectAll()
+                        .Execute();
+                    var dictStringValues = setting.DictionaryValues.Split(",");
+                    var dictFilterValues = dictStringValues.Select(x => x.ParseToDecimal()).Distinct().ToList();
+                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.CalculationValue.GetValueOrDefault())).Select(x=>x.Value).ToList();
+                    listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), QSConditionType.In, dictFilter));
+                    continue;
+                }
+
                 var condition = setting.Filters.Type switch
                 {
                     FilteringType.Boolean => setting.Filters.BoolFilter.FilteringType switch
@@ -757,6 +774,10 @@ namespace KadOzenka.Dal.KoObject
     {
         public Filters Filters { get; set; }
         public long KoAttributeId { get; set; }
+
+        public long? DictionaryId { get; set; }
+
+        public string DictionaryValues { get; set; }
     }
 
     public class EstimatedGroupAffixingUnitsGetter : AItemsGetter<SetEstimatedGroupUnitPure>

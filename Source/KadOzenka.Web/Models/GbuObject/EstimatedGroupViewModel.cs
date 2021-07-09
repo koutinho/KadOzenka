@@ -15,8 +15,6 @@ namespace KadOzenka.Web.Models.GbuObject
         [Display(Name = "Перезаписать уже заполненные группы")]
         public bool? OverwriteGroups { get; set; }
 
-        public string TestCompound { get; set; }
-
         [Display(Name = "Статус")]
         public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
