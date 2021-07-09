@@ -517,15 +517,17 @@ namespace KadOzenka.Web.Controllers
 
         private List<SelectListItem> GetDictionaries()
         {
-            var DictionaryService = new DictionaryService();
-            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }).ToList();
+            //var DictionaryService = new DictionaryService();
+            //var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            //{
+            //    Text = x.Name,
+            //    Value = x.Id.ToString()
+            //}).ToList();
 
-            dictionaries.Insert(0, new SelectListItem("", ""));
-            return dictionaries;
+            //dictionaries.Insert(0, new SelectListItem("", ""));
+            //return dictionaries;
+
+            return new List<SelectListItem>();
         }
 
         private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
