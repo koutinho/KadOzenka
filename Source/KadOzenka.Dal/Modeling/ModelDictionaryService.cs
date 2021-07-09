@@ -312,7 +312,7 @@ namespace KadOzenka.Dal.Modeling
 			var canParseToBoolean = !isEmptyValue && dictionary.Type_Code == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
 
 			if (!isEmptyValue && !canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
-				throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}'");
+				throw new Exception($"Значение '{value}' не может быть приведено к типу '{dictionary.Type_Code.GetEnumDescription()}' (тип фактора, к которому привязан словарь)");
 
 			var isTheSameMarkExists = OMModelingDictionariesValues
 				.Where(x => x.Id != markId && x.DictionaryId == dictionary.Id && x.Value == value)

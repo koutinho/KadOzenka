@@ -62,7 +62,7 @@ namespace KadOzenka.Web.Models.Modeling
 			return new()
 			{
 				Id = Id,
-				GeneralModelId = GeneralModelId,
+				ModelId = GeneralModelId,
 				Type = Type,
 				FactorId = FactorId,
 				Weight = Correction,

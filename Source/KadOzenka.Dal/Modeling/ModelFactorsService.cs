@@ -311,11 +311,11 @@ namespace KadOzenka.Dal.Modeling
 
 		public int AddManualFactor(ManualModelFactorDto dto)
 		{
-			ValidateManualFactorBeforeAddition(dto);
+			ValidateManualFactor(dto);
 
 			var newFactor = new OMModelFactor
 			{
-				ModelId = dto.GeneralModelId,
+				ModelId = dto.ModelId,
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
@@ -417,19 +417,12 @@ namespace KadOzenka.Dal.Modeling
 			}
 		}
 
+
 		#region Support Methods
-
-		private void ValidateManualFactorBeforeAddition(ManualModelFactorDto factorDto)
-		{
-			ValidateManualFactor(factorDto);
-
-			if (factorDto.MarkType == MarkType.Default && factorDto.DictionaryId.GetValueOrDefault() == 0)
-				throw new EmptyDictionaryForFactorWithDefaultMarkException();
-		}
 
 		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
-			ValidateBaseFactor(factorDto.Id, factorDto.GeneralModelId, factorDto.FactorId, factorDto.Type);
+			ValidateBaseFactor(factorDto);
 
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма модели для фактора");
@@ -459,7 +452,7 @@ namespace KadOzenka.Dal.Modeling
 
 		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
 		{
-			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, factor.Type);
+			ValidateBaseFactor(factor);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
@@ -509,17 +502,20 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(string.Join("<br>", errors));
 		}
 
-		private void ValidateBaseFactor(long id, long? modelId, long? factorId, KoAlgoritmType type)
+		private void ValidateBaseFactor(AModelFactorDto factor)
 		{
-			if (modelId == null)
+			if (factor.ModelId == null)
 				throw new Exception("Не передан ИД основной модели");
 
-			if (factorId == null)
+			if (factor.FactorId == null)
 				throw new Exception("Не передан ИД фактора");
 
-			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(id, factorId.Value, modelId.Value, type);
+			if (factor.Id == -1 && factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
+				throw new EmptyDictionaryForFactorWithDefaultMarkException();
+
+			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type);
 			if (isTheSameAttributeExists)
-				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factorId.GetValueOrDefault()).Name}' уже был добавлен");
+				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}
 
 		private string GenerateMessage(string attributeName, ModelDictionaryType dictionaryType)

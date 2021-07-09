@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 			_factor = new ManualModelFactorDto
 			{
 				Id = RandomGenerator.GenerateRandomId(),
-				GeneralModelId = RandomGenerator.GenerateRandomId(),
+				ModelId = RandomGenerator.GenerateRandomId(),
 				Type = KoAlgoritmType.Line,
 				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
