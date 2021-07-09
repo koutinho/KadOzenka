@@ -461,7 +461,7 @@ namespace KadOzenka.Dal.Modeling
 				CancellationToken = cancelTokenSource.Token,
 				MaxDegreeOfParallelism = 5
 			};
-			var locked = new object();
+			var locker = new object();
 			var existedValues = GetMarks(dictionary.Id);
 			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= RowsCount).ToList();
 			mainWorkSheet.Rows[0].Cells[resultColumnIndex].SetValue("Результат сохранения");
@@ -485,11 +485,11 @@ namespace KadOzenka.Dal.Modeling
 							currentMark.CalculationValue = calculationValue;
 							currentMark.Save();
 
-							row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
+							SetImportResultMessage(row, resultColumnIndex, "Значение успешно обновлено", locker);
 						}
 						else
 						{
-							row.Cells[resultColumnIndex].SetValue("Значение было добавлено ранее");
+							SetImportResultMessage(row, resultColumnIndex, "Значение было добавлено ранее", locker);
 						}
 					}
 					else
@@ -501,20 +501,23 @@ namespace KadOzenka.Dal.Modeling
 							CalculationValue = calculationValue
 						}.Save();
 
-						row.Cells[resultColumnIndex].SetValue("Значение успешно создано");
+						SetImportResultMessage(row, resultColumnIndex, "Значение успешно создано", locker);
 					}
 
-					lock (locked)
+					lock (locker)
 					{
 						CurrentRow++;
 					}
 				}
 				catch (Exception ex)
 				{
-					row.Cells[resultColumnIndex].SetValue($"Ошибка: {ex.Message}");
-					for (var i = 0; i < maxColumnsCount; i++)
+					SetImportResultMessage(row, resultColumnIndex, $"Ошибка: {ex.Message}", locker);
+					lock (locker)
 					{
-						row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+						for (var i = 0; i < maxColumnsCount; i++)
+						{
+							row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+						}
 					}
 				}
 			});
@@ -524,6 +527,14 @@ namespace KadOzenka.Dal.Modeling
 			stream.Seek(0, SeekOrigin.Begin);
 
 			return stream;
+		}
+
+		private void SetImportResultMessage(ExcelRow row, int columnIndex, string value, object locker)
+		{
+			lock (locker)
+			{
+				row.Cells[columnIndex].SetValue(value);
+			}
 		}
 
 		private string GetValueFromExcelCell(ModelDictionaryType valueType, object cellValue)
