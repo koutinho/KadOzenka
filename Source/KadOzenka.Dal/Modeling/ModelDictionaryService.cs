@@ -357,14 +357,14 @@ namespace KadOzenka.Dal.Modeling
 		public void UpdateDictionaryFromExcel(OMImportDataLog import, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool isDeleteExistedMarks)
 		{
-			var existedDictionary = GetDictionaryById(dictionaryId);
+			var dictionary = GetDictionaryById(dictionaryId);
 
 			if (isDeleteExistedMarks)
 			{
-				DeleteMarks(existedDictionary.Id);
+				DeleteMarks(dictionary.Id);
 			}
 
-			ImportDictionaryMarks(import, existedDictionary, fileImportInfo);
+			ImportDictionaryMarks(import, dictionary, fileImportInfo);
 		}
 
 		public OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
@@ -404,8 +404,8 @@ namespace KadOzenka.Dal.Modeling
 
 				var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
 					import.DataFileName);
-				var resFileStream = ProcessDictionaryMarksInExcel(fileStream, dictionary, fileImportInfo);
-				SaveResultFile(import, resFileStream);
+				var resultFileStream = ProcessDictionaryMarksInExcel(fileStream, dictionary, fileImportInfo);
+				SaveResultFile(import, resultFileStream);
 
 				import.Status_Code = ImportStatus.Completed;
 				import.Save();
@@ -432,6 +432,85 @@ namespace KadOzenka.Dal.Modeling
 			var mainWorkSheet = excelFile.Worksheets[0];
 			RowsCount = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 
+			var locker = new object();
+			var cancelTokenSource = new CancellationTokenSource();
+			var options = new ParallelOptions
+			{
+				CancellationToken = cancelTokenSource.Token,
+				MaxDegreeOfParallelism = 5
+			};
+
+			var existedMarks = GetMarks(dictionary.Id);
+			var columnIndexes = GetColumnIndexes(fileImportInfo, mainWorkSheet);
+			mainWorkSheet.Rows[0].Cells[columnIndexes.ResultIndex].SetValue("Результат сохранения");
+			Parallel.ForEach(mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= RowsCount).ToList(), options, row =>
+			{
+				try
+				{
+					var valueFromCell = row.Cells[columnIndexes.ValueIndex].Value;
+					var calculationValueFromCell = row.Cells[columnIndexes.CalculationValueIndex].Value;
+
+					if (!calculationValueFromCell.TryParseToDecimal(out var calculationValue))
+						throw new Exception($"Значение '{calculationValueFromCell}' не может быть приведено к числу");
+
+					var valueString = GetValueFromExcelCell(dictionary.Type_Code, valueFromCell);
+					
+					ValidateMark(dictionary.Type_Code, valueString, calculationValue);
+					
+					var currentMark = existedMarks.FirstOrDefault(x => x.Value == valueString);
+					if (currentMark != null)
+					{
+						if (currentMark.CalculationValue != calculationValue)
+						{
+							currentMark.CalculationValue = calculationValue;
+							currentMark.Save();
+
+							SetImportResultMessage(row, columnIndexes.ResultIndex, "Значение успешно обновлено", locker);
+						}
+						else
+						{
+							SetImportResultMessage(row, columnIndexes.ResultIndex, "Значение было добавлено ранее", locker);
+						}
+					}
+					else
+					{
+						new OMModelingDictionariesValues
+						{
+							DictionaryId = dictionary.Id,
+							Value = valueString,
+							CalculationValue = calculationValue
+						}.Save();
+
+						SetImportResultMessage(row, columnIndexes.ResultIndex, "Значение успешно создано", locker);
+					}
+
+					lock (locker)
+					{
+						CurrentRow++;
+					}
+				}
+				catch (Exception ex)
+				{
+					SetImportResultMessage(row, columnIndexes.ResultIndex, $"Ошибка: {ex.Message}", locker);
+					lock (locker)
+					{
+						for (var i = 0; i < columnIndexes.MaxColumnsCount; i++)
+						{
+							row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
+						}
+					}
+				}
+			});
+
+			var stream = new MemoryStream();
+			excelFile.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+
+			return stream;
+		}
+
+		private ColumnIndexes GetColumnIndexes(DictionaryImportFileInfoDto fileImportInfo, ExcelWorksheet mainWorkSheet)
+		{
 			var maxColumnsCount = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
@@ -446,6 +525,7 @@ namespace KadOzenka.Dal.Modeling
 				{
 					valueIndex = i;
 				}
+
 				if (columnName == fileImportInfo.CalcValueColumnName)
 				{
 					calculationValueIndex = i;
@@ -455,78 +535,13 @@ namespace KadOzenka.Dal.Modeling
 			if (valueIndex == -1 || calculationValueIndex == -1)
 				throw new Exception("Не удалось определить индексы колонок в файле");
 
-			var cancelTokenSource = new CancellationTokenSource();
-			var options = new ParallelOptions
+			return new ColumnIndexes
 			{
-				CancellationToken = cancelTokenSource.Token,
-				MaxDegreeOfParallelism = 5
+				MaxColumnsCount = maxColumnsCount,
+				ResultIndex = resultColumnIndex,
+				ValueIndex = valueIndex,
+				CalculationValueIndex = calculationValueIndex
 			};
-			var locker = new object();
-			var existedValues = GetMarks(dictionary.Id);
-			var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= RowsCount).ToList();
-			mainWorkSheet.Rows[0].Cells[resultColumnIndex].SetValue("Результат сохранения");
-			Parallel.ForEach(dataRows, options, row =>
-			{
-				try
-				{
-					var valueFromCell = row.Cells[valueIndex].Value;
-					var calculationValueFromCell = row.Cells[calculationValueIndex].Value;
-
-					if (!calculationValueFromCell.TryParseToDecimal(out var calculationValue))
-						throw new Exception($"Значение '{calculationValueFromCell}' не может быть приведено к числу");
-
-					var valueString = GetValueFromExcelCell(dictionary.Type_Code, valueFromCell);
-					ValidateMark(dictionary.Type_Code, valueString, calculationValue);
-					var currentMark = existedValues.FirstOrDefault(x => x.Value == valueString);
-					if (currentMark != null)
-					{
-						if (currentMark.CalculationValue != calculationValue)
-						{
-							currentMark.CalculationValue = calculationValue;
-							currentMark.Save();
-
-							SetImportResultMessage(row, resultColumnIndex, "Значение успешно обновлено", locker);
-						}
-						else
-						{
-							SetImportResultMessage(row, resultColumnIndex, "Значение было добавлено ранее", locker);
-						}
-					}
-					else
-					{
-						new OMModelingDictionariesValues
-						{
-							DictionaryId = dictionary.Id,
-							Value = valueString,
-							CalculationValue = calculationValue
-						}.Save();
-
-						SetImportResultMessage(row, resultColumnIndex, "Значение успешно создано", locker);
-					}
-
-					lock (locker)
-					{
-						CurrentRow++;
-					}
-				}
-				catch (Exception ex)
-				{
-					SetImportResultMessage(row, resultColumnIndex, $"Ошибка: {ex.Message}", locker);
-					lock (locker)
-					{
-						for (var i = 0; i < maxColumnsCount; i++)
-						{
-							row.Cells[i].Style.FillPattern.SetSolid(SpreadsheetColor.FromArgb(255, 200, 200));
-						}
-					}
-				}
-			});
-
-			var stream = new MemoryStream();
-			excelFile.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-
-			return stream;
 		}
 
 		private void SetImportResultMessage(ExcelRow row, int columnIndex, string value, object locker)
@@ -593,6 +608,15 @@ namespace KadOzenka.Dal.Modeling
 				ExpireDate = DateTime.Now.AddHours(2)
 			});
 		}
+
+		private class ColumnIndexes
+		{
+			public int MaxColumnsCount { get; set; }
+			public int ResultIndex { get; set; }
+			public int ValueIndex { get; set; }
+			public int CalculationValueIndex { get; set; }
+		}
+
 
 		#endregion
 
