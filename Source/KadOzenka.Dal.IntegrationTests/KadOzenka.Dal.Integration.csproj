@@ -40,6 +40,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modeling\Dictionaries\" />
+  </ItemGroup>
+
 	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
 		<Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\ReSharperTestRunner64.dll.config" />
 	</Target>
