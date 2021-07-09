@@ -41,14 +41,16 @@ namespace KadOzenka.Dal.Enum
         [Display(Name = "Заканчивается на")]
         EndsWith,
 
-        [Display(Name = "Заканчивается на (без учета регистра)")]
-        EndsWithIgnoreCase,
+        // Не поддерживается платформой
+        // [Display(Name = "Заканчивается на (без учета регистра)")]
+        // EndsWithIgnoreCase,
 
         [Display(Name = "Не заканчивается на")]
         NotEndsWith,
 
-        [Display(Name = "Не заканчивается на (без учета регистра)")]
-        NotEndsWithIgnoreCase,
+        // Не поддерживается платформой
+        // [Display(Name = "Не заканчивается на (без учета регистра)")]
+        // NotEndsWithIgnoreCase,
 
         [Display(Name = "Содержит")]
         Contains,

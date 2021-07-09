@@ -5,27 +5,53 @@
 <style>
     fieldset{
         border: none;
+        margin: 2px;
+    }
+    .row {
+        margin-bottom: 5px;
     }
 </style>
 @using (Html.BeginForm("TourGroupGroupingSettings", "Tour", FormMethod.Post, new {id = "updateGroupingSettingsForm", enctype = "multipart/form-data"}))
 {
     <div id="groupingSettingToolbar" class="top-toolbar" style="margin-top: 35px; width: 55%"></div>
-    <div class="bottom-main-content">
+    <div id="settingsRows" class="bottom-main-content">
 
         @Html.HiddenFor(m => m.GroupId)
         @for (var i = 0; i < Model.GroupFilters.Count; i++)
         {
             <fieldset>
-            <div id="groupFilter_@i" class="form-group">
-                <div class="col-sm-3">
-                    @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+                <div id="groupFilter_@i" class="form-group">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
+                        </div>
+                        <div class="col-sm-9">
+                            @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            @Html.Label("","Использовать справочник")
+                        </div>
+                        <div class="col-sm-3">
+                            @(Html.Kendo().DropDownListFor(m=>m.DictionaryId[i])
+                                .DataValueField("Value").DataTextField("Text")
+                                .DataSource(source =>
+                                {
+                                    source.Read(read => { read.Action("GetDictionaries", "Modeling"); })
+                                        .ServerFiltering(false);}))
+                        </div>
+                        <div class="col-sm-2">
+                            @Html.Label("","Значения")
+                        </div>
+                        <div class="col-sm-3">
+                            @(Html.Kendo().TextBoxFor(m=>m.DictionaryValue[i]).Placeholder("1,2,3"))
+                        </div>
+                    </div>
                 </div>
-                <div class="col-sm-9">
-                    @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
-                </div>
-            </div>
             </fieldset>
         }
+
     </div>
 }
 
@@ -33,7 +59,7 @@
 <script src="~/js/custom-filters.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-
+    let currentRow = @Model.GroupFilters.Count;
     $(document).ready(function () {
         $("#groupingSettingToolbar").kendoToolBar({
             items: [
@@ -44,14 +70,13 @@
                     text: 'Сохранить',
                     click: save
                 },
-                // {
-                //     type: 'button',
-                //     id: 'add',
-                //     icon: 'plus',
-                //     text: 'Добавить условие',
-                //     click: addCondition
-                // }
-                ]
+                {
+                    type: 'button',
+                    id: 'add',
+                    icon: 'plus',
+                    text: 'Добавить условие',
+                    click: addCondition
+                }]
         });
 
         bindEvents();
@@ -60,10 +85,14 @@
     function bindEvents(){
         let currentRow = @Model.GroupFilters.Count;
         for (let i=0; i<currentRow; i++){
-            bindAttributeSelectorEvents('#KoAttributes_'+i.toString()+'_');
-            bindUnusedFieldHider('GroupFilters['+i.toString()+']');
-            $('#GroupFilters_'+i.toString()+'__Type').change();
+            bindEvent(i);
         }
+    }
+
+    function bindEvent(rowIndex){
+        bindAttributeSelectorEvents('#KoAttributes_'+rowIndex.toString()+'_');
+        bindUnusedFieldHider('GroupFilters['+rowIndex.toString()+']');
+        $('#GroupFilters_'+rowIndex.toString()+'__Type').change();
     }
 
     function save() {
@@ -89,5 +118,26 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+    function addCondition(){
+        let index = currentRow;
+        $.ajax({
+            url: '@Url.Action("TourGroupGroupingSettingsPartialRow","Tour")',
+            data: {
+              groupId: @Model.GroupId,
+              index: index
+            },
+            cache: false,
+            success: function (html) {
+                $("#settingsRows").append(html);
+                bindEvent(index);
+                currentRow++;
+            },
+            error: function (html) {
+                alert(html);
+            }
+        });
+        return false;
     }
 </script>

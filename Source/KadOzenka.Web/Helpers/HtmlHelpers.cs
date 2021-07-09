@@ -25,19 +25,19 @@ namespace KadOzenka.Web.Helpers
 	{
 		public static IHtmlContent KendoDropDownListTreeWithButton<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable<DropDownTreeItemModel> data, string dataTextField = "Text",
-			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idPrefix = null)
+			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idSuffix = null)
 		{
 			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
 			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
 
 			string htmlFieldName = GetExpressionText(html, expression);
 			var name = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName);
-			var className = name.Replace(".", "_").Replace('[', '_').Replace(']', '_');
-			if (!string.IsNullOrEmpty(idPrefix))
+			if (!string.IsNullOrEmpty(idSuffix))
 			{
-				name = name + idPrefix;
-				className = className + idPrefix;
+				name = name + idSuffix;
 			}
+
+			var className = name.Replace(".", "_").Replace('[', '_').Replace(']', '_');
 
 			var script = $"<script src='/js/dropdowns.js'></script><script>" +
 			             $"init('{className}',{addFunction})</script>";
@@ -413,9 +413,9 @@ namespace KadOzenka.Web.Helpers
 			return expresionProvider.GetExpressionText(expression);
 		}
 
-		public static Task RenderPartialFor<TModel, TProperty>(this IHtmlHelper<TModel> helper, string partialViewName, Expression<Func<TModel, TProperty>> expression)
+		public static Task RenderPartialFor<TModel, TProperty>(this IHtmlHelper<TModel> helper, string partialViewName, Expression<Func<TModel, TProperty>> expression, string idSuffix = null)
 		{
-			var name = GetExpressionText(helper, expression);
+			var name = GetExpressionText(helper, expression) + idSuffix;
 			var modelExpressionProvider = (ModelExpressionProvider)helper.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
 			var modelExplorer = modelExpressionProvider.CreateModelExpression(helper.ViewData, expression);
 			object model = modelExplorer.Model;

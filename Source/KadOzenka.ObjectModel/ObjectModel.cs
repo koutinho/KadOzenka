@@ -10163,6 +10163,46 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private long? _dictionaryid;
+        /// <summary>
+        /// 26900500 Идентификатор справочника (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900500)]
+        public long? DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private string _dictionaryvalues;
+        /// <summary>
+        /// 26900600 Значения справочника (DICTIONARY_VALUES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900600)]
+        public string DictionaryValues
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryValues");
+                return _dictionaryvalues;
+            }
+            set
+            {
+                _dictionaryvalues = value;
+                NotifyPropertyChanged("DictionaryValues");
+            }
+        }
+
     }
 }
 

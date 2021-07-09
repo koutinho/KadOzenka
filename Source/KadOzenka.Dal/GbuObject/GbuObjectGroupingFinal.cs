@@ -138,9 +138,9 @@ namespace KadOzenka.Dal.GbuObject
                         FilteringTypeString.NotBeginsFrom or
                         FilteringTypeString.NotBeginsFromIgnoreCase or
                         FilteringTypeString.EndsWith or
-                        FilteringTypeString.EndsWithIgnoreCase or
-                        FilteringTypeString.NotEndsWith or
-                        FilteringTypeString.NotEndsWithIgnoreCase
+                        //FilteringTypeString.EndsWithIgnoreCase or
+                        FilteringTypeString.NotEndsWith
+                        //FilteringTypeString.NotEndsWithIgnoreCase
                         when filter.Value == null => false,
 
 
@@ -153,9 +153,9 @@ namespace KadOzenka.Dal.GbuObject
                     FilteringTypeString.NotBeginsFrom => !value.StartsWith(filter.Value),
                     FilteringTypeString.NotBeginsFromIgnoreCase => !value.ToLower().StartsWith(filter.Value.ToLower()),
                     FilteringTypeString.EndsWith => value.EndsWith(filter.Value),
-                    FilteringTypeString.EndsWithIgnoreCase => value.ToLower().EndsWith(filter.Value.ToLower()),
+                    //FilteringTypeString.EndsWithIgnoreCase => value.ToLower().EndsWith(filter.Value.ToLower()),
                     FilteringTypeString.NotEndsWith => !value.EndsWith(filter.Value),
-                    FilteringTypeString.NotEndsWithIgnoreCase => !value.ToLower().EndsWith(filter.Value.ToLower()),
+                    //FilteringTypeString.NotEndsWithIgnoreCase => !value.ToLower().EndsWith(filter.Value.ToLower()),
                     FilteringTypeString.Contains => value.Contains(filter.Value),
                     FilteringTypeString.ContainsIgnoreCase => value.Contains(filter.Value.ToLower()),
                     FilteringTypeString.NotContains => !value.Contains(filter.Value),

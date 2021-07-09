@@ -1,2 +1,0 @@
-INSERT INTO core_register_relation (id, name, parentregister, chieldregister, cardinality, kindid, parentregister_attribute_id, qscondition) 
-VALUES (101, 'От объекта аналога к истории цены c учетом корректировки на дату', 100, 113, null, 11300200, null, null);

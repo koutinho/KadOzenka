@@ -12,6 +12,9 @@ namespace KadOzenka.Web.Models.GbuObject
 	    [Required(ErrorMessage = "Параметр Задание на оценку обязательный")]
         public long? IdTask { get; set; }
 
+        [Display(Name = "Перезаписать уже заполненные группы")]
+        public bool? OverwriteGroups { get; set; }
+
         [Display(Name = "Статус")]
         public List<ObjectChangeStatus> ObjectChangeStatus { get; set; }
 
@@ -23,6 +26,7 @@ namespace KadOzenka.Web.Models.GbuObject
             return new EstimatedGroupModel
             {
                 IdTask = IdTask.Value,
+                OverwriteGroups = OverwriteGroups ?? false,
                 ObjectChangeStatus = ObjectChangeStatus,
                 IdCodeGroup = paramsDto.IdCodeGroup,
                 IdEstimatedSubGroup = IdEstimatedSubGroup.GetValueOrDefault()

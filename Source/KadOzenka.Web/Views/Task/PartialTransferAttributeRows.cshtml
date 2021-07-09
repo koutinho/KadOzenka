@@ -13,7 +13,7 @@
             @Html.KendoDropDownListWithAutocompleteFor(m => m[i].IdAttributeKO, (IEnumerable)ViewData["KoAttributes"], idPrefix: "_" + rowNumber)
         </td>
         <td>
-            @Html.KendoDropDownListTreeWithButton(m => m[i].IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idPrefix: "_" + rowNumber)
+            @Html.KendoDropDownListTreeWithButton(m => m[i].IdAttributeGbu, (IEnumerable<DropDownTreeItemModel>)ViewData["TreeAttributes"], idSuffix: "_" + rowNumber)
         </td>
     </tr>
 }

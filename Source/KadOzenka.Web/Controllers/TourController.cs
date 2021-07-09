@@ -505,9 +505,34 @@ namespace KadOzenka.Web.Controllers
             return models;
         }
 
+        private List<DropDownTreeItemModel> GetMergedAttributes(long groupId)
+        {
+            var mergedAttributes = new List<DropDownTreeItemModel>();
+            var koAttributes = GetKoAttributes(groupId);
+            mergedAttributes.AddRange(koAttributes);
+            var gbuAttributes = GetGbuAttributesTree();
+            mergedAttributes.AddRange(gbuAttributes);
+            return mergedAttributes;
+        }
+
+        private List<SelectListItem> GetDictionaries()
+        {
+            var DictionaryService = new DictionaryService();
+            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            }).ToList();
+
+            dictionaries.Insert(0, new SelectListItem("", ""));
+            return dictionaries;
+        }
+
         private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
         {
-            ViewData["KoAttributes"] = GetKoAttributes(groupId);
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
+
+            ViewData["Dictionaries"] = GetDictionaries();
 
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == groupId).SelectAll().Execute();
 
@@ -518,10 +543,11 @@ namespace KadOzenka.Web.Controllers
             {
                 model.KoAttributes.Add(groupSetting.KoAttributeId);
                 model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
+                model.DictionaryId.Add(groupSetting.DictionaryId);
+                model.DictionaryValue.Add(groupSetting.DictionaryValues);
             }
 
-            // TODO: Пофиксить добавление записи
-            for (int i = model.GroupFilters.Count; i < 10; i++)
+            for (int i = model.GroupFilters.Count; i < 1; i++)
             {
                 model.GroupFilters.Add(new Filters());
                 model.KoAttributes.Add(new long());
@@ -546,6 +572,14 @@ namespace KadOzenka.Web.Controllers
             return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml", model);
         }
 
+        [HttpGet]
+        public ActionResult TourGroupGroupingSettingsPartialRow(int groupId, int index)
+        {
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
+            var model = new TourGroupGroupingSettingsPartialModel {Index = index};
+            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
+        }
+
         [HttpPost]
         //[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public JsonResult TourGroupGroupingSettings(TourGroupGroupingSettingsModel model)
@@ -553,7 +587,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            var objectModel = model.ToObjectModel();
+            var objectModel = model.ToObjectModel().Where(x=>x.KoAttributeId != null);
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
 
             // TODO: Поменять логику создания
