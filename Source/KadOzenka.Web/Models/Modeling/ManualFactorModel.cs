@@ -35,6 +35,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 		[Display(Name = "Словарь")]
 		public string DictionaryName { get; set; }
+		public long? DictionaryId { get; set; }
 
 
 		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
@@ -44,6 +45,7 @@ namespace KadOzenka.Web.Models.Modeling
 				Id = factor.Id,
 				GeneralModelId = generalModelId,
 				FactorId = factor.FactorId,
+				DictionaryId = factor.DictionaryId,
 				Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
 				MarkerId = factor.MarkerId,
 				Correction = factor.Weight,
@@ -65,6 +67,7 @@ namespace KadOzenka.Web.Models.Modeling
 				ModelId = GeneralModelId,
 				Type = Type,
 				FactorId = FactorId,
+				DictionaryId = DictionaryId,
 				Weight = Correction,
 				B0 = B0,
 				SignDiv = SignDiv,

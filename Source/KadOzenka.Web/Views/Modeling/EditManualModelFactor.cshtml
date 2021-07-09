@@ -12,7 +12,9 @@
                 @Html.CustomLabel("Фактор")
             </div>
             <div class="col-sm-9">
-                @Html.Kendo().DropDownListFor(x => x.FactorId).HtmlAttributes(new {style = "width: 100%;"})
+                @(Html.Kendo().DropDownListFor(x => x.FactorId)
+                    .Enable(Model.Id == -1)
+                    .HtmlAttributes(new {style = "width: 100%;"}))
             </div>
         </div>
         <div class="form-group">
@@ -47,6 +49,7 @@
                 @Html.CustomLabelFor(x => x.DictionaryName)
             </div>
             <div class="col-sm-9">
+                @Html.HiddenFor(x => x.DictionaryId)
                 @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: !Model.IsNewFactor)
             </div>
         </div>

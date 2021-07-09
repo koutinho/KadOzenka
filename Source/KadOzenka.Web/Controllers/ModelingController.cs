@@ -423,11 +423,12 @@ namespace KadOzenka.Web.Controllers
            var model = AutomaticFactorModel.ToModel(factor);
            if (factor.DictionaryId != null)
            {
+               //todo после ТЗ на авто. модель объединить с ручной
 	           var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);
 	           model.DictionaryName = dictionary.Name;
            }
 
-            return View(model);
+           return View(model);
         }
 
         [HttpPost]

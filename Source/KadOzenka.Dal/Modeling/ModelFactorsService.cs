@@ -510,7 +510,7 @@ namespace KadOzenka.Dal.Modeling
 			if (factor.FactorId == null)
 				throw new Exception("Не передан ИД фактора");
 
-			if (factor.Id == -1 && factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
+			if (factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
 				throw new EmptyDictionaryForFactorWithDefaultMarkException();
 
 			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type);
