@@ -48,16 +48,6 @@ namespace KadOzenka.Dal.Modeling
 		
 
 
-		public bool MustUseLongProcess(Stream fileStream)
-		{
-			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-
-			var mainWorkSheet = excelFile.Worksheets[0];
-
-			return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
-		}
-
-
 
 		#region Dictionary
 
@@ -353,8 +343,19 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Import from Excel
 
-		public void UpdateDictionaryFromExcel(Stream fileStream, DictionaryImportFileInfoDto fileImportInfo,
-			long dictionaryId, bool isDeleteExistedMarks, OMImportDataLog import)
+		public bool MustUseLongProcess(Stream fileStream)
+		{
+			fileStream.Seek(0, SeekOrigin.Begin);
+
+			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+
+			var mainWorkSheet = excelFile.Worksheets[0];
+
+			return mainWorkSheet.Rows.Count > MaxRowInFileDuringImport;
+		}
+
+		public void UpdateDictionaryFromExcel(OMImportDataLog import, DictionaryImportFileInfoDto fileImportInfo,
+			long dictionaryId, bool isDeleteExistedMarks)
 		{
 			var existedDictionary = GetDictionaryById(dictionaryId);
 
@@ -363,7 +364,7 @@ namespace KadOzenka.Dal.Modeling
 				DeleteMarks(existedDictionary.Id);
 			}
 
-			ImportDictionaryMarks(fileStream, existedDictionary, fileImportInfo, import);
+			ImportDictionaryMarks(import, existedDictionary, fileImportInfo);
 		}
 
 		public OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
@@ -392,8 +393,8 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ImportDictionaryMarks(Stream fileStream, OMModelingDictionary dictionary,
-			DictionaryImportFileInfoDto fileImportInfo, OMImportDataLog import)
+		private void ImportDictionaryMarks(OMImportDataLog import, OMModelingDictionary dictionary,
+			DictionaryImportFileInfoDto fileImportInfo)
 		{
 			try
 			{
@@ -401,6 +402,8 @@ namespace KadOzenka.Dal.Modeling
 				import.DateStarted = DateTime.Now;
 				import.Save();
 
+				var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
+					import.DataFileName);
 				var resFileStream = ProcessDictionaryMarksInExcel(fileStream, dictionary, fileImportInfo);
 				SaveResultFile(import, resFileStream);
 
@@ -448,6 +451,9 @@ namespace KadOzenka.Dal.Modeling
 					calculationValueIndex = i;
 				}
 			}
+
+			if (valueIndex == -1 || calculationValueIndex == -1)
+				throw new Exception("Не удалось определить индексы колонок в файле");
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions

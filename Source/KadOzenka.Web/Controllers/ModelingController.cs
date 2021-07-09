@@ -25,6 +25,7 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
+using System.Threading;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -47,6 +48,9 @@ using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Kendo.Mvc.Extensions;
+using ObjectModel.Common;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
 using StringExtensions = Core.Shared.Extensions.StringExtensions;
 
 namespace KadOzenka.Web.Controllers
@@ -839,50 +843,46 @@ namespace KadOzenka.Web.Controllers
 
             ValidateMarkModification(model.DictionaryId);
 
-            var isViaLongProcess = false;
-            using (var fileStream = file.OpenReadStream())
-            {
-                var importInfo = new DictionaryImportFileInfoDto
-                {
-                    FileName = file.FileName,
-                    ValueColumnName = model.Value,
-                    CalcValueColumnName = model.CalcValue
-                };
-                var import = ModelDictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
-                fileStream.Seek(0, SeekOrigin.Begin);
+	        OMImportDataLog import;
+	        bool isViaLongProcess;
+	        using (var fileStream = file.OpenReadStream())
+	        {
+		        import = ModelDictionaryService.CreateDataFileImport(fileStream, file.FileName);
+		        isViaLongProcess = ModelDictionaryService.MustUseLongProcess(fileStream);
+	        }
 
-                if (ModelDictionaryService.MustUseLongProcess(fileStream))
-                {
-                    fileStream.Seek(0, SeekOrigin.Begin);
-                    var inputParameters = new DictionaryImportFileFromExcelDto
-                    {
-                        DeleteOldValues = model.IsDeleteOldValues,
-                        FileInfo = importInfo,
-                        DictionaryId = model.DictionaryId
-                    };
-                    ////TODO для тестирования
-                    //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
-                    //{
-                    //	Status_Code = Status.Added,
-                    //	UserId = SRDSession.GetCurrentUserId(),
-                    //	ObjectId = import.Id,
-                    //	Parameters = inputParameters.SerializeToXml()
-                    //}, new CancellationToken());
+	        var importInfo = new DictionaryImportFileInfoDto
+	        {
+		        FileName = file.FileName,
+		        ValueColumnName = model.Value,
+		        CalcValueColumnName = model.CalculationValue
+	        };
+            if (isViaLongProcess)
+	        {
+		        var inputParameters = new DictionaryImportFileFromExcelDto
+		        {
+			        DeleteOldValues = model.IsDeleteOldValues,
+			        FileInfo = importInfo,
+			        DictionaryId = model.DictionaryId
+		        };
+				////TODO для тестирования
+				//new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId(),
+				//	ObjectId = import.Id,
+				//	Parameters = inputParameters.SerializeToXml()
+				//}, new CancellationToken());
 
-                    ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
+				ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(inputParameters, import);
+	        }
+	        else
+	        {
+		        ModelDictionaryService.UpdateDictionaryFromExcel(import, importInfo,
+			        model.DictionaryId, model.IsDeleteOldValues);
+	        }
 
-                    isViaLongProcess = true;
-                }
-                else
-                {
-                    fileStream.Seek(0, SeekOrigin.Begin);
-
-                    ModelDictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
-                        model.DictionaryId, model.IsDeleteOldValues, import);
-                }
-            }
-
-            return Json(new { isViaLongProcess });
+	        return Json(new {isViaLongProcess});
         }
 
         #region Support Methods

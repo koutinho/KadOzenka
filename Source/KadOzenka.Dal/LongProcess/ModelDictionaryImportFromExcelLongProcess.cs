@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.LongProcess
 		}
 
 
-		public static void AddProcessToQueue(Stream file, DictionaryImportFileFromExcelDto settings, OMImportDataLog import)
+		public static void AddProcessToQueue(DictionaryImportFileFromExcelDto settings, OMImportDataLog import)
 		{
 			LongProcessManager.AddTaskToQueue(nameof(ModelDictionaryImportFromExcelLongProcess), OMModelingDictionary.GetRegisterId(), import.Id, settings.SerializeToXml());
 		}
@@ -75,11 +75,8 @@ namespace KadOzenka.Dal.LongProcess
 				var settings = processQueue.Parameters.DeserializeFromXml<DictionaryImportFileFromExcelDto>();
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelDictionaryService.RowsCount, () => ModelDictionaryService.CurrentRow);
 
-				var fileStream = FileStorageManagerWrapper.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
-					import.DataFileName);
-
-				ModelDictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
-					settings.DeleteOldValues, import);
+				ModelDictionaryService.UpdateDictionaryFromExcel(import, settings.FileInfo, settings.DictionaryId,
+					settings.DeleteOldValues);
 			}
 			catch (Exception e)
 			{

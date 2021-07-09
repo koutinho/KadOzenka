@@ -19,10 +19,10 @@
         </div>
         <div class="form-group">
             <div class="col-sm-4">
-                @Html.CustomLabelFor(m => m.CalcValue)
+                @Html.CustomLabelFor(m => m.CalculationValue)
             </div>
             <div class="col-sm-8">
-                @Html.Kendo().DropDownListFor(m => m.CalcValue).DataTextField("Name").DataValueField("Name")
+                @Html.Kendo().DropDownListFor(m => m.CalculationValue).DataTextField("Name").DataValueField("Name")
             </div>
         </div>
         <div class="form-group">
@@ -65,7 +65,7 @@
 
 
     $(document).ready(function() {
-        $("#@(nameof(Model.CalcValue))").data('kendoDropDownList').setDataSource(dataSource);
+        $("#@(nameof(Model.CalculationValue))").data('kendoDropDownList').setDataSource(dataSource);
         $("#@(nameof(Model.Value))").data('kendoDropDownList').setDataSource(dataSource);
 
 
@@ -121,7 +121,7 @@
         var formData = new FormData();
         formData.append("model.DictionaryId", formObject.DictionaryId);
         formData.append("model.Value", formObject.Value);
-        formData.append("model.CalcValue", formObject.CalcValue);
+        formData.append("model.CalculationValue", formObject.CalculationValue);
         formData.append("model.IsDeleteOldValues", formObject.IsDeleteOldValues);
         formData.append("file", files[0].rawFile);
         kendo.ui.progress($('body'), true);
