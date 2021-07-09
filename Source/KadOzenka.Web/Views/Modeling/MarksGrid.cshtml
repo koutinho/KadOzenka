@@ -1,5 +1,5 @@
 ﻿
-<div class="form-horizontal col-sm-12">
+<div id="marksGridBlock" class="form-horizontal col-sm-12">
     <div style="display: flex;">
         <div id="marksGrid"></div>
     </div>
@@ -43,12 +43,12 @@
             },
             requestStart: function(e) {
                 if (e.type == "read") {
-                    kendo.ui.progress($('body'), true);
+                    kendo.ui.progress($('#marksGridBlock'), true);
                 }
             },
             requestEnd: function (e) {
                 if (e.type == "read") {
-                    kendo.ui.progress($('body'), false);
+                    kendo.ui.progress($('#marksGridBlock'), false);
                 }
             },
             error: function (e) {

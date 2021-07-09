@@ -123,7 +123,6 @@
         var selectedRowData = getSelectedRowInDictionariesGrid();
         if (selectedRowData) {
             var dictionaryId = selectedRowData.DictionaryId;
-            kendo.ui.progress($('body'), true);
             $.ajax({
                 type: 'GET',
                 url: '@Url.Action("MarksGrid", "Modeling", new {isReadOnly = ViewBag.IsReadOnly})' + '&dictionaryId=' + dictionaryId,
@@ -135,9 +134,6 @@
                 },
                 error: function(response) {
                     Common.ShowError(response.responseText);
-                },
-                complete: function() {
-                    kendo.ui.progress($('body'), false);
                 }
             });
         }
