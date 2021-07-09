@@ -275,7 +275,7 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var dictionary = GetDictionaryById(dto.DictionaryId);
 
-			ValidateMark(dictionary, dto);
+			ValidateSingleMark(dictionary, dto);
 
 			var mark = new OMModelingDictionariesValues
 			{
@@ -293,7 +293,7 @@ namespace KadOzenka.Dal.Modeling
 
 			var dictionary = GetDictionaryById(dto.DictionaryId);
 
-			ValidateMark(dictionary, dto);
+			ValidateSingleMark(dictionary, dto);
 
 			mark.Value = dto.Value;
 			mark.CalculationValue = dto.CalculationValue.GetValueOrDefault();
@@ -321,24 +321,29 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
+		private void ValidateSingleMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
 		{
-			var isEmptyValue = string.IsNullOrWhiteSpace(mark.Value);
-			if (isEmptyValue)
-				throw new EmptyMarkValueException();
-			if (mark.CalculationValue == null)
-				throw new EmptyMarkCalculationValueException();
-
-			var canParseToNumber = (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && mark.Value.TryParseToDecimal(out _);
-			var canParseToDate = dictionary.Type_Code == ModelDictionaryType.Date && mark.Value.TryParseToDateTime(out _);
-			var canParseToBoolean = dictionary.Type_Code == ModelDictionaryType.Boolean && mark.Value.TryParseToBoolean(out _);
-
-			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
-				throw new MarkValueConvertingException(mark.Value, dictionary.Type_Code);
-
+			ValidateMark(dictionary.Type_Code, mark.Value, mark.CalculationValue);
+			
 			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
 			if (isTheSameMarkExists)
 				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
+		}
+
+		private void ValidateMark(ModelDictionaryType dictionaryType, string value, decimal? calculationValue)
+		{
+			var isEmptyValue = string.IsNullOrWhiteSpace(value);
+			if (isEmptyValue)
+				throw new EmptyMarkValueException();
+			if (calculationValue == null)
+				throw new EmptyMarkCalculationValueException();
+
+			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
+			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
+			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
+
+			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
+				throw new MarkValueConvertingException(value, dictionaryType);
 		}
 
 		#endregion
@@ -361,7 +366,7 @@ namespace KadOzenka.Dal.Modeling
 			ImportDictionaryMarks(fileStream, existedDictionary, fileImportInfo, import);
 		}
 
-		public static OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
+		public OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName)
 		{
 			var currentTime = DateTime.Now;
 			var fileName = $"{DataImporterCommon.GetDataFileTitle(inputFileName)} ({currentTime.GetString().Replace(":", "_")})";
@@ -427,7 +432,7 @@ namespace KadOzenka.Dal.Modeling
 			var maxColumnsCount = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
-			var metkaIndex = -1;
+			var calculationValueIndex = -1;
 			for (var i = 0; i <= maxColumnsCount; i++)
 			{
 				if (mainWorkSheet.Rows[0].Cells[i].Value == null)
@@ -440,7 +445,7 @@ namespace KadOzenka.Dal.Modeling
 				}
 				if (columnName == fileImportInfo.CalcValueColumnName)
 				{
-					metkaIndex = i;
+					calculationValueIndex = i;
 				}
 			}
 
@@ -458,19 +463,20 @@ namespace KadOzenka.Dal.Modeling
 			{
 				try
 				{
-					var value = row.Cells[valueIndex].Value;
-					var calculationValue = row.Cells[metkaIndex].Value;
+					var valueFromCell = row.Cells[valueIndex].Value;
+					var calculationValueFromCell = row.Cells[calculationValueIndex].Value;
 
-					if (!calculationValue.TryParseToDecimal(out var calcValue))
-						throw new Exception($"Значение '{calculationValue}' не может быть приведено к числу");
+					if (!calculationValueFromCell.TryParseToDecimal(out var calculationValue))
+						throw new Exception($"Значение '{calculationValueFromCell}' не может быть приведено к числу");
 
-					var valueString = GetValueFromExcelCell(dictionary.Type_Code, value);
+					var valueString = GetValueFromExcelCell(dictionary.Type_Code, valueFromCell);
+					ValidateMark(dictionary.Type_Code, valueString, calculationValue);
 					var currentMark = existedValues.FirstOrDefault(x => x.Value == valueString);
 					if (currentMark != null)
 					{
-						if (currentMark.CalculationValue != calcValue)
+						if (currentMark.CalculationValue != calculationValue)
 						{
-							currentMark.CalculationValue = calcValue;
+							currentMark.CalculationValue = calculationValue;
 							currentMark.Save();
 
 							row.Cells[resultColumnIndex].SetValue("Значение успешно обновлено");
@@ -486,7 +492,7 @@ namespace KadOzenka.Dal.Modeling
 						{
 							DictionaryId = dictionary.Id,
 							Value = valueString,
-							CalculationValue = calcValue
+							CalculationValue = calculationValue
 						}.Save();
 
 						row.Cells[resultColumnIndex].SetValue("Значение успешно создано");
@@ -535,6 +541,11 @@ namespace KadOzenka.Dal.Modeling
 					if (!cellValue.TryParseToDateTime(out var date))
 						throw new Exception($"Значение '{cellValue}'не может быть приведено к типу 'Дата'");
 					valueString = date.ToString(CultureInfo.CurrentCulture);
+					break;
+				case ModelDictionaryType.Boolean:
+					if (!cellValue.TryParseToBoolean(out var boolValue))
+						throw new Exception($"Значение '{cellValue}'не может быть приведено к типу 'Логическое значение'");
+					valueString = boolValue.ToString(CultureInfo.CurrentCulture);
 					break;
 			}
 

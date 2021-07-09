@@ -33,5 +33,6 @@ namespace KadOzenka.Dal.Modeling
 		void UpdateMark(DictionaryMarkDto dto);
 		void DeleteMark(long markId);
 		int DeleteMarks(long? dictionaryId);
+		OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName);
 	}
 }
