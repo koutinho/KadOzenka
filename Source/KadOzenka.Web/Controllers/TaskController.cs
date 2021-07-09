@@ -647,7 +647,7 @@ namespace KadOzenka.Web.Controllers
 		        {
 			        Value = Guid.NewGuid().ToString(),
 			        Text = RegisterCache.Registers.Values.FirstOrDefault(x => x.Id == zuRgisId)?.Description,
-			        Items = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == oksRgisId).Select(x =>
+			        Items = RegisterCache.RegisterAttributes.Values.Where(x => x.RegisterId == zuRgisId).Select(x =>
 				        new DropDownTreeItemModel
 				        {
 					        Value = x.Id.ToString(),
@@ -667,17 +667,19 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
+            GeoFactorsFromRgisLongProcess pr = new GeoFactorsFromRgisLongProcess();
+            pr.StartProcess(model.TaskId, model.AttributeIds);
 
-
-            var RgisDataApi = new RgisDataApi();
-            RgisDataApi.GetDistanceFactorsValue(new RequestData
-            {
-                Kn = "50:11:0020501:2154",
-                Layers = new List<string>
-                {
-                    "BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903"
-                }
-            });
+            //var RgisDataApi = new RgisDataApi();
+            // RgisDataApi.GetDistanceFactorsValue(new RequestData
+            // {
+            //     Kn = "50:11:0020501:2154",
+            //     Layers = new List<string>
+            //     {
+            //         "BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903",
+            //         "BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903"
+            //     }
+            // });
             //var inputParameters = new KoFactorsFromReonInputParameters
             //{
             //    TaskId = model.TaskId,

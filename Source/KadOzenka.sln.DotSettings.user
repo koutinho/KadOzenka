@@ -3,4 +3,6 @@
   &lt;Assembly Path="C:\Users\Alex\.nuget\packages\platform\1.0.390\lib\netcoreapp2.1\Platform.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Users\Alex\.nuget\packages\platform.web\1.0.722-beta.0\lib\netcoreapp2.1\Platform.Web.dll" /&gt;&#xD;
   &lt;Assembly Path="C:\Program Files\dotnet\shared\Microsoft.NETCore.App\2.1.28\System.Private.CoreLib.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Program Files\dotnet\shared\Microsoft.NETCore.App\5.0.7\System.Net.Http.dll" /&gt;&#xD;
+  &lt;Assembly Path="C:\Users\Alex\.nuget\packages\restsharp\106.11.7\lib\netstandard2.0\RestSharp.dll" /&gt;&#xD;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

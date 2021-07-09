@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using DocumentFormat.OpenXml.Office2010.ExcelAc;
 using KadOzenka.WebClients.RgisClient.Client;
+using KadOzenka.WebClients.RgisClient.Model;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -11,43 +8,85 @@ namespace KadOzenka.WebClients.RgisClient.Api
 {
 	public class RgisDataApi
 	{
-		private ILogger _log = Log.ForContext<RgisDataApi>();
-		private readonly string _apiUrl;
+		private readonly ILogger _log = Log.ForContext<RgisDataApi>();
+		private readonly Configurator _configurator;
 
 		public RgisDataApi()
 		{
 			_log.Debug("Урл для запросов в РГИС = {url}", WebClientsConfig.Current.RgisBaseUrl);
-			_apiUrl = WebClientsConfig.Current.RgisBaseUrl;
+			var apiUrl = WebClientsConfig.Current.RgisBaseUrl;
+			_configurator = new Configurator(apiUrl);
 		}
 
-
-		public void GetDistanceFactorsValue(RequestData data)
+		/// <summary>
+		/// Запрос с большим кол-вом параметров
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public ApiResponse<ResponseData> GetDistanceZuFactorsValue(RequestData data)
 		{
-			var paramsList = new List<object>();
-
-			foreach (var dataLayer in data.Layers)
+			if (data.Layers.Count == 0)
 			{
-				paramsList.Add(new
-				{
-					connectiondataset_code = dataLayer,
-					dataset_code = "BASE.DSPARCEL",
-					cnum = data.Kn,
-					options = "shortest"
-				});
+				var error = new Exception("Не переданы слои для построения параметров запроса");
+				_log.Error(error, error.Message);
+				throw error;
 			}
+			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
+			string dataSetCode = "BASE.DSPARCEL";
 
 			RequestBody body = new RequestBody
 			{
 				Id = 1,
-				Method = "CONNECTIONS.DSCALCDISTANCE.GETDATA",
-				Params = paramsList
+				Method = method,
+				Params = _configurator.GetParams(data, dataSetCode)
+			};
+		
+
+			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+
+			if (_configurator.IsError(res, out string msg))
+			{
+				throw new Exception(msg);
+			}
+			return new ApiResponse<ResponseData>(res);
+		}
+
+		/// <summary>
+		/// Ответ от апи отличается если параметр в массиве один, это вариант на такой слчучай
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public ApiResponse<ResponseDataSingle> GetDistanceZuFactorsValueSingle(RequestData data)
+		{
+			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
+			string dataSetCode = "BASE.DSPARCEL";
+
+			RequestBody body = new RequestBody
+			{
+				Id = 1,
+				Method = method,
+				Params = _configurator.GetParams(data, dataSetCode)
 			};
 
+			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+			return new ApiResponse<ResponseDataSingle>(res);
+		}
 
 
-			var api = new ApiClient(_apiUrl);
-			var res = api.CallApi(JsonConvert.SerializeObject(body));
+		public ApiResponse<ResponseData> GetDistanceOksFactorsValue(RequestData data)
+		{
+			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
+			string dataSetCode = "BASE.DSREALTY";
 
+			RequestBody body = new RequestBody
+			{
+				Id = 1,
+				Method = method,
+				Params = _configurator.GetParams(data, dataSetCode)
+			};
+
+			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+			return new ApiResponse<ResponseData>(res);
 		}
 	}
 
