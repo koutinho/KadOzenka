@@ -99,23 +99,17 @@ namespace KadOzenka.Dal.Modeling
 			}.Save();
 		}
 
-		//public void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType)
-		//{
-		//	var dictionary = GetDictionaryById(id);
+		public void UpdateDictionary(long id, string newName, List<long> modelDictionariesIds)
+		{
+			var dictionary = GetDictionaryById(id);
+			if (dictionary.Name == newName)
+				return;
 
-		//	ValidateDictionary(newName);
+			ValidateDictionary(newName, modelDictionariesIds);
 
-		//	if (dictionary.Type_Code != newValueType)
-		//	{
-		//		var hasValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).ExecuteExists();
-		//		if (hasValues)
-		//			throw new Exception("Нельзя изменить тип для непустого справочника");
-		//	}
-
-		//	dictionary.Name = newName;
-		//	dictionary.Type_Code = newValueType;
-		//	dictionary.Save();
-		//}
+			dictionary.Name = newName;
+			dictionary.Save();
+		}
 
 		public int DeleteDictionary(long? id)
 		{
