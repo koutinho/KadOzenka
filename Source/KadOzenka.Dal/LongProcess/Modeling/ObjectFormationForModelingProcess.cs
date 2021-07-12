@@ -73,8 +73,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
             try
 			{
-				Model = ModelingService.GetModelEntityById(InputParameters.ModelId);
-				Tour = ModelingService.GetModelTour(Model.GroupId);
+				Model = ModelService.GetModelEntityById(InputParameters.ModelId);
+				Tour = ModelService.GetModelTour(Model.GroupId);
 
 				if (LongProcessService.HasOtherActiveProcessInQueue(Queue.Id, ProcessId, Model.Id))
 					throw new Exception("Процесс сбора данных уже был запущен ранее");
@@ -86,7 +86,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                 var processedMarketObjectsCount = PrepareData(modelAttributes);
                 AddLog(processQueue, $"Закончен сбор данных для модели '{Model.Name}'.", logger: Logger);
 
-                CreateMarkCatalog(Model.GroupId, ModelObjects, modelAttributes, Queue);
+                CreateMarkCatalog(ModelObjects, modelAttributes, Queue);
 
                 SaveStatistic(ModelObjects, modelAttributes, Model, Queue);
 
@@ -229,7 +229,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var dictionaryIds = modelAttributes?.Where(x => x.DictionaryId != null).Select(x => x.DictionaryId.Value)
                 .Distinct().ToList();
 
-            return DictionaryService.GetDictionaries(dictionaryIds);
+            return ModelDictionaryService.GetDictionaries(dictionaryIds);
         }
 
         private OMGroupToMarketSegmentRelation GetGroupToMarketSegmentRelation()

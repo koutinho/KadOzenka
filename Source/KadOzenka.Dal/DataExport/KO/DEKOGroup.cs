@@ -14,6 +14,7 @@ using Core.Shared.Extensions;
 using DevExpress.Data.Extensions;
 using Ionic.Zip;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -116,7 +117,7 @@ namespace KadOzenka.Dal.DataExport
             private readonly Stopwatch _stopwatch;
             private long _unloadId;
             private long _unitCount;
-            private Dictionary<long?, List<OMMarkCatalog>> _marks;
+            private Dictionary<long, List<OMModelingDictionariesValues>> _marks;
             private CancellationToken _token;
 
             protected DEKOGroupExportBase(KOUnloadSettings setting, OMGroup subgroup, long taskId, long unloadId) : this(subgroup,
@@ -137,7 +138,7 @@ namespace KadOzenka.Dal.DataExport
                 _model = OMModel.Where(x => x.GroupId == _subgroup.Id && x.IsActive.Coalesce(true) == true)
                     .SelectAll()
                     .ExecuteFirstOrDefault();
-                _marks = new Dictionary<long?, List<OMMarkCatalog>>();
+                _marks = new Dictionary<long, List<OMModelingDictionariesValues>>();
             }
 
             protected void FullExport(int countCurr, List<ResultKoUnloadSettings> res)
@@ -495,7 +496,7 @@ namespace KadOzenka.Dal.DataExport
                                     xnQualitativeValueRoot.AppendChild(xnQualitativeId);
 
                                     XmlNode xnQualitativeValue = _xmlFile.CreateElement("Qualitative_Value");
-                                    xnQualitativeValue.InnerText = mark.ValueFactor.ToUpper();
+                                    xnQualitativeValue.InnerText = mark.Value.ToUpper();
                                     xnQualitativeValueRoot.AppendChild(xnQualitativeValue);
 
                                     xnQualitativeValues.AppendChild(xnQualitativeValueRoot);
@@ -522,18 +523,26 @@ namespace KadOzenka.Dal.DataExport
                 }
             }
 
-            private Dictionary<long?, List<OMMarkCatalog>> GetMarks()
+            private Dictionary<long, List<OMModelingDictionariesValues>> GetMarks()
             {
-                List<OMMarkCatalog> omMarkCatalogs;
+	           var modelFactorsWithDictionaries = new ModelFactorsService().GetGeneralModelAttributes(_model.Id)
+		           .Where(x => x.DictionaryId != null).ToList();
+
+                List<OMModelingDictionariesValues> omMarkCatalogs;
                 using (Log.TimeOperation("Получение меток"))
                 {
-                    omMarkCatalogs = OMMarkCatalog.Where(x => x.GroupId == _model.GroupId)
-                        .SelectAll().Execute();
+	                var dictionaryIds = modelFactorsWithDictionaries.Select(x => x.DictionaryId).ToList();
+	                omMarkCatalogs = new ModelDictionaryService().GetMarks(dictionaryIds);
                 }
 
                 using (Log.TimeOperation("Группировка {marksCount} меток по факторам", omMarkCatalogs.Count))
                 {
-                    return omMarkCatalogs.GroupBy(x => x.FactorId).ToDictionary(x => x.Key, x => x.ToList());
+	                return omMarkCatalogs.GroupBy(x => x.DictionaryId).ToDictionary(x =>
+		                {
+			                var factor = modelFactorsWithDictionaries.First(f => f.DictionaryId == x.Key);
+			                return factor.Id;
+		                },
+		                x => x.ToList());
                 }
             }
 
@@ -715,7 +724,7 @@ namespace KadOzenka.Dal.DataExport
                                     xnCastAccount.AppendChild(xnQualitativeId);
 
                                     XmlNode xnDimension = _xmlFile.CreateElement("Dimension");
-                                    xnDimension.InnerText = mark.MetkaFactor.ToString();
+                                    xnDimension.InnerText = mark.CalculationValue.ToString();
                                     xnCastAccount.AppendChild(xnDimension);
 
                                     xnCastAccounts.AppendChild(xnCastAccount);
@@ -797,7 +806,7 @@ namespace KadOzenka.Dal.DataExport
                 return xnRealEstate;
             }
 
-            private void AddXnEvaluativeFactors(Dictionary<long?, List<OMMarkCatalog>> marks, XmlNode xnRealEstate,
+            private void AddXnEvaluativeFactors(Dictionary<long, List<OMModelingDictionariesValues>> marks, XmlNode xnRealEstate,
                 List<CalcItem> calcItems)
             {
                 XmlNode xnCEvaluativeFactors = _xmlFile.CreateElement("Evaluative_Factors");
@@ -811,7 +820,7 @@ namespace KadOzenka.Dal.DataExport
                 xnRealEstate.AppendChild(xnCEvaluativeFactors);
             }
 
-            private void AddXnEvaluativeFactors(Dictionary<long?, List<OMMarkCatalog>> marks, XmlNode xnRealEstate,
+            private void AddXnEvaluativeFactors(Dictionary<long, List<OMModelingDictionariesValues>> marks, XmlNode xnRealEstate,
                 OMUnit unit,
                 int factorReestrId)
             {
@@ -829,7 +838,7 @@ namespace KadOzenka.Dal.DataExport
                 xnRealEstate.AppendChild(xnCEvaluativeFactors);
             }
 
-            private void Modelling(Dictionary<long?, List<OMMarkCatalog>> marks, List<CalcItem> calcItems,
+            private void Modelling(Dictionary<long, List<OMModelingDictionariesValues>> marks, List<CalcItem> calcItems,
                 XmlNode xnCEvaluativeFactors)
             {
                 if (_model == null) return;
@@ -849,7 +858,7 @@ namespace KadOzenka.Dal.DataExport
 
                     if (factorModel.SignMarket)
                     {
-                        var mark = factorModel.MarkCatalogs.Find(x => x.ValueFactor == valueItem);
+                        var mark = factorModel.MarkCatalogs.Find(x => x.Value == valueItem);
                         if (mark == null) continue;
 
                         XmlNode xnQualitativeId = _xmlFile.CreateElement("Qualitative_Id");

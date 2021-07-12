@@ -20,12 +20,12 @@ namespace KadOzenka.Dal.Groups
 {
     public class GroupService : IGroupService
     {
-        private ModelingService ModelingService { get; }
+        private ModelService ModelService { get; }
         private RecycleBinService RecycleBinService { get; }
 
         public GroupService()
         {
-	        ModelingService = new ModelingService();
+	        ModelService = new ModelService();
 	        RecycleBinService = new RecycleBinService();
         }
 
@@ -441,7 +441,6 @@ namespace KadOzenka.Dal.Groups
 	        }
             OMAutoCalculationSettings calculationSettings = OMAutoCalculationSettings.Where(x => x.IdGroup == groupId).ExecuteFirstOrDefault();
 	        List<OMModel> models = OMModel.Where(x => x.GroupId == groupId).Execute();
-	        List<OMGroupFactor> groupFactors = OMGroupFactor.Where(x => x.GroupId == groupId).Execute();
 	        List<OMCalcGroup> calcGroups = OMCalcGroup.Where(x => x.GroupId == groupId || x.ParentCalcGroupId == groupId).Execute();
 	        OMGroupToMarketSegmentRelation groupToMarketSegmentRelation = GetOMGroupToMarketSegmentRelationByGroupId(groupId);
 	        using (var ts = new TransactionScope())
@@ -470,11 +469,10 @@ namespace KadOzenka.Dal.Groups
 
 		        foreach (var model in models)
 		        {
-			        ModelingService.DeleteModelLogically(model.Id, eventId.Value);
+			        ModelService.DeleteModelLogically(model.Id, eventId.Value);
 		        }
 
 
-	            RecycleBinService.MoveObjectsToRecycleBin(groupFactors.Select(x => x.Id).ToList(), OMGroupFactor.GetRegisterId(), eventId.Value);
 	            RecycleBinService.MoveObjectsToRecycleBin(calcGroups.Select(x => x.Id).ToList(), OMCalcGroup.GetRegisterId(), eventId.Value);
 
 	            if (groupToMarketSegmentRelation != null)

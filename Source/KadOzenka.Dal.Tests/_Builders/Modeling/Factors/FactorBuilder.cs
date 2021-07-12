@@ -1,5 +1,4 @@
-﻿using System;
-using KadOzenka.Common.Tests;
+﻿using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Builders.Modeling;
 using ObjectModel.KO;
 

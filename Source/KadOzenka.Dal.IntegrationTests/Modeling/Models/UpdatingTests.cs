@@ -8,7 +8,7 @@ using ObjectModel.KO;
 namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 {
 	//[TestFixture, Ignore("Интеграционные тесты пропускаются, т.к. нет БД")]
-	public class InheritanceTests : BaseGbuObjectTests
+	public class InheritanceTests : BaseModelingTests
 	{
 		[Test]
 		public void Can_Update_Automatic_Model()
@@ -24,7 +24,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 				A0 = RandomGenerator.GenerateRandomDecimal(),
 				A0ForPreviousTour = RandomGenerator.GenerateRandomDecimal()
 			};
-			ModelingService.UpdateAutomaticModel(updatingModelDto);
+			ModelService.UpdateAutomaticModel(updatingModelDto);
 
 			var updatedModel = OMModel.Where(x => x.Id == existedModel.Id).SelectAll().ExecuteFirstOrDefault();
 			Assert.That(updatedModel.Name, Is.EqualTo(updatingModelDto.Name));

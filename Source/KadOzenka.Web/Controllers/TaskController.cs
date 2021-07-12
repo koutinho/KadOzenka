@@ -470,9 +470,6 @@ namespace KadOzenka.Web.Controllers
                     case UnitFactorsShowType.ModelFactors:
 	                    factorsValues = UnitService.GetUnitModelFactors(unit);
                         break;
-                    case UnitFactorsShowType.GroupFactors:
-	                    factorsValues = UnitService.GetUnitGroupFactors(unit);
-                        break;
                     default:
                         factorsValues = UnitService.GetUnitFactors(unit);
                         break;

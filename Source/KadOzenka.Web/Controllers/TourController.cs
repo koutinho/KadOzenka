@@ -43,19 +43,17 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
-        public GroupFactorService GroupFactorService { get; set; }
-        public IModelingService ModelingService { get; set; }
+        public IModelService ModelService { get; set; }
 
         public TourController(ITourService tourService, IGbuObjectService gbuObjectService,
-	        IRegisterCacheWrapper registerCacheWrapper, IModelingService modelingService)
+	        IRegisterCacheWrapper registerCacheWrapper, IModelService modelService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             TourService = tourService;
             TourComplianceImportService = new TourComplianceImportService();
-            GroupFactorService = new GroupFactorService();
-            ModelingService = modelingService;
+            ModelService = modelService;
         }
 
         #region Карточка тура
@@ -138,7 +136,7 @@ namespace KadOzenka.Web.Controllers
             var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            groupModel.Models = ModelingService.GetActiveModelsEntityByGroupId(groupId)
+            groupModel.Models = ModelService.GetGroupModels(groupId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -519,15 +517,17 @@ namespace KadOzenka.Web.Controllers
 
         private List<SelectListItem> GetDictionaries()
         {
-            var DictionaryService = new DictionaryService();
-            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }).ToList();
+            //var DictionaryService = new DictionaryService();
+            //var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            //{
+            //    Text = x.Name,
+            //    Value = x.Id.ToString()
+            //}).ToList();
 
-            dictionaries.Insert(0, new SelectListItem("", ""));
-            return dictionaries;
+            //dictionaries.Insert(0, new SelectListItem("", ""));
+            //return dictionaries;
+
+            return new List<SelectListItem>();
         }
 
         private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
@@ -848,93 +848,6 @@ namespace KadOzenka.Web.Controllers
             return Json(items);
         }
 
-        #region Факторы группы
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult GroupFactors(long groupId)
-        {
-            ViewBag.GroupId = groupId;
-            return PartialView("~/Views/Tour/Partials/GroupFactors.cshtml");
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public JsonResult GetGroupFactors(long groupId)
-        {
-            var models = GroupFactorService.GetGroupFactors(groupId).Select(GroupFactorModel.FromDto).ToList();
-            return Json(models);
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetTourFactors(long? groupId)
-        {
-            OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId)
-                .Select(x => x.TourId).ExecuteFirstOrDefault();
-
-            if (tourGroup != null)
-            {
-                var tourAllAttributes = TourFactorService.GetTourAttributes(tourGroup.TourId, ObjectTypeExtended.Both);
-                var result = tourAllAttributes.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).OrderBy(x => x.Text);
-
-                return Json(result);
-            }
-
-            return Json(new List<SelectListItem>());
-        }
-
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult EditGroupFactor(long? id, long groupId)
-        {
-            GroupFactorModel model;
-
-            if (id.HasValue)
-            {
-                var dto = GroupFactorService.GetGroupFactor(id.Value);
-                model = GroupFactorModel.FromDto(dto);
-            }
-            else
-            {
-                model = new GroupFactorModel(groupId);
-            }
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult EditGroupFactor(GroupFactorModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return GenerateMessageNonValidModel();
-            }
-
-            if (model.Id == -1)
-            {
-                var id = GroupFactorService.CreateGroupFactor(model.ToDto());
-                model.Id = id;
-            }
-            else
-            {
-                GroupFactorService.UpdateGroupFactor(model.ToDto());
-            }
-
-            return Json(new {Success = "Сохранено успешно", Id = model.Id});
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult DeleteGroupFactor(long id)
-        {
-            GroupFactorService.DeleteGroupFactor(id);
-            return Json(new {Success = "Удаление выполненно"});
-        }
-
-        #endregion Факторы группы
 
         #region Импорт группы из Excel
 

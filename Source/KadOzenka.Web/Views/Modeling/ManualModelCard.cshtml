@@ -2,12 +2,6 @@
 @model KadOzenka.Web.Models.Modeling.ManualModelingModel
 
 
-<!-- Модальное окно для загрузки справочника меток -->
-<div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
-</div>
-
-
-<!--Основное окно с информацией о модели -->
 @using (Html.BeginForm("ManualModelCard", "Modeling", FormMethod.Post, new { id = "saveModelForm", enctype = "multipart/form-data" }))
 {
     @Html.HiddenFor(x => x.Id)
@@ -146,28 +140,6 @@
                     attributes: { title: "Удалить" },
                     icon: 'delete',
                     hidden: isReadOnly
-                },
-                {
-                    type: 'button',
-                    id: 'show-marks',
-                    text: '',
-                    attributes: { title: "Метки" },
-                    icon: 'clock'
-                },
-                {
-                    type: 'button',
-                    id: 'upload-marks-catalog',
-                    text: '',
-                    attributes: { title: "Загрузить справочник меток" },
-                    icon: 'upload',
-                    hidden: isReadOnly
-                },
-                {
-                    type: 'button',
-                    id: 'download-marks-catalog',
-                    text: '',
-                    attributes: { title: "Выгрузить справочник меток" },
-                    icon: 'download'
                 }
             ]
         });
@@ -255,10 +227,6 @@
         $('#add-factor').on('click', addFactor);
         $('#edit-factor').on('click', editFactor);
         $('#remove-factor').on('click', deleteFactor);
-
-        $('#show-marks').on('click', showMarks);
-        $('#upload-marks-catalog').on('click', showModalToUploadMarksCatalog);
-        $('#download-marks-catalog').on('click', downloadMarksCatalog);
     });
 
 
@@ -307,14 +275,15 @@
 			url: form.attr('action'),
 			data: formObject,
 			success: function (e) {
-				kendo.ui.progress($('body'), false);
 				Common.ShowMessage('Сохранено');
 				UpdateView();
 			},
 			error: function (e) {
-				kendo.ui.progress($('body'), false);
 				Common.ShowError(e.responseText);
-			}
+			},
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
 		});
     }
 
@@ -374,16 +343,10 @@
         if (row.length == 0) {
             $('#edit-factor').addClass('k-state-disabled');
             $('#remove-factor').addClass('k-state-disabled');
-            $('#show-marks').addClass('k-state-disabled');
-            $('#download-marks-catalog').addClass('k-state-disabled');
-            $('#upload-marks-catalog').addClass('k-state-disabled');
         }
         else {
             $('#edit-factor').removeClass('k-state-disabled');
             $('#remove-factor').removeClass('k-state-disabled');
-            $('#show-marks').removeClass('k-state-disabled');
-            $('#download-marks-catalog').removeClass('k-state-disabled');
-            $('#upload-marks-catalog').removeClass('k-state-disabled');
         }
     }
 
@@ -422,19 +385,23 @@
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (selectedRowData) {
             Common.UI.ShowConfirm({
-                title: '',
+                title: 'Удаление фактора',
                 content: 'Удалить фактор?',
                 onSuccess: function () {
                     kendo.ui.progress($('body'), true);
                     $.ajax({
-                        url: '@Url.Action("DeleteModelFactor", "Modeling")',
+                        url: '@Url.Action("DeleteManualModelFactor", "Modeling")',
                         type: 'POST',
                         data: { id: selectedRowData.Id },
                         success: function (response) {
-                            if (response.Success) {
-                                Common.ShowMessage(response.Success);
-                                UpdateView();
-                            }
+                                if (response.Errors) {
+                                    var errors = getErrors(response.Errors);
+                                    Common.ShowError(errors);
+                                    return;
+                                } else {
+                                    Common.ShowMessage("Удаление выполненно");
+                                    UpdateView();
+                                }
                         },
                         error: function (response) {
                             Common.ShowError(response.responseText);
@@ -443,54 +410,6 @@
                             kendo.ui.progress($('body'), false);
                         }
                     });
-                }
-            });
-        }
-    }
-
-
-    function showMarks() {
-        var selectedRowData = getSelectedRowInFactorsGrid();
-        if (selectedRowData) {
-            var factorId = selectedRowData.AttributeId;
-            Common.UI.ShowWindow('Метки',
-                '@Url.Action("MarksGrid", "Modeling")' + '?groupId=' + '@Model.GroupId' + '&factorId=' + factorId,
-                'editFactorWindow',
-                function (e) {},
-                800, 400);
-        }
-    }
-
-
-    function downloadMarksCatalog() {
-        var selectedRowData = getSelectedRowInFactorsGrid();
-        if (selectedRowData) {
-            var factorId = selectedRowData.AttributeId;
-            window.open('@Url.Action("DownloadMarksCatalog", "Modeling")' + '?groupId=' + '@Model.GroupId' + '&factorId=' + factorId);
-        }
-    }
-
-
-    function showModalToUploadMarksCatalog() {
-        var selectedRowData = getSelectedRowInFactorsGrid();
-        if (selectedRowData) {
-            var groupId = '@Model.GroupId';
-            var factorId = selectedRowData.AttributeId;
-            kendo.ui.progress($('body'), true);
-            $.ajax({
-                url: '@Url.Action("UploadMarksCatalog", "Modeling")',
-                type: 'GET',
-                data: { groupId: groupId, factorId: factorId },
-                success: function (response) {
-                    var modal = $("#uploadMarksCatalogModal");
-                    modal.html(response);
-                    ShowModal(modal, '50%', '30%', "Загрузка меток");
-                },
-                error: function (response) {
-                    Common.ShowError(response.responseText);
-                },
-                complete: function() {
-                    kendo.ui.progress($('body'), false);
                 }
             });
         }

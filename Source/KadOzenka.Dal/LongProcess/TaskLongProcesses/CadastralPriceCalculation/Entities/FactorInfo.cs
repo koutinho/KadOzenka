@@ -6,6 +6,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.
 	public class FactorInfo
 	{
 		public long FactorId { get; set; }
+		public long? DictionaryId { get; set; }
 		public MarkType MarkType { get; set; }
 
 		public string AttributeName { get; set; }

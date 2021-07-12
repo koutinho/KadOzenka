@@ -22,6 +22,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public string Factor { get; set; }
 
 		[Display(Name = "Словарь")]
+		public string DictionaryName { get; set; }
 		public long? DictionaryId { get; set; }
 
 		[Display(Name = "Коэффициент из предыдущего тура")]

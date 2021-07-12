@@ -80,13 +80,13 @@
             </div>
         </div>
     </li>
-    <li id="Section_GroupFactors" data-expand>
-        <span>Факторы группы</span>
+    <li id="marksSection" data-expand>
+        <span>Метки</span>
         <div>
             <div class="row">
-                <div class="form-horizontal" style="margin-top: 10px">
+                <div class="form-horizontal col-sm-12" style="margin-top: 10px">
                     <div class="form-group col-sm-12">
-                        <div id="groupFactorsContent">
+                        <div id="marksContent">
 
                         </div>
                     </div>
@@ -349,24 +349,10 @@
                 });
             }
         });
-
-        kendo.ui.progress($('#groupFactorsContent'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("GroupFactors", "Tour")',
-            data: { 'groupId': '@Model.Id' },
-            success: function (response) {
-                $('#groupFactorsContent').html(response);
-            },
-            error: function (response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('#groupFactorsContent'), false);
-            }
-        });
     }
 
+
+    
     function initModelCard() {
         var modelId = $('#@nameof(Model.ModelId)').data("kendoDropDownList").value();
         if (!modelId || modelId == 0) {
@@ -380,6 +366,7 @@
 			data: { modelId: modelId, isPartial: true, isReadOnly: true },
             success: function (response) {
                 $('#modelMainContent').html(response);
+                initMarksSection(modelId);
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
@@ -394,6 +381,23 @@
         $('#modelMainContent').html("<span style='color:red;'>Модель для группы не найдена</span>");
     }
 
+    function initMarksSection(modelId) {
+        kendo.ui.progress($('#marksContent'), true);
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("ModelDictionaries", "Modeling")',
+            data: { modelId: modelId, isPartial: true },
+            success: function(response) {
+                $('#marksContent').html(response);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('#marksContent'), false);
+            }
+        });
+    }
 
     function makeModelActive() {
         var modelId = $('#@nameof(Model.ModelId)').data("kendoDropDownList").value();

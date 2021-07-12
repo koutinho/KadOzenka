@@ -20,7 +20,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = FactorBuilder.MarkType(MarkType.None).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
-			var formula = ModelingService.GetFormula(Model, KoAlgoritmType.Line);
+			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
 			var expectedFormula = $"{Model.A0ForLinearInFormula}+{CacheAttributeName}*{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
@@ -32,7 +32,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = FactorBuilder.MarkType(MarkType.Default).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
-			var formula = ModelingService.GetFormula(Model, KoAlgoritmType.Line);
+			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
 			var expectedFormula = $"{Model.A0ForLinearInFormula}+метка({CacheAttributeName})*{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = FactorBuilder.MarkType(MarkType.Straight).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
-			var formula = ModelingService.GetFormula(Model, KoAlgoritmType.Line);
+			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
 			var expectedFormula = $"{Model.A0ForLinearInFormula}+({CacheAttributeName}+{factor.CorrectingTermInFormula})/{factor.KInFormula} * {factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var factor = FactorBuilder.MarkType(MarkType.Reverse).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
-			var formula = ModelingService.GetFormula(Model, KoAlgoritmType.Line);
+			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
 			var expectedFormula = $"{Model.A0ForLinearInFormula}+{factor.KInFormula}/({CacheAttributeName}+{factor.CorrectingTermInFormula})*{factor.B0InFormula}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
@@ -83,7 +83,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(straightMarkTypeFactor.FactorId.Value)).Returns(straightMarkTypeAttribute);
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(reverseMarkTypeFactor.FactorId.Value)).Returns(reverseMarkTypeAttribute);
 
-			var formula = ModelingService.GetFormula(Model, KoAlgoritmType.Line);
+			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
 			var baseFormulaPart = $"{Model.A0ForLinearInFormula}";
 			var noneMarkTypeFormulaPart = $"+\"{noneMarkTypeAttribute.Name}\"*{noneMarkTypeFactor.B0InFormula}";

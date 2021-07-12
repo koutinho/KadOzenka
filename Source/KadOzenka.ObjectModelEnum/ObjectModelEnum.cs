@@ -6178,6 +6178,59 @@ namespace ObjectModel.Directory.Ko
     }
 }
 
+namespace ObjectModel.Directory.KO
+{
+    /// <summary>
+    /// Тип данных для словаря моделирования (227)
+    ///</summary>
+    [ReferenceInfo(ReferenceId = 227)]
+    public enum ModelDictionaryType : long
+    {
+		/// <summary>
+		/// Целое число (1)
+		/// </summary>
+		[Description("Целое число")]
+        [EnumCode("1")]
+        [ShortTitle("Целое число")]
+        Integer = 1,
+		/// <summary>
+		/// Десятичное число (2)
+		/// </summary>
+		[Description("Десятичное число")]
+        [EnumCode("2")]
+        [ShortTitle("Десятичное число")]
+        Decimal = 2,
+		/// <summary>
+		/// Логическое значение (3)
+		/// </summary>
+		[Description("Логическое значение")]
+        [EnumCode("3")]
+        [ShortTitle("Логическое значение")]
+        Boolean = 3,
+		/// <summary>
+		/// Строка (4)
+		/// </summary>
+		[Description("Строка")]
+        [EnumCode("4")]
+        [ShortTitle("Строка")]
+        String = 4,
+		/// <summary>
+		/// Дата и время (5)
+		/// </summary>
+		[Description("Дата и время")]
+        [EnumCode("5")]
+        [ShortTitle("Дата и время")]
+        Date = 5,
+		/// <summary>
+		/// Значение из справочника (6)
+		/// </summary>
+		[Description("Значение из справочника")]
+        [EnumCode("6")]
+        [ShortTitle("Значение из справочника")]
+        Reference = 6,
+    }
+}
+
 namespace ObjectModel.Directory.Sud
 {
     /// <summary>

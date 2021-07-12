@@ -10,6 +10,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using Serilog;
@@ -25,12 +26,17 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         };
         private readonly ILogger _logger;
         protected override ILogger Logger => _logger;
-
         public readonly QueryManager QueryManager;
+        private IModelingService ModelingService { get; }
+        private IModelDictionaryService ModelDictionaryService { get; }
+
+
         public CalculationParamsReport()
         {
 	        QueryManager= new QueryManager();
             _logger = Log.ForContext<CalculationParamsReport>();
+            ModelingService = new ModelingService();
+            ModelDictionaryService = new ModelDictionaryService();
         }
 
         protected override string TemplateName(NameValueCollection query)
@@ -128,6 +134,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactor.Type)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactor.FactorId)));
+            query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelFactor.DictionaryId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactor.FactorName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelFactor.Weight)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.AlgorithmType_Code, nameof(ModelFactor.AlgorithmType)));
@@ -142,6 +149,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
 
 				var type = row[nameof(ModelFactor.Type)].ParseToLong();
 				var factorId = row[nameof(ModelFactor.FactorId)].ParseToLong();
+				var dictionaryId = row[nameof(ModelFactor.DictionaryId)].ParseToLong();
 				var factorName = row[nameof(ModelFactor.FactorName)].ParseToStringNullable();
 				var weight = row[nameof(ModelFactor.Weight)].ParseToDecimalNullable();
 				var algorithmType = row[nameof(ModelFactor.AlgorithmType)].ParseToLongNullable();
@@ -150,7 +158,8 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
                 {
 	                Type = type,
 	                FactorId = factorId,
-	                FactorName = factorName,
+                    DictionaryId = dictionaryId,
+                    FactorName = factorName,
 	                Weight = weight,
 	                AlgorithmType = algorithmType == null ? KoAlgoritmType.None : (KoAlgoritmType)algorithmType
                 });
@@ -178,22 +187,21 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             if (factorIds.Count <= 0)
                 return new List<QuantitativeFactor>();
 
-            var allMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && factorIds.Contains(x.FactorId ?? 0))
-                .SelectAll().Execute();
+            var allMarks = GetMarks(groupId, factorIds);
 
             var groupedMarks = allMarks
-                .GroupBy(x => x.FactorId)
+                .GroupBy(x => x.DictionaryId)
                 .Select(x => new
                 {
-                    FactorId = x.Key,
-                    MaxValue = x.Max(y => y.ValueFactor.ParseToDecimalNullable() ?? 0),
-                    MinValue = x.Min(y => y.ValueFactor.ParseToDecimalNullable() ?? 0)
+                    DictionaryId = x.Key,
+                    MaxValue = x.Max(y => y.Value.ParseToDecimalNullable() ?? 0),
+                    MinValue = x.Min(y => y.Value.ParseToDecimalNullable() ?? 0)
                 }).ToList();
 
             var result = new List<QuantitativeFactor>();
             quantitativeFactors.ForEach(factor =>
             {
-                var factorMarks = groupedMarks.FirstOrDefault(x => x.FactorId == factor.FactorId);
+                var factorMarks = groupedMarks.FirstOrDefault(x => x.DictionaryId == factor.DictionaryId);
                 if (factorMarks != null)
                 {
                     result.Add(new QuantitativeFactor
@@ -237,20 +245,19 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             if (factorIds.Count <= 0)
                 return new List<QualityFactor>();
 
-            var allMarks = OMMarkCatalog.Where(x => x.GroupId == groupId && factorIds.Contains(x.FactorId ?? 0))
-                .SelectAll().Execute();
+            var allMarks = GetMarks(groupId, factorIds);
 
             var result = new List<QualityFactor>();
             qualityFactors.ForEach(factor =>
             {
-                var factorMarks = allMarks.Where(x => x.FactorId == factor.FactorId).ToList();
+                var factorMarks = allMarks.Where(x => x.DictionaryId == factor.DictionaryId).ToList();
                 factorMarks.ForEach(x =>
                 {
                     result.Add(new QualityFactor
                     {
                         Name = factor.FactorName,
-                        Value = x.ValueFactor,
-                        Metka = x.MetkaFactor
+                        Value = x.Value,
+                        Metka = x.CalculationValue
                     });
                 });
             });
@@ -278,6 +285,20 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             return dataTable;
         }
 
+        private List<OMModelingDictionariesValues> GetMarks(long groupId, List<long> factorIds)
+        {
+	        var dictionaryIds = new List<long?>();
+	        factorIds.ForEach(x =>
+	        {
+		        var dictionaryId = ModelingService.GetDictionaryId(groupId, x);
+		        if (dictionaryId != null)
+			        dictionaryIds.Add(dictionaryId.Value);
+	        });
+
+	        var allMarks = ModelDictionaryService.GetMarks(dictionaryIds);
+	        return allMarks;
+        }
+
         #endregion
 
 
@@ -293,6 +314,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
         {
 	        //public long Id { get; set; }
 	        public long FactorId { get; set; }
+	        public long DictionaryId { get; set; }
 	        public string FactorName { get; set; }
 	        public long Type { get; set; }
 	        public decimal? B0 { get; set; }
