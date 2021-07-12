@@ -17,7 +17,7 @@ namespace KadOzenka.Dal.Modeling
 		List<OMModelingDictionary> GetDictionaries();
 		List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true);
 		OMModelingDictionary GetDictionaryById(long id);
-		long CreateDictionary(string name, RegisterAttributeType factorType);
+		long CreateDictionary(string name, RegisterAttributeType factorType, List<long> modelDictionariesIds);
 		//void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType);
 		void UpdateDictionaryFromExcel(OMImportDataLog import, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool isDeleteExistedMarks);

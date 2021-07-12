@@ -57,3 +57,4 @@ update core_register_attribute set is_nullable=0 where id in (26500400, 26500300
 
 
 CREATE INDEX ko_modeling_dictionaries_values_idx ON ko_modeling_dictionaries_values USING btree (dictionary_id);
+DROP INDEX IF EXISTS ko_modeling_dictionaries_name_key;

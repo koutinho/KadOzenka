@@ -86,9 +86,9 @@ namespace KadOzenka.Dal.Modeling
 			return dictionary;
 		}
 
-		public long CreateDictionary(string name, RegisterAttributeType factorType)
+		public long CreateDictionary(string name, RegisterAttributeType factorType, List<long> modelDictionariesIds)
 		{
-			ValidateDictionary(name, -1);
+			ValidateDictionary(name, modelDictionariesIds);
 
 			var dictionaryType = MapDictionaryType(factorType);
 
@@ -103,7 +103,7 @@ namespace KadOzenka.Dal.Modeling
 		//{
 		//	var dictionary = GetDictionaryById(id);
 
-		//	ValidateDictionary(newName, id);
+		//	ValidateDictionary(newName);
 
 		//	if (dictionary.Type_Code != newValueType)
 		//	{
@@ -191,14 +191,17 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateDictionary(string name, long id)
+		private void ValidateDictionary(string name, List<long> modelDictionariesIds)
 		{
 			if (string.IsNullOrWhiteSpace(name))
-				throw new Exception("Невозможно создать справочник с пустым именем");
+				throw new Exception("Нельзя создать словарь с пустым именем");
 
-			var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
-			if (isExistsDictionaryWithTheSameName)
-				throw new Exception($"Справочник '{name}' уже существует");
+			if (modelDictionariesIds.Count > 0)
+			{
+				var existedDictionaries = GetDictionaries(modelDictionariesIds, false);
+				if (existedDictionaries.Select(x => x.Name).Contains(name))
+					throw new DictionaryAlreadyExistsException(name);
+			}
 		}
 
 		private ModelDictionaryType MapDictionaryType(RegisterAttributeType factorType)

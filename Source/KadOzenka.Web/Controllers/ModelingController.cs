@@ -455,11 +455,7 @@ namespace KadOzenka.Web.Controllers
                     throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
                 }
 
-                if (!string.IsNullOrWhiteSpace(factorModel.DictionaryName))
-                {
-	                var attribute = RegisterCacheWrapper.GetAttributeData(factorModel.FactorId.GetValueOrDefault());
-	                dto.DictionaryId = ModelDictionaryService.CreateDictionary(factorModel.DictionaryName, attribute.Type);
-                }
+                dto.DictionaryId = CreateDictionary(factorModel.DictionaryName, factorModel.FactorId, factorModel.ModelId);
                 ModelFactorsService.AddAutomaticFactor(dto);
                 ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
@@ -684,11 +680,7 @@ namespace KadOzenka.Web.Controllers
 
             if (manualFactorModel.Id == -1)
             {
-	            if (!string.IsNullOrWhiteSpace(manualFactorModel.DictionaryName))
-	            {
-		            var attribute = RegisterCacheWrapper.GetAttributeData(manualFactorModel.FactorId.GetValueOrDefault());
-		            dto.DictionaryId = ModelDictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
-                }
+	            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.GeneralModelId);
 	            ModelFactorsService.AddManualFactor(dto);
             }
             else
@@ -1378,6 +1370,19 @@ namespace KadOzenka.Web.Controllers
             generalQuery.Condition = conditionGroup;
 
             return generalQuery;
+        }
+
+        private long? CreateDictionary(string dictionaryName, long? factorId, long? modelId)
+        {
+	        if (string.IsNullOrWhiteSpace(dictionaryName)) 
+		        return null;
+	        
+	        var attribute = RegisterCacheWrapper.GetAttributeData(factorId.GetValueOrDefault());
+	        var modelDictionariesIds = ModelFactorsService
+		        .GetGeneralModelAttributes(modelId.GetValueOrDefault())
+		        .Select(x => x.DictionaryId.GetValueOrDefault()).Distinct().ToList();
+		       
+	        return ModelDictionaryService.CreateDictionary(dictionaryName, attribute.Type, modelDictionariesIds);
         }
 
         #endregion
