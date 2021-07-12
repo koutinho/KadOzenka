@@ -3,7 +3,7 @@ services:
   postgres_miomo_kadozenka_demo: 
     build:
       context: .
-      dockerfile: services\postgresql\Dockerfile
+      dockerfile: services/postgresql/Dockerfile
     container_name: postgres_miomo_kadozenka_demo
     restart: always
     volumes:
