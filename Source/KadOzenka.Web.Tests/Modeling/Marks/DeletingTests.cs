@@ -10,10 +10,11 @@ namespace KadOzenka.Web.UnitTests.Modeling.Marks
 		[Test]
 		public void CanNot_Delete_Mark_For_Automatic_Model()
 		{
+			var markId = RandomGenerator.GenerateRandomId();
 			var dictionaryId = RandomGenerator.GenerateRandomId();
 			MockFactorForAutomaticModel(dictionaryId);
 
-			Assert.Throws<AutomaticModelMarkModificationException>(() => ModelingController.DeleteMark(dictionaryId, new MarkModel()));
+			Assert.Throws<AutomaticModelMarkModificationException>(() => ModelingController.DeleteMark(dictionaryId, markId));
 		}
 	}
 }
