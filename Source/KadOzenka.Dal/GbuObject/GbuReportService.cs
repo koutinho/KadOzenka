@@ -19,7 +19,7 @@ namespace KadOzenka.Dal.GbuObject
 	{
 		public string DefaultExtension => "xlsx";
 		public string FileStorageKey => "GbuOperationsReportsPath";
-		public bool IsReportEmpty { get; private set; } = true;
+		public bool IsReportEmpty { get; protected set; } = true;
 		public static readonly int MaxRowsCountInSheet = 1000000;
 
 		private readonly Serilog.ILogger _log = Serilog.Log.ForContext<GbuReportService>();
@@ -28,11 +28,11 @@ namespace KadOzenka.Dal.GbuObject
 		public CellStyle WarningCellStyle { get; }
 		public CellStyle ErrorCellStyle { get; }
 
-		private ExcelFile _curretExcelFile;
+		protected ExcelFile _curretExcelFile;
 		private int _fileCounter = 0;
 		private string _fileName;
 		private ZipFile _zipFile;
-		private Row CurrentRow { get; set; }
+		protected Row CurrentRow { get; set; }
 		private readonly List<Column> _columnsWidth;
 		private List<string> _headers;
 		private bool _applyStyle;
@@ -304,7 +304,7 @@ namespace KadOzenka.Dal.GbuObject
 			}
 		}
 
-		private void CreateFile()
+		protected virtual void CreateFile()
 		{
 			_log.Debug("Создание нового файла");
 

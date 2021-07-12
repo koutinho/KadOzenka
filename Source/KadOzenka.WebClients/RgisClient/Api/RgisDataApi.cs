@@ -88,6 +88,27 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
 			return new ApiResponse<ResponseData>(res);
 		}
+
+		/// <summary>
+		/// Ответ от апи отличается если параметр в массиве один, это вариант на такой слчучай
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
+		public ApiResponse<ResponseDataSingle> GetDistanceOksFactorsValueSingle(RequestData data)
+		{
+			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
+			string dataSetCode = "BASE.DSREALTY";
+
+			RequestBody body = new RequestBody
+			{
+				Id = 1,
+				Method = method,
+				Params = _configurator.GetParams(data, dataSetCode)
+			};
+
+			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+			return new ApiResponse<ResponseDataSingle>(res);
+		}
 	}
 
 }

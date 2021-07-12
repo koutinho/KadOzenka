@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using CadAppraisalDataApi.Models;
 using Core.Register;
 using Core.SRD;
+using GemBox.Spreadsheet;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.Oks;
 using KadOzenka.WebClients.RgisClient.Api;
 using KadOzenka.WebClients.RgisClient.Client;
 using KadOzenka.WebClients.RgisClient.Model;
-using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
@@ -19,10 +19,20 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
+	public struct ReportData
+	{
+		public string Header { get; set; }
+		public long AttributeId { get; set; }
+		public int ColumnNumber { get; set; }
+	} 
+
 	public class GeoFactorsFromRgisLongProcess
 	{
 		private readonly ILogger _log = Log.ForContext<GeoFactorsFromRgisLongProcess>();
-		object lockMy = new ();
+		private object lockMy = new ();
+		private List<ReportData> zuReportData =  new ();
+		private List<ReportData> oksReportData =  new ();
+
 
 		private readonly RgisDataApi _rgisDataApi;
 		public GeoFactorsFromRgisLongProcess()
@@ -39,12 +49,16 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var units = GetUnits(task.Id);
 
 
-			using var gbuReportService = new GbuReportService("Получение географических факторов из РГИС");
+			using var reportService = new GeoFactorsReport("Получение географических факторов из РГИС");
+			reportService.AddHeaders(new List<string> {"Кадастровый номер"});
+
 
 			var zuUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Stead).ToList();
 			var zuLayers = GetLayersZuOnlySelected(idsFactors);
 			var oksUnits = units.Where(x => x.PropertyType_Code != PropertyTypes.Stead).ToList();
 			var oksLayers = GetLayersOksOnlySelected(idsFactors);
+			
+			SetReportHeaders(zuLayers, reportService, ObjectType.ZU);
 
 			var options = new ParallelOptions
 			{
@@ -53,9 +67,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			};
 
 			
-			
 			List<Task> tasks = new();
-			if (zuLayers.Count > 0)
+			if (zuLayers.Count > 0 && zuUnits.Count > 0)
 			{
 				int countParamsToRequest = 100;
 				var groupingUnits = GetGroupingUnits(zuUnits, zuLayers, countParamsToRequest);
@@ -102,11 +115,56 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 				 tasks.Add(zuTask);
 			}
+			else
+			{
+				_log.Debug("Импорт данных из Ргис для Зу не запущен");
+			}
 
-			if (oksLayers.Count > 0)
+			if (oksLayers.Count > 0 && oksUnits.Count > 0)
 			{
 				int countParamsToRequest = 100;
 				var groupingUnits = GetGroupingUnits(oksUnits, oksLayers, countParamsToRequest);
+
+				var oksTask = Task.Run(() =>
+				{
+					Parallel.ForEach(groupingUnits, options, omUnits =>
+					{
+						try
+						{
+							int countParams = omUnits.Count * oksLayers.Count;
+							if (countParams > 1)
+							{
+								ApiResponse<ResponseData> response = _rgisDataApi.GetDistanceOksFactorsValue(new RequestData
+								{
+									KadNumbers = omUnits.Select(x => x.CadastralNumber).ToList(),
+									Layers = oksLayers.Select(x => x.LayerName).ToList()
+								});
+
+								PrepareResponseData(response.Data, oksUnits, oksLayers, document);
+
+							}
+							else
+							{
+								ApiResponse<ResponseDataSingle> response = _rgisDataApi.GetDistanceOksFactorsValueSingle(new RequestData
+								{
+									KadNumbers = omUnits.Select(x => x.CadastralNumber).ToList(),
+									Layers = oksLayers.Select(x => x.LayerName).ToList()
+								});
+
+								PrepareResponseData(response.Data, oksUnits, oksLayers, document);
+							}
+
+						}
+						catch (Exception e)
+						{
+							_log.Error(e, e.Message);
+							//report 
+						}
+
+					});
+
+				});
+				tasks.Add(oksTask);
 			}
 
 			Task.WaitAll(tasks.ToArray());
@@ -178,6 +236,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private List<List<OMUnit>> GetGroupingUnits(List<OMUnit> units, List<OMRgisLayers> layers, int count)
 		{
+			if (units.Count == 0 || layers.Count == 0) return new List<List<OMUnit>>();
+
 			int availableCount = count / layers.Count;
 
 			if (availableCount > 1)
@@ -275,10 +335,99 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
+		private void SetReportHeaders(List<OMRgisLayers> layers, GbuReportService reportService, ObjectType oType)
+		{
+			if (layers.Count > 0)
+			{
+				var headers = RegisterCache.RegisterAttributes.Values.Where(x => layers.Select(y => y.Id).Contains(x.Id))
+					.Select((x, i) => new ReportData
+					{
+						AttributeId = x.Id,
+						ColumnNumber = i + 1,
+						Header = x.Name
+					}).ToList();
 
+				if (oType == ObjectType.ZU)
+				{
+					zuReportData = headers;
+				}
+				else
+				{
+					oksReportData = headers;
+				}
+
+				reportService.AddHeaders(headers.Select(x => x.Header).ToList());
+
+				headers.ForEach(x =>
+				{
+					reportService.SetIndividualWidth(x.ColumnNumber, 10);
+				});
+				
+			}
+
+		}
 
 		#endregion
 
 
+	}
+
+	public class GeoFactorsReport: GbuReportService
+	{
+		private Row CurrentRowZu { get; set; }
+		public GeoFactorsReport(string fileName): base(fileName)
+		{
+
+		}
+
+		protected override void CreateFile()
+		{
+			_curretExcelFile = new ExcelFile();
+			var sheet = _curretExcelFile.Worksheets.Add("Oks");
+			sheet.Cells.Style.Font.Name = "Times New Roman";
+			sheet = _curretExcelFile.Worksheets.Add("Zu");
+			sheet.Cells.Style.Font.Name = "Times New Roman";
+
+			CurrentRow = new Row
+			{
+				File = _curretExcelFile
+			};
+			CurrentRowZu = new Row
+			{
+				File = _curretExcelFile
+			};
+		}
+
+
+		public void AddValue(string value, int column, Row row, CellStyle cellStyle = null, int worksheet = 0)
+		{
+			try
+			{
+				var cell = row.File.Worksheets[worksheet].Rows[row.Index].Cells[column];
+
+				cell.SetValue(value);
+
+				if (cellStyle != null)
+					cell.Style = cellStyle;
+
+				IsReportEmpty = false;
+
+				if (new Random().Next(0, 10000) > 9950)
+					Serilog.Log.ForContext<ExcelFile>().Verbose("Запись значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row.Index, column, value);
+			}
+			catch (Exception ex)
+			{
+				if (new Random().Next(0, 100) > 80)
+					Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка записи значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row.Index, column, value);
+			}
+		}
+		public new Row GetCurrentRow()
+		{
+			var tmpRow = CurrentRow.Copy();
+
+			CurrentRow.Index++;
+
+			return tmpRow;
+		}
 	}
 }
