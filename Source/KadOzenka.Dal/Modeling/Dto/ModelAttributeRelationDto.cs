@@ -15,14 +15,13 @@ namespace KadOzenka.Dal.Modeling.Dto
 		public long AttributeType { get; set; }
 		public RegisterAttributeType AttributeTypeCode => (RegisterAttributeType)AttributeType;
 		public long? DictionaryId { get; set; }
+		public string DictionaryName { get; set; }
 		public bool IsNormalized => DictionaryId != null;
 		public bool IsActive { get; set; }
 	}
 
 	public class ModelAttributeRelationDto : ModelAttributeRelationPure
 	{
-		public string DictionaryName { get; set; }
-
 		public KoAlgoritmType Type { get; set; }
 		public decimal? Coefficient { get; set; }
 		public decimal? PreviousWeight { get; set; }

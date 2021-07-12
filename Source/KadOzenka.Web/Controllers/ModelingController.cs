@@ -4,7 +4,6 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.Enums;
 using Core.Register.QuerySubsystem;
@@ -26,6 +25,7 @@ using Kendo.Mvc.UI;
 using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
+using System.Threading;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
@@ -39,6 +39,7 @@ using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Web.Exceptions;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
 using Npgsql;
@@ -46,16 +47,23 @@ using ObjectModel.Ko;
 using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
+using Kendo.Mvc.Extensions;
+using ObjectModel.Common;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory.Core.LongProcess;
+using StringExtensions = Core.Shared.Extensions.StringExtensions;
 
 namespace KadOzenka.Web.Controllers
 {
     public class ModelingController : KoBaseController
     {
+        public IModelService ModelService { get; set; }
         public IModelingService ModelingService { get; set; }
         public IModelObjectsService ModelObjectsService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public IRegisterAttributeService RegisterAttributeService { get; set; }
-        public DictionaryService DictionaryService { get; set; }
+        public ModelDictionaryService ModelDictionaryService { get; set; }
+        public IModelFactorsRepository ModelFactorsRepository { get; set; }
         public IModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
@@ -63,32 +71,37 @@ namespace KadOzenka.Web.Controllers
         public ILongProcessService LongProcessService { get; set; }
 
 
-        public ModelingController(IModelingService modelingService, TourFactorService tourFactorService,
-	        IRegisterAttributeService registerAttributeService, DictionaryService dictionaryService,
+        public ModelingController(IModelService modelService, TourFactorService tourFactorService,
+	        IRegisterAttributeService registerAttributeService, ModelDictionaryService modelDictionaryService,
 	        IModelFactorsService modelFactorsService, GroupService groupService,
 	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
-	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService)
+	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
+	        IModelFactorsRepository modelFactorsRepository,
+            IModelingService modelingService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
-            ModelingService = modelingService;
+            ModelService = modelService;
             TourFactorService = tourFactorService;
             RegisterAttributeService = registerAttributeService;
-            DictionaryService = dictionaryService;
+            ModelDictionaryService = modelDictionaryService;
             ModelFactorsService = modelFactorsService;
             GroupService = groupService;
             ModelObjectsRepository = modelObjectsRepository;
             ModelingRepository = modelingRepository;
             ModelObjectsService = modelObjectsService;
             LongProcessService = longProcessService;
+            ModelFactorsRepository = modelFactorsRepository;
+            ModelingService = modelingService;
         }
+
 
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ModelCard(long modelId, bool isPartial = false, bool isReadOnly = false)
         {
-            var isGroupExists = ModelingService.IsModelGroupExist(modelId);
+            var isGroupExists = ModelService.IsModelGroupExist(modelId);
             if (!isGroupExists)
             {
                 return RedirectToAction(nameof(ModelWithDeletedGroupCard), new { modelId, isPartial });
@@ -126,11 +139,11 @@ namespace KadOzenka.Web.Controllers
             var modelDto = modelingModel.ToDto();
             if (modelDto.Type == KoModelType.Automatic)
             {
-                ModelingService.AddAutomaticModel(modelDto);
+                ModelService.AddAutomaticModel(modelDto);
             }
             else
             {
-                ModelingService.AddManualModel(modelDto);
+                ModelService.AddManualModel(modelDto);
             }
 
             return Json(new { Message = "Сохранение выполнено" });
@@ -140,7 +153,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult MakeModelActive(long modelId)
         {
-            ModelingService.MakeModelActive(modelId);
+            ModelService.MakeModelActive(modelId);
 
             return Ok();
         }
@@ -165,7 +178,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult AutomaticModelCard(long modelId, bool isPartial, bool isReadOnly = false)
         {
-            var modelDto = ModelingService.GetModelById(modelId);
+            var modelDto = ModelService.GetModelById(modelId);
 
             var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.Training);
             var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
@@ -278,7 +291,7 @@ namespace KadOzenka.Web.Controllers
                 return GenerateMessageNonValidModel();
 
             var modelDto = modelingModel.ToDto();
-            ModelingService.UpdateAutomaticModel(modelDto);
+            ModelService.UpdateAutomaticModel(modelDto);
 
             return Ok();
         }
@@ -412,8 +425,14 @@ namespace KadOzenka.Web.Controllers
            var factor = ModelFactorsService.GetFactorById(id);
 
            var model = AutomaticFactorModel.ToModel(factor);
+           if (factor.DictionaryId != null)
+           {
+               //todo после ТЗ на авто. модель объединить с ручной
+	           var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);
+	           model.DictionaryName = dictionary.Name;
+           }
 
-            return View(model);
+           return View(model);
         }
 
         [HttpPost]
@@ -436,6 +455,11 @@ namespace KadOzenka.Web.Controllers
                     throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
                 }
 
+                if (!string.IsNullOrWhiteSpace(factorModel.DictionaryName))
+                {
+	                var attribute = RegisterCacheWrapper.GetAttributeData(factorModel.FactorId.GetValueOrDefault());
+	                dto.DictionaryId = ModelDictionaryService.CreateDictionary(factorModel.DictionaryName, attribute.Type);
+                }
                 ModelFactorsService.AddAutomaticFactor(dto);
                 ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
@@ -463,7 +487,7 @@ namespace KadOzenka.Web.Controllers
                 var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
                 if (mustResetTrainingResult)
                 {
-                    ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
+	                ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
                 }
             }
 
@@ -481,9 +505,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetAllAttributes(long modelId)
         {
-            var model = ModelingService.GetModelEntityById(modelId);
+            var model = ModelService.GetModelEntityById(modelId);
 
-            var tour = ModelingService.GetModelTour(model.GroupId);
+            var tour = ModelService.GetModelTour(model.GroupId);
             var type = model.IsOksObjectType.GetValueOrDefault() ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu;
 
             var availableAttributeTypes = new[]
@@ -559,7 +583,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult ManualModelCard(long modelId, bool isPartial, bool isReadOnly = false)
         {
-            var modelDto = ModelingService.GetModelById(modelId);
+            var modelDto = ModelService.GetModelById(modelId);
             var model = ManualModelingModel.ToModel(modelDto);
             model.IsReadOnly = isReadOnly;
 
@@ -575,9 +599,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetFactorsForManualModel(long modelId)
         {
-            var model = ModelingService.GetModelEntityById(modelId);
+            var model = ModelService.GetModelEntityById(modelId);
 
-            var tour = ModelingService.GetModelTour(model.GroupId);
+            var tour = ModelService.GetModelTour(model.GroupId);
 
             var objectType = model.IsOksObjectType.GetValueOrDefault() ? ObjectTypeExtended.Oks : ObjectTypeExtended.Zu;
             var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, objectType);
@@ -598,7 +622,7 @@ namespace KadOzenka.Web.Controllers
         {
             var dto = model.ToDto();
 
-            ModelingService.UpdateManualModel(dto);
+            ModelService.UpdateManualModel(dto);
 
             return Ok();
         }
@@ -607,10 +631,10 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetFormula(long modelId, long algType)
         {
-            var model = ModelingService.GetModelEntityById(modelId);
+            var model = ModelService.GetModelEntityById(modelId);
 
             var type =  (KoAlgoritmType)algType;
-            var formula = ModelingService.GetFormula(model, type);
+            var formula = ModelService.GetFormula(model, type);
             var a0 = model.GetA0(type);
 
             return Json(new { formula, a0 });
@@ -629,6 +653,11 @@ namespace KadOzenka.Web.Controllers
                 var factor = ModelFactorsService.GetFactorById(id);
 
                 manualFactorDto = ManualFactorModel.ToModel(generalModelId, factor);
+                if (factor.DictionaryId != null)
+                {
+	                var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);
+	                manualFactorDto.DictionaryName = dictionary.Name;
+                }
             }
             else
             {
@@ -650,12 +679,17 @@ namespace KadOzenka.Web.Controllers
         {
             var dto = manualFactorModel.ToDto();
 
-            var model = ModelingService.GetModelEntityById(manualFactorModel.GeneralModelId);
+            var model = ModelService.GetModelEntityById(manualFactorModel.GeneralModelId);
             dto.Type = model.AlgoritmType_Code;
 
             if (manualFactorModel.Id == -1)
             {
-                ModelFactorsService.AddManualFactor(dto);
+	            if (!string.IsNullOrWhiteSpace(manualFactorModel.DictionaryName))
+	            {
+		            var attribute = RegisterCacheWrapper.GetAttributeData(manualFactorModel.FactorId.GetValueOrDefault());
+		            dto.DictionaryId = ModelDictionaryService.CreateDictionary(manualFactorModel.DictionaryName, attribute.Type);
+                }
+	            ModelFactorsService.AddManualFactor(dto);
             }
             else
             {
@@ -667,11 +701,11 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult DeleteModelFactor(long? id)
+        public ActionResult DeleteManualModelFactor(long? id)
         {
             ModelFactorsService.DeleteManualModelFactor(id);
 
-            return Json(new { Success = "Удаление выполненно" });
+            return Ok();
         }
 
         #endregion
@@ -679,6 +713,10 @@ namespace KadOzenka.Web.Controllers
 
         #region Метки
 
+        /// <summary>
+        /// Метод из левого меню в Турах
+        /// </summary>
+        /// <returns></returns>
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public ActionResult MarkCatalog()
         {
@@ -686,121 +724,178 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetDictionaryId(long groupId, long factorId)
+        {
+	        var dictionaryId = ModelingService.GetDictionaryId(groupId, factorId);
+
+            return new JsonResult(dictionaryId);
+        }
+
+        [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
-        public ActionResult MarksGrid(long groupId, long factorId)
+        public ActionResult MarksGrid(bool isReadOnly, long dictionaryId)
         {
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
+	        ViewBag.IsReadOnly = isReadOnly;
+	        ViewBag.DictionaryId = dictionaryId;
 
-            return View();
+	        return PartialView();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public JsonResult GetMarkCatalog(long groupId, long factorId)
+        public JsonResult GetMarks(long dictionaryId)
         {
-            if (groupId == 0 || factorId == 0)
-                return Json(new List<MarkModel>());
+	        var marks = ModelDictionaryService.GetMarks(dictionaryId).Select(MarkModel.ToModel).ToList();
 
-            var marks = ModelFactorsService.GetMarks(groupId, factorId);
-
-            var markModels = marks.Select(MarkModel.ToModel).ToList();
-
-            return Json(markModels);
+            return Json(marks);
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult CreateMark(MarkModel markCatalog)
+        public ActionResult CreateMark(long dictionaryId, MarkModel markCatalog)
         {
-            var id = ModelFactorsService.CreateMark(markCatalog.Value, markCatalog.Metka, markCatalog.FactorId, markCatalog.GroupId);
-            markCatalog.Id = id;
+	        ValidateMarkModification(dictionaryId);
 
-            return Json(markCatalog);
+	        var dto = markCatalog.ToDto(dictionaryId);
+	        
+	        var id = ModelDictionaryService.CreateMark(dto);
+	        markCatalog.Id = id;
+
+	        return Json(markCatalog);
         }
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UpdateMark(MarkModel markCatalog)
+        public ActionResult UpdateMark(long dictionaryId, MarkModel markCatalog)
         {
-            ModelFactorsService.UpdateMark(markCatalog.Id, markCatalog.Value, markCatalog.Metka);
+	        ValidateMarkModification(dictionaryId);
+
+            var dto = markCatalog.ToDto(dictionaryId);
+	        ModelDictionaryService.UpdateMark(dto);
 
             return Json(markCatalog);
         }
 
-        [HttpPost]
+        [HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DeleteMark(MarkModel markCatalog)
+        public ActionResult DeleteMark(long dictionaryId, long markId)
         {
-            ModelFactorsService.DeleteMark(markCatalog.Id);
+			ValidateMarkModification(dictionaryId);
 
-            return Json(markCatalog);
+			ModelDictionaryService.DeleteMark(markId);
+
+			return Ok();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult MarksCatalogUploading(long groupId, long factorId)
+        public FileResult DownloadMarks(long dictionaryId)
         {
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
+	        var fileStream = DataExporterKO.ExportMarkerListToExcel(dictionaryId);
 
-            return View();
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public FileResult DownloadMarksCatalog(long groupId, long factorId)
-        {
-            var fileStream = DataExporterKO.ExportMarkerListToExcel(groupId, factorId);
-
-            return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
+	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UploadMarksCatalog(long groupId, long factorId)
+        public ActionResult ModelDictionaries(long modelId, bool isPartial = false)
         {
-            ViewBag.GroupId = groupId;
-            ViewBag.FactorId = factorId;
+	        var model = ModelService.GetModelById(modelId);
 
-            return PartialView();
-        }
+	        ViewBag.ModelId = model.ModelId;
+	        ViewBag.IsReadOnly = model.Type == KoModelType.Automatic;
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult UploadMarksCatalog(IFormFile file, long groupId, long factorId, bool isDeleteOld)
-        {
-            if (file == null)
-                throw new Exception("Не выбран файл для загрузки");
-            if (!(file.FileName.EndsWith(".xlsx") || file.FileName.EndsWith(".xls")))
-                throw new Exception("Загружен файл неправильного формата. Допустимые форматы: .xlsx и .xls");
+	        if (isPartial)
+		        return PartialView();
 
-            using (var stream = file.OpenReadStream())
-            {
-                var excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
-                excelFile.DocumentProperties.Custom["FileName"] = file.FileName;
-
-                var fileStream = DataImporterKO.ImportDataMarkerFromExcel(excelFile, nameof(OMMarkCatalog),
-                    OMMarkCatalog.GetRegisterId(), groupId, factorId, isDeleteOld);
-
-                var fileName = "Справочник меток (загрузка) " + file.FileName;
-                HttpContext.Session.Set(fileName, fileStream.ToByteArray());
-
-                return Content(JsonConvert.SerializeObject(new { success = true, fileName }), "application/json");
-            }
+            return View();
         }
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DownloadExcelFile(string fileName)
+        public JsonResult GetModelDictionaries([DataSourceRequest] DataSourceRequest request, long modelId)
         {
-            var fileContent = HttpContext.Session.Get(fileName);
-            if (fileContent == null)
-            {
-                return new EmptyResult();
-            }
+	        var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId)
+		        .Where(x => x.IsNormalized).Select(GeneralModelAttributeModel.ToModel)
+		        .ToList();
 
-            HttpContext.Session.Remove(fileName);
-            StringExtensions.GetFileExtension(RegistersExportType.Xlsx, out string fileExtensiton, out string contentType);
-
-            return File(fileContent, contentType, fileName);
+	        return Json(modelAttributes.ToDataSourceResult(request));
         }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult DictionaryImport(long dictionaryId)
+        {
+            ValidateMarkModification(dictionaryId);
+
+            var model = new DictionaryImportModel
+            {
+                DictionaryId = dictionaryId
+            };
+
+            return PartialView(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel model)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            ValidateMarkModification(model.DictionaryId);
+
+	        OMImportDataLog import;
+	        bool isViaLongProcess;
+	        using (var fileStream = file.OpenReadStream())
+	        {
+		        import = ModelDictionaryService.CreateDataFileImport(fileStream, file.FileName);
+		        isViaLongProcess = ModelDictionaryService.MustUseLongProcess(fileStream);
+	        }
+
+	        var importInfo = new DictionaryImportFileInfoDto
+	        {
+		        FileName = file.FileName,
+		        ValueColumnName = model.Value,
+		        CalcValueColumnName = model.CalculationValue
+	        };
+            if (isViaLongProcess)
+	        {
+		        var inputParameters = new DictionaryImportFileFromExcelDto
+		        {
+			        DeleteOldValues = model.IsDeleteOldValues,
+			        FileInfo = importInfo,
+			        DictionaryId = model.DictionaryId
+		        };
+				////TODO для тестирования
+				//new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
+				//{
+				//	Status_Code = Status.Added,
+				//	UserId = SRDSession.GetCurrentUserId(),
+				//	ObjectId = import.Id,
+				//	Parameters = inputParameters.SerializeToXml()
+				//}, new CancellationToken());
+
+				ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(inputParameters, import);
+	        }
+	        else
+	        {
+		        ModelDictionaryService.UpdateDictionaryFromExcel(import, importInfo,
+			        model.DictionaryId, model.IsDeleteOldValues);
+	        }
+
+	        return Json(new {isViaLongProcess});
+        }
+
+        #region Support Methods
+
+        private void ValidateMarkModification(long dictionaryId)
+        {
+	        var factor = ModelFactorsRepository.GetFactorByDictionary(dictionaryId);
+	        var model = ModelService.GetModelById(factor.ModelId.GetValueOrDefault());
+	        if (model.Type == KoModelType.Automatic)
+		        throw new AutomaticModelMarkModificationException();
+        }
+
+        #endregion
 
         #endregion
 
@@ -815,7 +910,7 @@ namespace KadOzenka.Web.Controllers
         {
             try
             {
-                var model = ModelingService.GetModelEntityById(modelId);
+                var model = ModelService.GetModelEntityById(modelId);
 
                 ViewBag.ModelName = model.Name;
                 ViewBag.ModelId = model.Id;
@@ -832,7 +927,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public IActionResult DeleteModel(long modelId)
         {
-            ModelingService.DeleteModel(modelId);
+            ModelService.DeleteModel(modelId);
 
             return Json(new { Success = true });
         }
@@ -907,7 +1002,7 @@ namespace KadOzenka.Web.Controllers
             if (omModel == null)
                 throw new Exception($"Не найдена модель с ИД '{modelId}'");
 
-            var tour = ModelingService.GetModelTour(omModel.GroupId);
+            var tour = ModelService.GetModelTour(omModel.GroupId);
 
             var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
@@ -934,7 +1029,7 @@ namespace KadOzenka.Web.Controllers
             //{
             //	var obj = objectsDto[i];
             //	var calculationParameters =
-            //		ModelingService.GetModelCalculationParameters(model.A0ForExponential, obj.Price, factors,
+            //		ModelService.GetModelCalculationParameters(model.A0ForExponential, obj.Price, factors,
             //			obj.Coefficients, obj.CadastralNumber);
             //	obj.ModelingPrice = calculationParameters.ModelingPrice;
             //	obj.Percent = calculationParameters.Percent;
@@ -1256,242 +1351,6 @@ namespace KadOzenka.Web.Controllers
             ModelingProcess.AddProcessToQueue(inputRequest);
 
             return new JsonResult(new {Message = "Процесс корреляции поставлен в очередь. Результат будет отправлен на почту."});
-        }
-
-        #endregion
-
-
-        #region Словари моделирования
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
-        public ActionResult DictionaryCard(long dictionaryId, bool showItems = false)
-        {
-            var dictionary = OMModelingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
-            var model = DictionaryModel.ToModel(dictionary, showItems);
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public ActionResult DictionaryCard(DictionaryModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-
-            var id = viewModel.Id;
-            if (id == -1)
-                id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
-            else
-                DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
-
-            return Json(new { Success = "Сохранено успешно", Id = id });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryDelete(long dictionaryId)
-        {
-            try
-            {
-                var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
-
-                return View(DictionaryModel.ToModel(dictionary));
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-        }
-
-        [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DeleteDictionary(long dictionaryId)
-        {
-            try
-            {
-                DictionaryService.DeleteDictionary(dictionaryId);
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-
-            return Json(new { Success = true });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryImport()
-        {
-            ViewData["References"] = OMModelingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
-            {
-                Text = x.Name,
-                Value = x.Id
-            }).ToList();
-
-            return View(new DictionaryImportModel());
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
-        public IActionResult DictionaryImport(IFormFile file, DictionaryImportModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-
-            long? dictionaryId = null;
-            object returnedData;
-            try
-            {
-                using (var fileStream = file.OpenReadStream())
-                {
-                    var importInfo = new DictionaryImportFileInfoDto
-                    {
-                        FileName = file.FileName,
-                        ValueColumnName = viewModel.Value,
-                        CalcValueColumnName = viewModel.CalcValue,
-                        ValueType = viewModel.ValueType
-                    };
-
-                    var import = DictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
-                    fileStream.Seek(0, SeekOrigin.Begin);
-                    if (DictionaryService.MustUseLongProcess(fileStream))
-                    {
-                        fileStream.Seek(0, SeekOrigin.Begin);
-                        var inputParameters = new DictionaryImportFileFromExcelDto
-                        {
-                            DeleteOldValues = viewModel.Dictionary.DeleteOldValues,
-                            FileInfo = importInfo,
-                            DictionaryId = viewModel.Dictionary.DictionaryId.GetValueOrDefault(),
-                            IsNewDictionary = viewModel.Dictionary.IsNewDictionary,
-                            NewDictionaryName = viewModel.Dictionary.NewDictionaryName
-                        };
-                        ////TODO для тестирования
-                        //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
-                        //{
-                        //	Status_Code = Status.Added,
-                        //	UserId = SRDSession.GetCurrentUserId(),
-                        //	ObjectId = import.Id,
-                        //	Parameters = inputParameters.SerializeToXml()
-                        //}, new CancellationToken());
-
-                        ModelDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
-
-                        returnedData = new
-                        {
-                            Success = true,
-                            message = "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.",
-                            isLongProcess = true
-                        };
-                    }
-                    else
-                    {
-                        fileStream.Seek(0, SeekOrigin.Begin);
-
-                        var dictionary = viewModel.Dictionary;
-                        if (dictionary.IsNewDictionary)
-                        {
-                            dictionaryId = DictionaryService.CreateDictionaryFromExcel(fileStream, importInfo,
-                                dictionary.NewDictionaryName, import);
-                        }
-                        else
-                        {
-                            DictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
-                                dictionary.DictionaryId.GetValueOrDefault(-1), dictionary.DeleteOldValues, import);
-                        }
-
-                        returnedData = new
-                        {
-                            Success = true,
-                            message = "Справочник успешно импортирован",
-                            newDictionaryId = viewModel.Dictionary.IsNewDictionary ? dictionaryId : null,
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorManager.LogError(ex);
-                return SendErrorMessage(ex.Message);
-            }
-
-            return Json(returnedData);
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES)]
-        public ActionResult DictionaryValueCard(long dictionaryValueId, long dictionaryId)
-        {
-            var dictionaryValue = OMModelingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
-            dictionaryId = dictionaryValue == null ? dictionaryId : dictionaryValue.DictionaryId;
-            var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
-
-            return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
-        public ActionResult DictionaryValueCard(DictionaryValueModel viewModel)
-        {
-            if (!ModelState.IsValid)
-                return GenerateMessageNonValidModel();
-
-            var id = viewModel.Id;
-            if (id == -1)
-                id = DictionaryService.CreateDictionaryValue(viewModel.ToDto());
-            else
-                DictionaryService.UpdateDictionaryValue(viewModel.ToDto());
-
-            return Json(new { Success = "Сохранено успешно", Id = id });
-        }
-
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
-        public IActionResult DictionaryValueDelete(long dictionaryValueId)
-        {
-            try
-            {
-                var dictionaryValue = DictionaryService.GetDictionaryValueById(dictionaryValueId);
-                var dictionary = DictionaryService.GetDictionaryById(dictionaryValue.DictionaryId);
-
-                return View(DictionaryValueModel.ToModel(dictionaryValue, dictionary));
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-        }
-
-        [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
-        public IActionResult DeleteDictionaryValue(long dictionaryValueId)
-        {
-            try
-            {
-                DictionaryService.DeleteDictionaryValue(dictionaryValueId);
-            }
-            catch (Exception ex)
-            {
-                return SendErrorMessage(ex.Message);
-            }
-
-            return Json(new { Success = true });
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
-        public JsonResult GetDictionaries()
-        {
-            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
-            {
-                Text = x.Name,
-                Value = x.Id.ToString()
-            }).ToList();
-
-            dictionaries.Insert(0, new SelectListItem("", ""));
-
-            return Json(dictionaries);
         }
 
         #endregion

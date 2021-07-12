@@ -45,13 +45,26 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			ModelFactorsRepository.Verify(foo => foo.Save(It.IsAny<OMModelFactor>()), Times.Never);
 		}
 
+		[Test]
+		public void CanNot_Create_Manual_Factor_Of_Default_Mark_Without_Dictionary()
+		{
+			var factor = new ManualFactorDtoBuilder().Type(MarkType.Default).Dictionary(null).Build();
+			ModelFactorsRepository.Setup(x => x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type)).Returns(false);
+			var attribute = new RegisterAttributeBuilder().Id(factor.FactorId).Type(RegisterAttributeType.STRING).Build();
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.GetValueOrDefault())).Returns(attribute);
+
+			Assert.Throws<EmptyDictionaryForFactorWithDefaultMarkException>(() => ModelFactorsService.AddManualFactor(factor));
+
+			ModelFactorsRepository.Verify(foo => foo.Save(It.IsAny<OMModelFactor>()), Times.Never);
+		}
+
 		[TestCase(MarkType.None)]
 		[TestCase(MarkType.Straight)]
 		[TestCase(MarkType.Reverse)]
 		public void CanNot_Create_Manual_Factor_With_NotNumber_Type_Without_Default_Mark(MarkType markType)
 		{
 			var factor = new ManualFactorDtoBuilder().Type(markType).Build();
-			ModelFactorsRepository.Setup(x => x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.GeneralModelId.Value, factor.Type)).Returns(false);
+			ModelFactorsRepository.Setup(x => x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type)).Returns(false);
 			var attribute = new RegisterAttributeBuilder().Id(factor.FactorId).Type(RegisterAttributeType.STRING).Build();
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.GetValueOrDefault())).Returns(attribute);
 
@@ -64,7 +77,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 		public void Can_Create_Manual_Factor_With_NotNumber_Type_With_Default_Mark()
 		{
 			var factor = new ManualFactorDtoBuilder().Type(MarkType.Default).Build();
-			ModelFactorsRepository.Setup(x => x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.GeneralModelId.Value, factor.Type)).Returns(false);
+			ModelFactorsRepository.Setup(x => x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type)).Returns(false);
 			var attribute = new RegisterAttributeBuilder().Id(factor.FactorId).Type(RegisterAttributeType.STRING).Build();
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.GetValueOrDefault())).Returns(attribute);
 

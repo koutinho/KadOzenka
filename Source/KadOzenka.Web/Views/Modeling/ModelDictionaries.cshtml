@@ -1,0 +1,186 @@
+﻿@using KadOzenka.Web.Models.Modeling
+
+<!-- Модальное окно для показа справочника меток -->
+<div id="marksCatalogModal" style="display: none;">
+</div>
+
+<!-- Модальное окно для загрузки справочника меток -->
+<div id="uploadMarksCatalogModal" style="display: none; padding: 2%;">
+</div>
+
+<div class="form-horizontal" style="padding: 3%">
+    <div class="form-group">
+        <div id="dictionaryCommandsToolBar"></div>
+
+        @(Html.Kendo().Grid<GeneralModelAttributeModel>()
+            .Name("modelDictionariesGrid")
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.AttributeName).Title("Фактор");
+                columns.Bound(x => x.DictionaryName).Title("Словарь");
+            })
+            .Selectable()
+            .Pageable()
+            .Sortable()
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Read(read => read.Action("GetModelDictionaries", "Modeling", new {modelId = ViewBag.ModelId}).Type(HttpVerbs.Get))
+                .PageSize(15)
+                .Model(x =>
+                {
+                    x.Id(p => p.Id);
+                    x.Field(c => c.AttributeName).Editable(false);
+                    x.Field(c => c.DictionaryName).Editable(false);
+                    x.Field(c => c.DictionaryId).Editable(false);
+                })))
+    </div>
+</div>
+
+
+
+<script src="~/js/common-modals.js"></script>
+<script src="~/js/custom-validation.js"></script>
+<script src="~/js/toolbars.js"></script>
+<script>
+    var isReadOnly = '@ViewBag.IsReadOnly' === "True";
+
+
+    $(document).ready(function() {
+
+        initToolBar();
+
+        var grid = $("#modelDictionariesGrid").data("kendoGrid");
+        grid.bind("dataBound", changeButtonsAbility);
+        grid.bind("change", changeButtonsAbility);
+    });
+
+
+
+
+    function initToolBar() {
+        $("#dictionaryCommandsToolBar").kendoToolBar({
+            items: [
+                {
+                    type: "button",
+                    icon: "refresh",
+                    click: reloadGrid,
+                    attributes: { "id": "reloadGridBtn", "title": "Обновить" }
+                },
+                {
+                    type: "button",
+                    icon: "clock",
+                    click: showMarks,
+                    attributes: { "id": "showMarksBtn", "title": "Просмотреть метки" }
+                },
+                {
+                    type: "button",
+                    icon: "download",
+                    click: downloadMarksCatalog,
+                    attributes: { "id": "downloadMarksCatalogBtn", "title": "Выгрузить справочник меток" }
+                },
+                {
+                    type: "button",
+                    icon: "upload",
+                    click: showModalToUploadMarksCatalog,
+                    enable: '@ViewBag.IsReadOnly' === "False",
+                        attributes: { "id": "uploadMarksCatalogBtn", "title": "Выгрузить справочник меток" }
+                    }
+                ]
+            });
+        }
+
+    
+    function changeButtonsAbility() {
+        var showMarksSelector = $('#showMarksBtn');
+        var downloadMarksSelector = $('#downloadMarksCatalogBtn');
+        var uploadMarksSelector = $('#uploadMarksCatalogBtn');
+        $("#reloadGridBtn").removeAttr('disabled');
+        var selectedRowData = getSelectedRowInDictionariesGrid();
+        if (selectedRowData) {
+            showMarksSelector.removeClass('k-state-disabled');
+            showMarksSelector.removeAttr('disabled');
+            downloadMarksSelector.removeClass('k-state-disabled');
+            downloadMarksSelector.removeAttr('disabled');
+            if(!isReadOnly)
+            {
+                uploadMarksSelector.removeClass('k-state-disabled');
+                uploadMarksSelector.removeAttr('disabled');
+            }
+        } else {
+            showMarksSelector.addClass('k-state-disabled');
+            downloadMarksSelector.addClass('k-state-disabled');
+            uploadMarksSelector.addClass('k-state-disabled');
+        }
+    }
+
+
+    function reloadGrid() {
+        $('#modelDictionariesGrid').data('kendoGrid').dataSource.read();
+    }
+
+
+    function showMarks() {
+        var selectedRowData = getSelectedRowInDictionariesGrid();
+        if (selectedRowData) {
+            var dictionaryId = selectedRowData.DictionaryId;
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("MarksGrid", "Modeling", new {isReadOnly = ViewBag.IsReadOnly})' + '&dictionaryId=' + dictionaryId,
+                data: { isReadOnly: '@ViewBag.IsReadOnly', dictionaryId: dictionaryId },
+                success: function(response) {
+                    var modal = $("#marksCatalogModal");
+                    modal.html(response);
+                    ShowModal(modal, '90%', '80%', "Метки");
+                },
+                error: function(response) {
+                    Common.ShowError(response.responseText);
+                }
+            });
+        }
+    }
+
+
+    function showModalToUploadMarksCatalog() {
+        var selectedRowData = getSelectedRowInDictionariesGrid();
+        if (selectedRowData) {
+            var dictionaryId = selectedRowData.DictionaryId;
+            kendo.ui.progress($('body'), true);
+            $.ajax({
+                url: '@Url.Action("DictionaryImport", "Modeling")',
+                type: 'GET',
+                data: { dictionaryId: dictionaryId },
+                success: function (response) {
+                    var modal = $("#uploadMarksCatalogModal");
+                    modal.html(response);
+                    ShowModal(modal, '80%', '60%', "Загрузка меток");
+                },
+                error: function (response) {
+                    Common.ShowError(response.responseText);
+                },
+                complete: function() {
+                    kendo.ui.progress($('body'), false);
+                }
+            });
+        }
+    }
+
+    
+    function downloadMarksCatalog() {
+        var selectedRowData = getSelectedRowInDictionariesGrid();
+        if (selectedRowData) {
+            var dictionaryId = selectedRowData.DictionaryId;
+            window.open('@Url.Action("DownloadMarks", "Modeling")' + '?dictionaryId=' + dictionaryId);
+        }
+    }
+
+
+    function getSelectedRowInDictionariesGrid() {
+        var grid = $("#modelDictionariesGrid").data("kendoGrid");
+        var row = grid.select();
+        if (row.length > 0) {
+            var data = grid.dataItem(row);
+            return data;
+        }
+        return null;
+    }
+</script>

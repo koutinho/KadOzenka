@@ -9,32 +9,36 @@ using KadOzenka.Dal.Modeling.Dto.Factors;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Misc;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
-using ObjectModel.Directory.ES;
 using ObjectModel.Directory.Ko;
+using ObjectModel.Directory.KO;
 
 namespace KadOzenka.Dal.Modeling
 {
 	public class ModelFactorsService : IModelFactorsService
 	{
 		private IModelFactorsRepository ModelFactorsRepository { get; }
+		private IModelDictionaryService ModelDictionaryService { get; }
 		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
 
 		public ModelFactorsService(IModelFactorsRepository modelFactorsRepository = null,
+			IModelDictionaryService modelDictionaryService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelFactorsRepository = modelFactorsRepository ?? new ModelFactorsRepository();
+			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
 
-		#region Факторы
+
 
 		public OMModelFactor GetFactorById(long? id)
 		{
@@ -60,7 +64,8 @@ namespace KadOzenka.Dal.Modeling
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.AttributeName)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 
 			var attributes = new List<ModelAttributeRelationPure>();
@@ -78,6 +83,7 @@ namespace KadOzenka.Dal.Modeling
 				var attributeType = row[nameof(ModelAttributeRelationDto.AttributeType)].ParseToInt();
 
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToStringNullable();
 				
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 
@@ -89,6 +95,7 @@ namespace KadOzenka.Dal.Modeling
 					AttributeName = attributeName,
 					AttributeType = attributeType,
 					DictionaryId = dictionaryId,
+					DictionaryName = dictionaryName,
 					IsActive = isActive.GetValueOrDefault()
 				});
 			}
@@ -101,18 +108,6 @@ namespace KadOzenka.Dal.Modeling
 		//TODO разделить на получение факторов для Ручной и Автоматический моделей
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
-			var dictionaryJoin = new QSJoin
-			{
-				RegisterId = OMModelingDictionary.GetRegisterId(),
-				JoinCondition = new QSConditionSimple
-				{
-					ConditionType = QSConditionType.Equal,
-					LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
-					RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
-				},
-				JoinType = QSJoinType.Left
-			};
-
 			//для совместимости с уже ранее созданными моделями (не через блок "Справочники моделей")
 			QSConditionSimple typeCondition = null;
 			var isFactorsWithSpecificTypeExist = OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).ExecuteExists();
@@ -121,7 +116,7 @@ namespace KadOzenka.Dal.Modeling
 				typeCondition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.AlgorithmType_Code), QSConditionType.Equal, (int)type);
 			}
 
-			var query = GetModelFactorsQuery(modelId, dictionaryJoin, typeCondition);
+			var query = GetModelFactorsQuery(modelId, typeCondition);
 
 			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelAttributeRelationDto.RegisterId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.AttributeId)));
@@ -195,7 +190,7 @@ namespace KadOzenka.Dal.Modeling
 			return attributes;
 		}
 
-		public QSQuery GetModelFactorsQuery(long modelId, QSJoin additionalJoin = null, QSCondition additionalCondition = null)
+		public QSQuery GetModelFactorsQuery(long modelId, QSCondition additionalCondition = null)
 		{
 			var conditions = new List<QSCondition>
 			{
@@ -224,6 +219,17 @@ namespace KadOzenka.Dal.Modeling
 							RightOperand = OMAttribute.GetColumn(x => x.Id)
 						},
 						JoinType = QSJoinType.Inner
+					},
+					new QSJoin
+					{
+						RegisterId = OMModelingDictionary.GetRegisterId(),
+						JoinCondition = new QSConditionSimple
+						{
+							ConditionType = QSConditionType.Equal,
+							LeftOperand = OMModelFactor.GetColumn(x => x.DictionaryId),
+							RightOperand = OMModelingDictionary.GetColumn(x => x.Id)
+						},
+						JoinType = QSJoinType.Left
 					}
 				},
 				OrderBy = new List<QSOrder>
@@ -235,9 +241,6 @@ namespace KadOzenka.Dal.Modeling
 					}
 				}
 			};
-
-			if (additionalJoin != null)
-				query.Joins.Add(additionalJoin);
 
 			return query;
 		}
@@ -280,18 +283,16 @@ namespace KadOzenka.Dal.Modeling
 			var mustResetTrainingResult = false;
 			using (var ts = new TransactionScope())
 			{
-				if (factor.DictionaryId != dto.DictionaryId || factor.IsActive.GetValueOrDefault() != dto.IsActive)
+				if (factor.IsActive.GetValueOrDefault() != dto.IsActive)
 				{
 					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
 						.Select(x => new
 						{
-							x.DictionaryId,
 							x.IsActive
 						}).Execute();
 					
 					factors.ForEach(x =>
 					{
-						x.DictionaryId = dto.DictionaryId;
 						x.IsActive = dto.IsActive;
 						ModelFactorsRepository.Save(x);
 					});
@@ -314,8 +315,9 @@ namespace KadOzenka.Dal.Modeling
 
 			var newFactor = new OMModelFactor
 			{
-				ModelId = dto.GeneralModelId,
+				ModelId = dto.ModelId,
 				FactorId = dto.FactorId,
+				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
 				Weight = dto.Weight,
 				B0 = dto.B0,
@@ -343,6 +345,11 @@ namespace KadOzenka.Dal.Modeling
 			ValidateManualFactor(dto);
 
 			var factor = GetFactorById(dto.Id);
+			if (factor.DictionaryId != null && dto.MarkType != MarkType.Default)
+			{
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+				factor.DictionaryId = null;
+			}
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
@@ -365,14 +372,22 @@ namespace KadOzenka.Dal.Modeling
 		{
 			var factor = GetFactorById(id);
 
-			factor.Destroy();
+			using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
+			{
+				factor.Destroy();
 
-			//RecalculateFormula(factor.ModelId);
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+
+				//RecalculateFormula(factor.ModelId);
+
+				ts.Complete();
+			}
 		}
 
 		public void DeleteAutomaticModelFactor(long? id)
 		{
-			var modelingService = new ModelingService();
+			//todo инжектить нельзя, вынести в отдельный сервис?
+			var modelService = new ModelingService();
 			var factor = GetFactorById(id);
 
 			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
@@ -382,10 +397,12 @@ namespace KadOzenka.Dal.Modeling
 			{
 				allFactors.ForEach(x => x.Destroy());
 
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+
 				ts.Complete();
 			}
 
-			modelingService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
+			modelService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId)
 				.Select(x => new
@@ -403,15 +420,14 @@ namespace KadOzenka.Dal.Modeling
 				model.ObjectsStatistic = statistic.SerializeToXml();
 				model.Save();
 			}
-
-			DeleteMarks(model?.GroupId, factor.FactorId);
 		}
+
 
 		#region Support Methods
 
 		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
-			ValidateBaseFactor(factorDto.Id, factorDto.GeneralModelId, factorDto.FactorId, factorDto.Type);
+			ValidateBaseFactor(factorDto);
 
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма модели для фактора");
@@ -441,7 +457,7 @@ namespace KadOzenka.Dal.Modeling
 
 		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
 		{
-			ValidateBaseFactor(factor.Id, factor.ModelId, factor.FactorId, factor.Type);
+			ValidateBaseFactor(factor);
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
@@ -474,14 +490,14 @@ namespace KadOzenka.Dal.Modeling
 				{
 					case RegisterAttributeType.STRING:
 						{
-							if (dictionary.Type_Code != ReferenceItemCodeType.String)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.String));
+							if (dictionary.Type_Code != ModelDictionaryType.String)
+								errors.Add(GenerateMessage(attribute.Name, ModelDictionaryType.String));
 							break;
 						}
 					case RegisterAttributeType.DATE:
 						{
-							if (dictionary.Type_Code != ReferenceItemCodeType.Date)
-								errors.Add(GenerateMessage(attribute.Name, ReferenceItemCodeType.Date));
+							if (dictionary.Type_Code != ModelDictionaryType.Date)
+								errors.Add(GenerateMessage(attribute.Name, ModelDictionaryType.Date));
 							break;
 						}
 				}
@@ -491,20 +507,23 @@ namespace KadOzenka.Dal.Modeling
 				throw new Exception(string.Join("<br>", errors));
 		}
 
-		private void ValidateBaseFactor(long id, long? modelId, long? factorId, KoAlgoritmType type)
+		private void ValidateBaseFactor(AModelFactorDto factor)
 		{
-			if (modelId == null)
+			if (factor.ModelId == null)
 				throw new Exception("Не передан ИД основной модели");
 
-			if (factorId == null)
+			if (factor.FactorId == null)
 				throw new Exception("Не передан ИД фактора");
 
-			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(id, factorId.Value, modelId.Value, type);
+			if (factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
+				throw new EmptyDictionaryForFactorWithDefaultMarkException();
+
+			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type);
 			if (isTheSameAttributeExists)
-				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factorId.GetValueOrDefault()).Name}' уже был добавлен");
+				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}
 
-		private string GenerateMessage(string attributeName, ReferenceItemCodeType dictionaryType)
+		private string GenerateMessage(string attributeName, ModelDictionaryType dictionaryType)
 		{
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
@@ -535,98 +554,6 @@ namespace KadOzenka.Dal.Modeling
 		//	model.Formula = model.GetFormulaFull(true);
 		//	model.Save();
 		//}
-
-		#endregion
-
-		#endregion
-
-		#region Метки
-
-		public List<OMMarkCatalog> GetMarks(long? groupId, long? factorId)
-		{
-			var factorIds = new List<long?> {factorId};
-
-			return GetMarks(groupId, factorIds);
-		}
-
-		public List<OMMarkCatalog> GetMarks(long? groupId, List<long?> factorIds)
-		{
-			var notNullFactorIds = factorIds.Where(x => x.HasValue).ToList();
-			if (groupId == null || notNullFactorIds.Count == 0)
-				return new List<OMMarkCatalog>();
-
-			return OMMarkCatalog.Where(x => notNullFactorIds.Contains(x.FactorId) && x.GroupId == groupId).SelectAll().Execute();
-		}
-
-		public OMMarkCatalog GetMarkById(long id)
-		{
-			var mark = OMMarkCatalog.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-			if (mark == null)
-				throw new Exception($"Не найдена метка с ИД {id}");
-
-			return mark;
-		}
-
-		public int CreateMark(string value, decimal? metka, long? factorId, long? groupId)
-		{
-			ValidateMark(groupId, value, metka);
-
-			return new OMMarkCatalog
-			{
-				GroupId = groupId,
-				FactorId = factorId,
-				MetkaFactor = metka,
-				ValueFactor = value
-			}.Save();
-		}
-
-		public void UpdateMark(long id, string value, decimal? metka)
-		{
-			var mark = GetMarkById(id);
-
-			ValidateMark(mark.GroupId, value, metka);
-
-			mark.ValueFactor = value;
-			mark.MetkaFactor = metka;
-
-			mark.Save();
-		}
-
-		public void DeleteMark(long id)
-		{
-			var mark = GetMarkById(id);
-
-			mark.Destroy();
-		}
-
-		public int DeleteMarks(long? groupId, long? factorId)
-		{
-			//реализовано удаление по фактору, чтобы было более подробное логирование
-			//сделано не через ОРМ для улучшения производительности
-			//можно ускорить, если удалять сразу по группе
-
-			var sql = $"delete from ko_mark_catalog where group_id = {groupId} and factor_id = {factorId}";
-
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			return DBMngr.Main.ExecuteNonQuery(command);
-		}
-
-
-		#region Support Methods
-
-		private void ValidateMark(long? groupId, string value, decimal? metka)
-		{
-			if (string.IsNullOrWhiteSpace(value))
-				throw new Exception("Нельзя сохранить пустое значение");
-			if (metka == null)
-				throw new Exception("Нельзя сохранить пустую метку");
-			if (metka.GetValueOrDefault() == 0)
-				throw new Exception("Нельзя сохранить нулевую метку");
-			if (groupId == null)
-				throw new Exception("Не переден ИД группы");
-		}
-
-		#endregion
 
 		#endregion
 	}

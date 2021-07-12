@@ -13,11 +13,12 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 		{
 			_factor = new ManualModelFactorDto
 			{
-				Id = RandomGenerator.GenerateRandomInteger(),
-				GeneralModelId = RandomGenerator.GenerateRandomInteger(),
+				Id = RandomGenerator.GenerateRandomId(),
+				ModelId = RandomGenerator.GenerateRandomId(),
 				Type = KoAlgoritmType.Line,
-				FactorId = RandomGenerator.GenerateRandomInteger(),
+				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
+				DictionaryId = RandomGenerator.GenerateRandomId(),
 				Weight = RandomGenerator.GenerateRandomDecimal(),
 				B0 = RandomGenerator.GenerateRandomDecimal(),
 				SignDiv = true,
@@ -44,6 +45,12 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 		public ManualFactorDtoBuilder K(decimal? k)
 		{
 			_factor.K = k;
+			return this;
+		}
+
+		public ManualFactorDtoBuilder Dictionary(long? dictionaryId)
+		{
+			_factor.DictionaryId = dictionaryId;
 			return this;
 		}
 

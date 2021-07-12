@@ -1,4 +1,5 @@
-﻿using ObjectModel.KO;
+﻿using KadOzenka.Dal.Modeling.Dto;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -10,15 +11,25 @@ namespace KadOzenka.Web.Models.Modeling
 		public string Value { get; set; }
 		public decimal? Metka { get; set; }
 
-		public static MarkModel ToModel(OMMarkCatalog entity)
+
+		public static MarkModel ToModel(OMModelingDictionariesValues entity)
 		{
 			return new MarkModel
 			{
 				Id = entity.Id,
-				FactorId = entity.FactorId,
-				GroupId = entity.GroupId,
-				Value = entity.ValueFactor,
-				Metka = entity.MetkaFactor
+				Value = entity.Value,
+				Metka = entity.CalculationValue
+			};
+		}
+
+		public DictionaryMarkDto ToDto(long dictionaryId)
+		{
+			return new DictionaryMarkDto
+			{
+				Id = Id,
+				DictionaryId = dictionaryId,
+				CalculationValue = Metka,
+				Value = Value
 			};
 		}
 	}

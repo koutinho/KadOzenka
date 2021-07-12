@@ -49,9 +49,9 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return unitFactorValue * factor.B0InFormula;
 		}
 
-		private decimal GetExpectedCadastralConstForDefaultMark(OMMarkCatalog mark, OMModelFactor factor)
+		private decimal GetExpectedCadastralConstForDefaultMark(OMModelingDictionariesValues mark, OMModelFactor factor)
 		{
-			return mark.MetkaFactor.GetValueOrDefault() * factor.B0InFormula;
+			return mark.CalculationValue * factor.B0InFormula;
 		}
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)

@@ -19,15 +19,15 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 			_factor = new OMModelFactor
 			{
-				ModelId = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue),
-				FactorId = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue),
+				ModelId = RandomGenerator.GenerateRandomId(),
+				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
 				Weight = RandomGenerator.GenerateRandomDecimal(),
 				B0 = RandomGenerator.GenerateRandomDecimal(),
 				SignDiv = true,
 				SignAdd = true,
 				SignMarket = true,
-				DictionaryId = RandomGenerator.GenerateRandomInteger(),
+				DictionaryId = RandomGenerator.GenerateRandomId(),
 				AlgorithmType = algorithm.GetEnumDescription(),
 				AlgorithmType_Code = algorithm,
 				PreviousWeight = RandomGenerator.GenerateRandomDecimal(),

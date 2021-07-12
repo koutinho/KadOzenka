@@ -32,5 +32,10 @@ namespace KadOzenka.Dal.Modeling.Repositories
 					x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
 				.ExecuteExists();
 		}
+
+		public OMModelFactor GetFactorByDictionary(long dictionaryId)
+		{
+			return OMModelFactor.Where(x => x.DictionaryId == dictionaryId).SelectAll().ExecuteFirstOrDefault();
+		}
 	}
 }

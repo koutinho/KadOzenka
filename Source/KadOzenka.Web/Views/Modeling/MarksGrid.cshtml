@@ -1,47 +1,48 @@
 ﻿
-<div class="form-horizontal col-sm-12">
+<div id="marksGridBlock" class="form-horizontal col-sm-12">
     <div style="display: flex;">
-        <div id="markGrid"></div>
+        <div id="marksGrid"></div>
     </div>
 </div>
 
 
 
 <script>
+
+    var isReadOnly = '@ViewBag.IsReadOnly' === "True";
+
+
     $(document).ready(function () {
 
-        var markGridDataSource = new kendo.data.DataSource({
+        var marksGridDataSource = new kendo.data.DataSource({
             transport: {
                 read: {
-                    url: '@Url.Action("GetMarkCatalog", "Modeling")',
+                    url: '@Url.Action("GetMarks", "Modeling")',
                     contentType: 'application/json; charset=utf-8',
-                    data: { groupId: '@ViewBag.GroupId', factorId: '@ViewBag.FactorId' },
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     dataType: 'json'
                 },
                 create: {
-                    url: '@Url.Action("CreateMark", "Modeling")',                         
+                    url: '@Url.Action("CreateMark", "Modeling")',
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 },
                 update: {
-                    url: '@Url.Action("UpdateMark", "Modeling")',                    
-                    type: 'POST',
-                    dataType: 'json'
-                },
-                destroy: {
-                    url: '@Url.Action("DeleteMark", "Modeling")',                        
+                    url: '@Url.Action("UpdateMark", "Modeling")',
+                    data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
                 }
             },
             requestStart: function(e) {
                 if (e.type == "read") {
-                    kendo.ui.progress($('body'), true);
+                    kendo.ui.progress($('#marksGridBlock'), true);
                 }
             },
             requestEnd: function (e) {
                 if (e.type == "read") {
-                    kendo.ui.progress($('body'), false);
+                    kendo.ui.progress($('#marksGridBlock'), false);
                 }
             },
             error: function (e) {
@@ -52,18 +53,20 @@
                     id: "Id",
                     fields: {
                         Id: { editable: false, nullable: true },
-                        GroupId: { editable: false},
-                        FactorId: { editable: false },
-                        Value: { validation: {
+                        Value: { 
+                            /*validation: {
                             valuefactorvalidation: function (input) {
                                 if (input.is("[name='Value']") && input.val() == "") {
                                     input.attr("data-valuefactorvalidation-msg", "Значение фактора обязательно");
                                     return false;
                                 }
                                 return true;
-                            }
-                        } },
-                        Metka: { validation: {
+                            } 
+                            }*/
+                            type: "string", nullable: false
+                        },
+                        Metka: { 
+                            /*validation: {
                             metkafactorvalidation: function (input) {
                                 if (input.is("[name='Metka']") && input.val() == "") {
                                     input.attr("data-metkafactorvalidation-msg", "Значение метки обязательно");
@@ -71,7 +74,9 @@
                                 }
                                 return true;
                             }
-                        }, type: "number", nullable: true   }
+                            }, */
+                            type: "number", nullable: false
+                        }
                     }
                 }
             },
@@ -93,36 +98,11 @@
             pageSize: 10
         });
 
-        $('#markGrid').kendoGrid({
-            dataSource: markGridDataSource,
-            columns: [
-                {
-                    field: 'Value',
-                    title: 'Значение',
-                    headerAttributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'Metka',
-                    title: 'Метка',
-                    headerAttributes: { style: "text-align: center;" },
-                    //по умолчанию точность новой метки - 2 знака после запятой, 
-                    //переопределяем это
-                    editor: function (container, options) {
-                        $('<input name="' + options.field + '"/>')
-                            .appendTo(container)
-                            .kendoNumericTextBox({
-                                format: "{0:n14}",
-                                decimals: 14,
-                                step: 0.1
-                            });
-                        //In case the custom editor is a widget, the developer should customize the validation warning tooltip position in order to avoid visual issues
-                        var tooltipElement = $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>');
-                        tooltipElement.appendTo(container);
-                    }
-                },
-                { command: ["edit", "destroy"], title: "&nbsp;", width: "250px" }
-            ],
-            toolbar: ["create"],
+
+        $('#marksGrid').kendoGrid({
+            dataSource: marksGridDataSource,
+            columns: getGridColumns(),
+            toolbar: isReadOnly ? [] : [{name: "create"}],
             scrollable: true,
             pageable: true,
             editable: "inline",
@@ -141,21 +121,95 @@
                     }
                 }
             },
-            beforeEdit: function (e) {
-                if (e.model.isNew()) {
-                    e.model.GroupId = '@ViewBag.GroupId';
-                    e.model.FactorId = '@ViewBag.FactorId';
-                }
-            },
             save: function (e) {
                 //из-за неправильного разделителя значение в контроллер приходит пустое
                 //была попытка установить culture для kendoNumericTextBox - не сработало
+                if (!e.model.Metka)
+                    return;
                 var initialValue = e.model.Metka.toString();
                 var replacedValue = initialValue.replace(".", ",");
                 e.model.Metka = replacedValue;
             }
         });
     });
+
+
+
+    function getGridColumns() {
+        var columns = [
+            {
+                field: 'Value',
+                title: 'Значение',
+                headerAttributes: { style: "text-align: center;" }
+            },
+            {
+                field: 'Metka',
+                title: 'Метка',
+                headerAttributes: { style: "text-align: center;" },
+                //по умолчанию точность новой метки - 2 знака после запятой, 
+                //переопределяем это
+                editor: function(container, options) {
+                    $('<input name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoNumericTextBox({
+                            format: "{0:n14}",
+                            decimals: 14,
+                            step: 0.1
+                        });
+                    //In case the custom editor is a widget, the developer should customize the validation warning tooltip position in order to avoid visual issues
+                    var tooltipElement = $('<span class="k-invalid-msg" data-for="' + options.field + '"></span>');
+                    tooltipElement.appendTo(container);
+                }
+            }
+        ];
+
+        if (!isReadOnly) {
+            columns.push({
+                command:
+                [
+                    { name: "edit" },
+                    { 
+                        name: "Удалить", 
+                        iconClass: "k-icon k-i-delete",
+                        click: deleteMark
+                    }
+                ],
+                title: "&nbsp;",
+                width: "250px"
+            });
+        }
+
+        return columns;
+    }
+
+
+    function deleteMark(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var clickedRow = this.dataItem(tr);
+        Common.UI.ShowConfirm({
+            title: 'Удаление метки',
+            content: `Удалить метку со значением "${clickedRow.Value}"?`,
+            onSuccess: function () {
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    url: '@Url.Action("DeleteMark", "Modeling")',
+                    type: 'DELETE',
+                    data: {dictionaryId: '@ViewBag.DictionaryId', markId: clickedRow.Id},
+                    success: function () {
+                        Common.ShowMessage("Метка удалена");
+                        $('#marksGrid').data('kendoGrid').dataSource.remove(clickedRow);
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function() {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+        });
+    }
 
 </script>
 

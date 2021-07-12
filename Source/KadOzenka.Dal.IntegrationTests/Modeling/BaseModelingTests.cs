@@ -3,15 +3,19 @@ using NUnit.Framework;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling
 {
-	public class BaseGbuObjectTests : BaseTests
+	public class BaseModelingTests : BaseTests
 	{
-		protected IModelingService ModelingService { get; set; }
+		protected string PathToFileFolder => @".\Modeling\_Files\";
+
+		protected IModelService ModelService { get; set; }
+		protected IModelDictionaryService ModelDictionaryService { get; set; }
 
 
 		[OneTimeSetUp]
 		protected void OneTimeSetUpForModeling()
 		{
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
+			ModelDictionaryService = new ModelDictionaryService();
 		}
 	}
 }

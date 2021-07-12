@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.Modeling
 {
     public class Training : AModelingTemplate
     {
-	    public DictionaryService DictionaryService { get; set; }
+	    public ModelDictionaryService ModelDictionaryService { get; set; }
         private TrainingRequest RequestForService { get; set; }
         protected GeneralModelingInputParameters InputParameters { get; set; }
         private OMModel GeneralModel { get; }
@@ -34,10 +34,10 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, Log.ForContext<Training>())
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
             ModelAttributes = new List<ModelAttributeRelationPure>();
-            DictionaryService = new DictionaryService();
+            ModelDictionaryService = new ModelDictionaryService();
         }
 
 

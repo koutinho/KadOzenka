@@ -113,7 +113,7 @@ namespace CIPJS
 			//services.AddTransient<ExpressScoreService>();
 			//services.AddTransient<ExpressScoreReferenceService>();
 	        services.AddTransient<ViewRenderService>();
-	        services.AddTransient<ModelingService>();
+	        services.AddTransient<ModelService>();
 	        services.AddTransient<MapBuildingService>();
 	        services.AddTransient<DashboardWidgetService>();
 	        services.AddTransient<StatisticsReportsWidgetService>();
@@ -125,13 +125,13 @@ namespace CIPJS
 	        services.AddTransient<DocumentService>();
 	        services.AddSingleton<KoUnloadResultsListenerService>();
             //services.AddSingleton<OutliersCheckingListenerService>();
-            services.AddSingleton<DictionaryService>();
+            services.AddSingleton<ModelDictionaryService>();
             services.AddSingleton<EsHubService>();
             services.AddSingleton<SignalRMessageService>();
             services.AddSingleton<StatisticalDataService>();
             services.AddSingleton<CustomReportsService>();
             services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
-            services.AddTransient(typeof(IModelingService), typeof(ModelingService));
+            services.AddTransient(typeof(IModelService), typeof(ModelService));
             services.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
             services.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));
             services.AddTransient(typeof(ITourRepository), typeof(TourRepository));
@@ -163,9 +163,11 @@ namespace CIPJS
             services.AddTransient(typeof(IMarketObjectsForMapService), typeof(MarketObjectsForMapService));
             services.AddTransient(typeof(IUnitService), typeof(UnitService));
             services.AddTransient(typeof(ITourFactorService), typeof(TourFactorService));
-            services.AddTransient(typeof(IGroupFactorService), typeof(GroupFactorService));
             services.AddTransient(typeof(IInheritanceFactorSettingsService), typeof(InheritanceInheritanceFactorSettingsService));
             services.AddTransient(typeof(IFactorSettingsRepository), typeof(FactorSettingsRepository));
+            services.AddTransient(typeof(IModelingService), typeof(ModelingService));
+            services.AddTransient(typeof(IModelDictionaryRepository), typeof(ModelDictionaryRepository));
+            services.AddTransient(typeof(IModelMarksRepository), typeof(ModelMarksRepository));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 
             services.AddSingleton<BackgroundProcessWidgetService>();

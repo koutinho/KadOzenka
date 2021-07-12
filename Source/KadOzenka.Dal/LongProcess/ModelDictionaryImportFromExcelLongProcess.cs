@@ -22,7 +22,7 @@ namespace KadOzenka.Dal.LongProcess
 	{
 		private readonly ILogger _log = Log.ForContext<ModelDictionaryImportFromExcelLongProcess>();
 		private string MessageSubject => "Загрузка справочника для моделирования";
-		private IDictionaryService DictionaryService { get; }
+		private IModelDictionaryService ModelDictionaryService { get; }
 		private IImportDataLogRepository ImportDataLogRepository { get; }
 		private IWorkerCommonWrapper Worker { get; }
 		private IFileStorageManagerWrapper FileStorageManagerWrapper { get; }
@@ -31,13 +31,13 @@ namespace KadOzenka.Dal.LongProcess
 		/// <summary>
 		/// Конструктор для юнит-тестов
 		/// </summary>
-		public ModelDictionaryImportFromExcelLongProcess(IDictionaryService dictionaryService,
+		public ModelDictionaryImportFromExcelLongProcess(IModelDictionaryService modelDictionaryService,
 			IImportDataLogRepository importDataLogRepository, INotificationSender notificationSender, 
 			IWorkerCommonWrapper worker, IFileStorageManagerWrapper fileStorageManagerWrapper,
 			ILongProcessProgressLogger logger)
 			: base(notificationSender, logger)
 		{
-			DictionaryService = dictionaryService;
+			ModelDictionaryService = modelDictionaryService;
 			ImportDataLogRepository = importDataLogRepository;
 			Worker = worker;
 			FileStorageManagerWrapper = fileStorageManagerWrapper;
@@ -45,14 +45,14 @@ namespace KadOzenka.Dal.LongProcess
 
 		public ModelDictionaryImportFromExcelLongProcess()
 		{
-			DictionaryService = new DictionaryService();
+			ModelDictionaryService = new ModelDictionaryService();
 			ImportDataLogRepository = new ImportDataLogRepository();
 			Worker = new WorkerCommonWrapper();
 			FileStorageManagerWrapper = new FileStorageManagerWrapper();
 		}
 
 
-		public static void AddProcessToQueue(Stream file, DictionaryImportFileFromExcelDto settings, OMImportDataLog import)
+		public static void AddProcessToQueue(DictionaryImportFileFromExcelDto settings, OMImportDataLog import)
 		{
 			LongProcessManager.AddTaskToQueue(nameof(ModelDictionaryImportFromExcelLongProcess), OMModelingDictionary.GetRegisterId(), import.Id, settings.SerializeToXml());
 		}
@@ -73,22 +73,10 @@ namespace KadOzenka.Dal.LongProcess
 				}
 
 				var settings = processQueue.Parameters.DeserializeFromXml<DictionaryImportFileFromExcelDto>();
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => DictionaryService.RowsCount, () => DictionaryService.CurrentRow);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelDictionaryService.RowsCount, () => ModelDictionaryService.CurrentRow);
 
-				var fileStream = FileStorageManagerWrapper.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated,
-					import.DataFileName);
-
-				_log.ForContext("IsNewDictionary", settings.IsNewDictionary).Verbose("Создание или обновление словаря.");
-				if (settings.IsNewDictionary)
-				{
-					DictionaryService.CreateDictionaryFromExcel(fileStream, settings.FileInfo,
-						settings.NewDictionaryName, import);
-				}
-				else
-				{
-					DictionaryService.UpdateDictionaryFromExcel(fileStream, settings.FileInfo, settings.DictionaryId,
-						settings.DeleteOldValues, import);
-				}
+				ModelDictionaryService.UpdateDictionaryFromExcel(import, settings.FileInfo, settings.DictionaryId,
+					settings.DeleteOldValues);
 			}
 			catch (Exception e)
 			{

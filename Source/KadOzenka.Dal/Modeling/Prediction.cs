@@ -28,7 +28,7 @@ namespace KadOzenka.Dal.Modeling
             : base(processQueue, Log.ForContext<Prediction>())
         {
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
-            GeneralModel = ModelingService.GetModelEntityById(InputParameters.ModelId);
+            GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
         }
 
 

@@ -21,7 +21,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
         protected readonly StatisticalDataService StatisticalDataService;
         protected readonly RosreestrRegisterService RosreestrRegisterService;
         protected readonly FactorsService FactorsService;
-        protected readonly ModelingService ModelingService;
+        protected readonly ModelService ModelService;
 
         private const string ReportTitle = "Таблица. Состав данных о результатах кадастровой оценки предыдущих туров";
         private const string TypeTitle = "Тип";
@@ -56,12 +56,12 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
             StatisticalDataService = new StatisticalDataService();
             RosreestrRegisterService = new RosreestrRegisterService();
             FactorsService = new FactorsService();
-            ModelingService = new ModelingService();
+            ModelService = new ModelService();
         }
 
         public PreviousToursReportInfo GetReportInfo(List<long> taskIds, long groupId)
         {
-            var model = ModelingService.GetActiveModelEntityByGroupId(groupId);
+            var model = ModelService.GetActiveModelEntityByGroupId(groupId);
             var factorsByRegisters = model == null
                 ? new List<FactorsService.PricingFactors>()
                 : FactorsService.GetGroupedModelFactors(model.Id, QueryManager);

@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			var factor = new ManualFactorDtoBuilder().Type(markType).CorrectItem(correctItem).K(k).Build();
 			
 			ModelFactorsRepository.Setup(x =>
-					x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.GeneralModelId.Value,
+					x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value,
 						factor.Type))
 				.Returns(false);
 

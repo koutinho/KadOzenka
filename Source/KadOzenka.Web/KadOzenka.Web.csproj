@@ -144,6 +144,14 @@
     <_WebToolingArtifacts Remove="Properties\PublishProfiles\IIS_Production.pubxml" />
   </ItemGroup>
 	
+  <ItemGroup>
+    <Compile Update="Resources\WebMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WebMessages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+	
 
   <ItemGroup>
     <Content Update="wwwroot\lib\kendo-ui\styles\kendo.miomo.theme..css">
@@ -152,6 +160,14 @@
     <Content Update="wwwroot\lib\kendo-ui\styles\kendo.miomo.theme.min.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+	
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\WebMessages.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>WebMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
   <Choose>
