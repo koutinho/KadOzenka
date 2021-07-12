@@ -4,35 +4,42 @@
 
 <fieldset>
     <div id="groupFilter_@Model.Index" class="form-group">
-         <div class="row">
-            <div class="col-sm-3">
-                @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idSuffix: $"[{Model.Index}]")
-            </div>
-            <div class="col-sm-9">
-                @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters, idSuffix: $"[{Model.Index}]"); }
-            </div>
+        <div class="col-sm-3">
+            @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idSuffix: $"[{Model.Index}]")
         </div>
-        <div class="row">
-            <div class="col-sm-2">
-                @Html.Label("", "Использовать справочник")
-            </div>
-            <div class="col-sm-3">
+        <div class="col-sm-1">
+            <label class="switch k-button-icon k-button">
+                <input id="UseDictionary_@(Model.Index)_" name="UseDictionary[@Model.Index]" class="switchInner" type="checkbox">
+                <span class="k-icon k-i-list-unordered"></span>
+            </label>
+
+        </div>
+        <div id="filters_@Model.Index" class="col-sm-8">
+            @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters, idSuffix: $"[{Model.Index}]"); }
+        </div>
+        <div id="dict_@Model.Index" class="col-sm-8">
+            <div class="row">
+            @* <div class="col-sm-2"> *@
+            @*     @Html.Label("", "Использовать справочник") *@
+            @* </div> *@
+            <div class="col-sm-4">
                 @(Html.Kendo().DropDownList()
                     .Name(nameof(Model.DictionaryId)+$"[{Model.Index}]")
                     .DataValueField("Value").DataTextField("Text")
                     .DataSource(source =>
                     {
-                        source.Read(read => { read.Action("GetDictionaries", "Modeling"); })
+                        source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
                             .ServerFiltering(false);
                     }))
             </div>
-            <div class="col-sm-2">
-                @Html.Label("", "Значения")
-            </div>
-            <div class="col-sm-3">
+            @* <div class="col-sm-2"> *@
+            @*     @Html.Label("", "Значения") *@
+            @* </div> *@
+            <div class="col-sm-4">
                 @(Html.Kendo().TextBox()
                     .Name(nameof(Model.DictionaryValue)+$"[{Model.Index}]")
                     .Placeholder("1,2,3"))
+            </div>
             </div>
         </div>
     </div>

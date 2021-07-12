@@ -10206,6 +10206,205 @@ namespace ObjectModel.KO
     }
 }
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 270 Справочники группировки (KO_GROUPING_DICTIONARIES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 270)]
+    [Serializable]
+    public partial class OMGroupingDictionary : OMBaseClass<OMGroupingDictionary>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 27000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 27000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 27000200 Имя (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27000200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 27000300 Тип (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27000300)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private ObjectModel.Directory.ES.ReferenceItemCodeType _type_Code;
+        /// <summary>
+        /// 27000300 Тип (справочный код) (TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27000300)]
+        public ObjectModel.Directory.ES.ReferenceItemCodeType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 271 Справочники группировки. Значения справочников (KO_GROUPING_DICTIONARIES_VALUES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 271)]
+    [Serializable]
+    public partial class OMGroupingDictionariesValues : OMBaseClass<OMGroupingDictionariesValues>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 27100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 27100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _dictionaryid;
+        /// <summary>
+        /// 27100200 ИД справочника (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27100200)]
+        public long DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private string _value;
+        /// <summary>
+        /// 27100300 Значение (VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27100300)]
+        public string Value
+        {
+            get
+            {
+                CheckPropertyInited("Value");
+                return _value;
+            }
+            set
+            {
+                _value = value;
+                NotifyPropertyChanged("Value");
+            }
+        }
+
+
+        private string _groupingvalue;
+        /// <summary>
+        /// 27100400 Значение для группировки (GROUPING_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27100400)]
+        public string GroupingValue
+        {
+            get
+            {
+                CheckPropertyInited("GroupingValue");
+                return _groupingvalue;
+            }
+            set
+            {
+                _groupingvalue = value;
+                NotifyPropertyChanged("GroupingValue");
+            }
+        }
+
+    }
+}
+
 namespace ObjectModel.Sud
 {
     /// <summary>

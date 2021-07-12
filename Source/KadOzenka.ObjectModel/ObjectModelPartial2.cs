@@ -782,6 +782,24 @@ namespace ObjectModel.KO
 }
 
 
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 271 Справочники группировки. Значения справочников
+    /// </summary>
+    public partial class OMGroupingDictionariesValues
+    {
+        /// <summary>
+        /// Ссылка на (270 Справочники группировки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMGroupingDictionary ParentGroupingDictionary { get; set; }
+
+    }
+}
+
+
 namespace ObjectModel.Sud
 {
     /// <summary>
