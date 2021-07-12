@@ -413,7 +413,8 @@ namespace KadOzenka.Web.Controllers
             {
                 Id = -1,
                 ModelId = generalModelId,
-                IsActive = true
+                IsActive = true,
+                Attributes = GetPossibleFactorsForAutomaticModel(generalModelId)
             };
 
             return View("EditAutomaticModelFactor", factorDto);
@@ -426,6 +427,8 @@ namespace KadOzenka.Web.Controllers
            var factor = ModelFactorsService.GetFactorById(id);
 
            var model = AutomaticFactorModel.ToModel(factor);
+           model.Attributes = GetPossibleFactorsForAutomaticModel(factor.ModelId.Value);
+
            if (factor.DictionaryId != null)
            {
                //todo после ТЗ на авто. модель объединить с ручной
@@ -507,8 +510,12 @@ namespace KadOzenka.Web.Controllers
             return Ok();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetAllAttributes(long modelId)
+        #endregion
+
+
+        #region Support Methods
+
+        private List<DropDownTreeItemModel> GetPossibleFactorsForAutomaticModel(long modelId)
         {
             var model = ModelService.GetModelEntityById(modelId);
 
@@ -537,13 +544,8 @@ namespace KadOzenka.Web.Controllers
                 marketObjectsAttributesTree
             };
 
-            return Json(fullTree);
+            return fullTree;
         }
-
-        #endregion
-
-
-        #region Support Methods
 
         private KoAlgoritmType ConvertModelType(ModelType inputType)
         {
