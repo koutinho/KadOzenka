@@ -299,6 +299,8 @@ namespace KadOzenka.Dal.Modeling
 					mustResetTrainingResult = true;
 				}
 
+				ProcessDictionary(factor, dto.MarkType);
+
 				factor.PreviousWeight = dto.PreviousWeight ?? 1;
 				factor.MarkType_Code = dto.MarkType;
 				ModelFactorsRepository.Save(factor);
@@ -345,11 +347,7 @@ namespace KadOzenka.Dal.Modeling
 			ValidateManualFactor(dto);
 
 			var factor = GetFactorById(dto.Id);
-			if (factor.DictionaryId != null && dto.MarkType != MarkType.Default)
-			{
-				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
-				factor.DictionaryId = null;
-			}
+			ProcessDictionary(factor, dto.MarkType);
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
@@ -543,6 +541,15 @@ namespace KadOzenka.Dal.Modeling
 			}
 
 			return types;
+		}
+
+		private void ProcessDictionary(OMModelFactor factor, MarkType newMarkType)
+		{
+			if (factor.DictionaryId != null && newMarkType != MarkType.Default)
+			{
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+				factor.DictionaryId = null;
+			}
 		}
 
 		//private void RecalculateFormula(long? generalModelId)
