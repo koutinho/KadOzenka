@@ -480,6 +480,10 @@ namespace KadOzenka.Web.Controllers
             }
             else
             {
+	            if (dto.DictionaryId != null)
+	            {
+		            UpdateDictionary(dto.DictionaryId.Value, factorModel.DictionaryName, factorModel.ModelId);
+	            }
                 var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
                 if (mustResetTrainingResult)
                 {
@@ -685,6 +689,10 @@ namespace KadOzenka.Web.Controllers
             }
             else
             {
+	            if (dto.DictionaryId != null)
+	            {
+		            UpdateDictionary(dto.DictionaryId.Value, manualFactorModel.DictionaryName, manualFactorModel.GeneralModelId);
+	            }
                 ModelFactorsService.UpdateManualFactor(dto);
             }
 
@@ -1378,11 +1386,23 @@ namespace KadOzenka.Web.Controllers
 		        return null;
 	        
 	        var attribute = RegisterCacheWrapper.GetAttributeData(factorId.GetValueOrDefault());
-	        var modelDictionariesIds = ModelFactorsService
+	        var modelDictionariesIds = GetModelDictionariesIds(modelId);
+
+            return ModelDictionaryService.CreateDictionary(dictionaryName, attribute.Type, modelDictionariesIds);
+        }
+
+        private void UpdateDictionary(long dictionaryId, string dictionaryName, long? modelId)
+        {
+	        var modelDictionariesIds = GetModelDictionariesIds(modelId);
+
+	        ModelDictionaryService.UpdateDictionary(dictionaryId, dictionaryName, modelDictionariesIds);
+        }
+
+        private List<long> GetModelDictionariesIds(long? modelId)
+        {
+	        return ModelFactorsService
 		        .GetGeneralModelAttributes(modelId.GetValueOrDefault())
 		        .Select(x => x.DictionaryId.GetValueOrDefault()).Distinct().ToList();
-		       
-	        return ModelDictionaryService.CreateDictionary(dictionaryName, attribute.Type, modelDictionariesIds);
         }
 
         #endregion

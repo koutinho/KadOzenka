@@ -14,7 +14,6 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
-using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.Ko;
 using ObjectModel.Directory.KO;
