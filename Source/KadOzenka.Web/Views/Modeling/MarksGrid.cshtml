@@ -33,12 +33,6 @@
                     data: { dictionaryId: '@ViewBag.DictionaryId' },
                     type: 'POST',
                     dataType: 'json'
-                },
-                destroy: {
-                    url: '@Url.Action("DeleteMark", "Modeling")',    
-                    data: { dictionaryId: '@ViewBag.DictionaryId' },
-                    type: 'POST',
-                    dataType: 'json'
                 }
             },
             requestStart: function(e) {
@@ -174,7 +168,11 @@
                 command:
                 [
                     { name: "edit" },
-                    { name: "destroy" }
+                    { 
+                        name: "Удалить", 
+                        iconClass: "k-icon k-i-delete",
+                        click: deleteMark
+                    }
                 ],
                 title: "&nbsp;",
                 width: "250px"
@@ -182,6 +180,35 @@
         }
 
         return columns;
+    }
+
+
+    function deleteMark(e) {
+        e.preventDefault();
+        var tr = $(e.target).closest("tr");
+        var clickedRow = this.dataItem(tr);
+        Common.UI.ShowConfirm({
+            title: 'Удаление метки',
+            content: `Удалить метку со значением "${clickedRow.Value}"?`,
+            onSuccess: function () {
+                kendo.ui.progress($('body'), true);
+                $.ajax({
+                    url: '@Url.Action("DeleteMark", "Modeling")',
+                    type: 'DELETE',
+                    data: {dictionaryId: '@ViewBag.DictionaryId', markId: clickedRow.Id},
+                    success: function () {
+                        Common.ShowMessage("Метка удалена");
+                        $('#marksGrid').data('kendoGrid').dataSource.remove(clickedRow);
+                    },
+                    error: function (response) {
+                        Common.ShowError(response.responseText);
+                    },
+                    complete: function() {
+                        kendo.ui.progress($('body'), false);
+                    }
+                });
+            }
+        });
     }
 
 </script>

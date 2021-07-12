@@ -775,15 +775,15 @@ namespace KadOzenka.Web.Controllers
             return Json(markCatalog);
         }
 
-        [HttpPost]
+        [HttpDelete]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
-        public ActionResult DeleteMark(long dictionaryId, MarkModel markCatalog)
+        public ActionResult DeleteMark(long dictionaryId, long markId)
         {
-	        ValidateMarkModification(dictionaryId);
+			ValidateMarkModification(dictionaryId);
 
-            ModelDictionaryService.DeleteMark(markCatalog.Id);
+			ModelDictionaryService.DeleteMark(markId);
 
-            return Json(markCatalog);
+			return Ok();
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
