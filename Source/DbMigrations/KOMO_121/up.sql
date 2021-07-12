@@ -55,3 +55,5 @@ ALTER TABLE ko_modeling_dictionaries_values ALTER COLUMN CALCULATION_VALUE SET N
 ALTER TABLE ko_modeling_dictionaries_values ALTER COLUMN VALUE SET NOT NULL;
 update core_register_attribute set is_nullable=0 where id in (26500400, 26500300);
 
+
+CREATE INDEX ko_modeling_dictionaries_values_idx ON ko_modeling_dictionaries_values USING btree (dictionary_id);
