@@ -547,14 +547,27 @@ namespace KadOzenka.Web.Controllers
             {
                 model.KoAttributes.Add(groupSetting.KoAttributeId);
                 model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
-                model.DictionaryId.Add(groupSetting.DictionaryId);
-                model.DictionaryValue.Add(groupSetting.DictionaryValues);
+                if (groupSetting.DictionaryId is 0 or null)
+                {
+                    model.DictionaryId.Add(null);
+                    model.DictionaryValue.Add("");
+                    model.UseDictionary.Add(false);
+                }
+                else
+                {
+                    model.DictionaryId.Add(groupSetting.DictionaryId);
+                    model.DictionaryValue.Add(groupSetting.DictionaryValues);
+                    model.UseDictionary.Add(true);
+                }
             }
 
             for (int i = model.GroupFilters.Count; i < 1; i++)
             {
                 model.GroupFilters.Add(new Filters());
                 model.KoAttributes.Add(new long());
+                model.DictionaryId.Add(new long());
+                model.DictionaryValue.Add(String.Empty);
+                model.UseDictionary.Add(false);
             }
 
             return model;

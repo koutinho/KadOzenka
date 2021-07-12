@@ -651,12 +651,12 @@ namespace KadOzenka.Dal.KoObject
             {
                 if (setting.DictionaryId != null)
                 {
-                    var dictValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == setting.DictionaryId
-                        && x.CalculationValue != null).SelectAll()
+                    var dictValues = OMGroupingDictionariesValues.Where(x => x.DictionaryId == setting.DictionaryId
+                        && x.GroupingValue != null).SelectAll()
                         .Execute();
                     var dictStringValues = setting.DictionaryValues.Split(",");
-                    var dictFilterValues = dictStringValues.Select(x => x.ParseToDecimal()).Distinct().ToList();
-                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.CalculationValue.GetValueOrDefault())).Select(x=>x.Value).ToList();
+                    var dictFilterValues = dictStringValues.Distinct().Where(x=>x.IsNotEmpty()).ToList();
+                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.GroupingValue)).Select(x=>x.Value).ToList();
                     listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), QSConditionType.In, dictFilter));
                     continue;
                 }
@@ -722,6 +722,13 @@ namespace KadOzenka.Dal.KoObject
                     _ => throw new ArgumentOutOfRangeException()
                 };
 
+                if (setting.Filters.Type == FilteringType.String
+                    && setting.Filters.StringFilter.FilteringType == FilteringTypeString.Equal
+                    && setting.Filters.StringFilter.Value.Split(",").Distinct().Count(x => x.IsNotEmpty()) > 1)
+                {
+                    condition = QSConditionType.In;
+                }
+
                 if (condition is QSConditionType.GreaterSysdate or QSConditionType.LessSysdate)
                 {
                     bool includeBoundary = condition == QSConditionType.GreaterSysdate;
@@ -748,7 +755,17 @@ namespace KadOzenka.Dal.KoObject
                     switch (setting.Filters.Type)
                     {
                         case FilteringType.String:
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.Value));
+                        {
+                            if (condition == QSConditionType.In)
+                            {
+                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.Value.Split(',').Distinct().Where(x=>x.IsNotEmpty())));
+                            }
+                            else
+                            {
+                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.Value));
+                            }
+                        }
+
                             break;
                         case FilteringType.Boolean:
                             listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.BoolFilter.Value.GetValueOrDefault() ? 1 : 0));

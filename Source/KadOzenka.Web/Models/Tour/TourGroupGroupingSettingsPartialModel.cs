@@ -6,6 +6,8 @@ namespace KadOzenka.Web.Models.Tour
     {
         public int Index { get; set; }
 
+        public bool UseDictionary { get; set; }
+
         public long? DictionaryId { get; set; }
 
         public string DictionaryValue { get; set; }
