@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
 			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
-			ModelingService.MakeModelActive(initialModel.Id);
+			ModelService.MakeModelActive(initialModel.Id);
 
 			VerifyModelIsMakedActive(initialModel, updatedModel);
 		}
@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
-			ModelingService.MakeModelActive(initialModel.Id);
+			ModelService.MakeModelActive(initialModel.Id);
 
 			VerifyModelIsMakedActive(initialModel, updatedModel);
 		}
@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(false);
 
-			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
+			var exception = Assert.Throws<Exception>(() => ModelService.MakeModelActive(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
 			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 
-			var exception = Assert.Throws<Exception>(() => ModelingService.MakeModelActive(initialModel.Id));
+			var exception = Assert.Throws<Exception>(() => ModelService.MakeModelActive(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
 			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));

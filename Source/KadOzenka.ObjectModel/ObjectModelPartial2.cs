@@ -523,31 +523,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 208 Факторы группы
-    /// </summary>
-    public partial class OMGroupFactor
-    {
-        /// <summary>
-        /// Ссылка на (205 Группы/Подгруппы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
-
-        /// <summary>
-        /// Ссылка на (931 Список показателей реестра)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 210 Факторы модели
     /// </summary>
     public partial class OMModelFactor
@@ -558,13 +533,6 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-        /// <summary>
-        /// Ссылка на (211 Справочник меток)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMMarkCatalog ParentMarkCatalog { get; set; }
 
         /// <summary>
         /// Ссылка на (264 Моделирование. Справочники)
@@ -827,6 +795,24 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
+
+    }
+}
+
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 271 Справочники группировки. Значения справочников
+    /// </summary>
+    public partial class OMGroupingDictionariesValues
+    {
+        /// <summary>
+        /// Ссылка на (270 Справочники группировки)
+        /// </summary>
+        [ParentRegister]
+        [XmlIgnore]
+        public ObjectModel.KO.OMGroupingDictionary ParentGroupingDictionary { get; set; }
 
     }
 }

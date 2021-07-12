@@ -1,0 +1,29 @@
+version: "3"
+services:
+  postgres: 
+    build:
+      context: .
+      dockerfile: services/postgresql/Dockerfile-local
+    container_name: local_db_kadozenka_miomo
+    restart: always
+    volumes:
+      - local_db_kadozenka_miomo:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=miomo_local
+      - POSTGRES_USER=postgres
+    ports:
+      - 5439:5432
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@genix.pro"
+      PGADMIN_DEFAULT_PASSWORD: "123456"
+    ports:
+      - "8032:80"
+    volumes:
+      - pgadmin4:/var/lib/pgadmin
+volumes:
+  local_db_kadozenka_miomo:
+  pgadmin4: 

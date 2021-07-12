@@ -12,6 +12,7 @@ using GemBox.Document;
 using GemBox.Document.Tables;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Entities;
+using KadOzenka.Dal.Modeling;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -522,32 +523,6 @@ namespace KadOzenka.Dal.DataExport
                                     true, false);
                             }
                         }
-                        List<OMGroupFactor> group_factors = OMGroupFactor.Where(x => x.GroupId == calc_group.Id).SelectAll().Execute();
-                        foreach (OMGroupFactor factor in group_factors)
-                        {
-                            string attribute_name = "-";
-                            long attribute_id = -1;
-                            string attribute_value = "-";
-                            string attribute_source = "-";
-
-                            GetAttributeValue(_unit, group_unit, task, factor.FactorId, (bool)factor.SignMarket,
-                                out attribute_id,
-                                out attribute_name,
-                                out attribute_value,
-                                out attribute_source);
-
-                            pp++;
-                            idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                            DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                                "2.3." + pp.ToString(),
-                                attribute_name,
-                                attribute_value,
-                                attribute_source,
-                                12,
-                                HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                                true, false);
-                        }
-
                     }
                 }
                 #endregion
@@ -585,31 +560,6 @@ namespace KadOzenka.Dal.DataExport
                     }
                 }
 
-                List<OMGroupFactor> gr_factors = OMGroupFactor.Where(x => x.GroupId == group_unit.Id).SelectAll().Execute();
-                foreach (OMGroupFactor factor in gr_factors)
-                {
-                    string attribute_name = "-";
-                    long attribute_id = -1;
-                    string attribute_value = "-";
-                    string attribute_source = "-";
-
-                    GetAttributeValue(_unit, group_unit, task, factor.FactorId, (bool)factor.SignMarket,
-                        out attribute_id,
-                        out attribute_name,
-                        out attribute_value,
-                        out attribute_source);
-
-                    pp++;
-                    idx_row = DataExportCommon.AddRowToTableDoc(document, table, count_cells);
-                    DataExportCommon.SetText4Doc(document, table.Rows[idx_row],
-                        "2.3." + pp.ToString(),
-                        attribute_name,
-                        attribute_value,
-                        attribute_source,
-                        12,
-                        HorizontalAlignment.Center, HorizontalAlignment.Left, HorizontalAlignment.Center, HorizontalAlignment.Center,
-                        true, false);
-                }
                 #endregion
 
                 #endregion
@@ -960,19 +910,22 @@ namespace KadOzenka.Dal.DataExport
                     #region Если есть метка, получаем результирущий коэффициент в подставляемое значение
                     if (_sign_market.ParseToBoolean())
                     {
-                        List<OMMarkCatalog> MarkCatalogs = new List<OMMarkCatalog>();
-                        MarkCatalogs.AddRange(OMMarkCatalog.Where(x => x.GroupId == _group.Id && x.FactorId == factor_item.FactorId).SelectAll().Execute());
+	                    var marks = new List<OMModelingDictionariesValues>();
+	                    var dictionaryId = new ModelingService().GetDictionaryId(_group.Id, factor_item.FactorId);
+                        if(dictionaryId == null)
+                            return;
+                        
+	                    marks.AddRange(new ModelDictionaryService().GetMarks(dictionaryId.Value));
 
-                        OMMarkCatalog mc = null;
-                        string temp_val = attr_value;
-                        mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == temp_val.ToUpper().Replace('.', ','));
-                        if (mc == null)
-                            mc = MarkCatalogs.Find(x => x.ValueFactor.ToUpper() == temp_val.ToUpper().Replace(',', '.'));
+	                    string temp_val = attr_value;
+	                    var mc = marks.Find(x => x.Value.ToUpper() == temp_val.ToUpper().Replace('.', ','));
+	                    if (mc == null)
+		                    mc = marks.Find(x => x.Value.ToUpper() == temp_val.ToUpper().Replace(',', '.'));
 
-                        if (mc != null)
-                        {
-                            attr_value = attr_value + " (подставляемое значение: " + mc.MetkaFactor.ToString().Replace(',', '.').Replace(".00000000000000000000", ".00") + ")";
-                        }
+	                    if (mc != null)
+	                    {
+		                    attr_value = attr_value + " (подставляемое значение: " + mc.CalculationValue.ToString().Replace(',', '.').Replace(".00000000000000000000", ".00") + ")";
+	                    }
                     }
                     #endregion
                 }

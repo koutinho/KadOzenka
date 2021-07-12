@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,19 +43,19 @@ namespace KadOzenka.Web.Controllers
         public GroupService GroupService { get; set; }
         public TourFactorService TourFactorService { get; set; }
         public TourComplianceImportService TourComplianceImportService { get; set; }
-        public GroupFactorService GroupFactorService { get; set; }
-        public IModelingService ModelingService { get; set; }
+        public GroupingDictionaryService DictionaryService { get; set; }
+        public IModelService ModelService { get; set; }
 
         public TourController(ITourService tourService, IGbuObjectService gbuObjectService,
-	        IRegisterCacheWrapper registerCacheWrapper, IModelingService modelingService)
+	        IRegisterCacheWrapper registerCacheWrapper, IModelService modelService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             TourFactorService = new TourFactorService();
             GroupService = new GroupService();
             TourService = tourService;
             TourComplianceImportService = new TourComplianceImportService();
-            GroupFactorService = new GroupFactorService();
-            ModelingService = modelingService;
+            DictionaryService = new GroupingDictionaryService();
+            ModelService = modelService;
         }
 
         #region Карточка тура
@@ -138,7 +138,7 @@ namespace KadOzenka.Web.Controllers
             var groupModel = GroupModel.ToModel(groupDto);
             groupModel.IsReadOnly = isReadOnly;
 
-            groupModel.Models = ModelingService.GetActiveModelsEntityByGroupId(groupId)
+            groupModel.Models = ModelService.GetGroupModels(groupId)
                 .Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
@@ -507,9 +507,33 @@ namespace KadOzenka.Web.Controllers
             return models;
         }
 
+        private List<DropDownTreeItemModel> GetMergedAttributes(long groupId)
+        {
+            var mergedAttributes = new List<DropDownTreeItemModel>();
+            var koAttributes = GetKoAttributes(groupId);
+            mergedAttributes.AddRange(koAttributes);
+            var gbuAttributes = GetGbuAttributesTree();
+            mergedAttributes.AddRange(gbuAttributes);
+            return mergedAttributes;
+        }
+
+        public List<SelectListItem> GetDictionariesForDropdown()
+        {
+            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            }).ToList();
+
+            dictionaries.Insert(0, new SelectListItem("", ""));
+            return dictionaries;
+        }
+
         private TourGroupGroupingSettingsModel GetTourGroupSettingsModel(long groupId)
         {
-            ViewData["KoAttributes"] = GetKoAttributes(groupId);
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
+
+            ViewData["Dictionaries"] = GetDictionariesForDropdown();
 
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == groupId).SelectAll().Execute();
 
@@ -520,13 +544,27 @@ namespace KadOzenka.Web.Controllers
             {
                 model.KoAttributes.Add(groupSetting.KoAttributeId);
                 model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
+                if (groupSetting.DictionaryId is 0 or null)
+                {
+                    model.DictionaryId.Add(null);
+                    model.DictionaryValue.Add("");
+                    model.UseDictionary.Add(false);
+                }
+                else
+                {
+                    model.DictionaryId.Add(groupSetting.DictionaryId);
+                    model.DictionaryValue.Add(groupSetting.DictionaryValues);
+                    model.UseDictionary.Add(true);
+                }
             }
 
-            // TODO: Пофиксить добавление записи
-            for (int i = model.GroupFilters.Count; i < 10; i++)
+            for (int i = model.GroupFilters.Count; i < 1; i++)
             {
                 model.GroupFilters.Add(new Filters());
                 model.KoAttributes.Add(new long());
+                model.DictionaryId.Add(new long());
+                model.DictionaryValue.Add(String.Empty);
+                model.UseDictionary.Add(false);
             }
 
             return model;
@@ -548,6 +586,14 @@ namespace KadOzenka.Web.Controllers
             return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettings.cshtml", model);
         }
 
+        [HttpGet]
+        public ActionResult TourGroupGroupingSettingsPartialRow(int groupId, int index)
+        {
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
+            var model = new TourGroupGroupingSettingsPartialModel {Index = index};
+            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
+        }
+
         [HttpPost]
         //[SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS)]
         public JsonResult TourGroupGroupingSettings(TourGroupGroupingSettingsModel model)
@@ -555,7 +601,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            var objectModel = model.ToObjectModel();
+            var objectModel = model.ToObjectModel().Where(x=>x.KoAttributeId != null);
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
 
             // TODO: Поменять логику создания
@@ -563,6 +609,242 @@ namespace KadOzenka.Web.Controllers
             objectModel.Where(x=>x.KoAttributeId != 0).ToList().ForEach(x=>x.Save());
 
             return new JsonResult(new {Message = "Обновление выполнено"});
+        }
+
+        #endregion
+
+
+        #region Словари групировки
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
+        public ActionResult GroupingDictionaryCard(long dictionaryId, bool showItems = false)
+        {
+            var dictionary = OMGroupingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
+            var model = GroupingDictionaryModel.ToModel(dictionary, showItems);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public ActionResult GroupingDictionaryCard(GroupingDictionaryModel viewModel)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            var id = viewModel.Id;
+            if (id == -1)
+                id = DictionaryService.CreateDictionary(viewModel.Name, viewModel.ValueType);
+            else
+                DictionaryService.UpdateDictionary(viewModel.Id, viewModel.Name, viewModel.ValueType);
+
+            return Json(new { Success = "Сохранено успешно", Id = id });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult GroupingDictionaryDelete(long dictionaryId)
+        {
+            try
+            {
+                var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+
+                return View(GroupingDictionaryModel.ToModel(dictionary));
+            }
+            catch (Exception ex)
+            {
+                return SendErrorMessage(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult DeleteGroupingDictionary(long dictionaryId)
+        {
+            try
+            {
+                DictionaryService.DeleteDictionary(dictionaryId);
+            }
+            catch (Exception ex)
+            {
+                return SendErrorMessage(ex.Message);
+            }
+
+            return Json(new { Success = true });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult GroupingDictionaryImport()
+        {
+            ViewData["References"] = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
+            {
+                Text = x.Name,
+                Value = x.Id
+            }).ToList();
+
+            return View(new GroupingDictionaryImportModel());
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        public IActionResult GroupingDictionaryImport(IFormFile file, GroupingDictionaryImportModel viewModel)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            long? dictionaryId = null;
+            object returnedData;
+            try
+            {
+                using (var fileStream = file.OpenReadStream())
+                {
+                    var importInfo = new GroupingDictionaryImportFileInfoDto
+                    {
+                        FileName = file.FileName,
+                        ValueColumnName = viewModel.Value,
+                        CalcValueColumnName = viewModel.CalcValue,
+                        ValueType = viewModel.ValueType
+                    };
+
+                    var import = GroupingDictionaryService.CreateDataFileImport(fileStream, importInfo.FileName);
+                    fileStream.Seek(0, SeekOrigin.Begin);
+                    if (DictionaryService.MustUseLongProcess(fileStream))
+                    {
+                        fileStream.Seek(0, SeekOrigin.Begin);
+                        var inputParameters = new GroupingDictionaryImportFileFromExcelDto
+                        {
+                            DeleteOldValues = viewModel.GroupingDictionary.DeleteOldValues,
+                            FileInfo = importInfo,
+                            DictionaryId = viewModel.GroupingDictionary.DictionaryId.GetValueOrDefault(),
+                            IsNewDictionary = viewModel.GroupingDictionary.IsNewDictionary,
+                            NewDictionaryName = viewModel.GroupingDictionary.NewDictionaryName
+                        };
+                        ////TODO для тестирования
+                        //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                        //{
+                        //	Status_Code = Status.Added,
+                        //	UserId = SRDSession.GetCurrentUserId(),
+                        //	ObjectId = import.Id,
+                        //	Parameters = inputParameters.SerializeToXml()
+                        //}, new CancellationToken());
+
+                        GroupingDictionaryImportFromExcelLongProcess.AddProcessToQueue(fileStream, inputParameters, import);
+
+                        returnedData = new
+                        {
+                            Success = true,
+                            message = "Добавление справочника было поставленно в очередь долгих процессов. После добавления вы получите уведомление.",
+                            isLongProcess = true
+                        };
+                    }
+                    else
+                    {
+                        fileStream.Seek(0, SeekOrigin.Begin);
+
+                        var dictionary = viewModel.GroupingDictionary;
+                        if (dictionary.IsNewDictionary)
+                        {
+                            dictionaryId = DictionaryService.CreateDictionaryFromExcel(fileStream, importInfo,
+                                dictionary.NewDictionaryName, import);
+                        }
+                        else
+                        {
+                            DictionaryService.UpdateDictionaryFromExcel(fileStream, importInfo,
+                                dictionary.DictionaryId.GetValueOrDefault(-1), dictionary.DeleteOldValues, import);
+                        }
+
+                        returnedData = new
+                        {
+                            Success = true,
+                            message = "Справочник успешно импортирован",
+                            newDictionaryId = viewModel.GroupingDictionary.IsNewDictionary ? dictionaryId : null,
+                        };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorManager.LogError(ex);
+                return SendErrorMessage(ex.Message);
+            }
+
+            return Json(returnedData);
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES)]
+        public ActionResult GroupingDictionaryValueCard(long dictionaryValueId, long dictionaryId)
+        {
+            var dictionaryValue = OMGroupingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
+            dictionaryId = dictionaryValue == null ? dictionaryId : dictionaryValue.DictionaryId;
+            var dictionary = DictionaryService.GetDictionaryById(dictionaryId);
+
+            return View(GroupingDictionaryValueModel.ToModel(dictionaryValue, dictionary));
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
+        public ActionResult GroupingDictionaryValueCard(GroupingDictionaryValueModel viewModel)
+        {
+            if (!ModelState.IsValid)
+                return GenerateMessageNonValidModel();
+
+            var id = viewModel.Id;
+            if (id == -1)
+                id = DictionaryService.CreateDictionaryValue(viewModel.ToDto());
+            else
+                DictionaryService.UpdateDictionaryValue(viewModel.ToDto());
+
+            return Json(new { Success = "Сохранено успешно", Id = id });
+        }
+
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
+        public IActionResult GroupingDictionaryValueDelete(long dictionaryValueId)
+        {
+            try
+            {
+                var dictionaryValue = DictionaryService.GetDictionaryValueById(dictionaryValueId);
+                var dictionary = DictionaryService.GetDictionaryById(dictionaryValue.DictionaryId);
+
+                return View(GroupingDictionaryValueModel.ToModel(dictionaryValue, dictionary));
+            }
+            catch (Exception ex)
+            {
+                return SendErrorMessage(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
+        public IActionResult GroupingDeleteDictionaryValue(long dictionaryValueId)
+        {
+            try
+            {
+                DictionaryService.DeleteDictionaryValue(dictionaryValueId);
+            }
+            catch (Exception ex)
+            {
+                return SendErrorMessage(ex.Message);
+            }
+
+            return Json(new { Success = true });
+        }
+
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
+        public JsonResult GetGroupingDictionaries()
+        {
+            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            {
+                Text = x.Name,
+                Value = x.Id.ToString()
+            }).ToList();
+
+            dictionaries.Insert(0, new SelectListItem("", ""));
+
+            return Json(dictionaries);
         }
 
         #endregion
@@ -814,93 +1096,6 @@ namespace KadOzenka.Web.Controllers
             return Json(items);
         }
 
-        #region Факторы группы
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult GroupFactors(long groupId)
-        {
-            ViewBag.GroupId = groupId;
-            return PartialView("~/Views/Tour/Partials/GroupFactors.cshtml");
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public JsonResult GetGroupFactors(long groupId)
-        {
-            var models = GroupFactorService.GetGroupFactors(groupId).Select(GroupFactorModel.FromDto).ToList();
-            return Json(models);
-        }
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
-        public JsonResult GetTourFactors(long? groupId)
-        {
-            OMTourGroup tourGroup = OMTourGroup.Where(x => x.GroupId == groupId)
-                .Select(x => x.TourId).ExecuteFirstOrDefault();
-
-            if (tourGroup != null)
-            {
-                var tourAllAttributes = TourFactorService.GetTourAttributes(tourGroup.TourId, ObjectTypeExtended.Both);
-                var result = tourAllAttributes.Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).OrderBy(x => x.Text);
-
-                return Json(result);
-            }
-
-            return Json(new List<SelectListItem>());
-        }
-
-
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult EditGroupFactor(long? id, long groupId)
-        {
-            GroupFactorModel model;
-
-            if (id.HasValue)
-            {
-                var dto = GroupFactorService.GetGroupFactor(id.Value);
-                model = GroupFactorModel.FromDto(dto);
-            }
-            else
-            {
-                model = new GroupFactorModel(groupId);
-            }
-
-            return View(model);
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult EditGroupFactor(GroupFactorModel model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return GenerateMessageNonValidModel();
-            }
-
-            if (model.Id == -1)
-            {
-                var id = GroupFactorService.CreateGroupFactor(model.ToDto());
-                model.Id = id;
-            }
-            else
-            {
-                GroupFactorService.UpdateGroupFactor(model.ToDto());
-            }
-
-            return Json(new {Success = "Сохранено успешно", Id = model.Id});
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_GROUPS)]
-        public ActionResult DeleteGroupFactor(long id)
-        {
-            GroupFactorService.DeleteGroupFactor(id);
-            return Json(new {Success = "Удаление выполненно"});
-        }
-
-        #endregion Факторы группы
 
         #region Импорт группы из Excel
 

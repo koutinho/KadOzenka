@@ -27,9 +27,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		public FactorAdditionToModelObjectsLongProcess() : base(Log.ForContext<FactorAdditionToModelObjectsLongProcess>())
 		{
-			ModelingService = new ModelingService();
+			ModelService = new ModelService();
 			ModelFactorsService = new ModelFactorsService();
-			DictionaryService = new DictionaryService();
+			ModelDictionaryService = new ModelDictionaryService();
 		}
 
 
@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			try
 			{
-				Model = ModelingService.GetModelEntityById(inputParameters.ModelId);
+				Model = ModelService.GetModelEntityById(inputParameters.ModelId);
 				var allModelAttributes = GetGeneralModelAttributes(Model.Id);
 
 				Attribute = allModelAttributes.First(x => x.AttributeId == inputParameters.AttributeId);
@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				var dictionaries = Attribute.DictionaryId == null
 					? new List<OMModelingDictionary>()
-					: DictionaryService.GetDictionaries(new List<long> { Attribute.DictionaryId.Value });
+					: ModelDictionaryService.GetDictionaries(new List<long> { Attribute.DictionaryId.Value });
 				AddLog(Queue, $"Найдено {dictionaries?.Count} словарей для атрибута.", logger: Logger);
 
 				var objects = ModelObjectsService.GetModelObjects(inputParameters.ModelId);
@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				SaveCoefficient(objects, coefficients);
 				AddLog(Queue, "Закончено сохранение коэффициентов.", logger: Logger);
 
-				CreateMarkCatalog(Model.GroupId, objects, attributes, Queue);
+				CreateMarkCatalog(objects, attributes, Queue);
 
 				SaveStatistic(objects, allModelAttributes, Model, Queue);
 

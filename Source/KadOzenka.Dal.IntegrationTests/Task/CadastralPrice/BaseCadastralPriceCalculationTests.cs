@@ -82,13 +82,13 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		}
 
 		protected OMModelFactor CreateFactorWithDefaultMark(RegisterAttribute attribute, OMModel model, decimal value,
-			out OMMarkCatalog mark)
+			out OMModelingDictionariesValues mark)
 		{
 			var factor = new ModelFactorBuilder().FactorId(attribute.Id).Model(model)
 				.MarkType(MarkType.Default)
 				.Correction(FactorCorrection).Coefficient(FactorCoefficient).Build();
 
-			mark = new MarkBuilder().Factor(factor.FactorId).Group(model.GroupId)
+			mark = new MarkBuilder().Dictionary(factor.DictionaryId)
 				.Value(value.ToString()).Metka(1)
 				.Build();
 

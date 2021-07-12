@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RegisterView RegisterId="271" LinkedRegistersList="270,271" DefaultLayoutId="0"
+              IsBasic="false" ShowActualDate="false" ShowObjectCards="false" SearchPanel="GroupingDictionaryValues"
+              UseMasterPage="false" NeedOpenEmpty="false" UseSubMap="true" JoinType="Left" ShowFilterMenu="false" ShowSettingsPanel="false">
+    <Buttons>
+        <Button Caption="Добавить" NavigateURL="/Tour/GroupingDictionaryValueCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
+            <Parameters>
+                <Parameter Key="dictionaryId" Value="{Get:DictionaryId}" />
+            </Parameters>
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="{Get:DictionaryId}" Operation="Equal" Value="-1" AndOr="Or" />
+                        <Condition Key="{Get:DictionaryId}" Operation="IsNull" AndOr="Or" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+        </Button>
+        <Button Caption="Редактировать" NavigateURL="/Tour/GroupingDictionaryValueCard" WindowHeight="400" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="dictionaryValueId" Value="[ObjectID]" />
+                <Parameter Key="dictionaryId" Value="{Get:DictionaryId}" />
+            </Parameters>
+        </Button>
+
+        <Button Caption="Удалить" NavigateURL="/Tour/GroupingDictionaryValueDelete" WindowHeight="150" WindowWidth="800" SRDFunctionTag="KO.DICT.MODELS">
+            <ConditionGroups>
+                <ConditionGroup HideOrDisable="Disable">
+                    <Conditions>
+                        <Condition Key="NeedSelectedRow" Operation="" Value="true" />
+                    </Conditions>
+                </ConditionGroup>
+            </ConditionGroups>
+            <Parameters>
+                <Parameter Key="dictionaryValueId" Value="[ObjectID]" />
+            </Parameters>
+        </Button>
+    </Buttons>
+</RegisterView>

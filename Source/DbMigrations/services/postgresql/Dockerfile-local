@@ -1,0 +1,44 @@
+FROM postgres:latest
+
+COPY services/postgresql/scripts/00_create_sql_helpers.sql /docker-entrypoint-initdb.d/00_create_sql_helpers.sql
+COPY services/postgresql/scripts/01_create_tables.sql /docker-entrypoint-initdb.d/01_create_tables.sql
+COPY services/postgresql/scripts/02_create_indexes.sql /docker-entrypoint-initdb.d/02_create_indexes.sql
+COPY services/postgresql/scripts/03_create_sequence.sql /docker-entrypoint-initdb.d/03_create_sequence.sql
+COPY services/postgresql/scripts/04_create_functions.sql /docker-entrypoint-initdb.d/04_create_functions.sql
+COPY services/postgresql/scripts/05_create_triggers.sql /docker-entrypoint-initdb.d/05_create_triggers.sql
+COPY services/postgresql/scripts/06_insert_srd_data.sql /docker-entrypoint-initdb.d/06_insert_srd_data.sql
+COPY services/postgresql/scripts/07_insert_platform_data.sql /docker-entrypoint-initdb.d/07_insert_platform_data.sql
+COPY services/postgresql/scripts/08_insert_source_registers.sql /docker-entrypoint-initdb.d/08_insert_source_registers.sql
+COPY services/postgresql/scripts/09_create_postgres_users.sql /docker-entrypoint-initdb.d/09_create_postgres_users.sql
+COPY services/postgresql/scripts/10_insert_initial_data.sql /docker-entrypoint-initdb.d/10_insert_initial_data.sql
+
+COPY services/postgresql/scripts/platform_384.sql /docker-entrypoint-initdb.d/platform_384.sql
+COPY services/postgresql/scripts/platform_388.sql /docker-entrypoint-initdb.d/platform_388.sql
+
+COPY services/postgresql/scripts/up2732.sql /docker-entrypoint-initdb.d/up2732.sql
+COPY services/postgresql/scripts/up3029.sql /docker-entrypoint-initdb.d/up3029.sql
+COPY services/postgresql/scripts/up2929.sql /docker-entrypoint-initdb.d/up2929.sql
+COPY services/postgresql/scripts/up3108.sql /docker-entrypoint-initdb.d/up3108.sql
+COPY services/postgresql/scripts/up_moscow_2738.sql /docker-entrypoint-initdb.d/up_moscow_2738.sql
+
+COPY services/postgresql/scripts/up_region_000007.sql /docker-entrypoint-initdb.d/up_region_000007.sql
+COPY services/postgresql/scripts/up_region_000020.sql /docker-entrypoint-initdb.d/up_region_000020.sql
+COPY services/postgresql/scripts/up_region_000021.sql /docker-entrypoint-initdb.d/up_region_000021.sql
+COPY services/postgresql/scripts/up_region_000022.sql /docker-entrypoint-initdb.d/up_region_000022.sql
+COPY services/postgresql/scripts/up_region_000030.sql /docker-entrypoint-initdb.d/up_region_000030.sql
+COPY services/postgresql/scripts/up_region_000033.sql /docker-entrypoint-initdb.d/up_region_000033.sql
+COPY services/postgresql/scripts/up_region_000036.sql /docker-entrypoint-initdb.d/up_region_000036.sql
+COPY services/postgresql/scripts/up_region_000041.sql /docker-entrypoint-initdb.d/up_region_000041.sql
+COPY services/postgresql/scripts/up_region_000042.sql /docker-entrypoint-initdb.d/up_region_000042.sql
+COPY services/postgresql/scripts/up_region_000044.sql /docker-entrypoint-initdb.d/up_region_000044.sql
+COPY services/postgresql/scripts/up_region_000045.sql /docker-entrypoint-initdb.d/up_region_000045.sql
+COPY services/postgresql/scripts/up_region_000046.sql /docker-entrypoint-initdb.d/up_region_000046.sql
+COPY services/postgresql/scripts/up_region_000103.sql /docker-entrypoint-initdb.d/up_region_000046_22.sql
+COPY services/postgresql/scripts/up_region_000081.sql /docker-entrypoint-initdb.d/up_region_000081.sql
+COPY services/postgresql/scripts/up_region_000082.sql /docker-entrypoint-initdb.d/up_region_000082.sql
+COPY services/postgresql/scripts/up_region_000087.sql /docker-entrypoint-initdb.d/up_region_000087.sql
+COPY services/postgresql/scripts/up_region_000096.sql /docker-entrypoint-initdb.d/up_region_000096.sql
+COPY services/postgresql/scripts/up_region_000086.sql /docker-entrypoint-initdb.d/up_region_000086.sql
+COPY services/postgresql/scripts/up_region_000107.sql /docker-entrypoint-initdb.d/up_region_000107.sql
+COPY services/postgresql/scripts/up_region_000113.sql /docker-entrypoint-initdb.d/up_region_000113.sql
+COPY services/postgresql/scripts/up4090.sql			  /docker-entrypoint-initdb.d/up4090.sql

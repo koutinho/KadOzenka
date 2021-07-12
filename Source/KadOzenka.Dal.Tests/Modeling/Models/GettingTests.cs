@@ -16,7 +16,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 		[TestCase(0)]
 		public void If_Model_Id_Is_Empty_Throw_Exception(long modelId)
 		{
-			var exception = Assert.Throws<Exception>(() => ModelingService.GetModelEntityById(modelId));
+			var exception = Assert.Throws<Exception>(() => ModelService.GetModelEntityById(modelId));
 
 			StringAssert.Contains(Messages.EmptyModelId, exception.Message);
 		}
@@ -31,7 +31,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 				.Setup(foo => foo.GetById(modelId, It.IsAny<Expression<Func<OMModel, object>>>()))
 				.Returns((OMModel) null);
 
-			Assert.Throws<ModelNotFoundByIdException>(() => ModelingService.GetModelEntityById(modelId));
+			Assert.Throws<ModelNotFoundByIdException>(() => ModelService.GetModelEntityById(modelId));
 		}
 	}
 }

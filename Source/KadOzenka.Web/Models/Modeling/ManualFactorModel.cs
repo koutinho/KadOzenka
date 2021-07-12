@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Core.Register;
 using KadOzenka.Dal.Modeling.Dto.Factors;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
@@ -31,6 +33,10 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "K=[A+M]/2")]
 		public decimal? K { get; set; }
 
+		[Display(Name = "Словарь")]
+		public string DictionaryName { get; set; }
+		public long? DictionaryId { get; set; }
+
 
 		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
 		{
@@ -39,6 +45,7 @@ namespace KadOzenka.Web.Models.Modeling
 				Id = factor.Id,
 				GeneralModelId = generalModelId,
 				FactorId = factor.FactorId,
+				DictionaryId = factor.DictionaryId,
 				Factor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name,
 				MarkerId = factor.MarkerId,
 				Correction = factor.Weight,
@@ -57,9 +64,10 @@ namespace KadOzenka.Web.Models.Modeling
 			return new()
 			{
 				Id = Id,
-				GeneralModelId = GeneralModelId,
+				ModelId = GeneralModelId,
 				Type = Type,
 				FactorId = FactorId,
+				DictionaryId = DictionaryId,
 				Weight = Correction,
 				B0 = B0,
 				SignDiv = SignDiv,

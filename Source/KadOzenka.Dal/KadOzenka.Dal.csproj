@@ -72,7 +72,6 @@
     <Folder Include="LongProcess\Modeling\" />
     <Folder Include="LongProcess\Modeling\Entities\" />
     <Folder Include="LongProcess\Reports\AdditionalForms\AnalysisOfResuluts\Entities\" />
-    <Folder Include="Modeling\Dto\Factors\" />
   </ItemGroup>
 
   <ItemGroup>

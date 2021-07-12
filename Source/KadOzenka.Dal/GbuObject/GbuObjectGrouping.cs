@@ -149,7 +149,7 @@ namespace KadOzenka.Dal.GbuObject
                 };
 
                 //string resGroup = GetGroupCode(out string source);
-                string resGroup = dict.FirstOrDefault(x => x == record)?.Code ?? "14:000";
+                string resGroup = dict.FirstOrDefault(x => x == record)?.Code ?? setting.CodeDefault;
 
 
                 #region Результат

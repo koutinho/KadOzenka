@@ -3,9 +3,9 @@
 
 <div class="row">
     <div class="col-sm-5">
-        @Html.KendoDropDownListTreeWithButton(m => m.Attributes.IdFrom, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + Model.RowNumber)
+        @Html.KendoDropDownListTreeWithButton(m => m.Attributes.IdFrom, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idSuffix: "_" + Model.RowNumber)
     </div>
     <div class="col-sm-5 col-sm-offset-1">
-        @Html.KendoDropDownListTreeWithButton(m => m.Attributes.IdTo, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idPrefix: "_" + Model.RowNumber)
+        @Html.KendoDropDownListTreeWithButton(m => m.Attributes.IdTo, (IEnumerable<DropDownTreeItemModel>) ViewData["TreeAttributes"], idSuffix: "_" + Model.RowNumber)
     </div>
 </div>

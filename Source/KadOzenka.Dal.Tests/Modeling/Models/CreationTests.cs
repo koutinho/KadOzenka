@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			var modelDto = GetModelInfoDto();
 			modelDto.Name = null;
 			
-			var exception = Assert.Throws<ModelCrudException>(() => ModelingService.AddAutomaticModel(modelDto));
+			var exception = Assert.Throws<ModelCrudException>(() => ModelService.AddAutomaticModel(modelDto));
 
 			StringAssert.Contains(Messages.EmptyName, exception.Message);
 			ModelingRepository.Verify(foo => foo.Save(It.IsAny<OMModel>()), Times.Never);

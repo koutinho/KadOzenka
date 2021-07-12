@@ -10,7 +10,7 @@ namespace KadOzenka.Web.UnitTests.Modeling.Models
 		public void If_Model_Group_Is_Not_Found_Redirect_To_NoGroup_View()
 		{
 			var modelId = RandomGenerator.GenerateRandomInteger();
-			ModelingService.Setup(x => x.IsModelGroupExist(modelId)).Returns(false);
+			ModelService.Setup(x => x.IsModelGroupExist(modelId)).Returns(false);
 
 			var result = ModelingController.ModelCard(modelId);
 			var redirect = result as RedirectToActionResult;

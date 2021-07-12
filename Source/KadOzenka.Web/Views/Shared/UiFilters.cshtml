@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Web.Helpers
+@using Microsoft.AspNetCore.Routing
 @model KadOzenka.Dal.Models.Filters.Filters
 
 <div class="row" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_filterTypeContainer")" hidden>
@@ -13,7 +14,7 @@
         @Html.KendoDropDownListEnumFor(m=>m.StringFilter.FilteringType)
     </div>
     <div class="col-sm-4" id="@(ViewData.TemplateInfo.HtmlFieldPrefix+"_stringFilterValueContainer")">
-        @Html.Kendo().TextBoxFor(m=>m.StringFilter.Value)
+        @Html.Kendo().TextBoxFor(m=>m.StringFilter.Value).HtmlAttributes(new RouteValueDictionary{ {"class","k-input"} })
     </div>
 </div>
 

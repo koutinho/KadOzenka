@@ -1,0 +1,18 @@
+version: "3"
+services:
+  postgres_miomo_kadozenka_qa: 
+    build: 
+      context: .
+      dockerfile: services/postgresql/Dockerfile
+    container_name: postgres_miomo_kadozenka_qa
+    restart: always
+    volumes:
+      - postgres_data_kadozenka_miomo_qa:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=miomo_test
+      - POSTGRES_USER=postgres
+    ports:
+      - 5441:5432
+volumes:
+  postgres_data_kadozenka_miomo_qa:
+  pgadmin4:

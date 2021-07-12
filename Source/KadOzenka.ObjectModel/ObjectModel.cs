@@ -3755,98 +3755,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 208 Факторы группы (KO_GROUP_FACTOR)
-    /// </summary>
-    [RegisterInfo(RegisterID = 208)]
-    [Serializable]
-    public partial class OMGroupFactor : OMBaseClass<OMGroupFactor>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 20800100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 20800100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long? _groupid;
-        /// <summary>
-        /// 20800200 Идентификатор группы (GROUP_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20800200)]
-        public long? GroupId
-        {
-            get
-            {
-                CheckPropertyInited("GroupId");
-                return _groupid;
-            }
-            set
-            {
-                _groupid = value;
-                NotifyPropertyChanged("GroupId");
-            }
-        }
-
-
-        private long? _factorid;
-        /// <summary>
-        /// 20800300 Идентификатор фактора (FACTOR_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20800300)]
-        public long? FactorId
-        {
-            get
-            {
-                CheckPropertyInited("FactorId");
-                return _factorid;
-            }
-            set
-            {
-                _factorid = value;
-                NotifyPropertyChanged("FactorId");
-            }
-        }
-
-
-        private bool? _signmarket;
-        /// <summary>
-        /// 20800400 Признак использования метки (SIGN_NARKET)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20800400)]
-        public bool? SignMarket
-        {
-            get
-            {
-                CheckPropertyInited("SignMarket");
-                return _signmarket;
-            }
-            set
-            {
-                _signmarket = value;
-                NotifyPropertyChanged("SignMarket");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 210 Факторы модели (KO_MODEL_FACTOR)
     /// </summary>
     [RegisterInfo(RegisterID = 210)]
@@ -4240,118 +4148,6 @@ namespace ObjectModel.KO
             {
                 _k = value;
                 NotifyPropertyChanged("K");
-            }
-        }
-
-    }
-}
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 211 Справочник меток (KO_MARK_CATALOG)
-    /// </summary>
-    [RegisterInfo(RegisterID = 211)]
-    [Serializable]
-    public partial class OMMarkCatalog : OMBaseClass<OMMarkCatalog>
-    {
-
-        private long _id;
-        /// <summary>
-        /// 21100100 Идентификатор (ID)
-        /// </summary>
-        [PrimaryKey(AttributeID = 21100100)]
-        public long Id
-        {
-            get
-            {
-                CheckPropertyInited("Id");
-                return _id;
-            }
-            set
-            {
-                _id = value;
-                NotifyPropertyChanged("Id");
-            }
-        }
-
-
-        private long? _groupid;
-        /// <summary>
-        /// 21100200 Идентификатор группы (GROUP_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21100200)]
-        public long? GroupId
-        {
-            get
-            {
-                CheckPropertyInited("GroupId");
-                return _groupid;
-            }
-            set
-            {
-                _groupid = value;
-                NotifyPropertyChanged("GroupId");
-            }
-        }
-
-
-        private long? _factorid;
-        /// <summary>
-        /// 21100300 Идентификатор фактора (FACTOR_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21100300)]
-        public long? FactorId
-        {
-            get
-            {
-                CheckPropertyInited("FactorId");
-                return _factorid;
-            }
-            set
-            {
-                _factorid = value;
-                NotifyPropertyChanged("FactorId");
-            }
-        }
-
-
-        private string _valuefactor;
-        /// <summary>
-        /// 21100400 Значение фактора (VALUE_FACTOR)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21100400)]
-        public string ValueFactor
-        {
-            get
-            {
-                CheckPropertyInited("ValueFactor");
-                return _valuefactor;
-            }
-            set
-            {
-                _valuefactor = value;
-                NotifyPropertyChanged("ValueFactor");
-            }
-        }
-
-
-        private decimal? _metkafactor;
-        /// <summary>
-        /// 21100500 Значение метки (METKA_FACTOR)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21100500)]
-        public decimal? MetkaFactor
-        {
-            get
-            {
-                CheckPropertyInited("MetkaFactor");
-                return _metkafactor;
-            }
-            set
-            {
-                _metkafactor = value;
-                NotifyPropertyChanged("MetkaFactor");
             }
         }
 
@@ -9951,12 +9747,12 @@ namespace ObjectModel.KO
         }
 
 
-        private ObjectModel.Directory.ES.ReferenceItemCodeType _type_Code;
+        private ObjectModel.Directory.KO.ModelDictionaryType _type_Code;
         /// <summary>
         /// 26400300 Тип (справочный код) (TYPE_CODE)
         /// </summary>
         [RegisterAttribute(AttributeID = 26400300)]
-        public ObjectModel.Directory.ES.ReferenceItemCodeType Type_Code
+        public ObjectModel.Directory.KO.ModelDictionaryType Type_Code
         {
             get
             {
@@ -10058,12 +9854,12 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _calculationvalue;
+        private decimal _calculationvalue;
         /// <summary>
         /// 26500400 Значение для расчета (CALCULATION_VALUE)
         /// </summary>
         [RegisterAttribute(AttributeID = 26500400)]
-        public decimal? CalculationValue
+        public decimal CalculationValue
         {
             get
             {
@@ -10440,6 +10236,245 @@ namespace ObjectModel.KO
             {
                 _filter = value;
                 NotifyPropertyChanged("Filter");
+            }
+        }
+
+
+        private long? _dictionaryid;
+        /// <summary>
+        /// 26900500 Идентификатор справочника (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900500)]
+        public long? DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private string _dictionaryvalues;
+        /// <summary>
+        /// 26900600 Значения справочника (DICTIONARY_VALUES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900600)]
+        public string DictionaryValues
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryValues");
+                return _dictionaryvalues;
+            }
+            set
+            {
+                _dictionaryvalues = value;
+                NotifyPropertyChanged("DictionaryValues");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 270 Справочники группировки (KO_GROUPING_DICTIONARIES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 270)]
+    [Serializable]
+    public partial class OMGroupingDictionary : OMBaseClass<OMGroupingDictionary>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 27000100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 27000100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private string _name;
+        /// <summary>
+        /// 27000200 Имя (NAME)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27000200)]
+        public string Name
+        {
+            get
+            {
+                CheckPropertyInited("Name");
+                return _name;
+            }
+            set
+            {
+                _name = value;
+                NotifyPropertyChanged("Name");
+            }
+        }
+
+
+        private string _type;
+        /// <summary>
+        /// 27000300 Тип (TYPE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27000300)]
+        public string Type
+        {
+            get
+            {
+                CheckPropertyInited("Type");
+                return _type;
+            }
+            set
+            {
+                _type = value;
+                NotifyPropertyChanged("Type");
+            }
+        }
+
+
+        private ObjectModel.Directory.ES.ReferenceItemCodeType _type_Code;
+        /// <summary>
+        /// 27000300 Тип (справочный код) (TYPE_CODE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27000300)]
+        public ObjectModel.Directory.ES.ReferenceItemCodeType Type_Code
+        {
+            get
+            {
+                CheckPropertyInited("Type_Code");
+                return this._type_Code;
+            }
+            set
+            {
+                string descr = value.GetEnumDescription();
+
+                if (string.IsNullOrEmpty(descr))
+                {
+                    if (string.IsNullOrEmpty(_type))
+                    {
+                         _type = descr;
+                    }
+                }
+                else
+                {
+                     _type = descr;
+                }
+
+                this._type_Code = value;
+                NotifyPropertyChanged("Type");
+                NotifyPropertyChanged("Type_Code");
+            }
+        }
+
+    }
+}
+
+namespace ObjectModel.KO
+{
+    /// <summary>
+    /// 271 Справочники группировки. Значения справочников (KO_GROUPING_DICTIONARIES_VALUES)
+    /// </summary>
+    [RegisterInfo(RegisterID = 271)]
+    [Serializable]
+    public partial class OMGroupingDictionariesValues : OMBaseClass<OMGroupingDictionariesValues>
+    {
+
+        private long _id;
+        /// <summary>
+        /// 27100100 Идентификатор (ID)
+        /// </summary>
+        [PrimaryKey(AttributeID = 27100100)]
+        public long Id
+        {
+            get
+            {
+                CheckPropertyInited("Id");
+                return _id;
+            }
+            set
+            {
+                _id = value;
+                NotifyPropertyChanged("Id");
+            }
+        }
+
+
+        private long _dictionaryid;
+        /// <summary>
+        /// 27100200 ИД справочника (DICTIONARY_ID)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27100200)]
+        public long DictionaryId
+        {
+            get
+            {
+                CheckPropertyInited("DictionaryId");
+                return _dictionaryid;
+            }
+            set
+            {
+                _dictionaryid = value;
+                NotifyPropertyChanged("DictionaryId");
+            }
+        }
+
+
+        private string _value;
+        /// <summary>
+        /// 27100300 Значение (VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27100300)]
+        public string Value
+        {
+            get
+            {
+                CheckPropertyInited("Value");
+                return _value;
+            }
+            set
+            {
+                _value = value;
+                NotifyPropertyChanged("Value");
+            }
+        }
+
+
+        private string _groupingvalue;
+        /// <summary>
+        /// 27100400 Значение для группировки (GROUPING_VALUE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 27100400)]
+        public string GroupingValue
+        {
+            get
+            {
+                CheckPropertyInited("GroupingValue");
+                return _groupingvalue;
+            }
+            set
+            {
+                _groupingvalue = value;
+                NotifyPropertyChanged("GroupingValue");
             }
         }
 

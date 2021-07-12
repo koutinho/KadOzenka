@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
         private int _currentRowIndex;
         private PreviousToursService PreviousToursService { get; }
         private FactorsService FactorsService { get; }
-        private ModelingService ModelingService { get; }
+        private ModelService ModelService { get; }
         protected override string ReportName => "Состав данных о результатах кадастровой оценки предыдущих туров";
         protected override string ProcessName => nameof(PreviousToursReportProcess);
         private List<FactorsService.PricingFactors> GroupedFactors { get; set; }
@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
         {
 	        PreviousToursService = new PreviousToursService();
             FactorsService = new FactorsService();
-            ModelingService = new ModelingService();
+            ModelService = new ModelService();
 
             _excelFile = new ExcelFile();
             _mainWorkSheet = _excelFile.Worksheets.Add("Лист 1");
@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.LongProcess.Reports.PricingFactorsComposition.Reports
             TaskIdsStr = string.Join(',', inputParameters.TaskIds);
 
 	        GroupId = inputParameters.GroupId;
-	        ModelId = ModelingService.GetActiveModelEntityByGroupId(GroupId)?.Id;
+	        ModelId = ModelService.GetActiveModelEntityByGroupId(GroupId)?.Id;
 
             GroupedFactors = ModelId == null
 		        ? new List<FactorsService.PricingFactors>()
