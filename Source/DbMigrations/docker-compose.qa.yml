@@ -13,6 +13,17 @@ services:
       - POSTGRES_USER=postgres
     ports:
       - 5441:5432
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@genix.pro"
+      PGADMIN_DEFAULT_PASSWORD: "123456"
+    ports:
+      - "8041:80"
+    volumes:
+      - pgadmin4:/var/lib/pgadmin
 volumes:
   postgres_data_kadozenka_miomo_qa:
   pgadmin4:

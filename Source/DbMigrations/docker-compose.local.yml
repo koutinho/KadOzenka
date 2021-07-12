@@ -21,7 +21,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: "admin@genix.pro"
       PGADMIN_DEFAULT_PASSWORD: "123456"
     ports:
-      - "8032:80"
+      - "8039:80"
     volumes:
       - pgadmin4:/var/lib/pgadmin
 volumes:
