@@ -123,12 +123,12 @@ namespace KadOzenka.Dal.Modeling
 				return 0;
 
 			int deletedMarksCount;
-			var dictionary = GetDictionaryById(id.Value);
+			var dictionary = ModelDictionaryRepository.GetById(id.Value, null);
 			using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
 			{
 				deletedMarksCount = DeleteMarks(id);
 
-				dictionary.Destroy();
+				dictionary?.Destroy();
 
 				ts.Complete();
 			}
@@ -302,7 +302,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public int DeleteMarks(long? dictionaryId)
 		{
-			if (dictionaryId == null)
+			if (dictionaryId.GetValueOrDefault() == 0)
 				return 0;
 
 			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
