@@ -51,6 +51,7 @@ using Kendo.Mvc.Extensions;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
+using ObjectModel.Directory.Ko;
 using StringExtensions = Core.Shared.Extensions.StringExtensions;
 
 namespace KadOzenka.Web.Controllers
@@ -455,7 +456,7 @@ namespace KadOzenka.Web.Controllers
                     throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
                 }
 
-                dto.DictionaryId = CreateDictionary(factorModel.DictionaryName, factorModel.FactorId, factorModel.ModelId);
+                dto.DictionaryId = CreateDictionary(factorModel.DictionaryName, factorModel.FactorId, factorModel.MarkType, factorModel.ModelId);
                 ModelFactorsService.AddAutomaticFactor(dto);
                 ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
@@ -480,9 +481,13 @@ namespace KadOzenka.Web.Controllers
             }
             else
             {
-	            if (dto.DictionaryId != null)
+	            if (factorModel.DictionaryId != null)
 	            {
-		            UpdateDictionary(dto.DictionaryId.Value, factorModel.DictionaryName, factorModel.ModelId);
+		            UpdateDictionary(factorModel.DictionaryId.Value, factorModel.DictionaryName, factorModel.ModelId);
+	            }
+	            else
+	            {
+		            dto.DictionaryId = CreateDictionary(factorModel.DictionaryName, factorModel.FactorId, factorModel.MarkType, factorModel.ModelId);
 	            }
                 var mustResetTrainingResult = ModelFactorsService.UpdateAutomaticFactor(dto);
                 if (mustResetTrainingResult)
@@ -682,9 +687,9 @@ namespace KadOzenka.Web.Controllers
             var model = ModelService.GetModelEntityById(manualFactorModel.GeneralModelId);
             dto.Type = model.AlgoritmType_Code;
 
-            if (manualFactorModel.Id == -1)
+            if (manualFactorModel.IsNewFactor)
             {
-	            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.GeneralModelId);
+	            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.MarkType, manualFactorModel.GeneralModelId);
 	            ModelFactorsService.AddManualFactor(dto);
             }
             else
@@ -692,6 +697,10 @@ namespace KadOzenka.Web.Controllers
 	            if (dto.DictionaryId != null)
 	            {
 		            UpdateDictionary(dto.DictionaryId.Value, manualFactorModel.DictionaryName, manualFactorModel.GeneralModelId);
+	            }
+	            else
+	            {
+		            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.MarkType, manualFactorModel.GeneralModelId);
 	            }
                 ModelFactorsService.UpdateManualFactor(dto);
             }
@@ -1380,11 +1389,14 @@ namespace KadOzenka.Web.Controllers
             return generalQuery;
         }
 
-        private long? CreateDictionary(string dictionaryName, long? factorId, long? modelId)
+        private long? CreateDictionary(string dictionaryName, long? factorId, MarkType markType, long? modelId)
         {
 	        if (string.IsNullOrWhiteSpace(dictionaryName)) 
 		        return null;
-	        
+
+	        if (markType != MarkType.Default)
+		        throw new Exception($"Словарь может быть добавлен только для фактора с типом метки '{MarkType.Default.GetEnumDescription()}'");
+
 	        var attribute = RegisterCacheWrapper.GetAttributeData(factorId.GetValueOrDefault());
 	        var modelDictionariesIds = GetModelDictionariesIds(modelId);
 
