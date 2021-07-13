@@ -10,6 +10,8 @@
 docker-compose -f docker-compose.local.yml up -d
 docker-compose -f docker-compose.debug.yml up -d
 docker-compose -f docker-compose.qa.yml up -d
+docker-compose -f docker-compose.test.yml up -d
+docker-compose -f docker-compose.regres.yml up -d
 docker-compose -f docker-compose.demo.yml up -d
 docker-compose -f docker-compose.uat.yml up -d
 
