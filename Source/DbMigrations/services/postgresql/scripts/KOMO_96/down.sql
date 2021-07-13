@@ -14,5 +14,5 @@ alter table KO_MODEL_FACTOR  drop column k;
 delete from core_register_attribute where id=21001700;
 
 
-update core_register_attribute set name='Вес фактора' where id = 21000500;
+update core_register_attribute set name='Р’РµСЃ С„Р°РєС‚РѕСЂР°' where id = 21000500;
 
