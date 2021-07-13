@@ -309,15 +309,15 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception(Messages.ObjectFormationProcessAlreadyAdded);
 
             var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
-			//TODO код для отладки
-			new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-			{
-				Status_Code = Status.Added,
-				UserId = SRDSession.GetCurrentUserId(),
-				Parameters = inputParameters.SerializeToXml()
-			}, new CancellationToken());
+			////TODO код для отладки
+			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
 
-			//ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
+			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
             return Ok();
         }
