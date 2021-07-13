@@ -258,7 +258,7 @@ namespace KadOzenka.Dal.Modeling
 
 							var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
 							if (coefficientFromDb == null)
-								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут с ИД {column.AttributeStr}");
+								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут '{RegisterCache.GetAttributeData(attributeId).Name}'");
 
 							if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
 							{

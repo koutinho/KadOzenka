@@ -30,38 +30,32 @@ function initMatchBtn(isFirstElementInComparisonBlockReadonly) {
         iconClass: "my-custom-icon-class",
         enable: false,
         click: function (e) {
-            var treeView = $("#treeview").data('kendoTreeView');
-            var listBox = $("#columnsListBox").data('kendoListBox');
-            if (treeView && listBox) {
-                var treeViewData = treeView.dataItem(treeView.select());
-                //if (!isForMarketObjects)
-                //{
-                //    if (treeViewData != null) {
-                //        mainRegisterId = treeViewData.parentId;
-                //    }
-                //}
-                var listBoxData = listBox.dataItem(listBox.select());
-                if (treeViewData && listBoxData) {
-                    treeView.enable(treeView.select(), false);
-                    listBox.enable(listBox.select(), false);
-                    $("#matchButton").data('kendoButton').enable(false);
-                    var listView = $("#listView").data('kendoListView');
-                    listView.dataSource.add({
-                        IsKey: false,
-                        IsReadOnly: isFirstElementInComparisonBlockReadonly,
-                        ColumnName: listBoxData.Name,
-                        ColumnIndex: listBoxData.Id,
-                        ColumnId: listBoxData.Id,
-                        ColumnUid: listBoxData.uid,
-                        AttributeDescription: treeViewData.text,
-                        AttributeId: treeViewData.id,
-                        AttributeUid: treeViewData.uid
-                    });
-                    var loadBtn = $("#loadButton").data('kendoButton');
-                    if (loadBtn)
-                        loadBtn.enable(true);
-                }
-            }
+	        var attributesTreeView = $("#treeview").data('kendoTreeView');
+            var excelColumnsListBox = $("#columnsListBox").data('kendoListBox');
+            if (attributesTreeView && excelColumnsListBox) {
+		        var selectedAttribute = attributesTreeView.dataItem(attributesTreeView.select());
+                var selectedFileColumn = excelColumnsListBox.dataItem(excelColumnsListBox.select());
+		        if (selectedAttribute && selectedFileColumn) {
+			        attributesTreeView.enable(attributesTreeView.select(), false);
+			        excelColumnsListBox.enable(excelColumnsListBox.select(), false);
+			        $("#matchButton").data('kendoButton').enable(false);
+                    var matchedParametersList = $("#listView").data('kendoListView');
+                    matchedParametersList.dataSource.add({
+				        IsKey: false,
+				        IsReadOnly: isFirstElementInComparisonBlockReadonly,
+				        ColumnName: selectedFileColumn.Name,
+				        ColumnIndex: selectedFileColumn.Id,
+				        ColumnId: selectedFileColumn.Id,
+				        ColumnUid: selectedFileColumn.uid,
+				        AttributeDescription: selectedAttribute.text,
+				        AttributeId: selectedAttribute.id,
+				        AttributeUid: selectedAttribute.uid
+			        });
+			        var loadBtn = $("#loadButton").data('kendoButton');
+			        if (loadBtn)
+				        loadBtn.enable(true);
+		        }
+	        }
         }
     });
 }
@@ -83,11 +77,7 @@ function initComparisonBlock() {
             var loadBtn = $("#loadButton").data('kendoButton');
             if (!loadBtn)
                 return;
-            if (dataSource.data().length === 0) {
-                loadBtn.enable(false);
-            } else {
-                loadBtn.enable(true);
-            }
+            $("#loadButton").data('kendoButton').enable(dataSource.data().length !== 0);
         }
     }).data("kendoListView");
 }
@@ -141,10 +131,10 @@ function initAttributesTree() {
                 e.preventDefault();
                 return;
             }
-            var listBox = $("#columnsListBox").data('kendoListBox');
-            if (listBox) {
-                var selected = listBox.select();
-                var data = listBox.dataItem(selected);
+            var columnsFromExcel = $("#columnsListBox").data('kendoListBox');
+            if (columnsFromExcel) {
+                var selected = columnsFromExcel.select();
+                var data = columnsFromExcel.dataItem(selected);
                 if (data) {
                     $("#matchButton").data('kendoButton').enable(true);
                 }
