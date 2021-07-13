@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link href="./szc.css" rel="stylesheet" type="text/css" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+      .main-page {
+        height: 95%;
+      }
+      .panel {
+        height: 5%;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-page aaaa" style="border: 1px solid blue">
+      <div id="rusgis" class="main"></div>
+    </div>
+    <div class="panel">
+      <button id="show" type="button" disabled>Показать геометрию</button>
+      <button id="clear" type="button" disabled>Очистить геометрию</button>
+      <button id="get" type="button" disabled>
+        Получить текущую геометрию
+      </button>
+      <button id="extent" type="button" disabled>
+        Получить текущий экстент
+      </button>
+      <button id="resize" type="button" disabled>Перерисовать карту</button>
+    </div>
+    <script type="text/javascript" src="./szc.umd.min.js"></script>
+    <script type="text/javascript">
+      window.onload = function () {
+        var config = {
+          apiKey: "1B1A308B-2FA9-44A5-8ACC-DAC95D32FA61",
+          pageName: "vismiomo-map-js-api",
+        };
+
+        var geoportal = null;
+        window.szc.geoportal.init("#rusgis", config, onConfigReady);
+        function onConfigReady(geoportalApi) {
+          var panelButtons = document.querySelectorAll(".panel button");
+          panelButtons.forEach((button) => (button.disabled = false));
+          geoportal = geoportalApi;
+          geoportal.onMapClick((event) => {
+            window.console.log('onClick ' + event);
+          });
+        }
+
+        show.onclick = function () {
+          geoportal.showGeometry(
+            '{"type":"Polygon", "crs":{"type":"name","properties":{"name":"EPSG:3857"}},"coordinates": [[[132.476135, 43.635818], [132.545624, 43.635818], [132.572548, 43.59944], [132.545624, 43.563062], [132.476135, 43.563062], [132.449211, 43.59944], [132.476135, 43.635818]]]}',
+            true
+          );
+        };
+        clear.onclick = function () {
+          geoportal.clearGeometry();
+        };
+        get.onclick = function () {
+          geoportal.getCurrentGeometry((geometry) => {
+            alert(geometry);
+          });
+        };
+        extent.onclick = function () {
+          alert(geoportal.getExtent("EPSG:4326"));
+        };
+        resize.onclick = function () {
+          geoportal.updateMapSize();
+        };
+      };
+    </script>
+  </body>
+</html>

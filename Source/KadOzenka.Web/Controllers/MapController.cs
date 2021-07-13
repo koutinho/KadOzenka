@@ -425,5 +425,10 @@ namespace KadOzenka.Web.Controllers
             return 0;
         }
 
+        public IActionResult Vismio()
+        {
+	        return View();
+        }
+
     }
 }
