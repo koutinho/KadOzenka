@@ -244,6 +244,12 @@ namespace KadOzenka.Dal.Modeling
 			return query;
 		}
 
+		public List<long> GetAttributesWhichMustBeUnActive()
+		{
+			return RegisterCache.GetAttributeDataList(MarketPlaceBusiness.Common.Consts.RegisterId)
+				.Select(x => x.Id).ToList();
+		}
+
 		public void AddAutomaticFactor(AutomaticModelFactorDto dto)
 		{
 			ValidateAutomaticFactor(dto);
@@ -458,6 +464,10 @@ namespace KadOzenka.Dal.Modeling
 		private void ValidateAutomaticFactor(AutomaticModelFactorDto factor)
 		{
 			ValidateBaseFactor(factor);
+
+			var activeForbiddenAttributes = GetAttributesWhichMustBeUnActive();
+			if (activeForbiddenAttributes.Contains(factor.FactorId.GetValueOrDefault()))
+				throw new Exception("Атрибут недоступен для активации");
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)

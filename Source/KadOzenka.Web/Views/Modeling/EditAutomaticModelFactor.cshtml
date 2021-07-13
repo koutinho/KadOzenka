@@ -33,9 +33,7 @@
             @Html.CustomLabelFor(x => x.FactorId)
         </div>
         <div class="col-sm-9">
-            @(Html.Kendo().DropDownListFor(x => x.FactorId)
-                .HtmlAttributes(new {style = "width: 100%;"})
-                .Enable(Model.Id == -1))
+            @Html.KendoDropDownListTreeWithButton(m => m.FactorId, Model.Attributes, isReadonly: !Model.IsNewFactor)
         </div>
     </div>
     <div class="form-group">
@@ -88,27 +86,32 @@
 
 
 <script>
-    $(document).ready(function () {
+    var marketObjectRegisterAttributeIds = [];
+
+
+    $(document).ready(function() {
         $('#save').on('click', saveFactor);
         $('#cancel').on('click', closeWindow);
+        
+        @foreach (var d in Model.UnActiveAttributeIds)
+        {
+            @:marketObjectRegisterAttributeIds.push("@d");
+        }
 
-        initAttributes();
+        var factorsTree = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
+        factorsTree.bind("change", setActiveFlagState);
+        setActiveFlagState();
     });
 
-    //иногда лейбл загораживает значение в списке и это значение невозможно выбрать
-    function hideOptionalLabel() {
-        $(".k-list-optionlabel").hide();
-    }
 
 
-
+   
 
     function saveFactor(e) {
         e.preventDefault();
         kendo.ui.progress($('body'), true);
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
-        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownList").value();
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),
@@ -133,57 +136,18 @@
     }
 
 
-    function initAttributes() {
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("GetAllAttributes", "Modeling")',
-            data: { modelId: '@Model.ModelId' },
-            dataType: "json",
-            traditional: true,
-            success: function(response) {
-                var data = response.map(function(item) {
-                    return {
-                        Text: item.Text,
-                        Value: item.Value,
-                        items: item.Items.map(function(i) {
-                            return {
-                                Text: i.Text,
-                                Value: i.Value
-                            }
-                        })
-                    }
-                });
-                var attribute = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
-                if (attribute) {
-                    attribute.setDataSource(data);
-                    attribute.value('');
-                } else {
-                    attribute = $('#@nameof(Model.FactorId)').kendoDropDownTree({
-                        dataTextField: 'Text',
-                        dataValueField: 'Value',
-                        dataSource: data,
-                        filter: "contains"
-                    }).data("kendoDropDownTree");
-                    //нельзя выбирать корневой элемент дерева (таблицу)
-                    var attributeTableTreeSelect = function(e){
-                        if(e.sender.dataItem(e.node).hasChildren) {
-                            e.preventDefault();
-                        }
-                    };
-                    attribute.treeview.bind("select", attributeTableTreeSelect);
-                }
-                var factorId = '@Model.FactorId';
-                if (factorId)
-                    attribute.value(factorId);
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
+    function setActiveFlagState() {
+        var factorId = $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value();
+        if(!factorId)
+            factorId = Number('@Model.FactorId');
+        var isActiveElement = $('#@nameof(Model.IsActive)');
+        if (marketObjectRegisterAttributeIds.includes(factorId)) {
+            isActiveElement.prop("checked", false);
+            isActiveElement.prop("disabled", true);
+        } else {
+            isActiveElement.prop("checked", true);
+            isActiveElement.prop("disabled", false);
+        }
     }
 
 
