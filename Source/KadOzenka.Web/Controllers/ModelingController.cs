@@ -1122,7 +1122,7 @@ namespace KadOzenka.Web.Controllers
             var source = new List<object> { registerInfo };
             var exceptions = new List<long>
             {
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),

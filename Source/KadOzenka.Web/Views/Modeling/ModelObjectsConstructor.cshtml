@@ -1,4 +1,5 @@
 ﻿@using KadOzenka.Web.Models.Modeling
+@using ObjectModel.Modeling
 
 
 <form id="importForm">
@@ -9,11 +10,8 @@
 
 
 
-
 <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
 <link rel="stylesheet" href="~/css/data-import-by-template.css" />
-
-
 
 
 
@@ -24,7 +22,8 @@
 			<div>
 				<span>
 					<span>
-                        <input type="checkbox" #=IsKey ? checked='checked' : '' # data-bind="checked: IsKey" disabled='disabled'/>
+                        <input type="checkbox" #=IsKey ? checked='checked' : '' 
+                                # onclick="checkboxChange(this)" />
                     </span>
 					<span>#:ColumnName#</span>
 					<span>-</span>
@@ -109,21 +108,13 @@
     }
 
     function showConfirmationAboutFileStructure(e) {
-        var upload = e.sender;
-        Common.UI.ShowConfirm({
-            title: 'Подтверждение',
-            content: 'Для корректной загрузки данных соблюдайте следующие требования к загружаемому файлу:' +
-                '<br/> 1 столбец - ИД',
-            captionYes: "Загрузить",
-            captionNo: "Отменить",
-            onSuccess: function() {
+        Common.UI.ShowInfo({
+            title: 'Загрузка файла с объектами модели',
+            content: 'Для обновления объектов укажите ключевое поле (столбец "Индентификатор"). Если ключ не указан, то объекты будут созданы как новые.<br>',
+            icon: 'ok',
+            onSuccess: function () {
+                var upload = e.sender;
                 upload.upload();
-            },
-            onFail: function() {
-                upload.clearAllFiles();
-                var window = $(this).closest('[data-role=window]').data('kendoWindow');
-                window.close();
-                window.destroy();
             }
         });
     }
@@ -140,20 +131,6 @@
                 $("#backgroundDownloadCheckbox").prop('checked', false);
             }
             resetData();
-            if (columnsListBox.items() != null) {
-                var idColumn = columnsListBox.items()[0];
-                columnsListBox.enable(idColumn, false);
-                var idData = columnsListBox.dataItem(idColumn);
-                var matchingListView = $("#listView").data('kendoListView');
-                matchingListView.dataSource.add({
-                    IsKey: true,
-                    IsReadOnly: true,
-                    ColumnName: idData.Name,
-                    ColumnIndex: idData.Id,
-                    AttributeDescription: 'ИД',
-                    AttributeId: 70200100
-                });
-            }
         }
     }
 
@@ -199,18 +176,28 @@
 
 
     function saveChanges() {
-        kendo.ui.progress($('#importForm'), true);
-        $("#loadButton").data('kendoButton').enable(false);
         var listView = $("#listView").data('kendoListView');
         var data = listView.dataSource.data();
         var columns = $.map(data,
             function(item) {
                 return {
+                    IsKey: item.IsKey,
                     ColumnIndex: item.ColumnIndex,
                     AttributeId: item.AttributeId
                 };
             });
 
+        var keyColumns = columns.filter(x => x.IsKey);
+        console.log('keyColumns', keyColumns);
+        if (keyColumns.length > 1) {
+            Common.ShowError("Для обновления должен быть указан один ключ (Индентификатор)");
+            return;
+        }
+        else if(keyColumns.length == 1 && keyColumns[0].AttributeId != '@OMModelToMarketObjects.GetColumnAttributeId(x => x.Id)')
+        {
+            Common.ShowError("Для обновления в качестве ключа должен быть выбран антибут 'Идентификатор'");
+            return;
+        }
         var file = $('#files').data('kendoUpload').getFiles()[0];
         var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
 
@@ -221,6 +208,7 @@
             formData.append("columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
             formData.append("columns[" + i + "].AttributeId", columns[i].AttributeId);
         }
+        kendo.ui.progress($('#importForm'), true);
         $.ajax({
             type: 'POST',
             url: '@Url.Action("ChangeModelObjects", "Modeling")',
@@ -250,9 +238,8 @@
             error: function(response) {
                 Common.ShowError(response.responseText);
             },
-            complete: function(data) {
+            complete: function() {
                 kendo.ui.progress($('#importForm'), false);
-                $("#loadButton").data('kendoButton').enable(true);
             }
         });
     }

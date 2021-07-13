@@ -1,7 +1,7 @@
 ﻿@using ObjectModel.Directory
 @model KadOzenka.Web.Models.Modeling.ModelingObjectsModel
 
-<!-- Модальное окно для обновления объектов -->
+<!-- Модальное окно для загрузки файла с объектами -->
 <div id="constructorModal" style="display: none;">
 </div>
 
@@ -113,9 +113,9 @@
         <div id="gridWithPreviousTourCoefficients"></div>
     </div>*@
     <div class="form-group">
-        <a class="k-button k-button-icon" id="updateBtn" style="width:250px;">
+        <a class="k-button k-button-icon" id="downloadBtn" style="width:250px;">
             <span class="k-icon k-i-upload" style="padding-right: 30%"></span>
-            Обновить объекты
+            Загрузить файл
         </a>
     </div>
     <div class="form-group">
@@ -203,7 +203,7 @@
         updateGrid();
         //initFactorsGrid();
 
-        $('#updateBtn').on('click', showModelObjectsConstructor);
+        $('#downloadBtn').on('click', showModelObjectsConstructor);
         $('#modelObjectsDiagramBtn').on('click', showModelObjectsDiagram);
     });
 
@@ -248,7 +248,6 @@
             url: '@Url.Action("GetObjectsForModel", "Modeling", new {modelId = Model.Id})',
             success: function (result) {
                 if (!result.successfulModels || result.successfulModels.length == 0) {
-                    $("#updateBtn").addClass('k-state-disabled');
                     $("#modelObjectsDiagramBtn").addClass('k-state-disabled');
                 }
                 generateGrid(result.successfulModels, successfulObjectsGridId,
@@ -814,7 +813,7 @@
             success: function (response) {
                 $("#constructorModal").html(response);
                 var modal = $("#constructorModal");
-                ShowModal(modal, '50%', '80%', "Обновление объектов модели");
+                ShowModal(modal, '50%', '80%', "Загрузка файла с объектами модели");
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
