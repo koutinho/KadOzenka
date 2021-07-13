@@ -1,4 +1,4 @@
-﻿--справочник "Сегмент рынка"
+--справочник "Сегмент рынка"
 INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (744, 114, '104', 'Апартаменты', null, null, null, null, null, null, 'Appartment');
 INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (745, 114, '2', 'Гаражи', null, null, null, null, null, null, 'Parking');
 INSERT INTO public.core_reference_item (itemid, referenceid, code, value, short_title, is_archives, user_name, date_end_change, date_s, flag, name) VALUES (746, 114, '3', 'Гостиницы', null, null, null, null, null, null, 'Hotel');

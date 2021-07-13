@@ -7,12 +7,12 @@ update core_reference set simple_values =
 '[
 	{
 		"Id": 1,
-		"Value": "Атрибут кода группы",
+		"Value": "РђС‚СЂРёР±СѓС‚ РєРѕРґР° РіСЂСѓРїРїС‹",
 		"Name": "CodeGroupAttribute"
 	},
 	{
 		"Id": 2,
-		"Value": "Атрибут кадастрового квартала",
+		"Value": "РђС‚СЂРёР±СѓС‚ РєР°РґР°СЃС‚СЂРѕРІРѕРіРѕ РєРІР°СЂС‚Р°Р»Р°",
 		"Name": "CodeQuarterAttribute"
 	}
 ]'
