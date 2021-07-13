@@ -59,10 +59,10 @@ namespace KadOzenka.LongProcessService
         public static IWebHostBuilder CreateWebHostBuilder(string[] args, IConfigurationRoot config) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseSerilog()
-                .StartWorkerChecker(config)
                 .UseKoConfigManager(config)
                 .UseWebClientsConfigManager(config)
                 .UseCoreConfigManager(config)
+                .StartWorkerChecker(config)
                 .UseStartup<Startup>();
     }
 }

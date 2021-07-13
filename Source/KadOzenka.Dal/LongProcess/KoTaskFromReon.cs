@@ -99,7 +99,7 @@ namespace KadOzenka.Dal.LongProcess
 
             var reportId = reportService.SaveReport();
             var message = $"{info}\n" + $@"<a href=""{reportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
-            var roleId = ConfigurationManager.ReonConfig.RoleIdForNotification?.ParseToLongNullable();
+            var roleId = ConfigurationManager.WebClientsConfig.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, "Получение заданий на оценку из ИС РЕОН", message, roleId);
 
             WorkerCommon.SetProgress(processQueue, 100);
@@ -206,7 +206,7 @@ namespace KadOzenka.Dal.LongProcess
 
         private void ProcessFile(DocUrl fileInfo, long taskId)
         {
-            var url = ConfigurationManager.ReonConfig.BaseUrl + "/RosreestrData/" + fileInfo.Url;
+            var url = ConfigurationManager.WebClientsConfig.BaseUrl + "/RosreestrData/" + fileInfo.Url;
             var data = GetFileData(url);
             var stream = new MemoryStream(data);
 

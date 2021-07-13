@@ -1,38 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.Register;
+using Core.Register.LongProcessManagment;
+using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.Oks;
 using KadOzenka.WebClients.RgisClient.Api;
 using KadOzenka.WebClients.RgisClient.Client;
 using KadOzenka.WebClients.RgisClient.Model;
+using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.Gbu;
 using ObjectModel.KO;
 using Serilog;
+using OperationCanceledException = System.OperationCanceledException;
 
 namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 {
-	public struct ReportData
+	public struct ReportHeaderData
 	{
 		public string Header { get; set; }
 		public long AttributeId { get; set; }
 		public int ColumnNumber { get; set; }
-	} 
+		public string LayerName { get; set; }
+	}
 
-	public class GeoFactorsFromRgisLongProcess
+	public struct ReportData
+	{
+		public double Distance { get; set; }
+		public string ErrorMessage { get; set; }
+		public int ColumnNumber { get; set; }
+	}
+
+	public struct ErrorData
+	{
+		public string Message { get; set; }
+		public string CadNumber { get; set; }
+		public ObjectType ObjType { get; set; }
+	}
+
+	public class GeoFactorsFromRgisLongProcess: LongProcess
 	{
 		private readonly ILogger _log = Log.ForContext<GeoFactorsFromRgisLongProcess>();
-		private object lockMy = new ();
-		private List<ReportData> zuReportData =  new ();
-		private List<ReportData> oksReportData =  new ();
+		private readonly object _lockMy = new ();
+		private List<ReportHeaderData> _zuReportHeader =  new ();
+		private List<ReportHeaderData> _oksReportHeader =  new ();
+		private readonly int knHeaderColumnNumber = 0;
+		private static string LongProcessName = "GeoFactorsFromRgisLongProcess";
 
+		int _unitCount;
+		int _unitProcessed;
 
 		private readonly RgisDataApi _rgisDataApi;
 		public GeoFactorsFromRgisLongProcess()
@@ -40,32 +67,60 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			_rgisDataApi = new RgisDataApi();
 		}
 
-		public void StartProcess(long taskId, List<long> idsFactors)
+		public static void AddProcessToQueue(GeoFactorsFromRgis inputParameters)
+		{
+			LongProcessManager.AddTaskToQueue(LongProcessName, parameters: inputParameters.SerializeToXml());
+		}
+
+		public override void StartProcess(OMProcessType processType, OMQueue processQueue,
+			CancellationToken cancellationToken)
 		{
 			var messageSubject = "Получение географических факторов из РГИС";
 
-			var task = GetTask(taskId);
+			GeoFactorsFromRgis inputParameters = new GeoFactorsFromRgis();
+
+			if (!string.IsNullOrWhiteSpace(processQueue.Parameters))
+			{
+				inputParameters = processQueue.Parameters.DeserializeFromXml<GeoFactorsFromRgis>();
+			}
+
+			if (inputParameters == null || inputParameters.TaskId == 0)
+			{
+				WorkerCommon.SetMessage(processQueue, Common.Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
+				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
+				NotificationSender.SendNotification(processQueue, messageSubject,
+					"Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
+				return;
+			}
+
+			WorkerCommon.SetProgress(processQueue, 0);
+			var task = GetTask(inputParameters.TaskId);
 			var document = GetDocument(task.DocumentId);
 			var units = GetUnits(task.Id);
+			_unitCount = units.Count;
+
+			using var reportService = new GeoFactorsReport(messageSubject);
 
 
-			using var reportService = new GeoFactorsReport("Получение географических факторов из РГИС");
-			reportService.AddHeaders(new List<string> {"Кадастровый номер"});
 
-
-			var zuUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Stead).ToList();
-			var zuLayers = GetLayersZuOnlySelected(idsFactors);
-			var oksUnits = units.Where(x => x.PropertyType_Code != PropertyTypes.Stead).ToList();
-			var oksLayers = GetLayersOksOnlySelected(idsFactors);
+			var zuUnits = units.Where(x => x.PropertyType_Code == PropertyTypes.Stead).DistinctBy(x => x.CadastralNumber).ToList();
+			var zuLayers = GetLayersZuOnlySelected(inputParameters.IdFactors);
+			var oksUnits = units.Where(x => x.PropertyType_Code != PropertyTypes.Stead).DistinctBy(x => x.CadastralNumber).ToList();
+			var oksLayers = GetLayersOksOnlySelected(inputParameters.IdFactors);
 			
 			SetReportHeaders(zuLayers, reportService, ObjectType.ZU);
+			SetReportHeaders(oksLayers, reportService, ObjectType.Oks);
 
 			var options = new ParallelOptions
 			{
 				MaxDegreeOfParallelism = 10,
-				CancellationToken = CancellationToken.None //todo replase LP
+				CancellationToken = cancellationToken
 			};
 
+
+			var zuReportData = new Dictionary<string, List<ReportData>>();
+			var oksReportData = new Dictionary<string, List<ReportData>>();
+			var errors = new List<ErrorData>();
 			
 			List<Task> tasks = new();
 			if (zuLayers.Count > 0 && zuUnits.Count > 0)
@@ -79,45 +134,70 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					{
 						try
 						{
+							options.CancellationToken.ThrowIfCancellationRequested();
 							int countParams = omUnits.Count * zuLayers.Count;
 							if (countParams > 1)
 							{
-								ApiResponse<ResponseData> response = _rgisDataApi.GetDistanceZuFactorsValue(new RequestData
-								{
-									KadNumbers = omUnits.Select(x => x.CadastralNumber).ToList(),
-									Layers = zuLayers.Select(x => x.LayerName).ToList()
-								});
+								ApiResponse<ResponseData> response = _rgisDataApi.GetDistanceZuFactorsValue(
+									new RequestData
+									{
+										KadNumbers = omUnits.Select(x => x.CadastralNumber).ToList(),
+										Layers = zuLayers.Select(x => x.LayerName).ToList()
+									});
 
 								PrepareResponseData(response.Data, zuUnits, zuLayers, document);
-
+								PrepareReportData(response.Data, _zuReportHeader, zuReportData, errors, ObjectType.ZU);
+								
 							}
 							else
 							{
-								ApiResponse<ResponseDataSingle> response = _rgisDataApi.GetDistanceZuFactorsValueSingle(new RequestData
-								{
-									KadNumbers = omUnits.Select(x => x.CadastralNumber).ToList(),
-									Layers = zuLayers.Select(x => x.LayerName).ToList()
-								});
+								ApiResponse<ResponseDataSingle> response = _rgisDataApi.GetDistanceZuFactorsValueSingle(
+									new RequestData
+									{
+										KadNumbers = omUnits.Select(x => x.CadastralNumber).ToList(),
+										Layers = zuLayers.Select(x => x.LayerName).ToList()
+									});
 
 								PrepareResponseData(response.Data, zuUnits, zuLayers, document);
+								PrepareReportData(response.Data, _zuReportHeader, zuReportData, errors, ObjectType.ZU);
 							}
-
+							UpdateProgress(processQueue, omUnits.Count);
+						}
+						catch (OperationCanceledException ex)
+						{
+							// only catch
 						}
 						catch (Exception e)
 						{
 							_log.Error(e, e.Message);
-							//report 
+							lock (_lockMy)
+							{
+								omUnits.ForEach(x =>
+								{
+									errors.Add(new ErrorData
+									{
+										CadNumber = x.CadastralNumber,
+										Message = e.Message,
+										ObjType = ObjectType.ZU
+									});
+								});
+							}
+							UpdateProgress(processQueue, omUnits.Count);
 						}
+						
 
 					});
 
-				});
+				}, cancellationToken);
 
 				 tasks.Add(zuTask);
 			}
 			else
 			{
-				_log.Debug("Импорт данных из Ргис для Зу не запущен");
+				_log
+					.ForContext("UnitsCount", zuUnits.Count)
+					.ForContext("LayersCount", zuLayers.Count)
+					.Warning("Импорт данных из Ргис для Зу не запущен, т.к нет Юнитов или слоев");
 			}
 
 			if (oksLayers.Count > 0 && oksUnits.Count > 0)
@@ -131,6 +211,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					{
 						try
 						{
+							options.CancellationToken.ThrowIfCancellationRequested();
 							int countParams = omUnits.Count * oksLayers.Count;
 							if (countParams > 1)
 							{
@@ -141,7 +222,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 								});
 
 								PrepareResponseData(response.Data, oksUnits, oksLayers, document);
-
+								PrepareReportData(response.Data, _oksReportHeader, oksReportData, errors, ObjectType.Oks);
 							}
 							else
 							{
@@ -152,23 +233,63 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 								});
 
 								PrepareResponseData(response.Data, oksUnits, oksLayers, document);
+								PrepareReportData(response.Data, _oksReportHeader, oksReportData, errors, ObjectType.Oks);
 							}
-
+							UpdateProgress(processQueue, omUnits.Count);
+						}
+						catch (OperationCanceledException ex)
+						{
+							// only catch
 						}
 						catch (Exception e)
 						{
 							_log.Error(e, e.Message);
-							//report 
+							lock (_lockMy)
+							{
+								omUnits.ForEach(x => {
+									errors.Add(new ErrorData
+									{
+										CadNumber = x.CadastralNumber,
+										Message = e.Message,
+										ObjType = ObjectType.Oks
+									});
+								});
+							}
+							UpdateProgress(processQueue, omUnits.Count);
 						}
 
 					});
-
-				});
+				}, cancellationToken);
 				tasks.Add(oksTask);
+			}
+			else
+			{
+				_log
+					.ForContext("UnitsCount", oksUnits.Count)
+					.ForContext("LayersCount", oksLayers.Count)
+					.Warning("Импорт данных из Ргис для Oks не запущен, т.к нет Юнитов или слоев");
 			}
 
 			Task.WaitAll(tasks.ToArray());
-			//ObjectType
+
+			var roleId = ConfigurationManager.WebClientsConfig.RoleIdForNotification?.ParseToLongNullable();
+			if (cancellationToken.IsCancellationRequested)
+			{
+				WorkerCommon.SetProgress(processQueue, 100);
+				var cancelMessage = "Импорт данных из РГИС отменен";
+				NotificationSender.SendNotification(processQueue, messageSubject, cancelMessage, roleId);
+				return;
+			}
+
+			FillReport(oksReportData, reportService, ObjectType.Oks);
+			FillReport(zuReportData, reportService, ObjectType.ZU);
+			FillReportErrorData(errors, reportService);
+
+			var reportId = reportService.SaveReport();
+
+			var message = $"Импорт данных из РГИС выполнен " + $@"<a href=""{reportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
+			NotificationSender.SendNotification(processQueue, messageSubject, message, roleId);
+			WorkerCommon.SetProgress(processQueue, 100);
 
 		}
 
@@ -219,7 +340,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var selectedIdsZuFactors = idsFactors.Where(x => idsZuFactors.Contains(x)).ToList();
 
 			return selectedIdsZuFactors.Any() 
-				? OMRgisLayers.Where(x => selectedIdsZuFactors.Contains(x.Id)).SelectAll().Execute().ToList() 
+				? GetLayers(selectedIdsZuFactors).ToList() 
 				: new ();
 		}
 
@@ -230,7 +351,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var selectedIdsOksFactors = idsOksFactors.Where(idsFactors.Contains).ToList();
 
 			return selectedIdsOksFactors.Any() 
-				?  OMRgisLayers.Where(x => selectedIdsOksFactors.Contains(x.Id)).SelectAll().Execute().ToList() 
+				? GetLayers(selectedIdsOksFactors).ToList() 
 				: new ();
 		}
 
@@ -335,47 +456,207 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 		}
 
-		private void SetReportHeaders(List<OMRgisLayers> layers, GbuReportService reportService, ObjectType oType)
+		private void SetReportHeaders(List<OMRgisLayers> layers, GeoFactorsReport reportService, ObjectType oType)
 		{
 			if (layers.Count > 0)
 			{
-				var headers = RegisterCache.RegisterAttributes.Values.Where(x => layers.Select(y => y.Id).Contains(x.Id))
-					.Select((x, i) => new ReportData
+				var headers = new List<ReportHeaderData>
+				{
+					new ()
 					{
-						AttributeId = x.Id,
-						ColumnNumber = i + 1,
-						Header = x.Name
-					}).ToList();
+						ColumnNumber = 0,
+						Header = "Кадастровый номер"
+					}
+				};
+
+				RegisterCache.RegisterAttributes.Values
+					.Where(x => layers.Select(y => y.Id).Contains(x.Id)).ForEach(x =>
+					{
+						headers.Add(new ReportHeaderData
+						{
+							AttributeId = x.Id,
+							ColumnNumber = headers.Count,
+							Header = x.Name,
+							LayerName = layers.FirstOrDefault(y => y.Id == x.Id)?.LayerName
+						});
+					});
+
+
+				headers.Add(new ReportHeaderData
+				{
+					ColumnNumber = headers.Count,
+					Header = "Ошибка"
+				});
 
 				if (oType == ObjectType.ZU)
 				{
-					zuReportData = headers;
+					_zuReportHeader = headers;
 				}
 				else
 				{
-					oksReportData = headers;
+					_oksReportHeader = headers;
 				}
 
-				reportService.AddHeaders(headers.Select(x => x.Header).ToList());
+				reportService.AddHeaders(headers.Select(x => x.Header).ToList(), oType);
 
 				headers.ForEach(x =>
 				{
-					reportService.SetIndividualWidth(x.ColumnNumber, 10);
+					reportService.SetIndividualWidth(x.ColumnNumber, 10, oType);
 				});
 				
 			}
 
 		}
 
-		#endregion
+		private void PrepareReportData(ResponseData responseData, List<ReportHeaderData> headers, Dictionary<string, List<ReportData>> reportDataDictionary, List<ErrorData> errors, ObjectType objectType)
+		{
 
+			if (responseData != null && responseData.Result.Count > 0)
+			{
+				responseData.Result.GroupBy(x => x[0].Params.KadNumber).ForEach((x) =>
+				{
+					var reportData = new List<ReportData>();
+					x.SelectMany(y => y).ForEach(y =>
+					{
+						if (y.Distance == null)
+						{
+							//lock (_lockMy)
+							//{
+							//	errors.Add(new ErrorData
+							//	{
+							//		CadNumber = y.Params.KadNumber,
+							//		Message = "Объект не найден",
+							//		ObjType = objectType
+							//	});
+							//}
+						}
+						else
+						{
+							lock (_lockMy)
+							{
+								reportData.Add(new ReportData
+								{
+									Distance = y.Distance ?? 0,
+									ColumnNumber = headers.FirstOrDefault(z => z.LayerName == y.Params.LayerName)
+										.ColumnNumber
+								});
+							}
+						}
+					});
+					if (reportData.Count > 0)
+					{
+						lock (_lockMy)
+						{
+							reportDataDictionary.Add(x.Key, reportData);
+						}
+					}
+				});
+			}
+
+		}
+
+
+
+		private void PrepareReportData(ResponseDataSingle responseData, List<ReportHeaderData> headers, Dictionary<string, List<ReportData>> reportDataDictionary, List<ErrorData> errors, ObjectType objectType)
+		{
+
+			if (responseData != null && responseData.Result.Count > 0)
+			{
+				responseData.Result.GroupBy(x => x.Params.KadNumber).ForEach((x) =>
+				{
+					var reportData = new List<ReportData>();
+					x.ForEach(y =>
+					{
+						if (y.Distance == null)
+						{
+							//lock (_lockMy)
+							//{
+							//	errors.Add(new ErrorData
+							//	{
+							//		CadNumber = y.Params.KadNumber,
+							//		Message = "Объект не найден",
+							//		ObjType = objectType
+							//	});
+							//}
+						}
+						else
+						{
+							lock (_lockMy)
+							{
+								reportData.Add(new ReportData
+								{
+									Distance = y.Distance ?? 0,
+									ColumnNumber = headers.FirstOrDefault(z => z.LayerName == y.Params.LayerName)
+										.ColumnNumber
+								});
+							}
+						}
+					});
+					if (reportData.Count > 0)
+					{
+						lock (_lockMy)
+						{
+							reportDataDictionary.Add(x.Key, reportData);
+						}
+					}
+				});
+			}
+
+		}
+
+		private void FillReportErrorData(List<ErrorData> errors, GeoFactorsReport reportService)
+		{
+			foreach (var error in errors)
+			{
+				int errorColumn = error.ObjType == ObjectType.ZU ? _zuReportHeader.Count : _oksReportHeader.Count;
+				var row = error.ObjType == ObjectType.ZU ? reportService.GetCurrentRowZu() : reportService.GetCurrentRowOks();
+					reportService.AddValue(error.CadNumber, knHeaderColumnNumber, row, error.ObjType);
+					reportService.AddErrorValue(error.Message, errorColumn - 1, row, error.ObjType);
+			}
+		
+		}
+
+		private void FillReport(Dictionary<string, List<ReportData>> reportData, GeoFactorsReport reportService, ObjectType type)
+		{
+			foreach (var data in reportData)
+			{
+				var oksRow = type == ObjectType.Oks ? reportService.GetCurrentRowOks() : reportService.GetCurrentRowZu();
+				reportService.AddValue(data.Key, knHeaderColumnNumber, oksRow, ObjectType.Oks);
+				data.Value.ForEach(x =>
+				{
+					if (x.ErrorMessage.IsNullOrEmpty())
+					{
+						reportService.AddValue(x.Distance.ToString(CultureInfo.InvariantCulture), x.ColumnNumber,
+							oksRow, type);
+					}
+					else
+					{
+						reportService.AddValue(x.ErrorMessage, x.ColumnNumber,
+							oksRow, type);
+					}
+				});
+			}
+		}
+
+		private void UpdateProgress(OMQueue processQueue, int count)
+		{
+			lock (_lockMy)
+			{
+				_unitProcessed += count;
+				var progress = _unitProcessed * 100 / _unitCount ;
+				WorkerCommon.SetProgress(processQueue, progress);
+			}
+			
+		}
+		#endregion
 
 	}
 
 	public class GeoFactorsReport: GbuReportService
 	{
 		private Row CurrentRowZu { get; set; }
-		public GeoFactorsReport(string fileName): base(fileName)
+		private Row CurrentRowOks { get; set; }
+		public GeoFactorsReport(string fileName): base(fileName, false)
 		{
 
 		}
@@ -388,7 +669,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			sheet = _curretExcelFile.Worksheets.Add("Zu");
 			sheet.Cells.Style.Font.Name = "Times New Roman";
 
-			CurrentRow = new Row
+			CurrentRowOks = new Row
 			{
 				File = _curretExcelFile
 			};
@@ -398,17 +679,24 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			};
 		}
 
+		public void AddErrorValue(string value, int column, Row row, ObjectType worksheet)
+		{
+			AddValue(value, column, row, worksheet);
+			row.File.Worksheets[(int) worksheet].Rows[row.Index].Cells[column].Style.FillPattern.SetSolid(SpreadsheetColor.FromName(ColorName.Red));
+		}
 
-		public void AddValue(string value, int column, Row row, CellStyle cellStyle = null, int worksheet = 0)
+		public void AddValue(string value, int column, Row row, ObjectType worksheet)
 		{
 			try
 			{
-				var cell = row.File.Worksheets[worksheet].Rows[row.Index].Cells[column];
+				var cell = row.File.Worksheets[(int)worksheet].Rows[row.Index].Cells[column];
 
 				cell.SetValue(value);
-
-				if (cellStyle != null)
-					cell.Style = cellStyle;
+				cell.Style = new CellStyle
+					{
+						HorizontalAlignment = HorizontalAlignmentStyle.Center,
+						VerticalAlignment = VerticalAlignmentStyle.Center
+					}; ;
 
 				IsReportEmpty = false;
 
@@ -421,13 +709,56 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					Serilog.Log.ForContext<ExcelFile>().Warning(ex, "Ошибка записи значения в Excel. Строка {Row}, столбец {Column}, значение {Value}", row.Index, column, value);
 			}
 		}
-		public new Row GetCurrentRow()
+		public Row GetCurrentRowOks()
 		{
-			var tmpRow = CurrentRow.Copy();
+			var tmpRow = CurrentRowOks.Copy();
 
-			CurrentRow.Index++;
+			CurrentRowOks.Index++;
 
 			return tmpRow;
+		}
+		public Row GetCurrentRowZu()
+		{
+			var tmpRow = CurrentRowZu.Copy();
+
+			CurrentRowZu.Index++;
+
+			return tmpRow;
+		}
+
+
+
+		public void AddHeaders(List<string> values, ObjectType objectType)
+		{
+			var rowIndex = 0;
+			int columnIndex = 0;
+			ExcelWorksheet sheet;
+			if (objectType == ObjectType.ZU)
+			{
+				sheet = CurrentRowZu.File.Worksheets[(int)objectType];
+				CurrentRowZu.Index++;
+			}
+			else
+			{
+				sheet = CurrentRowOks.File.Worksheets[(int)objectType];
+				CurrentRowOks.Index++;
+			}
+			foreach (string value in values)
+			{
+				sheet.Rows[rowIndex].Cells[columnIndex].SetValue(value);
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.HorizontalAlignment = HorizontalAlignmentStyle.Center;
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.VerticalAlignment = VerticalAlignmentStyle.Center;
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.Borders.SetBorders(MultipleBorders.All, SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);
+				sheet.Rows[rowIndex].Cells[columnIndex].Style.WrapText = true;
+				columnIndex++;
+			}
+
+		}
+
+		public void SetIndividualWidth(int column, int width, ObjectType objType)
+		{
+
+			_curretExcelFile.Worksheets[(int)objType].Columns[column].SetWidth(width, LengthUnit.Centimeter);
 		}
 	}
 }

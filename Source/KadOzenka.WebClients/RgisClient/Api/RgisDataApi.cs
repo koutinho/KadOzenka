@@ -46,6 +46,7 @@ namespace KadOzenka.WebClients.RgisClient.Api
 
 			if (_configurator.IsError(res, out string msg))
 			{
+				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
 				throw new Exception(msg);
 			}
 			return new ApiResponse<ResponseData>(res);
@@ -69,6 +70,11 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			};
 
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+			if (_configurator.IsError(res, out string msg))
+			{
+				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				throw new Exception(msg);
+			}
 			return new ApiResponse<ResponseDataSingle>(res);
 		}
 
@@ -86,6 +92,11 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			};
 
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+			if (_configurator.IsError(res, out string msg))
+			{
+				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				throw new Exception(msg);
+			}
 			return new ApiResponse<ResponseData>(res);
 		}
 
@@ -107,6 +118,11 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			};
 
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
+			if (_configurator.IsError(res, out string msg))
+			{
+				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				throw new Exception(msg);
+			}
 			return new ApiResponse<ResponseDataSingle>(res);
 		}
 	}

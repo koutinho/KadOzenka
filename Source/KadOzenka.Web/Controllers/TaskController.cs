@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register;
@@ -27,8 +26,6 @@ using KadOzenka.Dal.LongProcess.DataComparing;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.RecycleBin;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
-using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tasks;
 using Kendo.Mvc.Extensions;
@@ -44,13 +41,9 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Helpers;
 using KadOzenka.Web.Models.DataImport;
 using KadOzenka.Web.Models.Unit;
-using KadOzenka.WebClients.RgisClient.Api;
-using KadOzenka.WebClients.RgisClient.Client;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory.Core.LongProcess;
 using ObjectModel.Directory.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Serilog;
@@ -664,38 +657,26 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            GeoFactorsFromRgisLongProcess pr = new GeoFactorsFromRgisLongProcess();
-            pr.StartProcess(model.TaskId, model.AttributeIds);
 
-            //var RgisDataApi = new RgisDataApi();
-            // RgisDataApi.GetDistanceFactorsValue(new RequestData
-            // {
-            //     Kn = "50:11:0020501:2154",
-            //     Layers = new List<string>
-            //     {
-            //         "BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903",
-            //         "BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903"
-            //     }
-            // });
-            //var inputParameters = new KoFactorsFromReonInputParameters
-            //{
-            //    TaskId = model.TaskId,
-            //    AttributeIds = model.AttributeIds
-            //};
-            ////TODO код для отладки
-            //new KoFactorsFromReon().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //    Status_Code = Status.Added,
-            //    UserId = SRDSession.GetCurrentUserId(),
-            //    Parameters = inputParameters.SerializeToXml()
-            //}, new CancellationToken());
+			var inputParameters = new GeoFactorsFromRgis
+            {
+				TaskId = model.TaskId,
+				IdFactors = model.AttributeIds
+			};
+			////TODO код для отладки
+			//new GeoFactorsFromRgisLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//    Status_Code = Status.Added,
+			//    UserId = SRDSession.GetCurrentUserId(),
+			//    Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
 
-            //KoFactorsFromReon.AddProcessToQueue(inputParameters);
-            //_log.ForContext("TaskId", inputParameters.TaskId)
-            //    .ForContext("AttributeIds", inputParameters.AttributeIds)
-            //    .Information("Процесс {SRDCoreFunctions} поставлен в очередь", "KO_TASKS_DOWNLOAD_GRAPHIC_FACTORS_FROM_REON");
+			GeoFactorsFromRgisLongProcess.AddProcessToQueue(inputParameters);
+			_log.ForContext("TaskId", inputParameters.TaskId)
+				.ForContext("AttributeIds", inputParameters.IdFactors)
+				.Information("Процесс {SRDCoreFunctions} поставлен в очередь", "KO_TASKS_DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS");
 
-            return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
+			return new JsonResult(new { Message = "Процесс поставлен в очередь. Результат будет отправлен на почту." });
         }
 
         #endregion

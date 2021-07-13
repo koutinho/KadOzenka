@@ -152,7 +152,7 @@ namespace KadOzenka.Dal.LongProcess
             WorkerCommon.SetMessage(processQueue, info);
             var reportId = gbuReportService.SaveReport();
             var message = $"{info}\n" + $@"<a href=""{gbuReportService.GetUrlToDownloadFile(reportId)}"">Скачать результат</a>";
-            var roleId = ConfigurationManager.ReonConfig.RoleIdForNotification?.ParseToLongNullable();
+            var roleId = ConfigurationManager.WebClientsConfig.RoleIdForNotification?.ParseToLongNullable();
             NotificationSender.SendNotification(processQueue, messageSubject, message, roleId);
 
             WorkerCommon.SetProgress(processQueue, 100);

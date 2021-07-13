@@ -67,7 +67,7 @@ namespace KadOzenka.WebClients.RgisClient.Client
 			var error = JsonConvert.DeserializeObject<ErrorData>(response.Content);
 			message = "";
 			bool isError =  error != null && error.Error?.Message != null;
-			if (isError) message = error.Error.Message;
+			if (isError) message = "РГИС API: " + error.Error.Message;
 			return isError;
 		}
 
