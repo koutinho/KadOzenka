@@ -3,73 +3,7 @@
 
 <form id="importForm">
     <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
-        <li id="sectionUploading" data-expand>
-            <span>Формирование загрузки</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <input name="files" id="files" type="file" aria-label="files" accept=".xls,.xlsx"/>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-5">
-                            <div class="row" style="padding-bottom: 1%">
-                                <label class="control-label">Колонки в файле Excel:</label>
-                            </div>
-                            <div class="row paramsContainer">
-                                <select id="columnsListBox"></select>
-                            </div>
-                        </div>
-                        <div class="col-sm-2">
-                            <div class="row">
-                                <span>&nbsp;</span>
-                            </div>
-                            <div class="row matchButtonContainer">
-                                <button id="matchButton" type="button"></button>
-                            </div>
-                        </div>
-                        <div class="col-sm-5">
-                            <div class="row" style="padding-bottom: 1%">
-                                <label class="control-label">Факторы модели:</label>
-                            </div>
-                            <div class="row filterParamsContainer">
-                                <span class="filterInput">
-                                    <input class="k-textbox" id="filter" autocomplete="off" placeholder="Поиск"/>
-                                </span>
-                                <div class="filterAttrParamsContainer">
-                                    <div id="treeview"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div>
-                            <span>
-                                <button id="loadButton" type="button">Загрузить</button>
-                                <input id="backgroundDownloadCheckbox" type="checkbox"/>
-                                <label for="backgroundDownloadCheckbox">Фоновая Загрузка</label>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <a class="k-button k-state-disabled" id="goToJournalBtn" href="" target="_blank"><span>Перейти в журнал</span></a>
-                    </div>
-                </div>
-            </div>
-        </li>
-        <li id="sectionMatching" data-expand>
-            <span>Сопоставление</span>
-            <div>
-                <div class="form-horizontal col-sm-12">
-                    <div class="form-group"></div>
-                    <div class="form-group">
-                        <div class="col-sm-12 paramsContainer matchParamsContainer">
-                            <div id="listView"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </li>
+        @(await Html.PartialAsync("~/Views/DataImportByTemplate/Partials/DataImportMain.cshtml"))
     </ul>
 </form>
 
