@@ -465,6 +465,10 @@ namespace KadOzenka.Dal.Modeling
 		{
 			ValidateBaseFactor(factor);
 
+			var activeForbiddenAttributes = GetAttributesWhichMustBeUnActive();
+			if (activeForbiddenAttributes.Contains(factor.FactorId.GetValueOrDefault()))
+				throw new Exception("Атрибут недоступен для активации");
+
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
 				throw new Exception($"Не найдена модель с ИД '{factor.ModelId}'");

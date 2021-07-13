@@ -47,6 +47,12 @@ namespace KadOzenka.Web.Models.Modeling
 			UnActiveAttributeIds = unActiveAttributeIds;
 		}
 
+		//конструктор без параметров нужен при передачи модели в метод контроллера
+		public AutomaticFactorModel()
+		{
+
+		}
+
 
 
 		public static AutomaticFactorModel ToModel(OMModelFactor factor, List<DropDownTreeItemModel> attributes, List<long> unActiveAttributeIds)
