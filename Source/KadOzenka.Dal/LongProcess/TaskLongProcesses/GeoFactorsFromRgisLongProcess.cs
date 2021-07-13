@@ -596,7 +596,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			foreach (var data in reportData)
 			{
 				var row = type == ObjectType.Oks ? reportService.GetCurrentRowOks() : reportService.GetCurrentRowZu();
-				reportService.AddValue(data.Key, knHeaderColumnNumber, row, ObjectType.Oks);
+				reportService.AddValue(data.Key, knHeaderColumnNumber, row, type);
 				data.Value.ForEach(x =>
 				{
 					if (x.ErrorMessage.IsNullOrEmpty())
