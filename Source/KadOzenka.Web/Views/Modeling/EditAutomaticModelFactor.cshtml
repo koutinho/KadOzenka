@@ -86,18 +86,26 @@
 
 
 <script>
-    $(document).ready(function () {
+    var marketObjectRegisterAttributeIds = [];
+
+
+    $(document).ready(function() {
         $('#save').on('click', saveFactor);
         $('#cancel').on('click', closeWindow);
+        
+        @foreach (var d in Model.UnActiveAttributeIds)
+        {
+            @:marketObjectRegisterAttributeIds.push("@d");
+        }
+
+        var factorsTree = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
+        factorsTree.bind("change", setActiveFlagState);
+        setActiveFlagState();
     });
 
-    //иногда лейбл загораживает значение в списке и это значение невозможно выбрать
-    function hideOptionalLabel() {
-        $(".k-list-optionlabel").hide();
-    }
 
 
-
+   
 
     function saveFactor(e) {
         e.preventDefault();
@@ -125,6 +133,21 @@
                 kendo.ui.progress($('body'), false);
             }
         });
+    }
+
+
+    function setActiveFlagState() {
+        var factorId = $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value();
+        if(!factorId)
+            factorId = Number('@Model.FactorId');
+        var isActiveElement = $('#@nameof(Model.IsActive)');
+        if (marketObjectRegisterAttributeIds.includes(factorId)) {
+            isActiveElement.prop("checked", false);
+            isActiveElement.prop("disabled", true);
+        } else {
+            isActiveElement.prop("checked", true);
+            isActiveElement.prop("disabled", false);
+        }
     }
 
 

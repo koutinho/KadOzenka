@@ -36,13 +36,22 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Тип метки")]
 		public MarkType MarkType { get; set; }
 
-		public List<DropDownTreeItemModel> Attributes { get; set; }
+		public List<long> UnActiveAttributeIds { get; }
+		public List<DropDownTreeItemModel> Attributes { get; }
 
 
 
-		public static AutomaticFactorModel ToModel(OMModelFactor factor)
+		public AutomaticFactorModel(List<DropDownTreeItemModel> attributes, List<long> unActiveAttributeIds)
 		{
-			return new AutomaticFactorModel
+			Attributes = attributes;
+			UnActiveAttributeIds = unActiveAttributeIds;
+		}
+
+
+
+		public static AutomaticFactorModel ToModel(OMModelFactor factor, List<DropDownTreeItemModel> attributes, List<long> unActiveAttributeIds)
+		{
+			return new AutomaticFactorModel(attributes, unActiveAttributeIds)
 			{
 				Id = factor.Id,
 				ModelId = factor.ModelId,

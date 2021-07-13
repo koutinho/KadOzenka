@@ -409,12 +409,13 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult AddAutomaticModelFactor(long generalModelId)
         {
-            var factorDto = new AutomaticFactorModel
+	        var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+	        var attributes = GetPossibleFactorsForAutomaticModel(generalModelId);
+            var factorDto = new AutomaticFactorModel(attributes, unActiveAttributes)
             {
                 Id = -1,
                 ModelId = generalModelId,
-                IsActive = true,
-                Attributes = GetPossibleFactorsForAutomaticModel(generalModelId)
+                IsActive = true
             };
 
             return View("EditAutomaticModelFactor", factorDto);
@@ -426,8 +427,9 @@ namespace KadOzenka.Web.Controllers
         {
            var factor = ModelFactorsService.GetFactorById(id);
 
-           var model = AutomaticFactorModel.ToModel(factor);
-           model.Attributes = GetPossibleFactorsForAutomaticModel(factor.ModelId.Value);
+           var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+           var attributes = GetPossibleFactorsForAutomaticModel(factor.ModelId.GetValueOrDefault());
+           var model = AutomaticFactorModel.ToModel(factor, attributes, unActiveAttributes);
 
            if (factor.DictionaryId != null)
            {

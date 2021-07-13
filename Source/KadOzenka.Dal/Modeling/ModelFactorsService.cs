@@ -244,6 +244,12 @@ namespace KadOzenka.Dal.Modeling
 			return query;
 		}
 
+		public List<long> GetAttributesWhichMustBeUnActive()
+		{
+			return RegisterCache.GetAttributeDataList(MarketPlaceBusiness.Common.Consts.RegisterId)
+				.Select(x => x.Id).ToList();
+		}
+
 		public void AddAutomaticFactor(AutomaticModelFactorDto dto)
 		{
 			ValidateAutomaticFactor(dto);
