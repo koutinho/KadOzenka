@@ -105,3 +105,7 @@ create table GBU_RGIS_LAYERS (
     "layer_name"  VARCHAR(255) NOT NULL);
 
 insert into GBU_RGIS_LAYERS ("id", "layer_name") values (2603300, 'BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903');
+insert into GBU_RGIS_LAYERS ("id", "layer_name") values (2502800, 'BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903');
+
+insert into core_long_process_type ("id", "process_name", "class_name", "schedule_type", "repeat_interval", "enabled", "run_count", "failure_count", "last_start_date", "last_run_duration", "next_run_date", "parameters", "description", "test_result", "parameters_setter_url") values
+(99, 'GeoFactorsFromRgisLongProcess', 'KadOzenka.Dal.LongProcess.TaskLongProcesses.GeoFactorsFromRgisLongProcess, KadOzenka.Dal', 0, NULL, 1, NULL, NULL, null, NULL, NULL, NULL, 'Импорт данных из РГИС', 1, NULL);

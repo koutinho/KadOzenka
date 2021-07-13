@@ -42,4 +42,4 @@ COPY services/postgresql/scripts/up_region_000086.sql /docker-entrypoint-initdb.
 COPY services/postgresql/scripts/up_region_000107.sql /docker-entrypoint-initdb.d/up_region_000107.sql
 COPY services/postgresql/scripts/up_region_000113.sql /docker-entrypoint-initdb.d/up_region_000113.sql
 COPY services/postgresql/scripts/up_region_000121.sql /docker-entrypoint-initdb.d/up_region_000121.sql
-COPY services/postgresql/scripts/up4090.sql /docker-entrypoint-initdb.d/up4090.sql
+COPY services/postgresql/scripts/up_region_004090.sql /docker-entrypoint-initdb.d/up_region_004090.sql
