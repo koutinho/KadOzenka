@@ -86,9 +86,9 @@ namespace KadOzenka.Dal.Modeling
 			return dictionary;
 		}
 
-		public long CreateDictionary(string name, RegisterAttributeType factorType)
+		public long CreateDictionary(string name, RegisterAttributeType factorType, List<long> modelDictionariesIds)
 		{
-			ValidateDictionary(name, -1);
+			ValidateDictionary(name, modelDictionariesIds);
 
 			var dictionaryType = MapDictionaryType(factorType);
 
@@ -99,23 +99,17 @@ namespace KadOzenka.Dal.Modeling
 			}.Save();
 		}
 
-		//public void UpdateDictionary(long id, string newName, ModelDictionaryType newValueType)
-		//{
-		//	var dictionary = GetDictionaryById(id);
+		public void UpdateDictionary(long id, string newName, List<long> modelDictionariesIds)
+		{
+			var dictionary = GetDictionaryById(id);
+			if (dictionary.Name == newName)
+				return;
 
-		//	ValidateDictionary(newName, id);
+			ValidateDictionary(newName, modelDictionariesIds);
 
-		//	if (dictionary.Type_Code != newValueType)
-		//	{
-		//		var hasValues = OMModelingDictionariesValues.Where(x => x.DictionaryId == id).ExecuteExists();
-		//		if (hasValues)
-		//			throw new Exception("Нельзя изменить тип для непустого справочника");
-		//	}
-
-		//	dictionary.Name = newName;
-		//	dictionary.Type_Code = newValueType;
-		//	dictionary.Save();
-		//}
+			dictionary.Name = newName;
+			dictionary.Save();
+		}
 
 		public int DeleteDictionary(long? id)
 		{
@@ -123,12 +117,12 @@ namespace KadOzenka.Dal.Modeling
 				return 0;
 
 			int deletedMarksCount;
-			var dictionary = GetDictionaryById(id.Value);
+			var dictionary = ModelDictionaryRepository.GetById(id.Value, null);
 			using (var ts = TransactionScopeWrapper.OpenTransaction(TransactionScopeOption.RequiresNew))
 			{
 				deletedMarksCount = DeleteMarks(id);
 
-				dictionary.Destroy();
+				dictionary?.Destroy();
 
 				ts.Complete();
 			}
@@ -191,14 +185,17 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateDictionary(string name, long id)
+		private void ValidateDictionary(string name, List<long> modelDictionariesIds)
 		{
 			if (string.IsNullOrWhiteSpace(name))
-				throw new Exception("Невозможно создать справочник с пустым именем");
+				throw new Exception("Нельзя создать словарь с пустым именем");
 
-			var isExistsDictionaryWithTheSameName = OMModelingDictionary.Where(x => x.Name == name && x.Id != id).ExecuteExists();
-			if (isExistsDictionaryWithTheSameName)
-				throw new Exception($"Справочник '{name}' уже существует");
+			if (modelDictionariesIds.Count > 0)
+			{
+				var existedDictionaries = GetDictionaries(modelDictionariesIds, false);
+				if (existedDictionaries.Select(x => x.Name).Contains(name))
+					throw new DictionaryAlreadyExistsException(name);
+			}
 		}
 
 		private ModelDictionaryType MapDictionaryType(RegisterAttributeType factorType)
@@ -299,7 +296,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public int DeleteMarks(long? dictionaryId)
 		{
-			if (dictionaryId == null)
+			if (dictionaryId.GetValueOrDefault() == 0)
 				return 0;
 
 			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";

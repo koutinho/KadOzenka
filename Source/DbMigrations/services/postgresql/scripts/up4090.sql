@@ -88,3 +88,20 @@ perform create_source_register_tables_from_records(26);
 end $$;
 
 update core_srd_function set functiontag = 'KO.TASKS.DOWNLOAD_GEOGRAPHIC_FACTORS_FROM_RGIS', functionname = 'Загрузка географических факторов из ИС РГИС' where id = 630;
+
+
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(82, 'Gbu.RgisLayers', 'Таблица, содержащая список слоев для факторов из РГИС', NULL, NULL, 'GBU_RGIS_LAYERS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, NULL, NULL, NULL);
+
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(8200100, 'Идентификатор', 82, 1, NULL, NULL, 'ID', NULL, NULL, 1, NULL, NULL, 'Id', NULL, NULL, NULL, NULL, 0, NULL, NULL, 0);
+
+insert into core_register_attribute ("id", "name", "registerid", "type", "parentid", "referenceid", "value_field", "code_field", "value_template", "primary_key", "user_key", "qscolumn", "internal_name", "is_nullable", "description", "layout", "export_column_name", "is_deleted", "change_user_id", "change_date", "hidden") values
+(8200200, 'Название слоя', 82, 4, NULL, NULL, 'LAYER_NAME', NULL, NULL, 0, NULL, NULL, 'LayerName', NULL, NULL, NULL, NULL, 0, NULL, NULL, 0);
+
+
+create table GBU_RGIS_LAYERS (
+    "id" BIGINT NOT NULL PRIMARY KEY,
+    "layer_name"  VARCHAR(255) NOT NULL);
+
+insert into GBU_RGIS_LAYERS ("id", "layer_name") values (2603300, 'BASE.DSOBRAZOVATELNYE_UCHREJDENIYA_MO_7903');

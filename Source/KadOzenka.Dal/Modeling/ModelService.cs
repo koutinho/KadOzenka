@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Transactions;
@@ -10,8 +9,6 @@ using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
-using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions;
 using KadOzenka.Dal.Modeling.Repositories;
@@ -21,7 +18,6 @@ using System.Linq.Expressions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Formulas;
 using KadOzenka.Dal.RecycleBin;
-using Newtonsoft.Json;
 using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.Modeling

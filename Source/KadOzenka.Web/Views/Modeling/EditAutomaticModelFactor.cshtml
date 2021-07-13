@@ -1,4 +1,5 @@
-﻿@model KadOzenka.Web.Models.Modeling.AutomaticFactorModel
+﻿@using KadOzenka.Web.Helpers
+@model KadOzenka.Web.Models.Modeling.AutomaticFactorModel
 
 @using (Html.BeginForm("EditAutomaticModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
 {
@@ -51,7 +52,7 @@
         </div>
         <div class="col-sm-9">
             @Html.HiddenFor(x => x.DictionaryId)
-            @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: !Model.IsNewFactor)
+            @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: false)
         </div>
     </div>
     <div class="form-group">
@@ -67,7 +68,10 @@
             @Html.CustomLabel("Тип метки")
         </div>
         <div class="col-sm-9">
-            @Html.KendoEnumDropDownListFor(x => x.MarkType, isReadonly: false, withoutNull: Model.IsNewFactor)
+            @Html.KendoKoReferenceDropDownListFor(x => x.MarkType, 226,
+                text: Model.MarkType.GetEnumDescription(), 
+                value: ((long) Model.MarkType).ToString(),
+                isReadonly: false, withOptionLabel: false)
         </div>
     </div>
 

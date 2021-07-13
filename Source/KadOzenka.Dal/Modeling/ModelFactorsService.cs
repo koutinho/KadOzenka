@@ -14,7 +14,6 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Exceptions.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
-using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory.Ko;
 using ObjectModel.Directory.KO;
@@ -283,24 +282,29 @@ namespace KadOzenka.Dal.Modeling
 			var mustResetTrainingResult = false;
 			using (var ts = new TransactionScope())
 			{
-				if (factor.IsActive.GetValueOrDefault() != dto.IsActive)
+				if (factor.DictionaryId != dto.DictionaryId || factor.IsActive.GetValueOrDefault() != dto.IsActive ||
+				    factor.MarkType_Code != dto.MarkType)
 				{
 					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
 						.Select(x => new
 						{
-							x.IsActive
+							x.IsActive,
+							x.DictionaryId,
+							x.MarkType_Code
 						}).Execute();
-					
+
 					factors.ForEach(x =>
 					{
 						x.IsActive = dto.IsActive;
+						factor.MarkType_Code = dto.MarkType;
+						ProcessDictionary(x, dto);
+
 						ModelFactorsRepository.Save(x);
 					});
 					mustResetTrainingResult = true;
 				}
 
 				factor.PreviousWeight = dto.PreviousWeight ?? 1;
-				factor.MarkType_Code = dto.MarkType;
 				ModelFactorsRepository.Save(factor);
 
 				ts.Complete();
@@ -345,11 +349,7 @@ namespace KadOzenka.Dal.Modeling
 			ValidateManualFactor(dto);
 
 			var factor = GetFactorById(dto.Id);
-			if (factor.DictionaryId != null && dto.MarkType != MarkType.Default)
-			{
-				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
-				factor.DictionaryId = null;
-			}
+			ProcessDictionary(factor, dto);
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
@@ -543,6 +543,20 @@ namespace KadOzenka.Dal.Modeling
 			}
 
 			return types;
+		}
+
+		private void ProcessDictionary(OMModelFactor factor, AModelFactorDto dto)
+		{
+			//если раньше был тип метки по умолчанию, а потом его изменили, то удаляем словарь
+			if (factor.DictionaryId != null && dto.MarkType != MarkType.Default)
+			{
+				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+				factor.DictionaryId = null;
+			}
+			else
+			{
+				factor.DictionaryId = dto.DictionaryId;
+			}
 		}
 
 		//private void RecalculateFormula(long? generalModelId)

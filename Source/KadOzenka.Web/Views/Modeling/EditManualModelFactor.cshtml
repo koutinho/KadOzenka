@@ -50,7 +50,7 @@
             </div>
             <div class="col-sm-9">
                 @Html.HiddenFor(x => x.DictionaryId)
-                @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: !Model.IsNewFactor)
+                @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: false)
             </div>
         </div>
         <div class="form-group">
