@@ -520,29 +520,16 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					var reportData = new List<ReportData>();
 					x.SelectMany(y => y).ForEach(y =>
 					{
-						if (y.Distance == null)
+						
+						lock (_lockMy)
 						{
-							//lock (_lockMy)
-							//{
-							//	errors.Add(new ErrorData
-							//	{
-							//		CadNumber = y.Params.KadNumber,
-							//		Message = "Объект не найден",
-							//		ObjType = objectType
-							//	});
-							//}
-						}
-						else
-						{
-							lock (_lockMy)
+							reportData.Add(new ReportData
 							{
-								reportData.Add(new ReportData
-								{
-									Distance = y.Distance ?? 0,
-									ColumnNumber = headers.FirstOrDefault(z => z.LayerName == y.Params.LayerName)
-										.ColumnNumber
-								});
-							}
+								Distance = y.Distance ?? 0,
+								ErrorMessage = y.Distance == null ? "Объект не найден" : "",
+								ColumnNumber = headers.FirstOrDefault(z => z.LayerName == y.Params.LayerName)
+									.ColumnNumber
+							});
 						}
 					});
 					if (reportData.Count > 0)
@@ -569,29 +556,15 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					var reportData = new List<ReportData>();
 					x.ForEach(y =>
 					{
-						if (y.Distance == null)
+						lock (_lockMy)
 						{
-							//lock (_lockMy)
-							//{
-							//	errors.Add(new ErrorData
-							//	{
-							//		CadNumber = y.Params.KadNumber,
-							//		Message = "Объект не найден",
-							//		ObjType = objectType
-							//	});
-							//}
-						}
-						else
-						{
-							lock (_lockMy)
+							reportData.Add(new ReportData
 							{
-								reportData.Add(new ReportData
-								{
-									Distance = y.Distance ?? 0,
-									ColumnNumber = headers.FirstOrDefault(z => z.LayerName == y.Params.LayerName)
-										.ColumnNumber
-								});
-							}
+								Distance = y.Distance ?? 0,
+								ErrorMessage = y.Distance == null ? "Объект не найден" : "",
+								ColumnNumber = headers.FirstOrDefault(z => z.LayerName == y.Params.LayerName)
+									.ColumnNumber
+							});
 						}
 					});
 					if (reportData.Count > 0)
@@ -622,19 +595,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 		{
 			foreach (var data in reportData)
 			{
-				var oksRow = type == ObjectType.Oks ? reportService.GetCurrentRowOks() : reportService.GetCurrentRowZu();
-				reportService.AddValue(data.Key, knHeaderColumnNumber, oksRow, ObjectType.Oks);
+				var row = type == ObjectType.Oks ? reportService.GetCurrentRowOks() : reportService.GetCurrentRowZu();
+				reportService.AddValue(data.Key, knHeaderColumnNumber, row, ObjectType.Oks);
 				data.Value.ForEach(x =>
 				{
 					if (x.ErrorMessage.IsNullOrEmpty())
 					{
 						reportService.AddValue(x.Distance.ToString(CultureInfo.InvariantCulture), x.ColumnNumber,
-							oksRow, type);
+							row, type);
 					}
 					else
 					{
 						reportService.AddValue(x.ErrorMessage, x.ColumnNumber,
-							oksRow, type);
+							row, type);
 					}
 				});
 			}
