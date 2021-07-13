@@ -99,6 +99,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var units = GetUnits(task.Id);
 			_unitCount = units.Count;
 
+			_log.Debug("Найдено юнитов = {units}", units.Count);
+
 			using var reportService = new GeoFactorsReport(messageSubject);
 
 
