@@ -32,6 +32,7 @@ using Newtonsoft.Json;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
+using ObjectModel.Directory.ES;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
@@ -685,6 +686,38 @@ namespace KadOzenka.Web.Controllers
             }).ToList();
 
             return View(new GroupingDictionaryImportModel());
+        }
+
+        public IActionResult GroupingDictionaryImportPreconfigured(long attributeId, long groupId)
+        {
+            ViewData["References"] = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
+            {
+                Text = x.Name,
+                Value = x.Id
+            }).ToList();
+
+            var model = new GroupingDictionaryImportModel();
+
+            var attrib = RegisterCache.RegisterAttributes.FirstOrDefault(x => x.Key == attributeId);
+            model.ValueType = attrib.Value.Type switch
+            {
+                RegisterAttributeType.INTEGER or RegisterAttributeType.DECIMAL => ReferenceItemCodeType.Number,
+                RegisterAttributeType.DATE => ReferenceItemCodeType.Date,
+                _ => model.ValueType
+            };
+
+            var dictName = "";
+            var group = GroupService.GetGroupsByIds(new List<long> { groupId }).FirstOrDefault();
+            if (group != null)
+            {
+                dictName += group.FullGroupName + " " + attrib.Value.Name;
+            }
+
+            var partialDict = new PartialGroupingDictionaryModel();
+            partialDict.IsNewDictionary = true;
+            partialDict.NewDictionaryName = dictName;
+
+            return View("GroupingDictionaryImport", model);
         }
 
         [HttpPost]

@@ -29,6 +29,21 @@
         border-color: blanchedalmond;
     }
 
+    .switchActive:hover{
+        background-color: #FFC485;
+        border-color: #FFCC80;
+    }
+
+    .switchActive:active{
+        background-color: #FFC485;
+        border-color: #FFCC80;
+    }
+
+    ::placeholder{
+        font-style: italic;
+        color: #d7d9ff99;
+    }
+
 </style>
 @using (Html.BeginForm("TourGroupGroupingSettings", "Tour", FormMethod.Post, new {id = "updateGroupingSettingsForm", enctype = "multipart/form-data"}))
 {
@@ -44,11 +59,13 @@
                         @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
                     </div>
                     <div class="col-sm-1">
-                        <label class="switch k-button-icon k-button @(Model.UseDictionary[i]?"switchActive":string.Empty)">
-                            <input id="UseDictionary_@(i)_" name="UseDictionary[@i]" class="switchInner" type="checkbox" @(Model.UseDictionary[i]?"checked":string.Empty)>
-                            <span class="k-icon k-i-list-unordered"></span>
-                        </label>
+                        <div class="row">
+                            <label class="switch k-button-icon k-button @(Model.UseDictionary[i] ? "switchActive" : string.Empty)">
+                                <input id="UseDictionary_@(i)_" name="UseDictionary[@i]" class="switchInner" type="checkbox" @(Model.UseDictionary[i] ? "checked" : string.Empty)>
+                                <span class="k-icon k-i-list-unordered"></span>
+                            </label>
 
+                        </div>
                     </div>
                     <div id="filters_@i" class="col-sm-8">
                         @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
@@ -58,20 +75,20 @@
                         @*     @Html.Label("","Справочник") *@
                         @* </div> *@
                         <div class="row">
-                        <div class="col-sm-4">
-                            @(Html.Kendo().DropDownListFor(m=>m.DictionaryId[i])
-                                .DataValueField("Value").DataTextField("Text")
-                                .DataSource(source =>
-                                {
-                                    source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
-                                        .ServerFiltering(false);}))
-                        </div>
-                        @* <div class="col-sm-2"> *@
-                        @*     @Html.Label("","Значения") *@
-                        @* </div> *@
-                        <div class="col-sm-4">
-                            @(Html.Kendo().TextBoxFor(m=>m.DictionaryValue[i]).Placeholder("1,2,3").HtmlAttributes(new RouteValueDictionary{ {"class","k-input"} }))
-                        </div>
+                            <div class="col-sm-4">
+                                @(Html.Kendo().DropDownListFor(m=>m.DictionaryId[i])
+                                    .DataValueField("Value").DataTextField("Text")
+                                    .DataSource(source =>
+                                    {
+                                        source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
+                                            .ServerFiltering(false);}))
+                            </div>
+                            @* <div class="col-sm-2"> *@
+                            @*     @Html.Label("","Значения") *@
+                            @* </div> *@
+                            <div class="col-sm-4">
+                                @(Html.Kendo().TextBoxFor(m=>m.DictionaryValue[i]).Placeholder("1,2,3").HtmlAttributes(new RouteValueDictionary{ {"class","k-input"} }))
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,9 +96,11 @@
         }
 
     </div>
+    <div id="dictionaryUploadModal"></div>
 }
 
 <script src="~/js/toolbars.js"></script>
+<script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-filters.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
@@ -102,6 +121,13 @@
                     icon: 'plus',
                     text: 'Добавить условие',
                     click: addCondition
+                },
+                {
+                    type: 'button',
+                    id: 'add',
+                    icon: 'plus',
+                    text: 'Добавить справочник',
+                    click: showDictionaryUploadModal
                 }]
         });
 
@@ -139,16 +165,12 @@
                 filterFields.show();
             } });
         switchBox.change();
-
-        try{
-            let dictId = $('DictionaryId_'+rowIndex.toString()+'_').data('kendoDropDownList').value();
-            if (dictId != null && dictId !== ""){
-                switchBox.check();
-                console.log(rowIndex);
-            }
-        }
-        catch (e) { console.log(e);}
     }
+
+        function showDictionaryUploadModal() {
+            let modal = $("#dictionaryUploadModal");
+            ShowIframe('@Url.Action("GroupingDictionaryImportPreconfigured", "Tour", new {  })', modal, '50%', '80%', "Загрузка справочника");
+        }
 
     function save() {
         kendo.ui.progress($('body'), true);

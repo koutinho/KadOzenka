@@ -5,7 +5,7 @@ namespace KadOzenka.Web.Models.Tour
 {
 	public class PartialGroupingDictionaryModel : IValidatableObject
     {
-        public static string NoDictionaryIdErrorMessage => "Выберете справочник";
+        public static string NoDictionaryIdErrorMessage => "Выберите справочник";
         public static string EmptyDictionaryNameErrorMessage => "Наименование нового справочника не может быть пустым";
 
 

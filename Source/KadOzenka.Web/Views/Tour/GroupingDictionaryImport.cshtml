@@ -117,10 +117,10 @@
                 formData.append("viewModel.Value", formObject.Value);
                 formData.append("viewModel.CalcValue", formObject.CalcValue);
                 formData.append("viewModel.ValueType", formObject.ValueType);
-                formData.append("viewModel.Dictionary.DictionaryId", formObject["Dictionary.DictionaryId"]);
-                formData.append("viewModel.Dictionary.DeleteOldValues", formObject["Dictionary.DeleteOldValues"]);
-                formData.append("viewModel.Dictionary.NewDictionaryName", formObject["Dictionary.NewDictionaryName"]);
-                formData.append("viewModel.Dictionary.IsNewDictionary", formObject["Dictionary.IsNewDictionary"]);
+                formData.append("viewModel.GroupingDictionary.DictionaryId", formObject["GroupingDictionary.DictionaryId"]);
+                formData.append("viewModel.GroupingDictionary.DeleteOldValues", formObject["GroupingDictionary.DeleteOldValues"]);
+                formData.append("viewModel.GroupingDictionary.NewDictionaryName", formObject["GroupingDictionary.NewDictionaryName"]);
+                formData.append("viewModel.GroupingDictionary.IsNewDictionary", formObject["GroupingDictionary.IsNewDictionary"]);
                 formData.append("file", files[0].rawFile);
 	            kendo.ui.progress($('body'), true);
                 $.ajax({
