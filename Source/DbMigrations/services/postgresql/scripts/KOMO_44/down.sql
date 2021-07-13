@@ -1,1 +1,1 @@
-﻿update core_layout_details set attributeid=20102500, headertext='Дата создания' where id=20100800;
+update core_layout_details set attributeid=20102500, headertext='Дата создания' where id=20100800;

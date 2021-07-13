@@ -77,13 +77,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected void CreateMarkCatalog(List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
 		{
+			var attributesWithMarks = attributes.Where(x => x.DictionaryId != null).ToList();
 			using (Logger.TimeOperation("Формирование каталога меток"))
 			{
 				AddLog(queue, "Начато формирование каталога меток", logger: Logger);
 
 				using (Logger.TimeOperation("Удаление всех предыдущих меток"))
 				{
-					attributes.Where(x => x.DictionaryId != null).ForEach(attribute =>
+					attributesWithMarks.ForEach(attribute =>
 					{
 						var deletedMarksCount = ModelDictionaryService.DeleteMarks(attribute.DictionaryId.Value);
 						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для словаря c ИД '{DictionaryId}'", deletedMarksCount, attribute.DictionaryId);
@@ -99,7 +100,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 						var modelObject = modelObjects[i];
 						var objectCoefficients = modelObject.DeserializeCoefficient();
 
-						foreach (var attribute in attributes)
+						foreach (var attribute in attributesWithMarks)
 						{
 							var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
 							if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||

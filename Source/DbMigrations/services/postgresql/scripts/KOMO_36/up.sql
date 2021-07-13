@@ -1,4 +1,4 @@
-﻿update core_reference set simple_values=
+update core_reference set simple_values=
     '[
 	{
 		"Id": 0,
