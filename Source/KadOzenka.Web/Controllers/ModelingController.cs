@@ -309,15 +309,15 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception(Messages.ObjectFormationProcessAlreadyAdded);
 
             var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
-            ////TODO код для отладки
-            //new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //	Status_Code = Status.Added,
-            //	UserId = SRDSession.GetCurrentUserId(),
-            //	Parameters = inputParameters.SerializeToXml()
-            //}, new CancellationToken());
+			//TODO код для отладки
+			new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
+			{
+				Status_Code = Status.Added,
+				UserId = SRDSession.GetCurrentUserId(),
+				Parameters = inputParameters.SerializeToXml()
+			}, new CancellationToken());
 
-            ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
+			//ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
             return Ok();
         }
@@ -1110,7 +1110,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult ModelObjectsUpdatingConstructor(long modelId)
+        public IActionResult ModelObjectsConstructor(long modelId)
         {
             var register = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
             var registerInfo = new
@@ -1182,7 +1182,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult UpdateModelObjects(ModelingObjectsUpdatingModel model)
+        public ActionResult ChangeModelObjects(ModelingObjectsUpdatingModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();

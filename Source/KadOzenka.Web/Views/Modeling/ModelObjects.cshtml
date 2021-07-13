@@ -203,7 +203,7 @@
         updateGrid();
         //initFactorsGrid();
 
-        $('#updateBtn').on('click', showModelObjectsUpdatingConstructor);
+        $('#updateBtn').on('click', showModelObjectsConstructor);
         $('#modelObjectsDiagramBtn').on('click', showModelObjectsDiagram);
     });
 
@@ -805,11 +805,11 @@
     }
 
 
-    function showModelObjectsUpdatingConstructor() {
+    function showModelObjectsConstructor() {
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("ModelObjectsUpdatingConstructor", "Modeling")',
+            url: '@Url.Action("ModelObjectsConstructor", "Modeling")',
             data: { modelId: '@Model.Id' },
             success: function (response) {
                 $("#constructorModal").html(response);

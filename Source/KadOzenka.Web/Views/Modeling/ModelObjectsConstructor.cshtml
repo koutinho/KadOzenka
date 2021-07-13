@@ -1,4 +1,6 @@
 ﻿@using KadOzenka.Web.Models.Modeling
+
+
 <form id="importForm">
     <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
         <li id="sectionUploading" data-expand>
@@ -346,7 +348,7 @@
         }
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("UpdateModelObjects", "Modeling")',
+            url: '@Url.Action("ChangeModelObjects", "Modeling")',
             data: formData,
             contentType: false,
             processData: false,
