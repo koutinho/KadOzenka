@@ -269,7 +269,7 @@ namespace KadOzenka.Web.Controllers
                 .Select(x => new
                 {
                     GroupId = x.GroupId.ToString(),
-                    FullGroupName = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}",
+                    FullGroupName = $"{x.ParentGroup?.Number}. {x.ParentGroup?.GroupName}",
                     ParentGroupNumber = GroupService.GetParentGroupNumber(x.ParentGroup?.Number),
                     SubGroupNumber = GroupService.GetSubGroupNumber(x.ParentGroup?.Number)
                 })
