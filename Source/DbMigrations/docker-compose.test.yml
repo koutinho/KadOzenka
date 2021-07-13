@@ -1,13 +1,13 @@
 version: "3"
 services:
-  postgres_miomo_kadozenka_regres: 
+  postgres: 
     build: 
       context: .
       dockerfile: services/postgresql/Dockerfile
-    container_name: postgres_miomo_kadozenka_test
+    container_name: miomo_kadozenka_test_postgres
     restart: always
     volumes:
-      - postgres_data_kadozenka_miomo_test:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=miomo_test
       - POSTGRES_USER=postgres
@@ -15,7 +15,7 @@ services:
       - 5443:5432
   pgadmin4:
     image: dpage/pgadmin4
-    container_name: pgadmin4
+    container_name: miomo_kadozenka_test_pgadmin4
     restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: "admin@genix.pro"
@@ -25,5 +25,5 @@ services:
     volumes:
       - pgadmin4:/var/lib/pgadmin
 volumes:
-  postgres_data_kadozenka_miomo_test:
+  postgres:
   pgadmin4:
