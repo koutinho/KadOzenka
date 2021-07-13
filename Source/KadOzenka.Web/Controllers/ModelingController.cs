@@ -409,7 +409,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult AddAutomaticModelFactor(long generalModelId)
         {
-            var factorDto = new AutomaticFactorModel
+	        var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+	        var attributes = GetPossibleFactorsForAutomaticModel(generalModelId);
+            var factorDto = new AutomaticFactorModel(attributes, unActiveAttributes)
             {
                 Id = -1,
                 ModelId = generalModelId,
@@ -425,7 +427,10 @@ namespace KadOzenka.Web.Controllers
         {
            var factor = ModelFactorsService.GetFactorById(id);
 
-           var model = AutomaticFactorModel.ToModel(factor);
+           var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+           var attributes = GetPossibleFactorsForAutomaticModel(factor.ModelId.GetValueOrDefault());
+           var model = AutomaticFactorModel.ToModel(factor, attributes, unActiveAttributes);
+
            if (factor.DictionaryId != null)
            {
                //todo после ТЗ на авто. модель объединить с ручной
@@ -507,8 +512,12 @@ namespace KadOzenka.Web.Controllers
             return Ok();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetAllAttributes(long modelId)
+        #endregion
+
+
+        #region Support Methods
+
+        private List<DropDownTreeItemModel> GetPossibleFactorsForAutomaticModel(long modelId)
         {
             var model = ModelService.GetModelEntityById(modelId);
 
@@ -537,13 +546,8 @@ namespace KadOzenka.Web.Controllers
                 marketObjectsAttributesTree
             };
 
-            return Json(fullTree);
+            return fullTree;
         }
-
-        #endregion
-
-
-        #region Support Methods
 
         private KoAlgoritmType ConvertModelType(ModelType inputType)
         {

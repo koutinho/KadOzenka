@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
@@ -64,6 +65,15 @@ namespace KadOzenka.Dal.Modeling
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
             ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id).Where(x => x.IsActive).ToList();
+            var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+            var activeForbiddenAttributes = ModelAttributes.Select(x => x.Id).Intersect(unActiveAttributes).ToList();
+            if (activeForbiddenAttributes.Count > 0)
+            {
+	            var attributeNames = RegisterCache.RegisterAttributes
+		            .Where(x => activeForbiddenAttributes.Contains(x.Key)).Select(x => x.Value.Name);
+	            var attributeNamesStr = string.Join(',', attributeNames);
+	            throw new Exception($"Атрибуты, которые относятся к аналогам должны быть отмечены как неактивные: '{attributeNamesStr}'");
+            }
             AddLog($"Найдено {ModelAttributes?.Count} активных атрибутов для модели.");
             Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 

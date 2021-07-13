@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling.Dto.Factors;
+using Kendo.Mvc.UI;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
@@ -34,10 +36,28 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Тип метки")]
 		public MarkType MarkType { get; set; }
 
+		public List<long> UnActiveAttributeIds { get; }
+		public List<DropDownTreeItemModel> Attributes { get; }
 
-		public static AutomaticFactorModel ToModel(OMModelFactor factor)
+
+
+		public AutomaticFactorModel(List<DropDownTreeItemModel> attributes, List<long> unActiveAttributeIds)
 		{
-			return new AutomaticFactorModel
+			Attributes = attributes;
+			UnActiveAttributeIds = unActiveAttributeIds;
+		}
+
+		//конструктор без параметров нужен при передачи модели в метод контроллера
+		public AutomaticFactorModel()
+		{
+
+		}
+
+
+
+		public static AutomaticFactorModel ToModel(OMModelFactor factor, List<DropDownTreeItemModel> attributes, List<long> unActiveAttributeIds)
+		{
+			return new AutomaticFactorModel(attributes, unActiveAttributeIds)
 			{
 				Id = factor.Id,
 				ModelId = factor.ModelId,
