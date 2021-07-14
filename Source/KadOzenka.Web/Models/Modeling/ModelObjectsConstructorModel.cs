@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace KadOzenka.Web.Models.Modeling
 {
-    public class ModelingObjectsUpdatingModel : IValidatableObject
+    public class ModelObjectsConstructorModel : IValidatableObject
     {
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }

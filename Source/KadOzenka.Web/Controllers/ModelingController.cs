@@ -1182,7 +1182,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ChangeModelObjects(ModelingObjectsUpdatingModel model)
+        public ActionResult ChangeModelObjects(ModelObjectsConstructorModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
