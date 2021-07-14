@@ -16,9 +16,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
+using DevExpress.CodeParser;
 using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Modeling
 {
@@ -197,14 +199,15 @@ namespace KadOzenka.Dal.Modeling
 			if (modelObjectsIds.Count == 0)
 				throw new Exception("В файле не было найдено ИД объектов");
 
-			var objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
-				.Select(x => new
-				{
-					x.IsForControl,
-					x.IsForTraining,
-					x.Coefficients
-				}).Execute();
+			var objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id)).SelectAll().Execute();
 			_log.Debug("{LoggerBasePhrase} найдено {ModelObjectsCount} объектов в БД", loggerBasePhrase, objectsFromDb.Count);
+
+			var objectTypes = System.Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
+				.Select(x => new ObjectTypeInfo
+				{
+					EnumValue = x,
+					Str = x.GetEnumDescription()
+				}).ToList();
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -236,8 +239,24 @@ namespace KadOzenka.Dal.Modeling
 					var omModelToMarketObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)objectFromDb.Id);
 					objectFromExcel.Columns.ForEach(column =>
 					{
+						if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.Id))
+							return;
+
 						if (column.AttributeId != 0)
 						{
+							//платформа не может обновлять атрибуты типа Reference
+							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code))
+							{
+								var type = GetObjectTypeInfo(objectTypes, column.ValueToUpdate?.ToString());
+								if(objectFromDb.UnitPropertyType_Code == type.EnumValue)
+									return;
+
+								objectFromDb.UnitPropertyType = type.Str;
+								objectFromDb.UnitPropertyType_Code = type.EnumValue;
+								objectFromDb.Save();
+								return;
+							}
+
 							omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
 
 							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl))
@@ -251,7 +270,7 @@ namespace KadOzenka.Dal.Modeling
 						}
 						else
 						{
-							//из атрибута вида ххх_1 вытаскиваем ххх (ИД)
+							//из нормализованного атрибута вида ххх_1 вытаскиваем ххх (ИД)
 							var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
 							var attributeIdStr = match.Groups[0].Value;
 							long.TryParse(attributeIdStr, out var attributeId);
@@ -260,12 +279,19 @@ namespace KadOzenka.Dal.Modeling
 							if (coefficientFromDb == null)
 								throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут '{RegisterCache.GetAttributeData(attributeId).Name}'");
 
+							//если фактор нормализованный
 							if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
 							{
 								coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
 							}
+							else if(column.AttributeStr.Contains(PrefixForCoefficientInNormalizedColumn))
+							{
+								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
+							}
+							//если фактор не нормализованный
 							else
 							{
+								coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
 								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
 							}
 
@@ -298,7 +324,19 @@ namespace KadOzenka.Dal.Modeling
 			return stream;
         }
 
-        public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
+        private ObjectTypeInfo GetObjectTypeInfo(List<ObjectTypeInfo> descriptions, string typeFromFile)
+		{
+			if (string.IsNullOrWhiteSpace(typeFromFile))
+				throw new Exception("Не указан тип объекта");
+
+			var enumInfo = descriptions.FirstOrDefault(x => x.Str == typeFromFile);
+			if (enumInfo == null)
+				throw new Exception("Не указан тип объекта");
+
+			return enumInfo;
+		}
+
+		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
         {
 	        try
@@ -481,6 +519,12 @@ namespace KadOzenka.Dal.Modeling
 	        public object ValueToUpdate { get; set; }
         }
 
-        #endregion
-    }
+        private class ObjectTypeInfo
+        {
+	        public PropertyTypes EnumValue { get; set; }
+	        public string Str { get; set; }
+        }
+
+	#endregion
+	}
 }

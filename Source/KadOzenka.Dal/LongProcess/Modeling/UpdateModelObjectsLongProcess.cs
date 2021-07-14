@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 
 
-		public static long AddToQueue(Stream file, string fileName, List<ColumnToAttributeMapping> columnsMapping)
+		public static long AddToQueue(Stream file, string fileName, ModelObjectsConstructor modelObjectsConstructor)
 		{
 			var import = new OMImportDataLog
 			{
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
 				DataFileTitle = DataImporterCommon.GetDataFileTitle(fileName),
 				FileExtension = DataImporterCommon.GetFileExtension(fileName),
-				ColumnsMapping = JsonConvert.SerializeObject(columnsMapping),
+				ColumnsMapping = JsonConvert.SerializeObject(modelObjectsConstructor.ColumnsMapping),
 				MainRegisterId = OMModelToMarketObjects.GetRegisterId(),
 				RegisterViewId = "KoModels"
 			};
@@ -108,7 +108,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				Stream updatingResult;
 				using (_log.TimeOperation("Обновление объектов"))
 				{
-					updatingResult = ModelObjectsService.UpdateModelObjects(excelFile, columnsMapping);
+					//todo
+					var a = new ModelObjectsConstructor
+					{
+						ColumnsMapping = columnsMapping
+					};
+					updatingResult = ModelObjectsService.ChangeModelObjects(excelFile, a);
 				}
 
 				using (_log.TimeOperation("Сохранение файла с результатом обновления"))
