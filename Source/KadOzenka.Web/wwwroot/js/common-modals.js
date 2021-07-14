@@ -24,8 +24,8 @@ function CloseModal(modal) {
     }
 }
 
-function ShowIframe(content, modal, width, height, title, onClose) {
-	if (!modal.data("kendoWindow")) {
+function ShowIframe(content, modal, width, height, title, onClose, forceRecreate) {
+	if (!modal.data("kendoWindow") || forceRecreate) {
 		modal.kendoWindow({
 			content:{
 				url: content,

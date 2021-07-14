@@ -44,6 +44,9 @@
         color: #d7d9ff99;
     }
 
+    .hiddenList{
+        display: none !important;
+    }
 </style>
 @using (Html.BeginForm("TourGroupGroupingSettings", "Tour", FormMethod.Post, new {id = "updateGroupingSettingsForm", enctype = "multipart/form-data"}))
 {
@@ -51,52 +54,14 @@
     <div id="settingsRows" class="bottom-main-content">
 
         @Html.HiddenFor(m => m.GroupId)
-        @for (var i = 0; i < Model.GroupFilters.Count; i++)
+        @for (var i = 0; i < Model.Settings.Count; i++)
         {
-            <fieldset>
-                <div id="groupFilter_@i" class="form-group">
-                    <div class="col-sm-3">
-                        @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes[i], (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"])
-                    </div>
-                    <div class="col-sm-1">
-                        <div class="row">
-                            <label class="switch k-button-icon k-button @(Model.UseDictionary[i] ? "switchActive" : string.Empty)">
-                                <input id="UseDictionary_@(i)_" name="UseDictionary[@i]" class="switchInner" type="checkbox" @(Model.UseDictionary[i] ? "checked" : string.Empty)>
-                                <span class="k-icon k-i-list-unordered"></span>
-                            </label>
-
-                        </div>
-                    </div>
-                    <div id="filters_@i" class="col-sm-8">
-                        @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters[i]); }
-                    </div>
-                    <div id="dict_@i" class="col-sm-8">
-                        @* <div class="col-sm-2"> *@
-                        @*     @Html.Label("","Справочник") *@
-                        @* </div> *@
-                        <div class="row">
-                            <div class="col-sm-4">
-                                @(Html.Kendo().DropDownListFor(m=>m.DictionaryId[i])
-                                    .DataValueField("Value").DataTextField("Text")
-                                    .DataSource(source =>
-                                    {
-                                        source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
-                                            .ServerFiltering(false);}))
-                            </div>
-                            @* <div class="col-sm-2"> *@
-                            @*     @Html.Label("","Значения") *@
-                            @* </div> *@
-                            <div class="col-sm-4">
-                                @(Html.Kendo().TextBoxFor(m=>m.DictionaryValue[i]).Placeholder("1,2,3").HtmlAttributes(new RouteValueDictionary{ {"class","k-input"} }))
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </fieldset>
+            await Html.RenderPartialFor("TourGroupGroupingSettingsPartial.cshtml", m => m.Settings[i]);
         }
 
     </div>
     <div id="dictionaryUploadModal"></div>
+    <div id="dictionaryCardModal"></div>
 }
 
 <script src="~/js/toolbars.js"></script>
@@ -104,7 +69,7 @@
 <script src="~/js/custom-filters.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    let currentRow = @Model.GroupFilters.Count;
+    let currentRow = @Model.Settings.Count;
     $(document).ready(function () {
         $("#groupingSettingToolbar").kendoToolBar({
             items: [
@@ -135,7 +100,7 @@
     });
 
     function bindEvents(){
-        let currentRow = @Model.GroupFilters.Count;
+        let currentRow = @Model.Settings.Count;
         for (let i=0; i<currentRow; i++){
             bindEvent(i);
         }
@@ -143,13 +108,28 @@
 
     function bindEvent(rowIndex){
         bindSwitch(rowIndex);
-        bindAttributeSelectorEvents('#KoAttributes_'+rowIndex.toString()+'_');
-        bindUnusedFieldHider('GroupFilters['+rowIndex.toString()+']');
-        $('#GroupFilters_'+rowIndex.toString()+'__Type').change();
+        bindUpload(rowIndex);
+        bindDictionaryCard(rowIndex);
+        bindAttributeSelectorEvents('#Settings_'+rowIndex.toString()+'__KoAttributes');
+        bindUnusedFieldHider('Settings_'+rowIndex.toString()+'__GroupFilters');
+        $('#Settings_'+rowIndex.toString()+'__GroupFilters_Type').change();
+        createMultiSelectForDictionary(rowIndex);
+    }
+
+    function bindUpload(rowIndex){
+        let button = $('#UploadDictionary_'+rowIndex.toString());
+        button.click( (e) => showDictionaryUploadModalForRow(rowIndex));
+    }
+
+    function bindDictionaryCard(rowIndex){
+        let button = $('#ShowDictionary_'+rowIndex.toString());
+            button.click( (e) => showDictionaryModalForRow(rowIndex));
     }
 
     function bindSwitch(rowIndex){
-        let switchBox = $('#UseDictionary_'+rowIndex.toString()+'_');
+        let switchBox = $('#UseDictionary_'+rowIndex.toString());
+        let dictUpload = $('#UploadDictionary_'+rowIndex.toString());
+        let dictView = $('#ShowDictionary_'+rowIndex.toString());
         let dictFields = $('#dict_'+rowIndex.toString());
         let filterFields = $('#filters_'+rowIndex.toString());
         let switchContainer = switchBox.parent('label');
@@ -158,24 +138,89 @@
             if (e.target.checked) {
                 switchContainer.addClass('switchActive');
                 dictFields.show();
+                dictUpload.show();
+                dictView.show();
                 filterFields.hide();
             } else {
                 switchContainer.removeClass('switchActive');
                 dictFields.hide();
+                dictUpload.hide();
+                dictView.hide();
                 filterFields.show();
             } });
         switchBox.change();
     }
 
-        function showDictionaryUploadModal() {
-            let modal = $("#dictionaryUploadModal");
-            ShowIframe('@Url.Action("GroupingDictionaryImportPreconfigured", "Tour", new {  })', modal, '50%', '80%', "Загрузка справочника");
+    function createMultiSelectForDictionary(rowIndex){
+        let valueBox = $('#Settings_'+rowIndex.toString()+'__DictionaryValue');
+        valueBox.hide();
+        let data = valueBox.val().split('\n');
+        let presetData = (valueBox.val()!=="")
+            ? data.map( (x) => { return { valuesFilter:x, valuesFilterName:x, selected: true } })
+            : [];
+        console.log(presetData);
+        let multiSelect = $('#DictionaryValueSelect_'+rowIndex).kendoMultiSelect({
+                dataTextField: "valuesFilterName",
+                dataValueField: "valuesFilter",
+                dataSource: {
+                    data: presetData
+                },
+                dataBound: onDataBound,
+                enable: true
+            });
+        $('#DictionaryValueSelect_'+rowIndex+'-list').addClass('hiddenList');
+        multiSelect.getKendoMultiSelect().value(data);
+    }
+
+    function onDataBound(e) {
+        $('.k-multiselect .k-input').unbind('keyup');
+        $('.k-multiselect .k-input').on('keyup', onClickEnter);
+    }
+
+    function onClickEnter(e) {
+        if (e.keyCode === 13) {
+            var widget = $(e.target.parentElement.parentElement.lastChild).getKendoMultiSelect();
+            var dataSource = widget.dataSource;
+            var input = $(e.target);
+            var value = input.val().trim();
+            if (!value || value.length === 0) {
+                return;
+            }
+            var newItem = {
+                valuesFilter: value,
+                valuesFilterName: value
+            };
+
+            dataSource.add(newItem);
+            var newValue = newItem.valuesFilter;
+            widget.value(widget.value().concat([newValue]));
+            var box = $(e.target).parents('[id^="dictValue"]').children('[id^="Settings"]')
+            box.val(widget.value().join('\n'));
         }
+    }
+
+    function showDictionaryUploadModal() {
+        let modal = $("#dictionaryUploadModal");
+        ShowIframe('@Url.Action("GroupingDictionaryImport", "Tour")', modal, '50%', '80%', "Загрузка справочника", null, true);
+    }
+
+    function showDictionaryUploadModalForRow(row) {
+        let attr = $('#Settings_'+row+'__KoAttributes').val();
+        let modal = $("#dictionaryUploadModal");
+        ShowIframe('@Url.Action("GroupingDictionaryImportPreconfigured", "Tour")'+'?groupId=@Model.GroupId&attributeId='+attr, modal, '50%', '80%', "Загрузка справочника", null, true);
+    }
+
+    function showDictionaryModalForRow(row){
+        let dictId = $('#Settings_'+row+'__DictionaryId').val();
+        let modal = $("#dictionaryCardModal");
+        ShowIframe('@Url.Action("GroupingDictionaryCard", "Tour")'+'?dictionaryId='+dictId+'&showItems=true', modal, '50%', '80%', "Просмотр справочника", null, true);
+    }
 
     function save() {
         kendo.ui.progress($('body'), true);
         var form = $('#updateGroupingSettingsForm');
         var formObject = Common.Functions.FormToObject(form);
+        console.log(formObject);
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),
@@ -201,10 +246,11 @@
         let index = currentRow;
         kendo.ui.progress($('body'), true);
         $.ajax({
-            url: '@Url.Action("TourGroupGroupingSettingsPartialRow","Tour")',
+            url: '@Url.Action("TourGroupGroupingSettingsPartialNewRow","Tour")',
             data: {
               groupId: @Model.GroupId,
-              index: index
+              index: index,
+              prefix: 'Settings['+index+']'
             },
             cache: false,
             success: function (html) {

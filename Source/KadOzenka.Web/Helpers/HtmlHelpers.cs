@@ -25,7 +25,7 @@ namespace KadOzenka.Web.Helpers
 	{
 		public static IHtmlContent KendoDropDownListTreeWithButton<TModel, TValue>(this IHtmlHelper<TModel> html,
 			Expression<Func<TModel, TValue>> expression, IEnumerable<DropDownTreeItemModel> data, string dataTextField = "Text",
-			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idSuffix = null)
+			string dataValueField = "Value", FilterType filter = FilterType.Contains, bool useAddTag = false, string addFunction = "", double minLength = 3, bool isReadonly = false, string idSuffix = null, string idOverwrite =null)
 		{
 			var modelExpressionProvider = (ModelExpressionProvider)html.ViewContext.HttpContext.RequestServices.GetService(typeof(IModelExpressionProvider));
 			var modelExplorer = modelExpressionProvider.CreateModelExpression(html.ViewData, expression);
@@ -58,7 +58,7 @@ namespace KadOzenka.Web.Helpers
 			addTag.InnerHtml.AppendHtml("<span class='fas fa-plus-circle'></span>");
 
 			DropDownTreeBuilder dropDownTreeBuilder = html.Kendo().DropDownTree()
-				.Name(name)
+				.Name(idOverwrite ?? name)
 				.Filter(filter)
 				.BindTo(dataSource)
 				.ClearButton(false)
@@ -420,7 +420,7 @@ namespace KadOzenka.Web.Helpers
 			var modelExplorer = modelExpressionProvider.CreateModelExpression(helper.ViewData, expression);
 			object model = modelExplorer.Model;
 			var viewData = new ViewDataDictionary(helper.ViewData);
-			var htmlPrefix = viewData.TemplateInfo.HtmlFieldPrefix;
+			var htmlPrefix = viewData.TemplateInfo.HtmlFieldPrefix.Replace('[','_').Replace(']','_');
 			viewData.TemplateInfo.HtmlFieldPrefix += !Equals(htmlPrefix, string.Empty) ? $".{name}" : name;
 
 			return helper.RenderPartialAsync(partialViewName, model, viewData);

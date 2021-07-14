@@ -10,23 +10,26 @@ namespace KadOzenka.Web.Models.Tour
     {
         public long? GroupId { get; set; }
 
-        public List<bool> UseDictionary { get; set; }
+        public List<TourGroupGroupingSettingsPartialModel> Settings { get; set; }
 
-        public List<long?> DictionaryId { get; set; }
-
-        public List<string> DictionaryValue { get; set; }
-
-        public List<Filters> GroupFilters { get; set; }
-
-        public List<long?> KoAttributes { get; set; }
+        // public List<bool> UseDictionary { get; set; }
+        //
+        // public List<long?> DictionaryId { get; set; }
+        //
+        // public List<string> DictionaryValue { get; set; }
+        //
+        // public List<Filters> GroupFilters { get; set; }
+        //
+        // public List<long?> KoAttributes { get; set; }
 
         public TourGroupGroupingSettingsModel()
         {
-            GroupFilters = new List<Filters>();
-            KoAttributes = new List<long?>();
-            DictionaryId = new List<long?>();
-            DictionaryValue = new List<string>();
-            UseDictionary = new List<bool>();
+            Settings = new List<TourGroupGroupingSettingsPartialModel>();
+            // GroupFilters = new List<Filters>();
+            // KoAttributes = new List<long?>();
+            // DictionaryId = new List<long?>();
+            // DictionaryValue = new List<string>();
+            // UseDictionary = new List<bool>();
         }
 
         public TourGroupGroupingSettingsDto ToDto()
@@ -34,10 +37,10 @@ namespace KadOzenka.Web.Models.Tour
             return new()
             {
                 GroupId = GroupId,
-                GroupFilterSetting = GroupFilters,
-                KoAttributes = KoAttributes,
-                DictionaryId = DictionaryId,
-                DictionaryValue = DictionaryValue
+                // GroupFilterSetting = GroupFilters,
+                // KoAttributes = KoAttributes,
+                // DictionaryId = DictionaryId,
+                // DictionaryValue = DictionaryValue
             };
         }
 
@@ -46,28 +49,29 @@ namespace KadOzenka.Web.Models.Tour
             return new()
             {
                 GroupId = dto.GroupId,
-                GroupFilters = dto.GroupFilterSetting,
-                KoAttributes = dto.KoAttributes,
-                DictionaryId = dto.DictionaryId,
-                DictionaryValue = dto.DictionaryValue
+                // GroupFilters = dto.GroupFilterSetting,
+                // KoAttributes = dto.KoAttributes,
+                // DictionaryId = dto.DictionaryId,
+                // DictionaryValue = dto.DictionaryValue
             };
         }
 
         public List<OMTourGroupGroupingSettings> ToObjectModel()
         {
             var om = new List<OMTourGroupGroupingSettings>();
-            for (int i = 0; i < GroupFilters.Count; i++)
+
+            foreach (var setting in Settings)
             {
-                var useDict = UseDictionary[i];
+                var useDict = setting.UseDictionary;
                 if (useDict)
                 {
                     om.Add(new OMTourGroupGroupingSettings
                     {
                         GroupId = GroupId,
-                        KoAttributeId = KoAttributes[i],
-                        Filter = GroupFilters[i].SerializeToXml(),
-                        DictionaryId = DictionaryId[i],
-                        DictionaryValues = DictionaryValue[i]
+                        KoAttributeId = setting.KoAttributes,
+                        Filter = setting.GroupFilters.SerializeToXml(),
+                        DictionaryId = setting.DictionaryId,
+                        DictionaryValues = setting.DictionaryValue
                     });
                 }
                 else
@@ -75,9 +79,8 @@ namespace KadOzenka.Web.Models.Tour
                     om.Add(new OMTourGroupGroupingSettings
                     {
                         GroupId = GroupId,
-                        KoAttributeId = KoAttributes[i],
-                        Filter = GroupFilters[i].SerializeToXml()
-
+                        KoAttributeId = setting.KoAttributes,
+                        Filter = setting.GroupFilters.SerializeToXml()
                     });
                 }
             }
