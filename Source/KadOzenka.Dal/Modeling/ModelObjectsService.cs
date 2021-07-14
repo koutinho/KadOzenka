@@ -244,16 +244,10 @@ namespace KadOzenka.Dal.Modeling
 
 						if (column.AttributeId != 0)
 						{
-							//платформа не может обновлять атрибуты типа Reference
 							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code))
 							{
 								var type = GetObjectTypeInfo(objectTypes, column.ValueToUpdate?.ToString());
-								if(objectFromDb.UnitPropertyType_Code == type.EnumValue)
-									return;
-
-								objectFromDb.UnitPropertyType = type.Str;
-								objectFromDb.UnitPropertyType_Code = type.EnumValue;
-								objectFromDb.Save();
+								omModelToMarketObject.SetAttributeValue((int)column.AttributeId, type.Str, (int)type.EnumValue);
 								return;
 							}
 
