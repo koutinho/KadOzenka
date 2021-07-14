@@ -183,7 +183,7 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public Stream ChangeModelObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
+        public Stream UpdateModelObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
         {
 	        var loggerBasePhrase = "Обновление объектов моделирования:";
 			_log.Debug("{LoggerBasePhrase} старт", loggerBasePhrase);
@@ -192,7 +192,7 @@ namespace KadOzenka.Dal.Modeling
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
-			var objectsFromExcel = GetInfoFromFile(sheet, modelObjectsConstructor.ColumnsMapping);
+			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", loggerBasePhrase, MaxRowsCountInFileForUpdating);
 
 			var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
@@ -318,14 +318,158 @@ namespace KadOzenka.Dal.Modeling
 			return stream;
         }
 
-        private ObjectTypeInfo GetObjectTypeInfo(List<ObjectTypeInfo> descriptions, string typeFromFile)
+		public Stream CreateModelObjects(ExcelFile file, long modelId, ModelObjectsConstructor modelObjectsConstructor)
+		{
+			var loggerBasePhrase = "Обновление объектов моделирования:";
+			_log.Debug("{LoggerBasePhrase} старт", loggerBasePhrase);
+
+			var sheet = file.Worksheets[0];
+			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
+			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
+
+			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
+			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", loggerBasePhrase, MaxRowsCountInFileForUpdating);
+
+			//var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
+			//if (modelObjectsIds.Count == 0)
+			//	throw new Exception("В файле не было найдено ИД объектов");
+
+			//var objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id)).SelectAll().Execute();
+			//_log.Debug("{LoggerBasePhrase} найдено {ModelObjectsCount} объектов в БД", loggerBasePhrase, objectsFromDb.Count);
+
+			var objectTypes = System.Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
+				.Select(x => new ObjectTypeInfo
+				{
+					EnumValue = x,
+					Str = x.GetEnumDescription()
+				}).ToList();
+
+			var cancelTokenSource = new CancellationTokenSource();
+			var options = new ParallelOptions
+			{
+				CancellationToken = cancelTokenSource.Token,
+				MaxDegreeOfParallelism = 100
+			};
+			Parallel.ForEach(objectsFromExcel, options, objectFromExcel =>
+			{
+				try
+				{
+					lock (_locker)
+					{
+						CurrentRowIndexInFileForUpdating++;
+					}
+					if (CurrentRowIndexInFileForUpdating % 1000 == 0)
+						_log.Debug("{LoggerBasePhrase} обрабатывается объект № {CurrentCount}", loggerBasePhrase, CurrentRowIndexInFileForUpdating);
+
+					//var objectFromDb = objectsFromDb.FirstOrDefault(o => o.Id == objectFromExcel.Id);
+					//if (objectFromDb == null)
+					//{
+					//	ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex, $"Объект с ИД {objectFromExcel.Id} не найден в БД");
+					//	return;
+					//}
+
+					//var coefficientsFromDb = objectFromDb.DeserializeCoefficient();
+					var coefficientsFromDb = new List<CoefficientForObject>();
+
+					bool isForControl = false, isForTraining = false;
+					//var omModelToMarketObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)objectFromDb.Id);
+					var omModelToMarketObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), -1);
+					omModelToMarketObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), modelId);
+					objectFromExcel.Columns.ForEach(column =>
+					{
+						if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.Id))
+							return;
+
+						if (column.AttributeId != 0)
+						{
+							//платформа не может обновлять атрибуты типа Reference
+							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code))
+							{
+								var type = GetObjectTypeInfo(objectTypes, column.ValueToUpdate?.ToString());
+								omModelToMarketObject.SetAttributeValue((int)column.AttributeId, type.Str, referenceItemId: (int)type.EnumValue);
+								return;
+							}
+
+							omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
+
+							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl))
+							{
+								isForControl = column.ValueToUpdate?.ToString()?.ToLower() == "да";
+							}
+							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining))
+							{
+								isForTraining = column.ValueToUpdate?.ToString()?.ToLower() == "да";
+							}
+						}
+						else
+						{
+							//из нормализованного атрибута вида ххх_1 вытаскиваем ххх (ИД)
+							var match = Regex.Match(column.AttributeStr, @$"^[^{PrefixForFactor}]*");
+							var attributeIdStr = match.Groups[0].Value;
+							long.TryParse(attributeIdStr, out var attributeId);
+
+							var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
+							if (coefficientFromDb == null)
+							{
+								coefficientFromDb = new CoefficientForObject(attributeId);
+								coefficientsFromDb.Add(coefficientFromDb);
+								//	throw new Exception($"У объекта с ИД {objectFromExcel.Id} не найден атрибут '{RegisterCache.GetAttributeData(attributeId).Name}'");
+							}
+
+							//если фактор нормализованный
+							if (column.AttributeStr.Contains(PrefixForValueInNormalizedColumn))
+							{
+								coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
+							}
+							else if (column.AttributeStr.Contains(PrefixForCoefficientInNormalizedColumn))
+							{
+								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
+							}
+							//если фактор не нормализованный
+							else
+							{
+								coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
+								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
+							}
+
+							omModelToMarketObject.SetAttributeValue(
+								(int)OMModelToMarketObjects.GetColumnAttributeId(c => c.Coefficients),
+								coefficientsFromDb.SerializeCoefficient());
+						}
+					});
+
+					//if ((isForControl && objectFromDb.IsForTraining.GetValueOrDefault()) ||
+					//	(isForTraining && objectFromDb.IsForControl.GetValueOrDefault()) ||
+					//	(isForTraining && isForControl))
+					if (isForTraining && isForControl)
+						throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
+
+					RegisterStorage.Save(omModelToMarketObject);
+					sheet.Rows[objectFromExcel.RowIndexInFile].Cells[maxColumnIndex].SetValue("Обработано");
+				}
+				catch (Exception ex)
+				{
+					long errorId = ErrorManager.LogError(ex);
+					ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
+						$"Ошибка: {ex.Message} (подробно в журнале №{errorId})");
+				}
+			});
+
+			var stream = new MemoryStream();
+			file.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+
+			return stream;
+		}
+
+		private ObjectTypeInfo GetObjectTypeInfo(List<ObjectTypeInfo> descriptions, string typeFromFile)
 		{
 			if (string.IsNullOrWhiteSpace(typeFromFile))
 				throw new Exception("Не указан тип объекта");
 
 			var enumInfo = descriptions.FirstOrDefault(x => x.Str == typeFromFile);
 			if (enumInfo == null)
-				throw new Exception("Не указан тип объекта");
+				throw new Exception($"Указан недопустимый тип объекта '{typeFromFile}'");
 
 			return enumInfo;
 		}
@@ -398,13 +542,13 @@ namespace KadOzenka.Dal.Modeling
 
         #region Support Methods
 
-		private List<ModelObjectsFromExcelData> GetInfoFromFile(ExcelWorksheet sheet, List<ColumnToAttributeMapping> columnsMapping)
+		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsConstructor config)
 		{
 			var rows = sheet.Rows;
 			MaxRowsCountInFileForUpdating = DataExportCommon.GetLastUsedRowIndex(sheet);
 			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
 
-			var columnsMappingWithoutPrimaryKey = columnsMapping.Where(x =>
+			var columnsMappingWithoutPrimaryKey = config.ColumnsMapping.Where(x =>
 				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
 
 			for (var i = 1; i <= MaxRowsCountInFileForUpdating; i++)
@@ -425,7 +569,7 @@ namespace KadOzenka.Dal.Modeling
 
 				modelObjectsFromExcel.Add(new ModelObjectsFromExcelData
 				{
-					Id = cells[IdColumnIndex].Value.ParseToLongNullable(),
+					Id = config.IdColumnIndex == null ? null : cells[config.IdColumnIndex.Value].Value.ParseToLongNullable(),
 					RowIndexInFile = i,
 					Columns = columnsWithValues
 				});

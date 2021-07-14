@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
@@ -17,7 +18,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 	{
 		private long _addressAttributeId;
 		private long _squareAttributeId;
-		private OMModelToMarketObjects _firstObject;
+		private OMModel _model;
 		private ExcelRow _firstExcelRow;
 
 
@@ -47,6 +48,14 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			_addressAttributeId = RandomGenerator.GenerateRandomId();
 			_squareAttributeId = RandomGenerator.GenerateRandomId();
 			
+			_model = new ModelBuilder().Build();
+		}
+
+
+
+		[Test]
+		public void Can_Update_Object()
+		{
 			var coefficients = new List<CoefficientForObject>
 			{
 				new(_addressAttributeId)
@@ -60,26 +69,30 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 					Value = RandomGenerator.GetRandomString()
 				}
 			};
+			var firstObject = new ModelObjectBuilder().Id(1).Model(_model).Coefficients(coefficients).Build();
 
-			var model = new ModelBuilder().Build();
-			_firstObject = new ModelObjectBuilder().Id(1).Model(model).Coefficients(coefficients).Build();
+			var excelFile = GetFile();
+			var config = GetConfig(0);
+			ModelObjectsService.UpdateModelObjects(excelFile, config);
+
+			CheckUpdatedObject(firstObject.Id, _firstExcelRow);
 		}
 
-
-
 		[Test]
-		public void Can_Update_Objects()
+		public void Can_Create_Object()
 		{
 			var excelFile = GetFile();
-			var config = GetConfig();
-			ModelObjectsService.ChangeModelObjects(excelFile, config);
+			var config = GetConfig(null);
+			ModelObjectsService.CreateModelObjects(excelFile, _model.Id, config);
 
-			CheckUpdatedObject(_firstObject.Id, _firstExcelRow);
+			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id).SelectAll().ExecuteFirstOrDefault();
+			Assert.That(createdObject, Is.Not.Null);
+			CheckUpdatedObject(createdObject.Id, _firstExcelRow);
 		}
 
 
 		#region Support Methods
-		
+
 		private ExcelFile GetFile()
 		{
 			var fileName = "objects.xlsx";
@@ -89,11 +102,11 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			}
 		}
 
-		private ModelObjectsConstructor GetConfig()
+		private ModelObjectsConstructor GetConfig(int? idColumnIndex)
 		{
 			return new ModelObjectsConstructor
 			{
-				IdColumnIndex = 0,
+				IdColumnIndex = idColumnIndex,
 				ColumnsMapping = new List<ColumnToAttributeMapping>
 				{
 					new(1, GetAttributeId(x => x.IsForTraining)),
@@ -156,6 +169,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			public decimal AddressCoefficient { get; set; }
 			public decimal SquareCoefficient { get; set; }
 		}
+
 		#endregion
 	}
 }

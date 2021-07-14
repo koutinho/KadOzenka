@@ -113,7 +113,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					{
 						ColumnsMapping = columnsMapping
 					};
-					updatingResult = ModelObjectsService.ChangeModelObjects(excelFile, a);
+					updatingResult = ModelObjectsService.UpdateModelObjects(excelFile, a);
 				}
 
 				using (_log.TimeOperation("Сохранение файла с результатом обновления"))
