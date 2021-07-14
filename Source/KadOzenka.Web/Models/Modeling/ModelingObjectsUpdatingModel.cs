@@ -9,19 +9,17 @@ namespace KadOzenka.Web.Models.Modeling
     {
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
+        public KeyColumnToAttributeMapping KeyColumn { get; set; }
         public List<ColumnToAttributeMapping> Columns { get; set; }
 
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
 	        if (File == null)
-	        {
-				yield return new ValidationResult("Не передан файл", new[] { nameof(File) });
-			}
+		        yield return new ValidationResult("Не передан файл");
+
 	        if (Columns.Count <= 1)
-	        {
-		        yield return new ValidationResult("Минимальное число сопоставляемых полей - 2", new[] { nameof(Columns) });
-	        }
+		        yield return new ValidationResult("Минимальное число сопоставляемых полей - 2");
         }
 
 		public List<Dal.Modeling.Entities.ColumnToAttributeMapping> Map()
@@ -41,5 +39,12 @@ namespace KadOzenka.Web.Models.Modeling
 
 		//для нормализованных атрибутов ИД идет с префиксом _
 	    public string AttributeId { get; set; }
+    }
+
+    public class KeyColumnToAttributeMapping
+    {
+	    public int ColumnIndex { get; set; }
+
+	    public long AttributeId { get; set; }
     }
 }

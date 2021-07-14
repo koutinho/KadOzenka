@@ -176,9 +176,9 @@
 
 
     function saveChanges() {
-        var listView = $("#listView").data('kendoListView');
-        var data = listView.dataSource.data();
-        var columns = $.map(data,
+        var matchingSection = $("#listView").data('kendoListView');
+        var matchedData = matchingSection.dataSource.data();
+        var columns = $.map(matchedData,
             function(item) {
                 return {
                     IsKey: item.IsKey,
@@ -187,26 +187,13 @@
                 };
             });
 
-        var keyColumns = columns.filter(x => x.IsKey);
-        console.log('keyColumns', keyColumns);
-        if (keyColumns.length > 1) {
-            Common.ShowError("Для обновления должен быть указан один ключ (Индентификатор)");
+        var formData;
+        try {
+            formData = fillFormData(columns);
+        } 
+        catch (e) {
+            Common.ShowError(e);
             return;
-        }
-        else if(keyColumns.length == 1 && keyColumns[0].AttributeId != '@OMModelToMarketObjects.GetColumnAttributeId(x => x.Id)')
-        {
-            Common.ShowError("Для обновления в качестве ключа должен быть выбран антибут 'Идентификатор'");
-            return;
-        }
-        var file = $('#files').data('kendoUpload').getFiles()[0];
-        var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
-
-        var formData = new FormData();
-        formData.append('@nameof(ModelingObjectsUpdatingModel.File)', file.rawFile);
-        formData.append('@nameof(ModelingObjectsUpdatingModel.IsBackgroundDownload)', isBackgroundDownload);
-        for (var i = 0; i !== columns.length; i++) {
-            formData.append("columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
-            formData.append("columns[" + i + "].AttributeId", columns[i].AttributeId);
         }
         kendo.ui.progress($('#importForm'), true);
         $.ajax({
@@ -242,5 +229,32 @@
                 kendo.ui.progress($('#importForm'), false);
             }
         });
+    }
+
+    function fillFormData(columns) {
+        var formData = new FormData();
+        var keyColumns = columns.filter(x => x.IsKey);
+        if (keyColumns.length > 1) {
+            throw "Для обновления должен быть указан один ключ (Индентификатор)";
+        } 
+        else if (keyColumns.length === 1) {
+            if (keyColumns[0].AttributeId != '@OMModelToMarketObjects.GetColumnAttributeId(x => x.Id)') {
+                throw "Для обновления в качестве ключа должен быть выбран антибут 'Идентификатор'";
+            } else {
+                var keyColumnName = '@nameof(ModelingObjectsUpdatingModel.KeyColumn)';
+                formData.append(`${keyColumnName}.ColumnIndex`, keyColumns[0].ColumnIndex);
+                formData.append(`${keyColumnName}.AttributeId`, keyColumns[0].AttributeId);
+            }
+        }
+        var file = $('#files').data('kendoUpload').getFiles()[0];
+        var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
+        formData.append('@nameof(ModelingObjectsUpdatingModel.File)', file.rawFile);
+        formData.append('@nameof(ModelingObjectsUpdatingModel.IsBackgroundDownload)', isBackgroundDownload);
+        for (var i = 0; i !== columns.length; i++) {
+            formData.append("Columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
+            formData.append("Columns[" + i + "].AttributeId", columns[i].AttributeId);
+        }
+
+        return formData;
     }
 </script>
