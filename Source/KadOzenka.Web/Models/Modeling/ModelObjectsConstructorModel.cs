@@ -9,7 +9,7 @@ namespace KadOzenka.Web.Models.Modeling
     {
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
-        public KeyColumnToAttributeMapping KeyColumn { get; set; }
+        public int? KeyColumnIndex { get; set; }
         public List<ColumnToAttributeMapping> Columns { get; set; }
 
 
@@ -39,12 +39,5 @@ namespace KadOzenka.Web.Models.Modeling
 
 		//для нормализованных атрибутов ИД идет с префиксом _
 	    public string AttributeId { get; set; }
-    }
-
-    public class KeyColumnToAttributeMapping
-    {
-	    public int ColumnIndex { get; set; }
-
-	    public long AttributeId { get; set; }
     }
 }
