@@ -236,6 +236,7 @@ namespace KadOzenka.Dal.Gadgets
 
             data.Rows.Add("/RegistersView/MarketObjects", "Реестр объектов аналогов", _moveToPageSymbol);
             data.Rows.Add("/Map", "На карту", _moveToPageSymbol);
+            data.Rows.Add("Map/VisMio", "Карта ВИСМИО-МО", _moveToPageSymbol);
 
             return data;
         }
