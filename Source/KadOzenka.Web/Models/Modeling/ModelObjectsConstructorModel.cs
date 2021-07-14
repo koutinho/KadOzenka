@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using KadOzenka.Dal.Modeling.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -9,7 +10,7 @@ namespace KadOzenka.Web.Models.Modeling
     {
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
-        public int? KeyColumnIndex { get; set; }
+        public int? IdColumnIndex { get; set; }
         public List<ColumnToAttributeMapping> Columns { get; set; }
 
 
@@ -22,13 +23,17 @@ namespace KadOzenka.Web.Models.Modeling
 		        yield return new ValidationResult("Минимальное число сопоставляемых полей - 2");
         }
 
-		public List<Dal.Modeling.Entities.ColumnToAttributeMapping> Map()
+		public ModelObjectsConstructor Map()
 		{
-			return Columns.Select(x => new Dal.Modeling.Entities.ColumnToAttributeMapping
+			return new ModelObjectsConstructor
 			{
-				AttributeId = x.AttributeId,
-				ColumnIndex = x.ColumnIndex
-			}).ToList();
+				IdColumnIndex = IdColumnIndex,
+				ColumnsMapping = Columns.Select(x => new Dal.Modeling.Entities.ColumnToAttributeMapping
+				{
+					AttributeId = x.AttributeId,
+					ColumnIndex = x.ColumnIndex
+				}).ToList()
+			};
 		}
     }
 

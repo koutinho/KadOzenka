@@ -1204,7 +1204,7 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
 
-            var resultStream = ModelObjectsService.UpdateModelObjects(excelFile, model.Map());
+            var resultStream = ModelObjectsService.ChangeModelObjects(excelFile, model.Map());
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
             return Json(new { fileName = fileName });

@@ -193,7 +193,7 @@
             if (keyColumns[0].AttributeId != '@OMModelToMarketObjects.GetColumnAttributeId(x => x.Id)') {
                 throw "Для обновления в качестве ключа должен быть выбран антибут 'Идентификатор'";
             } else {
-                formData.append('@nameof(ModelObjectsConstructorModel.KeyColumnIndex)', keyColumns[0].ColumnIndex);
+                formData.append('@nameof(ModelObjectsConstructorModel.IdColumnIndex)', keyColumns[0].ColumnIndex);
             }
         }
         var file = $('#files').data('kendoUpload').getFiles()[0];

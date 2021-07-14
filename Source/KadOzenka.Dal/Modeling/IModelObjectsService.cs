@@ -25,7 +25,7 @@ namespace KadOzenka.Dal.Modeling
 
 		Stream ExportMarketObjectsToExcel(long modelId, List<OMModelFactor> factors);
 
-		Stream UpdateModelObjects(ExcelFile file, List<ColumnToAttributeMapping> columnsMapping);
+		Stream ChangeModelObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor);
 
 		ModelObjectsService.ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
 			List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber);

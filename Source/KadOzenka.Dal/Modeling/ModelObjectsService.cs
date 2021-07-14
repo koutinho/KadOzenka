@@ -181,7 +181,7 @@ namespace KadOzenka.Dal.Modeling
             return stream;
         }
 
-        public Stream UpdateModelObjects(ExcelFile file, List<ColumnToAttributeMapping> columnsMapping)
+        public Stream ChangeModelObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
         {
 	        var loggerBasePhrase = "Обновление объектов моделирования:";
 			_log.Debug("{LoggerBasePhrase} старт", loggerBasePhrase);
@@ -190,7 +190,7 @@ namespace KadOzenka.Dal.Modeling
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
-			var objectsFromExcel = GetInfoFromFile(sheet, columnsMapping);
+			var objectsFromExcel = GetInfoFromFile(sheet, modelObjectsConstructor.ColumnsMapping);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", loggerBasePhrase, MaxRowsCountInFileForUpdating);
 
 			var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
