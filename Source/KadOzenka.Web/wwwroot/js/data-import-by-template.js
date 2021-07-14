@@ -262,3 +262,60 @@ function filter(dataSource, query) {
 
     return hasVisibleChildren;
 }
+
+
+function initFileUploader(dataCountForBackgroundLoading, onSelectFunction) {
+	$('#files').kendoUpload({
+        multiple: false,
+        localization: {
+            select: 'Загрузить Файл',
+            clearSelectedFiles: 'Очистить',
+            //invalidMaxFileSize: "Максимальный размер файла - 4 МБ"
+        },
+        async: {
+            autoUpload: !onSelectFunction,
+            saveUrl: '/DataImportByTemplate/ParseFileColumns'
+        },
+        select: onSelectFunction,
+		validation: {
+			allowedExtensions: ['.xls', '.xlsx'],
+			//maxFileSize: 4194304
+		},
+        success: function (e) {
+	        if (!dataCountForBackgroundLoading)
+		        dataCountForBackgroundLoading = 1000;
+	        onFileUpload(e, dataCountForBackgroundLoading);
+        },
+		error: function (e) {
+			$("#columnsListBox").data("kendoListBox").setDataSource([]);
+			resetData();
+			if (e.XMLHttpRequest.responseText) {
+				Common.ShowError(e.XMLHttpRequest.responseText);
+			} else {
+				Common.ShowError("Не удалось загрузить выбранный файл");
+			}
+		},
+		clear: function (e) {
+			$("#columnsListBox").data("kendoListBox").setDataSource([]);
+			resetData();
+		}
+	}).data('kendoUpload');
+}
+
+function onFileUpload(e, dataCountForBackgroundLoading) {
+	if (e.operation === "upload") {
+		var columnNames = e.response.ColumnsNames;
+		var dataCount = e.response.DataCount;
+		var excelColumnsListBox = $("#columnsListBox").data("kendoListBox");
+        excelColumnsListBox.setDataSource(columnNames);
+        resetData();
+        var backgroundDownloadCheckbox = $("#backgroundDownloadCheckbox");
+        if (!backgroundDownloadCheckbox)
+	        return;
+		if (dataCount > dataCountForBackgroundLoading) {
+			backgroundDownloadCheckbox.prop('checked', true);
+		} else {
+			backgroundDownloadCheckbox.prop('checked', false);
+		}
+	}
+}
