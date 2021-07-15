@@ -12,6 +12,7 @@ using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects.Exceptions;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
@@ -30,7 +31,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 		private readonly long _unitPropertyTypeAttributeId;
 		private readonly long _isForTrainingAttributeId;
 		private readonly long _isForControlAttributeId;
-		private List<ObjectTypeInfo> _objectTypes;
+		private readonly List<ObjectTypeInfo> _objectTypes;
 
 		public int MaxRowsCount;
 		public int CurrentRowCount;
@@ -47,7 +48,6 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 					Str = x.GetEnumDescription()
 				}).ToList();
 
-
 			//вынесено отдельно, чтобы избежать рефлексии в цикле
 			_coefficientsAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients);
 			_idAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Id);
@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			_isForControlAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl);
 		}
 
-		
+
 		public Stream ChangeObjects(bool isUpdating, ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
 		{
 			_log.Debug("{LoggerBasePhrase} старт. Обновление - {IsUpdating}", LoggerBasePhrase, isUpdating);
@@ -70,9 +70,11 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 
 			IModelObjectsImporter importer;
 			if (isUpdating)
-				importer = new ModelObjectsImporterForUpdating(objectsFromExcel, _log);
+				importer = new ModelObjectsImporterForUpdating(objectsFromExcel, _isForTrainingAttributeId,
+					_isForControlAttributeId, _coefficientsAttributeId, _log);
 			else
-				importer = new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId);
+				importer = new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId,
+					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId);
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -208,7 +210,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			});
 
 			if (IsInValidObject(modelToMarketObject))
-				throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
+				throw new ObjectIsForControlAndForTrainingAtTheSameTimeException();
 
 			RegisterStorage.Save(modelToMarketObject);
 		}

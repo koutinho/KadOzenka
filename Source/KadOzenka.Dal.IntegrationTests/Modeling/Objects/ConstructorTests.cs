@@ -9,6 +9,9 @@ using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Exceptions;
+using KadOzenka.Dal.Modeling.Objects.Import;
+using KadOzenka.Dal.Modeling.Objects.Import.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -22,11 +25,16 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		private OMModel _model;
 		private ExcelRow _firstExcelRow;
 		private ExcelRow _secondExcelRow;
+		private long _modelIdAttributeId;
+		private long _coefficientAttributeId;
 
 
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
+			_modelIdAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId);
+			_coefficientAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients);
+
 			_firstExcelRow = new ExcelRow
 			{
 				Id = 1,
@@ -85,7 +93,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		}
 
 		[Test]
-		public void CanNot_Make_Object_ForTraining_If_It_Was_ForControl()
+		public void CanNot_Update_Object_ForTraining_If_It_Was_ForControl()
 		{
 			var coefficients = GetCoefficients();
 			var secondObject = new ModelObjectBuilder().Id(2).Model(_model).ForControl(true).Coefficients(coefficients).Build();
@@ -107,29 +115,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		}
 
 		[Test]
-		public void CanNot_Make_Object_ForTraining_And_ForControl_At_The_Same_Time()
-		{
-			var coefficients = GetCoefficients();
-			var thirdObject = new ModelObjectBuilder().Id(3).Model(_model).Coefficients(coefficients).Build();
-
-			var excelFile = GetFile();
-			var config = new ModelObjectsConstructor
-			{
-				IdColumnIndex = 0,
-				ModelId = _model.Id,
-				ColumnsMapping = new List<ColumnToAttributeMapping>
-				{
-					new(1, GetAttributeId(x => x.IsForTraining)),
-					new(1, GetAttributeId(x => x.IsForControl))
-				}
-			};
-
-			ModelObjectsImporter.ChangeObjects(true, excelFile, config);
-
-			CheckObjectWasNotUpdated(thirdObject.Id, thirdObject);
-		}
-
-		[Test]
 		public void Can_Create_Object()
 		{
 			var excelFile = GetFile();
@@ -141,6 +126,21 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			CheckUpdatedObject(createdObject.Id, _firstExcelRow);
 		}
 
+		[Test]
+		public void CanNot_Create_Object_ForTraining_And_ForControl_At_The_Same_Time()
+		{
+			var importer = new ModelObjectsImporterForCreation(_model.Id, _modelIdAttributeId, _coefficientAttributeId);
+			var excelData = new ModelObjectsFromExcelData
+			{
+				Columns = new List<Column>
+				{
+					new() {AttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining), AttributeStr = GetAttributeId(x => x.IsForTraining), ValueToUpdate = "Да"},
+					new() {AttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl), AttributeStr = GetAttributeId(x => x.IsForControl), ValueToUpdate = "Да"}
+				}
+			};
+
+			Assert.Throws<ObjectIsForControlAndForTrainingAtTheSameTimeException>(() => ModelObjectsImporter.ProcessObjectFromExcel(importer, excelData));
+		}
 
 		#region Support Methods
 

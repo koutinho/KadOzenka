@@ -9,21 +9,25 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 	public class ModelObjectsImporterForCreation : IModelObjectsImporter
 	{
 		private readonly long _modelId;
+		private readonly long _modelIdAttributeId;
+		private readonly long _coefficientAttributeId;
 
-		public ModelObjectsImporterForCreation(long? modelId)
+		public ModelObjectsImporterForCreation(long? modelId, long modelIdAttributeId, long coefficientAttributeId)
 		{
 			if (modelId == null)
 				throw new Exception("Не передан ИД модели для создания объектов моделирования");
 
 			_modelId = modelId.Value;
+			_modelIdAttributeId = modelIdAttributeId;
+			_coefficientAttributeId = coefficientAttributeId;
 		}
 
 		public RegisterObject CreateObject(long? objectId)
 		{
 			var registerObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), -1);
 			
-			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _modelId);
-			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients), string.Empty);
+			registerObject.SetAttributeValue(_modelIdAttributeId, _modelId);
+			registerObject.SetAttributeValue(_coefficientAttributeId, string.Empty);
 
 			return registerObject;
 		}

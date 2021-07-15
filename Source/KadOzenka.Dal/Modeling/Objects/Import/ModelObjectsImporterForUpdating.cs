@@ -10,10 +10,14 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 {
 	public class ModelObjectsImporterForUpdating : IModelObjectsImporter
 	{
+		private readonly long _isForTrainingAttributeId;
+		private readonly long _isForControlAttributeId;
+		private readonly long _coefficientsAttributeId;
 		private readonly List<OMModelToMarketObjects> _objectsFromDb;
 
 		
 		public ModelObjectsImporterForUpdating(List<ModelObjectsFromExcelData> objectsFromExcel,
+			long isForTrainingAttributeId, long isForControlAttributeId, long coefficientsAttributeId,
 			ILogger logger)
 		{
 			var modelObjectsIds = objectsFromExcel.Select(x => x.Id).ToList();
@@ -22,6 +26,10 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 
 			_objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id)).SelectAll().Execute();
 			logger.Debug("Найдено {ModelObjectsCount} объектов моделирования в БД", _objectsFromDb.Count);
+
+			_isForTrainingAttributeId = isForTrainingAttributeId;
+			_isForControlAttributeId = isForControlAttributeId;
+			_coefficientsAttributeId = coefficientsAttributeId;
 		}
 
 
@@ -35,10 +43,10 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 				throw new Exception($"Объект с ИД '{objectId}' не найден в БД");
 
 			var registerObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), (int)objectId);
-			
-			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl), objectFromDb.IsForControl);
-			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining), objectFromDb.IsForTraining);
-			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients), objectFromDb.Coefficients);
+
+			registerObject.SetAttributeValue(_isForTrainingAttributeId, objectFromDb.IsForTraining);
+			registerObject.SetAttributeValue(_isForControlAttributeId, objectFromDb.IsForControl);
+			registerObject.SetAttributeValue(_coefficientsAttributeId, objectFromDb.Coefficients);
 
 			return registerObject;
 		}
