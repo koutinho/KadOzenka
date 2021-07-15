@@ -1131,11 +1131,11 @@ namespace KadOzenka.Web.Controllers
                 //OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients),
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitId),
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code)
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code)
             };
 
             RegisterCache.RegisterAttributes.Values
@@ -1210,9 +1210,7 @@ namespace KadOzenka.Web.Controllers
             {
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
-
-            var isUpdating = model.IdColumnIndex != null;
-            var resultStream = ModelObjectsImporter.ChangeObjects(isUpdating, excelFile, model.Map());
+            var resultStream = ModelObjectsImporter.ChangeObjects(model.IsCreation, excelFile, model.Map());
 
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 

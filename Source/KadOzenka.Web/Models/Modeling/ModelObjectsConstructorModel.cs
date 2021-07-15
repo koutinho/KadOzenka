@@ -2,7 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using Microsoft.AspNetCore.Http;
+using ObjectModel.Modeling;
 
 namespace KadOzenka.Web.Models.Modeling
 {
@@ -11,6 +13,7 @@ namespace KadOzenka.Web.Models.Modeling
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
         public int? IdColumnIndex { get; set; }
+        public bool IsCreation => IdColumnIndex == null;
         public long ModelId { get; set; }
         public List<ColumnToAttributeMapping> Columns { get; set; }
 
@@ -22,7 +25,12 @@ namespace KadOzenka.Web.Models.Modeling
 
 	        if (Columns.Count <= 1)
 		        yield return new ValidationResult("Минимальное число сопоставляемых полей - 2");
-        }
+
+	        if (IsCreation)
+	        {
+		        ModelObjectsImporter.ValidateCreationParameters(ModelId, Columns);
+	        }
+		}
 
 		public ModelObjectsConstructor Map()
 		{
@@ -30,21 +38,8 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				IdColumnIndex = IdColumnIndex,
 				ModelId = ModelId,
-				ColumnsMapping = Columns.Select(x => new Dal.Modeling.Entities.ColumnToAttributeMapping
-				{
-					AttributeId = x.AttributeId,
-					ColumnIndex = x.ColumnIndex
-				}).ToList()
+				ColumnsMapping = Columns
 			};
 		}
-    }
-
-
-    public class ColumnToAttributeMapping
-    {
-	    public int ColumnIndex { get; set; }
-
-		//для нормализованных атрибутов ИД идет с префиксом _
-	    public string AttributeId { get; set; }
     }
 }

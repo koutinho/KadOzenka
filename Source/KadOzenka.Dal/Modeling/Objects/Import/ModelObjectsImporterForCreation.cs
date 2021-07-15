@@ -12,12 +12,9 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 		private readonly long _modelIdAttributeId;
 		private readonly long _coefficientAttributeId;
 
-		public ModelObjectsImporterForCreation(long? modelId, long modelIdAttributeId, long coefficientAttributeId)
+		public ModelObjectsImporterForCreation(long modelId, long modelIdAttributeId, long coefficientAttributeId)
 		{
-			if (modelId == null)
-				throw new Exception("Не передан ИД модели для создания объектов моделирования");
-
-			_modelId = modelId.Value;
+			_modelId = modelId;
 			_modelIdAttributeId = modelIdAttributeId;
 			_coefficientAttributeId = coefficientAttributeId;
 		}

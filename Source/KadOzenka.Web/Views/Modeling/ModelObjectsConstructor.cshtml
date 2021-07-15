@@ -77,7 +77,7 @@
     function showConfirmationAboutFileStructure(e) {
         Common.UI.ShowInfo({
             title: 'Загрузка файла с объектами модели',
-            content: 'Для обновления объектов укажите ключевое поле (столбец "Индентификатор"). Если ключ не указан, то объекты будут созданы как новые.<br>',
+            content: 'Для обновления объектов укажите ключевое поле (столбец "Индентификатор"). Если ключ не указан, то объекты будут созданы.<br>',
             icon: 'ok',
             onSuccess: function () {
                 var upload = e.sender;
@@ -167,7 +167,7 @@
                         goToJournalBtn.attr('href', "/RegistersView/DataImporter?Transition=1&80100100=" + data.importDataLogId);
                     }
                     else if (data.fileName) {
-                        Common.ShowMessage("Обновление завершено. Идет скачивание файла с результатом операции");
+                        Common.ShowMessage("Процесс завершен. Идет скачивание файла с результатом");
                         window.location = '@Url.Action("DownloadExcelFileFromSessionByName", "Modeling")' + "?fileName=" + data.fileName;
                     } else {
                         Common.ShowError("Неизвестная ошибка. Обратитесь к администратору.");

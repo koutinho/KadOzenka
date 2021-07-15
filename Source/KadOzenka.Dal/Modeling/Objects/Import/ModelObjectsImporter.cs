@@ -57,9 +57,9 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 		}
 
 
-		public Stream ChangeObjects(bool isUpdating, ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
+		public Stream ChangeObjects(bool isCreation, ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
 		{
-			_log.Debug("{LoggerBasePhrase} старт. Обновление - {IsUpdating}", LoggerBasePhrase, isUpdating);
+			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, isCreation);
 
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
@@ -68,13 +68,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCount);
 
-			IModelObjectsImporter importer;
-			if (isUpdating)
-				importer = new ModelObjectsImporterForUpdating(objectsFromExcel, _isForTrainingAttributeId,
-					_isForControlAttributeId, _coefficientsAttributeId, _log);
-			else
-				importer = new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId,
-					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId);
+			var importer = GetImporter(isCreation, modelObjectsConstructor, objectsFromExcel);
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -114,9 +108,37 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 
 			return stream;
 		}
-		
+
+		public static void ValidateCreationParameters(long? modelId, List<ColumnToAttributeMapping> columnsMapping)
+		{
+			if (modelId == null)
+				throw new Exception("Не передан ИД модели для создания объектов моделирования");
+
+			var cadastralNumberAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber);
+			var priceAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Price);
+			var attributeIds = columnsMapping.Where(x => long.TryParse(x.AttributeId, out _)).Select(x => long.Parse(x.AttributeId)).ToList();
+
+			if (!attributeIds.Contains(cadastralNumberAttributeId) || !attributeIds.Contains(priceAttributeId))
+				throw new Exception("Для создания объектов обязательно нужны: Кадастровый номер и Цена ОА");
+		}
+
 
 		#region Support Methods
+
+		private IModelObjectsImporter GetImporter(bool isCreation, ModelObjectsConstructor modelObjectsConstructor,
+			List<ModelObjectsFromExcelData> objectsFromExcel)
+		{
+			if (isCreation)
+			{
+				ValidateCreationParameters(modelObjectsConstructor.ModelId, modelObjectsConstructor.ColumnsMapping);
+
+				return new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId.Value,
+					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId);
+			}
+
+			return new ModelObjectsImporterForUpdating(objectsFromExcel, _isForTrainingAttributeId,
+				_isForControlAttributeId, _coefficientsAttributeId, _log);
+		}
 
 		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsConstructor config)
 		{
