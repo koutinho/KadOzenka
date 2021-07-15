@@ -6,12 +6,8 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 {
 	public interface IModelObjectsImporter
 	{
-		bool IsValidateObject(RegisterObject omModelToMarketObject, bool isForControl,
-			bool isForTraining);
+		RegisterObject CreateObject(long? objectId);
 
-		CoefficientForObject GetCoefficient(List<CoefficientForObject> coefficientsFromDb,
-			long attributeId);
-
-		RegisterObject CreateRegisterObject(long? objectId);
+		CoefficientForObject GetCoefficient(List<CoefficientForObject> coefficients, long attributeId);
 	}
 }

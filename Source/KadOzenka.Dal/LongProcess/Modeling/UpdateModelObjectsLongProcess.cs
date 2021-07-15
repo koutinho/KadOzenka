@@ -105,7 +105,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(import.ColumnsMapping);
 				}
 
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsImporter.MaxRowsCountInFileForUpdating, () => ModelObjectsImporter.CurrentRowIndexInFileForUpdating);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsImporter.MaxRowsCount, () => ModelObjectsImporter.CurrentRowCount);
 				Stream updatingResult;
 				using (_log.TimeOperation("Обновление объектов"))
 				{

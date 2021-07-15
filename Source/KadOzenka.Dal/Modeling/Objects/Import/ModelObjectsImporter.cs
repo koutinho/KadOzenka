@@ -15,22 +15,30 @@ using KadOzenka.Dal.Modeling.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
+using KadOzenka.Dal.Modeling.Objects.Import.Entities;
 using Serilog;
 
 namespace KadOzenka.Dal.Modeling.Objects.Import
 {
 	public class ModelObjectsImporter
 	{
-		protected readonly ILogger _log = Log.ForContext<ModelObjectsImporter>();
-		private object _locker;
-		protected const string  LoggerBasePhrase = "Импорт объектов моделирования:";
-		public int MaxRowsCountInFileForUpdating { get; set; } = 1;
-		public int CurrentRowIndexInFileForUpdating { get; set; }
+		private const string LoggerBasePhrase = "Импорт объектов моделирования:";
+		private readonly ILogger _log = Log.ForContext<ModelObjectsImporter>();
+		private readonly object _locker;
+		private readonly long _coefficientsAttributeId;
+		private readonly long _idAttributeId;
+		private readonly long _unitPropertyTypeAttributeId;
 
-
+		public int MaxRowsCount;
+		public int CurrentRowCount;
+		
+		
 		public ModelObjectsImporter()
 		{
 			_locker = new object();
+			_coefficientsAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients);
+			_idAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Id);
+			_unitPropertyTypeAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code);
 		}
 
 		
@@ -43,11 +51,11 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
-			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCountInFileForUpdating);
+			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCount);
 
 			IModelObjectsImporter importer;
 			if (isUpdating)
-				importer = new ModelObjectsImporterForUpdating(objectsFromExcel);
+				importer = new ModelObjectsImporterForUpdating(objectsFromExcel, _log);
 			else
 				importer = new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId);
 
@@ -68,45 +76,33 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			{
 				try
 				{
-					lock (_locker)
-					{
-						CurrentRowIndexInFileForUpdating++;
-					}
-					if (CurrentRowIndexInFileForUpdating % 1000 == 0)
-						_log.Debug("{LoggerBasePhrase} обрабатывается объект № {CurrentCount}", LoggerBasePhrase, CurrentRowIndexInFileForUpdating);
+					Interlocked.Increment(ref CurrentRowCount);
+					if (CurrentRowCount % 1000 == 0)
+						_log.Debug("{LoggerBasePhrase} обрабатывается объект №{CurrentCount} из {MaxCount}", LoggerBasePhrase, CurrentRowCount, MaxRowsCount);
 
-					var omModelToMarketObject = importer.CreateRegisterObject(objectFromExcel.Id);
+					var omModelToMarketObject = importer.CreateObject(objectFromExcel.Id);
 					
-					var coefficientsStr = omModelToMarketObject.AttributesValues[OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients)].Value?.ToString();
+					var coefficientsStr = omModelToMarketObject.AttributesValues[_coefficientsAttributeId].Value?.ToString();
 					var coefficientsFromDb = string.IsNullOrWhiteSpace(coefficientsStr) 
 						? new List<CoefficientForObject>() 
 						: JsonConvert.DeserializeObject<List<CoefficientForObject>>(coefficientsStr);
 
-					bool isForControl = false, isForTraining = false;
 					objectFromExcel.Columns.ForEach(column =>
 					{
-						if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.Id))
+						if (column.AttributeId == _idAttributeId)
 							return;
 
 						if (column.AttributeId != 0)
 						{
-							//платформа не может обновлять атрибуты типа Reference
-							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code))
+							//платформе нужен referenceItemId для обновления атрибута типа Reference
+							if (column.AttributeId == _unitPropertyTypeAttributeId)
 							{
 								var type = GetObjectTypeInfo(objectTypes, column.ValueToUpdate?.ToString());
 								omModelToMarketObject.SetAttributeValue((int)column.AttributeId, type.Str, referenceItemId: (int)type.EnumValue);
-								return;
 							}
-
-							omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
-
-							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl))
+							else
 							{
-								isForControl = column.ValueToUpdate?.ToString()?.ToLower() == "да";
-							}
-							if (column.AttributeId == OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining))
-							{
-								isForTraining = column.ValueToUpdate?.ToString()?.ToLower() == "да";
+								omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
 							}
 						}
 						else
@@ -134,23 +130,28 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
 							}
 
-							omModelToMarketObject.SetAttributeValue(
-								(int)OMModelToMarketObjects.GetColumnAttributeId(c => c.Coefficients),
-								coefficientsFromDb.SerializeCoefficient());
+							omModelToMarketObject.SetAttributeValue((int)_coefficientsAttributeId, coefficientsFromDb.SerializeCoefficient());
 						}
 					});
 
-					if (importer.IsValidateObject(omModelToMarketObject, isForControl, isForTraining))
+					if (IsInValidObject(omModelToMarketObject))
 						throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
 
 					RegisterStorage.Save(omModelToMarketObject);
-					sheet.Rows[objectFromExcel.RowIndexInFile].Cells[maxColumnIndex].SetValue("Обработано");
+					
+					lock (_locker)
+					{
+						sheet.Rows[objectFromExcel.RowIndexInFile].Cells[maxColumnIndex].SetValue("Обработано");
+					}
 				}
 				catch (Exception ex)
 				{
 					long errorId = ErrorManager.LogError(ex);
-					ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
-						$"{ex.Message} (подробно в журнале №{errorId})");
+					lock (_locker)
+					{
+						ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
+							$"{ex.Message} (подробно в журнале №{errorId})");
+					}
 				}
 			});
 
@@ -167,13 +168,13 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsConstructor config)
 		{
 			var rows = sheet.Rows;
-			MaxRowsCountInFileForUpdating = DataExportCommon.GetLastUsedRowIndex(sheet);
+			MaxRowsCount = DataExportCommon.GetLastUsedRowIndex(sheet);
 			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
 
 			var columnsMappingWithoutPrimaryKey = config.ColumnsMapping.Where(x =>
 				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
 
-			for (var i = 1; i <= MaxRowsCountInFileForUpdating; i++)
+			for (var i = 1; i <= MaxRowsCount; i++)
 			{
 				var cells = rows[i].Cells;
 
@@ -212,35 +213,23 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			return enumInfo;
 		}
 
+		private bool IsInValidObject(RegisterObject modelToMarketObject)
+		{
+			var isForTraining = modelToMarketObject.AttributesValues[OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining)].Value?.ParseToBooleanNullable();
+			var isForControl = modelToMarketObject.AttributesValues[OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl)].Value?.ParseToBooleanNullable();
 
+			return isForTraining.GetValueOrDefault() && isForControl.GetValueOrDefault();
+		}
+		
 		#endregion
 
 
 		#region Entities
 
-		public class ModelObjectsFromExcelData
-		{
-			public long? Id { get; set; }
-			public int RowIndexInFile { get; set; }
-			public List<Column> Columns { get; set; }
-
-			public ModelObjectsFromExcelData()
-			{
-				Columns = new List<Column>();
-			}
-		}
-
-		public class Column
-		{
-			public string AttributeStr { get; set; }
-			public long AttributeId { get; set; }
-			public object ValueToUpdate { get; set; }
-		}
-
 		private class ObjectTypeInfo
 		{
-			public PropertyTypes EnumValue { get; set; }
-			public string Str { get; set; }
+			public PropertyTypes EnumValue { get; init; }
+			public string Str { get; init; }
 		}
 
 		#endregion

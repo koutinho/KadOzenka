@@ -18,30 +18,26 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			_modelId = modelId.Value;
 		}
 
-		public RegisterObject CreateRegisterObject(long? objectId)
+		public RegisterObject CreateObject(long? objectId)
 		{
 			var registerObject = new RegisterObject(OMModelToMarketObjects.GetRegisterId(), -1);
+			
 			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _modelId);
 			registerObject.SetAttributeValue(OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients), string.Empty);
 
 			return registerObject;
 		}
 
-		public CoefficientForObject GetCoefficient(List<CoefficientForObject> coefficientsFromDb, long attributeId)
+		public CoefficientForObject GetCoefficient(List<CoefficientForObject> coefficients, long attributeId)
 		{
-			var coefficientFromDb = coefficientsFromDb.FirstOrDefault(с => с.AttributeId == attributeId);
+			var coefficientFromDb = coefficients.FirstOrDefault(с => с.AttributeId == attributeId);
 			if (coefficientFromDb == null)
 			{
 				coefficientFromDb = new CoefficientForObject(attributeId);
-				coefficientsFromDb.Add(coefficientFromDb);
+				coefficients.Add(coefficientFromDb);
 			}
 
 			return coefficientFromDb;
-		}
-
-		public bool IsValidateObject(RegisterObject objectFromDb, bool isForControl, bool isForTraining)
-		{
-			return isForTraining && isForControl;
 		}
 	}
 }
