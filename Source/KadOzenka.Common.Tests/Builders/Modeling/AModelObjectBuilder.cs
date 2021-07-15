@@ -65,6 +65,11 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AModelObjectBuilder ForControl(bool isForControl)
+		{
+			_modelObject.IsForControl = isForControl;
+			return this;
+		}
 
 
 		public abstract OMModelToMarketObjects Build();

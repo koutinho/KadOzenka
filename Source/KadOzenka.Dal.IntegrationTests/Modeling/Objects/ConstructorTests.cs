@@ -20,6 +20,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		private long _squareAttributeId;
 		private OMModel _model;
 		private ExcelRow _firstExcelRow;
+		private ExcelRow _secondExcelRow;
 
 
 		[OneTimeSetUp]
@@ -40,6 +41,22 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 				AddressCoefficient = 12,
 				SquareCoefficient = 13
 			};
+
+			_secondExcelRow = new ExcelRow
+			{
+				Id = 1,
+				IsForTraining = true,
+				IsForControl = false,
+				IsExcluded = false,
+				CadastralNumber = "test_error_for_control_and_training",
+				UnitPropertyTypeCode = PropertyTypes.Pllacement,
+				UnitPropertyType = "Помещение",
+				Price = 20,
+				PriceFromModel = 21,
+				AddressValue = "Адрес 2",
+				AddressCoefficient = 22,
+				SquareCoefficient = 23
+			};
 		}
 
 		[SetUp]
@@ -56,7 +73,47 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		[Test]
 		public void Can_Update_Object()
 		{
-			var coefficients = new List<CoefficientForObject>
+			var coefficients = GetCoefficients();
+			var firstObject = new ModelObjectBuilder().Id(1).Model(_model).Coefficients(coefficients).Build();
+
+			var excelFile = GetFile();
+			var config = GetConfig(0);
+			ModelObjectsService.UpdateModelObjects(excelFile, config);
+
+			CheckUpdatedObject(firstObject.Id, _firstExcelRow);
+		}
+
+		[Test]
+		public void CanNot_Update_Object_If_It_Is_ForTraining_And_ForControl_At_The_Same_Time()
+		{
+			var coefficients = GetCoefficients();
+			var secondObject = new ModelObjectBuilder().Id(2).Model(_model).ForControl(true).Coefficients(coefficients).Build();
+
+			var excelFile = GetFile();
+			var config = GetConfig(0);
+			ModelObjectsService.UpdateModelObjects(excelFile, config);
+
+			CheckObjectWasNotUpdated(secondObject.Id, secondObject);
+		}
+
+		[Test]
+		public void Can_Create_Object()
+		{
+			var excelFile = GetFile();
+			var config = GetConfig(null);
+			ModelObjectsService.CreateModelObjects(excelFile, _model.Id, config);
+
+			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id && x.CadastralNumber == _firstExcelRow.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+			Assert.That(createdObject, Is.Not.Null);
+			CheckUpdatedObject(createdObject.Id, _firstExcelRow);
+		}
+
+
+		#region Support Methods
+
+		private List<CoefficientForObject> GetCoefficients()
+		{
+			return new()
 			{
 				new(_addressAttributeId)
 				{
@@ -69,29 +126,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 					Value = RandomGenerator.GetRandomString()
 				}
 			};
-			var firstObject = new ModelObjectBuilder().Id(1).Model(_model).Coefficients(coefficients).Build();
-
-			var excelFile = GetFile();
-			var config = GetConfig(0);
-			ModelObjectsService.UpdateModelObjects(excelFile, config);
-
-			CheckUpdatedObject(firstObject.Id, _firstExcelRow);
 		}
-
-		[Test]
-		public void Can_Create_Object()
-		{
-			var excelFile = GetFile();
-			var config = GetConfig(null);
-			ModelObjectsService.CreateModelObjects(excelFile, _model.Id, config);
-
-			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id).SelectAll().ExecuteFirstOrDefault();
-			Assert.That(createdObject, Is.Not.Null);
-			CheckUpdatedObject(createdObject.Id, _firstExcelRow);
-		}
-
-
-		#region Support Methods
 
 		private ExcelFile GetFile()
 		{
@@ -151,6 +186,34 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			var squareAttribute = coefficients.First(x => x.AttributeId == _squareAttributeId);
 			Assert.That(squareAttribute.Value, Is.EqualTo(row.SquareCoefficient.ToString()));
 			Assert.That(squareAttribute.Coefficient, Is.EqualTo(row.SquareCoefficient));
+		}
+
+		private void CheckObjectWasNotUpdated(long id, OMModelToMarketObjects initial)
+		{
+			var updatedObject = OMModelToMarketObjects.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+
+			Assert.That(updatedObject.IsForTraining, Is.EqualTo(initial.IsForTraining));
+			Assert.That(updatedObject.IsForControl, Is.EqualTo(initial.IsForControl));
+			Assert.That(updatedObject.IsExcluded, Is.EqualTo(initial.IsExcluded));
+			Assert.That(updatedObject.CadastralNumber, Is.EqualTo(initial.CadastralNumber));
+			Assert.That(updatedObject.UnitPropertyType, Is.EqualTo(initial.UnitPropertyType));
+			Assert.That(updatedObject.UnitPropertyType_Code, Is.EqualTo(initial.UnitPropertyType_Code));
+			Assert.That(updatedObject.Price, Is.EqualTo(initial.Price));
+			Assert.That(updatedObject.PriceFromModel, Is.EqualTo(initial.PriceFromModel));
+
+			var updatedCoefficients = updatedObject.DeserializeCoefficient();
+			var initialCoefficients = initial.DeserializeCoefficient();
+			Assert.That(updatedCoefficients.Count, Is.EqualTo(2));
+
+			var updatedAddressAttribute = updatedCoefficients.First(x => x.AttributeId == _addressAttributeId);
+			var initialAddressAttribute = initialCoefficients.First(x => x.AttributeId == _addressAttributeId);
+			Assert.That(updatedAddressAttribute.Value, Is.EqualTo(initialAddressAttribute.Value));
+			Assert.That(updatedAddressAttribute.Coefficient, Is.EqualTo(initialAddressAttribute.Coefficient));
+
+			var updatedSquareAttribute = updatedCoefficients.First(x => x.AttributeId == _squareAttributeId);
+			var initialSquareAttribute = initialCoefficients.First(x => x.AttributeId == _squareAttributeId);
+			Assert.That(updatedSquareAttribute.Value, Is.EqualTo(initialSquareAttribute.Value));
+			Assert.That(updatedSquareAttribute.Coefficient, Is.EqualTo(initialSquareAttribute.Coefficient));
 		}
 
 
