@@ -87,7 +87,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 
 			var excelFile = GetFile();
 			var config = GetConfig(0);
-			ModelObjectsImporter.ChangeObjects(true, excelFile, config);
+			ModelObjectsImporter.ChangeObjects(excelFile, config);
 
 			CheckUpdatedObject(firstObject.Id, _firstExcelRow);
 		}
@@ -109,7 +109,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 				}
 			};
 
-			ModelObjectsImporter.ChangeObjects(true, excelFile, config);
+			ModelObjectsImporter.ChangeObjects(excelFile, config);
 
 			CheckObjectWasNotUpdated(secondObject.Id, secondObject);
 		}
@@ -119,7 +119,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		{
 			var excelFile = GetFile();
 			var config = GetConfig(null);
-			ModelObjectsImporter.ChangeObjects(false, excelFile, config);
+			ModelObjectsImporter.ChangeObjects(excelFile, config);
 
 			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id && x.CadastralNumber == _firstExcelRow.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
 			Assert.That(createdObject, Is.Not.Null);

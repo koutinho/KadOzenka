@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using Microsoft.AspNetCore.Http;
-using ObjectModel.Modeling;
 
 namespace KadOzenka.Web.Models.Modeling
 {

@@ -73,7 +73,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelingRepository ModelingRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
-        public ModelObjectsImporter ModelObjectsImporter { get; set; }
+        public IBaseModelObjectsImporter ModelObjectsImporter { get; set; }
 
 
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
@@ -84,7 +84,7 @@ namespace KadOzenka.Web.Controllers
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
             IModelingService modelingService,
-	        ModelObjectsImporter modelObjectsImporter)
+	        IBaseModelObjectsImporter modelObjectsImporter)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelService = modelService;
@@ -1210,7 +1210,7 @@ namespace KadOzenka.Web.Controllers
             {
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
-            var resultStream = ModelObjectsImporter.ChangeObjects(model.IsCreation, excelFile, model.Map());
+            var resultStream = ModelObjectsImporter.ChangeObjects(excelFile, model.Map());
 
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 

@@ -12,6 +12,7 @@ using KadOzenka.Dal.ManagementDecisionSupport;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using KadOzenka.Dal.Modeling.Objects.Repositories;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
@@ -34,6 +35,7 @@ namespace KadOzenka.Web.UnitTests
 		protected ServiceProvider Provider { get; set; }
 		protected Mock<ITourService> TourService { get; set; }
 		protected Mock<IModelService> ModelService { get; set; }
+		protected Mock<IBaseModelObjectsImporter> ModelObjectsImporter { get; set; }
 		protected Mock<IModelFactorsRepository> ModelFactorsRepository { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
 		protected Mock<ILongProcessService> LongProcessService { get; set; }
@@ -58,6 +60,7 @@ namespace KadOzenka.Web.UnitTests
 			ObjectsCharacteristicsSourceService = new Mock<IObjectsCharacteristicsSourceService>();
 			RegisterAttributeService = new Mock<IRegisterAttributeService>();
 			RegisterCacheWrapper = new Mock<IRegisterCacheWrapper>();
+			ModelObjectsImporter = new Mock<IBaseModelObjectsImporter>();
 
 			ConfigureServices();
 		}
@@ -141,11 +144,14 @@ namespace KadOzenka.Web.UnitTests
 			container.AddTransient(typeof(IRegisterAttributeService), sp => RegisterAttributeService.Object);
 			container.AddTransient(typeof(IRegisterCacheWrapper), sp => RegisterCacheWrapper.Object);
 			container.AddTransient(typeof(IModelingService), typeof(ModelingService));
+			container.AddTransient(typeof(IBaseModelObjectsImporter), sp => ModelObjectsImporter.Object);
 
 			AddServicesToContainer(container);
 
 			Provider = container.BuildServiceProvider();
 		}
+
+
 
 		#endregion
 	}

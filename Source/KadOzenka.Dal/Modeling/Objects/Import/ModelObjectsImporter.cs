@@ -21,7 +21,12 @@ using Serilog;
 
 namespace KadOzenka.Dal.Modeling.Objects.Import
 {
-	public class ModelObjectsImporter
+	public interface IBaseModelObjectsImporter
+	{
+		Stream ChangeObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor);
+	}
+
+	public class ModelObjectsImporter : IBaseModelObjectsImporter
 	{
 		private const string LoggerBasePhrase = "Импорт объектов моделирования:";
 		private readonly ILogger _log = Log.ForContext<ModelObjectsImporter>();
@@ -56,10 +61,15 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			_isForControlAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl);
 		}
 
-
-		public Stream ChangeObjects(bool isCreation, ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
+		public ModelObjectsImporter(long coefficientsAttributeId)
 		{
-			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, isCreation);
+
+		}
+
+
+		public Stream ChangeObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
+		{
+			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, modelObjectsConstructor.IsCreation);
 
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
@@ -68,7 +78,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCount);
 
-			var importer = GetImporter(isCreation, modelObjectsConstructor, objectsFromExcel);
+			var importer = GetImporter(modelObjectsConstructor, objectsFromExcel);
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -125,10 +135,10 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 
 		#region Support Methods
 
-		private IModelObjectsImporter GetImporter(bool isCreation, ModelObjectsConstructor modelObjectsConstructor,
+		private IModelObjectsImporter GetImporter(ModelObjectsConstructor modelObjectsConstructor,
 			List<ModelObjectsFromExcelData> objectsFromExcel)
 		{
-			if (isCreation)
+			if (modelObjectsConstructor.IsCreation)
 			{
 				ValidateCreationParameters(modelObjectsConstructor.ModelId, modelObjectsConstructor.ColumnsMapping);
 
