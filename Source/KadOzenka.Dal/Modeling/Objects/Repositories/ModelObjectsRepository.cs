@@ -6,7 +6,7 @@ using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Entities;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.Modeling.Repositories
+namespace KadOzenka.Dal.Modeling.Objects.Repositories
 {
 	public class ModelObjectsRepository : GenericRepository<OMModelToMarketObjects>, IModelObjectsRepository
 	{

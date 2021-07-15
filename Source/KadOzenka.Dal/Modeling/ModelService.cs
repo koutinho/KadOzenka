@@ -17,6 +17,8 @@ using Serilog;
 using System.Linq.Expressions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Formulas;
+using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Repositories;
 using KadOzenka.Dal.RecycleBin;
 using ObjectModel.Directory.Ko;
 

@@ -1,4 +1,6 @@
 ﻿using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Repositories;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;

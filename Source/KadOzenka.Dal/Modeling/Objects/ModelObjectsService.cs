@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Register;
-using KadOzenka.Dal.Modeling.Dto;
-using ObjectModel.KO;
-using ObjectModel.Modeling;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.Modeling.Repositories;
-using Serilog;
+using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Objects.Repositories;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
+using ObjectModel.KO;
+using ObjectModel.Modeling;
+using Serilog;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Objects
 {
 	public class ModelObjectsService : IModelObjectsService
 	{

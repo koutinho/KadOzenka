@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.Modeling.Objects;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling.Dto

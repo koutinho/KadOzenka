@@ -4,7 +4,7 @@ using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Objects
 {
 	public interface IModelObjectsService
 	{
