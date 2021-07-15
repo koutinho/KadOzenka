@@ -28,6 +28,8 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 		private readonly long _coefficientsAttributeId;
 		private readonly long _idAttributeId;
 		private readonly long _unitPropertyTypeAttributeId;
+		private readonly long _isForTrainingAttributeId;
+		private readonly long _isForControlAttributeId;
 
 		public int MaxRowsCount;
 		public int CurrentRowCount;
@@ -36,9 +38,12 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 		public ModelObjectsImporter()
 		{
 			_locker = new object();
+
 			_coefficientsAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients);
 			_idAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Id);
 			_unitPropertyTypeAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code);
+			_isForTrainingAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining);
+			_isForControlAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl);
 		}
 
 		
@@ -215,8 +220,8 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 
 		private bool IsInValidObject(RegisterObject modelToMarketObject)
 		{
-			var isForTraining = modelToMarketObject.AttributesValues[OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining)].Value?.ParseToBooleanNullable();
-			var isForControl = modelToMarketObject.AttributesValues[OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl)].Value?.ParseToBooleanNullable();
+			var isForTraining = modelToMarketObject.AttributesValues[_isForTrainingAttributeId].Value?.ParseToBooleanNullable();
+			var isForControl = modelToMarketObject.AttributesValues[_isForControlAttributeId].Value?.ParseToBooleanNullable();
 
 			return isForTraining.GetValueOrDefault() && isForControl.GetValueOrDefault();
 		}
