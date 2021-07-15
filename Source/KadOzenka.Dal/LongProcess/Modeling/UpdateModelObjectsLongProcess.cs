@@ -11,6 +11,7 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
@@ -25,13 +26,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	{
 		private readonly ILogger _log = Log.ForContext<UpdateModelObjectsLongProcess>();
 		private string MessageSubject => "Обновление объектов моделирования";
-		public IModelObjectsService ModelObjectsService { get; set; }
+		public ModelObjectsImporter ModelObjectsImporter { get; set; }
 
 
 
 		public UpdateModelObjectsLongProcess()
 		{
-			ModelObjectsService = new ModelObjectsService();
+			ModelObjectsImporter = new ModelObjectsImporter();
 		}
 
 
@@ -104,7 +105,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(import.ColumnsMapping);
 				}
 
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsService.MaxRowsCountInFileForUpdating, () => ModelObjectsService.CurrentRowIndexInFileForUpdating);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsImporter.MaxRowsCountInFileForUpdating, () => ModelObjectsImporter.CurrentRowIndexInFileForUpdating);
 				Stream updatingResult;
 				using (_log.TimeOperation("Обновление объектов"))
 				{
@@ -113,7 +114,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					{
 						ColumnsMapping = columnsMapping
 					};
-					updatingResult = ModelObjectsService.UpdateModelObjects(excelFile, a);
+					//updatingResult = ModelObjectsImporter.UpdateModelObjects(excelFile, a);
 				}
 
 				using (_log.TimeOperation("Сохранение файла с результатом обновления"))
@@ -121,7 +122,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					import.DateFinished = DateTime.Now;
 					import.ResultFileTitle = DataImporterCommon.GetFileResultTitleFromDataTitle(import);
 					import.ResultFileName = DataImporterCommon.GetStorageResultFileName(import.Id);
-					FileStorageManager.Save(updatingResult, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
+					//FileStorageManager.Save(updatingResult, DataImporterCommon.FileStorageName, import.DateFinished.Value, import.ResultFileName);
 				}
 
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Completed;

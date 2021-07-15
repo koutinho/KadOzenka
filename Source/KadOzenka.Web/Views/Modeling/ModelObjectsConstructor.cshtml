@@ -200,6 +200,7 @@
         var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
         formData.append('@nameof(ModelObjectsConstructorModel.File)', file.rawFile);
         formData.append('@nameof(ModelObjectsConstructorModel.IsBackgroundDownload)', isBackgroundDownload);
+        formData.append('@nameof(ModelObjectsConstructorModel.ModelId)', '@ViewBag.ModelId');
         for (var i = 0; i !== columns.length; i++) {
             formData.append("Columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
             formData.append("Columns[" + i + "].AttributeId", columns[i].AttributeId);

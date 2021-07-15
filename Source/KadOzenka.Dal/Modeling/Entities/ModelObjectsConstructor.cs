@@ -5,6 +5,7 @@ namespace KadOzenka.Dal.Modeling.Entities
 	public class ModelObjectsConstructor
 	{
 		public int? IdColumnIndex { get; set; }
+		public long? ModelId { get; set; }
 		public List<ColumnToAttributeMapping> ColumnsMapping { get; set; }
 	}
 

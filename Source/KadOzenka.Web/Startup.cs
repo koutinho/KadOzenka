@@ -41,6 +41,7 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.ObjectsCharacteristics.Repositories;
@@ -168,6 +169,7 @@ namespace CIPJS
             services.AddTransient(typeof(IModelingService), typeof(ModelingService));
             services.AddTransient(typeof(IModelDictionaryRepository), typeof(ModelDictionaryRepository));
             services.AddTransient(typeof(IModelMarksRepository), typeof(ModelMarksRepository));
+            services.AddTransient(typeof(ModelObjectsImporter));
             //services.AddTransient(typeof(IMarketObjectsForExpressScoreService), typeof(MarketObjectsForExpressScoreService));
 
             services.AddSingleton<BackgroundProcessWidgetService>();

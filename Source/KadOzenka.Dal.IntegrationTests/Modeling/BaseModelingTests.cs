@@ -1,4 +1,5 @@
 ﻿using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using NUnit.Framework;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling
@@ -9,6 +10,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling
 
 		protected IModelService ModelService { get; set; }
 		protected IModelObjectsService ModelObjectsService { get; set; }
+		protected ModelObjectsImporter ModelObjectsImporter { get; set; }
 		protected IModelDictionaryService ModelDictionaryService { get; set; }
 
 
@@ -18,6 +20,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling
 			ModelService = new ModelService();
 			ModelObjectsService = new ModelObjectsService();
 			ModelDictionaryService = new ModelDictionaryService();
+			ModelObjectsImporter = new ModelObjectsImporter();
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace KadOzenka.Web.Models.Modeling
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
         public int? IdColumnIndex { get; set; }
+        public long ModelId { get; set; }
         public List<ColumnToAttributeMapping> Columns { get; set; }
 
 
@@ -28,6 +29,7 @@ namespace KadOzenka.Web.Models.Modeling
 			return new ModelObjectsConstructor
 			{
 				IdColumnIndex = IdColumnIndex,
+				ModelId = ModelId,
 				ColumnsMapping = Columns.Select(x => new Dal.Modeling.Entities.ColumnToAttributeMapping
 				{
 					AttributeId = x.AttributeId,

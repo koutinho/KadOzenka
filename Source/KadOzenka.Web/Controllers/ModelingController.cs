@@ -38,6 +38,7 @@ using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Web.Exceptions;
 using KadOzenka.Web.Helpers;
@@ -70,6 +71,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelingRepository ModelingRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
+        public ModelObjectsImporter ModelObjectsImporter { get; set; }
 
 
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
@@ -79,7 +81,8 @@ namespace KadOzenka.Web.Controllers
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
-            IModelingService modelingService)
+            IModelingService modelingService,
+	        ModelObjectsImporter modelObjectsImporter)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelService = modelService;
@@ -94,6 +97,7 @@ namespace KadOzenka.Web.Controllers
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
             ModelingService = modelingService;
+            ModelObjectsImporter = modelObjectsImporter;
         }
 
 
@@ -1153,13 +1157,13 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForValueInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForValueInNormalizedColumn}",
                         ParentId = register.Id
                     });
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForCoefficientInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
                         ParentId = register.Id
                     });
                 }
@@ -1168,13 +1172,14 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = x.AttributeName,
-                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForFactor}",
+                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForFactor}",
                         ParentId = register.Id
                     });
                 }
             });
 
             ViewBag.Attributes = source;
+            ViewBag.ModelId = modelId;
 
             return PartialView();
         }
@@ -1204,7 +1209,9 @@ namespace KadOzenka.Web.Controllers
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
 
-            var resultStream = ModelObjectsService.UpdateModelObjects(excelFile, model.Map());
+            var isUpdating = model.IdColumnIndex != null;
+            var resultStream = ModelObjectsImporter.ChangeObjects(isUpdating, excelFile, model.Map());
+
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
             return Json(new { fileName = fileName });

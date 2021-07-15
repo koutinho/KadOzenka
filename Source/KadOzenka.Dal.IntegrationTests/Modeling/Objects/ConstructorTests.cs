@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -78,22 +79,54 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 
 			var excelFile = GetFile();
 			var config = GetConfig(0);
-			ModelObjectsService.UpdateModelObjects(excelFile, config);
+			ModelObjectsImporter.ChangeObjects(true, excelFile, config);
 
 			CheckUpdatedObject(firstObject.Id, _firstExcelRow);
 		}
 
 		[Test]
-		public void CanNot_Update_Object_If_It_Is_ForTraining_And_ForControl_At_The_Same_Time()
+		public void CanNot_Make_Object_ForTraining_If_It_Was_ForControl()
 		{
 			var coefficients = GetCoefficients();
 			var secondObject = new ModelObjectBuilder().Id(2).Model(_model).ForControl(true).Coefficients(coefficients).Build();
 
 			var excelFile = GetFile();
-			var config = GetConfig(0);
-			ModelObjectsService.UpdateModelObjects(excelFile, config);
+			var config = new ModelObjectsConstructor
+			{
+				IdColumnIndex = 0,
+				ModelId = _model.Id,
+				ColumnsMapping = new List<ColumnToAttributeMapping>
+				{
+					new(1, GetAttributeId(x => x.IsForTraining))
+				}
+			};
+
+			ModelObjectsImporter.ChangeObjects(true, excelFile, config);
 
 			CheckObjectWasNotUpdated(secondObject.Id, secondObject);
+		}
+
+		[Test]
+		public void CanNot_Make_Object_ForTraining_And_ForControl_At_The_Same_Time()
+		{
+			var coefficients = GetCoefficients();
+			var thirdObject = new ModelObjectBuilder().Id(3).Model(_model).Coefficients(coefficients).Build();
+
+			var excelFile = GetFile();
+			var config = new ModelObjectsConstructor
+			{
+				IdColumnIndex = 0,
+				ModelId = _model.Id,
+				ColumnsMapping = new List<ColumnToAttributeMapping>
+				{
+					new(1, GetAttributeId(x => x.IsForTraining)),
+					new(1, GetAttributeId(x => x.IsForControl))
+				}
+			};
+
+			ModelObjectsImporter.ChangeObjects(true, excelFile, config);
+
+			CheckObjectWasNotUpdated(thirdObject.Id, thirdObject);
 		}
 
 		[Test]
@@ -101,7 +134,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		{
 			var excelFile = GetFile();
 			var config = GetConfig(null);
-			ModelObjectsService.CreateModelObjects(excelFile, _model.Id, config);
+			ModelObjectsImporter.ChangeObjects(false, excelFile, config);
 
 			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id && x.CadastralNumber == _firstExcelRow.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
 			Assert.That(createdObject, Is.Not.Null);
@@ -142,6 +175,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			return new ModelObjectsConstructor
 			{
 				IdColumnIndex = idColumnIndex,
+				ModelId = _model.Id,
 				ColumnsMapping = new List<ColumnToAttributeMapping>
 				{
 					new(1, GetAttributeId(x => x.IsForTraining)),
@@ -151,9 +185,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 					new(5, GetAttributeId(x => x.UnitPropertyType)),
 					new(6, GetAttributeId(x => x.Price)),
 					new(7, GetAttributeId(x => x.PriceFromModel)),
-					new(9, $"{_addressAttributeId}{ModelObjectsService.PrefixForValueInNormalizedColumn}"),
-					new(10, $"{_addressAttributeId}{ModelObjectsService.PrefixForCoefficientInNormalizedColumn}"),
-					new(11, $"{_squareAttributeId}{ModelObjectsService.PrefixForFactor}")
+					new(9, $"{_addressAttributeId}{Consts.PrefixForValueInNormalizedColumn}"),
+					new(10, $"{_addressAttributeId}{Consts.PrefixForCoefficientInNormalizedColumn}"),
+					new(11, $"{_squareAttributeId}{Consts.PrefixForFactor}")
 				}
 			};
 		}
