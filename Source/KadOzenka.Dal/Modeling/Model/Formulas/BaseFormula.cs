@@ -1,7 +1,7 @@
-﻿using System.Text;
+﻿using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Formulas
+namespace KadOzenka.Dal.Modeling.Model.Formulas
 {
 	public abstract class BaseFormula
 	{

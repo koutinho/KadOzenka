@@ -6,6 +6,7 @@ using Core.Register;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Objects.Repositories;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;

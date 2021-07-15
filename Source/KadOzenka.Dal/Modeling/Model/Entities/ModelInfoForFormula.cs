@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.Modeling.Formulas
+﻿namespace KadOzenka.Dal.Modeling.Model.Entities
 {
 	public class ModelInfoForFormula
 	{

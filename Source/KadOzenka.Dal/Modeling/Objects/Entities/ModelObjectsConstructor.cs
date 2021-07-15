@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KadOzenka.Dal.Modeling.Entities
+namespace KadOzenka.Dal.Modeling.Objects.Entities
 {
 	public class ModelObjectsConstructor
 	{

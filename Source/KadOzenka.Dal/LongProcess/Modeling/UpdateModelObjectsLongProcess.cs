@@ -9,6 +9,7 @@ using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using Newtonsoft.Json;
 using ObjectModel.Common;

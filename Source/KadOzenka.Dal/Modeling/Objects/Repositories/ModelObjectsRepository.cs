@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects.Entities;
 using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.Modeling.Objects.Repositories

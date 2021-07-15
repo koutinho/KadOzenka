@@ -12,6 +12,7 @@ using KadOzenka.Dal.Modeling.Dictionaries;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Factors.Entities;
+using KadOzenka.Dal.Modeling.Objects.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;

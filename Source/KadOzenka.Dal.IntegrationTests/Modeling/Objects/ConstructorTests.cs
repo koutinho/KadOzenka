@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Objects.Exceptions;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using KadOzenka.Dal.Modeling.Objects.Import.Entities;

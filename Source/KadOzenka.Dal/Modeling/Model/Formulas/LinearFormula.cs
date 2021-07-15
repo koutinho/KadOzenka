@@ -1,8 +1,9 @@
-﻿using ObjectModel.KO;
+﻿using KadOzenka.Dal.Modeling.Model.Entities;
+using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Formulas
+namespace KadOzenka.Dal.Modeling.Model.Formulas
 {
-	public class ExponentialFormula : BaseFormula
+	public class LinearFormula : BaseFormula
 	{
 		public override string FactorsSeparator => "+";
 
@@ -29,8 +30,9 @@ namespace KadOzenka.Dal.Modeling.Formulas
 
 		public override string GetBaseFormulaPart(OMModel model, string factors)
 		{
-			var a0 = ProcessNumber(model.A0ForExponential == null ? 1 : model.A0ForExponentialInFormula);
-			return $"{a0} * exp({factors})";
+			var a0 = ProcessNumber(model.A0 == null ? 1 : model.A0ForLinearInFormula);
+			
+			return $"{a0} + {factors}";
 		}
 	}
 }

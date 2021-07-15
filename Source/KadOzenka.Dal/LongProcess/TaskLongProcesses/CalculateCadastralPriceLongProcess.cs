@@ -19,8 +19,8 @@ using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exce
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dictionaries;
 using KadOzenka.Dal.Modeling.Factors;
-using KadOzenka.Dal.Modeling.Formulas;
 using KadOzenka.Dal.Modeling.Model;
+using KadOzenka.Dal.Modeling.Model.Formulas;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
