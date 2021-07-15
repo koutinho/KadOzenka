@@ -41,6 +41,8 @@ using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Dictionaries.Repositories;
 using KadOzenka.Dal.Modeling.Objects;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using KadOzenka.Dal.Modeling.Objects.Repositories;

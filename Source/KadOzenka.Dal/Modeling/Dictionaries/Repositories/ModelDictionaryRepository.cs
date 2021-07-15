@@ -4,7 +4,7 @@ using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Repositories
+namespace KadOzenka.Dal.Modeling.Dictionaries.Repositories
 {
 	public class ModelDictionaryRepository : GenericRepository<OMModelingDictionary>, IModelDictionaryRepository
 	{

@@ -1,4 +1,12 @@
-﻿using Core.ErrorManagment;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Transactions;
+using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
 using Core.Register;
@@ -8,24 +16,18 @@ using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport;
+using KadOzenka.Dal.Modeling.Dictionaries.Entities;
+using KadOzenka.Dal.Modeling.Dictionaries.Exceptions;
+using KadOzenka.Dal.Modeling.Dictionaries.Repositories;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Repositories;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Transactions;
-using KadOzenka.Dal.Modeling.Exceptions.Dictionaries;
-using KadOzenka.Dal.Modeling.Repositories;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Dictionaries
 {
 	public class ModelDictionaryService : IModelDictionaryService
 	{

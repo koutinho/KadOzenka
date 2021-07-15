@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using Core.Register;
+using KadOzenka.Dal.Modeling.Dictionaries.Entities;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Dictionaries
 {
 	public interface IModelDictionaryService
 	{

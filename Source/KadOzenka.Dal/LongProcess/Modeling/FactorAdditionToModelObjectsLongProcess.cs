@@ -7,6 +7,7 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
 using KadOzenka.Dal.Modeling.Dto;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common;

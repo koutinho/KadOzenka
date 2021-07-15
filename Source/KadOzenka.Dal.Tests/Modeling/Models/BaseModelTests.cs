@@ -1,4 +1,6 @@
 ﻿using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Dictionaries.Repositories;
 using KadOzenka.Dal.Modeling.Objects;
 using KadOzenka.Dal.Modeling.Objects.Repositories;
 using KadOzenka.Dal.Modeling.Repositories;

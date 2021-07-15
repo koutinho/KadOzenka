@@ -17,6 +17,7 @@ using KadOzenka.Dal.LongProcess._Common;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Exceptions;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
 using KadOzenka.Dal.Modeling.Formulas;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;
