@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.Modeling.Exceptions
+namespace KadOzenka.Dal.Modeling.Model.Exceptions
 {
 	public class ModelNotFoundByIdException : Exception
 	{

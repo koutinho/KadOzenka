@@ -2,6 +2,7 @@
 using KadOzenka.Dal.Integration._Builders.Model;
 using NUnit.Framework;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -14,7 +15,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 		{
 			var existedModel = new ModelBuilder().Build();
 
-			var updatingModelDto = new ModelingModelDto
+			var updatingModelDto = new ModelDto
 			{
 				ModelId = existedModel.Id,
 				Name = RandomGenerator.GetRandomString(),

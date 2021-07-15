@@ -4,7 +4,6 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Factors.Entities;
 using KadOzenka.Dal.Modeling.Factors.Repositories;
-using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Microsoft.Extensions.DependencyInjection;

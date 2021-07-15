@@ -1,7 +1,7 @@
 ﻿using Core.Register;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.Modeling.Dto
+namespace KadOzenka.Dal.Modeling.Factors.Entities
 {
 	public class ModelAttributeRelationPure
 	{

@@ -17,7 +17,8 @@ using Platform.Reports;
 using System.Data;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Modeling.Factors;
-using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Model;
+using KadOzenka.Dal.Modeling.Model.Repositories;
 using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common

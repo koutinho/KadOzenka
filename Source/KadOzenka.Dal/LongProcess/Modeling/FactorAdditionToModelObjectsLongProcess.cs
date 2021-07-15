@@ -10,6 +10,7 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dictionaries;
 using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Factors;
+using KadOzenka.Dal.Modeling.Model;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common;
 using ObjectModel.Core.LongProcess;

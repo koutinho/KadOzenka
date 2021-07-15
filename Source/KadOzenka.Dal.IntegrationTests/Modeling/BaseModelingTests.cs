@@ -1,5 +1,6 @@
 ﻿using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Modeling.Objects;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using NUnit.Framework;

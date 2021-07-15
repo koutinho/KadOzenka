@@ -4,6 +4,8 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Factors.Entities;
+using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -30,7 +32,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 		
 
-		public static AutomaticModelingModel ToModel(ModelingModelDto entity, bool hasFormedObjectArray)
+		public static AutomaticModelingModel ToModel(ModelDto entity, bool hasFormedObjectArray)
 		{
 			return new AutomaticModelingModel
 			{
@@ -59,7 +61,7 @@ namespace KadOzenka.Web.Models.Modeling
 			};
         }
 
-		public override ModelingModelDto ToDto()
+		public override ModelDto ToDto()
         {
 	        var dto = base.ToDto();
 	        

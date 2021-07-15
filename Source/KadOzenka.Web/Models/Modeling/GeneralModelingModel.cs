@@ -2,6 +2,7 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -53,9 +54,9 @@ namespace KadOzenka.Web.Models.Modeling
 	    public decimal? A0 { get; set; }
 
 
-		public virtual ModelingModelDto ToDto()
+		public virtual ModelDto ToDto()
 	    {
-		    return new ModelingModelDto
+		    return new ModelDto
 		    {
 			    ModelId = Id,
 			    Name = Name,

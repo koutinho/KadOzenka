@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using KadOzenka.Dal.Modeling.Factors.Entities;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.Modeling.Dto
+namespace KadOzenka.Dal.Modeling.Model.Entities
 {
-	public class ModelingModelDto
+	public class ModelDto
 	{
         public long ModelId { get; set; }
         public KoModelType Type { get; set; }
@@ -27,7 +28,7 @@ namespace KadOzenka.Dal.Modeling.Dto
         public bool IsActive { get; set; }
         public List<ModelAttributeRelationDto> Attributes { get; set; }
 
-        public ModelingModelDto()
+        public ModelDto()
 		{
 			Attributes = new List<ModelAttributeRelationDto>();
 		}

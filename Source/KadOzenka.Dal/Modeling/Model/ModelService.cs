@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto;
-using ObjectModel.Directory;
-using ObjectModel.KO;
-using ObjectModel.Modeling;
-using KadOzenka.Dal.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Exceptions;
-using KadOzenka.Dal.Modeling.Repositories;
-using KadOzenka.Dal.Modeling.Resources;
-using Serilog;
-using System.Linq.Expressions;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Formulas;
-using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Model.Entities;
+using KadOzenka.Dal.Modeling.Model.Exceptions;
+using KadOzenka.Dal.Modeling.Model.Repositories;
 using KadOzenka.Dal.Modeling.Objects.Repositories;
+using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.RecycleBin;
+using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
+using ObjectModel.KO;
+using ObjectModel.Modeling;
+using Serilog;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Model
 {
 	public class ModelService : IModelService
 	{
@@ -87,7 +86,7 @@ namespace KadOzenka.Dal.Modeling
 	        return model;
         }
 
-        public ModelingModelDto GetModelById(long modelId)
+        public ModelDto GetModelById(long modelId)
         {
 	        Expression<Func<OMModel, object>> selectExpression = x => new
 	        {
@@ -120,7 +119,7 @@ namespace KadOzenka.Dal.Modeling
 
 			var tour = GetModelTour(model.GroupId);
 
-            return new ModelingModelDto
+            return new ModelDto
 	        {
 		        ModelId = model.Id,
 		        Name = model.Name,
@@ -166,7 +165,7 @@ namespace KadOzenka.Dal.Modeling
 	        return tourToGroupRelation.ParentTour;
         }
 
-        public void AddAutomaticModel(ModelingModelDto modelDto)
+        public void AddAutomaticModel(ModelDto modelDto)
         {
 	        ValidateModelDuringAddition(modelDto);
 
@@ -185,7 +184,7 @@ namespace KadOzenka.Dal.Modeling
 	        ModelingRepository.Save(model);
         }
 
-        public void AddManualModel(ModelingModelDto modelDto)
+        public void AddManualModel(ModelDto modelDto)
         {
 	        ValidateModelDuringAddition(modelDto);
 
@@ -203,7 +202,7 @@ namespace KadOzenka.Dal.Modeling
 	        ModelingRepository.Save(model);
 		}
 
-        public void UpdateAutomaticModel(ModelingModelDto modelDto)
+        public void UpdateAutomaticModel(ModelDto modelDto)
 		{
 			ValidateBaseModel(modelDto);
 
@@ -232,7 +231,7 @@ namespace KadOzenka.Dal.Modeling
             existedModel.Save();
         }
 
-        public void UpdateManualModel(ModelingModelDto modelDto)
+        public void UpdateManualModel(ModelDto modelDto)
         {
 	        ValidateBaseModel(modelDto);
 
@@ -355,7 +354,7 @@ namespace KadOzenka.Dal.Modeling
 
 		#region Support Methods
 
-		private void ValidateBaseModel(ModelingModelDto modelDto)
+		private void ValidateBaseModel(ModelDto modelDto)
         {
 	        var message = new StringBuilder();
 
@@ -371,7 +370,7 @@ namespace KadOzenka.Dal.Modeling
 		        throw new ModelCrudException(message.ToString());
         }
 
-        private void ValidateModelDuringAddition(ModelingModelDto modelDto)
+        private void ValidateModelDuringAddition(ModelDto modelDto)
         {
 	        ValidateBaseModel(modelDto);
 

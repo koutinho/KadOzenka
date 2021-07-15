@@ -7,6 +7,7 @@ using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Enti
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Formulas;
+using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
