@@ -24,7 +24,13 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			if (modelObjectsIds.Count == 0)
 				throw new Exception("В файле нет ИД объектов");
 
-			_objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id)).SelectAll().Execute();
+			_objectsFromDb = OMModelToMarketObjects.Where(x => modelObjectsIds.Contains(x.Id))
+				.Select(x => new
+				{
+					x.IsForTraining,
+					x.IsForControl,
+					x.Coefficients
+				}).Execute();
 			logger.Debug("Найдено {ModelObjectsCount} объектов моделирования в БД", _objectsFromDb.Count);
 
 			_isForTrainingAttributeId = isForTrainingAttributeId;
