@@ -246,7 +246,7 @@ namespace KadOzenka.Dal.Modeling
 
 		public List<long> GetAttributesWhichMustBeUnActive()
 		{
-			return RegisterCache.GetAttributeDataList(MarketPlaceBusiness.Common.Consts.RegisterId)
+			return RegisterCacheWrapper.GetAttributeDataList(MarketPlaceBusiness.Common.Consts.RegisterId)
 				.Select(x => x.Id).ToList();
 		}
 

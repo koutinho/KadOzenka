@@ -36,6 +36,7 @@ namespace KadOzenka.Web.UnitTests
 		protected Mock<ITourService> TourService { get; set; }
 		protected Mock<IModelService> ModelService { get; set; }
 		protected Mock<IBaseModelObjectsImporter> ModelObjectsImporter { get; set; }
+		protected Mock<IModelFactorsService> ModelFactorsService { get; set; }
 		protected Mock<IModelFactorsRepository> ModelFactorsRepository { get; set; }
 		protected Mock<IGbuObjectService> GbuObjectService { get; set; }
 		protected Mock<ILongProcessService> LongProcessService { get; set; }
@@ -53,6 +54,7 @@ namespace KadOzenka.Web.UnitTests
 		{
 			TourService = new Mock<ITourService>();
 			ModelService = new Mock<IModelService>();
+			ModelFactorsService = new Mock<IModelFactorsService>();
 			ModelFactorsRepository = new Mock<IModelFactorsRepository>();
 			GbuObjectService = new Mock<IGbuObjectService>();
 			LongProcessService = new Mock<ILongProcessService>();
@@ -129,7 +131,7 @@ namespace KadOzenka.Web.UnitTests
 			container.AddSingleton<StatisticalDataService>();
 			container.AddSingleton<CustomReportsService>();
 			container.AddTransient(typeof(IModelObjectsRepository), typeof(ModelObjectsRepository));
-			container.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));
+			container.AddTransient(typeof(IModelFactorsService), x => ModelFactorsService.Object);
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 			container.AddTransient(typeof(IModelService), sp => ModelService.Object);
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
