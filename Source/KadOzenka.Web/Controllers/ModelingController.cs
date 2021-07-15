@@ -1132,6 +1132,7 @@ namespace KadOzenka.Web.Controllers
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients),
                 //OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.PriceFromModel),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitId),
                 //OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
