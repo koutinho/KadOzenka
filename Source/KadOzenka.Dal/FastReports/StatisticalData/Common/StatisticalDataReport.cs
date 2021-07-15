@@ -16,6 +16,7 @@ using ObjectModel.KO;
 using Platform.Reports;
 using System.Data;
 using KadOzenka.Dal.CancellationQueryManager;
+using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Repositories;
 using Serilog;
 

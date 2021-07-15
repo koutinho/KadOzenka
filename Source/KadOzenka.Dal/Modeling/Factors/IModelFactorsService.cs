@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using Core.Register.QuerySubsystem;
 using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Modeling.Dto.Factors;
+using KadOzenka.Dal.Modeling.Factors.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Factors
 {
 	public interface IModelFactorsService
 	{

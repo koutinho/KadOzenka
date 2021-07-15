@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using Core.Register;
-using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Modeling.Dto.Factors;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 using Core.Register.QuerySubsystem;
+using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Exceptions.Factors;
-using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Factors.Entities;
+using KadOzenka.Dal.Modeling.Factors.Exceptions;
+using KadOzenka.Dal.Modeling.Factors.Repositories;
 using ObjectModel.Core.Register;
+using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 using ObjectModel.Directory.KO;
+using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Factors
 {
 	public class ModelFactorsService : IModelFactorsService
 	{

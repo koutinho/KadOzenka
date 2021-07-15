@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Register;
-using KadOzenka.Dal.Modeling.Dto.Factors;
+using KadOzenka.Dal.Modeling.Factors.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;

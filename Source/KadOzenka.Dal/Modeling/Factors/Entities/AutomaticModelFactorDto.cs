@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.Modeling.Dto.Factors
+﻿namespace KadOzenka.Dal.Modeling.Factors.Entities
 {
 	public class AutomaticModelFactorDto : AModelFactorDto
 	{

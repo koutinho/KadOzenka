@@ -1,7 +1,7 @@
 ﻿using System;
 using KadOzenka.Dal.Modeling.Resources;
 
-namespace KadOzenka.Dal.Modeling.Exceptions.Factors
+namespace KadOzenka.Dal.Modeling.Factors.Exceptions
 {
 	public class EmptyKForFactorWithStraightMarkException : Exception
 	{

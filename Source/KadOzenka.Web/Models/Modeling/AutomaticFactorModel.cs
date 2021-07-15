@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto.Factors;
+using KadOzenka.Dal.Modeling.Factors.Entities;
 using Kendo.Mvc.UI;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;

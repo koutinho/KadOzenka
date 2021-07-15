@@ -2,7 +2,7 @@
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Repositories
+namespace KadOzenka.Dal.Modeling.Factors.Repositories
 {
 	public interface IModelFactorsRepository : IGenericRepository<OMModelFactor>
 	{
