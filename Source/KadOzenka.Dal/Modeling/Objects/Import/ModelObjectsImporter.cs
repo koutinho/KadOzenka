@@ -80,9 +80,9 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 					if (CurrentRowCount % 1000 == 0)
 						_log.Debug("{LoggerBasePhrase} обрабатывается объект №{CurrentCount} из {MaxCount}", LoggerBasePhrase, CurrentRowCount, MaxRowsCount);
 
-					var omModelToMarketObject = importer.CreateObject(objectFromExcel.Id);
+					var modelToMarketObject = importer.CreateObject(objectFromExcel.Id);
 					
-					var coefficientsStr = omModelToMarketObject.AttributesValues[_coefficientsAttributeId].Value?.ToString();
+					var coefficientsStr = modelToMarketObject.AttributesValues[_coefficientsAttributeId].Value?.ToString();
 					var coefficientsFromDb = string.IsNullOrWhiteSpace(coefficientsStr) 
 						? new List<CoefficientForObject>() 
 						: JsonConvert.DeserializeObject<List<CoefficientForObject>>(coefficientsStr);
@@ -98,11 +98,11 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 							if (column.AttributeId == _unitPropertyTypeAttributeId)
 							{
 								var type = GetObjectTypeInfo(objectTypes, column.ValueToUpdate?.ToString());
-								omModelToMarketObject.SetAttributeValue((int)column.AttributeId, type.Str, referenceItemId: (int)type.EnumValue);
+								modelToMarketObject.SetAttributeValue((int)column.AttributeId, type.Str, referenceItemId: (int)type.EnumValue);
 							}
 							else
 							{
-								omModelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
+								modelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
 							}
 						}
 						else
@@ -130,14 +130,14 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 								coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
 							}
 
-							omModelToMarketObject.SetAttributeValue((int)_coefficientsAttributeId, coefficientsFromDb.SerializeCoefficient());
+							modelToMarketObject.SetAttributeValue((int)_coefficientsAttributeId, coefficientsFromDb.SerializeCoefficient());
 						}
 					});
 
-					if (IsInValidObject(omModelToMarketObject))
+					if (IsInValidObject(modelToMarketObject))
 						throw new Exception("Объект не может быть в контрольной и обучающей выборках одновременно");
 
-					RegisterStorage.Save(omModelToMarketObject);
+					RegisterStorage.Save(modelToMarketObject);
 					
 					lock (_locker)
 					{
