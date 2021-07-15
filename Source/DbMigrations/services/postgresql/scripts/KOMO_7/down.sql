@@ -1,4 +1,4 @@
-﻿
+
 --Удаление колонки с информацией о созданной таблице для словаря
 alter table ko_cod_job drop column register_id;
 delete from core_register_attribute where id=21500400;

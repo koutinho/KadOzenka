@@ -10,6 +10,8 @@ using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Modeling.Entities;
 using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.Modeling.Factors;
+using KadOzenka.Dal.Modeling.Model;
 using Newtonsoft.Json;
 
 namespace KadOzenka.Dal.Modeling

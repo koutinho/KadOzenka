@@ -2,20 +2,20 @@
 using KadOzenka.Dal.Integration._Builders.Model;
 using NUnit.Framework;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 {
-	//[TestFixture, Ignore("Интеграционные тесты пропускаются, т.к. нет БД")]
-	public class InheritanceTests : BaseModelingTests
+	public class UpdatingTests : BaseModelingTests
 	{
 		[Test]
 		public void Can_Update_Automatic_Model()
 		{
 			var existedModel = new ModelBuilder().Build();
 
-			var updatingModelDto = new ModelingModelDto
+			var updatingModelDto = new ModelDto
 			{
 				ModelId = existedModel.Id,
 				Name = RandomGenerator.GetRandomString(),

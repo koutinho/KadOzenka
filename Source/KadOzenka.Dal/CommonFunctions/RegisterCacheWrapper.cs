@@ -30,6 +30,11 @@ namespace KadOzenka.Dal.CommonFunctions
         {
             return RegisterCache.RegisterAttributes;
         }
+
+        public List<RegisterAttribute> GetAttributeDataList(int registerId)
+        {
+	        return RegisterCache.GetAttributeDataList(registerId);
+        }
     }
 
 
@@ -44,5 +49,7 @@ namespace KadOzenka.Dal.CommonFunctions
         void UpdateCache();
 
         RegisterAttribute GetAttributeData(long attributeId);
+
+        List<RegisterAttribute> GetAttributeDataList(int registerId);
 	}
 }

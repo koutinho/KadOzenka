@@ -1,1 +1,0 @@
-delete from core_register_relation where id=101;

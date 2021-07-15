@@ -7,15 +7,9 @@
     <div id="toolbar" class="top-toolbar"></div>
     <div class="bottom-main-content">
         <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
-            @Html.RenderHelpButton()
             @{
                 await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
             }
-            <div class="form-group">
-                <div class="col-sm-3 col-sm-offset-8" style="padding-top: 2%">
-                    @Html.KendoButton("saveModel", "Сохранить")
-                </div>
-            </div>
         </div>
     </div>
 }
@@ -36,6 +30,9 @@
         });
         $("#saveModel").on('click', saveModel);
     });
+
+
+
 
     function saveModel() {
         kendo.ui.progress($('body'), true);

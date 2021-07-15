@@ -1,0 +1,22 @@
+﻿<link href="~/js/js-api-vismio-mo/szc.css" rel="stylesheet" type="text/css" />
+<div id="rusgis" class="map-container"></div>
+<script type="text/javascript" src="~/js/js-api-vismio-mo/szc.umd.min.js"></script>
+<script type="text/javascript">
+	window.onload = function () {
+		var config = {
+			apiKey: "1B1A308B-2FA9-44A5-8ACC-DAC95D32FA61",
+			pageName: "vismiomo-map-js-api",
+		};
+
+		var geoportal = null;
+		window.szc.geoportal.init("#rusgis", config, onConfigReady);
+		function onConfigReady(geoportalApi) {
+			var panelButtons = document.querySelectorAll(".panel button");
+			panelButtons.forEach((button) => (button.disabled = false));
+			geoportal = geoportalApi;
+			geoportal.onMapClick((event) => {
+				window.console.log('onClick ' + event);
+			});
+		}
+	};
+</script>

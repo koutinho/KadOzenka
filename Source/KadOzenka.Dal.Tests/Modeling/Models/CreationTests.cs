@@ -1,6 +1,7 @@
 ﻿using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Modeling.Exceptions;
+using KadOzenka.Dal.Modeling.Model.Entities;
+using KadOzenka.Dal.Modeling.Model.Exceptions;
 using KadOzenka.Dal.Modeling.Resources;
 using Moq;
 using NUnit.Framework;
@@ -27,9 +28,9 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 
 		#region Support Methods
 
-		private ModelingModelDto GetModelInfoDto()
+		private ModelDto GetModelInfoDto()
 		{
-			return new ModelingModelDto
+			return new ModelDto
 			{
 				Name = RandomGenerator.GetRandomString(),
 				Description = RandomGenerator.GetRandomString(),

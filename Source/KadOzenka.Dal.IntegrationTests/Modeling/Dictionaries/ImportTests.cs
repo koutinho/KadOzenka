@@ -4,6 +4,7 @@ using NUnit.Framework;
 using KadOzenka.Dal.Modeling.Dto;
 using System.IO;
 using System.Linq;
+using KadOzenka.Dal.Modeling.Dictionaries.Entities;
 using ObjectModel.Common;
 using ObjectModel.KO;
 

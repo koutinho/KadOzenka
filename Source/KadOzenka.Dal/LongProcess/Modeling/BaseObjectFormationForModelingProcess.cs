@@ -9,8 +9,11 @@ using Core.Shared.Extensions;
 using ExCSS.Model.Extensions;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Factors;
+using KadOzenka.Dal.Modeling.Model;
+using KadOzenka.Dal.Modeling.Objects;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Common;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Core.LongProcess;
@@ -19,6 +22,7 @@ using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
+using Consts = MarketPlaceBusiness.Common.Consts;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -77,13 +81,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected void CreateMarkCatalog(List<OMModelToMarketObjects> modelObjects, List<ModelAttributePure> attributes, OMQueue queue)
 		{
+			var attributesWithMarks = attributes.Where(x => x.DictionaryId != null).ToList();
 			using (Logger.TimeOperation("Формирование каталога меток"))
 			{
 				AddLog(queue, "Начато формирование каталога меток", logger: Logger);
 
 				using (Logger.TimeOperation("Удаление всех предыдущих меток"))
 				{
-					attributes.Where(x => x.DictionaryId != null).ForEach(attribute =>
+					attributesWithMarks.ForEach(attribute =>
 					{
 						var deletedMarksCount = ModelDictionaryService.DeleteMarks(attribute.DictionaryId.Value);
 						Logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для словаря c ИД '{DictionaryId}'", deletedMarksCount, attribute.DictionaryId);
@@ -99,7 +104,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 						var modelObject = modelObjects[i];
 						var objectCoefficients = modelObject.DeserializeCoefficient();
 
-						foreach (var attribute in attributes)
+						foreach (var attribute in attributesWithMarks)
 						{
 							var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
 							if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||

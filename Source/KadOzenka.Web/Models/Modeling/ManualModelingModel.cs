@@ -2,6 +2,7 @@
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -20,7 +21,7 @@ namespace KadOzenka.Web.Models.Modeling
         public KoCalculationMethod CalculationMethodCode { get; set; }
 
 		
-        public static ManualModelingModel ToModel(ModelingModelDto entity)
+        public static ManualModelingModel ToModel(ModelDto entity)
         {
 	        return new ManualModelingModel
 	        {
@@ -41,7 +42,7 @@ namespace KadOzenka.Web.Models.Modeling
 			};
         }
 
-        public override ModelingModelDto ToDto()
+        public override ModelDto ToDto()
         {
 	        var dto = base.ToDto();
 	       

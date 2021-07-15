@@ -309,7 +309,7 @@
         initColumnsFromExcelBlock();
         initAttributesTree();
         downloadAttributes();
-        initFilesBlockInMapping();
+        initFileUploader();
     });
 
 
@@ -349,46 +349,7 @@
             }
         });
     }
-
-
-    function initFilesBlockInMapping() {
-        $('#files').kendoUpload({
-            multiple: false,
-            localization: {
-                select: 'Загрузить Файл',
-                clearSelectedFiles: 'Очистить'
-            },
-            async: {
-                autoUpload: true,
-                saveUrl: '@Url.Action("ParseFileColumns", "DataImportByTemplate")'
-            },
-            validation: {
-                allowedExtensions: ['.xls', '.xlsx']
-            },
-            success: function(e) {
-                if (e.operation === "upload") {
-                    var columnNames = e.response.ColumnsNames;
-                    var excelColumnsListBox = $("#columnsListBox").data("kendoListBox");
-                    excelColumnsListBox.setDataSource(columnNames);
-                    resetData();
-                }
-            },
-            error: function(e) {
-                $("#columnsListBox").data("kendoListBox").setDataSource([]);
-                resetData();
-                if (e.XMLHttpRequest.responseText) {
-                    Common.ShowError(e.XMLHttpRequest.responseText);
-                } else {
-                    Common.ShowError("Не удалось загрузить выбранный файл");
-                }
-            },
-            clear: function(e) {
-                $("#columnsListBox").data("kendoListBox").setDataSource([]);
-                resetData();
-            }
-        }).data('kendoUpload');
-    }
-
+    
 
     function collectFormDataFromMappingBlock() {
         var formData = new FormData();

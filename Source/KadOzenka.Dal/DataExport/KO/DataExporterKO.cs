@@ -2,6 +2,7 @@
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
 
 namespace KadOzenka.Dal.DataExport
 {

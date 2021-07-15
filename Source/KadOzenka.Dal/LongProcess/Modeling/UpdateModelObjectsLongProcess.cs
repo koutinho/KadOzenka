@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;
+using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.LongProcess.Common;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Objects.Entities;
+using KadOzenka.Dal.Modeling.Objects.Import;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
@@ -24,19 +24,19 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	public class UpdateModelObjectsLongProcess : LongProcess
 	{
 		private readonly ILogger _log = Log.ForContext<UpdateModelObjectsLongProcess>();
-		private string MessageSubject => "Обновление объектов моделирования";
-		public IModelObjectsService ModelObjectsService { get; set; }
+		private string MessageSubject => "Загрузка файла с объектами моделирования";
+		private ModelObjectsImporter ModelObjectsImporter { get; }
 
 
 
 		public UpdateModelObjectsLongProcess()
 		{
-			ModelObjectsService = new ModelObjectsService();
+			ModelObjectsImporter = new ModelObjectsImporter();
 		}
 
 
 
-		public static long AddToQueue(Stream file, string fileName, List<ColumnToAttributeMapping> columnsMapping)
+		public static long AddToQueue(Stream file, string fileName, ModelObjectsConstructor modelObjectsConstructor)
 		{
 			var import = new OMImportDataLog
 			{
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
 				DataFileTitle = DataImporterCommon.GetDataFileTitle(fileName),
 				FileExtension = DataImporterCommon.GetFileExtension(fileName),
-				ColumnsMapping = JsonConvert.SerializeObject(columnsMapping),
+				ColumnsMapping = JsonConvert.SerializeObject(modelObjectsConstructor.ColumnsMapping),
 				MainRegisterId = OMModelToMarketObjects.GetRegisterId(),
 				RegisterViewId = "KoModels"
 			};
@@ -60,10 +60,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			//{
 			//	Status_Code = Status.Added,
 			//	UserId = SRDSession.GetCurrentUserId(),
-			//	ObjectId = import.Id
+			//	ObjectId = import.Id,
+			//	Parameters = modelObjectsConstructor.SerializeToXml()
 			//}, new CancellationToken());
 
-			LongProcessManager.AddTaskToQueue(nameof(UpdateModelObjectsLongProcess), OMImportDataLog.GetRegisterId(), import.Id);
+			LongProcessManager.AddTaskToQueue(nameof(UpdateModelObjectsLongProcess), OMImportDataLog.GetRegisterId(),
+				import.Id, modelObjectsConstructor.SerializeToXml());
 
 			return import.Id;
 		}
@@ -72,43 +74,22 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			_log.Debug("Старт фонового процесса {InputParameters}", processQueue.Parameters);
 
-			if (processQueue.ObjectId.GetValueOrDefault() == 0)
-			{
-				WorkerCommon.SetMessage(processQueue, Consts.MessageForProcessInterruptedBecauseOfNoObjectId);
-				WorkerCommon.SetProgress(processQueue, Common.Consts.ProgressForProcessInterruptedBecauseOfNoObjectId);
-				NotificationSender.SendNotification(processQueue, MessageSubject, "Операция завершена с ошибкой, т.к. нет входных данных. Подробнее в списке процессов");
-				return;
-			}
-
 			try
 			{
-				WorkerCommon.SetProgress(processQueue, 0);
-
-				var import = OMImportDataLog.Where(x => x.Id == processQueue.ObjectId).SelectAll().ExecuteFirstOrDefault();
-				if (import == null)
-				{
-					NotificationSender.SendNotification(processQueue, MessageSubject, "Процесс не выполнен, так как отсутствует исходный файл.");
-					return;
-				}
-
+				var import = GetImport(processQueue);
 				import.Status_Code = ObjectModel.Directory.Common.ImportStatus.Running;
 				import.DateStarted = DateTime.Now;
 				import.Save();
 
-				ExcelFile excelFile;
-				List<ColumnToAttributeMapping> columnsMapping;
-				using (_log.TimeOperation("Подготовка данных для запуска обновления"))
-				{
-					var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
-					excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
-					columnsMapping = JsonConvert.DeserializeObject<List<ColumnToAttributeMapping>>(import.ColumnsMapping);
-				}
+				var constructor = processQueue.Parameters.DeserializeFromXml<ModelObjectsConstructor>();
+				var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
+				var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsService.MaxRowsCountInFileForUpdating, () => ModelObjectsService.CurrentRowIndexInFileForUpdating);
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => ModelObjectsImporter.MaxRowsCount, () => ModelObjectsImporter.CurrentRowCount);
 				Stream updatingResult;
 				using (_log.TimeOperation("Обновление объектов"))
 				{
-					updatingResult = ModelObjectsService.UpdateModelObjects(excelFile, columnsMapping);
+					updatingResult = ModelObjectsImporter.ChangeObjects(excelFile, constructor);
 				}
 
 				using (_log.TimeOperation("Сохранение файла с результатом обновления"))
@@ -128,7 +109,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				_log.Error(e, "Ошибка");
 				NotificationSender.SendNotification(processQueue, MessageSubject,
-					$"Операция завершена с ошибкой. Подробнее в журнале (ИД {ErrorManager.LogError(e)})");
+					$"Операция завершена с ошибкой: {e.Message}. Подробнее в журнале (ИД {ErrorManager.LogError(e)})");
 			}
 
 			LongProcessProgressLogger.StopLogProgress();
@@ -138,6 +119,23 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 
 		#region Support Methods
+
+		private OMImportDataLog GetImport(OMQueue processQueue)
+		{
+			if (processQueue.ObjectId.GetValueOrDefault() == 0)
+				throw new Exception("Операция завершена с ошибкой, т.к. нет данных о расположении загруженного файла.");
+
+			if (string.IsNullOrWhiteSpace(processQueue.Parameters))
+				throw new Exception("Операция завершена с ошибкой, т.к. нет входных параметров.");
+
+			var import = OMImportDataLog.Where(x => x.Id == processQueue.ObjectId).SelectAll().ExecuteFirstOrDefault();
+			if (import == null)
+			{
+				throw new Exception("Процесс не выполнен, так как отсутствует исходный файл.");
+			}
+
+			return import;
+		}
 
 		private void SendSuccessfulMessage(OMQueue processQueue, long importId)
 		{

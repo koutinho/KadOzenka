@@ -10,6 +10,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.RecycleBin;
 using ObjectModel.Common;
 using ObjectModel.Directory;

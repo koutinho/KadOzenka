@@ -9,6 +9,8 @@ using KadOzenka.Dal.CommonFunctions.Repositories;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Dictionaries.Entities;
 using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;

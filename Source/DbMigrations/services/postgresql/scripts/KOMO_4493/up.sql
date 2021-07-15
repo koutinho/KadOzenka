@@ -1,0 +1,1 @@
+ALTER TABLE modeling_model_to_market_objects ALTER COLUMN cadastral_number TYPE VARCHAR(4000);

@@ -4,7 +4,6 @@ using NUnit.Framework;
 
 namespace KadOzenka.Web.UnitTests.ObjectsCharacteristics
 {
-	[TestFixture]
 	public class BaseObjectCharacteristicsTests : BaseTests
 	{
 		protected ObjectsCharacteristicsController ObjectsCharacteristicsController => Provider.GetService<ObjectsCharacteristicsController>();

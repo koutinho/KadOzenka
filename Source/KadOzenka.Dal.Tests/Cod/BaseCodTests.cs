@@ -14,7 +14,6 @@ using Platform.Configurator.DbConfigurator;
 
 namespace KadOzenka.Dal.UnitTests.Cod
 {
-    [TestFixture]
     public class BaseCodTests : BaseTests
     {
         protected ICodDictionaryService CodDictionaryService => Provider.GetService<ICodDictionaryService>();

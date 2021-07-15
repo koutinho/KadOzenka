@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace KadOzenka.Dal.UnitTests.Tours
 {
-	[TestFixture]
 	public class BaseTourTests : BaseTests
 	{
 		protected TourService TourService => Provider.GetService<TourService>();

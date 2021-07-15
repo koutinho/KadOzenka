@@ -1,0 +1,211 @@
+﻿@using KadOzenka.Web.Models.Modeling
+@using ObjectModel.Modeling
+
+
+<form id="importForm">
+    <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
+        @(await Html.PartialAsync("~/Views/DataImportByTemplate/Partials/DataImportMain.cshtml"))
+    </ul>
+</form>
+
+
+
+<link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
+<link rel="stylesheet" href="~/css/data-import-by-template.css" />
+
+
+
+<script src="~/js/jquery.fancybox.min.js"></script>
+<script src="~/js/data-import-by-template.js"></script>
+<script type="text/x-kendo-tmpl" id="template">
+		<div class="matchItem k-widget">
+			<div>
+				<span>
+					<span>
+                        <input type="checkbox" #=IsKey ? checked='checked' : '' 
+                                # onclick="checkboxChange(this)" />
+                    </span>
+					<span>#:ColumnName#</span>
+					<span>-</span>
+					<span>#:AttributeDescription#</span>
+					<span #=IsReadOnly ? 'style="display: none"' : '' #>
+                        <a class="k-button k-delete-button deleteButton" href="\\#">
+                            <span class="k-icon k-i-close"></span>
+                        </a>
+                    </span>
+				</span>
+			</div>
+		</div>
+</script>
+    
+    
+<script>
+    var dataCountForBackgroundLoading = 10000;
+    var dataSource = new kendo.data.DataSource({
+        data: []
+    });
+
+
+    $(document).ready(function() {
+        initFilter();
+
+        initMatchBtn(false);
+
+        $("#loadButton").kendoButton({
+            enable: false,
+            click: saveChanges
+        });
+
+        initComparisonBlock();
+
+        initColumnsFromExcelBlock();
+
+        initAttributesTreeInternal();
+
+        $('#upload_panelbar')
+            .kendoPanelBar()
+            .data('kendoPanelBar')
+            .expand('li[data-expand]');
+
+        initFileUploader(dataCountForBackgroundLoading, showConfirmationAboutFileStructure);
+    });
+
+
+
+
+
+    function showConfirmationAboutFileStructure(e) {
+        Common.UI.ShowInfo({
+            title: 'Загрузка файла с объектами модели',
+            content: 'Для обновления объектов укажите ключевое поле (столбец "Индентификатор"). Если ключ не указан, то объекты будут созданы.<br>',
+            icon: 'ok',
+            onSuccess: function () {
+                var upload = e.sender;
+                upload.upload();
+            }
+        });
+    }
+
+
+    function initAttributesTreeInternal() {
+        initAttributesTree();
+        var attributesTree = $("#treeview").data('kendoTreeView');
+        var modelAttributesSerialized = '@Json.Serialize(ViewBag.Attributes)';
+        var data = JSON.parse(modelAttributesSerialized);
+        attributesTree.setDataSource(getAttributesDataSourceInternal(data));
+        attributesTree.expand(".k-item");
+    }
+
+    function getAttributesDataSourceInternal(data) {
+        var source = [];
+        if (data && data.length) {
+            var parantItems = data.filter(function(item) {
+                return (item.ParentId == null);
+            });
+            if (parantItems.length) {
+                for (var i = 0; i < parantItems.length; i++) {
+                    var child = {};
+                    child.text = parantItems[i].Description;
+                    var childItems = data.filter(function(item) {
+                        return item.ParentId === parantItems[i].AttributeId;
+                    });
+                    if (childItems) {
+                        child.items = $.map(childItems,
+                            function(item) {
+                                return {
+                                    id: item.AttributeId,
+                                    text: item.Description,
+                                    parentId: item.ParentId
+                                };
+                            });
+                    }
+                    source.push(child);
+                }
+            }
+        }
+        return source;
+    }
+
+
+    function saveChanges() {
+        var matchingSection = $("#listView").data('kendoListView');
+        var matchedData = matchingSection.dataSource.data();
+        var columns = $.map(matchedData,
+            function(item) {
+                return {
+                    IsKey: item.IsKey,
+                    ColumnIndex: item.ColumnIndex,
+                    AttributeId: item.AttributeId
+                };
+            });
+
+        var formData;
+        try {
+            formData = fillFormData(columns);
+        } 
+        catch (e) {
+            Common.ShowError(e);
+            return;
+        }
+        kendo.ui.progress($('#importForm'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ChangeModelObjects", "Modeling")',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(data) {
+                if (data.Errors) {
+                    var errors = getErrors(data.Errors);
+                    Common.ShowError(errors);
+                    return;
+                } else {
+                    if (data.importDataLogId) {
+                        Common.ShowMessage("Процесс добавлен в очередь. Результат будет отправлен на почту.");
+                        var goToJournalBtn = $("#goToJournalBtn");
+                        goToJournalBtn.removeClass('k-state-disabled');
+                        goToJournalBtn.attr('href', "/RegistersView/DataImporter?Transition=1&80100100=" + data.importDataLogId);
+                    }
+                    else if (data.fileName) {
+                        Common.ShowMessage("Процесс завершен. Идет скачивание файла с результатом");
+                        window.location = '@Url.Action("DownloadExcelFileFromSessionByName", "Modeling")' + "?fileName=" + data.fileName;
+                    } else {
+                        Common.ShowError("Неизвестная ошибка. Обратитесь к администратору.");
+                    }
+                }
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('#importForm'), false);
+            }
+        });
+    }
+
+    function fillFormData(columns) {
+        var formData = new FormData();
+        var keyColumns = columns.filter(x => x.IsKey);
+        if (keyColumns.length > 1) {
+            throw "Для обновления должен быть указан один ключ (Индентификатор)";
+        } 
+        else if (keyColumns.length === 1) {
+            if (keyColumns[0].AttributeId != '@OMModelToMarketObjects.GetColumnAttributeId(x => x.Id)') {
+                throw "Для обновления в качестве ключа должен быть выбран антибут 'Идентификатор'";
+            } else {
+                formData.append('@nameof(ModelObjectsConstructorModel.IdColumnIndex)', keyColumns[0].ColumnIndex);
+            }
+        }
+        var file = $('#files').data('kendoUpload').getFiles()[0];
+        var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
+        formData.append('@nameof(ModelObjectsConstructorModel.File)', file.rawFile);
+        formData.append('@nameof(ModelObjectsConstructorModel.IsBackgroundDownload)', isBackgroundDownload);
+        formData.append('@nameof(ModelObjectsConstructorModel.ModelId)', '@ViewBag.ModelId');
+        for (var i = 0; i !== columns.length; i++) {
+            formData.append("Columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
+            formData.append("Columns[" + i + "].AttributeId", columns[i].AttributeId);
+        }
+
+        return formData;
+    }
+</script>

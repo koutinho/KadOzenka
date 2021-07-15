@@ -38,7 +38,17 @@ using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
-using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Dictionaries.Entities;
+using KadOzenka.Dal.Modeling.Factors;
+using KadOzenka.Dal.Modeling.Factors.Repositories;
+using KadOzenka.Dal.Modeling.Model;
+using KadOzenka.Dal.Modeling.Model.Entities;
+using KadOzenka.Dal.Modeling.Model.Repositories;
+using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Entities;
+using KadOzenka.Dal.Modeling.Objects.Import;
+using KadOzenka.Dal.Modeling.Objects.Repositories;
 using KadOzenka.Web.Exceptions;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
@@ -70,6 +80,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelingRepository ModelingRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
+        public IBaseModelObjectsImporter ModelObjectsImporter { get; set; }
 
 
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
@@ -79,7 +90,8 @@ namespace KadOzenka.Web.Controllers
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
-            IModelingService modelingService)
+            IModelingService modelingService,
+	        IBaseModelObjectsImporter modelObjectsImporter)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelService = modelService;
@@ -94,6 +106,7 @@ namespace KadOzenka.Web.Controllers
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
             ModelingService = modelingService;
+            ModelObjectsImporter = modelObjectsImporter;
         }
 
 
@@ -269,7 +282,7 @@ namespace KadOzenka.Web.Controllers
                 .Select(x => new
                 {
                     GroupId = x.GroupId.ToString(),
-                    FullGroupName = $"{x.ParentGroup?.Number}.{x.ParentGroup?.GroupName}",
+                    FullGroupName = $"{x.ParentGroup?.Number}. {x.ParentGroup?.GroupName}",
                     ParentGroupNumber = GroupService.GetParentGroupNumber(x.ParentGroup?.Number),
                     SubGroupNumber = GroupService.GetSubGroupNumber(x.ParentGroup?.Number)
                 })
@@ -309,15 +322,15 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception(Messages.ObjectFormationProcessAlreadyAdded);
 
             var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
-            ////TODO код для отладки
-            //new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //	Status_Code = Status.Added,
-            //	UserId = SRDSession.GetCurrentUserId(),
-            //	Parameters = inputParameters.SerializeToXml()
-            //}, new CancellationToken());
+			////TODO код для отладки
+			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	Parameters = inputParameters.SerializeToXml()
+			//}, new CancellationToken());
 
-            ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
+			ObjectFormationForModelingProcess.AddProcessToQueue(inputParameters);
 
             return Ok();
         }
@@ -409,7 +422,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult AddAutomaticModelFactor(long generalModelId)
         {
-            var factorDto = new AutomaticFactorModel
+	        var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+	        var attributes = GetPossibleFactorsForAutomaticModel(generalModelId);
+            var factorDto = new AutomaticFactorModel(attributes, unActiveAttributes)
             {
                 Id = -1,
                 ModelId = generalModelId,
@@ -425,7 +440,10 @@ namespace KadOzenka.Web.Controllers
         {
            var factor = ModelFactorsService.GetFactorById(id);
 
-           var model = AutomaticFactorModel.ToModel(factor);
+           var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+           var attributes = GetPossibleFactorsForAutomaticModel(factor.ModelId.GetValueOrDefault());
+           var model = AutomaticFactorModel.ToModel(factor, attributes, unActiveAttributes);
+
            if (factor.DictionaryId != null)
            {
                //todo после ТЗ на авто. модель объединить с ручной
@@ -507,8 +525,12 @@ namespace KadOzenka.Web.Controllers
             return Ok();
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetAllAttributes(long modelId)
+        #endregion
+
+
+        #region Support Methods
+
+        private List<DropDownTreeItemModel> GetPossibleFactorsForAutomaticModel(long modelId)
         {
             var model = ModelService.GetModelEntityById(modelId);
 
@@ -537,13 +559,8 @@ namespace KadOzenka.Web.Controllers
                 marketObjectsAttributesTree
             };
 
-            return Json(fullTree);
+            return fullTree;
         }
-
-        #endregion
-
-
-        #region Support Methods
 
         private KoAlgoritmType ConvertModelType(ModelType inputType)
         {
@@ -1106,7 +1123,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult ModelObjectsUpdatingConstructor(long modelId)
+        public IActionResult ModelObjectsConstructor(long modelId)
         {
             var register = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
             var registerInfo = new
@@ -1118,14 +1135,15 @@ namespace KadOzenka.Web.Controllers
             var source = new List<object> { registerInfo };
             var exceptions = new List<long>
             {
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.Id),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients),
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber),
+                OMModelToMarketObjects.GetColumnAttributeId(x => x.PriceFromModel),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectId),
                 OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitId),
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
-                OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code)
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType),
+                //OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code)
             };
 
             RegisterCache.RegisterAttributes.Values
@@ -1149,13 +1167,13 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForValueInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForValueInNormalizedColumn}",
                         ParentId = register.Id
                     });
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForCoefficientInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
                         ParentId = register.Id
                     });
                 }
@@ -1164,13 +1182,14 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = x.AttributeName,
-                        AttributeId = $"{x.AttributeId}{ModelObjectsService.PrefixForFactor}",
+                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForFactor}",
                         ParentId = register.Id
                     });
                 }
             });
 
             ViewBag.Attributes = source;
+            ViewBag.ModelId = modelId;
 
             return PartialView();
         }
@@ -1178,7 +1197,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult UpdateModelObjects(ModelingObjectsUpdatingModel model)
+        public ActionResult ChangeModelObjects(ModelObjectsConstructorModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
@@ -1199,8 +1218,8 @@ namespace KadOzenka.Web.Controllers
             {
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
+            var resultStream = ModelObjectsImporter.ChangeObjects(excelFile, model.Map());
 
-            var resultStream = ModelObjectsService.UpdateModelObjects(excelFile, model.Map());
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
             return Json(new { fileName = fileName });
