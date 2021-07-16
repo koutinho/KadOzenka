@@ -675,19 +675,23 @@ namespace ObjectModel.KO
 		    }
 	    }
 
-        public decimal? GetA0ForPreviousTour()
+	    public void SetA0(decimal? a0, KoAlgoritmType algoritmType)
 	    {
-		    switch (AlgoritmType_Code)
+		    switch (algoritmType)
 		    {
 			    case KoAlgoritmType.Exp:
-				    return A0ForExponentialTypeInPreviousTour;
+				    A0ForExponential = a0;
+				    break;
 			    case KoAlgoritmType.Line:
-				    return A0ForLinearTypeInPreviousTour;
+				    A0 = a0;
+				    break;
 			    case KoAlgoritmType.Multi:
-				    return A0ForMultiplicativeTypeInPreviousTour;
+				    A0ForMultiplicative = a0;
+				    break;
+			    default:
+				    A0 = a0;
+				    break;
 		    }
-
-		    return null;
 	    }
 
         public string GetTrainingResult(KoAlgoritmType type)

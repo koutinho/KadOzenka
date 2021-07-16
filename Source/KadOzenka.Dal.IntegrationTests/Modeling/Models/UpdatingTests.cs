@@ -20,8 +20,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 				Name = RandomGenerator.GetRandomString(),
 				Description = RandomGenerator.GetRandomString(),
 				AlgorithmType = KoAlgoritmType.Exp,
-				A0 = RandomGenerator.GenerateRandomDecimal(),
-				A0ForPreviousTour = RandomGenerator.GenerateRandomDecimal()
+				A0 = RandomGenerator.GenerateRandomDecimal()
 			};
 			ModelService.UpdateAutomaticModel(updatingModelDto);
 
@@ -29,7 +28,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 			Assert.That(updatedModel.Name, Is.EqualTo(updatingModelDto.Name));
 			Assert.That(updatedModel.Description, Is.EqualTo(updatingModelDto.Description));
 			Assert.That(updatedModel.A0ForExponential, Is.EqualTo(updatingModelDto.A0));
-			Assert.That(updatedModel.A0ForExponentialTypeInPreviousTour, Is.EqualTo(updatingModelDto.A0ForPreviousTour));
 		}
 	}
 }

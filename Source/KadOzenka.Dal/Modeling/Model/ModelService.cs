@@ -105,9 +105,6 @@ namespace KadOzenka.Dal.Modeling.Model
 		        x.A0,
 		        x.A0ForExponential,
 		        x.A0ForMultiplicative,
-		        x.A0ForLinearTypeInPreviousTour,
-		        x.A0ForExponentialTypeInPreviousTour,
-		        x.A0ForMultiplicativeTypeInPreviousTour,
 		        x.Formula,
 		        x.CalculationMethod_Code,
 		        x.IsActive
@@ -136,7 +133,6 @@ namespace KadOzenka.Dal.Modeling.Model
                 AlgorithmTypeForCadastralPriceCalculation = model.AlgoritmType_Code,
                 CalculationType = model.CalculationType_Code,
                 A0 = model.GetA0(),
-                A0ForPreviousTour = model.GetA0ForPreviousTour(),
                 Formula = model.Formula,
                 CalculationMethod = model.CalculationMethod_Code,
                 IsActive = model.IsActive.GetValueOrDefault()
@@ -211,22 +207,7 @@ namespace KadOzenka.Dal.Modeling.Model
             existedModel.Name = modelDto.Name;
             existedModel.Description = modelDto.Description;
             existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-            switch (modelDto.AlgorithmType)
-            {
-	            case KoAlgoritmType.None:
-	            case KoAlgoritmType.Line:
-		            existedModel.A0 = modelDto.A0;
-		            existedModel.A0ForLinearTypeInPreviousTour = modelDto.A0ForPreviousTour;
-		            break;
-	            case KoAlgoritmType.Exp:
-		            existedModel.A0ForExponential = modelDto.A0;
-		            existedModel.A0ForExponentialTypeInPreviousTour = modelDto.A0ForPreviousTour;
-		            break;
-	            case KoAlgoritmType.Multi:
-		            existedModel.A0ForMultiplicative = modelDto.A0;
-		            existedModel.A0ForMultiplicativeTypeInPreviousTour = modelDto.A0ForPreviousTour;
-		            break;
-            }
+            existedModel.SetA0(modelDto.A0, modelDto.AlgorithmType);
 
             existedModel.Save();
         }

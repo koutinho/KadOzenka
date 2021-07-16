@@ -3650,66 +3650,6 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _a0forlineartypeinprevioustour;
-        /// <summary>
-        /// 20601800 Cвободный член в формуле для Линейного алгоритма в предыдущем туре (A0_linear_previous)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20601800)]
-        public decimal? A0ForLinearTypeInPreviousTour
-        {
-            get
-            {
-                CheckPropertyInited("A0ForLinearTypeInPreviousTour");
-                return _a0forlineartypeinprevioustour;
-            }
-            set
-            {
-                _a0forlineartypeinprevioustour = value;
-                NotifyPropertyChanged("A0ForLinearTypeInPreviousTour");
-            }
-        }
-
-
-        private decimal? _a0forexponentialtypeinprevioustour;
-        /// <summary>
-        /// 20601900 Cвободный член в формуле для Экспоненциального алгоритма в предыдущем туре (A0_exponential_previous)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20601900)]
-        public decimal? A0ForExponentialTypeInPreviousTour
-        {
-            get
-            {
-                CheckPropertyInited("A0ForExponentialTypeInPreviousTour");
-                return _a0forexponentialtypeinprevioustour;
-            }
-            set
-            {
-                _a0forexponentialtypeinprevioustour = value;
-                NotifyPropertyChanged("A0ForExponentialTypeInPreviousTour");
-            }
-        }
-
-
-        private decimal? _a0formultiplicativetypeinprevioustour;
-        /// <summary>
-        /// 20602000 Cвободный член в формуле для Мультипликативного алгоритма в предыдущем туре (A0_multiplicative_previous)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 20602000)]
-        public decimal? A0ForMultiplicativeTypeInPreviousTour
-        {
-            get
-            {
-                CheckPropertyInited("A0ForMultiplicativeTypeInPreviousTour");
-                return _a0formultiplicativetypeinprevioustour;
-            }
-            set
-            {
-                _a0formultiplicativetypeinprevioustour = value;
-                NotifyPropertyChanged("A0ForMultiplicativeTypeInPreviousTour");
-            }
-        }
-
-
         private string _objectsstatistic;
         /// <summary>
         /// 20602100 Статистика по объектам модели (objects_statistic)

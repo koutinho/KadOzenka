@@ -219,36 +219,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetA0(long modelId, KoAlgoritmType type)
         {
-            var model = OMModel.Where(x => x.Id == modelId).Select(x => new
-            {
-                x.A0,
-                x.A0ForExponential,
-                x.A0ForMultiplicative,
-                x.A0ForLinearTypeInPreviousTour,
-                x.A0ForExponentialTypeInPreviousTour,
-                x.A0ForMultiplicativeTypeInPreviousTour
-            }).ExecuteFirstOrDefault();
+            var model = ModelService.GetModelEntityById(modelId);
 
-            decimal? a0 = null;
-            decimal? a0Previous = null;
-            switch (type)
-            {
-                case KoAlgoritmType.None:
-                case KoAlgoritmType.Line:
-                    a0 = model?.A0;
-                    a0Previous = model?.A0ForLinearTypeInPreviousTour;
-                    break;
-                case KoAlgoritmType.Exp:
-                    a0 = model?.A0ForExponential;
-                    a0Previous = model?.A0ForExponentialTypeInPreviousTour;
-                    break;
-                case KoAlgoritmType.Multi:
-                    a0 = model?.A0ForMultiplicative;
-                    a0Previous = model?.A0ForMultiplicativeTypeInPreviousTour;
-                    break;
-            }
-
-            return Json(new {a0, a0Previous});
+            return Json(new {a0 = model.GetA0(type)});
         }
 
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]

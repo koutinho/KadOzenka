@@ -19,18 +19,14 @@ namespace KadOzenka.Web.Models.Modeling
         public bool HasMultiplicativeTrainingResult { get; set; }
         public List<ModelAttributeRelationDto> Attributes { get; set; }
 
-
         [Display(Name = "Группа")]
         public string GroupName { get; set; }
 
         [Display(Name = "Алгоритм расчета")]
         public KoAlgoritmType AlgorithmType { get; set; }
 
-        [Display(Name = "Свободный член из предыдущего тура")]
-		public decimal? A0ForPreviousTour { get; set; }
 
-		
-
+        
 		public static AutomaticModelingModel ToModel(ModelDto entity, bool hasFormedObjectArray)
 		{
 			return new AutomaticModelingModel
@@ -55,7 +51,6 @@ namespace KadOzenka.Web.Models.Modeling
 				//HasProcessToFormObjectArrayInQueue = new LongProcessService().HasActiveProcessInQueue(ObjectFormationForModelingProcess.ProcessId, entity.ModelId),
 				AlgorithmTypeForCadastralPriceCalculation = entity.AlgorithmTypeForCadastralPriceCalculation,
 				AlgorithmType = entity.AlgorithmTypeForCadastralPriceCalculation,
-				A0ForPreviousTour = entity.A0ForPreviousTour,
 				Attributes = entity.Attributes
 			};
         }
@@ -64,7 +59,6 @@ namespace KadOzenka.Web.Models.Modeling
         {
 	        var dto = base.ToDto();
 	        
-	        dto.A0ForPreviousTour = A0ForPreviousTour;
 	        dto.AlgorithmType = AlgorithmType;
 
 	        return dto;

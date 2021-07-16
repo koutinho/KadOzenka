@@ -16,7 +16,6 @@ namespace KadOzenka.Dal.Modeling.Model.Entities
 		public string Description { get; set; }
 		public string Formula { get; set; }
 		public decimal? A0 { get; set; }
-		public decimal? A0ForPreviousTour { get; set; }
         public long TourId { get; set; }
 		public long TourYear { get; set; }
         public long? GroupId { get; set; }
