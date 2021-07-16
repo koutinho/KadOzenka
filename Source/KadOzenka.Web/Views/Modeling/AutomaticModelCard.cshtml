@@ -273,7 +273,6 @@
                             AttributeId: { type: "number" },
                             DictionaryId: { type: "number" },
                             AttributeName: { type: "string" },
-                            IsNormalized: { type: "boolean" },
                             DictionaryName: { type: "string" },
                             Coefficient: { type: "number" },
                             IsActive: { type: "boolean" },
@@ -293,12 +292,12 @@
                 },
                 {
                     field: 'AttributeName',
-                    title: 'Фактор'
+                    title: 'Фактор',
+                    width: "40%"
                 },
                 {
-                    field: 'IsNormalized',
-                    title: 'Нормализация',
-                    template: '<input type="checkbox" #= DictionaryId != null ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
+                    field: 'MarkType',
+                    title: 'Тип метки',
                     attributes: { style: "text-align: center;" }
                 },
                 {
@@ -312,14 +311,18 @@
                     attributes: { style: "text-align: center;" }
                 },
                 {
+                    field: 'CorrectingTerm',
+                    title: 'Корректирующее слагаемое',
+                    headerAttributes: { style: "word-wrap: break-word;" }
+                },
+                {
+                    field: 'K',
+                    title: 'К'
+                },
+                {
                     field: 'IsActive',
                     title: 'Использовать в модели',
                     template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'MarkType',
-                    title: 'Тип метки',
                     attributes: { style: "text-align: center;" }
                 }
             ],
