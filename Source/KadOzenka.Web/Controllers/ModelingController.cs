@@ -651,9 +651,8 @@ namespace KadOzenka.Web.Controllers
                 manualFactorDto = new ManualFactorModel
                 {
                     Id = -1,
-                    GeneralModelId = generalModelId,
-                    FactorId = -1,
-                    MarkerId = -1
+                    ModelId = generalModelId,
+                    FactorId = -1
                 };
             }
 
@@ -666,23 +665,23 @@ namespace KadOzenka.Web.Controllers
         {
             var dto = manualFactorModel.ToDto();
 
-            var model = ModelService.GetModelEntityById(manualFactorModel.GeneralModelId);
+            var model = ModelService.GetModelEntityById(manualFactorModel.ModelId);
             dto.Type = model.AlgoritmType_Code;
 
             if (manualFactorModel.IsNewFactor)
             {
-	            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.MarkType, manualFactorModel.GeneralModelId);
+	            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.MarkType, manualFactorModel.ModelId);
 	            ModelFactorsService.AddManualFactor(dto);
             }
             else
             {
 	            if (dto.DictionaryId != null)
 	            {
-		            UpdateDictionary(dto.DictionaryId.Value, manualFactorModel.DictionaryName, manualFactorModel.GeneralModelId);
+		            UpdateDictionary(dto.DictionaryId.Value, manualFactorModel.DictionaryName, manualFactorModel.ModelId);
 	            }
 	            else
 	            {
-		            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.MarkType, manualFactorModel.GeneralModelId);
+		            dto.DictionaryId = CreateDictionary(manualFactorModel.DictionaryName, manualFactorModel.FactorId, manualFactorModel.MarkType, manualFactorModel.ModelId);
 	            }
                 ModelFactorsService.UpdateManualFactor(dto);
             }

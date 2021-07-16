@@ -18,7 +18,6 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				Type = KoAlgoritmType.Line,
 				FactorId = RandomGenerator.GenerateRandomInteger(),
 				DictionaryId = RandomGenerator.GenerateRandomInteger(),
-				PreviousWeight = RandomGenerator.GenerateRandomDecimal(),
 				IsActive = true,
 				MarkType = MarkType.Default
 			};

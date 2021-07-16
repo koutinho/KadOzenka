@@ -1,14 +1,14 @@
-﻿@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.Modeling.ManualFactorModel
+﻿@model KadOzenka.Web.Models.Modeling.ManualFactorModel
+
 
 @using (Html.BeginForm("EditManualModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
 {
     @Html.HiddenFor(x => x.Id)
-    @Html.HiddenFor(x => x.GeneralModelId)
+    @Html.HiddenFor(x => x.ModelId)
     <div class="form-horizontal col-sm-12" style="margin-top: 10px">
         <div class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabel("Фактор")
+                @Html.CustomLabelFor(x => x.FactorId)
             </div>
             <div class="col-sm-9">
                 @(Html.Kendo().DropDownListFor(x => x.FactorId)
@@ -16,45 +16,13 @@
                     .HtmlAttributes(new {style = "width: 100%;"}))
             </div>
         </div>
+        @{
+            await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralFactorInfo.cshtml", Model);
+        }
+
         <div class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabelFor(x => x.MarkType)
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoKoReferenceDropDownListFor(x => x.MarkType, 226,
-                    text: Model.MarkType.GetEnumDescription(), 
-                    value: ((long) Model.MarkType).ToString(),
-                    isReadonly: false, withOptionLabel: false)
-            </div>
-        </div>
-        <div id="correctItemBlock" class="form-group">
-            <div class="col-sm-3">
-                @Html.LabelFor(x => x.CorrectItem, new { @class = "control-label required"})
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoNumericTextBoxFor(x => x.CorrectItem, precision: 5, isReadonly: false)
-            </div>
-        </div>
-        <div id="kBlock" class="form-group">
-            <div class="col-sm-3">
-                @Html.LabelFor(x => x.K, new { @class = "control-label required"})
-            </div>
-            <div class="col-sm-9">
-                @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: false)
-            </div>
-        </div>
-        <div id="dictionaryBlock" class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(x => x.DictionaryName)
-            </div>
-            <div class="col-sm-9">
-                @Html.HiddenFor(x => x.DictionaryId)
-                @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: false)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabel("Коэффициент")
+                @Html.CustomLabelFor(x => x.B0)
             </div>
             <div class="col-sm-9">
                 @Html.KendoNumericTextBoxFor(x => x.B0, precision: 5, isReadonly: false)
@@ -62,12 +30,13 @@
         </div>
         <div class="form-group">
             <div class="col-sm-3">
-                @Html.CustomLabel("Поправка")
+                @Html.CustomLabelFor(x => x.Weight)
             </div>
             <div class="col-sm-9">
-                @Html.KendoNumericTextBoxFor(x => x.Correction, precision: 15, isReadonly: false)
+                @Html.KendoNumericTextBoxFor(x => x.Weight, precision: 15, isReadonly: false)
             </div>
         </div>
+
         <div class="form-group">
             <div class="col-sm-2 col-sm-offset-8">
                 <button class="btn btn-default btn-block" id="cancel">Отмена</button>
@@ -80,19 +49,12 @@
 }
 
 
-<script src="~/js/modeling.js"></script>
 <script>
     $(document).ready(function () {
         $('#save').on('click', saveFactor);
-
-        $('#cancel').on('click', function () {
-            Common.UI.CloseWindow('editFactorWindow', window.parent);
-        });
+        $('#cancel').on('click', closeWindow);
 
         initAttributes();
-
-        setFactorParametersVisibility();
-        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setFactorParametersVisibility);
     });
 
 
@@ -125,7 +87,7 @@
         $.ajax({
             type: 'GET',
             url: '@Url.Action("GetFactorsForManualModel", "Modeling")',
-            data: { modelId: '@Model.GeneralModelId' },
+            data: { modelId: '@Model.ModelId' },
             dataType: "json",
             traditional: true,
             success: function (data) {
