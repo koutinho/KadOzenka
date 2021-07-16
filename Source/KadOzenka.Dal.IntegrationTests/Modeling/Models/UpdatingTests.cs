@@ -27,7 +27,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Models
 			var updatedModel = OMModel.Where(x => x.Id == existedModel.Id).SelectAll().ExecuteFirstOrDefault();
 			Assert.That(updatedModel.Name, Is.EqualTo(updatingModelDto.Name));
 			Assert.That(updatedModel.Description, Is.EqualTo(updatingModelDto.Description));
-			Assert.That(updatedModel.A0ForExponential, Is.EqualTo(updatingModelDto.A0));
+			Assert.That(updatedModel.A0ForExponential, Is.EqualTo(existedModel.A0ForExponential));
 		}
 	}
 }
