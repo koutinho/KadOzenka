@@ -1,5 +1,4 @@
 @using KadOzenka.Web.Helpers
-@using Microsoft.AspNetCore.Routing
 @model KadOzenka.Web.Models.Tour.TourGroupGroupingSettingsModel
 
 <link rel="stylesheet" href="~/css/toolbars.css"/>
@@ -71,6 +70,7 @@
 <script>
     let currentRow = @Model.Settings.Count;
     $(document).ready(function () {
+        initSignalRConnection();
         $("#groupingSettingToolbar").kendoToolBar({
             items: [
                 {
@@ -81,18 +81,20 @@
                     click: save
                 },
                 {
-                    type: 'button',
+                    type: 'splitButton',
                     id: 'add',
                     icon: 'plus',
                     text: 'Добавить условие',
-                    click: addCondition
-                },
-                {
-                    type: 'button',
-                    id: 'add',
-                    icon: 'plus',
-                    text: 'Добавить справочник',
-                    click: showDictionaryUploadModal
+                    click: addConditionWithoutDict,
+                    menuButtons:[
+                        {
+                            type: 'button',
+                            id: 'addDict',
+                            icon: 'list-unordered',
+                            text: 'Добавить условие (справочник)',
+                            click: addConditionWithDict
+                        }
+                    ]
                 }]
         });
 
@@ -107,23 +109,53 @@
     }
 
     function bindEvent(rowIndex){
-        bindSwitch(rowIndex);
-        bindUpload(rowIndex);
-        bindDictionaryCard(rowIndex);
         bindAttributeSelectorEvents('#Settings_'+rowIndex.toString()+'__KoAttributes');
         bindUnusedFieldHider('Settings_'+rowIndex.toString()+'__GroupFilters');
+
+        swapDropDownAndDeleteButton(rowIndex);
+        bindSwitch(rowIndex);
+        bindUpload(rowIndex);
+        bindDelete(rowIndex);
+        bindDictionaryCard(rowIndex);
+
         $('#Settings_'+rowIndex.toString()+'__GroupFilters_Type').change();
         createMultiSelectForDictionary(rowIndex);
+    }
+
+    function swapDropDownAndDeleteButton(rowIndex){
+        let wrapper = $('#Settings_'+rowIndex.toString()+'__KoAttributesWrapper');
+        wrapper.children().first().children().first().insertAfter(wrapper.children().first().children().last());
+    }
+
+    function bindDelete(rowIndex){
+        $('#Settings_'+rowIndex.toString()+'__KoAttributesWrapper').find('a').click( (e) => {
+            $('#groupFilter_'+rowIndex.toString()).parent().hide();
+            $('#Settings_'+rowIndex.toString()+'__IsDeleted').val(true);
+        });
     }
 
     function bindUpload(rowIndex){
         let button = $('#UploadDictionary_'+rowIndex.toString());
         button.click( (e) => showDictionaryUploadModalForRow(rowIndex));
+        let attributeControl = $('#Settings_'+rowIndex.toString()+'__KoAttributes').data('kendoDropDownTree');
+        attributeControl.bind('change', () => {
+            if (attributeControl.value() == 0)
+                $('#UploadDictionary_'+rowIndex.toString()).addClass('k-state-disabled');
+            else $('#UploadDictionary_'+rowIndex.toString()).removeClass('k-state-disabled');
+        });
+        attributeControl.trigger('change');
     }
 
     function bindDictionaryCard(rowIndex){
         let button = $('#ShowDictionary_'+rowIndex.toString());
             button.click( (e) => showDictionaryModalForRow(rowIndex));
+        let dictControl = $('#Settings_'+rowIndex.toString()+'__DictionaryId');
+        dictControl.change( (e) => {
+            if (dictControl.data('kendoDropDownList').value() == 0)
+                $('#ShowDictionary_'+rowIndex.toString()).addClass('k-state-disabled');
+            else $('#ShowDictionary_'+rowIndex.toString()).removeClass('k-state-disabled');
+        });
+        dictControl.change();
     }
 
     function bindSwitch(rowIndex){
@@ -137,12 +169,14 @@
         switchBox.change((e) => {
             if (e.target.checked) {
                 switchContainer.addClass('switchActive');
+                switchContainer.hide();
                 dictFields.show();
                 dictUpload.show();
                 dictView.show();
                 filterFields.hide();
             } else {
                 switchContainer.removeClass('switchActive');
+                //switchContainer.show();
                 dictFields.hide();
                 dictUpload.hide();
                 dictView.hide();
@@ -158,17 +192,18 @@
         let presetData = (valueBox.val()!=="")
             ? data.map( (x) => { return { valuesFilter:x, valuesFilterName:x, selected: true } })
             : [];
-        console.log(presetData);
         let multiSelect = $('#DictionaryValueSelect_'+rowIndex).kendoMultiSelect({
-                dataTextField: "valuesFilterName",
-                dataValueField: "valuesFilter",
-                dataSource: {
-                    data: presetData
-                },
-                dataBound: onDataBound,
-                enable: true
-            });
-        $('#DictionaryValueSelect_'+rowIndex+'-list').addClass('hiddenList');
+            dataTextField: "valuesFilterName",
+            dataValueField: "valuesFilter",
+            dataSource: {
+                data: presetData
+            },
+            dataBound: onDataBound,
+            enable: true,
+            clearButton: false
+        });
+        multiSelect.getKendoMultiSelect().list.addClass('hiddenList');
+        //$('#DictionaryValueSelect_'+rowIndex+'_listbox').addClass('hiddenList');
         multiSelect.getKendoMultiSelect().value(data);
     }
 
@@ -179,7 +214,7 @@
 
     function onClickEnter(e) {
         if (e.keyCode === 13) {
-            var widget = $(e.target.parentElement.parentElement.lastChild).getKendoMultiSelect();
+            var widget = $(e.target.parentElement.parentElement).find('select').getKendoMultiSelect();
             var dataSource = widget.dataSource;
             var input = $(e.target);
             var value = input.val().trim();
@@ -216,6 +251,33 @@
         ShowIframe('@Url.Action("GroupingDictionaryCard", "Tour")'+'?dictionaryId='+dictId+'&showItems=true', modal, '50%', '80%', "Просмотр справочника", null, true);
     }
 
+    function initSignalRConnection(){
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/koGroupingDictionaryProgress", { skipNegotiation: true, transport: signalR.HttpTransportType.WebSockets })
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on('ReceiveMessage', function (message) {
+
+            var encodedMsg = JSON.parse(message);
+
+            for (var row = 0; row < currentRow; row++){
+                let dropDownDictionaryList = $('#Settings_'+row+'__DictionaryId').data('kendoDropDownList');
+                let selected = dropDownDictionaryList.value();
+                dropDownDictionaryList.dataSource.data(encodedMsg)
+                dropDownDictionaryList.value(selected);
+            }
+        });
+
+        connection.start()
+            .then(function () {
+                connection.invoke('SendMessage');
+            })
+            .catch(error => {
+                console.error(error.message);
+            });
+    }
+
     function save() {
         kendo.ui.progress($('body'), true);
         var form = $('#updateGroupingSettingsForm');
@@ -242,7 +304,14 @@
         });
     }
 
-    function addCondition(){
+    function addConditionWithoutDict(){
+        addCondition(false);
+    }
+    function addConditionWithDict(){
+        addCondition(true);
+    }
+
+    function addCondition(useDict){
         let index = currentRow;
         kendo.ui.progress($('body'), true);
         $.ajax({
@@ -250,7 +319,8 @@
             data: {
               groupId: @Model.GroupId,
               index: index,
-              prefix: 'Settings['+index+']'
+              prefix: 'Settings['+index+']',
+              useDictionary: useDict
             },
             cache: false,
             success: function (html) {

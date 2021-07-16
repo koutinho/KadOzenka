@@ -5,19 +5,22 @@
 <fieldset>
     <div id="groupFilter_@Model.Index" class="form-group">
         <div class="col-sm-3">
-            @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idOverwrite:nameof(Model.KoAttributes))
+            @Html.HiddenFor(m=>m.IsDeleted)
+            @Html.KendoDropDownListTreeWithButton(m => m.KoAttributes, (IEnumerable<DropDownTreeItemModel>) ViewData["KoAttributes"], idOverwrite: nameof(Model.KoAttributes))
         </div>
         <div class="col-sm-1">
-            <label class="switch k-button-icon k-button">
-                <input id="UseDictionary_@Model.Index" name="@(prefix).UseDictionary" class="switchInner" type="checkbox" @(Model.UseDictionary ? "checked" : string.Empty)>
-                <span class="k-icon k-i-list-unordered"></span>
-            </label>
-            <label id="UploadDictionary_@Model.Index" class="k-button-icon k-button">
-                <span class="k-icon k-i-download"></span>
-            </label>
-            <label id="ShowDictionary_@Model.Index" class="k-button-icon k-button">
-                <span class="k-icon k-i-eye"></span>
-            </label>
+            <div class="row">
+                <label class="switch k-button-icon k-button" style="display: none;">
+                    <input id="UseDictionary_@Model.Index" name="@(prefix).UseDictionary" class="switchInner" type="checkbox" @(Model.UseDictionary ? "checked" : string.Empty)>
+                    <span class="k-icon k-i-list-unordered"></span>
+                </label>
+                <label id="UploadDictionary_@Model.Index" class="k-button-icon k-button k-state-disabled">
+                    <span class="k-icon k-i-download"></span>
+                </label>
+                <label id="ShowDictionary_@Model.Index" class="k-button-icon k-button k-state-disabled">
+                    <span class="k-icon k-i-eye"></span>
+                </label>
+            </div>
         </div>
         <div id="filters_@Model.Index" class="col-sm-8">
             @{ await Html.RenderPartialFor("UiFilters", m => m.GroupFilters); }
@@ -25,15 +28,16 @@
         <div id="dict_@Model.Index" class="col-sm-8">
             <div class="row">
                 <div class="col-sm-4">
-                @(Html.Kendo().DropDownList()
-                    .Name(nameof(Model.DictionaryId))
-                    .DataValueField("Value").DataTextField("Text")
-                    .DataSource(source =>
-                    {
-                        source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
-                            .ServerFiltering(false);
-                    })
-                    .Value(Model.DictionaryId.ToString()))
+                    @(Html.Kendo().DropDownList()
+                        .Name(nameof(Model.DictionaryId))
+                        .DataValueField("Value").DataTextField("Text")
+                        .Filter(FilterType.Contains)
+                        .DataSource(source =>
+                        {
+                            source.Read(read => { read.Action("GetDictionariesForDropdown", "Tour"); })
+                                .ServerFiltering(false);
+                        })
+                        .Value(Model.DictionaryId.ToString()))
                 </div>
                 <div id="dictValueContainer_@Model.Index" class="col-sm-4">
                     <select id="DictionaryValueSelect_@Model.Index"></select>

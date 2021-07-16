@@ -654,7 +654,7 @@ namespace KadOzenka.Dal.KoObject
                     var dictValues = OMGroupingDictionariesValues.Where(x => x.DictionaryId == setting.DictionaryId
                         && x.GroupingValue != null).SelectAll()
                         .Execute();
-                    var dictStringValues = setting.DictionaryValues.Split(",");
+                    var dictStringValues = setting.DictionaryValues.Split("\n");
                     var dictFilterValues = dictStringValues.Distinct().Where(x=>x.IsNotEmpty()).ToList();
                     var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.GroupingValue)).Select(x=>x.Value).ToList();
                     listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), QSConditionType.In, dictFilter));

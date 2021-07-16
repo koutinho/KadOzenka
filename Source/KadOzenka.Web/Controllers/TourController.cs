@@ -549,13 +549,8 @@ namespace KadOzenka.Web.Controllers
                 settingModel.Index = ind;
                 settingModel.KoAttributes = groupSetting.KoAttributeId;
                 settingModel.GroupFilters = groupSetting.Filter.DeserializeFromXml<Filters>();
-                // model.KoAttributes.Add(groupSetting.KoAttributeId);
-                // model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
                 if (groupSetting.DictionaryId is 0 or null)
                 {
-                    // model.DictionaryId.Add(null);
-                    // model.DictionaryValue.Add("");
-                    // model.UseDictionary.Add(false);
                     settingModel.UseDictionary = false;
                 }
                 else
@@ -563,22 +558,10 @@ namespace KadOzenka.Web.Controllers
                     settingModel.DictionaryId = groupSetting.DictionaryId;
                     settingModel.DictionaryValue = groupSetting.DictionaryValues;
                     settingModel.UseDictionary = true;
-                    // model.DictionaryId.Add(groupSetting.DictionaryId);
-                    // model.DictionaryValue.Add(groupSetting.DictionaryValues);
-                    // model.UseDictionary.Add(true);
                 }
                 model.Settings.Add(settingModel);
                 ind++;
             }
-
-            // for (int i = model.GroupFilters.Count; i < 1; i++)
-            // {
-            //     model.GroupFilters.Add(new Filters());
-            //     model.KoAttributes.Add(new long());
-            //     model.DictionaryId.Add(new long());
-            //     model.DictionaryValue.Add(String.Empty);
-            //     model.UseDictionary.Add(false);
-            // }
 
             return model;
         }
@@ -608,11 +591,11 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult TourGroupGroupingSettingsPartialNewRow(int groupId, int index, string prefix)
+        public ActionResult TourGroupGroupingSettingsPartialNewRow(int groupId, int index, string prefix, bool useDictionary)
         {
             ViewData["KoAttributes"] = GetMergedAttributes(groupId);
             ViewData.TemplateInfo.HtmlFieldPrefix = prefix;
-            var model = new TourGroupGroupingSettingsPartialModel {Index = index};
+            var model = new TourGroupGroupingSettingsPartialModel {Index = index, UseDictionary = useDictionary};
             return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
         }
 
@@ -623,7 +606,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
-            return new JsonResult(new {Message = "Test"});
+            //return new JsonResult(new {Message = "Test"});
             var objectModel = model.ToObjectModel().Where(x=>x.KoAttributeId != null);
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
 
@@ -712,11 +695,13 @@ namespace KadOzenka.Web.Controllers
 
         public IActionResult GroupingDictionaryImportPreconfigured(long attributeId, long groupId)
         {
-            ViewData["References"] = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
+            var dictionaries = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
             {
                 Text = x.Name,
                 Value = x.Id
             }).ToList();
+
+            ViewData["References"] = dictionaries;
 
             var model = new GroupingDictionaryImportModel();
 
@@ -736,8 +721,18 @@ namespace KadOzenka.Web.Controllers
             }
 
             var partialDict = new PartialGroupingDictionaryModel();
-            partialDict.IsNewDictionary = true;
-            partialDict.NewDictionaryName = dictName;
+            var value = dictionaries?.FirstOrDefault(x => x?.Text == dictName)?.Value;
+            if (value is not null or 0)
+            {
+                partialDict.IsNewDictionary = false;
+                partialDict.DeleteOldValues = true;
+                partialDict.DictionaryId = value;
+            }
+            else
+            {
+                partialDict.IsNewDictionary = true;
+                partialDict.NewDictionaryName = dictName;
+            }
 
             model.GroupingDictionary = partialDict;
             return View("GroupingDictionaryImport", model);
