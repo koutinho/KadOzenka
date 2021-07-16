@@ -805,7 +805,7 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetModelDictionaries([DataSourceRequest] DataSourceRequest request, long modelId)
         {
 	        var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId)
-		        .Where(x => x.IsNormalized).Select(GeneralModelAttributeModel.ToModel)
+		        .Where(x => x.IsNormalized).Select(DictionaryModel.ToModel)
 		        .ToList();
 
 	        return Json(modelAttributes.ToDataSourceResult(request));
