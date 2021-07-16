@@ -279,7 +279,8 @@ namespace KadOzenka.Dal.Modeling.Factors
 			var mustResetTrainingResult = false;
 			using (var ts = new TransactionScope())
 			{
-				if (factor.DictionaryId != dto.DictionaryId || factor.IsActive.GetValueOrDefault() != dto.IsActive ||
+				if (factor.DictionaryId != dto.DictionaryId || 
+				    factor.IsActive.GetValueOrDefault() != dto.IsActive ||
 				    factor.MarkType_Code != dto.MarkType)
 				{
 					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
@@ -300,8 +301,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 					});
 					mustResetTrainingResult = true;
 				}
-
-				ModelFactorsRepository.Save(factor);
 
 				ts.Complete();
 			}
