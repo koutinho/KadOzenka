@@ -63,3 +63,38 @@ function copyFormula(btn) {
 	var tooltip = $("#copyFormulaBtn").data("kendoTooltip");
 	tooltip.show();
 }
+
+
+
+
+
+//Методы для факторов модели
+
+function setFactorParametersVisibility() {
+	//debugger;
+	var selectedMarkType = Number($('#MarkType').data('kendoDropDownList').value());
+	var correctItemBlock = $("#correctItemBlock");
+	var kBlock = $("#kBlock");
+	var dictionaryBlock = $("#dictionaryBlock");
+	var straightMarkType = 2;
+	var reverseMarkType = 3;
+	var defaultMarkType = 1;
+	if (selectedMarkType === straightMarkType || selectedMarkType === reverseMarkType) {
+		//todo удалить после добавление этих блоков в авто.модель
+		if (correctItemBlock && kBlock) {
+			correctItemBlock.show();
+			kBlock.show();
+		}
+	} else {
+		//todo удалить после добавление этих блоков в авто.модель
+		if (correctItemBlock && kBlock) {
+			correctItemBlock.hide();
+			kBlock.hide();
+		}
+	}
+	if (selectedMarkType === defaultMarkType) {
+		dictionaryBlock.show();
+	} else {
+		dictionaryBlock.hide();
+	}
+}

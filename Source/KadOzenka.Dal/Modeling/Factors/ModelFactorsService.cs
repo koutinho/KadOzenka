@@ -354,6 +354,11 @@ namespace KadOzenka.Dal.Modeling.Factors
 				factor.CorrectingTerm = dto.CorrectItem;
 				factor.K = dto.K;
 			}
+			else
+			{
+				factor.CorrectingTerm = null;
+				factor.K = null;
+			}
 
 			ModelFactorsRepository.Save(factor);
 

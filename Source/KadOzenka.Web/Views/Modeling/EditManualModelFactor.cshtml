@@ -1,5 +1,4 @@
-﻿@using ObjectModel.Directory.Ko
-@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.Modeling.ManualFactorModel
 
 @using (Html.BeginForm("EditManualModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
@@ -81,6 +80,7 @@
 }
 
 
+<script src="~/js/modeling.js"></script>
 <script>
     $(document).ready(function () {
         $('#save').on('click', saveFactor);
@@ -91,8 +91,8 @@
 
         initAttributes();
 
-        setParametersVisibility();
-        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setParametersVisibility);
+        setFactorParametersVisibility();
+        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setFactorParametersVisibility);
     });
 
 
@@ -146,27 +146,5 @@
             }
         });
     }
-
-
-    function setParametersVisibility() {
-        var selectedMarkType = $('#@nameof(Model.MarkType)').data('kendoDropDownList').value();
-        var correctItemBlock = $("#correctItemBlock");
-        var kBlock = $("#kBlock");
-        var dictionaryBlock = $("#dictionaryBlock");
-        if (selectedMarkType === '@((long)MarkType.Straight)' || selectedMarkType === '@((long)MarkType.Reverse)') {
-            correctItemBlock.show();
-            kBlock.show();
-        } else {
-            correctItemBlock.hide();
-            kBlock.hide();
-        }
-        if (selectedMarkType === '@((long)MarkType.Default)') {
-            dictionaryBlock.show();
-        }
-        else {
-            dictionaryBlock.hide();
-        }
-    }
-
 
 </script>
