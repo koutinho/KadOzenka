@@ -211,7 +211,6 @@ namespace KadOzenka.Dal.Modeling.Model
             existedModel.Name = modelDto.Name;
             existedModel.Description = modelDto.Description;
             existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-            existedModel.SetA0(modelDto.A0, modelDto.AlgorithmType);
 
             existedModel.Save();
         }
