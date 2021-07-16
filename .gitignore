@@ -73,6 +73,8 @@
 /Source/EmbeddedResource/obj
 /Source/MarketPlaceBusiness/bin
 /Source/MarketPlaceBusiness/obj
+/Source/ModelingBusiness/bin
+/Source/ModelingBusiness/obj
 obj
 /Source/KadOzenka.LongProcessService/KadOzenka.LongProcessService.csproj.user
 /Source/angular-Web-settings/node_modules
