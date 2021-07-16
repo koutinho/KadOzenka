@@ -27,9 +27,6 @@ namespace KadOzenka.Web.Models.Modeling
 		public string DictionaryName { get; set; }
 		public long? DictionaryId { get; set; }
 
-		[Display(Name = "Коэффициент из предыдущего тура")]
-		public decimal? PreviousWeight { get; set; }
-
 		[Display(Name = "Использовать в модели")]
 		public bool? IsActive { get; set; }
 
@@ -64,7 +61,6 @@ namespace KadOzenka.Web.Models.Modeling
 				AlgorithmType = factor.AlgorithmType_Code,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
-				PreviousWeight = factor.PreviousWeight,
 				IsActive = factor.IsActive.GetValueOrDefault(),
 				MarkType = factor.MarkType_Code
 			};
@@ -79,7 +75,6 @@ namespace KadOzenka.Web.Models.Modeling
 				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
-				PreviousWeight = PreviousWeight,
 				IsActive = IsActive.GetValueOrDefault(),
 				MarkType = MarkType
 			};

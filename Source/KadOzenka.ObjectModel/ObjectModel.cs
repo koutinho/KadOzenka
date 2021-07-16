@@ -4017,26 +4017,6 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _previousweight;
-        /// <summary>
-        /// 21001200 Вес из предыдущего тура (previous_weight)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001200)]
-        public decimal? PreviousWeight
-        {
-            get
-            {
-                CheckPropertyInited("PreviousWeight");
-                return _previousweight;
-            }
-            set
-            {
-                _previousweight = value;
-                NotifyPropertyChanged("PreviousWeight");
-            }
-        }
-
-
         private bool? _isactive;
         /// <summary>
         /// 21001300 Использовать в моделировании (is_active)

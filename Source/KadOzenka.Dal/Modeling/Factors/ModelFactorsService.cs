@@ -129,7 +129,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.PreviousWeight, nameof(ModelAttributeRelationDto.PreviousWeight)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType, nameof(ModelAttributeRelationDto.MarkType)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelAttributeRelationDto.CorrectingTerm)));
@@ -161,7 +160,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 				var correctingTerm = row[nameof(ModelAttributeRelationDto.CorrectingTerm)].ParseToDecimalNullable();
 				var k = row[nameof(ModelAttributeRelationDto.K)].ParseToDecimalNullable();
-				var previousWeight = row[nameof(ModelAttributeRelationDto.PreviousWeight)].ParseToDecimalNullable();
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
 				var markType = row[nameof(ModelAttributeRelationDto.MarkType)].ParseToString();
 
@@ -181,7 +179,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 					Coefficient = weight,
 					CorrectingTerm = correctingTerm,
 					K = k,
-					PreviousWeight = previousWeight,
 					IsActive = isActive.GetValueOrDefault(),
 					MarkType = markType
 				});
@@ -268,7 +265,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 						DictionaryId = dto.DictionaryId,
 						MarkerId = -1,
 						AlgorithmType_Code = type,
-						PreviousWeight = dto.PreviousWeight ?? 1,
 						IsActive = dto.IsActive,
 						MarkType_Code = dto.MarkType
 					};
@@ -311,7 +307,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 					mustResetTrainingResult = true;
 				}
 
-				factor.PreviousWeight = dto.PreviousWeight ?? 1;
 				ModelFactorsRepository.Save(factor);
 
 				ts.Complete();

@@ -16,9 +16,6 @@ namespace KadOzenka.Dal.Modeling.Objects
 
 		Stream ExportMarketObjectsToExcel(long modelId, List<OMModelFactor> factors);
 
-		ModelObjectsService.ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
-			List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber);
-
 		void ExcludeObjectFromCalculation(long objectId);
 	}
 }

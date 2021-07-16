@@ -30,7 +30,6 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				AlgorithmType = algorithm.GetEnumDescription(),
 				AlgorithmType_Code = algorithm,
-				PreviousWeight = RandomGenerator.GenerateRandomDecimal(),
 				IsActive = true,
 				MarkType = markType.GetEnumDescription(),
 				MarkType_Code = markType,

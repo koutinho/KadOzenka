@@ -167,47 +167,6 @@ namespace KadOzenka.Dal.Modeling.Objects
             return stream;
         }
 
-		public ModelObjectsCalculationParameters GetModelCalculationParameters(decimal? a0, decimal? objectPrice,
-	        List<OMModelFactor> factors, List<CoefficientForObject> objectCoefficients, string cadastralNumber)
-        {
-	        try
-	        {
-		        decimal modelingPriceCounter = 0;
-		        foreach (var factor in factors)
-		        {
-			        var objectCoefficient = objectCoefficients?.FirstOrDefault(x =>
-				        x.AttributeId == factor.FactorId && !string.IsNullOrWhiteSpace(x.Value));
-
-			        var metka = objectCoefficient?.Coefficient;
-
-			        modelingPriceCounter = modelingPriceCounter +
-			                               (metka.GetValueOrDefault(1) * factor.PreviousWeight.GetValueOrDefault(1));
-		        }
-
-		        var resultModelingPrice = (decimal?) Math.Exp((double) (a0.GetValueOrDefault() + modelingPriceCounter));
-		        var modelingPrice = Math.Round(resultModelingPrice.GetValueOrDefault(), 2);
-		        decimal? percent = null;
-		        if (objectPrice.GetValueOrDefault() != 1)
-		        {
-			        percent = CalculatePercent(modelingPrice, objectPrice);
-		        }
-
-		        return new ModelObjectsCalculationParameters
-		        {
-			        ModelingPrice = modelingPrice,
-			        Percent = percent
-		        };
-	        }
-	        catch (Exception exception)
-	        {
-		        _log.ForContext("CadastralNumber", cadastralNumber)
-			        .ForContext("A0", a0)
-			        .ForContext("ObjectPrice", objectPrice)
-			        .Error(exception, "Ошибка во время расчета МС и % для объекта моделирования");
-		        return new ModelObjectsCalculationParameters();
-	        }
-        }
-
         public static decimal? CalculatePercent(decimal? calculatedPrice, decimal? initialPrice)
         {
 	        decimal? percent = null;
