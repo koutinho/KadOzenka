@@ -6,6 +6,11 @@ namespace KadOzenka.Dal.Modeling.Model.Entities
 {
 	public class ModelDto
 	{
+		public bool IsModelWasTrained { get; init; }
+		public bool HasLinearTrainingResult { get; init; }
+        public bool HasExponentialTrainingResult { get; init; }
+        public bool HasMultiplicativeTrainingResult { get; init; }
+
         public long ModelId { get; set; }
         public KoModelType Type { get; set; }
         public KoAlgoritmType AlgorithmTypeForCadastralPriceCalculation { get; set; }

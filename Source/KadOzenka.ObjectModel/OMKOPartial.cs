@@ -636,11 +636,16 @@ namespace ObjectModel.KO
     public partial class OMModel
     {
 	    public string InternalName => $"model_{Id}";
+	    public bool IsAutomatic => Type_Code == KoModelType.Automatic;
 	    public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 	    public decimal A0ForExponentialInFormula => Math.Round(A0ForExponential.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 	    public decimal A0ForLinearInFormula => Math.Round(A0.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-
-	    public decimal? GetA0(KoAlgoritmType? type = null)
+        public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
+	    public bool HasLinearTrainingResult => !string.IsNullOrWhiteSpace(LinearTrainingResult);
+	    public bool HasExponentialTrainingResult => !string.IsNullOrWhiteSpace(ExponentialTrainingResult);
+	    public bool HasMultiplicativeTrainingResult => !string.IsNullOrWhiteSpace(MultiplicativeTrainingResult);
+        
+        public decimal? GetA0(KoAlgoritmType? type = null)
 	    {
 		    var resultType = type ?? AlgoritmType_Code;
 		    switch (resultType)

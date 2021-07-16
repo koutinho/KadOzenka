@@ -135,7 +135,11 @@ namespace KadOzenka.Dal.Modeling.Model
                 A0 = model.GetA0(),
                 Formula = model.Formula,
                 CalculationMethod = model.CalculationMethod_Code,
-                IsActive = model.IsActive.GetValueOrDefault()
+                IsActive = model.IsActive.GetValueOrDefault(),
+				IsModelWasTrained = model.IsModelWasTrained,
+				HasLinearTrainingResult = model.HasLinearTrainingResult,
+				HasExponentialTrainingResult = model.HasExponentialTrainingResult,
+				HasMultiplicativeTrainingResult = model.HasMultiplicativeTrainingResult,
 			};
         }
 
@@ -233,20 +237,9 @@ namespace KadOzenka.Dal.Modeling.Model
 	            existedModel.Name = modelDto.Name;
 	            existedModel.Description = modelDto.Description;
 	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-	            switch (modelDto.AlgorithmTypeForCadastralPriceCalculation)
-	            {
-		            case KoAlgoritmType.Exp:
-			            existedModel.A0ForExponential = modelDto.A0;
-						break;
-		            case KoAlgoritmType.Line:
-			            existedModel.A0 = modelDto.A0;
-						break;
-		            case KoAlgoritmType.Multi:
-			            existedModel.A0ForMultiplicative = modelDto.A0;
-						break;
-	            }
+				existedModel.SetA0(modelDto.A0, modelDto.AlgorithmTypeForCadastralPriceCalculation);
 
-	            existedModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
+				existedModel.CalculationMethod_Code = modelDto.CalculationType == KoCalculationType.Comparative
 		            ? modelDto.CalculationMethod
 		            : KoCalculationMethod.None;
 
@@ -378,8 +371,9 @@ namespace KadOzenka.Dal.Modeling.Model
 		{
 			//для ручной модели существует один набор факторов под алгоритм самой модели
 			//для автоматической модели набор факторов разный под тип алгоритма
-			var factors = ModelFactorsService.GetFactors(model.Id, model.AlgoritmType_Code);
-			if (factors.Count == 0)
+			var typeForFactors = model.IsAutomatic ? algorithmType : model.AlgoritmType_Code;
+			var factors = ModelFactorsService.GetFactors(model.Id, typeForFactors);
+			if (factors.Count == 0 || (model.IsAutomatic && !model.IsModelWasTrained))
 				return "Y = 0";
 
 			var formulaCreator = GetFormulaCreator(algorithmType);

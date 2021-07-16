@@ -215,15 +215,6 @@ namespace KadOzenka.Web.Controllers
             return Json(attributes);
         }
 
-        [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetA0(long modelId, KoAlgoritmType type)
-        {
-            var model = ModelService.GetModelEntityById(modelId);
-
-            return Json(new {a0 = model.GetA0(type)});
-        }
-
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult GetGroups(long tourId, ObjectTypeExtended objectType)
         {
@@ -624,7 +615,8 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult GetFormula(long modelId, long algType)
+        //используется в modeling.js
+        public JsonResult GetFormulaInfo(long modelId, long algType)
         {
             var model = ModelService.GetModelEntityById(modelId);
 

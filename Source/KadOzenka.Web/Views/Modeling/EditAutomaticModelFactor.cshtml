@@ -104,6 +104,7 @@
         kendo.ui.progress($('body'), true);
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value();
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),
