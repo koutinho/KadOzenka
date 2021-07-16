@@ -20,8 +20,6 @@ namespace KadOzenka.Web.Models.Modeling
 		public long? MarkerId { get; set; }
 		public decimal Correction { get; set; }
 		public decimal B0 { get; set; }
-		public bool SignDiv { get; set; }
-		public bool SignAdd { get; set; }
 		public bool SignMarket { get; set; }
 
 		[Display(Name = "Тип метки")]
@@ -50,8 +48,6 @@ namespace KadOzenka.Web.Models.Modeling
 				MarkerId = factor.MarkerId,
 				Correction = factor.Weight,
 				B0 = factor.B0,
-				SignDiv = factor.SignDiv,
-				SignAdd = factor.SignAdd,
 				MarkType = factor.MarkType_Code,
 				CorrectItem = factor.CorrectingTerm,
 				K = factor.K
@@ -70,8 +66,6 @@ namespace KadOzenka.Web.Models.Modeling
 				DictionaryId = DictionaryId,
 				Weight = Correction,
 				B0 = B0,
-				SignDiv = SignDiv,
-				SignAdd = SignAdd,
 				MarkType = MarkType,
 				CorrectItem = CorrectItem,
 				K = K

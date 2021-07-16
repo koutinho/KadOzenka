@@ -24,8 +24,6 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
 				Weight = RandomGenerator.GenerateRandomDecimal(),
 				B0 = RandomGenerator.GenerateRandomDecimal(),
-				SignDiv = true,
-				SignAdd = true,
 				SignMarket = true,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				AlgorithmType = algorithm.GetEnumDescription(),

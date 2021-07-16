@@ -18,3 +18,12 @@ VALUES (20602000, 'Cвободный член в формуле для Мультипликативного алгоритма в п
 ALTER TABLE ko_model ADD COLUMN a0_multiplicative_previous NUMERIC;
 
 
+--признаки деления, сложения
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (21000700, 'Признак деления на фактор', 210, 3, null, null, 'SIGN_DIV', null, null, 0, null, null, 'SignDiv', 0, null, null, null, 0, null, null, 0);
+ALTER TABLE ko_model_factor ADD COLUMN sign_div SMALLINT;
+
+INSERT INTO core_register_attribute (id, name, registerid, type, parentid, referenceid, value_field, code_field, value_template, primary_key, user_key, qscolumn, internal_name, is_nullable, description, layout, export_column_name, is_deleted, change_user_id, change_date, hidden) 
+VALUES (21000800, 'Признак сложения', 210, 3, null, null, 'SIGN_ADD', null, null, null, null, null, 'SignAdd', 0, null, null, null, 0, null, null, 0);
+ALTER TABLE ko_model_factor DROP COLUMN sign_add SMALLINT;
+

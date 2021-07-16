@@ -3822,46 +3822,6 @@ namespace ObjectModel.KO
         }
 
 
-        private bool _signdiv;
-        /// <summary>
-        /// 21000700 Признак деления на фактор (SIGN_DIV)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21000700)]
-        public bool SignDiv
-        {
-            get
-            {
-                CheckPropertyInited("SignDiv");
-                return _signdiv;
-            }
-            set
-            {
-                _signdiv = value;
-                NotifyPropertyChanged("SignDiv");
-            }
-        }
-
-
-        private bool _signadd;
-        /// <summary>
-        /// 21000800 Признак сложения (SIGN_ADD)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21000800)]
-        public bool SignAdd
-        {
-            get
-            {
-                CheckPropertyInited("SignAdd");
-                return _signadd;
-            }
-            set
-            {
-                _signadd = value;
-                NotifyPropertyChanged("SignAdd");
-            }
-        }
-
-
         private bool _signmarket;
         /// <summary>
         /// 21000900 Признак использования метки (SIGN_MARKET)

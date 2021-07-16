@@ -8,3 +8,8 @@ delete from core_register_attribute where id in (20601800, 20601900, 20602000);
 ALTER TABLE ko_model DROP COLUMN a0_linear_previous;
 ALTER TABLE ko_model DROP COLUMN a0_multiplicative_previous;
 ALTER TABLE ko_model DROP COLUMN a0_exponential_previous;
+
+--признаки деления, сложения
+delete from core_register_attribute where id in (21000700, 21000800);
+ALTER TABLE ko_model_factor DROP COLUMN sign_div;
+ALTER TABLE ko_model_factor DROP COLUMN sign_add;

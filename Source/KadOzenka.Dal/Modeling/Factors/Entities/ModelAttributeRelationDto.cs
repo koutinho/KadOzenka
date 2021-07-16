@@ -25,9 +25,7 @@ namespace KadOzenka.Dal.Modeling.Factors.Entities
 		public KoAlgoritmType Type { get; set; }
 		public decimal? Coefficient { get; set; }
 		public decimal B0 { get; set; }
-        public bool SignDiv { get; set; }
-        public bool SignAdd { get; set; }
-        public bool SignMarket { get; set; }
+		public bool SignMarket { get; set; }
         public string MarkType { get; set; }
         public decimal? CorrectingTerm { get; set; }
         public decimal? K { get; set; }

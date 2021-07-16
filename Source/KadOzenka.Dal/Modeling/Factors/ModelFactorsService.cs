@@ -125,8 +125,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignAdd, nameof(ModelAttributeRelationDto.SignAdd)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignDiv, nameof(ModelAttributeRelationDto.SignDiv)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
@@ -154,8 +152,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
 
 				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
-				var signAdd = row[nameof(ModelAttributeRelationDto.SignAdd)].ParseToBooleanNullable();
-				var signDiv = row[nameof(ModelAttributeRelationDto.SignDiv)].ParseToBooleanNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
 				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 				var correctingTerm = row[nameof(ModelAttributeRelationDto.CorrectingTerm)].ParseToDecimalNullable();
@@ -173,8 +169,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 					DictionaryId = dictionaryId,
 					DictionaryName = dictionaryName,
 					B0 = b0.GetValueOrDefault(),
-					SignAdd = signAdd.GetValueOrDefault(),
-					SignDiv = signDiv.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
 					Coefficient = weight,
 					CorrectingTerm = correctingTerm,
@@ -327,8 +321,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 				MarkerId = -1,
 				Weight = dto.Weight,
 				B0 = dto.B0,
-				SignDiv = dto.SignDiv,
-				SignAdd = dto.SignAdd,
 				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
 			};
@@ -355,8 +347,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 
 			factor.Weight = dto.Weight;
 			factor.B0 = dto.B0;
-			factor.SignDiv = dto.SignDiv;
-			factor.SignAdd = dto.SignAdd;
 			factor.MarkType_Code = dto.MarkType;
 
 			if (IsSpecialMarkType(dto.MarkType))
