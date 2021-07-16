@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Factors.Entities;
 using ObjectModel.KO;
 

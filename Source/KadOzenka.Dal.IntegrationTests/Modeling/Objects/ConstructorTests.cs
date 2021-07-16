@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
-using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects;
 using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Objects.Exceptions;

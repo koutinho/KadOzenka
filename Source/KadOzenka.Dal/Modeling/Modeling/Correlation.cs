@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Text;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.InputParameters;
-using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Modeling.Requests;
+using KadOzenka.Dal.Modeling.Modeling.Responses;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
-using ObjectModel.Market;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Modeling
 {
     public class Correlation : AModelingTemplate
     {

@@ -1,4 +1,4 @@
-﻿using KadOzenka.Dal.Modeling.Entities;
+﻿using KadOzenka.Dal.Modeling.Modeling.Responses;
 
 namespace KadOzenka.Web.Models.Modeling
 {

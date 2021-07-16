@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Core.Register;
 using KadOzenka.Dal.Modeling.Dictionaries.Entities;
-using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.Common;
 using ObjectModel.KO;
 

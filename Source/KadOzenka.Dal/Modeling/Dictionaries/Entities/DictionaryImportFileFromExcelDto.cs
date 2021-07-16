@@ -1,6 +1,4 @@
-﻿using KadOzenka.Dal.Modeling.Dto;
-
-namespace KadOzenka.Dal.Modeling.Dictionaries.Entities
+﻿namespace KadOzenka.Dal.Modeling.Dictionaries.Entities
 {
 	public class DictionaryImportFileFromExcelDto
 	{

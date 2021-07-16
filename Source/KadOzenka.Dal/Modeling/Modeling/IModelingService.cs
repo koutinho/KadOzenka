@@ -1,10 +1,10 @@
 ﻿using System.IO;
-using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Modeling.Responses;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Modeling
 {
 	public interface IModelingService
 	{

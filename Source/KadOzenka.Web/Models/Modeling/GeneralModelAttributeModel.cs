@@ -1,5 +1,4 @@
 ﻿using Core.Register;
-using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Factors.Entities;
 
 namespace KadOzenka.Web.Models.Modeling

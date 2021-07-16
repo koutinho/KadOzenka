@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace KadOzenka.Dal.Modeling.Entities
+namespace KadOzenka.Dal.Modeling.Modeling.Entities
 {
 	public enum TrainingSampleType
 	{

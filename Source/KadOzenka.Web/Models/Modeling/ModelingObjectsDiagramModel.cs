@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using KadOzenka.Dal.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Modeling.Entities;
 
 namespace KadOzenka.Web.Models.Modeling
 {

@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using Core.Register.LongProcessManagment;
-using KadOzenka.Dal.Modeling.Entities;
-using ObjectModel.Core.LongProcess;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Core.ErrorManagment;
+using Core.Register.LongProcessManagment;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Modeling.Responses;
 using KadOzenka.Dal.Modeling.Objects.Repositories;
 using Newtonsoft.Json;
+using ObjectModel.Core.LongProcess;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Modeling
 {
     public abstract class AModelingTemplate
     {

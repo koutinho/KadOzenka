@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace KadOzenka.Dal.Modeling.Entities
+namespace KadOzenka.Dal.Modeling.Modeling.Responses
 {
     public class GeneralResponse
     {

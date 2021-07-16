@@ -7,7 +7,6 @@ using System.Transactions;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model.Entities;
 using KadOzenka.Dal.Modeling.Model.Exceptions;

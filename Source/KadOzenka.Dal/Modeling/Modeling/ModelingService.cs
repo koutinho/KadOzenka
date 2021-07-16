@@ -2,19 +2,19 @@
 using System.IO;
 using System.Linq;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto;
-using ObjectModel.Directory;
-using ObjectModel.KO;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.Modeling.Entities;
-using Serilog;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
+using KadOzenka.Dal.Modeling.Modeling.Entities;
+using KadOzenka.Dal.Modeling.Modeling.Responses;
 using Newtonsoft.Json;
+using ObjectModel.Directory;
+using ObjectModel.KO;
+using Serilog;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Modeling
 {
 	public class ModelingService : IModelingService
 	{

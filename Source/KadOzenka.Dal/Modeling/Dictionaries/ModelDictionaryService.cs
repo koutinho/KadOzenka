@@ -19,7 +19,6 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Modeling.Dictionaries.Entities;
 using KadOzenka.Dal.Modeling.Dictionaries.Exceptions;
 using KadOzenka.Dal.Modeling.Dictionaries.Repositories;
-using KadOzenka.Dal.Modeling.Dto;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;

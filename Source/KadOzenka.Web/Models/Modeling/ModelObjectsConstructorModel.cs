@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using Microsoft.AspNetCore.Http;

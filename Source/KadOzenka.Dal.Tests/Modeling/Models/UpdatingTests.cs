@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;

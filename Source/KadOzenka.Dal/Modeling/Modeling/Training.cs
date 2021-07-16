@@ -6,12 +6,11 @@ using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Dto;
-using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Factors.Entities;
+using KadOzenka.Dal.Modeling.Modeling.Requests;
+using KadOzenka.Dal.Modeling.Modeling.Responses;
 using KadOzenka.Dal.Modeling.Objects.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
@@ -20,7 +19,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling
+namespace KadOzenka.Dal.Modeling.Modeling
 {
     public class Training : AModelingTemplate
     {

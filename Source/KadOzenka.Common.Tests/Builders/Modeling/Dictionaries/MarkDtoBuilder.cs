@@ -1,5 +1,4 @@
 ﻿using KadOzenka.Dal.Modeling.Dictionaries.Entities;
-using KadOzenka.Dal.Modeling.Dto;
 using ObjectModel.KO;
 
 namespace KadOzenka.Common.Tests.Builders.Modeling.Dictionaries

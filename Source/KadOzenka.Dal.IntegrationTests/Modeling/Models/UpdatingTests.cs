@@ -1,7 +1,6 @@
 ﻿using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
 using NUnit.Framework;
-using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;

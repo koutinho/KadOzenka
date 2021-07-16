@@ -11,7 +11,6 @@ using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
-using KadOzenka.Dal.Modeling.Entities;
 using KadOzenka.Dal.Modeling.Objects.Entities;
 using KadOzenka.Dal.Modeling.Objects.Exceptions;
 using Newtonsoft.Json;

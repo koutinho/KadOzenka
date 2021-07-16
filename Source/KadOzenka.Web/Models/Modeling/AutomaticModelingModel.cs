@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
-using KadOzenka.Dal.Modeling.Dto;
 using KadOzenka.Dal.Modeling.Factors.Entities;
 using KadOzenka.Dal.Modeling.Model.Entities;
 using ObjectModel.Directory;
