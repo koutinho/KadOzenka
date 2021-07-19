@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;

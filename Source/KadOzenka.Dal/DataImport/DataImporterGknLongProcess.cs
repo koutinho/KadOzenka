@@ -11,6 +11,7 @@ using Core.Shared.Extensions;
 using System.Linq;
 using System.Text;
 using System.Transactions;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;

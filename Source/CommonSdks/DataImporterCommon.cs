@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Core.Main.FileStorages;
@@ -7,15 +6,10 @@ using Core.Messages;
 using Core.Register;
 using Core.Shared.Extensions;
 using Core.SRD;
-using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.LongProcess.DataImport;
-using Newtonsoft.Json;
 using ObjectModel.Common;
-using ObjectModel.Declarations;
 using ObjectModel.Directory.Common;
-using ObjectModel.Market;
 
-namespace KadOzenka.Dal.DataImport
+namespace CommonSdks
 {
 	public class DataImporterCommon
 	{
@@ -52,25 +46,7 @@ namespace KadOzenka.Dal.DataImport
 			return FileStorageManager.GetFileStream(FileStorageName, import.DateFinished.Value, import.ResultFileName);
 		}
 
-		public static void RepeatFormation(OMImportDataLog import)
-		{
-			if (string.IsNullOrEmpty(import.DataFileName))
-			{
-				throw new Exception("Не задан шаблон файла");
-			}
-
-			var fileStream = GetImportDataFileStream(import.Id);
-			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
-			if (import.MainRegisterId == OMDeclaration.GetRegisterId())
-			{
-				DataImporterDeclarations.AddImportToQueue(OMDeclaration.GetRegisterId(), "DeclarationsDeclaration", import.DataFileTitle, fileStream,
-					columns);
-			}
-			else
-			{
-				DataImporterByTemplateLongProcess.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileTitle, fileStream, columns, import.DocumentId);
-			}
-		}
+		
 
 		public static void SendResultNotification(OMImportDataLog import, string subject = null, string importStatus = null)
 		{

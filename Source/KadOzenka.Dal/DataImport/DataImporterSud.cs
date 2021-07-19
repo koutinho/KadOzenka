@@ -12,6 +12,7 @@ using ObjectModel.Common;
 using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Linq;
+using CommonSdks;
 using ObjectModel.Directory.Sud;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Common;

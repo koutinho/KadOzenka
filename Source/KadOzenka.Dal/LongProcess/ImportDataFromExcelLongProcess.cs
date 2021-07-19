@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;
