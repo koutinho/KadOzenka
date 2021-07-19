@@ -1,0 +1,81 @@
+﻿@using KadOzenka.Web.Helpers
+@using ObjectModel.Directory.Ko
+@model KadOzenka.Web.Models.Modeling.GeneralFactorModel
+
+
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.ModelId)
+
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.MarkType)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoKoReferenceDropDownListFor(x => x.MarkType, 226,
+                text: Model.MarkType.GetEnumDescription(), 
+                value: ((long) Model.MarkType).ToString(),
+                isReadonly: false, withOptionLabel: false)
+        </div>
+    </div>
+    <div id="correctItemBlock" class="form-group">
+        <div class="col-sm-3">
+            @Html.LabelFor(x => x.CorrectItem, new { @class = "control-label required"})
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.CorrectItem, precision: 5, isReadonly: Model.IsAutomatic)
+        </div>
+    </div>
+    <div id="kBlock" class="form-group">
+        <div class="col-sm-3">
+            @Html.LabelFor(x => x.K, new { @class = "control-label required"})
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: Model.IsAutomatic)
+        </div>
+    </div>
+    <div id="dictionaryBlock" class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.DictionaryName)
+        </div>
+        <div class="col-sm-9">
+            @Html.HiddenFor(x => x.DictionaryId)
+            @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: false)
+        </div>
+    </div>
+    
+
+
+
+<script>
+    $(document).ready(function () {
+        setFactorParametersVisibility();
+        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setFactorParametersVisibility);
+    });
+
+
+
+
+    function setFactorParametersVisibility() {
+        var selectedMarkType = $('#@nameof(Model.MarkType)').data('kendoDropDownList').value();
+        var correctItemBlock = $("#correctItemBlock");
+        var kBlock = $("#kBlock");
+        if (selectedMarkType === '@((long)MarkType.Straight)' || selectedMarkType === '@((long)MarkType.Reverse)') {
+            correctItemBlock.show();
+            kBlock.show();
+        } else {
+            correctItemBlock.hide();
+            kBlock.hide();
+        }
+        var dictionaryBlock = $("#dictionaryBlock");
+        if (selectedMarkType === '@((long)MarkType.Default)') {
+            dictionaryBlock.show();
+        } else {
+            dictionaryBlock.hide();
+        }
+    }
+
+
+    function closeWindow() {
+        Common.UI.CloseWindow('editFactorWindow', window.parent, true);
+    }
+</script>

@@ -113,7 +113,7 @@
                 </div>
                 <div class="form-group">
                     <div style="padding-top: 2%;">
-                        <div id="attributesToolbar"></div>
+                        <div id="factorsToolbar"></div>
                     </div>
                     <div id="grid"></div>
                 </div>
@@ -218,120 +218,15 @@
                 }
             ]
         });
-        $('#attributesToolbar').kendoToolBar({
-            items: [
-                {
-                    type: 'button',
-                    id: 'addAttributeBtn',
-                    text: '',
-                    attributes: { title: "Добавить" },
-                    icon: 'add',
-                    click: addAttribute
-                },
-                {
-                    type: 'button',
-                    id: 'editAttributeBtn',
-                    text: '',
-                    attributes: { title: "Изменить" },
-                    icon: 'edit',
-                    click: editAttribute
-                },
-                {
-                    type: 'button',
-                    id: 'deleteAttributeBtn',
-                    className: "k-state-disabled",
-                    text: '',
-                    attributes: { title: "Удалить" },
-                    icon: 'delete',
-                    click: deleteAttribute
-                }
-            ]
-        });
-        $(".k-toolbar [title]").kendoTooltip({
-            position: "top"
-        });
+       
         if (isReadOnly) {
             $('#mainToolbar').hide();
-            $('#attributesToolbar').hide();
+            $('#factorsToolbar').hide();
             $('#SectionMainData').switchClass('toolbarVisible', 'toolbarHidden', 0);
         }
 
-        $('#grid').kendoGrid({
-            dataSource: {
-                transport: {
-                    read: {
-                        url: '@Url.Action("GetModelAttributes", "Modeling")',
-                        data: getDataForModelAttributesDownloader,
-                        contentType: 'application/json; charset=utf-8',
-                        dataType: 'json'
-                    }
-                },
-                schema: {
-                    model: {
-                        id: "AttributeId",
-                        fields: {
-                            AttributeId: { type: "number" },
-                            DictionaryId: { type: "number" },
-                            AttributeName: { type: "string" },
-                            IsNormalized: { type: "boolean" },
-                            DictionaryName: { type: "string" },
-                            Coefficient: { type: "number" },
-                            IsActive: { type: "boolean" },
-                            MarkType: { type: "string" }
-                        }
-                    }
-                }
-            },
-            columns: [
-                {
-                    field: 'AttributeId',
-                    hidden: true
-                },
-                {
-                    field: 'DictionaryId',
-                    hidden: true
-                },
-                {
-                    field: 'AttributeName',
-                    title: 'Фактор'
-                },
-                {
-                    field: 'IsNormalized',
-                    title: 'Нормализация',
-                    template: '<input type="checkbox" #= DictionaryId != null ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'DictionaryName',
-                    title: 'Справочник',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'Coefficient',
-                    title: 'Коэффициент',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'IsActive',
-                    title: 'Использовать в модели',
-                    template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
-                    field: 'MarkType',
-                    title: 'Тип метки',
-                    attributes: { style: "text-align: center;" }
-                }
-            ],
-            change: changeToolBarButtonsClass,
-            dataBound: changeToolBarButtonsClass,
-            width: '100%',
-            scrollable: true,
-            selectable: true,
-            pageable: {
-                pageSize: 10
-            }
-        });
+        initToolBarForFactorsGrid(addFactor, editFactor, deleteFactor);
+        initFactorsGrid(getDataForModelAttributesDownloader, changeToolBarButtonsClass);
 
         $("#chooseModelTypeButtons").kendoButtonGroup({
             select: function(e) {
@@ -567,7 +462,7 @@
         });
     }
 
-    function addAttribute() {
+    function addFactor() {
         Common.UI.ShowWindow('Добавление фактора',
             '@Url.Action("AddAutomaticModelFactor", "Modeling", new { generalModelId = Model.Id})',
             'editFactorWindow',
@@ -575,7 +470,7 @@
             800, 450);
     }
 
-    function editAttribute() {
+    function editFactor() {
         var selectedRowData = getSelectedRowInFactorsGrid();
         Common.UI.ShowWindow('Редактирование фактора',
             '@Url.Action("EditAutomaticModelFactor", "Modeling")' + '?id=' + selectedRowData.Id,
@@ -584,7 +479,7 @@
             800, 450);
     }
 
-    function deleteAttribute() {
+    function deleteFactor() {
         var selectedRowData = getSelectedRowInFactorsGrid();
         if (!selectedRowData)
             return;
@@ -617,12 +512,12 @@
         $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
-            $('#editAttributeBtn').addClass('k-state-disabled');
-			$('#deleteAttributeBtn').addClass('k-state-disabled');
+            $('#editFactorBtn').addClass('k-state-disabled');
+			$('#deleteFactorBtn').addClass('k-state-disabled');
 		}
 		else {
-            $('#editAttributeBtn').removeClass('k-state-disabled');
-			$('#deleteAttributeBtn').removeClass('k-state-disabled');
+            $('#editFactorBtn').removeClass('k-state-disabled');
+			$('#deleteFactorBtn').removeClass('k-state-disabled');
 		}
     }
 

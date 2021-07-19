@@ -65,36 +65,125 @@ function copyFormula(btn) {
 }
 
 
+function initToolBarForFactorsGrid(addFactorFunc, editFactorFunc, deleteFactorFunc) {
+	$('#factorsToolbar').kendoToolBar({
+		items: [
+			{
+				type: 'button',
+				id: 'addFactorBtn',
+				text: '',
+				attributes: { title: "Добавить" },
+				icon: 'add',
+				click: addFactorFunc
+			},
+			{
+				type: 'button',
+				id: 'editFactorBtn',
+				text: '',
+				attributes: { title: "Изменить" },
+				icon: 'edit',
+				click: editFactorFunc
+			},
+			{
+				type: 'button',
+				id: 'deleteFactorBtn',
+				className: "k-state-disabled",
+				text: '',
+				attributes: { title: "Удалить" },
+				icon: 'delete',
+				click: deleteFactorFunc
+			}
+		]
+	});
+	$(".k-toolbar [title]").kendoTooltip({
+		position: "top"
+	});
+}
 
 
-
-//Методы для факторов модели
-
-function setFactorParametersVisibility() {
-	//debugger;
-	var selectedMarkType = Number($('#MarkType').data('kendoDropDownList').value());
-	var correctItemBlock = $("#correctItemBlock");
-	var kBlock = $("#kBlock");
-	var dictionaryBlock = $("#dictionaryBlock");
-	var straightMarkType = 2;
-	var reverseMarkType = 3;
-	var defaultMarkType = 1;
-	if (selectedMarkType === straightMarkType || selectedMarkType === reverseMarkType) {
-		//todo удалить после добавление этих блоков в авто.модель
-		if (correctItemBlock && kBlock) {
-			correctItemBlock.show();
-			kBlock.show();
-		}
-	} else {
-		//todo удалить после добавление этих блоков в авто.модель
-		if (correctItemBlock && kBlock) {
-			correctItemBlock.hide();
-			kBlock.hide();
-		}
-	}
-	if (selectedMarkType === defaultMarkType) {
-		dictionaryBlock.show();
-	} else {
-		dictionaryBlock.hide();
-	}
+function initFactorsGrid(getDataForModelAttributesDownloaderFunc, onGridChangeFunc) {
+    $('#grid').kendoGrid({
+        dataSource: {
+            transport: {
+                read: {
+                    url: '/Modeling/GetModelAttributes',
+                    data: getDataForModelAttributesDownloaderFunc,
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                }
+            },
+            schema: {
+                model: {
+                    id: "AttributeId",
+                    fields: {
+                        AttributeId: { type: "number" },
+                        DictionaryId: { type: "number" },
+                        AttributeName: { type: "string" },
+                        DictionaryName: { type: "string" },
+                        Correction: { type: "number" },
+                        IsActive: { type: "boolean" },
+                        MarkType: { type: "string" }
+                    }
+                }
+            }
+        },
+        columns: [
+            {
+                field: 'AttributeId',
+                hidden: true
+            },
+            {
+                field: 'DictionaryId',
+                hidden: true
+            },
+            {
+                field: 'AttributeName',
+                title: 'Фактор',
+                width: "40%"
+            },
+            {
+                field: 'MarkType',
+                title: 'Тип метки',
+                attributes: { style: "text-align: center;" }
+            },
+            {
+                field: 'DictionaryName',
+                title: 'Справочник',
+                attributes: { style: "text-align: center;" }
+            },
+            {
+                field: 'Coefficient',
+                title: 'Коэффициент',
+                attributes: { style: "text-align: center;" }
+            },
+            {
+                field: 'CorrectingTerm',
+                title: 'Корректирующее слагаемое',
+                headerAttributes: { style: "word-wrap: break-word;" }
+            },
+            {
+                field: 'K',
+                title: 'К'
+            },
+            {
+                field: 'Correction',
+                title: 'Поправка',
+                attributes: { style: "text-align: center;" }
+            },
+            {
+                field: 'IsActive',
+                title: 'Использовать в модели',
+                template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
+                attributes: { style: "text-align: center;" }
+            }
+        ],
+        change: onGridChangeFunc,
+        dataBound: onGridChangeFunc,
+        width: '100%',
+        scrollable: true,
+        selectable: true,
+        pageable: {
+            pageSize: 10
+        }
+    });
 }

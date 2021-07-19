@@ -19,8 +19,8 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
 				DictionaryId = RandomGenerator.GenerateRandomId(),
-				Weight = RandomGenerator.GenerateRandomDecimal(),
-				B0 = RandomGenerator.GenerateRandomDecimal(),
+				Correction = RandomGenerator.GenerateRandomDecimal(),
+				Coefficient = RandomGenerator.GenerateRandomDecimal(),
 				MarkType = MarkType.Default,
 				CorrectItem = RandomGenerator.GenerateRandomDecimal(),
 				K = RandomGenerator.GenerateRandomDecimal()

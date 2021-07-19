@@ -872,11 +872,11 @@ namespace ObjectModel.KO
         /// <summary>
         /// Поправка
         /// </summary>
-		public decimal WeightInFormula => Math.Round(Weight, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		public decimal WeightInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 		/// <summary>
         /// Добавочный коэффициент
         /// </summary>
-		public decimal B0InFormula => Math.Round(B0, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		public decimal B0InFormula => Math.Round(Coefficient, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 		public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 		public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 

@@ -105,7 +105,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
 		}
 
-		//TODO разделить на получение факторов для Ручной и Автоматический моделей
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
 			//для совместимости с уже ранее созданными моделями (не через блок "Справочники моделей")
@@ -124,9 +123,9 @@ namespace KadOzenka.Dal.Modeling.Factors
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Coefficient, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelAttributeRelationDto.Correction)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType, nameof(ModelAttributeRelationDto.MarkType)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelAttributeRelationDto.CorrectingTerm)));
@@ -151,9 +150,9 @@ namespace KadOzenka.Dal.Modeling.Factors
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
 				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
 
-				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
+				var coefficient = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
-				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
+				var correction = row[nameof(ModelAttributeRelationDto.Correction)].ParseToDecimalNullable();
 				var correctingTerm = row[nameof(ModelAttributeRelationDto.CorrectingTerm)].ParseToDecimalNullable();
 				var k = row[nameof(ModelAttributeRelationDto.K)].ParseToDecimalNullable();
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
@@ -168,9 +167,9 @@ namespace KadOzenka.Dal.Modeling.Factors
 					AttributeType = attributeType,
 					DictionaryId = dictionaryId,
 					DictionaryName = dictionaryName,
-					B0 = b0.GetValueOrDefault(),
+					Coefficient = coefficient.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
-					Coefficient = weight,
+					Correction = correction,
 					CorrectingTerm = correctingTerm,
 					K = k,
 					IsActive = isActive.GetValueOrDefault(),
@@ -279,7 +278,8 @@ namespace KadOzenka.Dal.Modeling.Factors
 			var mustResetTrainingResult = false;
 			using (var ts = new TransactionScope())
 			{
-				if (factor.DictionaryId != dto.DictionaryId || factor.IsActive.GetValueOrDefault() != dto.IsActive ||
+				if (factor.DictionaryId != dto.DictionaryId || 
+				    factor.IsActive.GetValueOrDefault() != dto.IsActive ||
 				    factor.MarkType_Code != dto.MarkType)
 				{
 					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
@@ -293,15 +293,13 @@ namespace KadOzenka.Dal.Modeling.Factors
 					factors.ForEach(x =>
 					{
 						x.IsActive = dto.IsActive;
-						factor.MarkType_Code = dto.MarkType;
+						x.MarkType_Code = dto.MarkType;
 						ProcessDictionary(x, dto);
 
 						ModelFactorsRepository.Save(x);
 					});
 					mustResetTrainingResult = true;
 				}
-
-				ModelFactorsRepository.Save(factor);
 
 				ts.Complete();
 			}
@@ -319,8 +317,8 @@ namespace KadOzenka.Dal.Modeling.Factors
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
-				Weight = dto.Weight,
-				B0 = dto.B0,
+				Correction = dto.Correction,
+				Coefficient = dto.Coefficient,
 				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
 			};
@@ -345,8 +343,8 @@ namespace KadOzenka.Dal.Modeling.Factors
 			var factor = GetFactorById(dto.Id);
 			ProcessDictionary(factor, dto);
 
-			factor.Weight = dto.Weight;
-			factor.B0 = dto.B0;
+			factor.Correction = dto.Correction;
+			factor.Coefficient = dto.Coefficient;
 			factor.MarkType_Code = dto.MarkType;
 
 			if (IsSpecialMarkType(dto.MarkType))

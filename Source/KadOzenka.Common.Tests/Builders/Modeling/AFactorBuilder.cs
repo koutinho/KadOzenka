@@ -22,8 +22,8 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				ModelId = RandomGenerator.GenerateRandomId(),
 				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
-				Weight = RandomGenerator.GenerateRandomDecimal(),
-				B0 = RandomGenerator.GenerateRandomDecimal(),
+				Correction = RandomGenerator.GenerateRandomDecimal(),
+				Coefficient = RandomGenerator.GenerateRandomDecimal(),
 				SignMarket = true,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				AlgorithmType = algorithm.GetEnumDescription(),
@@ -58,25 +58,25 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 		public AFactorBuilder Correction(double weight)
 		{
-			_factor.Weight = (decimal) weight;
+			_factor.Correction = (decimal) weight;
 			return this;
 		}
 
 		public AFactorBuilder Correction(decimal weight)
 		{
-			_factor.Weight = weight;
+			_factor.Correction = weight;
 			return this;
 		}
 
 		public AFactorBuilder Coefficient(double b0)
 		{
-			_factor.B0 = (decimal) b0;
+			_factor.Coefficient = (decimal) b0;
 			return this;
 		}
 
 		public AFactorBuilder Coefficient(decimal b0)
 		{
-			_factor.B0 = b0;
+			_factor.Coefficient = b0;
 			return this;
 		}
 

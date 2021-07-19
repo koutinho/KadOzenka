@@ -18,7 +18,7 @@ namespace KadOzenka.Web.UnitTests.Modeling.Factors
 
 			Assert.IsNotNull(modelFromView);
 			Assert.That(modelFromView.Id, Is.EqualTo(-1));
-			Assert.That(modelFromView.GeneralModelId, Is.EqualTo(modelId));
+			Assert.That(modelFromView.ModelId, Is.EqualTo(modelId));
 			Assert.That(modelFromView.FactorId, Is.EqualTo(-1));
 		}
 	}
