@@ -6,7 +6,7 @@ using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Modeling;
-using KadOzenka.Dal.Modeling.Modeling.Entities;
+using ModelingBusiness.Modeling.Entities;
 using ObjectModel.Core.LongProcess;
 using Serilog;
 

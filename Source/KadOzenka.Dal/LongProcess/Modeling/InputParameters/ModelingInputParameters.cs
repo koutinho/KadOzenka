@@ -1,4 +1,4 @@
-﻿using KadOzenka.Dal.Modeling.Modeling.Entities;
+﻿using ModelingBusiness.Modeling.Entities;
 
 namespace KadOzenka.Dal.LongProcess.Modeling.InputParameters
 {

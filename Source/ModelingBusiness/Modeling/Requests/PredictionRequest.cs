@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace KadOzenka.Dal.Modeling.Modeling.Requests
+namespace ModelingBusiness.Modeling.Requests
 {
     public class PredictionRequest : GeneralRequest
     {

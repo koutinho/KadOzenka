@@ -1,7 +1,7 @@
-﻿using KadOzenka.Dal.Modeling.Modeling.Responses;
+﻿using ModelingBusiness.Modeling.Responses;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.Modeling.Modeling.Entities
+namespace ModelingBusiness.Modeling.Entities
 {
     public class TrainingDetailsDto
     {

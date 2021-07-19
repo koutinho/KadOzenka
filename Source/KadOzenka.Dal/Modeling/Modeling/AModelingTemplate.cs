@@ -8,7 +8,7 @@ using Core.Register.LongProcessManagment;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Modeling.Responses;
+using ModelingBusiness.Modeling.Responses;
 using ModelingBusiness.Objects.Repositories;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;

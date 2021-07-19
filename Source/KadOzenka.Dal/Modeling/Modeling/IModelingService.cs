@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using KadOzenka.Dal.Modeling.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Modeling.Responses;
+using ModelingBusiness.Modeling.Entities;
+using ModelingBusiness.Modeling.Responses;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 

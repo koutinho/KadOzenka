@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using KadOzenka.Dal.Modeling.Modeling.Entities;
 using ModelingBusiness.Objects.Entities;
 
 namespace KadOzenka.Web.Models.Modeling

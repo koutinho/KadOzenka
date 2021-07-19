@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace KadOzenka.Dal.Modeling.Modeling.Entities
+namespace ModelingBusiness.Modeling.Entities
 {
     public enum ModelingMode
     {
