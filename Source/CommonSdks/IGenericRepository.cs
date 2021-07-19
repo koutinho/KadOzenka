@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Core.ObjectModel;
 
-namespace KadOzenka.Dal.CommonFunctions
+namespace CommonSdks
 {
 	public interface IGenericRepository<TSource> where TSource : OMBaseClass<TSource>, new()
 	{
