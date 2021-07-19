@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KadOzenka.Dal.LongProcess.Modeling.Entities
+namespace ModelingBusiness.Objects
 {
 	public class ModelingObjectsStatistic
 	{

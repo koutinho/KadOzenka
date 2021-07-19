@@ -14,6 +14,7 @@ using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Exceptions;
 using ModelingBusiness.Factors.Repositories;
+using ModelingBusiness.Objects;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
