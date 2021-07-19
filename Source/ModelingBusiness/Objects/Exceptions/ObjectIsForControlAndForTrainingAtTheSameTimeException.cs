@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.Modeling.Objects.Exceptions
+namespace ModelingBusiness.Objects.Exceptions
 {
 	public class ObjectIsForControlAndForTrainingAtTheSameTimeException : Exception
 	{
