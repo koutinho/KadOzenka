@@ -113,7 +113,7 @@
                 </div>
                 <div class="form-group">
                     <div style="padding-top: 2%;">
-                        <div id="attributesToolbar"></div>
+                        <div id="factorsToolbar"></div>
                     </div>
                     <div id="grid"></div>
                 </div>
@@ -218,11 +218,11 @@
                 }
             ]
         });
-        $('#attributesToolbar').kendoToolBar({
+        $('#factorsToolbar').kendoToolBar({
             items: [
                 {
                     type: 'button',
-                    id: 'addAttributeBtn',
+                    id: 'addFactorBtn',
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
@@ -230,7 +230,7 @@
                 },
                 {
                     type: 'button',
-                    id: 'editAttributeBtn',
+                    id: 'editFactorBtn',
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
@@ -238,7 +238,7 @@
                 },
                 {
                     type: 'button',
-                    id: 'deleteAttributeBtn',
+                    id: 'deleteFactorBtn',
                     className: "k-state-disabled",
                     text: '',
                     attributes: { title: "Удалить" },
@@ -252,7 +252,7 @@
         });
         if (isReadOnly) {
             $('#mainToolbar').hide();
-            $('#attributesToolbar').hide();
+            $('#factorsToolbar').hide();
             $('#SectionMainData').switchClass('toolbarVisible', 'toolbarHidden', 0);
         }
 
@@ -625,12 +625,12 @@
         $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
-            $('#editAttributeBtn').addClass('k-state-disabled');
-			$('#deleteAttributeBtn').addClass('k-state-disabled');
+            $('#editFactorBtn').addClass('k-state-disabled');
+			$('#deleteFactorBtn').addClass('k-state-disabled');
 		}
 		else {
-            $('#editAttributeBtn').removeClass('k-state-disabled');
-			$('#deleteAttributeBtn').removeClass('k-state-disabled');
+            $('#editFactorBtn').removeClass('k-state-disabled');
+			$('#deleteFactorBtn').removeClass('k-state-disabled');
 		}
     }
 

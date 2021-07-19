@@ -56,7 +56,7 @@
             </div>
 
             <div style="padding-top: 2%;">
-                <div id="factorToolbar"></div>
+                <div id="factorsToolbar"></div>
             </div>
             <div style="display: flex;">
                 <div style="align-items: stretch">
@@ -103,31 +103,31 @@
                 }
             ]
         });
-        $('#factorToolbar').kendoToolBar({
+        $('#factorsToolbar').kendoToolBar({
             items: [
                 {
                     type: 'button',
-                    id: 'add-factor',
+                    id: 'addFactorBtn',
                     text: '',
                     attributes: { title: "Добавить" },
                     icon: 'add',
-                    hidden: isReadOnly
+                    click: addFactor
                 },
                 {
                     type: 'button',
-                    id: 'edit-factor',
+                    id: 'editFactorBtn',
                     text: '',
                     attributes: { title: "Изменить" },
                     icon: 'edit',
-                    hidden: isReadOnly
+                    click: editFactor
                 },
                 {
                     type: 'button',
-                    id: 'remove-factor',
+                    id: 'deleteFactorBtn',
                     text: '',
                     attributes: { title: "Удалить" },
                     icon: 'delete',
-                    hidden: isReadOnly
+                    click: deleteFactor
                 }
             ]
         });
@@ -136,6 +136,7 @@
         });
         if (isReadOnly) {
             $('#toolbar').hide();
+            $('#factorsToolbar').hide();
         }
 
 
@@ -206,10 +207,6 @@
 
         $("#grid").data("kendoGrid").bind('change', onGridChanged);
         $("#grid").data("kendoGrid").bind('dataBound', onGridChanged);
-
-        $('#add-factor').on('click', addFactor);
-        $('#edit-factor').on('click', editFactor);
-        $('#remove-factor').on('click', deleteFactor);
     });
 
 
@@ -302,12 +299,12 @@
         var grid = $("#grid").data("kendoGrid");
         var row = grid.select();
         if (row.length == 0) {
-            $('#edit-factor').addClass('k-state-disabled');
-            $('#remove-factor').addClass('k-state-disabled');
+            $('#editFactorBtn').addClass('k-state-disabled');
+            $('#deleteFactorBtn').addClass('k-state-disabled');
         }
         else {
-            $('#edit-factor').removeClass('k-state-disabled');
-            $('#remove-factor').removeClass('k-state-disabled');
+            $('#editFactorBtn').removeClass('k-state-disabled');
+            $('#deleteFactorBtn').removeClass('k-state-disabled');
         }
     }
 
