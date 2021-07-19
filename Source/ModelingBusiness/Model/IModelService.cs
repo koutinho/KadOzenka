@@ -3,7 +3,7 @@ using ModelingBusiness.Model.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Model
+namespace ModelingBusiness.Model
 {
 	public interface IModelService
 	{

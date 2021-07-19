@@ -7,9 +7,6 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
-using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Modeling;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Exceptions;
@@ -21,7 +18,7 @@ using ObjectModel.Directory.Ko;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Factors
+namespace ModelingBusiness.Factors
 {
 	public class ModelFactorsService : IModelFactorsService
 	{
@@ -384,39 +381,39 @@ namespace KadOzenka.Dal.Modeling.Factors
 		public void DeleteAutomaticModelFactor(long? id)
 		{
 			//todo инжектить нельзя, вынести в отдельный сервис?
-			var modelService = new ModelingService();
-			var factor = GetFactorById(id);
+			//var modelService = new ModelingService();
+			//var factor = GetFactorById(id);
 
-			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
-				.Execute();
+			//var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
+			//	.Execute();
 
-			using (var ts = new TransactionScope())
-			{
-				allFactors.ForEach(x => x.Destroy());
+			//using (var ts = new TransactionScope())
+			//{
+			//	allFactors.ForEach(x => x.Destroy());
 
-				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
+			//	ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
 
-				ts.Complete();
-			}
+			//	ts.Complete();
+			//}
 
-			modelService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
+			//modelService.ResetTrainingResults(factor.ModelId, KoAlgoritmType.None);
 
-			var model = OMModel.Where(x => x.Id == factor.ModelId)
-				.Select(x => new
-				{
-					x.GroupId,
-					x.ObjectsStatistic
-				})
-				.ExecuteFirstOrDefault();
+			//var model = OMModel.Where(x => x.Id == factor.ModelId)
+			//	.Select(x => new
+			//	{
+			//		x.GroupId,
+			//		x.ObjectsStatistic
+			//	})
+			//	.ExecuteFirstOrDefault();
 
-			var statistic = model?.ObjectsStatistic?.DeserializeFromXml<ModelingObjectsStatistic>();
-			var deletedFactorStatistic = statistic?.ObjectsByAttributeStatistics.FirstOrDefault(x => x.AttributeId == factor.FactorId);
-			if (deletedFactorStatistic != null)
-			{
-				statistic.ObjectsByAttributeStatistics.Remove(deletedFactorStatistic);
-				model.ObjectsStatistic = statistic.SerializeToXml();
-				model.Save();
-			}
+			//var statistic = model?.ObjectsStatistic?.DeserializeFromXml<ModelingObjectsStatistic>();
+			//var deletedFactorStatistic = statistic?.ObjectsByAttributeStatistics.FirstOrDefault(x => x.AttributeId == factor.FactorId);
+			//if (deletedFactorStatistic != null)
+			//{
+			//	statistic.ObjectsByAttributeStatistics.Remove(deletedFactorStatistic);
+			//	model.ObjectsStatistic = statistic.SerializeToXml();
+			//	model.Save();
+			//}
 		}
 
 

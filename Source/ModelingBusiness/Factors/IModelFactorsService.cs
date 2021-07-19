@@ -4,7 +4,7 @@ using ModelingBusiness.Factors.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Factors
+namespace ModelingBusiness.Factors
 {
 	public interface IModelFactorsService
 	{

@@ -8,10 +8,8 @@ using CommonSdks;
 using CommonSdks.RecycleBin;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.Modeling.Factors;
+using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Repositories;
-using ModelingBusiness.Model;
 using ModelingBusiness.Model.Entities;
 using ModelingBusiness.Model.Exceptions;
 using ModelingBusiness.Model.Formulas;
@@ -23,7 +21,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Model
+namespace ModelingBusiness.Model
 {
 	public class ModelService : IModelService
 	{

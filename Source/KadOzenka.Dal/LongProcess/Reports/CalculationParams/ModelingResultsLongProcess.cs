@@ -8,8 +8,8 @@ using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
+using ModelingBusiness.Model;
 using ObjectModel.KO;
 using Serilog;
 

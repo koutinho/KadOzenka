@@ -8,14 +8,14 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Factors;
-using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units.Repositories;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using KadOzenka.Dal.Oks;
+using ModelingBusiness.Factors;
+using ModelingBusiness.Model;
 
 namespace KadOzenka.Dal.Units
 {

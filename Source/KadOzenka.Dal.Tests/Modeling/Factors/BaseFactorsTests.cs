@@ -1,10 +1,10 @@
 ﻿using Core.Register;
 using KadOzenka.Common.Tests.Builders.Cache;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Microsoft.Extensions.DependencyInjection;
+using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Repositories;
 using Moq;

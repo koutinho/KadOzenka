@@ -11,7 +11,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Model;
+using ModelingBusiness.Model;
 using ObjectModel.Common;
 using ObjectModel.Directory;
 using ObjectModel.Ko;
