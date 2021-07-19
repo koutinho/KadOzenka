@@ -12,7 +12,6 @@ using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dictionaries;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Objects;
 using MarketPlaceBusiness;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;

@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.Modeling.Objects.Import
+namespace ModelingBusiness.Objects.Import
 {
 	public class ModelObjectsImporterForCreation : IModelObjectsImporter
 	{

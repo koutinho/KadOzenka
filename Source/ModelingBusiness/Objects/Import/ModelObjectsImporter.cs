@@ -9,18 +9,14 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
+using ModelingBusiness.Objects.Entities;
+using ModelingBusiness.Objects.Exceptions;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
-using KadOzenka.Dal.Modeling.Objects.Import.Entities;
-using ModelingBusiness.Objects;
-using ModelingBusiness.Objects.Entities;
-using ModelingBusiness.Objects.Exceptions;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Objects.Import
+namespace ModelingBusiness.Objects.Import
 {
 	public interface IBaseModelObjectsImporter
 	{

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Objects;
 using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Entities;
 using ObjectModel.Directory;

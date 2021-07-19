@@ -10,8 +10,4 @@
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Objects\Import\Entities\" />
-  </ItemGroup>
-
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KadOzenka.Dal.Modeling.Objects.Import.Entities
+namespace ModelingBusiness.Objects.Import
 {
 	public class ModelObjectsFromExcelData
 	{

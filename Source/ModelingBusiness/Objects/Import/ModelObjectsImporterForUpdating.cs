@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
-using KadOzenka.Dal.Modeling.Objects.Import.Entities;
 using ObjectModel.Modeling;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Objects.Import
+namespace ModelingBusiness.Objects.Import
 {
 	public class ModelObjectsImporterForUpdating : IModelObjectsImporter
 	{

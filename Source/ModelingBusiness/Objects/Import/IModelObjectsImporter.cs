@@ -2,7 +2,7 @@
 using Core.Register;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.Modeling.Objects.Import
+namespace ModelingBusiness.Objects.Import
 {
 	public interface IModelObjectsImporter
 	{
