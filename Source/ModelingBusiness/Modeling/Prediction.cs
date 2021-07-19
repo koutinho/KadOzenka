@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CommonSdks.ConfigurationManagers;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
+using ModelingBusiness.Modeling.InputParameters;
 using ModelingBusiness.Modeling.Requests;
 using ModelingBusiness.Modeling.Responses;
 using ModelingBusiness.Objects.Entities;
@@ -14,7 +14,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Modeling
+namespace ModelingBusiness.Modeling
 {
     public class Prediction : AModelingTemplate
     {

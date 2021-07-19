@@ -7,8 +7,6 @@ using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using ExCSS.Model.Extensions;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
-using KadOzenka.Dal.Modeling;
 using MarketPlaceBusiness;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;

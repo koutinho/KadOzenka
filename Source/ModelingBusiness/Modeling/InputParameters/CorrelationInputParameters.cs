@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KadOzenka.Dal.LongProcess.InputParameters
+namespace ModelingBusiness.Modeling.InputParameters
 {
     public class CorrelationInputParameters
     {

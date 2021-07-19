@@ -7,7 +7,6 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units.Repositories;

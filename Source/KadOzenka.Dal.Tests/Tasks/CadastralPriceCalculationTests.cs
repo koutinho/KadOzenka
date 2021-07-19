@@ -4,7 +4,6 @@ using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses;
 using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Entities;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;

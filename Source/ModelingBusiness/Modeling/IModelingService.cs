@@ -4,7 +4,7 @@ using ModelingBusiness.Modeling.Responses;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Modeling
+namespace ModelingBusiness.Modeling
 {
 	public interface IModelingService
 	{

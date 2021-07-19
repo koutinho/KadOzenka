@@ -6,7 +6,6 @@ using System.Text;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.CancellationQueryManager;
-using KadOzenka.Dal.Modeling;
 using MarketPlaceBusiness.Common;
 using ModelingBusiness.Factors;
 using ObjectModel.Core.Register;

@@ -1,6 +1,5 @@
 ﻿using Core.Register;
 using KadOzenka.Common.Tests.Builders.Cache;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using Microsoft.Extensions.DependencyInjection;

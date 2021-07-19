@@ -1,5 +1,4 @@
-﻿using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Tests;
+﻿using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Dictionaries.Repositories;

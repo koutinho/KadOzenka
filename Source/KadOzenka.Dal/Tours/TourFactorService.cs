@@ -9,7 +9,6 @@ using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours.Dto;

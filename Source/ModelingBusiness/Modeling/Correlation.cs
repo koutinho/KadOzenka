@@ -6,10 +6,9 @@ using CommonSdks;
 using CommonSdks.ConfigurationManagers;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.LongProcess.InputParameters;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Interfaces;
+using ModelingBusiness.Modeling.InputParameters;
 using ModelingBusiness.Modeling.Requests;
 using ModelingBusiness.Modeling.Responses;
 using Newtonsoft.Json;
@@ -17,7 +16,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Register;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Modeling
+namespace ModelingBusiness.Modeling
 {
     public class Correlation : AModelingTemplate
     {

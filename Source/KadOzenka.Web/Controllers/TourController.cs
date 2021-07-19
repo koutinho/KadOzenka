@@ -17,7 +17,6 @@ using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.CalculateSystem;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Models.Filters;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.Tours;

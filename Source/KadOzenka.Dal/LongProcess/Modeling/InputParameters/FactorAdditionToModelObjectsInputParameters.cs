@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.LongProcess.Modeling.Entities
+﻿namespace KadOzenka.Dal.LongProcess.Modeling.InputParameters
 {
 	public class FactorAdditionToModelObjectsInputParameters
 	{

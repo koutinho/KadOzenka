@@ -6,10 +6,9 @@ using CommonSdks;
 using CommonSdks.ConfigurationManagers;
 using Core.Register;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess;
-using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors.Entities;
+using ModelingBusiness.Modeling.InputParameters;
 using ModelingBusiness.Modeling.Requests;
 using ModelingBusiness.Modeling.Responses;
 using ModelingBusiness.Objects.Entities;
@@ -20,7 +19,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Modeling
+namespace ModelingBusiness.Modeling
 {
     public class Training : AModelingTemplate
     {

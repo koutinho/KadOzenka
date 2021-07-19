@@ -4,8 +4,6 @@ using System.Linq;
 using CommonSdks;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.DataExport;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Model;
 using ModelingBusiness.Modeling.Entities;
@@ -16,7 +14,7 @@ using ObjectModel.KO;
 using Serilog;
 using DataExportCommon = CommonSdks.DataExportCommon;
 
-namespace KadOzenka.Dal.Modeling.Modeling
+namespace ModelingBusiness.Modeling
 {
 	public class ModelingService : IModelingService
 	{

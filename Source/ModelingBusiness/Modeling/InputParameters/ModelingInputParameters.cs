@@ -1,6 +1,6 @@
 ﻿using ModelingBusiness.Modeling.Entities;
 
-namespace KadOzenka.Dal.LongProcess.Modeling.InputParameters
+namespace ModelingBusiness.Modeling.InputParameters
 {
     public class ModelingInputParameters
     {

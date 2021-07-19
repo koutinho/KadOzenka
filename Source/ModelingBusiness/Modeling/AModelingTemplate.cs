@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CommonSdks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
-using KadOzenka.Dal.LongProcess;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Model;
 using ModelingBusiness.Modeling.Responses;
@@ -15,7 +14,7 @@ using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Modeling
+namespace ModelingBusiness.Modeling
 {
     public abstract class AModelingTemplate
     {
