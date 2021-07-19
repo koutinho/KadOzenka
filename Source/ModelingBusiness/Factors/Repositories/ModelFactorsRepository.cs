@@ -2,11 +2,10 @@
 using System.Linq.Expressions;
 using CommonSdks;
 using Core.Register.QuerySubsystem;
-using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Factors.Repositories
+namespace ModelingBusiness.Factors.Repositories
 {
 	public class ModelFactorsRepository : GenericRepository<OMModelFactor>, IModelFactorsRepository
 	{

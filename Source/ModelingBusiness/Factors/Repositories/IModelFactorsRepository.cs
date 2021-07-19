@@ -1,9 +1,8 @@
 ﻿using CommonSdks;
-using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Factors.Repositories
+namespace ModelingBusiness.Factors.Repositories
 {
 	public interface IModelFactorsRepository : IGenericRepository<OMModelFactor>
 	{
