@@ -23,7 +23,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
 				Correction = RandomGenerator.GenerateRandomDecimal(),
-				B0 = RandomGenerator.GenerateRandomDecimal(),
+				Coefficient = RandomGenerator.GenerateRandomDecimal(),
 				SignMarket = true,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				AlgorithmType = algorithm.GetEnumDescription(),
@@ -70,13 +70,13 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 		public AFactorBuilder Coefficient(double b0)
 		{
-			_factor.B0 = (decimal) b0;
+			_factor.Coefficient = (decimal) b0;
 			return this;
 		}
 
 		public AFactorBuilder Coefficient(decimal b0)
 		{
-			_factor.B0 = b0;
+			_factor.Coefficient = b0;
 			return this;
 		}
 

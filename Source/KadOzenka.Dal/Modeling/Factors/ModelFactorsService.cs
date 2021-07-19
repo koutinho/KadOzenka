@@ -123,7 +123,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelAttributeRelationDto.AttributeType)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelAttributeRelationDto.DictionaryId)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Coefficient, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelAttributeRelationDto.Correction)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
@@ -150,7 +150,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 				var dictionaryId = row[nameof(ModelAttributeRelationDto.DictionaryId)].ParseToLongNullable();
 				var dictionaryName = row[nameof(ModelAttributeRelationDto.DictionaryName)].ParseToString();
 
-				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
+				var coefficient = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
 				var correction = row[nameof(ModelAttributeRelationDto.Correction)].ParseToDecimalNullable();
 				var correctingTerm = row[nameof(ModelAttributeRelationDto.CorrectingTerm)].ParseToDecimalNullable();
@@ -167,7 +167,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 					AttributeType = attributeType,
 					DictionaryId = dictionaryId,
 					DictionaryName = dictionaryName,
-					B0 = b0.GetValueOrDefault(),
+					Coefficient = coefficient.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
 					Correction = correction,
 					CorrectingTerm = correctingTerm,
@@ -317,8 +317,8 @@ namespace KadOzenka.Dal.Modeling.Factors
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
-				Correction = dto.Weight,
-				B0 = dto.B0,
+				Correction = dto.Correction,
+				Coefficient = dto.Coefficient,
 				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
 			};
@@ -343,8 +343,8 @@ namespace KadOzenka.Dal.Modeling.Factors
 			var factor = GetFactorById(dto.Id);
 			ProcessDictionary(factor, dto);
 
-			factor.Correction = dto.Weight;
-			factor.B0 = dto.B0;
+			factor.Correction = dto.Correction;
+			factor.Coefficient = dto.Coefficient;
 			factor.MarkType_Code = dto.MarkType;
 
 			if (IsSpecialMarkType(dto.MarkType))

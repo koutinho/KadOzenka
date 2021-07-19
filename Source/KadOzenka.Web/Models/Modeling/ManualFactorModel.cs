@@ -9,10 +9,10 @@ namespace KadOzenka.Web.Models.Modeling
 		public override bool IsAutomatic => false;
 
 		[Display(Name = "Коэффициент")]
-		public decimal B0 { get; set; }
+		public decimal Coefficient { get; set; }
 
 		[Display(Name = "Поправка")]
-		public decimal Weight { get; set; }
+		public decimal Correction { get; set; }
 
 
 		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
@@ -23,8 +23,8 @@ namespace KadOzenka.Web.Models.Modeling
 				ModelId = generalModelId,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
-				Weight = factor.Correction,
-				B0 = factor.B0,
+				Correction = factor.Correction,
+				Coefficient = factor.Coefficient,
 				MarkType = factor.MarkType_Code,
 				CorrectItem = factor.CorrectingTerm,
 				K = factor.K
@@ -41,8 +41,8 @@ namespace KadOzenka.Web.Models.Modeling
 				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
-				Weight = Weight,
-				B0 = B0,
+				Correction = Correction,
+				Coefficient = Coefficient,
 				MarkType = MarkType,
 				CorrectItem = CorrectItem,
 				K = K

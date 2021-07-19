@@ -3802,22 +3802,22 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _b0;
+        private decimal _coefficient;
         /// <summary>
-        /// 21000600 Добавочный коэффициент (B0)
+        /// 21000600 Коэффициент (COEFFICIENT)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000600)]
-        public decimal B0
+        public decimal Coefficient
         {
             get
             {
-                CheckPropertyInited("B0");
-                return _b0;
+                CheckPropertyInited("Coefficient");
+                return _coefficient;
             }
             set
             {
-                _b0 = value;
-                NotifyPropertyChanged("B0");
+                _coefficient = value;
+                NotifyPropertyChanged("Coefficient");
             }
         }
 
