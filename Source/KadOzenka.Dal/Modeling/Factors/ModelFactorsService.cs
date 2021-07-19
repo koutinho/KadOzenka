@@ -293,7 +293,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 					factors.ForEach(x =>
 					{
 						x.IsActive = dto.IsActive;
-						factor.MarkType_Code = dto.MarkType;
+						x.MarkType_Code = dto.MarkType;
 						ProcessDictionary(x, dto);
 
 						ModelFactorsRepository.Save(x);
