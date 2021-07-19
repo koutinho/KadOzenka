@@ -7,7 +7,6 @@ using KadOzenka.Dal.LongProcess.TaskLongProcesses.CadastralPriceCalculation.Enti
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Model.Formulas;
 using KadOzenka.Dal.Tests;
 using KadOzenka.Dal.Tours;
 using KadOzenka.Dal.Units;
@@ -15,6 +14,8 @@ using KadOzenka.Dal.Units.Repositories;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using Microsoft.Extensions.DependencyInjection;
+using ModelingBusiness.Model;
+using ModelingBusiness.Model.Formulas;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;

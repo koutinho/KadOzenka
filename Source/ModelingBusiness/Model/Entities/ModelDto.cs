@@ -2,7 +2,7 @@
 using ModelingBusiness.Factors.Entities;
 using ObjectModel.Directory;
 
-namespace KadOzenka.Dal.Modeling.Model.Entities
+namespace ModelingBusiness.Model.Entities
 {
 	public class ModelDto
 	{

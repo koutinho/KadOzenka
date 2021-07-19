@@ -1,8 +1,7 @@
 ﻿using CommonSdks;
-using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Model.Repositories
+namespace ModelingBusiness.Factors.Repositories
 {
 	public interface IModelingRepository : IGenericRepository<OMModel>
 	{

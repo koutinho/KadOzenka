@@ -14,7 +14,6 @@ using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Model.Repositories;
 using KadOzenka.Dal.Modeling.Modeling;
 using KadOzenka.Dal.ObjectsCharacteristics;
 using KadOzenka.Dal.RecycleBin;

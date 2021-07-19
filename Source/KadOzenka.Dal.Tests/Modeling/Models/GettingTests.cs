@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
-using KadOzenka.Dal.Modeling.Model.Exceptions;
+using ModelingBusiness.Model.Exceptions;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;

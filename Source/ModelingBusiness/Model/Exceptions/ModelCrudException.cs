@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.Modeling.Model.Exceptions
+namespace ModelingBusiness.Model.Exceptions
 {
 	public class ModelCrudException : Exception
 	{

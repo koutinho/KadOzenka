@@ -1,7 +1,7 @@
-﻿using KadOzenka.Dal.Modeling.Model.Entities;
+﻿using ModelingBusiness.Model.Entities;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Model.Formulas
+namespace ModelingBusiness.Model.Formulas
 {
 	public class MultiplicativeFormula : BaseFormula
 	{

@@ -1,6 +1,6 @@
 ﻿using KadOzenka.Common.Tests;
-using KadOzenka.Dal.Modeling.Model.Entities;
-using KadOzenka.Dal.Modeling.Model.Exceptions;
+using ModelingBusiness.Model.Entities;
+using ModelingBusiness.Model.Exceptions;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory;
