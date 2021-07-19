@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonSdks\CommonSdks.csproj" />
     <ProjectReference Include="..\KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
