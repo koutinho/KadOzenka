@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register;

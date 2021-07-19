@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Transactions;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Register.QuerySubsystem;

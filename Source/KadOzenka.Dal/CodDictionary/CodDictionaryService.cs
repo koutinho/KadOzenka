@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Transactions;
+using CommonSdks;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;

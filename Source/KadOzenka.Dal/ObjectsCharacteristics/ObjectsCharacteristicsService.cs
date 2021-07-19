@@ -1,6 +1,7 @@
 ﻿using System;
 using KadOzenka.Dal.ObjectsCharacteristics.Dto;
 using System.Transactions;
+using CommonSdks;
 using Core.Register;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;

@@ -8,7 +8,6 @@
     <ProjectReference Include="..\CommonSdks\CommonSdks.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
-    <ProjectReference Include="..\MarketPlaceBusiness\MarketPlaceBusiness.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +24,10 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Factors\Repositories\" />
   </ItemGroup>
 
 </Project>

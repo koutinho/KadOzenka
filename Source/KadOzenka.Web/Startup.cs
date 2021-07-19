@@ -21,6 +21,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommonSdks;
 using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.WebSocket;

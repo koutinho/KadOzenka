@@ -2,7 +2,7 @@
 using Core.Register;
 using Core.Register.RegisterEntities;
 
-namespace KadOzenka.Dal.CommonFunctions
+namespace CommonSdks
 {
 	public class RegisterCacheWrapper : IRegisterCacheWrapper
 	{
