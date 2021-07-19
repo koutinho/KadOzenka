@@ -4,4 +4,13 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="DataImport\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
+    <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
+  </ItemGroup>
+
 </Project>
