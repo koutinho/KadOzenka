@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.Modeling.Factors.Exceptions
+namespace ModelingBusiness.Factors.Exceptions
 {
 	public class EmptyDictionaryForFactorWithDefaultMarkException : Exception
 	{

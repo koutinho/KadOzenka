@@ -1,8 +1,8 @@
 ﻿using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Builders.Cache;
-using KadOzenka.Dal.Modeling.Factors.Exceptions;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
+using ModelingBusiness.Factors.Exceptions;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;

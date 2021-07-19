@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -8,10 +8,6 @@
     <ProjectReference Include="..\CommonSdks\CommonSdks.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Factors\Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>
