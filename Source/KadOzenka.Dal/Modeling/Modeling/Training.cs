@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using CommonSdks.ConfigurationManagers;
 using Core.Register;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using ModelingBusiness.Dictionaries;

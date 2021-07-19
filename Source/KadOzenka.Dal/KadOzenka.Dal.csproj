@@ -68,6 +68,7 @@
     <Folder Include="DataImport\DataImportKoFactory\Interface\" />
     <Folder Include="Documents\Dto\" />
     <Folder Include="GbuObject\Decorators\" />
+    <Folder Include="Helpers\" />
     <Folder Include="LongProcess\Common\" />
     <Folder Include="LongProcess\Consts\" />
     <Folder Include="LongProcess\Modeling\" />

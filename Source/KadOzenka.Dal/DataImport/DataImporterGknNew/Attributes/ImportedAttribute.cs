@@ -1,4 +1,5 @@
 ﻿using System;
+using CommonSdks.ConfigurationManagers;
 using Core.Register;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject;
@@ -87,7 +88,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 		private bool ShouldCheckValueLength(long attributeId)
 		{
-			return ConfigurationManagers.ConfigurationManager.KoConfig.ImportDocumentForTaskConfig
+			return ConfigurationManager.KoConfig.ImportDocumentForTaskConfig
 				.AttributesToTrimLength.Contains(attributeId);
 		}
 

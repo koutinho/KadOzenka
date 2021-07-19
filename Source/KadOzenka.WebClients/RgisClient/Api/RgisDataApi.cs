@@ -1,4 +1,5 @@
 ﻿using System;
+using CommonSdks.ConfigurationManagers.WebClients;
 using KadOzenka.WebClients.RgisClient.Client;
 using KadOzenka.WebClients.RgisClient.Model;
 using Newtonsoft.Json;

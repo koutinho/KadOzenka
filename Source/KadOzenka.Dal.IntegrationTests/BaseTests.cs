@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommonSdks.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers.WebClients;
 using Core.Register.RegisterEntities;
-using KadOzenka.Dal.ConfigurationManagers;
-using KadOzenka.WebClients.ConfigurationManagers;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
