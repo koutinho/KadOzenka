@@ -107,7 +107,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 					long errorId = ErrorManager.LogError(ex);
 					lock (_locker)
 					{
-						ImportKoCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
+						CommonSdks.DataExportCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
 							$"Ошибка: {ex.Message} (подробно в журнале №{errorId})");
 					}
 				}

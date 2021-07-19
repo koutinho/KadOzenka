@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 
 
 				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
+				CommonSdks.DataExportCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
 
 				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
@@ -75,7 +75,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
+										CommonSdks.DataExportCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
 										return;
 									}
 								}
@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (окончательная) и УПКС (окончательный) обновлены");
+										CommonSdks.DataExportCommon.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (окончательная) и УПКС (окончательный) обновлены");
 									}
 								}
 								catch
@@ -111,7 +111,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 											: !setCost
 												? "КС (окончательная) не установлена"
 												: "УПКС (окончательный) не установлен";
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
+										CommonSdks.DataExportCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
 											? "Указанный объект не найден" : msg);
 									}
 								}
@@ -128,7 +128,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						long errorId = ErrorManager.LogError(ex);
 						lock (locked)
 						{
-							ImportKoCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
+							CommonSdks.DataExportCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 						}
 					}
 				});
@@ -166,7 +166,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				};
 
 				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
+				CommonSdks.DataExportCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
 				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
@@ -202,7 +202,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
+										CommonSdks.DataExportCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
 										return;
 									}
 								}
@@ -221,7 +221,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										ImportKoCommon.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (окончательная) и УПКС (окончательный) обновлены");
+										CommonSdks.DataExportCommon.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (окончательная) и УПКС (окончательный) обновлены");
 									}
 								}
 								catch
@@ -240,7 +240,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 											: !setCost
 												? "КС (окончательная) не установлена"
 												: "УПКС (окончательный) не установлен";
-										ImportKoCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
+										CommonSdks.DataExportCommon.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
 											? "Указанный объект не найден" : msg);
 									}
 								}
@@ -256,7 +256,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						long errorId = ErrorManager.LogError(ex);
 						lock (locked)
 						{
-							ImportKoCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
+							CommonSdks.DataExportCommon.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 						}
 					}
 				});
