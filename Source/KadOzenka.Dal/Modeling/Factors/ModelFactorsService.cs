@@ -105,7 +105,6 @@ namespace KadOzenka.Dal.Modeling.Factors
 			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
 		}
 
-		//TODO разделить на получение факторов для Ручной и Автоматический моделей
 		public List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
 		{
 			//для совместимости с уже ранее созданными моделями (не через блок "Справочники моделей")
@@ -126,7 +125,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelAttributeRelationDto.Coefficient)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelAttributeRelationDto.Correction)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType, nameof(ModelAttributeRelationDto.MarkType)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelAttributeRelationDto.CorrectingTerm)));
@@ -153,7 +152,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 
 				var b0 = row[nameof(ModelAttributeRelationDto.B0)].ParseToDecimalNullable();
 				var signMarket = row[nameof(ModelAttributeRelationDto.SignMarket)].ParseToBooleanNullable();
-				var weight = row[nameof(ModelAttributeRelationDto.Coefficient)].ParseToDecimalNullable();
+				var correction = row[nameof(ModelAttributeRelationDto.Correction)].ParseToDecimalNullable();
 				var correctingTerm = row[nameof(ModelAttributeRelationDto.CorrectingTerm)].ParseToDecimalNullable();
 				var k = row[nameof(ModelAttributeRelationDto.K)].ParseToDecimalNullable();
 				var isActive = row[nameof(ModelAttributeRelationDto.IsActive)].ParseToBooleanNullable();
@@ -170,7 +169,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 					DictionaryName = dictionaryName,
 					B0 = b0.GetValueOrDefault(),
 					SignMarket = signMarket.GetValueOrDefault(),
-					Coefficient = weight,
+					Correction = correction,
 					CorrectingTerm = correctingTerm,
 					K = k,
 					IsActive = isActive.GetValueOrDefault(),

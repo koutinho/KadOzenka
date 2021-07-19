@@ -274,7 +274,7 @@
                             DictionaryId: { type: "number" },
                             AttributeName: { type: "string" },
                             DictionaryName: { type: "string" },
-                            Coefficient: { type: "number" },
+                            Correction: { type: "number" },
                             IsActive: { type: "boolean" },
                             MarkType: { type: "string" }
                         }
@@ -306,7 +306,7 @@
                     attributes: { style: "text-align: center;" }
                 },
                 {
-                    field: 'Coefficient',
+                    field: 'B0',
                     title: 'Коэффициент',
                     attributes: { style: "text-align: center;" }
                 },
@@ -318,6 +318,11 @@
                 {
                     field: 'K',
                     title: 'К'
+                },
+                {
+                    field: 'Correction',
+                    title: 'Поправка',
+                    attributes: { style: "text-align: center;" }
                 },
                 {
                     field: 'IsActive',

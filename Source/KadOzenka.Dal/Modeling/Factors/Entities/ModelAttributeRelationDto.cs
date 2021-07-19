@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.Modeling.Factors.Entities
 	public class ModelAttributeRelationDto : ModelAttributeRelationPure
 	{
 		public KoAlgoritmType Type { get; set; }
-		public decimal? Coefficient { get; set; }
+		public decimal? Correction { get; set; }
 		public decimal B0 { get; set; }
 		public bool SignMarket { get; set; }
         public string MarkType { get; set; }
