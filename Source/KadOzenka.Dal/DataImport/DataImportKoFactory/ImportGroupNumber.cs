@@ -43,7 +43,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
 				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
@@ -171,7 +171,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
 				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 

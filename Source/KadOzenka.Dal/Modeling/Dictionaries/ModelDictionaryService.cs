@@ -508,7 +508,7 @@ namespace KadOzenka.Dal.Modeling.Dictionaries
 
 		private ColumnIndexes GetColumnIndexes(DictionaryImportFileInfoDto fileImportInfo, ExcelWorksheet mainWorkSheet)
 		{
-			var maxColumnsCount = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
+			var maxColumnsCount = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
 			var calculationValueIndex = -1;

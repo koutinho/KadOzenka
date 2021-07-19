@@ -121,7 +121,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 				}
 			}
 
-			var maxColIndex = DataExportCommon.GetLastUsedColumnIndex(worksheet);
+			var maxColIndex = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(worksheet);
 			for (int i = 0; i <= maxColIndex; i++)
 			{
 				worksheet.Columns[i].SetWidth(6, LengthUnit.Centimeter);

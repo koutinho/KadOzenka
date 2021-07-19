@@ -143,7 +143,7 @@ namespace KadOzenka.Dal.DataImport
 				CancellationToken = cancelTokenSource.Token,
 				MaxDegreeOfParallelism = 10
 			};
-			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 
 			var columnNames = new List<string>();

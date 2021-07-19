@@ -73,7 +73,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, modelObjectsConstructor.IsCreation);
 
 			var sheet = file.Worksheets[0];
-			var maxColumnIndex = DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
+			var maxColumnIndex = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);

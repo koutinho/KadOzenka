@@ -162,7 +162,7 @@ namespace KadOzenka.Dal.LongProcess.DataComparing
 					stream.Seek(0, SeekOrigin.Begin);
 					var currentExcelFile = ExcelFile.Load(stream, LoadOptions.XlsxDefault);
 					var currentLastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(currentExcelFile.Worksheets[0]);
-					var currentLastUsedColIndex = DataExportCommon.GetLastUsedColumnIndex(currentExcelFile.Worksheets[0]);
+					var currentLastUsedColIndex = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(currentExcelFile.Worksheets[0]);
 					for (var i = 1; i <= currentLastUsedRowIndex; i++)
 					{
 						for (var j = 0; j <= currentLastUsedColIndex; j++)

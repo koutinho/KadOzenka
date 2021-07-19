@@ -56,7 +56,7 @@ namespace KadOzenka.Dal.Tours
 				};
 				object locked = new object();
 
-				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				var columnNames = new List<string>();
 				for (var i = 0; i < maxColumns; i++)
 				{

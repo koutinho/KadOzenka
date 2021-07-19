@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using GemBox.Spreadsheet;
 
 namespace CommonSdks
@@ -84,6 +85,27 @@ namespace CommonSdks
 		public static void SetIndividualWidth(ExcelWorksheet sheet, int column, int width)
 		{
 			sheet.Columns[column].SetWidth(width, LengthUnit.Centimeter);
+		}
+
+		//Возвращает последнего заполненного столбца
+		public static int GetLastUsedColumnIndex(ExcelWorksheet worksheet)
+		{
+			int lastUsedColumnIndex = worksheet.CalculateMaxUsedColumns() - 1;
+			int maxRowIndex = worksheet.Rows.Count - 1;
+			for (var i = lastUsedColumnIndex; i >= 0; i--)
+			{
+				if (worksheet.Columns[i].Cells.Where(x => x.Row.Index <= maxRowIndex)
+					.All(x => x.ValueType == CellValueType.Null))
+				{
+					lastUsedColumnIndex--;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return lastUsedColumnIndex;
 		}
 	}
 }

@@ -277,7 +277,7 @@ namespace KadOzenka.Dal.DataExport
         protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
 			var columnNames = new List<string>();
-			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			for (var i = 0; i < maxColumns; i++)
 			{
                 var value = GetCellValue(mainWorkSheet, 0, i);

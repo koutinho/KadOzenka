@@ -631,26 +631,5 @@ namespace KadOzenka.Dal.DataExport
 
             return lastUsedRowIndex;
         }
-
-        //Возвращает последнего заполненного столбца
-        public static int GetLastUsedColumnIndex(ExcelWorksheet worksheet)
-        {
-            int lastUsedColumnIndex = worksheet.CalculateMaxUsedColumns() - 1;
-            int maxRowIndex = worksheet.Rows.Count - 1;
-            for (var i = lastUsedColumnIndex; i >= 0; i--)
-            {
-                if (worksheet.Columns[i].Cells.Where(x => x.Row.Index <= maxRowIndex)
-                    .All(x => x.ValueType == CellValueType.Null))
-                {
-                    lastUsedColumnIndex--;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return lastUsedColumnIndex;
-        }
     }
 }

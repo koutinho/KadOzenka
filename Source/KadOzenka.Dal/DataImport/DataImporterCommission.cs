@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.DataImport
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 				//mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,

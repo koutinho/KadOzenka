@@ -152,7 +152,7 @@ namespace KadOzenka.Dal.DataImport
 				MaxDegreeOfParallelism = 10
 			};
 
-			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
