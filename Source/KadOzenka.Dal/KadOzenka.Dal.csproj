@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonSdks\CommonSdks.csproj" />
     <ProjectReference Include="..\EmbeddedResource\EmbeddedResource.csproj" />
     <ProjectReference Include="..\ImageProccessor\ImageProccessor.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
