@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.Modeling.Dictionaries.Entities
+﻿namespace ModelingBusiness.Dictionaries.Entities
 {
     public class DictionaryMarkDto
     {

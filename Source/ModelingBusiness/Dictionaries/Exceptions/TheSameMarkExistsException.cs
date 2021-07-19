@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.Modeling.Dictionaries.Exceptions
+namespace ModelingBusiness.Dictionaries.Exceptions
 {
 	public class TheSameMarkExistsException : Exception
 	{

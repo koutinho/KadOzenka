@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Core.Register;
-using KadOzenka.Dal.Modeling.Dictionaries.Entities;
+using ModelingBusiness.Dictionaries.Entities;
 using ObjectModel.Common;
 using ObjectModel.KO;
 

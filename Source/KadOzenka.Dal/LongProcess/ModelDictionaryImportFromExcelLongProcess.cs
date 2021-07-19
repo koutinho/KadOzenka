@@ -10,7 +10,7 @@ using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Dictionaries.Entities;
+using ModelingBusiness.Dictionaries.Entities;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Common;

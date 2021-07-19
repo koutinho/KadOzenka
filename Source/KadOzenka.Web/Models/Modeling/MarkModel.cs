@@ -1,4 +1,4 @@
-﻿using KadOzenka.Dal.Modeling.Dictionaries.Entities;
+﻿using ModelingBusiness.Dictionaries.Entities;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling

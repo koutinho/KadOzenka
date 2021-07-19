@@ -1,11 +1,11 @@
 ﻿using KadOzenka.Dal.Modeling;
 using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Dictionaries.Repositories;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Modeling.Model.Repositories;
 using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
+using ModelingBusiness.Dictionaries.Repositories;
 using ModelingBusiness.Objects.Repositories;
 using Moq;
 using NUnit.Framework;
