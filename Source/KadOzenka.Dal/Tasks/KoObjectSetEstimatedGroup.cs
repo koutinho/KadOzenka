@@ -687,6 +687,7 @@ namespace KadOzenka.Dal.KoObject
                     {
                         FilteringTypeString.Equal => QSConditionType.Equal,
                         FilteringTypeString.EqualIgnoreCase => QSConditionType.EqualNonCaseSensitive,
+                        FilteringTypeString.In => QSConditionType.In,
                         FilteringTypeString.NotEqual => QSConditionType.NotEqual,
                         FilteringTypeString.NotEqualIgnoreCase => QSConditionType.NotEqualNonCaseSensitive,
                         FilteringTypeString.BeginsFrom => QSConditionType.BeginFrom,
@@ -758,7 +759,7 @@ namespace KadOzenka.Dal.KoObject
                         {
                             if (condition == QSConditionType.In)
                             {
-                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.Value.Split(',').Distinct().Where(x=>x.IsNotEmpty())));
+                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.ValueMulti.Replace("\r","").Split('\n').Distinct().Where(x=>x.IsNotEmpty())));
                             }
                             else
                             {

@@ -57,12 +57,68 @@ function replaceBrackets(prefix){
 function bindUnusedFieldHider(prefix) {
     //console.log(prefix);
     hideAllFilterContainers(prefix);
-
+    createMultiSelectForFilters(prefix);
     $(getFilterTypeField(prefix)).bind('change', () => onTypeChange(prefix));
     $(getStringFilteringTypeSelector(prefix)).bind('change', () => onStringFilterChange(prefix));
     $(getDateFilteringTypeSelector(prefix)).bind('change', () => onDateFilterChange(prefix));
     $(getNumberFilteringTypeSelector(prefix)).bind('change', () => onNumberFilterChange(prefix));
     $(getBoolFilteringTypeSelector(prefix)).bind('change', () => onBoolFilterChange(prefix));
+}
+
+function createMultiSelectForFilters(prefix){
+    let valueBox = $('#'+replaceBrackets(prefix)+'_StringFilter_ValueMulti');
+    valueBox.hide();
+    let data = valueBox.val().split('\n');
+    let presetData = (valueBox.val()!=="")
+        ? data.map( (x) => { return { valuesFilter:x, valuesFilterName:x, selected: true } })
+        : [];
+    let multiSelect = $('#'+replaceBrackets(prefix)+'_stringValueMulti').kendoMultiSelect({
+        dataTextField: "valuesFilterName",
+        dataValueField: "valuesFilter",
+        dataSource: {
+            data: presetData
+        },
+        dataBound: onDataBoundFilter,
+        change: onMultiSelectChange,
+        enable: true,
+        clearButton: false
+    });
+    multiSelect.getKendoMultiSelect().list.addClass('hiddenList');
+    //$('#DictionaryValueSelect_'+rowIndex+'_listbox').addClass('hiddenList');
+    multiSelect.getKendoMultiSelect().value(data);
+}
+
+function onDataBoundFilter(e) {
+    $('.k-multiselect .k-input').unbind('keyup');
+    $('.k-multiselect .k-input').on('keyup', onClickEnterFilter);
+}
+
+function onClickEnterFilter(e) {
+    if (e.keyCode === 13) {
+        var widget = $(e.target.parentElement.parentElement).find('select').getKendoMultiSelect();
+        var dataSource = widget.dataSource;
+        var input = $(e.target);
+        var value = input.val().trim();
+        if (!value || value.length === 0) {
+            return;
+        }
+        var newItem = {
+            valuesFilter: value,
+            valuesFilterName: value
+        };
+
+        dataSource.add(newItem);
+        var newValue = newItem.valuesFilter;
+        widget.value(widget.value().concat([newValue]));
+        var box = $(e.target).parents('[id$="_stringFilterContainer"]').find('[id$="_StringFilter_ValueMulti"]');
+        box.val(widget.value().join('\n'));
+    }
+}
+
+function onMultiSelectChange(e){
+    var widget = $(e.sender.element).getKendoMultiSelect();
+    var box = $(e.sender.element).parents('[id$="_stringFilterContainer"]').find('[id$="_StringFilter_ValueMulti"]');
+    box.val(widget.value().join('\n'));
 }
 
 function onTypeChange(prefix) {
@@ -90,14 +146,22 @@ function onStringFilterChange(prefix) {
     let stringFilterTypeField = getStringFilteringTypeSelector(prefix);
     let stringFilterTypeValue = $(stringFilterTypeField).data('kendoDropDownList').text();
     let stringFilterValueContainer = '#' + escapeBrackets(prefix) + '_stringFilterValueContainer';
+    let stringFilterValueMultiContainer = '#' + escapeBrackets(prefix) + '_stringFilterValueMultiContainer';
     switch (stringFilterTypeValue) {
         case "Пусто":
         case "Не пусто":
         case "IsNull":
         case "IsNotNull":
+            $(stringFilterValueMultiContainer).hide();
             $(stringFilterValueContainer).hide();
             break;
+        case "In":
+        case "Равно (мультивыбор)":
+            $(stringFilterValueContainer).hide();
+            $(stringFilterValueMultiContainer).show();
+            break;
         default:
+            $(stringFilterValueMultiContainer).hide();
             $(stringFilterValueContainer).show();
             break;
     }
@@ -253,6 +317,7 @@ function getAttributeInfo(e){
                     }
                     else {
                         switch (type) {
+                            case 1:
                             case 2:
                                 convertedType = "Number";
                                 break;

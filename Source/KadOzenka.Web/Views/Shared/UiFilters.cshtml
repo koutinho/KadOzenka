@@ -17,6 +17,10 @@
     <div class="col-sm-4" id="@(idPrefix+"_stringFilterValueContainer")">
         @Html.Kendo().TextBoxFor(m=>m.StringFilter.Value).HtmlAttributes(new RouteValueDictionary{ {"class","k-input"} })
     </div>
+    <div class="col-sm-4" id="@(idPrefix+"_stringFilterValueMultiContainer")" hidden>
+        @Html.HiddenFor(m=>m.StringFilter.ValueMulti)
+        <select id="@(idPrefix+"_stringValueMulti")"></select>
+    </div>
 </div>
 
 <div class="row" id="@(idPrefix+"_numberFilterContainer")">

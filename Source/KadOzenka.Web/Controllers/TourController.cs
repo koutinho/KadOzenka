@@ -443,7 +443,7 @@ namespace KadOzenka.Web.Controllers
         //TODO: Split and move to services
         private List<DropDownTreeItemModel> GetKoAttributes(long groupId)
         {
-            void FillTreeItemModel(DropDownTreeItemModel treeItemModel, List<OMAttribute> omAttributes, long attrId)
+            void FillTreeItemModel(DropDownTreeItemModel treeItemModel, IEnumerable<OMAttribute> omAttributes, long attrId)
             {
                 treeItemModel.Items.AddRange(omAttributes.Where(x => x.RegisterId == attrId).Select(x => new DropDownTreeItemModel
                 {
@@ -482,7 +482,7 @@ namespace KadOzenka.Web.Controllers
                 objectType = ObjectTypeExtended.Zu;
             }
 
-            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType);
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType).Where(x=>x.IsDeleted != true).ToList();
 
             var regIds = koAttributes.Select(x => x.RegisterId).Distinct().ToList();
             if (regIds.Count > 1)
