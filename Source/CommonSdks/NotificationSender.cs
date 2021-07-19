@@ -4,7 +4,7 @@ using Core.Shared.Extensions;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 
-namespace KadOzenka.Dal.LongProcess
+namespace CommonSdks
 {
 	public interface INotificationSender
 	{
