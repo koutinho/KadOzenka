@@ -11,11 +11,11 @@ using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImportKoFactory.ImportKoFactoryCommon;
-using KadOzenka.Dal.Modeling.Objects.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
 using KadOzenka.Dal.Modeling.Objects.Import.Entities;
+using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
 using Serilog;
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.Modeling.Objects.Entities
+namespace ModelingBusiness.Objects.Entities
 {
 	public class ModelMarketObjectRelationDto
 	{
@@ -11,7 +11,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Entities
 		public long? UnitId { get; set; }
 		public decimal Price { get; set; }
         public decimal? PriceFromModel { get; set; }
-        public decimal? DeviationFromPredictablePrice => ModelObjectsService.CalculatePercent(PriceFromModel, Price);
+        //public decimal? DeviationFromPredictablePrice => ModelObjectsService.CalculatePercent(PriceFromModel, Price);
         public decimal? ModelingPrice { get; set; }
         public decimal? Percent { get; set; }
         public bool IsExcluded { get; set; }

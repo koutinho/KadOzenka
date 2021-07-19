@@ -9,7 +9,7 @@ using KadOzenka.Dal.LongProcess;
 using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Modeling.Modeling.Responses;
-using KadOzenka.Dal.Modeling.Objects.Repositories;
+using ModelingBusiness.Objects.Repositories;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using Serilog;

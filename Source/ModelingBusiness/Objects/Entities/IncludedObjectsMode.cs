@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.Modeling.Objects.Entities
+﻿namespace ModelingBusiness.Objects.Entities
 {
 	public enum IncludedObjectsMode
 	{

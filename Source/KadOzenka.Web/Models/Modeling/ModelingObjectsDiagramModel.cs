@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using KadOzenka.Dal.Modeling.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Objects.Entities;
+using ModelingBusiness.Objects.Entities;
 
 namespace KadOzenka.Web.Models.Modeling
 {

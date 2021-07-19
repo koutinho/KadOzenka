@@ -6,7 +6,7 @@ using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using KadOzenka.Dal.Modeling.Modeling.Requests;
 using KadOzenka.Dal.Modeling.Modeling.Responses;
-using KadOzenka.Dal.Modeling.Objects.Entities;
+using ModelingBusiness.Objects.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;

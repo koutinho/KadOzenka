@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using KadOzenka.Dal.Modeling.Objects.Entities;
+using ModelingBusiness.Objects.Entities;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 
