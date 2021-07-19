@@ -107,7 +107,7 @@ namespace KadOzenka.Dal.Modeling.Modeling
 			var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
 			factors.ForEach(x =>
 			{
-				x.Weight = 0;
+				x.Correction = 0;
 				x.Save();
 			});
 

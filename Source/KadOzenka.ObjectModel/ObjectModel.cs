@@ -3782,22 +3782,22 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _weight;
+        private decimal _correction;
         /// <summary>
-        /// 21000500 Поправка (WEIGHT)
+        /// 21000500 Поправка (CORRECTION)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000500)]
-        public decimal Weight
+        public decimal Correction
         {
             get
             {
-                CheckPropertyInited("Weight");
-                return _weight;
+                CheckPropertyInited("Correction");
+                return _correction;
             }
             set
             {
-                _weight = value;
-                NotifyPropertyChanged("Weight");
+                _correction = value;
+                NotifyPropertyChanged("Correction");
             }
         }
 

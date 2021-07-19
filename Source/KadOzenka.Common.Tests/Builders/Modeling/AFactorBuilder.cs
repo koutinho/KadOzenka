@@ -22,7 +22,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				ModelId = RandomGenerator.GenerateRandomId(),
 				FactorId = RandomGenerator.GenerateRandomId(),
 				MarkerId = RandomGenerator.GenerateRandomInteger(),
-				Weight = RandomGenerator.GenerateRandomDecimal(),
+				Correction = RandomGenerator.GenerateRandomDecimal(),
 				B0 = RandomGenerator.GenerateRandomDecimal(),
 				SignMarket = true,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
@@ -58,13 +58,13 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 		public AFactorBuilder Correction(double weight)
 		{
-			_factor.Weight = (decimal) weight;
+			_factor.Correction = (decimal) weight;
 			return this;
 		}
 
 		public AFactorBuilder Correction(decimal weight)
 		{
-			_factor.Weight = weight;
+			_factor.Correction = weight;
 			return this;
 		}
 

@@ -23,7 +23,7 @@ namespace KadOzenka.Web.Models.Modeling
 				ModelId = generalModelId,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
-				Weight = factor.Weight,
+				Weight = factor.Correction,
 				B0 = factor.B0,
 				MarkType = factor.MarkType_Code,
 				CorrectItem = factor.CorrectingTerm,

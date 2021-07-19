@@ -126,7 +126,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelAttributeRelationDto.DictionaryName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.B0, nameof(ModelAttributeRelationDto.B0)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelAttributeRelationDto.SignMarket)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelAttributeRelationDto.Coefficient)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelAttributeRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelAttributeRelationDto.IsActive)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType, nameof(ModelAttributeRelationDto.MarkType)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelAttributeRelationDto.CorrectingTerm)));
@@ -318,7 +318,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
-				Weight = dto.Weight,
+				Correction = dto.Weight,
 				B0 = dto.B0,
 				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
@@ -344,7 +344,7 @@ namespace KadOzenka.Dal.Modeling.Factors
 			var factor = GetFactorById(dto.Id);
 			ProcessDictionary(factor, dto);
 
-			factor.Weight = dto.Weight;
+			factor.Correction = dto.Weight;
 			factor.B0 = dto.B0;
 			factor.MarkType_Code = dto.MarkType;
 

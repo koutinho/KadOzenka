@@ -256,9 +256,9 @@ namespace KadOzenka.Dal.Modeling.Modeling
 	            if (factor == null)
 		            throw new Exception($"Не найден фактор с ИД {attributeId}");
 
-	            if (factor.Weight != coefficient.Value)
+	            if (factor.Correction != coefficient.Value)
 	            {
-		            factor.Weight = coefficient.Value;
+		            factor.Correction = coefficient.Value;
 		            factor.Save();
 	            }
 

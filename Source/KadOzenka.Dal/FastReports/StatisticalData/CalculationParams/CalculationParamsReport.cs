@@ -138,7 +138,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.CalculationParams
             query.AddColumn(OMModelFactor.GetColumn(x => x.FactorId, nameof(ModelFactor.FactorId)));
             query.AddColumn(OMModelFactor.GetColumn(x => x.DictionaryId, nameof(ModelFactor.DictionaryId)));
 			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactor.FactorName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Weight, nameof(ModelFactor.Weight)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelFactor.Weight)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.AlgorithmType_Code, nameof(ModelFactor.AlgorithmType)));
 
 			var factors = new List<ModelFactor>();

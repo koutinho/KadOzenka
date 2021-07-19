@@ -872,7 +872,7 @@ namespace ObjectModel.KO
         /// <summary>
         /// Поправка
         /// </summary>
-		public decimal WeightInFormula => Math.Round(Weight, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+		public decimal WeightInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 		/// <summary>
         /// Добавочный коэффициент
         /// </summary>
