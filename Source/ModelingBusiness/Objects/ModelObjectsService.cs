@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Core.Register;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Objects.Entities;
@@ -13,7 +12,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
 
-namespace KadOzenka.Dal.Modeling.Objects
+namespace ModelingBusiness.Objects
 {
 	public class ModelObjectsService : IModelObjectsService
 	{

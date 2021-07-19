@@ -4,7 +4,7 @@ using ModelingBusiness.Objects.Entities;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.Modeling.Objects
+namespace ModelingBusiness.Objects
 {
 	public interface IModelObjectsService
 	{

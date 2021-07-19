@@ -56,6 +56,7 @@ using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Kendo.Mvc.Extensions;
+using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using ObjectModel.Common;
@@ -1132,13 +1133,13 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForValueInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForValueInNormalizedColumn}",
                         ParentId = register.Id
                     });
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
                         ParentId = register.Id
                     });
                 }
@@ -1147,7 +1148,7 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = x.AttributeName,
-                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForFactor}",
+                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForFactor}",
                         ParentId = register.Id
                     });
                 }

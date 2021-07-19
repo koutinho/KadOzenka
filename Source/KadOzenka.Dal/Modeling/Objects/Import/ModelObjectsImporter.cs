@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
 using KadOzenka.Dal.Modeling.Objects.Import.Entities;
+using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
 using Serilog;

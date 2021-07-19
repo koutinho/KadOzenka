@@ -10,6 +10,7 @@ using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Objects;
 using KadOzenka.Dal.Modeling.Objects.Import;
 using KadOzenka.Dal.Modeling.Objects.Import.Entities;
+using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
 using ObjectModel.Directory;

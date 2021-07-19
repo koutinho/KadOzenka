@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.Modeling.Objects
+﻿namespace ModelingBusiness.Objects
 {
 	public static class Consts
 	{

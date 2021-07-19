@@ -28,6 +28,7 @@ using KadOzenka.Web.Helpers;
 using KadOzenka.Web.SignalR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Repositories;
 using Moq;
 using NUnit.Framework;

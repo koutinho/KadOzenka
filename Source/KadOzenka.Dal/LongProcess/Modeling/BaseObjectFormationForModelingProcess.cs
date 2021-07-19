@@ -16,6 +16,7 @@ using KadOzenka.Dal.Modeling.Objects;
 using MarketPlaceBusiness;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
+using ModelingBusiness.Objects;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using ObjectModel.Market;
