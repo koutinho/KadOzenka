@@ -53,8 +53,8 @@ namespace KadOzenka.Dal.DataComparing.Files
 				MaxDegreeOfParallelism = 100
 			};
 
-			var targetLastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(ExcelFile.Worksheets[0]);
-			var comparableLastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(comparableFile.ExcelFile.Worksheets[0]);
+			var targetLastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(ExcelFile.Worksheets[0]);
+			var comparableLastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(comparableFile.ExcelFile.Worksheets[0]);
 
 			var resultRowCounter = 1;
 			for (var i = 1; i <= targetLastUsedRowIndex; i++)

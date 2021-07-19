@@ -74,8 +74,8 @@ namespace KadOzenka.Dal.DataComparing.DataComparers
 			rsmFileInfo.Compare(pkkoFileInfo, resultExcelFile, "Данные, отсутствующие в ПККО");
 			pkkoFileInfo.Compare(rsmFileInfo, resultExcelFile, "Данные, отсутствующие в РСМ");
 
-			var areProtocolsEqual = DataExportCommon.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в ПККО"]) == 0
-			                            && DataExportCommon.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в РСМ"]) == 0;
+			var areProtocolsEqual = CommonSdks.DataExportCommon.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в ПККО"]) == 0
+			                        && CommonSdks.DataExportCommon.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в РСМ"]) == 0;
 
 			_log.ForContext("RsmFileName", rsmFileInfo.Name)
 				.ForContext("PkkoFileName", pkkoFileInfo.Name)

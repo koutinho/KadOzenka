@@ -139,7 +139,7 @@ namespace KadOzenka.Dal.DataExport
 			int packageSize = 1000;
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
-			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			var usedRowCount = lastUsedRowIndex + 1;
             if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 				throw new Exception("В указанном файле отсутствуют данные");

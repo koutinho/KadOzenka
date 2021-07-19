@@ -107,5 +107,24 @@ namespace CommonSdks
 
 			return lastUsedColumnIndex;
 		}
+
+		//Возвращает индекс последней заполненной строки
+		public static int GetLastUsedRowIndex(ExcelWorksheet worksheet)
+		{
+			var lastUsedRowIndex = worksheet.Rows.Count - 1;
+			for (var i = lastUsedRowIndex; i >= 0; i--)
+			{
+				if (worksheet.Rows[i].AllocatedCells.All(x => x.ValueType == CellValueType.Null))
+				{
+					lastUsedRowIndex--;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return lastUsedRowIndex;
+		}
 	}
 }

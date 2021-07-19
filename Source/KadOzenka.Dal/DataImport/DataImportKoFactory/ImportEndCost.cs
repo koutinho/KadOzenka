@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
 
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try
@@ -168,7 +168,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				ImportKoCommon.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try

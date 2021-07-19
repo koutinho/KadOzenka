@@ -153,7 +153,7 @@ namespace KadOzenka.Dal.DataImport
 					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
 
-			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try

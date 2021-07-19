@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.Tours
 				var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 				var mainWorkSheet = excelFile.Worksheets[0];
 
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				AllRows = lastUsedRowIndex + 1;
 				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 				ParallelOptions options = new ParallelOptions

@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				var groupAttributeFromTourSettings =
 					_tourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(),
 						KoAttributeUsingType.CodeGroupAttribute);
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try
@@ -179,7 +179,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				List<OMGroup> oksGroup = OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), KoGroupAlgoritm.MainOKS);
 				var groupAttributeFromTourSettings = _tourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(), KoAttributeUsingType.CodeGroupAttribute);
 
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try

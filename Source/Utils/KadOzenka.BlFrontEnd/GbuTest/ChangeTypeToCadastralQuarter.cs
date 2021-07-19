@@ -15,7 +15,7 @@ namespace KadOzenka.BlFrontEnd.GbuTest
 			ExcelFile excelFile = ExcelFile.Load(filePath, new XlsxLoadOptions());
 			var mainWorkSheet = excelFile.Worksheets[0];
 			var cadastralNumbers = new List<string>();
-			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			for (var i = 1; i <= lastUsedRowIndex; i++)
 			{
 				var val = mainWorkSheet.Rows[i].Cells[1].StringValue;

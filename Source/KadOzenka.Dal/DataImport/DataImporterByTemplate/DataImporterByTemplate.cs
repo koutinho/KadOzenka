@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 		public DataImportResult ImportDataFromExcel(ExcelFile excelFile, List<DataExportColumn> columns, long? documentId = null)
 		{
 			var mainWorkSheet = excelFile.Worksheets[0];
-			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 			var usedRowCount = lastUsedRowIndex + 1;
 			if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 				throw new Exception("В указанном файле отсутствуют данные");

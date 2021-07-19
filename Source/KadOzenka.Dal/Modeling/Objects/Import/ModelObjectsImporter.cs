@@ -153,7 +153,7 @@ namespace KadOzenka.Dal.Modeling.Objects.Import
 
 		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsConstructor config)
 		{
-			MaxRowsCount = DataExportCommon.GetLastUsedRowIndex(sheet);
+			MaxRowsCount = CommonSdks.DataExportCommon.GetLastUsedRowIndex(sheet);
 
 			var columnsMappingWithoutPrimaryKey = config.ColumnsMapping.Where(x =>
 				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();

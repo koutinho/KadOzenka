@@ -1949,7 +1949,7 @@ namespace KadOzenka.Dal.XmlParser
             var objects = new xmlObjectList();
             var mainWorkSheet = excelFile.Worksheets[0];
             var objectTypeDescriptions = new ObjectTypeEnumDescriptions();
-            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+            var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
             mainWorkSheet.Rows.ForEach(row =>
             {
                 string cadastralNumber = null;

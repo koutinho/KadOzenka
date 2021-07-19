@@ -427,7 +427,7 @@ namespace KadOzenka.Dal.Modeling.Dictionaries
 			fileStream.Seek(0, SeekOrigin.Begin);
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			var mainWorkSheet = excelFile.Worksheets[0];
-			RowsCount = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			RowsCount = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 
 			var locker = new object();
 			var cancelTokenSource = new CancellationTokenSource();

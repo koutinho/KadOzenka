@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.DataImport
 				};
 
 				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
 				mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 				//mainWorkSheet.Rows[0].Cells[maxColumns].Style.Borders.SetBorders(MultipleBorders.All,
 				//	SpreadsheetColor.FromName(ColorName.Black), LineStyle.Thin);

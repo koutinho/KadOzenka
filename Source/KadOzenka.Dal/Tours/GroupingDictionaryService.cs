@@ -345,7 +345,7 @@ namespace KadOzenka.Dal.Tours
             }
 
             mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
-            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+            var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
             var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= lastUsedRowIndex).ToList();
 
             Parallel.ForEach(dataRows, options, row =>
