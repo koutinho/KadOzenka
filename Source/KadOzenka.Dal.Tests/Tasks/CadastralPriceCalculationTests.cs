@@ -14,6 +14,7 @@ using KadOzenka.Dal.Units.Repositories;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using Microsoft.Extensions.DependencyInjection;
+using ModelingBusiness.Factors;
 using ModelingBusiness.Model;
 using ModelingBusiness.Model.Formulas;
 using Moq;

@@ -1,5 +1,6 @@
 ﻿using System;
 using CommonSdks;
+using CommonSdks.RecycleBin;
 using Core.UI.Registers.Controllers;
 using Core.UI.Registers.Services;
 using KadOzenka.Common.Tests;
@@ -16,7 +17,6 @@ using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Modeling.Modeling;
 using KadOzenka.Dal.ObjectsCharacteristics;
-using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tasks;
 using KadOzenka.Dal.Tours;

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using CommonSdks.RecycleBin.Dto;
 using Core.Numerator;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager;
-using KadOzenka.Dal.RecycleBin.Dto;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Newtonsoft.Json;
 using Npgsql;
@@ -23,7 +21,7 @@ using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 using Serilog;
 using SerilogTimings;
 
-namespace KadOzenka.Dal.RecycleBin
+namespace CommonSdks.RecycleBin
 {
 	public class RecycleBinService : IRecycleBinService
 	{

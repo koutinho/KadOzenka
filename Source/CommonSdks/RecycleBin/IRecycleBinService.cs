@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using KadOzenka.Dal.RecycleBin.Dto;
+using CommonSdks.RecycleBin.Dto;
 using ObjectModel.Common;
 
-namespace KadOzenka.Dal.RecycleBin
+namespace CommonSdks.RecycleBin
 {
 	public interface IRecycleBinService
 	{

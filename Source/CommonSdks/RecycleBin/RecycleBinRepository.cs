@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq.Expressions;
-using CommonSdks;
 using Core.Register.QuerySubsystem;
-using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.Common;
 
-namespace KadOzenka.Dal.RecycleBin
+namespace CommonSdks.RecycleBin
 {
 	public class RecycleBinRepository : GenericRepository<OMRecycleBin>, IRecycleBinRepository
 	{

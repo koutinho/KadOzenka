@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KadOzenka.Dal.RecycleBin.Dto
+namespace CommonSdks.RecycleBin.Dto
 {
 	public class RecycleBinDto
 	{

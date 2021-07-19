@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
+using CommonSdks.RecycleBin;
 using Core.SRD;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.Groups;
-using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Tours.Dto;
 using KadOzenka.Dal.Tours.Exceptions;
 using KadOzenka.Dal.Tours.Repositories;
