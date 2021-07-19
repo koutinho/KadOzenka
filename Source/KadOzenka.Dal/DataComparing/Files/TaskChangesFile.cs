@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.DataComparing.Files
 		public void Compare(TaskChangesFile comparableFile, ExcelFile resultExcelFile, string resultWorksheetName)
 		{
 			resultExcelFile.Worksheets.Add(resultWorksheetName);
-			DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], 0, new object[] { "КН", "Новое значение", "Изменение" });
+			CommonSdks.DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], 0, new object[] { "КН", "Новое значение", "Изменение" });
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 			ParallelOptions options = new ParallelOptions
@@ -110,7 +110,7 @@ namespace KadOzenka.Dal.DataComparing.Files
 
 				if (!isExists)
 				{
-					DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], resultRowCounter, new object[]
+					CommonSdks.DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], resultRowCounter, new object[]
 					{
 						targetKn,
 						targetChanging,

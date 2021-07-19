@@ -155,7 +155,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			ExcelFile excelTemplate = new ExcelFile();
 			var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
-			DataExportCommon.AddRow(mainWorkSheet, 0,
+			CommonSdks.DataExportCommon.AddRow(mainWorkSheet, 0,
 				new object[]
 				{
 					"Кадастровый номер объекта", "Вид объекта недвижимости", "Площадь", "Кадастровая стоимость",
@@ -316,7 +316,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 				var excelRow = 1;
 				foreach (var rowValue in rowValueList)
 				{
-					DataExportCommon.AddRow(mainWorkSheet, excelRow, rowValue.ToArray());
+					CommonSdks.DataExportCommon.AddRow(mainWorkSheet, excelRow, rowValue.ToArray());
 					excelRow++;
 				}
 			}

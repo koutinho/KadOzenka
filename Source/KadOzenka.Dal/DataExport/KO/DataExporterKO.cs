@@ -13,7 +13,7 @@ namespace KadOzenka.Dal.DataExport
 		    var excelTemplate = new ExcelFile();
 		    var mainWorkSheet = excelTemplate.Worksheets.Add("Метки");
 
-		    DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
+		    CommonSdks.DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
 
 		    var row = 1;
 		    var markers = new ModelDictionaryService().GetMarks(dictionaryId);
@@ -23,7 +23,7 @@ namespace KadOzenka.Dal.DataExport
 			    var factor = marker.Value == null ? string.Empty : marker.Value;
 			    var metka = marker.CalculationValue == null ? string.Empty : marker.CalculationValue.ParseToString();
 
-			    DataExportCommon.AddRow(mainWorkSheet, row, new object[] { factor, metka });
+			    CommonSdks.DataExportCommon.AddRow(mainWorkSheet, row, new object[] { factor, metka });
 			    row++;
 		    }
 

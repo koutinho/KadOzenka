@@ -240,12 +240,12 @@ namespace KadOzenka.Dal.Tasks
             excelFile.Worksheets.Add("Изменения");
             var sheet = excelFile.Worksheets[0];
 
-            DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
+            CommonSdks.DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
             var rowCounter = 1;
 
             foreach (var attribute in history)
             {
-                DataExportCommon.AddRow(sheet,rowCounter,new object[]
+	            CommonSdks.DataExportCommon.AddRow(sheet,rowCounter,new object[]
                 {
                     attribute.cDoc.CadastralNumber,
                     attribute.cDoc.AttrName,

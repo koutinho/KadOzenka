@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.DataExport
 
             var mainWorkSheet = excelTemplate.Worksheets.Add("Изменения");
 
-            DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "КН", "Дата изменения", "Тип", "Статус", "Старое значение", "Новое значение", "Изменение" });
+            CommonSdks.DataExportCommon.AddRow(mainWorkSheet, 0, new object[] { "КН", "Дата изменения", "Тип", "Статус", "Старое значение", "Новое значение", "Изменение" });
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -63,7 +63,7 @@ namespace KadOzenka.Dal.DataExport
 
                         foreach (ObjectModel.KO.OMUnitChange change in changes)
                         {
-                            DataExportCommon.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
+	                        CommonSdks.DataExportCommon.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
                             row++;
                         }
 

@@ -211,7 +211,7 @@ namespace KadOzenka.Dal.DataExport
                 objcaps.Add("КН");
                 objcaps.Add("Дата определения КС");
                 int fieldcount = objcaps.Count;
-                DataExportCommon.AddRow(mainWorkSheet, 1, objcaps.ToArray());
+                CommonSdks.DataExportCommon.AddRow(mainWorkSheet, 1, objcaps.ToArray());
 
 
                 int lenobjs = baditems.Count;

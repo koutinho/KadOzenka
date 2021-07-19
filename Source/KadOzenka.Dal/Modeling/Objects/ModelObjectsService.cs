@@ -116,9 +116,9 @@ namespace KadOzenka.Dal.Modeling.Objects
             columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
             columnHeaders[DeviationFromPredictablePriceColumnIndex] = "Отклонение цены от прогнозной, %";
             groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
-            //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
-            //columnHeaders.AddRange(new List<string>{ "МС", "%" });
-            DataExportCommon.AddRow(mainWorkSheet, 0, columnHeaders);
+			//TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
+			//columnHeaders.AddRange(new List<string>{ "МС", "%" });
+			CommonSdks.DataExportCommon.AddRow(mainWorkSheet, 0, columnHeaders);
 
 			var rowCounter = 1;
 			var marketObjects = GetModelObjects(modelId);
@@ -158,7 +158,7 @@ namespace KadOzenka.Dal.Modeling.Objects
 				//values.Add(calculationParameters.ModelingPrice); 
 				//values.Add(calculationParameters.Percent);
 
-				DataExportCommon.AddRow(mainWorkSheet, rowCounter++, values);
+				CommonSdks.DataExportCommon.AddRow(mainWorkSheet, rowCounter++, values);
 			});
 
 			var stream = new MemoryStream();
