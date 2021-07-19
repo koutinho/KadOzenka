@@ -13,6 +13,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using ObjectModel.KO;
 using Serilog;

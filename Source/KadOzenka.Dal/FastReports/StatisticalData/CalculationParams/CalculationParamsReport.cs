@@ -11,6 +11,8 @@ using ObjectModel.KO;
 using Core.UI.Registers.Reports.Model;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Modeling;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using Serilog;

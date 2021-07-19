@@ -115,7 +115,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 			var options = new ParallelOptions
 			{
-				MaxDegreeOfParallelism = 10,
+				MaxDegreeOfParallelism = 2,
 				CancellationToken = cancellationToken
 			};
 

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Dto;
+using KadOzenka.Dal.Modeling.Objects;
+using KadOzenka.Dal.Modeling.Objects.Entities;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
 

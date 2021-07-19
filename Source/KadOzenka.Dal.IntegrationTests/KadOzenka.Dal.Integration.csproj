@@ -29,6 +29,9 @@
     <None Update="Modeling\_Files\marks.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Modeling\_Files\objects.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Task\_Files\one_parcel_success.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

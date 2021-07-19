@@ -1,0 +1,21 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using KadOzenka.Dal.Modeling.Objects.Entities;
+using ObjectModel.KO;
+using ObjectModel.Modeling;
+
+namespace KadOzenka.Dal.Modeling.Objects
+{
+	public interface IModelObjectsService
+	{
+		List<OMModelToMarketObjects> GetModelObjects(long modelId);
+
+		int DestroyModelMarketObjects(OMModel model);
+
+		void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects);
+
+		Stream ExportMarketObjectsToExcel(long modelId, List<OMModelFactor> factors);
+
+		void ExcludeObjectFromCalculation(long objectId);
+	}
+}

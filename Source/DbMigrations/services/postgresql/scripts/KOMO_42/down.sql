@@ -1,4 +1,4 @@
-﻿--Раскладка
+--Раскладка
 INSERT INTO public.core_layout_details (id, layoutid, detailtype, ordinal, attributeid, sortbyattribute, referenceid, headertext, headerwidth, visible, format, datatype, expression, sqlexpression, totaltext, totaltype, style, enablestyle, textalign, qscolumn, export_column_name) VALUES (1002267, 1001001, 0, 4, 10003600, null, null, 'Тип сделки', 170, 1, null, 4, null, null, null, null, '<?xml version="1.0" encoding="utf-16"?>
 <StyleConditionItemWrapper xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RowStyle>false</RowStyle>

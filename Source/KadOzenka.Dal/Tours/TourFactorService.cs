@@ -9,6 +9,7 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Factors;
 using KadOzenka.Dal.Oks;
 using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;

@@ -1,4 +1,4 @@
-﻿@using KadOzenka.Dal.Modeling.Entities
+﻿@using KadOzenka.Dal.Modeling.Model.Entities
 @model KadOzenka.Web.Models.Modeling.AutomaticModelingModel
 
 
@@ -89,17 +89,26 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="col-sm-2">
+                    <div class="col-sm-1 col-sm-offset-11">
+                        @(Html.Kendo().Button()
+                            .Name("copyFormulaBtn")
+                            .Icon("k-icon k-i-copy")
+                            .HtmlAttributes(new { style = "float: right;" }))
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div id="Formula" style="display: none;"></div>
+                        <div style="text-align: center" id="mathFormula">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4">
                         @Html.CustomLabelFor(x => x.A0)
                     </div>
-                    <div class="col-sm-4">
-                        @Html.Kendo().NumericTextBoxFor(x => x.A0).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsReadOnly)
-                    </div>
-                    <div class="col-sm-2">
-                        @Html.CustomLabelFor(x => x.A0ForPreviousTour)
-                    </div>
-                    <div class="col-sm-4">
-                        @Html.Kendo().NumericTextBoxFor(x => x.A0ForPreviousTour).Spinners(false).Format("N14").Decimals(14).Enable(!Model.IsReadOnly)
+                    <div class="col-sm-8">
+                        @Html.Kendo().NumericTextBoxFor(x => x.A0).Spinners(false).Format("N14").Decimals(14).Enable(false)
                     </div>
                 </div>
                 <div class="form-group">
@@ -114,6 +123,7 @@
 }
 
 
+<link rel="stylesheet" href="~/css/modeling.css" />
 <link rel="stylesheet" href="~/css/jquery.fancybox.min.css" />
 <style>
     #ls_panelbar {
@@ -139,9 +149,14 @@
     }
 </style>
 
+
+
+
+<script src="~/js/modeling.js"></script>
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script src="~/js/jquery.fancybox.min.js"></script>
+<script type="text/javascript" async src="~/js/MathJax/es5/startup.js"></script>
 <script>
     @*var hasProcessToFormObjectArrayInQueue = '@Model.HasProcessToFormObjectArrayInQueue' === "True";*@
     var hasFormedObjectArray = '@Model.HasFormedObjectArray' === "True";
@@ -152,6 +167,8 @@
         $("#navigation-menu a").mPageScroll2id({
             highlightSelector: "#navigation-menu a"
         });
+
+        initCopyButton();
 
         $('#mainToolbar').kendoToolBar({
             items: [
@@ -259,7 +276,6 @@
                             IsNormalized: { type: "boolean" },
                             DictionaryName: { type: "string" },
                             Coefficient: { type: "number" },
-                            PreviousWeight: { type: "number" },
                             IsActive: { type: "boolean" },
                             MarkType: { type: "string" }
                         }
@@ -296,11 +312,6 @@
                     attributes: { style: "text-align: center;" }
                 },
                 {
-                    field: 'PreviousWeight',
-                    title: 'Коэффициент из предыдущего тура (для справки)',
-                    attributes: { style: "text-align: center;" }
-                },
-                {
                     field: 'IsActive',
                     title: 'Использовать в модели',
                     template: '<input type="checkbox" #= IsActive ? \'checked="checked"\' : "" # class="chkbx" disabled="disabled" />',
@@ -329,6 +340,7 @@
         });
 
         $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').bind('change', onAlgorithmTypeChange);
+        onAlgorithmTypeChange();
     });
 
     function closeConfirmWindow(e) {
@@ -639,21 +651,8 @@
 
     function onAlgorithmTypeChange() {
         reloadGrid();
-        var modelType = $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').value();
-        $.ajax({
-            type: 'GET',
-            url: '@Url.Action("GetA0", "Modeling")',
-            data: { modelId: '@Model.Id', type: modelType},
-            success: function (response) {
-                $("#@nameof(Model.A0)").data("kendoNumericTextBox").value(response.a0);
-                $("#@nameof(Model.A0ForPreviousTour)").data("kendoNumericTextBox").value(response.a0Previous);
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
+        var algType = $('#@nameof(Model.AlgorithmType)').data('kendoDropDownList').value();
+        var modelId = '@Model.Id';
+        getInfoDependedOnAlgorithmType(modelId, algType);
     }
 </script>

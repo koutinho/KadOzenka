@@ -1,4 +1,4 @@
-﻿--раскладка
+--раскладка
 
 update  core_layout set qsquery='<?xml version="1.0" encoding="utf-16"?>
 <QSQuery xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -174,6 +174,7 @@ ALTER TABLE market_core_object DROP COLUMN PROPERTY_PART_SIZE;
 
 delete from core_register_attribute where id = 10005300;
 ALTER TABLE market_core_object DROP COLUMN NEIGHBORHOOD;
+ALTER TABLE market_core_object DROP COLUMN NEIGHBORHOOD_CODE;
 
 delete from core_register_attribute where id = 10007300;
 ALTER TABLE market_core_object DROP COLUMN SUBWAY_SPACE;
@@ -248,4 +249,3 @@ update core_register_attribute set name='Адрес' where id=10003100;
 update core_register_attribute set name='Стоимость' where id=10002700;
 update core_register_attribute set name='Источник объявления' where id=10002300;
 update core_register_attribute set name='Этаж' where id=10004100;
-

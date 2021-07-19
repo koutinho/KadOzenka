@@ -324,8 +324,8 @@
                                     data: requestData,
                                     success: function(response) {
                                         if (response.Success) {
-                                            window.parent.location.reload();
                                             Common.ShowMessage(response.Success);
+                                            setTimeout(reloadWindow, 4000);
                                         }
                                     },
                                     error: function(response) {
@@ -568,7 +568,7 @@
             success: function () {
                 $("#tourAdditionModal").data("kendoWindow").close();
                 Common.ShowMessage("Сохранение выполнено");
-                window.parent.location.reload();
+                setTimeout(reloadWindow, 4000);
             },
             error: function (response) {
                 Common.ShowError(response.responseText);
@@ -672,6 +672,10 @@
 		window.location.replace('@Url.Action("TourCard", "Tour")' + "?tourId=" +
 			tourId + "&parentGroupId=" + parentGroupId + "&groupId=" + groupId);
 	}
+
+    function reloadWindow() {
+        window.parent.location.reload();
+    }
 
 </script>
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Dto.Factors;
+using KadOzenka.Dal.Modeling.Factors.Entities;
 using Kendo.Mvc.UI;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -26,9 +26,6 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Словарь")]
 		public string DictionaryName { get; set; }
 		public long? DictionaryId { get; set; }
-
-		[Display(Name = "Коэффициент из предыдущего тура")]
-		public decimal? PreviousWeight { get; set; }
 
 		[Display(Name = "Использовать в модели")]
 		public bool? IsActive { get; set; }
@@ -64,7 +61,6 @@ namespace KadOzenka.Web.Models.Modeling
 				AlgorithmType = factor.AlgorithmType_Code,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
-				PreviousWeight = factor.PreviousWeight,
 				IsActive = factor.IsActive.GetValueOrDefault(),
 				MarkType = factor.MarkType_Code
 			};
@@ -79,7 +75,6 @@ namespace KadOzenka.Web.Models.Modeling
 				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
-				PreviousWeight = PreviousWeight,
 				IsActive = IsActive.GetValueOrDefault(),
 				MarkType = MarkType
 			};

@@ -31,7 +31,6 @@
         </div>
 
         <div style="border: 1px solid #cccdcf; padding: 1%;">
-            @Html.HiddenFor(x => x.Formula)
             <div class="form-group">
                 <div class="col-sm-1 col-sm-offset-11">
                     @(Html.Kendo().Button()
@@ -42,6 +41,7 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-12">
+                    @Html.HiddenFor(x => x.Formula)
                     <div style="text-align: center" id="mathFormula">
                     </div>
                 </div>
@@ -71,27 +71,15 @@
 
 
 <script type="text/javascript" async src="~/js/MathJax/es5/startup.js"></script>
+<script src="~/js/modeling.js"></script>
 <script src="~/js/common-modals.js"></script>
 <script src="~/js/custom-validation.js"></script>
 <script>
-    MathJax = {
-        loader: {load: ['input/asciimath', 'output/chtml']},
-        asciimath: {
-            decimalsign: "."
-        }
-    }
-
 
     $(document).ready(function () {
         $('#@nameof(Model.CalculationType)').data("kendoDropDownList").enable(!isReadOnly);
         $('#@nameof(Model.CalculationMethodCode)').data("kendoDropDownList").enable(!isReadOnly);
-        $("#copyFormulaBtn").data("kendoButton").bind("click", copyFormula);
-
-        $("#copyFormulaBtn").kendoTooltip({
-            filter: "span",
-            position: "top",
-            content: "Скопировано"
-        }).data("kendoTooltip");
+        initCopyButton();
 
         if (isReadOnly){
             $('#SectionMainData').switchClass('toolbarVisible', 'toolbarHidden', 0);
@@ -169,16 +157,6 @@
                     title: 'Фактор',
                     width: "40%"
                 },
-                /*{
-                    field: 'SignDiv',
-                    title: 'Деление',
-                    template: "#=SignDiv ? 'Да' : 'Нет'#"
-                },
-                {
-                    field: 'SignAdd',
-                    title: 'Сумма',
-                    template: "#=SignAdd ? 'Да' : 'Нет'#"
-                },*/
                 {
                     field: 'B0',
                     title: 'Коэф.'
@@ -215,8 +193,8 @@
             showAfter: 500
         });
 
-        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').bind('change', downloadInfoForFormula);
-        downloadInfoForFormula();
+        $('#@nameof(Model.AlgorithmTypeForCadastralPriceCalculation)').data('kendoDropDownList').bind('change', downloadInfoDependedOnAlgorithmType);
+        downloadInfoDependedOnAlgorithmType();
 
         $('#@nameof(Model.CalculationType)').data('kendoDropDownList').bind('change', onCalculationTypeChanged);
         onCalculationTypeChanged();
@@ -308,32 +286,10 @@
 
 
    
-    function downloadInfoForFormula() {
+    function downloadInfoDependedOnAlgorithmType() {
         var algType = getModelAlgorithmType();
-        $.ajax({
-            url: '@Url.Action("GetFormula", "Modeling")' + '?modelId=@Model.Id&algType=' + algType,
-            type: 'GET',
-            success: function (e) {
-                $('#Formula').val(e.formula);
-                $('#@nameof(Model.A0)').data("kendoNumericTextBox").value(e.a0);
-                $("#mathFormula").empty().append("`" + e.formula + "`");
-                redrawFormula();
-            },
-            error: function (e) {
-                Common.ShowError(e.responseText);
-            }
-        });
-    }
-    function redrawFormula() {
-        //TODO KOMO-98 разобраться, почему иногда падает с ошибкой
-        try {
-            MathJax.typesetPromise().then(() => {
-                MathJax.typesetPromise();
-            }).catch((err) => console.log(err.message));
-        }
-        catch(exception) {
-            console.error('Ошибка во время работы MathJax (будет поправлена позднее)', exception);
-        }
+        var modelId = '@Model.Id';
+        getInfoDependedOnAlgorithmType(modelId, algType);
     }
 
 
@@ -415,38 +371,11 @@
         }
     }
 
-
-    function copyFormula(btn) {
-        btn.preventDefault();
-        var formula = $("#Formula").val();
-        //работает только через https
-        //navigator.clipboard.writeText(formula);
-        var proxy = document.createElement('textarea');
-        $(proxy).val(formula)
-            .prop('readonly', true)
-            .css({"position" : "absolute", "left": "9999px"})
-            .appendTo($('body'));
-        proxy.select();
-        document.execCommand('copy');
-        $(proxy).remove();
-        var tooltip = $("#copyFormulaBtn").data("kendoTooltip");
-        tooltip.show();
-    }
-
 </script>
 
 
+<link rel="stylesheet" href="~/css/modeling.css" />
 <style>
-    .MathJax{
-        font-size: 130% !important;
-    }
-    .MathJax mjx-mstyle {
-        white-space: pre-wrap;
-    }
-    mjx-math {
-        line-height: 1.2;
-    }
-
     .factor-buttons button {
         width: 10rem;
         margin-bottom: 5px !important;

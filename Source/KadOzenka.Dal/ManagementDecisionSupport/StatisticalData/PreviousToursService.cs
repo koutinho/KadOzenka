@@ -7,7 +7,7 @@ using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Repositories;
+using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;

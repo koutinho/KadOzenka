@@ -31,9 +31,6 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				Type_Code = KoModelType.Manual,
 				A0ForExponential = RandomGenerator.GenerateRandomDecimal(),
 				A0ForMultiplicative = RandomGenerator.GenerateRandomDecimal(),
-				A0ForLinearTypeInPreviousTour = RandomGenerator.GenerateRandomDecimal(),
-				A0ForExponentialTypeInPreviousTour = RandomGenerator.GenerateRandomDecimal(),
-				A0ForMultiplicativeTypeInPreviousTour = RandomGenerator.GenerateRandomDecimal(),
 				ObjectsStatistic = RandomGenerator.GetRandomString(),
 				IsActive = true
 			};

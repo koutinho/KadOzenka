@@ -16,7 +16,7 @@ namespace KadOzenka.Web.UnitTests
 			var tmp = nameof(UnitTests.Tours.CreationTests.Can_Add_New_Tour);
 
 			//если контроллер возвращает View
-			tmp = nameof(CreationTests.Can_Return_View_During_Automatic_Factor_Addition);
+			tmp = nameof(CreationTests.Can_Return_View_During_Manual_Factor_Addition);
 
 			//если контроллер возвращает редирект (RedirectToAction)
 			tmp = nameof(UnitTests.Modeling.Models.GettingTests.If_Model_Group_Is_Not_Found_Redirect_To_NoGroup_View);

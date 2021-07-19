@@ -9,7 +9,6 @@ using NUnit.Framework;
 
 namespace KadOzenka.Dal.UnitTests.ObjectsCharacteristics
 {
-	[TestFixture]
 	public class BaseObjectCharacteristicsTests : BaseTests
 	{
 		protected IObjectsCharacteristicsService ObjectsCharacteristicsService => Provider.GetService<IObjectsCharacteristicsService>();

@@ -33,10 +33,10 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			}
 			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
 			string dataSetCode = "BASE.DSPARCEL";
-
+			Random rnd = new Random();
 			RequestBody body = new RequestBody
 			{
-				Id = 1,
+				Id = rnd.Next(1000),
 				Method = method,
 				Params = _configurator.GetParams(data, dataSetCode)
 			};
@@ -46,7 +46,7 @@ namespace KadOzenka.WebClients.RgisClient.Api
 
 			if (_configurator.IsError(res, out string msg))
 			{
-				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				_log.Error(new Exception(JsonConvert.SerializeObject(body)), msg);
 				throw new Exception(msg);
 			}
 			return new ApiResponse<ResponseData>(res);
@@ -61,10 +61,10 @@ namespace KadOzenka.WebClients.RgisClient.Api
 		{
 			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
 			string dataSetCode = "BASE.DSPARCEL";
-
+			Random rnd = new Random();
 			RequestBody body = new RequestBody
 			{
-				Id = 1,
+				Id = rnd.Next(1000),
 				Method = method,
 				Params = _configurator.GetParams(data, dataSetCode)
 			};
@@ -72,7 +72,7 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
 			if (_configurator.IsError(res, out string msg))
 			{
-				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				_log.Error(new Exception(JsonConvert.SerializeObject(body)), msg);
 				throw new Exception(msg);
 			}
 			return new ApiResponse<ResponseDataSingle>(res);
@@ -83,10 +83,10 @@ namespace KadOzenka.WebClients.RgisClient.Api
 		{
 			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
 			string dataSetCode = "BASE.DSREALTY";
-
+			Random rnd = new Random();
 			RequestBody body = new RequestBody
 			{
-				Id = 1,
+				Id = rnd.Next(1000),
 				Method = method,
 				Params = _configurator.GetParams(data, dataSetCode)
 			};
@@ -94,7 +94,7 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
 			if (_configurator.IsError(res, out string msg))
 			{
-				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				_log.Error(new Exception(JsonConvert.SerializeObject(body)), msg);
 				throw new Exception(msg);
 			}
 			return new ApiResponse<ResponseData>(res);
@@ -109,10 +109,10 @@ namespace KadOzenka.WebClients.RgisClient.Api
 		{
 			string method = "CONNECTIONS.DSCALCDISTANCE.GETDATA";
 			string dataSetCode = "BASE.DSREALTY";
-
+			Random rnd = new Random();
 			RequestBody body = new RequestBody
 			{
-				Id = 1,
+				Id = rnd.Next(1000),
 				Method = method,
 				Params = _configurator.GetParams(data, dataSetCode)
 			};
@@ -120,7 +120,7 @@ namespace KadOzenka.WebClients.RgisClient.Api
 			var res = _configurator.ApiClient.CallApi(JsonConvert.SerializeObject(body));
 			if (_configurator.IsError(res, out string msg))
 			{
-				_log.ForContext("body", body, true).Error(new Exception(msg), msg);
+				_log.Error(new Exception(JsonConvert.SerializeObject(body)), msg);
 				throw new Exception(msg);
 			}
 			return new ApiResponse<ResponseDataSingle>(res);

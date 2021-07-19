@@ -13,6 +13,8 @@ using GemBox.Document.Tables;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Entities;
 using KadOzenka.Dal.Modeling;
+using KadOzenka.Dal.Modeling.Dictionaries;
+using KadOzenka.Dal.Modeling.Modeling;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;

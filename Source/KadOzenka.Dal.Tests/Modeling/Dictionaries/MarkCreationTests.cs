@@ -1,5 +1,5 @@
 ﻿using KadOzenka.Common.Tests.Builders.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Exceptions.Dictionaries;
+using KadOzenka.Dal.Modeling.Dictionaries.Exceptions;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using KadOzenka.Dal.UnitTests.Modeling.Models;
 using Moq;

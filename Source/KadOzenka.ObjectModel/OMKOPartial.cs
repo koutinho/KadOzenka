@@ -636,11 +636,16 @@ namespace ObjectModel.KO
     public partial class OMModel
     {
 	    public string InternalName => $"model_{Id}";
+	    public bool IsAutomatic => Type_Code == KoModelType.Automatic;
 	    public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 	    public decimal A0ForExponentialInFormula => Math.Round(A0ForExponential.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 	    public decimal A0ForLinearInFormula => Math.Round(A0.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-
-	    public decimal? GetA0(KoAlgoritmType? type = null)
+        public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
+	    public bool HasLinearTrainingResult => !string.IsNullOrWhiteSpace(LinearTrainingResult);
+	    public bool HasExponentialTrainingResult => !string.IsNullOrWhiteSpace(ExponentialTrainingResult);
+	    public bool HasMultiplicativeTrainingResult => !string.IsNullOrWhiteSpace(MultiplicativeTrainingResult);
+        
+        public decimal? GetA0(KoAlgoritmType? type = null)
 	    {
 		    var resultType = type ?? AlgoritmType_Code;
 		    switch (resultType)
@@ -675,19 +680,23 @@ namespace ObjectModel.KO
 		    }
 	    }
 
-        public decimal? GetA0ForPreviousTour()
+	    public void SetA0(decimal? a0, KoAlgoritmType algoritmType)
 	    {
-		    switch (AlgoritmType_Code)
+		    switch (algoritmType)
 		    {
 			    case KoAlgoritmType.Exp:
-				    return A0ForExponentialTypeInPreviousTour;
+				    A0ForExponential = a0;
+				    break;
 			    case KoAlgoritmType.Line:
-				    return A0ForLinearTypeInPreviousTour;
+				    A0 = a0;
+				    break;
 			    case KoAlgoritmType.Multi:
-				    return A0ForMultiplicativeTypeInPreviousTour;
+				    A0ForMultiplicative = a0;
+				    break;
+			    default:
+				    A0 = a0;
+				    break;
 		    }
-
-		    return null;
 	    }
 
         public string GetTrainingResult(KoAlgoritmType type)
@@ -3258,69 +3267,69 @@ namespace ObjectModel.KO
                 string Dss_string = "";
 
 
-                foreach (OMModelFactor weight in model.ModelFactor)
-                {
-                    if (weight.SignAdd)
-                    {
-                        RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(weight.FactorId));
-                        if (attributeData != null)
-                        {
-                            string d_string = (weight.SignMarket) ? ("метка" + "(" + attributeData.Name + ")") : (attributeData.Name);
-                            switch (model.AlgoritmType_Code)
-                            {
-                                case KoAlgoritmType.Exp:
-                                case KoAlgoritmType.Line:
-                                    if (!weight.SignDiv)
-                                        De_string = De_string + " * " + "(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
-                                    else
-                                        De_string = De_string + " * " + "1/(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
-                                    break;
-                                case KoAlgoritmType.Multi:
-                                    if (!weight.SignDiv)
-                                        Dss_string = Dss_string + " + " + "(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
-                                    else
-                                        Dss_string = Dss_string + " + " + "1/(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //foreach (OMModelFactor weight in model.ModelFactor)
+                //{
+                //    if (weight.SignAdd)
+                //    {
+                //        RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(weight.FactorId));
+                //        if (attributeData != null)
+                //        {
+                //            string d_string = (weight.SignMarket) ? ("метка" + "(" + attributeData.Name + ")") : (attributeData.Name);
+                //            switch (model.AlgoritmType_Code)
+                //            {
+                //                case KoAlgoritmType.Exp:
+                //                case KoAlgoritmType.Line:
+                //                    //if (!weight.SignDiv)
+                //                        De_string = De_string + " * " + "(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //                    //else
+                //                     //   De_string = De_string + " * " + "1/(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //                    break;
+                //                case KoAlgoritmType.Multi:
+                //                    //if (!weight.SignDiv)
+                //                        Dss_string = Dss_string + " + " + "(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //                    //else
+                //                    //    Dss_string = Dss_string + " + " + "1/(" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
 
-                                    Dss_string = Dss_string.TrimStart(' ').TrimStart('+').TrimStart(' ');
-                                    Dm_string = "(" + Dss_string + ")";
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
+                //                    Dss_string = Dss_string.TrimStart(' ').TrimStart('+').TrimStart(' ');
+                //                    Dm_string = "(" + Dss_string + ")";
+                //                    break;
+                //                default:
+                //                    break;
+                //            }
+                //        }
+                //    }
+                //}
 
-                foreach (OMModelFactor weight in model.ModelFactor)
-                {
-                    if (!weight.SignAdd)
-                    {
-                        RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(weight.FactorId));
-                        if (attributeData != null)
-                        {
-                            string d_string = (weight.SignMarket) ? ("метка" + "(" + attributeData.Name + ")") : (attributeData.Name);
+                //foreach (OMModelFactor weight in model.ModelFactor)
+                //{
+                //    if (!weight.SignAdd)
+                //    {
+                //        RegisterAttribute attributeData = RegisterCache.GetAttributeData((int)(weight.FactorId));
+                //        if (attributeData != null)
+                //        {
+                //            string d_string = (weight.SignMarket) ? ("метка" + "(" + attributeData.Name + ")") : (attributeData.Name);
 
-                            switch (model.AlgoritmType_Code)
-                            {
-                                case KoAlgoritmType.Exp:
-                                case KoAlgoritmType.Line:
-                                    if (!weight.SignDiv)
-                                        D_string = D_string + " + " + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string;
-                                    else
-                                        D_string = D_string + " + " + "1 / (" + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
-                                    break;
-                                case KoAlgoritmType.Multi:
-                                    if (!weight.SignDiv)
-                                        Dm_string = Dm_string + " * (" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
-                                    else
-                                        Dm_string = Dm_string + " / (" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                    }
-                }
+                //            switch (model.AlgoritmType_Code)
+                //            {
+                //                case KoAlgoritmType.Exp:
+                //                case KoAlgoritmType.Line:
+                //                    //if (!weight.SignDiv)
+                //                        D_string = D_string + " + " + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string;
+                //                    //else
+                //                    //    D_string = D_string + " + " + "1 / (" + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //                    break;
+                //                case KoAlgoritmType.Multi:
+                //                    //if (!weight.SignDiv)
+                //                        Dm_string = Dm_string + " * (" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //                    //else
+                //                     //   Dm_string = Dm_string + " / (" + GetFormulaPart(weight.B0.ToString(), "+", 0) + GetFormulaPart(weight.Weight.ToString(), "*", 1) + d_string + ")";
+                //                    break;
+                //                default:
+                //                    break;
+                //            }
+                //        }
+                //    }
+                //}
 
 
                 switch (model.AlgoritmType_Code)

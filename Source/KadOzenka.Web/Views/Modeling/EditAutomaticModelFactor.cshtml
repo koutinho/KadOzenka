@@ -44,21 +44,13 @@
             @Html.KendoCheckBoxFor(x => x.IsActive, isReadonly: false)
         </div>
     </div>
-    <div class="form-group">
+    <div id="dictionaryBlock" class="form-group">
         <div class="col-sm-3">
             @Html.CustomLabelFor(x => x.DictionaryName)
         </div>
         <div class="col-sm-9">
             @Html.HiddenFor(x => x.DictionaryId)
             @Html.KendoTextBoxFor(x => x.DictionaryName, isReadonly: false)
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-sm-3">
-            @Html.CustomLabelFor(x => x.PreviousWeight, NotSetRequired: true)
-        </div>
-        <div class="col-sm-9">
-            @Html.KendoNumericTextBoxFor(x => x.PreviousWeight, precision: 15, isReadonly: false)
         </div>
     </div>
     <div class="form-group">
@@ -85,6 +77,7 @@
 }
 
 
+<script src="~/js/modeling.js"></script>
 <script>
     var marketObjectRegisterAttributeIds = [];
 
@@ -101,6 +94,9 @@
         var factorsTree = $('#@nameof(Model.FactorId)').data("kendoDropDownTree");
         factorsTree.bind("change", setActiveFlagState);
         setActiveFlagState();
+
+        setFactorParametersVisibility();
+        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setFactorParametersVisibility);
     });
 
 
@@ -112,6 +108,7 @@
         kendo.ui.progress($('body'), true);
         var form = $('#updateFactorForm');
         var formObject = Common.Functions.FormToObject(form);
+        formObject.FactorId = $('#@nameof(Model.FactorId)').data("kendoDropDownTree").value();
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),

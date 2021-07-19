@@ -1,5 +1,5 @@
 ﻿using KadOzenka.Common.Tests;
-using KadOzenka.Dal.Modeling.Dto.Factors;
+using KadOzenka.Dal.Modeling.Factors.Entities;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 
@@ -21,8 +21,6 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				Weight = RandomGenerator.GenerateRandomDecimal(),
 				B0 = RandomGenerator.GenerateRandomDecimal(),
-				SignDiv = true,
-				SignAdd = true,
 				MarkType = MarkType.Default,
 				CorrectItem = RandomGenerator.GenerateRandomDecimal(),
 				K = RandomGenerator.GenerateRandomDecimal()

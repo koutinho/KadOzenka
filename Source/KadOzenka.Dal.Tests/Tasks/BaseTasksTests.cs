@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Repositories;
 using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;

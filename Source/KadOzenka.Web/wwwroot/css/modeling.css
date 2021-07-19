@@ -1,0 +1,11 @@
+﻿.MathJax {
+    font-size: 130% !important;
+}
+
+.MathJax mjx-mstyle {
+    white-space: pre-wrap;
+}
+
+mjx-math {
+    line-height: 1.2;
+}

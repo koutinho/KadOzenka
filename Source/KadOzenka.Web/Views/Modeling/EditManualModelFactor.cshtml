@@ -1,5 +1,4 @@
-﻿@using ObjectModel.Directory.Ko
-@using KadOzenka.Web.Helpers
+﻿@using KadOzenka.Web.Helpers
 @model KadOzenka.Web.Models.Modeling.ManualFactorModel
 
 @using (Html.BeginForm("EditManualModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
@@ -69,22 +68,6 @@
                 @Html.KendoNumericTextBoxFor(x => x.Correction, precision: 15, isReadonly: false)
             </div>
         </div>
-        @*<div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabel("Деление на фактор")
-            </div>
-            <div class="col-sm-9">
-                @Html.CheckBoxFor(x => x.SignDiv)
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabel("Суммировать фактор")
-            </div>
-            <div class="col-sm-9">
-                @Html.CheckBoxFor(x => x.SignAdd)
-            </div>
-        </div>*@
         <div class="form-group">
             <div class="col-sm-2 col-sm-offset-8">
                 <button class="btn btn-default btn-block" id="cancel">Отмена</button>
@@ -97,6 +80,7 @@
 }
 
 
+<script src="~/js/modeling.js"></script>
 <script>
     $(document).ready(function () {
         $('#save').on('click', saveFactor);
@@ -107,8 +91,8 @@
 
         initAttributes();
 
-        setParametersVisibility();
-        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setParametersVisibility);
+        setFactorParametersVisibility();
+        $('#@nameof(Model.MarkType)').data('kendoDropDownList').bind('change', setFactorParametersVisibility);
     });
 
 
@@ -162,27 +146,5 @@
             }
         });
     }
-
-
-    function setParametersVisibility() {
-        var selectedMarkType = $('#@nameof(Model.MarkType)').data('kendoDropDownList').value();
-        var correctItemBlock = $("#correctItemBlock");
-        var kBlock = $("#kBlock");
-        var dictionaryBlock = $("#dictionaryBlock");
-        if (selectedMarkType === '@((long)MarkType.Straight)' || selectedMarkType === '@((long)MarkType.Reverse)') {
-            correctItemBlock.show();
-            kBlock.show();
-        } else {
-            correctItemBlock.hide();
-            kBlock.hide();
-        }
-        if (selectedMarkType === '@((long)MarkType.Default)') {
-            dictionaryBlock.show();
-        }
-        else {
-            dictionaryBlock.hide();
-        }
-    }
-
 
 </script>
