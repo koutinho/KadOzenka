@@ -15,8 +15,6 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
-using KadOzenka.Dal.DataImport;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ModelingBusiness.Dictionaries.Entities;
 using ModelingBusiness.Dictionaries.Exceptions;
@@ -26,7 +24,7 @@ using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Dictionaries
+namespace ModelingBusiness.Dictionaries
 {
 	public class ModelDictionaryService : IModelDictionaryService
 	{

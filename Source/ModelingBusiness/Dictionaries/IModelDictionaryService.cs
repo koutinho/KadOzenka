@@ -6,7 +6,7 @@ using ModelingBusiness.Dictionaries.Entities;
 using ObjectModel.Common;
 using ObjectModel.KO;
 
-namespace KadOzenka.Dal.Modeling.Dictionaries
+namespace ModelingBusiness.Dictionaries
 {
 	public interface IModelDictionaryService
 	{
