@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using ModelingBusiness.Objects.Entities;
 using Moq;
@@ -55,7 +54,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			var exception = Assert.Throws<Exception>(() => ModelService.MakeModelActive(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
-			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
+			Assert.That(exception.Message, Is.EqualTo(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
 		[Test]
@@ -71,7 +70,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			var exception = Assert.Throws<Exception>(() => ModelService.MakeModelActive(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
-			Assert.That(exception.Message, Is.EqualTo(Messages.CanNotActivateNotPreparedAutomaticModel));
+			Assert.That(exception.Message, Is.EqualTo(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
 

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using KadOzenka.Dal.Modeling.Factors.Entities;
+using ModelingBusiness.Factors.Entities;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.Modeling.Model.Entities

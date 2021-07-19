@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Register.QuerySubsystem;
-using KadOzenka.Dal.Modeling.Factors.Entities;
+using ModelingBusiness.Factors.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 

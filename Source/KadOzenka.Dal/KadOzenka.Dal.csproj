@@ -73,6 +73,7 @@
     <Folder Include="LongProcess\Modeling\" />
     <Folder Include="LongProcess\Modeling\Entities\" />
     <Folder Include="LongProcess\Reports\AdditionalForms\AnalysisOfResuluts\Entities\" />
+    <Folder Include="Modeling\Resources\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -129,11 +130,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Messages.resx</DependentUpon>
     </Compile>
-    <Compile Update="Modeling\Resources\Messages.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Messages.resx</DependentUpon>
-    </Compile>
     <Compile Update="ObjectsCharacteristics\Resources\Fields.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -162,10 +158,6 @@
       <LastGenOutput>CodMessages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="LongProcess\_Common\Messages.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Modeling\Resources\Messages.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>

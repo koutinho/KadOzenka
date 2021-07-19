@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using KadOzenka.Dal.GbuObject.Dto;
-using KadOzenka.Dal.Modeling.Factors.Entities;
 using KadOzenka.Dal.Modeling.Model.Entities;
+using ModelingBusiness.Factors.Entities;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling

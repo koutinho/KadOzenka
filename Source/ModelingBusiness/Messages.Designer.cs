@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KadOzenka.Dal.Modeling.Resources {
+namespace ModelingBusiness {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.Modeling.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KadOzenka.Dal.Modeling.Resources.Messages", typeof(Messages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ModelingBusiness.Messages", typeof(Messages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -70,38 +70,11 @@ namespace KadOzenka.Dal.Modeling.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не передано &apos;Корректирующее слагаемое&apos;.
-        /// </summary>
-        public static string EmptyCorrectTermForFactor {
-            get {
-                return ResourceManager.GetString("EmptyCorrectTermForFactor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Для фактора с типом метки &apos;По умолчанию&apos; обязательно нужно заполнить имя словаря.
         /// </summary>
         public static string EmptyDictionaryForFactorWithDefaultMark {
             get {
                 return ResourceManager.GetString("EmptyDictionaryForFactorWithDefaultMark", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не передан &apos;К&apos;.
-        /// </summary>
-        public static string EmptyKForFactor {
-            get {
-                return ResourceManager.GetString("EmptyKForFactor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &apos;K&apos; не может быть равным нулю для прямой метки (т.к. используется в знаменателе).
-        /// </summary>
-        public static string EmptyKForFactorWithStraightMark {
-            get {
-                return ResourceManager.GetString("EmptyKForFactorWithStraightMark", resourceCulture);
             }
         }
         
@@ -120,15 +93,6 @@ namespace KadOzenka.Dal.Modeling.Resources {
         public static string EmptyName {
             get {
                 return ResourceManager.GetString("EmptyName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Фактор относится к нечисловому типу, нужно установить тип метки &apos;Метка по умолчанию&apos;.
-        /// </summary>
-        public static string WrongFactorType {
-            get {
-                return ResourceManager.GetString("WrongFactorType", resourceCulture);
             }
         }
     }

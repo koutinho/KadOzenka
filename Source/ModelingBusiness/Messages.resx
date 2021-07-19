@@ -120,23 +120,11 @@
   <data name="CanNotActivateNotPreparedAutomaticModel" xml:space="preserve">
     <value>Невозможно активировать необученную модель</value>
   </data>
-  <data name="EmptyCorrectTermForFactor" xml:space="preserve">
-    <value>Не передано 'Корректирующее слагаемое'</value>
-  </data>
-  <data name="EmptyKForFactor" xml:space="preserve">
-    <value>Не передан 'К'</value>
-  </data>
-  <data name="EmptyKForFactorWithStraightMark" xml:space="preserve">
-    <value>'K' не может быть равным нулю для прямой метки (т.к. используется в знаменателе)</value>
-  </data>
   <data name="EmptyModelId" xml:space="preserve">
     <value>Не передан идентификатор Модели</value>
   </data>
   <data name="EmptyName" xml:space="preserve">
     <value>У модели не заполнено Имя</value>
-  </data>
-  <data name="WrongFactorType" xml:space="preserve">
-    <value>Фактор относится к нечисловому типу, нужно установить тип метки 'Метка по умолчанию'</value>
   </data>
   <data name="EmptyDictionaryForFactorWithDefaultMark" xml:space="preserve">
     <value>Для фактора с типом метки 'По умолчанию' обязательно нужно заполнить имя словаря</value>

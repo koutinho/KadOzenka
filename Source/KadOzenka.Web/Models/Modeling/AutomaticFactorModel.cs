@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.Modeling.Factors.Entities;
 using Kendo.Mvc.UI;
+using ModelingBusiness.Factors.Entities;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling

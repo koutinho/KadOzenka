@@ -2,7 +2,6 @@
 using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Modeling.Model.Exceptions;
-using KadOzenka.Dal.Modeling.Resources;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;
@@ -18,7 +17,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 		{
 			var exception = Assert.Throws<Exception>(() => ModelService.GetModelEntityById(modelId));
 
-			StringAssert.Contains(Messages.EmptyModelId, exception.Message);
+			StringAssert.Contains(ModelingBusiness.Messages.EmptyModelId, exception.Message);
 		}
 
 

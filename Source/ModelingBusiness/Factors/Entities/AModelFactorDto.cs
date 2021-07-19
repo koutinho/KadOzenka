@@ -1,7 +1,7 @@
 ﻿using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 
-namespace KadOzenka.Dal.Modeling.Factors.Entities
+namespace ModelingBusiness.Factors.Entities
 {
 	public abstract class AModelFactorDto
 	{

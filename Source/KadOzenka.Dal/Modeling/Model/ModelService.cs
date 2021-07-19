@@ -12,7 +12,6 @@ using KadOzenka.Dal.Modeling.Model.Entities;
 using KadOzenka.Dal.Modeling.Model.Exceptions;
 using KadOzenka.Dal.Modeling.Model.Formulas;
 using KadOzenka.Dal.Modeling.Model.Repositories;
-using KadOzenka.Dal.Modeling.Resources;
 using KadOzenka.Dal.RecycleBin;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
@@ -77,7 +76,7 @@ namespace KadOzenka.Dal.Modeling.Model
 		public OMModel GetModelEntityById(long? modelId)
         {
 	        if (modelId.GetValueOrDefault() == 0)
-		        throw new Exception(Messages.EmptyModelId);
+		        throw new Exception(ModelingBusiness.Messages.EmptyModelId);
 
 	        var model = ModelingRepository.GetById(modelId.Value, null);
 	        if (model == null)
@@ -270,7 +269,7 @@ namespace KadOzenka.Dal.Modeling.Model
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception(Messages.CanNotActivateNotPreparedAutomaticModel);
+			        throw new Exception(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel);
 			}
 	        
 			using (var ts = new TransactionScope())
@@ -332,7 +331,7 @@ namespace KadOzenka.Dal.Modeling.Model
 	        var message = new StringBuilder();
 
 	        if (string.IsNullOrWhiteSpace(modelDto.Name))
-		        message.AppendLine(Messages.EmptyName);
+		        message.AppendLine(ModelingBusiness.Messages.EmptyName);
 	        if (string.IsNullOrWhiteSpace(modelDto.Description))
 		        message.AppendLine("У модели не заполнено Описание");
 
