@@ -1,10 +1,12 @@
 ﻿using Core.ObjectModelBuilder;
 using Core.Shared.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using GenerateObjectModel.XmlParsingSupport;
+using GenerateObjectModel.JsonParsingSupport;
+using Newtonsoft.Json;
 
 namespace GenerateObjectModel
 {
@@ -40,7 +42,7 @@ namespace GenerateObjectModel
 			Console.WriteLine("Закончена работа с ObjectModelPartial2.");
 
 			//TODO KOMO-33 добавить в платформу фильтры для генерации СРД
-			if (mode.Type == Consts.GeneralModeName)
+			if (mode.Type == "General")
 			{
 				var objectModelSRDFunction = ObjectModelBuilder.BuildObjectModelSRDFunction();
 				File.WriteAllText(mode.Path + $"{mode.FileNameStarting}SRDFunction.cs", objectModelSRDFunction);
@@ -55,21 +57,24 @@ namespace GenerateObjectModel
 		
 		#region Support Methods
 
-		private static ModeElement GetModeInfo()
+		private static Mode GetModeInfo()
 		{
 			var modeStr = ConfigurationManager.AppSettings["Mode"].ParseToStringNullable();
 			Console.WriteLine($"Выбранная конфигурация '{modeStr}'");
 
-			var config = RegisterModesConfig.GetConfig();
+			var fileContent = File.ReadAllText("appsettings.json");
+			var allModes = JsonConvert.DeserializeObject<List<Mode>>(fileContent);
 
-			var mode = config.ModesCollection.Cast<ModeElement>().FirstOrDefault(item => item.Type == modeStr);
+			var mode = allModes?.FirstOrDefault(item => item.Type == modeStr);
 			if (mode == null)
 				throw new Exception($"Не найден параметр запуска '{modeStr}'");
 
-			mode.RegisterFilter = string.Format(mode.RegisterFilter, Consts.RegisterIdsForAnalogs);
+			mode.RegisterFilter = string.Format(mode.RegisterFilter, RegisterIdsForAnalogs);
 
 			return mode;
 		}
+
+		public const string RegisterIdsForAnalogs = "100, 101, 105, 107, 110, 118, 119";
 
 		#endregion
 	}
