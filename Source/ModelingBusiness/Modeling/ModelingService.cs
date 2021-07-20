@@ -34,23 +34,9 @@ namespace ModelingBusiness.Modeling
 		}
 
 
+        #region Результаты обучения модели
 
-        public long? GetDictionaryId(long? groupId, long? factorId)
-        {
-	        if (groupId.GetValueOrDefault() == 0 || factorId.GetValueOrDefault() == 0)
-		        return null;
-
-	        var activeModel = ModelService.GetActiveModelEntityByGroupId(groupId);
-	        if (activeModel == null)
-		        return null;
-
-	        var modelFactors = ModelFactorsService.GetGeneralModelAttributes(activeModel.Id);
-	        var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
-
-	        return dictionaryId;
-        }
-
-		public TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type)
+        public TrainingDetailsDto GetTrainingResult(long modelId, KoAlgoritmType type)
         {
 	        var model = ModelService.GetModelEntityById(modelId);
 
@@ -78,41 +64,53 @@ namespace ModelingBusiness.Modeling
 	        };
         }
 
-		public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
-		{
-			var model = ModelService.GetModelEntityById(modelId);
-			ResetTrainingResults(model, type);
-		}
+        public void ResetTrainingResults(long? modelId, KoAlgoritmType type)
+        {
+	        var model = ModelService.GetModelEntityById(modelId);
+	        ResetTrainingResults(model, type);
+        }
 
-		public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
-		{
-			switch (type)
-			{
-				case KoAlgoritmType.None:
-					generalModel.LinearTrainingResult = null;
-					generalModel.ExponentialTrainingResult = null;
-					generalModel.MultiplicativeTrainingResult = null;
-					break;
-				case KoAlgoritmType.Exp:
-					generalModel.ExponentialTrainingResult = null;
-					break;
-				case KoAlgoritmType.Line:
-					generalModel.LinearTrainingResult = null;
-					break;
-				case KoAlgoritmType.Multi:
-					generalModel.MultiplicativeTrainingResult = null;
-					break;
-			}
+        public void ResetTrainingResults(OMModel generalModel, KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.None:
+			        generalModel.LinearTrainingResult = null;
+			        generalModel.ExponentialTrainingResult = null;
+			        generalModel.MultiplicativeTrainingResult = null;
+			        break;
+		        case KoAlgoritmType.Exp:
+			        generalModel.ExponentialTrainingResult = null;
+			        break;
+		        case KoAlgoritmType.Line:
+			        generalModel.LinearTrainingResult = null;
+			        break;
+		        case KoAlgoritmType.Multi:
+			        generalModel.MultiplicativeTrainingResult = null;
+			        break;
+	        }
 
-			var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
-			factors.ForEach(x =>
-			{
-				x.Correction = 0;
-				x.Save();
-			});
+	        var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
+	        factors.ForEach(x =>
+	        {
+		        x.Correction = 0;
+		        x.Save();
+	        });
 
-			generalModel.Save();
-		}
+	        generalModel.Save();
+        }
+
+        public OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type)
+        {
+	        return OMModelTrainingResultImages.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type)
+		        .SelectAll()
+		        .ExecuteFirstOrDefault();
+        }
+
+		#endregion
+
+
+		#region Качество обученной модели
 
 		public void UpdateTrainingQualityInfo(long modelId, KoAlgoritmType type, QualityControlInfo newQualityControlInfo)
 		{
@@ -228,11 +226,26 @@ namespace ModelingBusiness.Modeling
 			return stream;
 		}
 
-		public OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type)
+		#endregion
+
+
+		#region Словари и метки
+
+		public long? GetDictionaryId(long? groupId, long? factorId)
 		{
-			return OMModelTrainingResultImages.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type)
-				.SelectAll()
-				.ExecuteFirstOrDefault();
+			if (groupId.GetValueOrDefault() == 0 || factorId.GetValueOrDefault() == 0)
+				return null;
+
+			var activeModel = ModelService.GetActiveModelEntityByGroupId(groupId);
+			if (activeModel == null)
+				return null;
+
+			var modelFactors = ModelFactorsService.GetGeneralModelAttributes(activeModel.Id);
+			var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
+
+			return dictionaryId;
 		}
+
+		#endregion
 	}
 }
