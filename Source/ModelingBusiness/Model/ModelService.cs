@@ -95,8 +95,6 @@ namespace ModelingBusiness.Model
 		        x.ExponentialTrainingResult,
 		        x.MultiplicativeTrainingResult,
 		        x.GroupId,
-		        x.ParentGroup.Id,
-		        x.ParentGroup.GroupName,
 		        x.IsOksObjectType,
 		        x.Type_Code,
 		        x.AlgoritmType_Code,
@@ -113,7 +111,14 @@ namespace ModelingBusiness.Model
 	        if (model == null)
 		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
 
-			var tour = GetModelTour(model.GroupId);
+	        var tour = GetModelTour(model.GroupId);
+
+			//todo использовать сервис, после того, как работа с группами будет в отдельном проекте
+			var group = OMGroup.Where(x => x.Id == model.GroupId)
+				.Select(x => new {x.GroupName, x.Number})
+				.ExecuteFirstOrDefault();
+			if (group == null)
+				throw new Exception($"Не найдена группа модели с ИД '{model.GroupId}'");
 
             return new ModelDto
 	        {
@@ -125,9 +130,10 @@ namespace ModelingBusiness.Model
 		        MultiplicativeTrainingResult = model.MultiplicativeTrainingResult,
 				TourId = tour.Id,
 				TourYear = tour.Year.GetValueOrDefault(),
-				GroupId = model.ParentGroup.Id,
-		        GroupName = model.ParentGroup.GroupName,
-		        IsOksObjectType = model.IsOksObjectType.GetValueOrDefault(),
+				GroupId = group.Id,
+				GroupName = group.GroupName,
+				FullGroupName = group.FullGroupName,
+				IsOksObjectType = model.IsOksObjectType.GetValueOrDefault(),
                 Type = model.Type_Code,
                 AlgorithmTypeForCadastralPriceCalculation = model.AlgoritmType_Code,
                 CalculationType = model.CalculationType_Code,

@@ -673,12 +673,12 @@ namespace KadOzenka.Dal.DataExport
                 {
                     if (!dd)
                     {
-                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                        //formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     else
                     {
-                        formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
-                                  OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                        //formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                        //          OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))

@@ -981,22 +981,11 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public ActionResult ModelObjects(long modelId)
         {
-            var omModel = OMModel.Where(x => x.Id == modelId)
-                .Select(x => new
-                {
-                    x.Name,
-                    x.GroupId,
-                    x.ParentGroup.GroupName,
-                    x.ParentGroup.Number
-                }).ExecuteFirstOrDefault();
-            if (omModel == null)
-                throw new Exception($"Не найдена модель с ИД '{modelId}'");
-
-            var tour = ModelService.GetModelTour(omModel.GroupId);
-
+	        var modelDto = ModelService.GetModelById(modelId);
+            
             var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
-            var model = ModelingObjectsModel.ToModel(omModel, tour.Year, attributes);
+            var model = ModelingObjectsModel.ToModel(modelDto, attributes);
 
             return View(model);
         }

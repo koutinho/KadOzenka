@@ -25,6 +25,8 @@ namespace ModelingBusiness.Model.Entities
 		public long TourYear { get; set; }
         public long? GroupId { get; set; }
         public string GroupName { get; set; }
+        public string GroupNumber { get; set; }
+        public string FullGroupName { get; init; }
         public string LinearTrainingResult { get; set; }
         public string ExponentialTrainingResult { get; set; }
         public string MultiplicativeTrainingResult { get; set; }

@@ -505,56 +505,6 @@ namespace ObjectModel.KO
 namespace ObjectModel.KO
 {
     /// <summary>
-    /// 206 Модель
-    /// </summary>
-    public partial class OMModel
-    {
-        /// <summary>
-        /// Ссылка на (205 Группы/Подгруппы)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMGroup ParentGroup { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 210 Факторы модели
-    /// </summary>
-    public partial class OMModelFactor
-    {
-        /// <summary>
-        /// Ссылка на (206 Модель)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModel ParentModel { get; set; }
-
-        /// <summary>
-        /// Ссылка на (264 Моделирование. Справочники)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
-
-        /// <summary>
-        /// Ссылка на (931 Список показателей реестра)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
     /// 212 Группы тура
     /// </summary>
     public partial class OMTourGroup
@@ -633,24 +583,6 @@ namespace ObjectModel.Ko
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.KO.OMGroup ParentGroup { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 223 Картинки с результатами обучения модели
-    /// </summary>
-    public partial class OMModelTrainingResultImages
-    {
-        /// <summary>
-        /// Ссылка на (206 Модель)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModel ParentModel { get; set; }
 
     }
 }
@@ -777,24 +709,6 @@ namespace ObjectModel.KO
         [ParentRegister]
         [XmlIgnore]
         public ObjectModel.Core.Register.OMAttribute ParentAttribute { get; set; }
-
-    }
-}
-
-
-namespace ObjectModel.KO
-{
-    /// <summary>
-    /// 265 Моделирование. Значения справочников
-    /// </summary>
-    public partial class OMModelingDictionariesValues
-    {
-        /// <summary>
-        /// Ссылка на (264 Моделирование. Справочники)
-        /// </summary>
-        [ParentRegister]
-        [XmlIgnore]
-        public ObjectModel.KO.OMModelingDictionary ParentModelingDictionary { get; set; }
 
     }
 }
