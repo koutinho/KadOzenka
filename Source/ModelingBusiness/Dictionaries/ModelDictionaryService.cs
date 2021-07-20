@@ -33,9 +33,6 @@ namespace ModelingBusiness.Dictionaries
 		private IModelDictionaryRepository ModelDictionaryRepository { get; }
 		private IModelMarksRepository ModelMarksRepository { get; }
 
-		private static readonly int MainRegisterId = OMModelingDictionary.GetRegisterId();
-		private static readonly string RegisterViewId = "ModelingDictionaries";
-
 
 		public ModelDictionaryService(IModelDictionaryRepository modelDictionaryRepository = null,
 			IModelMarksRepository modelMarksRepository = null)
@@ -386,8 +383,8 @@ namespace ModelingBusiness.Dictionaries
 				Status_Code = ImportStatus.Added,
 				DataFileTitle = fileName,
 				FileExtension = DataImporterCommon.GetFileExtension(inputFileName),
-				MainRegisterId = MainRegisterId,
-				RegisterViewId = RegisterViewId
+				MainRegisterId = OMModelingDictionary.GetRegisterId(),
+				RegisterViewId = "ModelingDictionaries"
 			};
 			import.Save();
 
