@@ -65,16 +65,7 @@ namespace ModelingBusiness.Modeling
         {
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id).Where(x => x.IsActive).ToList();
-            var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
-            var activeForbiddenAttributes = ModelAttributes.Select(x => x.Id).Intersect(unActiveAttributes).ToList();
-            if (activeForbiddenAttributes.Count > 0)
-            {
-	            var attributeNames = RegisterCache.RegisterAttributes
-		            .Where(x => activeForbiddenAttributes.Contains(x.Key)).Select(x => x.Value.Name);
-	            var attributeNamesStr = string.Join(',', attributeNames);
-	            throw new Exception($"Атрибуты, которые относятся к аналогам должны быть отмечены как неактивные: '{attributeNamesStr}'");
-            }
+            InitModelAttributes();
             AddLog($"Найдено {ModelAttributes?.Count} активных атрибутов для модели.");
             Logger.ForContext("Attributes", ModelAttributes, destructureObjects: true).Debug("Атрибуты для модели");
 
@@ -136,6 +127,8 @@ namespace ModelingBusiness.Modeling
 	        var trainingResults = new List<TrainingResponse>();
 
 	        var data = generalResponse.Data.ToString();
+	        if (data == null)
+		        throw new Exception("Сервис моделирования не вернул результаты обучения");
 
             Logger.ForContext("TrainingResultFromService", data).Debug("Результаты обучения от сервиса");
             if (InputParameters.ModelType == KoAlgoritmType.None)
@@ -158,7 +151,9 @@ namespace ModelingBusiness.Modeling
 	            {
 		            var returnedTypesStr = string.Join(", ", returnedResultType.Select(x => x.GetEnumDescription()).ToArray());
 
-                    AdditionalMessage = $"Сервис моделирования вернул результаты обучения для алгоритмов: {returnedTypesStr}";
+                    AdditionalMessage = string.IsNullOrWhiteSpace(returnedTypesStr) 
+	                    ? "Сервис моделирования не вернул результаты обучения" 
+	                    : $"Сервис моделирования вернул результаты обучения для алгоритмов: {returnedTypesStr}";
 		            Logger.Error(AdditionalMessage);
                     return;
                 }
@@ -362,6 +357,25 @@ namespace ModelingBusiness.Modeling
 	        using (var webClient = new WebClient())
 	        {
 		        return webClient.DownloadData(url);
+	        }
+        }
+
+        private void InitModelAttributes()
+        {
+	        ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id).Where(x => x.IsActive).ToList();
+
+            if (ModelAttributes.Count == 0)
+		        throw new Exception("У модели нет активных факторов, обучение невозможно");
+	        
+	        var unActiveAttributes = ModelFactorsService.GetAttributesWhichMustBeUnActive();
+	        var activeForbiddenAttributes = ModelAttributes.Select(x => x.Id).Intersect(unActiveAttributes).ToList();
+	        if (activeForbiddenAttributes.Count > 0)
+	        {
+		        var attributeNames = RegisterCache.RegisterAttributes
+			        .Where(x => activeForbiddenAttributes.Contains(x.Key)).Select(x => x.Value.Name);
+		        var attributeNamesStr = string.Join(',', attributeNames);
+		        throw new Exception(
+			        $"Атрибуты, которые относятся к аналогам должны быть отмечены как неактивные: '{attributeNamesStr}'");
 	        }
         }
 
