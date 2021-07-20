@@ -1,7 +1,7 @@
 ﻿.top-toolbar{
     position: fixed;
     top: 0;
-    background-color: inherit;
+    background-color: #f8f9fc;
     z-index: 100;
     width: 100%;
     border-color: #e5e6eb;

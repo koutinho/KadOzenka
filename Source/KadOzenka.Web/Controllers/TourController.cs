@@ -33,6 +33,7 @@ using Newtonsoft.Json;
 using ObjectModel.Core.Register;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
+using ObjectModel.Directory.ES;
 using ObjectModel.KO;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
@@ -443,7 +444,7 @@ namespace KadOzenka.Web.Controllers
         //TODO: Split and move to services
         private List<DropDownTreeItemModel> GetKoAttributes(long groupId)
         {
-            void FillTreeItemModel(DropDownTreeItemModel treeItemModel, List<OMAttribute> omAttributes, long attrId)
+            void FillTreeItemModel(DropDownTreeItemModel treeItemModel, IEnumerable<OMAttribute> omAttributes, long attrId)
             {
                 treeItemModel.Items.AddRange(omAttributes.Where(x => x.RegisterId == attrId).Select(x => new DropDownTreeItemModel
                 {
@@ -482,7 +483,7 @@ namespace KadOzenka.Web.Controllers
                 objectType = ObjectTypeExtended.Zu;
             }
 
-            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType);
+            var koAttributes = TourFactorService.GetTourAttributes(tourId, objectType).Where(x=>x.IsDeleted != true).ToList();
 
             var regIds = koAttributes.Select(x => x.RegisterId).Distinct().ToList();
             if (regIds.Count > 1)
@@ -540,32 +541,27 @@ namespace KadOzenka.Web.Controllers
 
             var model = new TourGroupGroupingSettingsModel();
             model.GroupId = groupId;
+            model.Settings = new List<TourGroupGroupingSettingsPartialModel>();
 
+            var ind = 0;
             foreach (var groupSetting in groupingSettingsList)
             {
-                model.KoAttributes.Add(groupSetting.KoAttributeId);
-                model.GroupFilters.Add(groupSetting.Filter.DeserializeFromXml<Filters>());
+                var settingModel = new TourGroupGroupingSettingsPartialModel();
+                settingModel.Index = ind;
+                settingModel.KoAttributes = groupSetting.KoAttributeId;
+                settingModel.GroupFilters = groupSetting.Filter.DeserializeFromXml<Filters>();
                 if (groupSetting.DictionaryId is 0 or null)
                 {
-                    model.DictionaryId.Add(null);
-                    model.DictionaryValue.Add("");
-                    model.UseDictionary.Add(false);
+                    settingModel.UseDictionary = false;
                 }
                 else
                 {
-                    model.DictionaryId.Add(groupSetting.DictionaryId);
-                    model.DictionaryValue.Add(groupSetting.DictionaryValues);
-                    model.UseDictionary.Add(true);
+                    settingModel.DictionaryId = groupSetting.DictionaryId;
+                    settingModel.DictionaryValue = groupSetting.DictionaryValues;
+                    settingModel.UseDictionary = true;
                 }
-            }
-
-            for (int i = model.GroupFilters.Count; i < 1; i++)
-            {
-                model.GroupFilters.Add(new Filters());
-                model.KoAttributes.Add(new long());
-                model.DictionaryId.Add(new long());
-                model.DictionaryValue.Add(String.Empty);
-                model.UseDictionary.Add(false);
+                model.Settings.Add(settingModel);
+                ind++;
             }
 
             return model;
@@ -588,10 +584,19 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        public ActionResult TourGroupGroupingSettingsPartialRow(int groupId, int index)
+        public ActionResult TourGroupGroupingSettingsPartialRow(int groupId, TourGroupGroupingSettingsPartialModel model)
         {
             ViewData["KoAttributes"] = GetMergedAttributes(groupId);
-            var model = new TourGroupGroupingSettingsPartialModel {Index = index};
+
+            return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
+        }
+
+        [HttpGet]
+        public ActionResult TourGroupGroupingSettingsPartialNewRow(int groupId, int index, string prefix, bool useDictionary)
+        {
+            ViewData["KoAttributes"] = GetMergedAttributes(groupId);
+            ViewData.TemplateInfo.HtmlFieldPrefix = prefix;
+            var model = new TourGroupGroupingSettingsPartialModel {Index = index, UseDictionary = useDictionary};
             return PartialView("~/Views/Tour/Partials/TourGroupGroupingSettingsPartial.cshtml", model);
         }
 
@@ -602,6 +607,7 @@ namespace KadOzenka.Web.Controllers
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
 
+            //return new JsonResult(new {Message = "Test"});
             var objectModel = model.ToObjectModel().Where(x=>x.KoAttributeId != null);
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
 
@@ -686,6 +692,51 @@ namespace KadOzenka.Web.Controllers
             }).ToList();
 
             return View(new GroupingDictionaryImportModel());
+        }
+
+        public IActionResult GroupingDictionaryImportPreconfigured(long attributeId, long groupId)
+        {
+            var dictionaries = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
+            {
+                Text = x.Name,
+                Value = x.Id
+            }).ToList();
+
+            ViewData["References"] = dictionaries;
+
+            var model = new GroupingDictionaryImportModel();
+
+            var attrib = RegisterCache.RegisterAttributes.FirstOrDefault(x => x.Key == attributeId);
+            model.ValueType = attrib.Value.Type switch
+            {
+                RegisterAttributeType.INTEGER or RegisterAttributeType.DECIMAL => ReferenceItemCodeType.Number,
+                RegisterAttributeType.DATE => ReferenceItemCodeType.Date,
+                _ => model.ValueType
+            };
+
+            var dictName = "";
+            var group = GroupService.GetGroupsByIds(new List<long> { groupId }).FirstOrDefault();
+            if (group != null)
+            {
+                dictName += group.FullGroupName + " " + attrib.Value.Name;
+            }
+
+            var partialDict = new PartialGroupingDictionaryModel();
+            var value = dictionaries?.FirstOrDefault(x => x?.Text == dictName)?.Value;
+            if (value is not null or 0)
+            {
+                partialDict.IsNewDictionary = false;
+                partialDict.DeleteOldValues = true;
+                partialDict.DictionaryId = value;
+            }
+            else
+            {
+                partialDict.IsNewDictionary = true;
+                partialDict.NewDictionaryName = dictName;
+            }
+
+            model.GroupingDictionary = partialDict;
+            return View("GroupingDictionaryImport", model);
         }
 
         [HttpPost]

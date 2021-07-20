@@ -16,6 +16,8 @@ namespace KadOzenka.Web.Models.Tour
 
         public long? KoAttributes { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public TourGroupGroupingSettingsPartialModel()
         {
             GroupFilters = new Filters();

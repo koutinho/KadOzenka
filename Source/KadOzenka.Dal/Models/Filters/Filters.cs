@@ -25,6 +25,7 @@ namespace KadOzenka.Dal.Models.Filters
 		public FilteringTypeString FilteringType { get; set; }
 		public string Value { get; set; }
 
+		public string ValueMulti { get; set; }
 	}
 
 	public class NumberFilter

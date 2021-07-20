@@ -654,7 +654,7 @@ namespace KadOzenka.Dal.KoObject
                     var dictValues = OMGroupingDictionariesValues.Where(x => x.DictionaryId == setting.DictionaryId
                         && x.GroupingValue != null).SelectAll()
                         .Execute();
-                    var dictStringValues = setting.DictionaryValues.Split(",");
+                    var dictStringValues = setting.DictionaryValues.Split("\n");
                     var dictFilterValues = dictStringValues.Distinct().Where(x=>x.IsNotEmpty()).ToList();
                     var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.GroupingValue)).Select(x=>x.Value).ToList();
                     listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), QSConditionType.In, dictFilter));
@@ -687,6 +687,7 @@ namespace KadOzenka.Dal.KoObject
                     {
                         FilteringTypeString.Equal => QSConditionType.Equal,
                         FilteringTypeString.EqualIgnoreCase => QSConditionType.EqualNonCaseSensitive,
+                        FilteringTypeString.In => QSConditionType.In,
                         FilteringTypeString.NotEqual => QSConditionType.NotEqual,
                         FilteringTypeString.NotEqualIgnoreCase => QSConditionType.NotEqualNonCaseSensitive,
                         FilteringTypeString.BeginsFrom => QSConditionType.BeginFrom,
@@ -758,7 +759,7 @@ namespace KadOzenka.Dal.KoObject
                         {
                             if (condition == QSConditionType.In)
                             {
-                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.Value.Split(',').Distinct().Where(x=>x.IsNotEmpty())));
+                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.ValueMulti.Replace("\r","").Split('\n').Distinct().Where(x=>x.IsNotEmpty())));
                             }
                             else
                             {

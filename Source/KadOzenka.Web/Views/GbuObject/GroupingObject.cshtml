@@ -47,6 +47,15 @@
     .codJobParam{
         display: none;
     }
+
+    ::placeholder{
+        font-style: italic;
+        color: #d7d9ff99;
+    }
+
+    .hiddenList{
+        display: none !important;
+    }
 </style>
 
 @using (Html.BeginForm("GroupingObject", "GbuObject", FormMethod.Post))

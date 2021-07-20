@@ -117,6 +117,8 @@ namespace CIPJS
             services.AddTransient<TourFactorService>();
 	        services.AddTransient<GbuLongProcessesService>();
 	        services.AddSingleton<GbuCurrentLongProcessesListenerService>();
+            services.AddSingleton<KoGroupingDictionaryImportListenerService>();
+            services.AddTransient<GroupingDictionaryService>();
 	        //services.AddTransient<ScoreCommonService>();
 			//services.AddTransient<ExpressScoreService>();
 			//services.AddTransient<ExpressScoreReferenceService>();
@@ -293,6 +295,7 @@ namespace CIPJS
                     endpoints.MapHub<UrgentMessageHub>("/coreMessageData");
                     endpoints.MapHub<NotificationMessageHub>("/coreMessagesList");
                     endpoints.MapHub<BackgroundProcessWidgetHub>("/backgroundUserProcess");
+                    endpoints.MapHub<KoGroupingDictionaryImportHub>("/koGroupingDictionaryProgress");
                     endpoints.MapControllerRoute(
                         name: "Register",
                         pattern: "RegistersView/{registerId}",

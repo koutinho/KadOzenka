@@ -20,6 +20,9 @@ namespace KadOzenka.Dal.Enum
         [Display(Name = "Равно (без учета регистра)")]
         EqualIgnoreCase,
 
+        [Display(Name = "Равно (мультивыбор)")]
+        In,
+
         [Display(Name = "Не равно")]
         NotEqual,
 
