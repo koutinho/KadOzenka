@@ -13,6 +13,7 @@ using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model.Entities;
 using ModelingBusiness.Model.Exceptions;
 using ModelingBusiness.Model.Formulas;
+using ModelingBusiness.Model.Repositories;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using ObjectModel.Directory;
@@ -26,20 +27,20 @@ namespace ModelingBusiness.Model
 	public class ModelService : IModelService
 	{
 		private readonly ILogger _log = Log.ForContext<ModelService>();
-        private IModelingRepository ModelingRepository { get; set; }
+        private IModelRepository ModelRepository { get; set; }
         private IModelObjectsRepository ModelObjectsRepository { get; set; }
         private IModelFactorsService ModelFactorsService { get; set; }
         private RecycleBinService RecycleBinService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
 
-        public ModelService(IModelingRepository modelingRepository = null,
+        public ModelService(IModelRepository modelRepository = null,
 			IModelObjectsRepository modelObjectsRepository = null,
 			IModelFactorsService modelFactorsService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
-			ModelingRepository = modelingRepository ?? new ModelingRepository();
+			ModelRepository = modelRepository ?? new ModelRepository();
 			RecycleBinService = new RecycleBinService();
 			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
@@ -53,7 +54,7 @@ namespace ModelingBusiness.Model
 	        if (groupId == null)
 		        throw new Exception("Не передан идентификатор Группы для поиска модели");
 
-			var model = ModelingRepository.GetEntityByCondition(x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, null);
+			var model = ModelRepository.GetEntityByCondition(x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, null);
 
 			return model;
         }
@@ -78,7 +79,7 @@ namespace ModelingBusiness.Model
 	        if (modelId.GetValueOrDefault() == 0)
 		        throw new Exception(ModelingBusiness.Messages.EmptyModelId);
 
-	        var model = ModelingRepository.GetById(modelId.Value, null);
+	        var model = ModelRepository.GetById(modelId.Value, null);
 	        if (model == null)
 		        throw new ModelNotFoundByIdException($"Не найдена Модель с id='{modelId}'");
 
@@ -107,7 +108,7 @@ namespace ModelingBusiness.Model
 		        x.IsActive
 	        };
 	        
-	        var model = ModelingRepository.GetById(modelId, selectExpression);
+	        var model = ModelRepository.GetById(modelId, selectExpression);
 	        if (model == null)
 		        throw new Exception($"Не найдена модель с ИД '{modelId}'");
 
@@ -150,7 +151,7 @@ namespace ModelingBusiness.Model
 
         public bool IsModelGroupExist(long modelId)
         {
-	        var model = ModelingRepository.GetById(modelId, x => new {x.GroupId});
+	        var model = ModelRepository.GetById(modelId, x => new {x.GroupId});
 	        if (model == null)
 		        return false;
 
@@ -186,7 +187,7 @@ namespace ModelingBusiness.Model
                 Formula = "-"
 	        };
 
-	        ModelingRepository.Save(model);
+	        ModelRepository.Save(model);
         }
 
         public void AddManualModel(ModelDto modelDto)
@@ -204,7 +205,7 @@ namespace ModelingBusiness.Model
 		        Formula = "-"
 			};
 
-	        ModelingRepository.Save(model);
+	        ModelRepository.Save(model);
 		}
 
         public void UpdateAutomaticModel(ModelDto modelDto)
@@ -258,7 +259,7 @@ namespace ModelingBusiness.Model
 
         public void MakeModelActive(long modelId)
         {
-	        var model = ModelingRepository.GetById(modelId, x => new
+	        var model = ModelRepository.GetById(modelId, x => new
 	        {
 		        x.GroupId,
 		        x.Type_Code,
@@ -280,18 +281,18 @@ namespace ModelingBusiness.Model
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = ModelingRepository.GetEntitiesByCondition(
+				var otherModelsForGroup = ModelRepository.GetEntitiesByCondition(
 					x => x.GroupId == model.GroupId && x.IsActive.Coalesce(false) == true, x => new {x.IsActive});
 				otherModelsForGroup.ForEach(x =>
 				{
 					x.IsActive = false;
-					ModelingRepository.Save(x);
+					ModelRepository.Save(x);
 				});
 
 		        if (!model.IsActive.GetValueOrDefault())
 		        {
 			        model.IsActive = true;
-			        ModelingRepository.Save(model);
+			        ModelRepository.Save(model);
 		        }
 
 		        ts.Complete();

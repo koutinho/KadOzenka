@@ -24,6 +24,7 @@ using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;
+using ModelingBusiness.Model.Repositories;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Import;
@@ -139,7 +140,7 @@ namespace KadOzenka.Web.UnitTests
 			container.AddTransient(typeof(ITourService), sp => TourService.Object);
 			container.AddTransient(typeof(IModelService), sp => ModelService.Object);
 			container.AddTransient(typeof(IGbuObjectService), sp => GbuObjectService.Object);
-			container.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
+			container.AddTransient(typeof(IModelRepository), typeof(ModelRepository));
 			container.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
 			container.AddTransient(typeof(IModelFactorsRepository), x => ModelFactorsRepository.Object);
 			container.AddTransient(typeof(ILongProcessService), sp => LongProcessService.Object);

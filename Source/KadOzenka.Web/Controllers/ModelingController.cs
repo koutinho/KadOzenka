@@ -50,6 +50,7 @@ using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;
 using ModelingBusiness.Model.Entities;
+using ModelingBusiness.Model.Repositories;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Modeling.Entities;
 using ModelingBusiness.Modeling.InputParameters;
@@ -77,7 +78,7 @@ namespace KadOzenka.Web.Controllers
         public IModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
-        public IModelingRepository ModelingRepository { get; set; }
+        public IModelRepository ModelRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
         public IBaseModelObjectsImporter ModelObjectsImporter { get; set; }
 
@@ -85,7 +86,7 @@ namespace KadOzenka.Web.Controllers
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
 	        IRegisterAttributeService registerAttributeService, ModelDictionaryService modelDictionaryService,
 	        IModelFactorsService modelFactorsService, GroupService groupService,
-	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
+	        IModelObjectsRepository modelObjectsRepository, IModelRepository modelRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
@@ -100,7 +101,7 @@ namespace KadOzenka.Web.Controllers
             ModelFactorsService = modelFactorsService;
             GroupService = groupService;
             ModelObjectsRepository = modelObjectsRepository;
-            ModelingRepository = modelingRepository;
+            ModelRepository = modelRepository;
             ModelObjectsService = modelObjectsService;
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
@@ -1067,7 +1068,7 @@ namespace KadOzenka.Web.Controllers
             var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
             var fileStream = ModelObjectsService.ExportMarketObjectsToExcel(modelId, factors);
 
-            var modelName = ModelingRepository.GetById(modelId, x => new { x.Name })?.Name;
+            var modelName = ModelRepository.GetById(modelId, x => new { x.Name })?.Name;
             var fileName = $"Объекты модели {modelName}";
             HttpContext.Session.Set(fileName, fileStream.ToByteArray());
 

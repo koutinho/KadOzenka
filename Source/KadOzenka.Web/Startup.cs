@@ -66,6 +66,7 @@ using ModelingBusiness.Dictionaries.Repositories;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;
+using ModelingBusiness.Model.Repositories;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Import;
@@ -140,7 +141,7 @@ namespace CIPJS
             services.AddSingleton<SignalRMessageService>();
             services.AddSingleton<StatisticalDataService>();
             services.AddSingleton<CustomReportsService>();
-            services.AddTransient(typeof(IModelingRepository), typeof(ModelingRepository));
+            services.AddTransient(typeof(IModelRepository), typeof(ModelRepository));
             services.AddTransient(typeof(IModelService), typeof(ModelService));
             services.AddTransient(typeof(IModelObjectsService), typeof(ModelObjectsService));
             services.AddTransient(typeof(IModelFactorsService), typeof(ModelFactorsService));

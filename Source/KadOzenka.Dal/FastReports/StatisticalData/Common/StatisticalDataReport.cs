@@ -18,6 +18,7 @@ using KadOzenka.Dal.CancellationQueryManager;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;
+using ModelingBusiness.Model.Repositories;
 using Serilog;
 
 namespace KadOzenka.Dal.FastReports.StatisticalData.Common
@@ -34,7 +35,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
         protected readonly RosreestrRegisterService RosreestrRegisterService;
         protected readonly GbuCodRegisterService GbuCodRegisterService;
         protected readonly ModelService ModelService;
-        protected readonly ModelingRepository ModelingRepository;
+        protected readonly ModelRepository ModelRepository;
         protected readonly ModelFactorsService ModelFactorsService;
 		protected readonly GroupService GroupService;
 		protected readonly FactorsService FactorsService;
@@ -48,7 +49,7 @@ namespace KadOzenka.Dal.FastReports.StatisticalData.Common
             RosreestrRegisterService = new RosreestrRegisterService();
             GbuCodRegisterService = new GbuCodRegisterService();
             ModelService = new ModelService();
-            ModelingRepository = new ModelingRepository();
+            ModelRepository = new ModelRepository();
             ModelFactorsService = new ModelFactorsService();
             GroupService = new GroupService();
             FactorsService = new FactorsService();
