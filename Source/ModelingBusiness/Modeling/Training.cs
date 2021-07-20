@@ -28,7 +28,7 @@ namespace ModelingBusiness.Modeling
         protected GeneralModelingInputParameters InputParameters { get; set; }
         private OMModel GeneralModel { get; }
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
-        private List<ModelAttributeRelationPure> ModelAttributes { get; set; }
+        private List<ModelFactorRelationPure> ModelAttributes { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
         private string AdditionalMessage { get; set; }
 
@@ -38,7 +38,7 @@ namespace ModelingBusiness.Modeling
             InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
             GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
-            ModelAttributes = new List<ModelAttributeRelationPure>();
+            ModelAttributes = new List<ModelFactorRelationPure>();
             ModelDictionaryService = new ModelDictionaryService();
         }
 
@@ -362,7 +362,7 @@ namespace ModelingBusiness.Modeling
 
         private void InitModelAttributes()
         {
-	        ModelAttributes = ModelFactorsService.GetGeneralModelAttributes(GeneralModel.Id).Where(x => x.IsActive).ToList();
+	        ModelAttributes = ModelFactorsService.GetGeneralModelFactors(GeneralModel.Id).Where(x => x.IsActive).ToList();
 
             if (ModelAttributes.Count == 0)
 		        throw new Exception("У модели нет активных факторов, обучение невозможно");

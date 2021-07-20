@@ -9,7 +9,7 @@ namespace KadOzenka.Web.Models.Modeling
 	public class ModelingObjectsModel 
     {
 	    public long Id { get; set; }
-	    public List<ModelAttributeRelationPure> Attributes { get; set; }
+	    public List<ModelFactorRelationPure> Attributes { get; set; }
 
         [Display(Name = "Имя")]
         public string Name { get; set; }
@@ -22,7 +22,7 @@ namespace KadOzenka.Web.Models.Modeling
 
 
 
-		public static ModelingObjectsModel ToModel(ModelDto model, List<ModelAttributeRelationPure> attributes)
+		public static ModelingObjectsModel ToModel(ModelDto model, List<ModelFactorRelationPure> attributes)
 		{
 			return new ModelingObjectsModel
 			{

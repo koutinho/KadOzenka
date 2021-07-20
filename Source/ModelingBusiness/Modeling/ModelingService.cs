@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommonSdks;
@@ -240,7 +241,7 @@ namespace ModelingBusiness.Modeling
 			if (activeModel == null)
 				return null;
 
-			var modelFactors = ModelFactorsService.GetGeneralModelAttributes(activeModel.Id);
+			var modelFactors = ModelFactorsService.GetGeneralModelFactors(activeModel.Id);
 			var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
 
 			return dictionaryId;

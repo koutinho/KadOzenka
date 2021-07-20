@@ -15,7 +15,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public bool IsNormalized => DictionaryId != null;
 
 
-		public static DictionaryModel ToModel(ModelAttributeRelationPure dto)
+		public static DictionaryModel ToModel(ModelFactorRelationPure dto)
 		{
 			return new DictionaryModel
 			{

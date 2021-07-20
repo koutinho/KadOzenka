@@ -51,7 +51,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected List<ModelAttributePure> GetGeneralModelAttributes(long modelId)
 		{
-			return ModelFactorsService.GetGeneralModelAttributes(modelId)
+			return ModelFactorsService.GetGeneralModelFactors(modelId)
 				.Select(x => new ModelAttributePure(x.AttributeId, x.DictionaryId)).ToList();
 		}
 

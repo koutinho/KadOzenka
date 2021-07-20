@@ -822,7 +822,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetModelDictionaries([DataSourceRequest] DataSourceRequest request, long modelId)
         {
-	        var modelAttributes = ModelFactorsService.GetGeneralModelAttributes(modelId)
+	        var modelAttributes = ModelFactorsService.GetGeneralModelFactors(modelId)
 		        .Where(x => x.IsNormalized).Select(DictionaryModel.ToModel)
 		        .ToList();
 
@@ -1014,7 +1014,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var modelDto = ModelService.GetModelById(modelId);
             
-            var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+            var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
 
             var model = ModelingObjectsModel.ToModel(modelDto, attributes);
 
@@ -1143,7 +1143,7 @@ namespace KadOzenka.Web.Controllers
                     });
                 });
 
-            var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
+            var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
             attributes.ForEach(x =>
             {
                 if (x.IsNormalized)
@@ -1416,7 +1416,7 @@ namespace KadOzenka.Web.Controllers
         private List<long> GetModelDictionariesIds(long? modelId)
         {
 	        return ModelFactorsService
-		        .GetGeneralModelAttributes(modelId.GetValueOrDefault())
+		        .GetGeneralModelFactors(modelId.GetValueOrDefault())
 		        .Select(x => x.DictionaryId.GetValueOrDefault()).Distinct().ToList();
         }
 

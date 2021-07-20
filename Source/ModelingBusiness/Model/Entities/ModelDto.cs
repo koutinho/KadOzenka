@@ -32,11 +32,11 @@ namespace ModelingBusiness.Model.Entities
         public string MultiplicativeTrainingResult { get; set; }
         public bool IsOksObjectType { get; set; }
         public bool IsActive { get; set; }
-        public List<ModelAttributeRelationDto> Attributes { get; set; }
+        public List<ModelFactorRelationDto> Attributes { get; set; }
 
         public ModelDto()
 		{
-			Attributes = new List<ModelAttributeRelationDto>();
+			Attributes = new List<ModelFactorRelationDto>();
 		}
 	}
 }

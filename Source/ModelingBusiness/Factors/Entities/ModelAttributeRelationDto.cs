@@ -3,7 +3,7 @@ using ObjectModel.Directory;
 
 namespace ModelingBusiness.Factors.Entities
 {
-	public class ModelAttributeRelationPure
+	public class ModelFactorRelationPure
 	{
 		/// <summary>
 		/// ID строки из ko_model_factor
@@ -20,7 +20,7 @@ namespace ModelingBusiness.Factors.Entities
 		public bool IsActive { get; set; }
 	}
 
-	public class ModelAttributeRelationDto : ModelAttributeRelationPure
+	public class ModelFactorRelationDto : ModelFactorRelationPure
 	{
 		public KoAlgoritmType Type { get; set; }
 		public decimal? Correction { get; set; }

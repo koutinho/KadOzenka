@@ -10,8 +10,8 @@ namespace ModelingBusiness.Factors
 	{
 		OMModelFactor GetFactorById(long? id);
 		List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type);
-		List<ModelAttributeRelationPure> GetGeneralModelAttributes(long modelId);
-		List<ModelAttributeRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type);
+		List<ModelFactorRelationPure> GetGeneralModelFactors(long modelId);
+		List<ModelFactorRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type);
 		QSQuery GetModelFactorsQuery(long modelId, QSCondition additionalCondition = null);
 		void AddAutomaticFactor(AutomaticModelFactorDto dto);
 		bool UpdateAutomaticFactor(AutomaticModelFactorDto dto);
