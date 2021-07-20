@@ -7,15 +7,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using CommonSdks.ConfigurationManagers;
 using Core.Register;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Importers.Base;
 using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.GbuObject;
-using KadOzenka.Dal.Helpers;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.Directory;
@@ -59,7 +58,7 @@ namespace KadOzenka.Dal.XmlParser
 
         public static void FillDictionary()
         {
-	        var dictionaries = ConfigurationManagers.ConfigurationManager.KoConfig.DictionariesForTaskDocument;
+	        var dictionaries = ConfigurationManager.KoConfig.DictionariesForTaskDocument;
             
             dictAssignationBuild ??= new xsdDictionary(dictionaries.AssBuilding, "dAssBuilding");
             dictWall ??= new xsdDictionary(dictionaries.Wall, "dWall");
@@ -1949,7 +1948,7 @@ namespace KadOzenka.Dal.XmlParser
             var objects = new xmlObjectList();
             var mainWorkSheet = excelFile.Worksheets[0];
             var objectTypeDescriptions = new ObjectTypeEnumDescriptions();
-            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+            var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
             mainWorkSheet.Rows.ForEach(row =>
             {
                 string cadastralNumber = null;

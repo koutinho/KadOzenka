@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.Modeling.Factors.Entities;
+using ModelingBusiness.Factors.Entities;
+using ModelingBusiness.Model.Entities;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -21,14 +22,14 @@ namespace KadOzenka.Web.Models.Modeling
 
 
 
-		public static ModelingObjectsModel ToModel(OMModel model, long? tourYear, List<ModelAttributeRelationPure> attributes)
+		public static ModelingObjectsModel ToModel(ModelDto model, List<ModelAttributeRelationPure> attributes)
 		{
 			return new ModelingObjectsModel
 			{
-				Id = model.Id,
+				Id = model.ModelId,
 				Name = model.Name,
-				TourYear = tourYear,
-				GroupName = $"{model.ParentGroup?.Number}.{model.ParentGroup?.GroupName}",
+				TourYear = model.TourYear,
+				GroupName = model.FullGroupName,
 				Attributes = attributes
 			};
         }

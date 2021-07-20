@@ -19,6 +19,7 @@
     <ProjectReference Include="..\KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
     <ProjectReference Include="..\KadOzenka.Web\KadOzenka.Web.csproj" />
+    <ProjectReference Include="..\ModelingBusiness\ModelingBusiness.csproj" />
 
 	  <Reference Include="Kendo.Mvc">
 		  <HintPath>..\_Dll\Kendo.Mvc.dll</HintPath>

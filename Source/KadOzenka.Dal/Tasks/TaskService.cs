@@ -11,6 +11,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Transactions;
+using CommonSdks.RecycleBin;
 using Core.Register;
 using Core.Shared.Misc;
 using GemBox.Spreadsheet;
@@ -23,7 +24,6 @@ using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.Models.Task;
 using KadOzenka.Dal.Oks;
-using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using KadOzenka.Dal.Tasks.Responses;
 using KadOzenka.Dal.Tours;
@@ -240,12 +240,12 @@ namespace KadOzenka.Dal.Tasks
             excelFile.Worksheets.Add("Изменения");
             var sheet = excelFile.Worksheets[0];
 
-            DataExportCommon.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
+            CommonSdks.ExcelFileHelper.AddRow(sheet,0,new object[]{"КН","Атрибут","Старое значение", "Новое значение"});
             var rowCounter = 1;
 
             foreach (var attribute in history)
             {
-                DataExportCommon.AddRow(sheet,rowCounter,new object[]
+	            CommonSdks.ExcelFileHelper.AddRow(sheet,rowCounter,new object[]
                 {
                     attribute.cDoc.CadastralNumber,
                     attribute.cDoc.AttrName,

@@ -1,6 +1,7 @@
 ﻿using System;
+using CommonSdks.RecycleBin;
+using CommonSdks.RecycleBin.Dto;
 using KadOzenka.Dal.LongProcess.RecycleBin;
-using KadOzenka.Dal.RecycleBin.Dto;
 
 namespace KadOzenka.Web.Models.RecycleBin
 {

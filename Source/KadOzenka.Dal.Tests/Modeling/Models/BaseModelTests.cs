@@ -1,13 +1,12 @@
-﻿using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Dictionaries.Repositories;
-using KadOzenka.Dal.Modeling.Factors;
-using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Model.Repositories;
-using KadOzenka.Dal.Modeling.Objects;
-using KadOzenka.Dal.Modeling.Objects.Repositories;
-using KadOzenka.Dal.Tests;
+﻿using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
+using ModelingBusiness.Dictionaries;
+using ModelingBusiness.Dictionaries.Repositories;
+using ModelingBusiness.Factors;
+using ModelingBusiness.Factors.Repositories;
+using ModelingBusiness.Model;
+using ModelingBusiness.Model.Repositories;
+using ModelingBusiness.Objects.Repositories;
 using Moq;
 using NUnit.Framework;
 
@@ -18,7 +17,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 		protected ModelService ModelService => Provider.GetService<ModelService>();
 		protected ModelDictionaryService ModelDictionaryService => Provider.GetService<ModelDictionaryService>();
 		protected Mock<IModelFactorsService> ModelFactorsService { get; set; }
-		protected Mock<IModelingRepository> ModelingRepository { get; set; }
+		protected Mock<IModelRepository> ModelingRepository { get; set; }
 		protected Mock<IModelObjectsRepository> ModelObjectsRepository { get; set; }
 		protected Mock<IModelDictionaryRepository> ModelDictionaryRepository { get; set; }
 		protected Mock<IModelMarksRepository> ModelMarksRepository { get; set; }
@@ -27,7 +26,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 		[SetUp]
 		public void BaseModelTestsSetUp()
 		{
-			ModelingRepository = new Mock<IModelingRepository>();
+			ModelingRepository = new Mock<IModelRepository>();
 			ModelObjectsRepository = new Mock<IModelObjectsRepository>();
 			ModelDictionaryRepository = new Mock<IModelDictionaryRepository>();
 			ModelMarksRepository = new Mock<IModelMarksRepository>();
@@ -39,7 +38,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 		{
 			container.AddTransient<ModelService>();
 			container.AddTransient<ModelDictionaryService>();
-			container.AddTransient(typeof(IModelingRepository), sp => ModelingRepository.Object);
+			container.AddTransient(typeof(IModelRepository), sp => ModelingRepository.Object);
 			container.AddTransient(typeof(IModelObjectsRepository), sp => ModelObjectsRepository.Object);
 			container.AddTransient(typeof(IModelDictionaryRepository), sp => ModelDictionaryRepository.Object);
 			container.AddTransient(typeof(IModelMarksRepository), sp => ModelMarksRepository.Object);

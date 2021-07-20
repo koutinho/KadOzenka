@@ -5,9 +5,8 @@ using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.ConfigurationManagers;
 using Core.SRD;
-using KadOzenka.Dal.ConfigurationManagers;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models;
 
 namespace KadOzenka.Dal.MapModeling
 {

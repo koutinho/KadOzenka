@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using KadOzenka.Dal.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers;
 using ObjectModel.Core.Shared;
 using ObjectModel.Market;
 

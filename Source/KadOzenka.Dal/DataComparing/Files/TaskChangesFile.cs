@@ -44,7 +44,7 @@ namespace KadOzenka.Dal.DataComparing.Files
 		public void Compare(TaskChangesFile comparableFile, ExcelFile resultExcelFile, string resultWorksheetName)
 		{
 			resultExcelFile.Worksheets.Add(resultWorksheetName);
-			DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], 0, new object[] { "КН", "Новое значение", "Изменение" });
+			CommonSdks.ExcelFileHelper.AddRow(resultExcelFile.Worksheets[resultWorksheetName], 0, new object[] { "КН", "Новое значение", "Изменение" });
 
 			CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 			ParallelOptions options = new ParallelOptions
@@ -53,8 +53,8 @@ namespace KadOzenka.Dal.DataComparing.Files
 				MaxDegreeOfParallelism = 100
 			};
 
-			var targetLastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(ExcelFile.Worksheets[0]);
-			var comparableLastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(comparableFile.ExcelFile.Worksheets[0]);
+			var targetLastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(ExcelFile.Worksheets[0]);
+			var comparableLastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(comparableFile.ExcelFile.Worksheets[0]);
 
 			var resultRowCounter = 1;
 			for (var i = 1; i <= targetLastUsedRowIndex; i++)
@@ -110,7 +110,7 @@ namespace KadOzenka.Dal.DataComparing.Files
 
 				if (!isExists)
 				{
-					DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], resultRowCounter, new object[]
+					CommonSdks.ExcelFileHelper.AddRow(resultExcelFile.Worksheets[resultWorksheetName], resultRowCounter, new object[]
 					{
 						targetKn,
 						targetChanging,

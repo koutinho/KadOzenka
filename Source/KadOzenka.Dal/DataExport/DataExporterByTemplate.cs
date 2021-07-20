@@ -139,7 +139,7 @@ namespace KadOzenka.Dal.DataExport
 			int packageSize = 1000;
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
-			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 			var usedRowCount = lastUsedRowIndex + 1;
             if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 				throw new Exception("В указанном файле отсутствуют данные");
@@ -277,7 +277,7 @@ namespace KadOzenka.Dal.DataExport
         protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
 			var columnNames = new List<string>();
-			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			for (var i = 0; i < maxColumns; i++)
 			{
                 var value = GetCellValue(mainWorkSheet, 0, i);

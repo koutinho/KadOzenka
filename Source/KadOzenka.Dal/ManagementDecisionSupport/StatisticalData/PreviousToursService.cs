@@ -6,11 +6,10 @@ using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;
-using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Model;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
+using ModelingBusiness.Model;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 {

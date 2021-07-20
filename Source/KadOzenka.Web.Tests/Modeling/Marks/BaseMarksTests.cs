@@ -1,5 +1,5 @@
 ﻿using KadOzenka.Common.Tests;
-using KadOzenka.Dal.Modeling.Model.Entities;
+using ModelingBusiness.Model.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 

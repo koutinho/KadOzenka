@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using CommonSdks.RecycleBin;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CodDictionary.Entities;
 using KadOzenka.Dal.CommonFunctions;
-using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Registers.Entities;
 using KadOzenka.Dal.Tests;

@@ -13,6 +13,8 @@ using ObjectModel.Core.Shared;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using Core.Register.Enums;
 using KadOzenka.Dal.CodDictionary;
 using KadOzenka.Dal.CommonFunctions;
@@ -24,7 +26,7 @@ using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImportByTemplate;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.KO;
-using ConfigurationManager = KadOzenka.Dal.ConfigurationManagers.ConfigurationManager;
+using ConfigurationManager = CommonSdks.ConfigurationManagers.ConfigurationManager;
 using Consts = MarketPlaceBusiness.Common.Consts;
 
 

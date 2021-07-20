@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
@@ -336,7 +337,7 @@ namespace KadOzenka.Dal.Tours
             };
             var locked = new object();
 
-            int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+            int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
             var columnNames = new List<string>();
             for (var i = 0; i < maxColumns; i++)
             {
@@ -345,7 +346,7 @@ namespace KadOzenka.Dal.Tours
             }
 
             mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат сохранения");
-            var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+            var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
             var dataRows = mainWorkSheet.Rows.Where(x => x.Index > 0 && x.Index <= lastUsedRowIndex).ToList();
 
             Parallel.ForEach(dataRows, options, row =>

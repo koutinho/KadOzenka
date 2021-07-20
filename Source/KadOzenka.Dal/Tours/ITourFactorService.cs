@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using CommonSdks.RecycleBin;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Oks;
-using KadOzenka.Dal.RecycleBin;
 using KadOzenka.Dal.Registers;
 using KadOzenka.Dal.Tours.Dto;
 using ObjectModel.Core.Register;

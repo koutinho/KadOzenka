@@ -4,9 +4,9 @@ using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
-using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Modeling;
-using KadOzenka.Dal.Modeling.Modeling.Entities;
+using ModelingBusiness.Modeling;
+using ModelingBusiness.Modeling.Entities;
+using ModelingBusiness.Modeling.InputParameters;
 using ObjectModel.Core.LongProcess;
 using Serilog;
 

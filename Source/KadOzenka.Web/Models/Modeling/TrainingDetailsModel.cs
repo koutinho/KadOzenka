@@ -1,5 +1,5 @@
 ﻿using System;
-using KadOzenka.Dal.Modeling.Modeling.Entities;
+using ModelingBusiness.Modeling.Entities;
 using ObjectModel.Directory;
 
 namespace KadOzenka.Web.Models.Modeling

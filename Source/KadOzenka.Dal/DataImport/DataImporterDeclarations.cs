@@ -18,6 +18,7 @@ using ObjectModel.Core.LongProcess;
 using ObjectModel.Core.Shared;
 using ObjectModel.Declarations;
 using System.Data;
+using CommonSdks;
 using Core.RefLib;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.DataImport.Validation;
@@ -143,7 +144,7 @@ namespace KadOzenka.Dal.DataImport
 				CancellationToken = cancelTokenSource.Token,
 				MaxDegreeOfParallelism = 10
 			};
-			int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue($"Результат сохранения");
 
 			var columnNames = new List<string>();
@@ -153,7 +154,7 @@ namespace KadOzenka.Dal.DataImport
 					columnNames.Add(mainWorkSheet.Rows[0].Cells[i].Value.ToString());
 			}
 
-			var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				try
