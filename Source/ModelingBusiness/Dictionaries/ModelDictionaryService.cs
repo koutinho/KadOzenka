@@ -180,7 +180,138 @@ namespace ModelingBusiness.Dictionaries
 			return 0;
 		}
 
-		#region Import from Excel
+		#endregion
+
+
+		#region Метки
+
+		public List<OMModelingDictionariesValues> GetMarks(long dictionaryId)
+		{
+			return OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).SelectAll().Execute();
+		}
+
+		public List<OMModelingDictionariesValues> GetMarks(List<long?> dictionaryIds)
+		{
+			if (dictionaryIds.IsEmpty())
+				return new List<OMModelingDictionariesValues>();
+
+			return OMModelingDictionariesValues.Where(x => dictionaryIds.Contains(x.DictionaryId)).SelectAll().Execute();
+		}
+
+		public OMModelingDictionariesValues GetMark(long id)
+		{
+			var mark = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
+			if (mark == null)
+				throw new Exception($"Не найдено значение с ИД = '{id}'");
+
+			return mark;
+		}
+
+		public long CreateMark(DictionaryMarkDto dto)
+		{
+			var dictionary = GetDictionaryById(dto.DictionaryId);
+
+			ValidateSingleMark(dictionary, dto);
+
+			var mark = new OMModelingDictionariesValues
+			{
+				DictionaryId = dto.DictionaryId,
+				Value = dto.Value,
+				CalculationValue = dto.CalculationValue.GetValueOrDefault()
+			};
+
+			return ModelMarksRepository.Save(mark);
+		}
+
+		public void UpdateMark(DictionaryMarkDto dto)
+		{
+			var mark = GetMark(dto.Id);
+
+			var dictionary = GetDictionaryById(dto.DictionaryId);
+
+			ValidateSingleMark(dictionary, dto);
+
+			mark.Value = dto.Value;
+			mark.CalculationValue = dto.CalculationValue.GetValueOrDefault();
+			mark.Save();
+		}
+
+		public void DeleteMark(long markId)
+		{
+			var mark = GetMark(markId);
+
+			mark.Destroy();
+		}
+
+		public int DeleteMarks(long? dictionaryId)
+		{
+			if (dictionaryId.GetValueOrDefault() == 0)
+				return 0;
+
+			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			return DBMngr.Main.ExecuteNonQuery(command);
+		}
+
+		public Stream ExportMarkerListToExcel(long dictionaryId)
+		{
+			var excelTemplate = new ExcelFile();
+			var mainWorkSheet = excelTemplate.Worksheets.Add("Метки");
+
+			ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
+
+			var row = 1;
+			var markers = new ModelDictionaryService().GetMarks(dictionaryId);
+
+			foreach (var marker in markers)
+			{
+				var factor = marker.Value ?? string.Empty;
+				var metka = marker.CalculationValue.ParseToString();
+
+				ExcelFileHelper.AddRow(mainWorkSheet, row, new object[] { factor, metka });
+				row++;
+			}
+
+			var stream = new MemoryStream();
+			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
+
+		#region Support Methods
+
+		private void ValidateSingleMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
+		{
+			ValidateMark(dictionary.Type_Code, mark.Value, mark.CalculationValue);
+			
+			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
+			if (isTheSameMarkExists)
+				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
+		}
+
+		private void ValidateMark(ModelDictionaryType dictionaryType, string value, decimal? calculationValue)
+		{
+			var isEmptyValue = string.IsNullOrWhiteSpace(value);
+			if (isEmptyValue)
+				throw new EmptyMarkValueException();
+			if (calculationValue == null)
+				throw new EmptyMarkCalculationValueException();
+
+			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
+			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
+			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
+
+			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
+				throw new MarkValueConvertingException(value, dictionaryType);
+		}
+
+		#endregion
+
+		#endregion
+
+
+		#region Загрузка меток через Excel
 
 		public void UpdateDictionaryFromExcel(OMImportDataLog import, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool isDeleteExistedMarks)
@@ -494,136 +625,6 @@ namespace ModelingBusiness.Dictionaries
 
 			return dictionaryType;
 		}
-
-		#endregion
-
-		#endregion
-
-
-		#region Метки
-
-		public List<OMModelingDictionariesValues> GetMarks(long dictionaryId)
-		{
-			return OMModelingDictionariesValues.Where(x => x.DictionaryId == dictionaryId).SelectAll().Execute();
-		}
-
-		public List<OMModelingDictionariesValues> GetMarks(List<long?> dictionaryIds)
-		{
-			if (dictionaryIds.IsEmpty())
-				return new List<OMModelingDictionariesValues>();
-
-			return OMModelingDictionariesValues.Where(x => dictionaryIds.Contains(x.DictionaryId)).SelectAll().Execute();
-		}
-
-		public OMModelingDictionariesValues GetMark(long id)
-		{
-			var mark = OMModelingDictionariesValues.Where(x => x.Id == id).SelectAll().ExecuteFirstOrDefault();
-			if (mark == null)
-				throw new Exception($"Не найдено значение с ИД = '{id}'");
-
-			return mark;
-		}
-
-		public long CreateMark(DictionaryMarkDto dto)
-		{
-			var dictionary = GetDictionaryById(dto.DictionaryId);
-
-			ValidateSingleMark(dictionary, dto);
-
-			var mark = new OMModelingDictionariesValues
-			{
-				DictionaryId = dto.DictionaryId,
-				Value = dto.Value,
-				CalculationValue = dto.CalculationValue.GetValueOrDefault()
-			};
-
-			return ModelMarksRepository.Save(mark);
-		}
-
-		public void UpdateMark(DictionaryMarkDto dto)
-		{
-			var mark = GetMark(dto.Id);
-
-			var dictionary = GetDictionaryById(dto.DictionaryId);
-
-			ValidateSingleMark(dictionary, dto);
-
-			mark.Value = dto.Value;
-			mark.CalculationValue = dto.CalculationValue.GetValueOrDefault();
-			mark.Save();
-		}
-
-		public void DeleteMark(long markId)
-		{
-			var mark = GetMark(markId);
-
-			mark.Destroy();
-		}
-
-		public int DeleteMarks(long? dictionaryId)
-		{
-			if (dictionaryId.GetValueOrDefault() == 0)
-				return 0;
-
-			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
-
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			return DBMngr.Main.ExecuteNonQuery(command);
-		}
-
-		public Stream ExportMarkerListToExcel(long dictionaryId)
-		{
-			var excelTemplate = new ExcelFile();
-			var mainWorkSheet = excelTemplate.Worksheets.Add("Метки");
-
-			ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
-
-			var row = 1;
-			var markers = new ModelDictionaryService().GetMarks(dictionaryId);
-
-			foreach (var marker in markers)
-			{
-				var factor = marker.Value ?? string.Empty;
-				var metka = marker.CalculationValue.ParseToString();
-
-				ExcelFileHelper.AddRow(mainWorkSheet, row, new object[] { factor, metka });
-				row++;
-			}
-
-			var stream = new MemoryStream();
-			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
-			stream.Seek(0, SeekOrigin.Begin);
-			return stream;
-		}
-
-		#region Support Methods
-
-		private void ValidateSingleMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
-		{
-			ValidateMark(dictionary.Type_Code, mark.Value, mark.CalculationValue);
-			
-			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
-			if (isTheSameMarkExists)
-				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
-		}
-
-		private void ValidateMark(ModelDictionaryType dictionaryType, string value, decimal? calculationValue)
-		{
-			var isEmptyValue = string.IsNullOrWhiteSpace(value);
-			if (isEmptyValue)
-				throw new EmptyMarkValueException();
-			if (calculationValue == null)
-				throw new EmptyMarkCalculationValueException();
-
-			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
-			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
-			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
-
-			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
-				throw new MarkValueConvertingException(value, dictionaryType);
-		}
-
-		#endregion
 
 		#endregion
 	}
