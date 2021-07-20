@@ -195,7 +195,7 @@ namespace KadOzenka.Web.Controllers
         {
             var modelDto = ModelService.GetModelById(modelId);
 
-            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.Training);
+            var hasFormedObjectArray = ModelObjectsRepository.AreIncludedModelObjectsExist(modelId, IncludedObjectsMode.All);
             var model = AutomaticModelingModel.ToModel(modelDto, hasFormedObjectArray);
             model.IsReadOnly = isReadOnly;
 
@@ -274,6 +274,23 @@ namespace KadOzenka.Web.Controllers
             ModelService.UpdateAutomaticModel(modelDto);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult CalculateMarks(long modelId)
+        {
+	        ////TODO код для отладки
+			//new MarksCalculationLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//  ObjectId = modelId
+			//}, new CancellationToken());
+
+			MarksCalculationLongProcess.AddProcessToQueue(modelId);
+
+	        return Ok();
         }
 
         [HttpPost]

@@ -182,6 +182,14 @@
                 },
                 {
                     type: 'button',
+                    id: 'calculateMarksBtn',
+                    text: '',
+                    attributes: { title: "Расчитать метки" },
+                    icon: 'paste-markdown',
+                    click: calculateMarks
+                },
+                {
+                    type: 'button',
                     id: 'formObjectArrayBtn',
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
@@ -325,6 +333,26 @@
 			}
 		});
     }
+
+
+    function calculateMarks() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CalculateMarks", "Modeling", new {modelId = Model.Id})',
+            success: function () {
+                Common.ShowMessage("Процесс расчета меток поставлен в очередь. По его завершению будет отправлено сообщение на почту.");
+                $("#mainToolbar").data("kendoToolBar").enable("#calculateMarksBtn", false);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
 
     function onFormObjectArrayBtnClick() {
         kendo.ui.progress($('body'), true);
@@ -510,6 +538,7 @@
     function changeToolBarButtonsClass() {
         var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
         $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
+        $("#mainToolbar").data("kendoToolBar").enable("#calculateMarksBtn", hasFormedObjectArray);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
             $('#editFactorBtn').addClass('k-state-disabled');
