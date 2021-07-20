@@ -180,6 +180,54 @@ namespace ModelingBusiness.Dictionaries
 			return 0;
 		}
 
+		#region Support Methods
+
+		private void ValidateDictionary(string name, List<long> modelDictionariesIds)
+		{
+			if (string.IsNullOrWhiteSpace(name))
+				throw new Exception("Нельзя создать словарь с пустым именем");
+
+			if (modelDictionariesIds.Count > 0)
+			{
+				var existedDictionaries = GetDictionaries(modelDictionariesIds, false);
+				if (existedDictionaries.Select(x => x.Name).Contains(name))
+					throw new DictionaryAlreadyExistsException(name);
+			}
+		}
+
+		private ModelDictionaryType MapDictionaryType(RegisterAttributeType factorType)
+		{
+			ModelDictionaryType dictionaryType;
+			switch (factorType)
+			{
+				case RegisterAttributeType.INTEGER:
+					dictionaryType = ModelDictionaryType.Integer;
+					break;
+				case RegisterAttributeType.DECIMAL:
+					dictionaryType = ModelDictionaryType.Decimal;
+					break;
+				case RegisterAttributeType.BOOLEAN:
+					dictionaryType = ModelDictionaryType.Boolean;
+					break;
+				case RegisterAttributeType.STRING:
+					dictionaryType = ModelDictionaryType.String;
+					break;
+				case RegisterAttributeType.DATE:
+					dictionaryType = ModelDictionaryType.Date;
+					break;
+				case RegisterAttributeType.REFERENCE:
+					dictionaryType = ModelDictionaryType.Reference;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException(
+						$"Для фактора с типом '{factorType.GetEnumDescription()}' нельзя создать словарь меток");
+			}
+
+			return dictionaryType;
+		}
+
+		#endregion
+
 		#endregion
 
 
@@ -577,54 +625,6 @@ namespace ModelingBusiness.Dictionaries
 		}
 
 		#endregion
-
-		#endregion
-
-		#region Support Methods
-
-		private void ValidateDictionary(string name, List<long> modelDictionariesIds)
-		{
-			if (string.IsNullOrWhiteSpace(name))
-				throw new Exception("Нельзя создать словарь с пустым именем");
-
-			if (modelDictionariesIds.Count > 0)
-			{
-				var existedDictionaries = GetDictionaries(modelDictionariesIds, false);
-				if (existedDictionaries.Select(x => x.Name).Contains(name))
-					throw new DictionaryAlreadyExistsException(name);
-			}
-		}
-
-		private ModelDictionaryType MapDictionaryType(RegisterAttributeType factorType)
-		{
-			ModelDictionaryType dictionaryType;
-			switch (factorType)
-			{
-				case RegisterAttributeType.INTEGER:
-					dictionaryType = ModelDictionaryType.Integer;
-					break;
-				case RegisterAttributeType.DECIMAL:
-					dictionaryType = ModelDictionaryType.Decimal;
-					break;
-				case RegisterAttributeType.BOOLEAN:
-					dictionaryType = ModelDictionaryType.Boolean;
-					break;
-				case RegisterAttributeType.STRING:
-					dictionaryType = ModelDictionaryType.String;
-					break;
-				case RegisterAttributeType.DATE:
-					dictionaryType = ModelDictionaryType.Date;
-					break;
-				case RegisterAttributeType.REFERENCE:
-					dictionaryType = ModelDictionaryType.Reference;
-					break;
-				default:
-					throw new ArgumentOutOfRangeException(
-						$"Для фактора с типом '{factorType.GetEnumDescription()}' нельзя создать словарь меток");
-			}
-
-			return dictionaryType;
-		}
 
 		#endregion
 	}
