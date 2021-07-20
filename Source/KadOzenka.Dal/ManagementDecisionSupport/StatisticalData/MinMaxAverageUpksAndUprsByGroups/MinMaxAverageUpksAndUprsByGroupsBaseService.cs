@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using CommonSdks;
 using Core.ConfigParam;
+using Core.Shared.Misc;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups.Dto;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageUpksAndUprsByGroups
@@ -37,7 +38,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.MinMaxAverageU
 
         protected string GetSqlFileContent(string fileName)
         {
-	        var path = PathCombiner.GetFullPath("StatisticalData", "MinMaxAverageUpksAndUprsByGroups", fileName);
+	        var path = FileSystemHelper.CombinePath("StatisticalData", "MinMaxAverageUpksAndUprsByGroups", fileName);
             string contents;
             using (var sr = new StreamReader(Configuration.GetFileStream(path, "sql", "SqlQueries")))
             {

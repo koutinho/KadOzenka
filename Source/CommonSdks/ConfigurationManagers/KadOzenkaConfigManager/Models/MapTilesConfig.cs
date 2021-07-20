@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Core.Shared.Misc;
 using Core.SRD;
 using Newtonsoft.Json;
 
@@ -47,26 +48,26 @@ namespace CommonSdks.ConfigurationManagers.KadOzenkaConfigManager.Models
 
 		public string GetMarketHeatMapInitialImageFileName(int currentZoom)
 		{
-			var directory = PathCombiner.GetFullPath(MarketMapHeatMapLayerFolder,
+			var directory = FileSystemHelper.CombinePath(MarketMapHeatMapLayerFolder,
 				$"user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}", "InitialImages");
 			if (!Directory.Exists(directory))
 			{
 				Directory.CreateDirectory(directory);
 			}
 
-			return PathCombiner.GetFullPath(directory, $"{currentZoom}.png");
+			return FileSystemHelper.CombinePath(directory, $"{currentZoom}.png");
 		}
 
 		public string GetManagementDecisionSupportHeatMapInitialImageFileName(int currentZoom)
 		{
-			var directory = PathCombiner.GetFullPath(ManagementDecisionSupportHeatMapLayerFolder,
+			var directory = FileSystemHelper.CombinePath(ManagementDecisionSupportHeatMapLayerFolder,
 				$"user_{SRDSession.GetCurrentUserId().GetValueOrDefault()}", "InitialImages");
 			if (!Directory.Exists(directory))
 			{
 				Directory.CreateDirectory(directory);
 			}
 
-			return PathCombiner.GetFullPath(directory, $"{currentZoom}.png");
+			return FileSystemHelper.CombinePath(directory, $"{currentZoom}.png");
 		}
 
 		private void InitPixelCoordinatesCache(int currentZoom)
@@ -87,7 +88,7 @@ namespace CommonSdks.ConfigurationManagers.KadOzenkaConfigManager.Models
 
 		private string GetPixelCoordinatesJsonFileName(int currentZoom)
 		{
-			return PathCombiner.GetFullPath(PixelCoordinatesJsonConfigFilesFolder,
+			return FileSystemHelper.CombinePath(PixelCoordinatesJsonConfigFilesFolder,
 				$"{PixelCoordinatesJsonConfigFilePrefix}_{currentZoom}.json");
 		}
 	}

@@ -11,6 +11,7 @@ using KadOzenka.Dal.ManagementDecisionSupport.Enums;
 using ObjectModel.KO;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using Core.SRD;
 using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports;
@@ -67,7 +68,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData
 
         public string GetSqlFileContent(string folder, string fileName)
         {
-	        var pathToFile = PathCombiner.GetFullPath("StatisticalData", folder, fileName);
+	        var pathToFile = FileSystemHelper.CombinePath("StatisticalData", folder, fileName);
 
             string contents;
 	        using (var sr = new StreamReader(GetSqlQueryFileStream(pathToFile)))
