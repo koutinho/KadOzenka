@@ -70,7 +70,6 @@
     <Folder Include="GbuObject\Decorators\" />
     <Folder Include="Helpers\" />
     <Folder Include="LongProcess\Common\" />
-    <Folder Include="LongProcess\Consts\" />
     <Folder Include="LongProcess\Reports\AdditionalForms\AnalysisOfResuluts\Entities\" />
     <Folder Include="RecycleBin\Dto\" />
   </ItemGroup>

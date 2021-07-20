@@ -13,7 +13,6 @@ namespace ModelingBusiness.Dictionaries
 		int RowsCount { get; set; }
 		int CurrentRow { get; set; }
 
-		bool MustUseLongProcess(Stream fileStream);
 		List<OMModelingDictionary> GetDictionaries();
 		List<OMModelingDictionary> GetDictionaries(List<long> dictionaryIds, bool withItems = true);
 		OMModelingDictionary GetDictionaryById(long id);

@@ -857,7 +857,7 @@ namespace KadOzenka.Web.Controllers
 	        using (var fileStream = file.OpenReadStream())
 	        {
 		        import = ModelDictionaryService.CreateDataFileImport(fileStream, file.FileName);
-		        isViaLongProcess = ModelDictionaryService.MustUseLongProcess(fileStream);
+		        isViaLongProcess = MustUseLongProcessToImportDictionary(fileStream);
 	        }
 
 	        var importInfo = new DictionaryImportFileInfoDto
@@ -902,6 +902,18 @@ namespace KadOzenka.Web.Controllers
 	        var model = ModelService.GetModelById(factor.ModelId.GetValueOrDefault());
 	        if (model.Type == KoModelType.Automatic)
 		        throw new AutomaticModelMarkModificationException();
+        }
+
+        private bool MustUseLongProcessToImportDictionary(Stream fileStream)
+        {
+	        fileStream.Seek(0, SeekOrigin.Begin);
+
+	        var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
+
+	        var maxRowCount = 1000;
+	        var mainWorkSheet = excelFile.Worksheets[0];
+
+	        return mainWorkSheet.Rows.Count > maxRowCount;
         }
 
         #endregion
