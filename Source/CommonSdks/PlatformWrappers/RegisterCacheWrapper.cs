@@ -2,7 +2,7 @@
 using Core.Register;
 using Core.Register.RegisterEntities;
 
-namespace CommonSdks
+namespace CommonSdks.PlatformWrappers
 {
 	public class RegisterCacheWrapper : IRegisterCacheWrapper
 	{

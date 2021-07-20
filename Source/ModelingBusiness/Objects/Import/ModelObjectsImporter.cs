@@ -69,7 +69,7 @@ namespace ModelingBusiness.Objects.Import
 			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, modelObjectsConstructor.IsCreation);
 
 			var sheet = file.Worksheets[0];
-			var maxColumnIndex = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(sheet) + 1;
+			var maxColumnIndex = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(sheet) + 1;
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
@@ -103,7 +103,7 @@ namespace ModelingBusiness.Objects.Import
 					long errorId = ErrorManager.LogError(ex);
 					lock (_locker)
 					{
-						CommonSdks.DataExportCommon.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
+						CommonSdks.ExcelFileHelper.AddErrorCell(sheet, objectFromExcel.RowIndexInFile, maxColumnIndex,
 							$"Ошибка: {ex.Message} (подробно в журнале №{errorId})");
 					}
 				}
@@ -149,7 +149,7 @@ namespace ModelingBusiness.Objects.Import
 
 		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsConstructor config)
 		{
-			MaxRowsCount = CommonSdks.DataExportCommon.GetLastUsedRowIndex(sheet);
+			MaxRowsCount = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(sheet);
 
 			var columnsMappingWithoutPrimaryKey = config.ColumnsMapping.Where(x =>
 				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();

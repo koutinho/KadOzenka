@@ -117,7 +117,7 @@ namespace ModelingBusiness.Objects
             groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
 			//TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
 			//columnHeaders.AddRange(new List<string>{ "МС", "%" });
-			CommonSdks.DataExportCommon.AddRow(mainWorkSheet, 0, columnHeaders);
+			CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, columnHeaders);
 
 			var rowCounter = 1;
 			var marketObjects = GetModelObjects(modelId);
@@ -157,7 +157,7 @@ namespace ModelingBusiness.Objects
 				//values.Add(calculationParameters.ModelingPrice); 
 				//values.Add(calculationParameters.Percent);
 
-				CommonSdks.DataExportCommon.AddRow(mainWorkSheet, rowCounter++, values);
+				CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, rowCounter++, values);
 			});
 
 			var stream = new MemoryStream();

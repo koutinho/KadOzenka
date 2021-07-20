@@ -4,7 +4,7 @@ using GemBox.Spreadsheet;
 
 namespace CommonSdks
 {
-	public class DataExportCommon
+	public class ExcelFileHelper
 	{
 		/// <summary>
 		/// Добавление в Excel строки данных в строку с индексом Row

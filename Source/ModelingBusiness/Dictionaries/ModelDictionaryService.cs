@@ -304,6 +304,30 @@ namespace ModelingBusiness.Dictionaries
 			return DBMngr.Main.ExecuteNonQuery(command);
 		}
 
+		public Stream ExportMarkerListToExcel(long dictionaryId)
+		{
+			var excelTemplate = new ExcelFile();
+			var mainWorkSheet = excelTemplate.Worksheets.Add("Метки");
+
+			ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Значение фактора", "Метка" });
+
+			var row = 1;
+			var markers = new ModelDictionaryService().GetMarks(dictionaryId);
+
+			foreach (var marker in markers)
+			{
+				var factor = marker.Value ?? string.Empty;
+				var metka = marker.CalculationValue.ParseToString();
+
+				ExcelFileHelper.AddRow(mainWorkSheet, row, new object[] { factor, metka });
+				row++;
+			}
+
+			var stream = new MemoryStream();
+			excelTemplate.Save(stream, SaveOptions.XlsxDefault);
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
 
 		#region Support Methods
 
@@ -426,7 +450,7 @@ namespace ModelingBusiness.Dictionaries
 			fileStream.Seek(0, SeekOrigin.Begin);
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			var mainWorkSheet = excelFile.Worksheets[0];
-			RowsCount = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			RowsCount = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 
 			var locker = new object();
 			var cancelTokenSource = new CancellationTokenSource();
@@ -507,7 +531,7 @@ namespace ModelingBusiness.Dictionaries
 
 		private ColumnIndexes GetColumnIndexes(DictionaryImportFileInfoDto fileImportInfo, ExcelWorksheet mainWorkSheet)
 		{
-			var maxColumnsCount = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet);
+			var maxColumnsCount = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
 			var calculationValueIndex = -1;

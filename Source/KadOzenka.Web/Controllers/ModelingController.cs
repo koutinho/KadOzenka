@@ -25,6 +25,7 @@ using ObjectModel.KO;
 using System.IO;
 using System.Threading;
 using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
@@ -780,7 +781,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public FileResult DownloadMarks(long dictionaryId)
         {
-	        var fileStream = DataExporterKO.ExportMarkerListToExcel(dictionaryId);
+	        var fileStream = ModelDictionaryService.ExportMarkerListToExcel(dictionaryId);
 
 	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }

@@ -5,10 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DataImport\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="SerilogTimings" Version="2.3.0" />
   </ItemGroup>
 

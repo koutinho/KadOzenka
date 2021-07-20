@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 		public DataImportResult ImportDataFromExcel(ExcelFile excelFile, List<DataExportColumn> columns, long? documentId = null)
 		{
 			var mainWorkSheet = excelFile.Worksheets[0];
-			var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 			var usedRowCount = lastUsedRowIndex + 1;
 			if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 				throw new Exception("В указанном файле отсутствуют данные");
@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 				CancellationToken = cancelTokenSource.Token,
 				MaxDegreeOfParallelism = 100
 			};
-			int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			mainWorkSheet.Rows[0].Cells[maxColumns].SetValue("Результат обработки");
 			mainWorkSheet.Rows[0].Cells[maxColumns + 1].SetValue("Создание объекта");
 			List<string> columnNames = new List<string>();

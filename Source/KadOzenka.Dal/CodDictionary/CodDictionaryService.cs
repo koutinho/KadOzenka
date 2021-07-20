@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using CommonSdks.RecycleBin;
 using Core.Register;
 using Core.Register.QuerySubsystem;

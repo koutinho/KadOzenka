@@ -22,6 +22,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using CommonSdks.RecycleBin;
 using Core.ErrorManagment;
 using KadOzenka.Dal.CodDictionary;

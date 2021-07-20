@@ -47,7 +47,7 @@ namespace KadOzenka.Dal.Tours
 				var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 				var mainWorkSheet = excelFile.Worksheets[0];
 
-				var lastUsedRowIndex = CommonSdks.DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 				AllRows = lastUsedRowIndex + 1;
 				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 				ParallelOptions options = new ParallelOptions
@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.Tours
 				};
 				object locked = new object();
 
-				int maxColumns = CommonSdks.DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				var columnNames = new List<string>();
 				for (var i = 0; i < maxColumns; i++)
 				{

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using ModelingBusiness.Factors;
@@ -12,7 +13,6 @@ using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Serilog;
-using DataExportCommon = CommonSdks.DataExportCommon;
 
 namespace ModelingBusiness.Modeling
 {
@@ -177,16 +177,16 @@ namespace ModelingBusiness.Modeling
 				"", "t-критерий Стьюдента", "Средняя ошибка аппроксимации",
 				"Коэффициент детерминации (R²)", "F-критерий Фишера"
 			};
-			DataExportCommon.SetIndividualWidth(mainWorkSheet, rowHeaderColumnIndex, 5);
-			DataExportCommon.SetIndividualWidth(mainWorkSheet, studentColumnIndex, 4);
-			DataExportCommon.SetIndividualWidth(mainWorkSheet, mseColumnIndex, 4);
-			DataExportCommon.SetIndividualWidth(mainWorkSheet, r2ColumnIndex, 4);
-			DataExportCommon.SetIndividualWidth(mainWorkSheet, fisherColumnIndex, 4);
+			ExcelFileHelper.SetIndividualWidth(mainWorkSheet, rowHeaderColumnIndex, 5);
+			ExcelFileHelper.SetIndividualWidth(mainWorkSheet, studentColumnIndex, 4);
+			ExcelFileHelper.SetIndividualWidth(mainWorkSheet, mseColumnIndex, 4);
+			ExcelFileHelper.SetIndividualWidth(mainWorkSheet, r2ColumnIndex, 4);
+			ExcelFileHelper.SetIndividualWidth(mainWorkSheet, fisherColumnIndex, 4);
 			mainWorkSheet.Rows[0].Cells[0].SetValue("Анализ качества статической модели");
 			var cells = mainWorkSheet.Cells.GetSubrangeAbsolute(0, 0, 0, columnHeaders.Length - 1);
 			cells.Merged = true;
 
-			DataExportCommon.AddRow(mainWorkSheet, columnHeadersRowIndex, columnHeaders.ToArray());
+			ExcelFileHelper.AddRow(mainWorkSheet, columnHeadersRowIndex, columnHeaders.ToArray());
 
 			var studentInfo = qualityInfo.Student;
 			var mseInfo = qualityInfo.MeanSquaredError;
@@ -197,25 +197,25 @@ namespace ModelingBusiness.Modeling
 			{
 				"Расчетное", studentInfo.Estimated, mseInfo.Estimated, r2Info.Estimated, fisherInfo.Estimated
 			};
-			DataExportCommon.AddRow(mainWorkSheet, calculationRowIndex, firstRow);
+			ExcelFileHelper.AddRow(mainWorkSheet, calculationRowIndex, firstRow);
 
 			var secondRow = new object[]
 			{
 				"Табличное", studentInfo.Tabular, mseInfo.Tabular, r2Info.Tabular, fisherInfo.Tabular
 			};
-			DataExportCommon.AddRow(mainWorkSheet, tableRowIndex, secondRow);
+			ExcelFileHelper.AddRow(mainWorkSheet, tableRowIndex, secondRow);
 
 			var thirdRow = new object[]
 			{
 				"Критерий", studentInfo.Criterion, mseInfo.Criterion, r2Info.Criterion, fisherInfo.Criterion
 			};
-			DataExportCommon.AddRow(mainWorkSheet, criterionRowIndex, thirdRow);
+			ExcelFileHelper.AddRow(mainWorkSheet, criterionRowIndex, thirdRow);
 
 			var fifthRow = new object[]
 			{
 				"Вывод", studentInfo.Conclusion, mseInfo.Conclusion, r2Info.Conclusion, fisherInfo.Conclusion
 			};
-			DataExportCommon.AddRow(mainWorkSheet, conclusionRowIndex, fifthRow);
+			ExcelFileHelper.AddRow(mainWorkSheet, conclusionRowIndex, fifthRow);
 
 			cells = mainWorkSheet.Cells.GetSubrangeAbsolute(calculationRowIndex, mseColumnIndex, tableRowIndex, mseColumnIndex);
 			cells.Merged = true;

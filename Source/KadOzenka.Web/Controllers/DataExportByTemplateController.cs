@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using Core.Register.Enums;
 using Core.Shared.Extensions;
 using Microsoft.AspNetCore.Http;

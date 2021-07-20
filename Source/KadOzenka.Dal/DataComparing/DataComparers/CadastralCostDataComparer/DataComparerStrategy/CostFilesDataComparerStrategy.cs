@@ -120,14 +120,14 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 		private void FillUnitSetsInconsistenciesReport(Dictionary<string, decimal?> targetDictionary, Dictionary<string, decimal?> comparableDictionary, ExcelFile resultExcelFile, string resultWorksheetName)
 		{
 			resultExcelFile.Worksheets.Add(resultWorksheetName);
-			CommonSdks.DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], 0, new object[] { "КН", "Кадастровая стоимость" });
+			CommonSdks.ExcelFileHelper.AddRow(resultExcelFile.Worksheets[resultWorksheetName], 0, new object[] { "КН", "Кадастровая стоимость" });
 
 			var missingUnitCadastralNumbers = targetDictionary.Keys.Except(comparableDictionary.Keys);
 			var row = 1;
 			foreach (var missingUnitCadastralNumber in missingUnitCadastralNumbers)
 			{
 				var value = targetDictionary[missingUnitCadastralNumber];
-				CommonSdks.DataExportCommon.AddRow(resultExcelFile.Worksheets[resultWorksheetName], row, new object[] { missingUnitCadastralNumber, GetDecimalString(value) });
+				CommonSdks.ExcelFileHelper.AddRow(resultExcelFile.Worksheets[resultWorksheetName], row, new object[] { missingUnitCadastralNumber, GetDecimalString(value) });
 				row++;
 			}
 		}
@@ -135,13 +135,13 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 		private void FillUnitCostsInconsistenciesReport(Dictionary<string, decimal?> targetDictionary, Dictionary<string, decimal?> comparableDictionary, ExcelFile resultExcelFile)
 		{
 			resultExcelFile.Worksheets.Add("Различия в КС");
-			CommonSdks.DataExportCommon.AddRow(resultExcelFile.Worksheets["Различия в КС"], 0, new object[] { "КН", "Кадастровая стоимость в РСМ", "Кадастровая стоимость в ПККО" });
+			CommonSdks.ExcelFileHelper.AddRow(resultExcelFile.Worksheets["Различия в КС"], 0, new object[] { "КН", "Кадастровая стоимость в РСМ", "Кадастровая стоимость в ПККО" });
 			var row = 1;
 			foreach (var pair in targetDictionary)
 			{
 				if (pair.Value != comparableDictionary[pair.Key])
 				{
-					CommonSdks.DataExportCommon.AddRow(resultExcelFile.Worksheets["Различия в КС"], row, new object[] { pair.Key, GetDecimalString(pair.Value), GetDecimalString(comparableDictionary[pair.Key]) });
+					CommonSdks.ExcelFileHelper.AddRow(resultExcelFile.Worksheets["Различия в КС"], row, new object[] { pair.Key, GetDecimalString(pair.Value), GetDecimalString(comparableDictionary[pair.Key]) });
 					row++;
 				}
 			}

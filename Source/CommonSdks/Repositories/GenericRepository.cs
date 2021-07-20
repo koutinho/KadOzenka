@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using Core.ObjectModel;
 using Core.Register.QuerySubsystem;
 
-namespace CommonSdks
+namespace CommonSdks.Repositories
 {
 	public abstract class GenericRepository<TSource> : IGenericRepository<TSource> where TSource : OMBaseClass<TSource>, new()
 	{
