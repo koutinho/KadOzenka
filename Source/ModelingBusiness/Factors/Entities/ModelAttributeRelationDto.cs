@@ -1,5 +1,6 @@
 ﻿using Core.Register;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Ko;
 
 namespace ModelingBusiness.Factors.Entities
 {
@@ -14,6 +15,7 @@ namespace ModelingBusiness.Factors.Entities
 		public string AttributeName { get; set; }
 		public long AttributeType { get; set; }
 		public RegisterAttributeType AttributeTypeCode => (RegisterAttributeType)AttributeType;
+		public MarkType MarkType { get; set; }
 		public long? DictionaryId { get; set; }
 		public string DictionaryName { get; set; }
 		public bool IsNormalized => DictionaryId != null;

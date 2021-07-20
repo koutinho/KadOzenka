@@ -61,13 +61,14 @@ namespace ModelingBusiness.Factors
 		{
 			var query = GetModelFactorsQuery(modelId);
 
-			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorRelationDto.RegisterId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelFactorRelationDto.AttributeId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorRelationDto.AttributeName)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorRelationDto.AttributeType)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelationDto.DictionaryId)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelationDto.DictionaryName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelationDto.IsActive)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorRelationPure.RegisterId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelFactorRelationPure.AttributeId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorRelationPure.AttributeName)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorRelationPure.AttributeType)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelationPure.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelationPure.DictionaryName)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelationPure.IsActive)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType_Code, nameof(ModelFactorRelationPure.MarkType)));
 
 			var attributes = new List<ModelFactorRelationPure>();
 			var table = query.ExecuteQuery();
@@ -75,18 +76,19 @@ namespace ModelingBusiness.Factors
 			{
 				var row = table.Rows[i];
 
-				var id = row[nameof(ModelFactorRelationDto.Id)].ParseToLong();
+				var id = row[nameof(ModelFactorRelationPure.Id)].ParseToLong();
 
-				var registerId = row[nameof(ModelFactorRelationDto.RegisterId)].ParseToLong();
+				var registerId = row[nameof(ModelFactorRelationPure.RegisterId)].ParseToLong();
 
-				var attributeId = row[nameof(ModelFactorRelationDto.AttributeId)].ParseToLong();
-				var attributeName = row[nameof(ModelFactorRelationDto.AttributeName)].ParseToString();
-				var attributeType = row[nameof(ModelFactorRelationDto.AttributeType)].ParseToInt();
+				var attributeId = row[nameof(ModelFactorRelationPure.AttributeId)].ParseToLong();
+				var attributeName = row[nameof(ModelFactorRelationPure.AttributeName)].ParseToString();
+				var attributeType = row[nameof(ModelFactorRelationPure.AttributeType)].ParseToInt();
 
-				var dictionaryId = row[nameof(ModelFactorRelationDto.DictionaryId)].ParseToLongNullable();
-				var dictionaryName = row[nameof(ModelFactorRelationDto.DictionaryName)].ParseToStringNullable();
+				var markType = row[nameof(ModelFactorRelationPure.MarkType)].ParseToLong();
+				var dictionaryId = row[nameof(ModelFactorRelationPure.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(ModelFactorRelationPure.DictionaryName)].ParseToStringNullable();
 				
-				var isActive = row[nameof(ModelFactorRelationDto.IsActive)].ParseToBooleanNullable();
+				var isActive = row[nameof(ModelFactorRelationPure.IsActive)].ParseToBooleanNullable();
 
 				attributes.Add(new ModelFactorRelationPure
 				{
@@ -95,6 +97,7 @@ namespace ModelingBusiness.Factors
 					AttributeId = attributeId,
 					AttributeName = attributeName,
 					AttributeType = attributeType,
+					MarkType = (MarkType) markType,
 					DictionaryId = dictionaryId,
 					DictionaryName = dictionaryName,
 					IsActive = isActive.GetValueOrDefault()
