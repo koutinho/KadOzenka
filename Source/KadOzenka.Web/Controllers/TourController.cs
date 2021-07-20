@@ -624,7 +624,7 @@ namespace KadOzenka.Web.Controllers
         #region Словари групировки
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public ActionResult GroupingDictionaryCard(long dictionaryId, bool showItems = false)
         {
             var dictionary = OMGroupingDictionary.Where(x => x.Id == dictionaryId).SelectAll().ExecuteFirstOrDefault();
@@ -634,7 +634,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public ActionResult GroupingDictionaryCard(GroupingDictionaryModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -650,7 +650,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult GroupingDictionaryDelete(long dictionaryId)
         {
             try
@@ -666,7 +666,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult DeleteGroupingDictionary(long dictionaryId)
         {
             try
@@ -682,7 +682,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult GroupingDictionaryImport()
         {
             ViewData["References"] = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
@@ -694,6 +694,8 @@ namespace KadOzenka.Web.Controllers
             return View(new GroupingDictionaryImportModel());
         }
 
+        [HttpGet]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult GroupingDictionaryImportPreconfigured(long attributeId, long groupId)
         {
             var dictionaries = OMGroupingDictionary.Where(x => true).SelectAll().Execute().Select(x => new
@@ -740,7 +742,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult GroupingDictionaryImport(IFormFile file, GroupingDictionaryImportModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -826,7 +828,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public ActionResult GroupingDictionaryValueCard(long dictionaryValueId, long dictionaryId)
         {
             var dictionaryValue = OMGroupingDictionariesValues.Where(x => x.Id == dictionaryValueId).SelectAll().ExecuteFirstOrDefault();
@@ -837,7 +839,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public ActionResult GroupingDictionaryValueCard(GroupingDictionaryValueModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -853,7 +855,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpGet]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult GroupingDictionaryValueDelete(long dictionaryValueId)
         {
             try
@@ -870,7 +872,7 @@ namespace KadOzenka.Web.Controllers
         }
 
         [HttpDelete]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES_VALUES_MODIFICATION)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public IActionResult GroupingDeleteDictionaryValue(long dictionaryValueId)
         {
             try
@@ -885,7 +887,7 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Success = true });
         }
 
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_DICTIONARIES)]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_GROUPING_DICT)]
         public JsonResult GetGroupingDictionaries()
         {
             var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem

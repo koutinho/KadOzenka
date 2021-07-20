@@ -10159,6 +10159,26 @@ namespace ObjectModel.KO
             }
         }
 
+
+        private bool? _checkmodelfactorsvalues;
+        /// <summary>
+        /// 26900700 Проверять наличие значений факторов (CHECK_MODEL_FACTORS_VALUES)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 26900700)]
+        public bool? CheckModelFactorsValues
+        {
+            get
+            {
+                CheckPropertyInited("CheckModelFactorsValues");
+                return _checkmodelfactorsvalues;
+            }
+            set
+            {
+                _checkmodelfactorsvalues = value;
+                NotifyPropertyChanged("CheckModelFactorsValues");
+            }
+        }
+
     }
 }
 

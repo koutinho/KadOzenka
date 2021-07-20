@@ -3,21 +3,23 @@ begin;
 INSERT INTO core_register VALUES (269, 'KO.TourGroupGroupingSettings', 'Реестр условий группировки', null, null, 'KO_GROUP_GROUPING_SETTINGS', null, 4, 'REG_OBJECT_SEQ', 0, 0, null, null, null, 0, null, null);
 
 INSERT INTO core_register_attribute VALUES (26900100, 'Идентификатор', 269, 1, null, null, 'ID', null, null, 1, null, null, 'Id', 0, null, null, null, null, null, null, 0);
-INSERT INTO core_register_attribute VALUES (26900200, 'Идентификатор группы', 269, 1, null, null, 'GROUP_ID', null, null, null, null, null, 'FactorId', 1, null, null, null, null, null, null, 0);
+INSERT INTO core_register_attribute VALUES (26900200, 'Идентификатор группы', 269, 1, null, null, 'GROUP_ID', null, null, null, null, null, 'GroupId', 1, null, null, null, null, null, null, 0);
 INSERT INTO core_register_attribute VALUES (26900300, 'Идентификатор атрибута', 269, 1, null, null, 'KO_ATTRIBUTE_ID', null, null, null, null, null, 'KoAttributeId', 1, null, null, null, null, null, null, 0);
 INSERT INTO core_register_attribute VALUES (26900400, 'Фильтр', 269, 4, null, null, 'FILTER', null, null, null, null, null, 'Filter', 1, null, null, null, null, null, null, 0);
 INSERT INTO core_register_attribute VALUES (26900500, 'Идентификатор справочника', 269, 1, null, null, 'DICTIONARY_ID', null, null, null, null, null, 'DictionaryId', 1, null, null, null, null, null, null, 0);
 INSERT INTO core_register_attribute VALUES (26900600, 'Значения справочника', 269, 4, null, null, 'DICTIONARY_VALUES', null, null, null, null, null, 'DictionaryValues', 1, null, null, null, null, null, null, 0);
+INSERT INTO core_register_attribute VALUES (26900700, 'Проверять наличие значений факторов', 269, 3, null, null, 'CHECK_MODEL_FACTORS_VALUES', null, null, null, null, null, 'CheckModelFactorsValues', 1, null, null, null, null, null, null, 0);
 
 create table if not exists ko_group_grouping_settings (
-                                                          id bigint not null
-                                                              constraint reg_269_q_pk
-                                                                  primary key,
-                                                          group_id bigint not null,
-                                                          ko_attribute_id bigint not null,
-                                                          filter varchar(4000),
-                                                          dictionary_id bigint,
-                                                          dictionary_values varchar(4000)
+    id bigint not null
+      constraint reg_269_q_pk
+          primary key,
+    group_id bigint not null,
+    ko_attribute_id bigint not null,
+    filter varchar(4000),
+    dictionary_id bigint,
+    dictionary_values varchar(4000),
+    check_models_factors_values smallint
 );
 
 alter table ko_group_grouping_settings owner to postgres;
@@ -66,4 +68,8 @@ alter table ko_grouping_dictionaries_values owner to postgres;
 
 -- Связь справочника с значениями
 INSERT INTO core_register_relation VALUES (271, 'От значения справочника группировки к справочнику', 270, 271, null, 27100200, null, null);
+
+-- СРД
+INSERT INTO public.core_srd_function (id, functionname, functiontag, parent_id, description) VALUES (670, 'Присвоение оценочной группы', 'KO.GROUPING', 502, null);
+INSERT INTO public.core_srd_function (id, functionname, functiontag, parent_id, description) VALUES (671, 'Настройка словарей для группировки', 'KO.GROUPING.DICT', 670, null);
 commit;
