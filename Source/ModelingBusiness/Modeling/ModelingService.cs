@@ -289,17 +289,34 @@ namespace ModelingBusiness.Modeling
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
+			var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
+
+			var uniqueValuesAveragePrices = CalculateUniqueValuesAveragePrices(uniqueFactorValues, modelObjects);
+
+			var allValuesAveragePrices = uniqueValuesAveragePrices.Values;
+			var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
+
+			CreateMarks(factor, uniqueValuesAveragePrices, divider);
+		}
+
+		private HashSet<string> GetUniqueFactorValues(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		{
 			var uniqueFactorValues = new HashSet<string>();
 			modelObjects.ForEach(obj =>
 			{
 				var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-				if (coefficient == null) 
+				if (coefficient == null)
 					return;
 
 				uniqueFactorValues.Add(coefficient.Value);
 			});
+			return uniqueFactorValues;
+		}
 
+		private Dictionary<string, decimal> CalculateUniqueValuesAveragePrices(HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
+		{
 			var uniqueValuesAveragePrice = new Dictionary<string, decimal>();
+
 			uniqueFactorValues.ForEach(uniqueValue =>
 			{
 				var objectsPriceSumWithUniqueValue = 0m;
@@ -317,10 +334,7 @@ namespace ModelingBusiness.Modeling
 				uniqueValuesAveragePrice[uniqueValue] = objectsPriceSumWithUniqueValue / objectsCountWithUniqueValue;
 			});
 
-			var prices = uniqueValuesAveragePrice.Values;
-			var divider = uniqueFactorValues.Count % 2 == 0 ? prices.Average() : CalculateMedian(prices.ToList());
-
-			CreateMarks(factor, uniqueValuesAveragePrice, divider);
+			return uniqueValuesAveragePrice;
 		}
 
 		private void CreateMarks(ModelFactorRelationPure factor, Dictionary<string, decimal> uniqueValuesAveragePrice, decimal divider)
