@@ -265,7 +265,8 @@ namespace ModelingBusiness.Modeling
 
 		public void CreateMarks(long modelId)
 		{
-			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training);
+			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
+				select => new {select.Coefficients, select.Price});
 			if (modelObjects.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 
