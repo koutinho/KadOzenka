@@ -104,6 +104,40 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			CheckMark(addressMarks, _thirdAddressValue, averagePriceForThirdAddressValue / medianPriceForAllAddressValues);
 		}
 
+		[Test]
+		public void Can_Create_Marks_For_Several_Factors()
+		{
+			var squareAttributeId = 48403152;
+			var coefficients = new List<CoefficientForObject>
+			{
+				new(_addressAttributeId)
+				{
+					Coefficient = RandomGenerator.GenerateRandomDecimal(),
+					Value = _firstAddressValue
+				},
+				new(squareAttributeId)
+				{
+					Coefficient = RandomGenerator.GenerateRandomDecimal(),
+					Value = RandomGenerator.GenerateRandomInteger().ToString()
+				}
+			};
+			var modelObject = new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+			var squareFactor = new ModelFactorBuilder().Model(_model).FactorId(squareAttributeId)
+				.Dictionary(new DictionaryBuilder().Build()).MarkType(MarkType.Default).Build();
+
+
+			ModelingService.CreateMarks(_model.Id);
+
+
+			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(addressMark.Count, Is.EqualTo(1));
+			Assert.That(addressMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
+
+			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(squareMark.Count, Is.EqualTo(1));
+			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
+		}
+
 
 		#region Support Methods
 
