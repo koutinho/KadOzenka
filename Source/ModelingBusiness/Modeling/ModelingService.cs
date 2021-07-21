@@ -294,8 +294,12 @@ namespace ModelingBusiness.Modeling
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
 			var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
+			if (uniqueFactorValues.Count == 0)
+				return;
 
 			var uniqueValuesAveragePrices = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
+			if (uniqueValuesAveragePrices.Count == 0)
+				return;
 
 			var allValuesAveragePrices = uniqueValuesAveragePrices.Values;
 			var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
@@ -307,7 +311,7 @@ namespace ModelingBusiness.Modeling
 		{
 			return modelObjects
 				.SelectMany(x => x.DeserializedCoefficients)
-				.Where(x => x.AttributeId == factor.AttributeId)
+				.Where(x => x.AttributeId == factor.AttributeId && !string.IsNullOrWhiteSpace(x.Value))
 				.Select(x => x.Value)
 				.ToHashSet();
 		}
