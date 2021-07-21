@@ -291,7 +291,7 @@ namespace ModelingBusiness.Modeling
 		{
 			var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
 
-			var uniqueValuesAveragePrices = CalculateUniqueValuesAveragePrices(uniqueFactorValues, modelObjects);
+			var uniqueValuesAveragePrices = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
 
 			var allValuesAveragePrices = uniqueValuesAveragePrices.Values;
 			var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
@@ -301,19 +301,15 @@ namespace ModelingBusiness.Modeling
 
 		private HashSet<string> GetUniqueFactorValues(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
-			var uniqueFactorValues = new HashSet<string>();
-			modelObjects.ForEach(obj =>
-			{
-				var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-				if (coefficient == null)
-					return;
-
-				uniqueFactorValues.Add(coefficient.Value);
-			});
-			return uniqueFactorValues;
+			return modelObjects
+				.SelectMany(x => x.DeserializedCoefficients)
+				.Where(x => x.AttributeId == factor.AttributeId)
+				.Select(x => x.Value)
+				.ToHashSet();
 		}
 
-		private Dictionary<string, decimal> CalculateUniqueValuesAveragePrices(HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
+		private Dictionary<string, decimal> CalculateUniqueValuesAveragePrices(long attributeId,
+			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
 		{
 			var uniqueValuesAveragePrice = new Dictionary<string, decimal>();
 
@@ -323,7 +319,7 @@ namespace ModelingBusiness.Modeling
 				var objectsCountWithUniqueValue = 0;
 				modelObjects.ForEach(obj =>
 				{
-					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.Value == uniqueValue);
+					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attributeId && x.Value == uniqueValue);
 					if (coefficient == null)
 						return;
 
