@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		public void Can_Not_Create_Marks_Without_Model_Objects()
 		{
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
-			ModelObjectsRepository.Setup(x => x.GetIncludedModelObjects(_modelId, IncludedObjectsMode.Training, It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(new List<OMModelToMarketObjects>());
+			MockModelObjects();
 			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> {factor});
 
 			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CreateMarks(_modelId));
@@ -44,47 +44,33 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		public void Can_Not_Create_Marks_Without_Model_Factors()
 		{
 			var modelObject = new ModelObjectBuilder().Build();
-			ModelObjectsRepository.Setup(x => x.GetIncludedModelObjects(_modelId, IncludedObjectsMode.Training, It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>()))
-				.Returns(new List<OMModelToMarketObjects> {modelObject});
+			MockModelObjects(modelObject);
 			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure>());
 
 			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
 		}
+
 
 		[Test]
 		public void Can_Not_Create_Marks_For_Factor_Without_DictionaryId()
 		{
 			var modelObject = new ModelObjectBuilder().Build();
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).DictionaryId(null).Build();
-			ModelObjectsRepository.Setup(x => x.GetIncludedModelObjects(_modelId, IncludedObjectsMode.Training, It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>()))
-				.Returns(new List<OMModelToMarketObjects> { modelObject });
+			MockModelObjects(modelObject);
 			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> { factor });
 
 			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => ModelingService.CreateMarks(_modelId));
 		}
 
+
 		#region Support Methods
 
-		private List<CoefficientForObject> GetCoefficients(string addressValue)
+		private void MockModelObjects(params OMModelToMarketObjects[] modelObjects)
 		{
-			return new()
-			{
-				new(_addressAttributeId)
-				{
-					Coefficient = RandomGenerator.GenerateRandomDecimal(),
-					Value = addressValue ?? RandomGenerator.GetRandomString()
-				}
-			};
-		}
+			var result = modelObjects?.ToList() ?? new List<OMModelToMarketObjects>();
 
-		private void CheckCreatedMark(List<DictionaryMarkDto> createdMarks, string markValue, decimal divider,
-			decimal objectPrice)
-		{
-			var mark = createdMarks.FirstOrDefault(x => x.Value == markValue);
-			Assert.That(mark, Is.Not.Null);
-
-			var expectedCalculationValue = objectPrice / divider;
-			Assert.That(mark.CalculationValue, Is.EqualTo(expectedCalculationValue));
+			ModelObjectsRepository.Setup(x => x.GetIncludedModelObjects(_modelId, IncludedObjectsMode.Training,
+					It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
 		}
 
 		#endregion
