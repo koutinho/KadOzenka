@@ -67,7 +67,38 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			CheckMark(addressMarks, _secondAddressValue, averagePriceForSecondAddressValue / averagePriceForAllAddressValues);
 		}
 
-		
+		[Test]
+		public void Can_Create_Marks_For_Factor_With_Odd_Values()
+		{
+			var firstModelObject = CreateModelObject(_firstAddressValue);
+			var secondModelObject = CreateModelObject(_firstAddressValue);
+			var thirdModelObject = CreateModelObject(_secondAddressValue);
+			var forthModelObject = CreateModelObject(_secondAddressValue);
+			var fifthModelObject = CreateModelObject(_thirdAddressValue);
+
+
+			ModelingService.CreateMarks(_model.Id);
+
+
+			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(addressMarks.Count, Is.EqualTo(3));
+
+			var averagePriceForFirstAddressValue = (firstModelObject.Price + secondModelObject.Price) / 2;
+			var averagePriceForSecondAddressValue = (thirdModelObject.Price + forthModelObject.Price) / 2;
+			var averagePriceForThirdAddressValue = fifthModelObject.Price;
+			var medianPriceForAllAddressValues = new List<decimal>
+				{
+					averagePriceForFirstAddressValue, averagePriceForSecondAddressValue,
+					averagePriceForThirdAddressValue
+				}
+				.OrderBy(x => x).ElementAt(1);
+
+			CheckMark(addressMarks, _firstAddressValue, averagePriceForFirstAddressValue / medianPriceForAllAddressValues);
+			CheckMark(addressMarks, _secondAddressValue, averagePriceForSecondAddressValue / medianPriceForAllAddressValues);
+			CheckMark(addressMarks, _thirdAddressValue, averagePriceForThirdAddressValue / medianPriceForAllAddressValues);
+		}
+
+
 		#region Support Methods
 
 		private OMModelToMarketObjects CreateModelObject(string addressValue = null, int? squareValue = null)
