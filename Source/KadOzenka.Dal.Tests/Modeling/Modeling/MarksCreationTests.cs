@@ -50,6 +50,27 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
 		}
 
+		[Test]
+		public void Can_Not_Create_Marks_If_Model_Has_No_Factors_With_Default_Mark_Type()
+		{
+			var modelObject = new ModelObjectBuilder().Build();
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			MockModelObjects(modelObject);
+			MockModelFactors(factor);
+
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
+		}
+
+		[Test]
+		public void Can_Not_Create_Marks_If_Model_Has_No_Active_Factors()
+		{
+			var modelObject = new ModelObjectBuilder().Build();
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Active(false).Build();
+			MockModelObjects(modelObject);
+			MockModelFactors(factor);
+
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
+		}
 
 		[Test]
 		public void Can_Not_Create_Marks_For_Factor_Without_DictionaryId()

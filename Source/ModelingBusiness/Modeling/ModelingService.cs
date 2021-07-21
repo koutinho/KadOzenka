@@ -267,8 +267,9 @@ namespace ModelingBusiness.Modeling
 			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training);
 			if (modelObjects.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
-			
-			var factors = ModelFactorsService.GetGeneralModelFactors(modelId).Where(x => x.MarkType == MarkType.Default).ToList();
+
+			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
+				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 

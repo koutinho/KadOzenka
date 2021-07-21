@@ -44,6 +44,12 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 			return this;
 		}
 
+		public ModelFactorRelationPureBuilder Active(bool isActive)
+		{
+			_factor.IsActive = isActive;
+			return this;
+		}
+
 		public ModelFactorRelationPure Build()
 		{
 			return _factor;
