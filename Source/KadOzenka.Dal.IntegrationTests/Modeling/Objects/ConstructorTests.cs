@@ -209,7 +209,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			Assert.That(updatedObject.Price, Is.EqualTo(row.Price));
 			Assert.That(updatedObject.PriceFromModel, Is.EqualTo(row.PriceFromModel));
 
-			var coefficients = updatedObject.DeserializeCoefficient();
+			var coefficients = updatedObject.DeserializedCoefficients;
 			Assert.That(coefficients.Count, Is.EqualTo(2));
 			
 			var addressAttribute = coefficients.First(x => x.AttributeId == _addressAttributeId);
@@ -234,8 +234,8 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			Assert.That(updatedObject.Price, Is.EqualTo(initial.Price));
 			Assert.That(updatedObject.PriceFromModel, Is.EqualTo(initial.PriceFromModel));
 
-			var updatedCoefficients = updatedObject.DeserializeCoefficient();
-			var initialCoefficients = initial.DeserializeCoefficient();
+			var updatedCoefficients = updatedObject.DeserializedCoefficients;
+			var initialCoefficients = initial.DeserializedCoefficients;
 			Assert.That(updatedCoefficients.Count, Is.EqualTo(2));
 
 			var updatedAddressAttribute = updatedCoefficients.First(x => x.AttributeId == _addressAttributeId);

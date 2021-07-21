@@ -112,7 +112,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				coefficientsToObject.TryGetValue(objectId.GetValueOrDefault(), out var coefficients);
 				var coefficient = coefficients?.FirstOrDefault();
 
-				var existedCoefficients = objects[i].DeserializeCoefficient();
+				var existedCoefficients = objects[i].DeserializedCoefficients;
 
 				var mustUpdateCoefficient = false;
 				var existedAttributeInCoefficients = existedCoefficients.FirstOrDefault(x => x.AttributeId == Attribute.AttributeId);

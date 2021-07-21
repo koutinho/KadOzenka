@@ -86,14 +86,14 @@ namespace ModelingBusiness.Modeling
                 if(counter++ % 100 == 0)
 					Logger.Debug("Идет обработка объекта моделирования №{i}", counter);
 
-                var modelObjectAttributes = modelObject.DeserializeCoefficient();
-                if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
+                var modelObjectCoefficients = modelObject.DeserializedCoefficients;
+                if (modelObjectCoefficients == null || modelObjectCoefficients.Count == 0)
                     return;
 
                 var coefficients = new List<decimal?>();
                 ModelAttributes.ForEach(modelAttribute =>
                 {
-	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId);
+	                var currentAttribute = modelObjectCoefficients.FirstOrDefault(x => x.AttributeId == modelAttribute.AttributeId);
                     coefficients.Add(currentAttribute?.Coefficient);
                 });
 

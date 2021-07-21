@@ -69,14 +69,14 @@ namespace ModelingBusiness.Modeling
             var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(InputParameters.ModelId, IncludedObjectsMode.Prediction);
             modelObjects.ForEach(modelObject =>
             {
-                var modelObjectAttributes = modelObject.DeserializeCoefficient();
-                if (modelObjectAttributes == null || modelObjectAttributes.Count == 0)
+                var modelObjectCoefficients = modelObject.DeserializedCoefficients;
+                if (modelObjectCoefficients == null || modelObjectCoefficients.Count == 0)
                     return;
 
                 var coefficients = new List<decimal?>();
                 allAttributes.ForEach(modelAttribute =>
                 {
-	                var currentAttribute = modelObjectAttributes.FirstOrDefault(x =>
+	                var currentAttribute = modelObjectCoefficients.FirstOrDefault(x =>
 		                x.AttributeId == modelAttribute.AttributeId && !string.IsNullOrWhiteSpace(x.Value));
                     coefficients.Add(currentAttribute?.Coefficient);
                 });

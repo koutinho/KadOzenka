@@ -140,10 +140,9 @@ namespace ModelingBusiness.Objects
 				values[PredictedPriceColumnIndex] = obj.PriceFromModel;
 				values[DeviationFromPredictablePriceColumnIndex] = CalculatePercent(obj.PriceFromModel, obj.Price);
 
-				var coefficients = obj.DeserializeCoefficient();
 				groupedFactors.ForEach(factor =>
 				{
-					var coefficient = coefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
+					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.Key);
 					factor.ToList().ForEach(x =>
 					{
 						if (x.IsColumnWithValue)

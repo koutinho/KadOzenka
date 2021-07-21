@@ -100,11 +100,10 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					for (var i = 0; i < modelObjects.Count; i++)
 					{
 						var modelObject = modelObjects[i];
-						var objectCoefficients = modelObject.DeserializeCoefficient();
-
+						
 						foreach (var attribute in attributesWithMarks)
 						{
-							var objectCoefficient = objectCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
+							var objectCoefficient = modelObject.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
 							if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
 							    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
 								continue;
@@ -166,10 +165,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			objects.ForEach(obj =>
 			{
-				var coefficients = obj.DeserializeCoefficient();
 				attributes.ForEach(attribute =>
 				{
-					var attributeCoefficient = coefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
+					var attributeCoefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId)?.Coefficient;
 					if (attributeCoefficient == null)
 						return;
 
