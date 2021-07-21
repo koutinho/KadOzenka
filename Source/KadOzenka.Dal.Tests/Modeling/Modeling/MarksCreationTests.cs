@@ -86,7 +86,33 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			CheckCreatedMark(createdMarks, secondObjectAddressValue, averagePrice, secondModelObject.Price);
 		}
 
-		
+		[Test]
+		public void Can_Create_Marks_For_Coded_Factor_With_Odd_Values_Count()
+		{
+			var createdMarks = new List<DictionaryMarkDto>();
+			var addressValue = "адрес_1";
+			var firstModelObject = new ModelObjectBuilder().Coefficients(GetCoefficients(addressValue)).Price(1).Build();
+			var secondModelObject = new ModelObjectBuilder().Coefficients(GetCoefficients(addressValue)).Price(2).Build();
+			var thirdModelObject = new ModelObjectBuilder().Coefficients(GetCoefficients(addressValue)).Price(3).Build();
+			var factor = new ModelFactorRelationPureBuilder().AttributeId(_addressAttributeId).MarkType(MarkType.Default).Build();
+
+			ModelObjectsService.Setup(x => x.GetModelObjects(_modelId)).Returns(new List<OMModelToMarketObjects> { firstModelObject, secondModelObject, thirdModelObject });
+			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> { factor });
+			ModelDictionaryService.Setup(x => x.CreateMark(It.IsAny<DictionaryMarkDto>())).Callback<DictionaryMarkDto>(x => createdMarks.Add(x));
+
+
+			ModelingService.CreateMarks(_modelId);
+
+
+			Assert.That(createdMarks.Count, Is.EqualTo(1));
+			Assert.That(createdMarks.All(x => x.DictionaryId == factor.DictionaryId));
+
+			var median = 2;
+			var averagePriceForThreeObjects = 2;
+			CheckCreatedMark(createdMarks, addressValue, median, averagePriceForThreeObjects);
+		}
+
+
 		#region Support Methods
 
 		private List<CoefficientForObject> GetCoefficients(string addressValue = null)
@@ -106,12 +132,13 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			};
 		}
 
-		private void CheckCreatedMark(List<DictionaryMarkDto> createdMarks, string markValue, decimal averagePrice, decimal objectPrice)
+		private void CheckCreatedMark(List<DictionaryMarkDto> createdMarks, string markValue, decimal divider,
+			decimal objectPrice)
 		{
 			var mark = createdMarks.FirstOrDefault(x => x.Value == markValue);
 			Assert.That(mark, Is.Not.Null);
 
-			var expectedCalculationValue = objectPrice / averagePrice;
+			var expectedCalculationValue = objectPrice / divider;
 			Assert.That(mark.CalculationValue, Is.EqualTo(expectedCalculationValue));
 		}
 

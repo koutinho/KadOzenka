@@ -315,27 +315,55 @@ namespace ModelingBusiness.Modeling
 				uniqueValuesAveragePrice[uniqueValue] = objectsPriceSumWithUniqueValue / objectsCountWithUniqueValue;
 			});
 
+			var prices = uniqueValuesAveragePrice.Values;
 			if (uniqueFactorValues.Count % 2 == 0)
 			{
-				var averagePrice = uniqueValuesAveragePrice.Values.Average();
-				if (averagePrice == 0)
-					throw new Exception($"Среднеарифметическая цена объектов с фактором {factor.AttributeId} равна нулю");
-
-				foreach (var valuePrice in uniqueValuesAveragePrice)
-				{
-					var mark = new DictionaryMarkDto
-					{
-						DictionaryId = factor.DictionaryId.Value,
-						Value = valuePrice.Key,
-						CalculationValue = valuePrice.Value / averagePrice
-					};
-					ModelDictionaryService.CreateMark(mark);
-				}
+				var averagePrice = prices.Average();
+				
+				CreateMark(factor, uniqueValuesAveragePrice, averagePrice);
 			}
 			else
 			{
-				
+				var median = CalculateMedian(prices.ToList());
+				CreateMark(factor, uniqueValuesAveragePrice, median);
 			}
+		}
+
+		private void CreateMark(ModelFactorRelationPure factor, Dictionary<string, decimal> uniqueValuesAveragePrice, decimal divider)
+		{
+			if (divider == 0)
+				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
+
+			foreach (var valuePrice in uniqueValuesAveragePrice)
+			{
+				var mark = new DictionaryMarkDto
+				{
+					DictionaryId = factor.DictionaryId.Value,
+					Value = valuePrice.Key,
+					CalculationValue = valuePrice.Value / divider
+				};
+
+				//todo если буду проблемы с производительностью, формировать sql-запрос через строку
+				ModelDictionaryService.CreateMark(mark);
+			}
+		}
+
+		private decimal CalculateMedian(List<decimal> prices)
+		{
+			var count = prices.Count;
+			var halfIndex = prices.Count / 2;
+			var sortedPrices = prices.OrderBy(n => n).ToList();
+			decimal median;
+			if (count % 2 == 0)
+			{
+				median = (sortedPrices.ElementAt(halfIndex) + sortedPrices.ElementAt(halfIndex - 1)) / 2;
+			}
+			else
+			{
+				median = sortedPrices.ElementAt(halfIndex);
+			}
+
+			return median;
 		}
 
 		#endregion
