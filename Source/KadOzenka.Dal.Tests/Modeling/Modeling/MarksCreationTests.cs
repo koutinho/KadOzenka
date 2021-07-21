@@ -35,7 +35,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		{
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
 			MockModelObjects();
-			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> {factor});
+			MockModelFactors(factor);
 
 			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CreateMarks(_modelId));
 		}
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		{
 			var modelObject = new ModelObjectBuilder().Build();
 			MockModelObjects(modelObject);
-			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure>());
+			MockModelFactors();
 
 			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
 		}
@@ -57,7 +57,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			var modelObject = new ModelObjectBuilder().Build();
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).DictionaryId(null).Build();
 			MockModelObjects(modelObject);
-			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> { factor });
+			MockModelFactors(factor);
 
 			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => ModelingService.CreateMarks(_modelId));
 		}
@@ -71,6 +71,12 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 
 			ModelObjectsRepository.Setup(x => x.GetIncludedModelObjects(_modelId, IncludedObjectsMode.Training,
 					It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
+		}
+
+		private void MockModelFactors(params ModelFactorRelationPure[] modelFactors)
+		{
+			var result = modelFactors?.ToList() ?? new List<ModelFactorRelationPure>();
+			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(result);
 		}
 
 		#endregion
