@@ -16,7 +16,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		private OMModelingDictionary _dictionary;
 		private OMModelFactor _addressFactor;
 		private long _addressAttributeId;
-		private long _squareAttributeId;
 		private string _firstAddressValue;
 		private string _secondAddressValue;
 		private string _thirdAddressValue;
@@ -26,7 +25,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		public void OneTimeSetUp()
 		{
 			_addressAttributeId = 48089615;
-			_squareAttributeId = 48403152;
 
 			_firstAddressValue = "адрес_1";
 			_secondAddressValue = "адрес_2";
@@ -117,11 +115,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 				{
 					Coefficient = RandomGenerator.GenerateRandomDecimal(),
 					Value = addressValue ?? RandomGenerator.GetRandomString()
-				},
-				new(_squareAttributeId)
-				{
-					Coefficient = RandomGenerator.GenerateRandomDecimal(),
-					Value = squareValue?.ToString() ?? RandomGenerator.GenerateRandomInteger().ToString()
 				}
 			};
 
