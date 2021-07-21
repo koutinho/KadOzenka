@@ -43,6 +43,18 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AFactorBuilder Dictionary(long dictionaryId)
+		{
+			_factor.DictionaryId = dictionaryId;
+			return this;
+		}
+
+		public AFactorBuilder Dictionary(OMModelingDictionary dictionary)
+		{
+			_factor.DictionaryId = dictionary.Id;
+			return this;
+		}
+
 		public AFactorBuilder MarkType(MarkType markType)
 		{
 			_factor.MarkType = markType.GetEnumDescription();

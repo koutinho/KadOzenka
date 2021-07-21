@@ -17,13 +17,11 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 	{
 		private long _modelId;
 		private long _addressAttributeId;
-		private long _squareAttributeId;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_addressAttributeId = RandomGenerator.GenerateRandomId();
-			_squareAttributeId = RandomGenerator.GenerateRandomId();
 
 			_modelId = RandomGenerator.GenerateRandomId();
 		}
@@ -32,7 +30,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_Without_Model_Objects()
 		{
-			var factor = new ModelFactorRelationPureBuilder().Build();
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
 			ModelObjectsService.Setup(x => x.GetModelObjects(_modelId)).Returns(new List<OMModelToMarketObjects>());
 			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> {factor});
 
@@ -53,7 +51,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		public void Can_Not_Create_Marks_For_Factor_Without_DictionaryId()
 		{
 			var modelObject = new ModelObjectBuilder().Build();
-			var factor = new ModelFactorRelationPureBuilder().DictionaryId(null).Build();
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).DictionaryId(null).Build();
 			ModelObjectsService.Setup(x => x.GetModelObjects(_modelId)).Returns(new List<OMModelToMarketObjects> { modelObject });
 			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(new List<ModelFactorRelationPure> { factor });
 
@@ -115,7 +113,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 
 		#region Support Methods
 
-		private List<CoefficientForObject> GetCoefficients(string addressValue = null)
+		private List<CoefficientForObject> GetCoefficients(string addressValue)
 		{
 			return new()
 			{
@@ -123,11 +121,6 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 				{
 					Coefficient = RandomGenerator.GenerateRandomDecimal(),
 					Value = addressValue ?? RandomGenerator.GetRandomString()
-				},
-				new(_squareAttributeId)
-				{
-					Coefficient = RandomGenerator.GenerateRandomDecimal(),
-					Value = RandomGenerator.GetRandomString()
 				}
 			};
 		}
