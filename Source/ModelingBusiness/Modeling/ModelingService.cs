@@ -6,6 +6,7 @@ using CommonSdks;
 using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Dictionaries.Entities;
 using ModelingBusiness.Factors;
@@ -275,6 +276,9 @@ namespace ModelingBusiness.Modeling
 
 			factors.ForEach(factor =>
 			{
+				if (factor.DictionaryId == null)
+					throw new CanNotCreateMarksBecauseNoDictionaryException(factor.AttributeName);
+
 				ProcessCodedFactor(factor, modelObjects);
 			});
 		}
@@ -284,20 +288,14 @@ namespace ModelingBusiness.Modeling
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
-			if (factor.DictionaryId == null)
-				throw new CanNotCreateMarksBecauseNoDictionaryException(factor.AttributeName);
-
-			var uniqueFactorValues = new List<string>();
+			var uniqueFactorValues = new HashSet<string>();
 			modelObjects.ForEach(obj =>
 			{
 				var coefficient = obj.DeserializeCoefficient().FirstOrDefault(x => x.AttributeId == factor.AttributeId);
 				if (coefficient == null) 
 					return;
 
-				if (!uniqueFactorValues.Contains(coefficient.Value))
-				{
-					uniqueFactorValues.Add(coefficient.Value);
-				}
+				uniqueFactorValues.Add(coefficient.Value);
 			});
 
 			var uniqueValuesAveragePrice = new Dictionary<string, decimal>();
@@ -319,20 +317,12 @@ namespace ModelingBusiness.Modeling
 			});
 
 			var prices = uniqueValuesAveragePrice.Values;
-			if (uniqueFactorValues.Count % 2 == 0)
-			{
-				var averagePrice = prices.Average();
-				
-				CreateMark(factor, uniqueValuesAveragePrice, averagePrice);
-			}
-			else
-			{
-				var median = CalculateMedian(prices.ToList());
-				CreateMark(factor, uniqueValuesAveragePrice, median);
-			}
+			var divider = uniqueFactorValues.Count % 2 == 0 ? prices.Average() : CalculateMedian(prices.ToList());
+
+			CreateMarks(factor, uniqueValuesAveragePrice, divider);
 		}
 
-		private void CreateMark(ModelFactorRelationPure factor, Dictionary<string, decimal> uniqueValuesAveragePrice, decimal divider)
+		private void CreateMarks(ModelFactorRelationPure factor, Dictionary<string, decimal> uniqueValuesAveragePrice, decimal divider)
 		{
 			if (divider == 0)
 				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
