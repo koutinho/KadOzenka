@@ -266,21 +266,13 @@ namespace ModelingBusiness.Modeling
 			if (modelObjects.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 			
-			var factors = ModelFactorsService.GetGeneralModelFactors(modelId);
+			var factors = ModelFactorsService.GetGeneralModelFactors(modelId).Where(x => x.MarkType == MarkType.Default).ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
 			factors.ForEach(factor =>
 			{
-				//если будут еще различия, то вынести в интерфейс
-				if (factor.MarkType == MarkType.Default)
-				{
-					ProcessCodedFactor(factor, modelObjects);
-				}
-				else
-				{
-					ProcessUncodedFactor(factor, modelObjects);
-				}
+				ProcessCodedFactor(factor, modelObjects);
 			});
 		}
 
@@ -344,11 +336,6 @@ namespace ModelingBusiness.Modeling
 			{
 				
 			}
-		}
-
-		private void ProcessUncodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
-		{
-			throw new NotImplementedException();
 		}
 
 		#endregion
