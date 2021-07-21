@@ -27,7 +27,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			{
 				CadastralNumber = RandomGenerator.GetRandomString(),
 				Price = RandomGenerator.GenerateRandomDecimal(),
-				IsExcluded = true,
+				IsExcluded = false,
 				ModelId = RandomGenerator.GenerateRandomId(),
 				Coefficients = coefficients.SerializeCoefficient(),
 				IsForTraining = true,
@@ -68,6 +68,12 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 		public AModelObjectBuilder ForControl(bool isForControl)
 		{
 			_modelObject.IsForControl = isForControl;
+			return this;
+		}
+
+		public AModelObjectBuilder Excluded(bool isExcluded)
+		{
+			_modelObject.IsExcluded = isExcluded;
 			return this;
 		}
 

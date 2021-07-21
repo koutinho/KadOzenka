@@ -4,6 +4,7 @@ using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Objects;
+using ModelingBusiness.Objects.Repositories;
 using Moq;
 using NUnit.Framework;
 
@@ -13,6 +14,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 	{
 		protected ModelingService ModelingService => Provider.GetService<ModelingService>();
 		protected Mock<IModelObjectsService> ModelObjectsService { get; private set; }
+		protected Mock<IModelObjectsRepository> ModelObjectsRepository { get; private set; }
 		protected Mock<IModelFactorsService> ModelFactorsService { get; private set; }
 		protected Mock<IModelDictionaryService> ModelDictionaryService { get; private set; }
 
@@ -21,6 +23,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		public void BaseModelingTestsSetUp()
 		{
 			ModelObjectsService = new Mock<IModelObjectsService>();
+			ModelObjectsRepository = new Mock<IModelObjectsRepository>();
 			ModelFactorsService = new Mock<IModelFactorsService>();
 			ModelDictionaryService = new Mock<IModelDictionaryService>();
 		}
@@ -30,6 +33,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		{
 			container.AddTransient<ModelingService>();
 			container.AddTransient(typeof(IModelObjectsService), x => ModelObjectsService.Object);
+			container.AddTransient(typeof(IModelObjectsRepository), x => ModelObjectsRepository.Object);
 			container.AddTransient(typeof(IModelFactorsService), x => ModelFactorsService.Object);
 			container.AddTransient(typeof(IModelDictionaryService), x => ModelDictionaryService.Object);
 		}

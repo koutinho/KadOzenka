@@ -15,6 +15,8 @@ using ModelingBusiness.Modeling.Entities;
 using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Modeling.Responses;
 using ModelingBusiness.Objects;
+using ModelingBusiness.Objects.Entities;
+using ModelingBusiness.Objects.Repositories;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
@@ -29,20 +31,20 @@ namespace ModelingBusiness.Modeling
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelService ModelService { get; }
         private IModelFactorsService ModelFactorsService { get; }
-        private IModelObjectsService ModelObjectsService { get; }
+        private IModelObjectsRepository ModelObjectsRepository { get; }
         private IModelDictionaryService ModelDictionaryService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
 
         public ModelingService(IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
-			IModelObjectsService modelObjectsService = null,
+			IModelObjectsRepository modelObjectsRepository = null,
 			IModelDictionaryService modelDictionaryService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
         {
 	        ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
-			ModelObjectsService = modelObjectsService ?? new ModelObjectsService();
+			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
@@ -262,7 +264,7 @@ namespace ModelingBusiness.Modeling
 
 		public void CreateMarks(long modelId)
 		{
-			var modelObjects = ModelObjectsService.GetModelObjects(modelId);
+			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training);
 			if (modelObjects.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 			

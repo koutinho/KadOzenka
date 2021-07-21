@@ -2,6 +2,7 @@
 using System.Linq;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
+using ModelingBusiness.Modeling.Exceptions;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
@@ -43,6 +44,13 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		}
 
 
+		[Test]
+		public void CanNot_Create_Marks_If_Model_Object_Is_Excluded()
+		{
+			new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(true).Build();
+			
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CreateMarks(_model.Id));
+		}
 
 		[Test]
 		public void Can_Create_Marks_For_Factor_With_Even_Values_Count()
@@ -117,7 +125,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 				}
 			};
 
-			return new ModelObjectBuilder().Model(_model).Coefficients(coefficients).Build();
+			return new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
 		}
 
 		private void CheckMark(List<OMModelingDictionariesValues> addressMarks, string value, decimal expectedCalculationValue)
