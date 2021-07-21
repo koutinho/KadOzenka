@@ -16,6 +16,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		private OMModelingDictionary _dictionary;
 		private OMModelFactor _addressFactor;
 		private long _addressAttributeId;
+		private long _squareAttributeId;
 		private string _firstAddressValue;
 		private string _secondAddressValue;
 		private string _thirdAddressValue;
@@ -25,6 +26,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		public void OneTimeSetUp()
 		{
 			_addressAttributeId = 48089615;
+			_squareAttributeId = 48403152;
 
 			_firstAddressValue = "адрес_1";
 			_secondAddressValue = "адрес_2";
@@ -107,23 +109,14 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		[Test]
 		public void Can_Create_Marks_For_Several_Factors()
 		{
-			var squareAttributeId = 48403152;
+			var squareValue = RandomGenerator.GenerateRandomInteger();
 			var coefficients = new List<CoefficientForObject>
 			{
-				new(_addressAttributeId)
-				{
-					Coefficient = RandomGenerator.GenerateRandomDecimal(),
-					Value = _firstAddressValue
-				},
-				new(squareAttributeId)
-				{
-					Coefficient = RandomGenerator.GenerateRandomDecimal(),
-					Value = RandomGenerator.GenerateRandomInteger().ToString()
-				}
+				CreateCoefficientForAddress(_firstAddressValue),
+				CreateCoefficientForSquare(squareValue)
 			};
 			var modelObject = new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
-			var squareFactor = new ModelFactorBuilder().Model(_model).FactorId(squareAttributeId)
-				.Dictionary(new DictionaryBuilder().Build()).MarkType(MarkType.Default).Build();
+			var squareFactor = CreateSquareFactor();
 
 
 			ModelingService.CreateMarks(_model.Id);
@@ -131,28 +124,50 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 
 			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(addressMark.Count, Is.EqualTo(1));
+			Assert.That(addressMark[0].Value, Is.EqualTo(_firstAddressValue));
 			Assert.That(addressMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
 
 			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(squareMark.Count, Is.EqualTo(1));
+			Assert.That(squareMark[0].Value, Is.EqualTo(squareValue.ToString()));
 			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
 		}
 
-
+		
 		#region Support Methods
 
-		private OMModelToMarketObjects CreateModelObject(string addressValue = null, int? squareValue = null)
+		private OMModelToMarketObjects CreateModelObject(string addressValue = null)
 		{
 			var coefficients = new List<CoefficientForObject>
 			{
-				new(_addressAttributeId)
-				{
-					Coefficient = RandomGenerator.GenerateRandomDecimal(),
-					Value = addressValue ?? RandomGenerator.GetRandomString()
-				}
+				CreateCoefficientForAddress(addressValue)
 			};
 
 			return new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+		}
+
+		private CoefficientForObject CreateCoefficientForAddress(string addressValue = null)
+		{
+			return new CoefficientForObject(_addressAttributeId)
+			{
+				Coefficient = RandomGenerator.GenerateRandomDecimal(),
+				Value = addressValue ?? RandomGenerator.GetRandomString()
+			};
+		}
+
+		private CoefficientForObject CreateCoefficientForSquare(double? squareValue = null)
+		{
+			return new CoefficientForObject(_squareAttributeId)
+			{
+				Coefficient = RandomGenerator.GenerateRandomDecimal(),
+				Value = squareValue?.ToString() ?? RandomGenerator.GenerateRandomInteger().ToString()
+			};
+		}
+
+		private OMModelFactor CreateSquareFactor()
+		{
+			return new ModelFactorBuilder().Model(_model).FactorId(_squareAttributeId)
+				.Dictionary(new DictionaryBuilder().Build()).MarkType(MarkType.Default).Build();
 		}
 
 		private void CheckMark(List<OMModelingDictionariesValues> addressMarks, string value, decimal expectedCalculationValue)
