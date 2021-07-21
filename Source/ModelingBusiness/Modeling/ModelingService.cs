@@ -6,6 +6,8 @@ using CommonSdks;
 using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using ModelingBusiness.Dictionaries;
+using ModelingBusiness.Dictionaries.Entities;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Model;
@@ -28,17 +30,20 @@ namespace ModelingBusiness.Modeling
         private IModelService ModelService { get; }
         private IModelFactorsService ModelFactorsService { get; }
         private IModelObjectsService ModelObjectsService { get; }
+        private IModelDictionaryService ModelDictionaryService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
 
         public ModelingService(IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
 			IModelObjectsService modelObjectsService = null,
+			IModelDictionaryService modelDictionaryService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
         {
 	        ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
 			ModelObjectsService = modelObjectsService ?? new ModelObjectsService();
+			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
@@ -284,7 +289,61 @@ namespace ModelingBusiness.Modeling
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
-			throw new NotImplementedException();
+			if (factor.DictionaryId == null)
+				throw new CanNotCreateMarksBecauseNoDictionaryException(factor.AttributeName);
+
+			var uniqueFactorValues = new List<string>();
+			modelObjects.ForEach(obj =>
+			{
+				var coefficient = obj.DeserializeCoefficient().FirstOrDefault(x => x.AttributeId == factor.AttributeId);
+				if (coefficient == null) 
+					return;
+
+				if (!uniqueFactorValues.Contains(coefficient.Value))
+				{
+					uniqueFactorValues.Add(coefficient.Value);
+				}
+			});
+
+			var uniqueValuesAveragePrice = new Dictionary<string, decimal>();
+			uniqueFactorValues.ForEach(uniqueValue =>
+			{
+				var objectsPriceSumWithUniqueValue = 0m;
+				var objectsCountWithUniqueValue = 0;
+				modelObjects.ForEach(obj =>
+				{
+					var coefficient = obj.DeserializeCoefficient().FirstOrDefault(x => x.Value == uniqueValue);
+					if (coefficient == null)
+						return;
+
+					objectsPriceSumWithUniqueValue += obj.Price;
+					objectsCountWithUniqueValue++;
+				});
+
+				uniqueValuesAveragePrice[uniqueValue] = objectsPriceSumWithUniqueValue / objectsCountWithUniqueValue;
+			});
+
+			if (uniqueFactorValues.Count % 2 == 0)
+			{
+				var averagePrice = uniqueValuesAveragePrice.Values.Average();
+				if (averagePrice == 0)
+					throw new Exception($"Среднеарифметическая цена объектов с фактором {factor.AttributeId} равна нулю");
+
+				foreach (var valuePrice in uniqueValuesAveragePrice)
+				{
+					var mark = new DictionaryMarkDto
+					{
+						DictionaryId = factor.DictionaryId.Value,
+						Value = valuePrice.Key,
+						CalculationValue = valuePrice.Value / averagePrice
+					};
+					ModelDictionaryService.CreateMark(mark);
+				}
+			}
+			else
+			{
+				
+			}
 		}
 
 		private void ProcessUncodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)

@@ -71,6 +71,12 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AModelObjectBuilder Price(decimal price)
+		{
+			_modelObject.Price = price;
+			return this;
+		}
+
 
 		public abstract OMModelToMarketObjects Build();
 	}

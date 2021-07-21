@@ -18,13 +18,31 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				AttributeId = RandomGenerator.GenerateRandomId(),
 				AttributeName = RandomGenerator.GetRandomString(),
 				AttributeType = (long) RegisterAttributeType.STRING,
-				MarkType = MarkType.Default,
+				MarkType = ObjectModel.Directory.Ko.MarkType.Default,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				DictionaryName = RandomGenerator.GetRandomString(),
 				IsActive = true
 			};
 		}
 
+
+		public ModelFactorRelationPureBuilder AttributeId(long attributeId)
+		{
+			_factor.AttributeId = attributeId;
+			return this;
+		}
+
+		public ModelFactorRelationPureBuilder DictionaryId(long? dictionaryId)
+		{
+			_factor.DictionaryId = dictionaryId;
+			return this;
+		}
+
+		public ModelFactorRelationPureBuilder MarkType(MarkType markType)
+		{
+			_factor.MarkType = markType;
+			return this;
+		}
 
 		public ModelFactorRelationPure Build()
 		{
