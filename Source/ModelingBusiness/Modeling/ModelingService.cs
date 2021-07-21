@@ -7,12 +7,17 @@ using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using ModelingBusiness.Factors;
+using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Model;
 using ModelingBusiness.Modeling.Entities;
+using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Modeling.Responses;
+using ModelingBusiness.Objects;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
+using ObjectModel.Modeling;
 using Serilog;
 
 namespace ModelingBusiness.Modeling
@@ -22,15 +27,18 @@ namespace ModelingBusiness.Modeling
 		private readonly ILogger _log = Log.ForContext<ModelingService>();
         private IModelService ModelService { get; }
         private IModelFactorsService ModelFactorsService { get; }
+        private IModelObjectsService ModelObjectsService { get; }
         public IRegisterCacheWrapper RegisterCacheWrapper { get; }
         
 
         public ModelingService(IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
+			IModelObjectsService modelObjectsService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
         {
 	        ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
+			ModelObjectsService = modelObjectsService ?? new ModelObjectsService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
@@ -246,6 +254,45 @@ namespace ModelingBusiness.Modeling
 
 			return dictionaryId;
 		}
+
+		public void CreateMarks(long modelId)
+		{
+			var modelObjects = ModelObjectsService.GetModelObjects(modelId);
+			if (modelObjects.IsEmpty())
+				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
+			
+			var factors = ModelFactorsService.GetGeneralModelFactors(modelId);
+			if (factors.IsEmpty())
+				throw new CanNotCreateMarksBecauseNoFactorsException();
+
+			factors.ForEach(factor =>
+			{
+				//если будут еще различия, то вынести в интерфейс
+				if (factor.MarkType == MarkType.Default)
+				{
+					ProcessCodedFactor(factor, modelObjects);
+				}
+				else
+				{
+					ProcessUncodedFactor(factor, modelObjects);
+				}
+			});
+		}
+
+		
+		#region Support Methods
+
+		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		{
+			throw new NotImplementedException();
+		}
+
+		private void ProcessUncodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		{
+			throw new NotImplementedException();
+		}
+
+		#endregion
 
 		#endregion
 	}

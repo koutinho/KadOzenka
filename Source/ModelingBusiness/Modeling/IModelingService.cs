@@ -20,5 +20,6 @@ namespace ModelingBusiness.Modeling
 		OMModelTrainingResultImages GetModelImages(long modelId, KoAlgoritmType type);
 		
 		long? GetDictionaryId(long? groupId, long? factorId);
+		void CreateMarks(long modelId);
 	}
 }

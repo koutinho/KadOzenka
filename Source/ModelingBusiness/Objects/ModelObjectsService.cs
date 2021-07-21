@@ -44,10 +44,16 @@ namespace ModelingBusiness.Objects
 
         public List<OMModelToMarketObjects> GetModelObjects(long modelId)
 		{
-			return OMModelToMarketObjects.Where(x => x.ModelId == modelId)
+			_log.Debug("Начато скачивание объектов моделирования для модели с ИД {ModelId}", modelId);
+
+			var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
                 .OrderBy(x => x.CadastralNumber)
                 .SelectAll()
                 .Execute();
+
+			_log.Debug("Cкачено {Count} объектов моделирования для модели с ИД {ModelId}", modelObjects.Count);
+
+			return modelObjects;
 		}
 
         public int DestroyModelMarketObjects(OMModel model)
