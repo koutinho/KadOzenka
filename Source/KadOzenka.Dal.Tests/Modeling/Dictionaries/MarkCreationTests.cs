@@ -10,7 +10,7 @@ using ObjectModel.KO;
 namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 {
 	[TestFixture]
-	public class MarkCreationTests : BaseModelTests
+	public class MarkCreationTests : BaseDictionaryTests
 	{
 		[Test]
 		public void CanNot_Create_Mark_Without_Value()
