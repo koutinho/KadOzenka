@@ -13,8 +13,12 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 	{
 		private OMModel _model;
 		private OMModelingDictionary _dictionary;
+		private OMModelFactor _addressFactor;
 		private long _addressAttributeId;
 		private long _squareAttributeId;
+		private string _firstAddressValue;
+		private string _secondAddressValue;
+		private string _thirdAddressValue;
 
 
 		[OneTimeSetUp]
@@ -22,6 +26,10 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		{
 			_addressAttributeId = 48089615;
 			_squareAttributeId = 48403152;
+
+			_firstAddressValue = "адрес_1";
+			_secondAddressValue = "адрес_2";
+			_thirdAddressValue = "адрес_3";
 		}
 
 		[SetUp]
@@ -29,6 +37,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		{
 			_model = new ModelBuilder().Automatic().Build();
 			_dictionary = new DictionaryBuilder().Build();
+			
+			_addressFactor = new ModelFactorBuilder().Model(_model).FactorId(_addressAttributeId)
+				.Dictionary(_dictionary).MarkType(MarkType.Default).Build();
 		}
 
 
@@ -36,40 +47,32 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		[Test]
 		public void Can_Create_Marks_For_Factor_With_Even_Values_Count()
 		{
-			var firstAddressValue = "адрес_1";
-			var secondAddressValue = "адрес_2";
-			var firstModelObject = new ModelObjectBuilder().Model(_model).Coefficients(GetCoefficients(firstAddressValue)).Build();
-			var secondModelObject = new ModelObjectBuilder().Model(_model).Coefficients(GetCoefficients(firstAddressValue)).Build();
-			var thirdModelObject = new ModelObjectBuilder().Model(_model).Coefficients(GetCoefficients(secondAddressValue)).Build();
-			var forthModelObject = new ModelObjectBuilder().Model(_model).Coefficients(GetCoefficients(secondAddressValue)).Build();
-			var addressFactor = new ModelFactorBuilder().Model(_model).FactorId(_addressAttributeId).Dictionary(_dictionary).MarkType(MarkType.Default).Build();
+			var firstModelObject = CreateModelObject(_firstAddressValue);
+			var secondModelObject = CreateModelObject(_firstAddressValue);
+			var thirdModelObject = CreateModelObject(_secondAddressValue);
+			var forthModelObject = CreateModelObject(_secondAddressValue);
 
 
 			ModelingService.CreateMarks(_model.Id);
 
 
-			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == addressFactor.DictionaryId).SelectAll().Execute();
+			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(addressMarks.Count, Is.EqualTo(2));
 
 			var averagePriceForFirstAddressValue = (firstModelObject.Price + secondModelObject.Price) / 2;
 			var averagePriceForSecondAddressValue = (thirdModelObject.Price + forthModelObject.Price) / 2;
 			var averagePriceForAllAddressValues = (averagePriceForFirstAddressValue + averagePriceForSecondAddressValue) / 2;
 
-			var firstAddressMark = addressMarks.FirstOrDefault(x => x.Value == firstAddressValue);
-			Assert.That(firstAddressMark, Is.Not.Null);
-			Assert.That(firstAddressMark.CalculationValue, Is.EqualTo(averagePriceForFirstAddressValue / averagePriceForAllAddressValues));
-
-			var secondAddressMark = addressMarks.FirstOrDefault(x => x.Value == secondAddressValue);
-			Assert.That(secondAddressMark, Is.Not.Null);
-			Assert.That(firstAddressMark.CalculationValue, Is.EqualTo(averagePriceForFirstAddressValue / averagePriceForAllAddressValues));
+			CheckMark(addressMarks, _firstAddressValue, averagePriceForFirstAddressValue / averagePriceForAllAddressValues);
+			CheckMark(addressMarks, _secondAddressValue, averagePriceForSecondAddressValue / averagePriceForAllAddressValues);
 		}
-		
 
+		
 		#region Support Methods
 
-		private List<CoefficientForObject> GetCoefficients(string addressValue = null, int? squareValue = null)
+		private OMModelToMarketObjects CreateModelObject(string addressValue = null, int? squareValue = null)
 		{
-			return new()
+			var coefficients = new List<CoefficientForObject>
 			{
 				new(_addressAttributeId)
 				{
@@ -82,6 +85,15 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 					Value = squareValue?.ToString() ?? RandomGenerator.GenerateRandomInteger().ToString()
 				}
 			};
+
+			return new ModelObjectBuilder().Model(_model).Coefficients(coefficients).Build();
+		}
+
+		private void CheckMark(List<OMModelingDictionariesValues> addressMarks, string value, decimal expectedCalculationValue)
+		{
+			var mark = addressMarks.FirstOrDefault(x => x.Value == value);
+			Assert.That(mark, Is.Not.Null);
+			Assert.That(mark.CalculationValue, Is.EqualTo(expectedCalculationValue));
 		}
 
 		#endregion
