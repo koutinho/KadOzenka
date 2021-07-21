@@ -275,7 +275,10 @@ namespace ObjectModel.Modeling
 {
 	public partial class OMModelToMarketObjects
 	{
-		public List<CoefficientForObject> DeserializeCoefficient()
+		private List<CoefficientForObject> _deserializeCoefficients;
+        public List<CoefficientForObject> DeserializedCoefficients => _deserializeCoefficients ??= DeserializeCoefficient();
+
+        public List<CoefficientForObject> DeserializeCoefficient()
 		{
 			if (string.IsNullOrWhiteSpace(Coefficients))
 				return new List<CoefficientForObject>();

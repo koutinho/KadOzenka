@@ -292,7 +292,7 @@ namespace ModelingBusiness.Modeling
 			var uniqueFactorValues = new HashSet<string>();
 			modelObjects.ForEach(obj =>
 			{
-				var coefficient = obj.DeserializeCoefficient().FirstOrDefault(x => x.AttributeId == factor.AttributeId);
+				var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
 				if (coefficient == null) 
 					return;
 
@@ -306,7 +306,7 @@ namespace ModelingBusiness.Modeling
 				var objectsCountWithUniqueValue = 0;
 				modelObjects.ForEach(obj =>
 				{
-					var coefficient = obj.DeserializeCoefficient().FirstOrDefault(x => x.Value == uniqueValue);
+					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.Value == uniqueValue);
 					if (coefficient == null)
 						return;
 
