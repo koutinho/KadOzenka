@@ -265,6 +265,10 @@ namespace ModelingBusiness.Modeling
 
 		public void CreateMarks(long modelId)
 		{
+			var model = ModelService.GetModelEntityById(modelId);
+			if (!model.IsAutomatic)
+				throw new CanNotCreateMarksForNonAutomaticModelException();
+
 			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
 				select => new {select.Coefficients, select.Price});
 			if (modelObjects.IsEmpty())

@@ -27,8 +27,20 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			_addressAttributeId = RandomGenerator.GenerateRandomId();
 
 			_modelId = RandomGenerator.GenerateRandomId();
+			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Automatic().Build());
 		}
 
+
+		[Test]
+		public void Can_Not_Create_Marks_For_Non_Automatic_Model()
+		{
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
+			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Manual().Build());
+			MockModelObjects();
+			MockModelFactors(factor);
+
+			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => ModelingService.CreateMarks(_modelId));
+		}
 
 		[Test]
 		public void Can_Not_Create_Marks_Without_Model_Objects()

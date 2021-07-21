@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
+using ModelingBusiness.Model;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Repositories;
@@ -13,6 +14,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 	public class BaseModelingTests : BaseTests
 	{
 		protected ModelingService ModelingService => Provider.GetService<ModelingService>();
+		protected Mock<IModelService> ModelService { get; private set; }
 		protected Mock<IModelObjectsService> ModelObjectsService { get; private set; }
 		protected Mock<IModelObjectsRepository> ModelObjectsRepository { get; private set; }
 		protected Mock<IModelFactorsService> ModelFactorsService { get; private set; }
@@ -22,6 +24,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[SetUp]
 		public void BaseModelingTestsSetUp()
 		{
+			ModelService = new Mock<IModelService>();
 			ModelObjectsService = new Mock<IModelObjectsService>();
 			ModelObjectsRepository = new Mock<IModelObjectsRepository>();
 			ModelFactorsService = new Mock<IModelFactorsService>();
@@ -32,6 +35,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
 			container.AddTransient<ModelingService>();
+			container.AddTransient(typeof(IModelService), x => ModelService.Object);
 			container.AddTransient(typeof(IModelObjectsService), x => ModelObjectsService.Object);
 			container.AddTransient(typeof(IModelObjectsRepository), x => ModelObjectsRepository.Object);
 			container.AddTransient(typeof(IModelFactorsService), x => ModelFactorsService.Object);
