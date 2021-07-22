@@ -300,7 +300,8 @@ namespace ModelingBusiness.Modeling
 			List<ModelFactorRelationPure> factors)
 		{
 			var factorIds = factors.Select(x => x.AttributeId).ToList();
-			var modelObjectsWithEmptyFactors = modelObjects.Where(x => x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
+			var modelObjectsWithEmptyFactors = modelObjects.Where(x => 
+				x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
 			if (modelObjectsWithEmptyFactors.Count == 0)
 				return string.Empty;
 
@@ -329,7 +330,7 @@ namespace ModelingBusiness.Modeling
 
 			modelObjectsWithEmptyFactors.ForEach(obj =>
 			{
-				var factorNames = "";
+				var factorNames = string.Empty;
 				factors.ForEach(factor =>
 				{
 					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.AttributeId);
