@@ -135,7 +135,8 @@ namespace ModelingBusiness.Objects.Import
 				ValidateCreationParameters(modelObjectsConstructor.ModelId, modelObjectsConstructor.ColumnsMapping);
 
 				return new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId.Value,
-					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId);
+					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId,
+					_isForTrainingAttributeId, _isForControlAttributeId);
 			}
 
 			return new ModelObjectsImporterForUpdating(objectsFromExcel, _isForTrainingAttributeId,

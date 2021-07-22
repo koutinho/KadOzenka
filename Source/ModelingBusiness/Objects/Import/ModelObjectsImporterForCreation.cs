@@ -11,13 +11,20 @@ namespace ModelingBusiness.Objects.Import
 		private readonly long _modelId;
 		private readonly long _modelIdAttributeId;
 		private readonly long _coefficientAttributeId;
+		private readonly long _isForTrainingAttributeId;
+		private readonly long _isForControlAttributeId;
 
-		public ModelObjectsImporterForCreation(long modelId, long modelIdAttributeId, long coefficientAttributeId)
+
+		public ModelObjectsImporterForCreation(long modelId, long modelIdAttributeId, long coefficientAttributeId,
+			long isForTrainingAttributeId, long isForControlAttributeId)
 		{
 			_modelId = modelId;
 			_modelIdAttributeId = modelIdAttributeId;
 			_coefficientAttributeId = coefficientAttributeId;
+			_isForTrainingAttributeId = isForTrainingAttributeId;
+			_isForControlAttributeId = isForControlAttributeId;
 		}
+
 
 		public RegisterObject CreateObject(long? objectId)
 		{
@@ -25,6 +32,9 @@ namespace ModelingBusiness.Objects.Import
 			
 			registerObject.SetAttributeValue(_modelIdAttributeId, _modelId);
 			registerObject.SetAttributeValue(_coefficientAttributeId, string.Empty);
+
+			registerObject.SetAttributeValue(_isForTrainingAttributeId, false);
+			registerObject.SetAttributeValue(_isForControlAttributeId, false);
 
 			return registerObject;
 		}
