@@ -95,59 +95,18 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				using (Logger.TimeOperation("Создание новых меток"))
 				{
-					var rowsToInsertSql = new StringBuilder();
-					var marksCounter = 0;
-					for (var i = 0; i < modelObjects.Count; i++)
+					foreach (var attribute in attributesWithMarks)
 					{
-						var modelObject = modelObjects[i];
-						
-						foreach (var attribute in attributesWithMarks)
-						{
-							var objectCoefficient = modelObject.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attribute.AttributeId);
-							if (objectCoefficient == null || string.IsNullOrWhiteSpace(objectCoefficient.Value) ||
-							    objectCoefficient.Coefficient.GetValueOrDefault() == 0)
-								continue;
+						var currentModelObjects = modelObjects.SelectMany(x => x.DeserializedCoefficients).ToList();
 
-							var value = objectCoefficient.Value.Replace(',', '.');
-							var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
-							rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {attribute.DictionaryId}, '{value}', {metka}),");
-
-							//добавляем метки пакетом по 1000 записей
-							marksCounter++;
-							if (marksCounter % 2500 == 0)
-							{
-								InsertMarks(rowsToInsertSql);
-								rowsToInsertSql = new StringBuilder();
-							}
-						}
+						ModelDictionaryService.CreateMarks(attribute.AttributeId, attribute.DictionaryId.Value, currentModelObjects);
 					}
-
-					if (rowsToInsertSql.Length > 0)
-					{
-						InsertMarks(rowsToInsertSql);
-					}
-
-					Logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
 				}
 				
 				AddLog(queue, "Закончено формирование каталога меток", logger: Logger);
 			}
 		}
 
-		private void InsertMarks(StringBuilder rowsToInsertSql)
-		{
-			//убираем последний перевод строки и знак ','
-			rowsToInsertSql.TrimLastLine().Length--;
-
-			var sql = @$"INSERT INTO ko_modeling_dictionaries_values (id, dictionary_id, value, calculation_value)
-							VALUES
-							{rowsToInsertSql}";
-
-			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			var insertedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
-
-			Logger.Debug("В БД добавлено {numberOfMarks} меток", insertedMarksCount);
-		}
 
 		protected void SaveStatistic(List<OMModelToMarketObjects> objects, List<ModelAttributePure> attributes, OMModel model, OMQueue queue)
 		{

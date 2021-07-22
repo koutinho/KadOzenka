@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
@@ -16,6 +18,7 @@ using Core.Shared.Misc;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using Microsoft.Practices.EnterpriseLibrary.Data;
+using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Dictionaries.Entities;
 using ModelingBusiness.Dictionaries.Exceptions;
 using ModelingBusiness.Dictionaries.Repositories;
@@ -23,6 +26,7 @@ using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
+using ObjectModel.Modeling;
 using Serilog;
 
 namespace ModelingBusiness.Dictionaries
@@ -30,17 +34,23 @@ namespace ModelingBusiness.Dictionaries
 	public class ModelDictionaryService : IModelDictionaryService
 	{
 		private readonly ILogger _logger = Log.ForContext<ModelDictionaryService>();
+		private readonly string _marksTableName;
 		public int RowsCount { get; set; } = 1;
 		public int CurrentRow { get; set; }
 		private IModelDictionaryRepository ModelDictionaryRepository { get; }
 		private IModelMarksRepository ModelMarksRepository { get; }
+		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
 
 		public ModelDictionaryService(IModelDictionaryRepository modelDictionaryRepository = null,
-			IModelMarksRepository modelMarksRepository = null)
+			IModelMarksRepository modelMarksRepository = null,
+			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelDictionaryRepository = modelDictionaryRepository ?? new ModelDictionaryRepository();
 			ModelMarksRepository = modelMarksRepository ?? new ModelMarksRepository();
+			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
+
+			_marksTableName = "ko_modeling_dictionaries_values";
 		}
 		
 
@@ -270,6 +280,37 @@ namespace ModelingBusiness.Dictionaries
 			return ModelMarksRepository.Save(mark);
 		}
 
+		public void CreateMarks(long attributeId, long dictionaryId, IEnumerable<CoefficientForObject> objectCoefficients)
+		{
+			var dictionary = GetDictionaryById(dictionaryId);
+
+			var rowsToInsertSql = new StringBuilder();
+			var marksCounter = 0;
+			objectCoefficients.Where(x => x.AttributeId == attributeId).DistinctBy(x => x.Value).ForEach(objectCoefficient =>
+			{
+				ValidateMark(dictionary.Type_Code, objectCoefficient.Value, objectCoefficient.Coefficient);
+
+				var value = objectCoefficient.Value.Replace(',', '.');
+				var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
+				rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {dictionaryId}, '{value}', {metka}),");
+
+				//добавляем метки пакетом
+				marksCounter++;
+				if (marksCounter % 1000 == 0)
+				{
+					InsertMarks(rowsToInsertSql);
+					rowsToInsertSql = new StringBuilder();
+				}
+			});
+
+			if (rowsToInsertSql.Length > 0)
+			{
+				InsertMarks(rowsToInsertSql);
+			}
+
+			_logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
+		}
+
 		public void UpdateMark(DictionaryMarkDto dto)
 		{
 			var mark = GetMark(dto.Id);
@@ -295,7 +336,7 @@ namespace ModelingBusiness.Dictionaries
 			if (dictionaryId.GetValueOrDefault() == 0)
 				return 0;
 
-			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
+			var sql = $"delete from {_marksTableName} where dictionary_id = {dictionaryId}";
 			_logger.ForContext("Sql", sql).Debug("Начато удаление меток для словаря с ИД '{DictionaryId}'", dictionaryId);
 			
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
@@ -393,6 +434,22 @@ namespace ModelingBusiness.Dictionaries
 
 			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
 				throw new MarkValueConvertingException(value, dictionaryType);
+		}
+
+		private void InsertMarks(StringBuilder rowsToInsertSql)
+		{
+			//убираем последний перевод строки и знак ','
+			var charsToRemoveCount = 3;
+			rowsToInsertSql.Remove(rowsToInsertSql.Length - charsToRemoveCount, charsToRemoveCount);
+
+			var sql = @$"INSERT INTO {_marksTableName} (id, dictionary_id, value, calculation_value)
+							VALUES
+							{rowsToInsertSql}";
+
+			var command = DBMngr.Main.GetSqlStringCommand(sql);
+			var insertedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
+
+			_logger.Debug("В БД добавлено {numberOfMarks} меток", insertedMarksCount);
 		}
 
 

@@ -401,7 +401,6 @@ namespace ModelingBusiness.Modeling
 			foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
 			{
 				var uniqueFactorInfo = uniqueFactorPair.Value;
-				var calculationValue = uniqueFactorInfo.AveragePrice / divider;
 
 				uniqueFactorInfo.ModelObjects.ForEach(obj =>
 				{
@@ -409,20 +408,13 @@ namespace ModelingBusiness.Modeling
 					if (oldCoefficient == null) 
 						return;
 					
-					oldCoefficient.Coefficient = calculationValue;
+					oldCoefficient.Coefficient = uniqueFactorInfo.AveragePrice / divider;
 					obj.Coefficients = obj.DeserializedCoefficients.SerializeCoefficient();
 					obj.Save();
 				});
 				
-				var mark = new DictionaryMarkDto
-				{
-					DictionaryId = factor.DictionaryId.Value,
-					Value = uniqueFactorPair.Key,
-					CalculationValue = calculationValue
-				};
-
-				//todo если буду проблемы с производительностью, формировать sql-запрос через строку
-				ModelDictionaryService.CreateMark(mark);
+				var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
+				ModelDictionaryService.CreateMarks(factor.AttributeId, factor.DictionaryId.Value, allObjectsCoefficients);
 			}
 		}
 

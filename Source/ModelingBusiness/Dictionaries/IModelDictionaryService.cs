@@ -5,6 +5,7 @@ using Core.Register;
 using ModelingBusiness.Dictionaries.Entities;
 using ObjectModel.Common;
 using ObjectModel.KO;
+using ObjectModel.Modeling;
 
 namespace ModelingBusiness.Dictionaries
 {
@@ -34,5 +35,6 @@ namespace ModelingBusiness.Dictionaries
 		int DeleteMarks(long? dictionaryId);
 		OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName);
 		Stream ExportMarksToExcel(long dictionaryId);
+		void CreateMarks(long attributeId, long dictionaryId, IEnumerable<CoefficientForObject> objectCoefficients);
 	}
 }
