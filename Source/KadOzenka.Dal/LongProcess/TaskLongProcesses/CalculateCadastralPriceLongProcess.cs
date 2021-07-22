@@ -180,18 +180,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 					}
 
 					_log.Debug("Активная модель - '{ModelName}' (с ИД - {ModelId})", activeGroupModel.Name, activeGroupModel.Id);
-					if (activeGroupModel.Type_Code == KoModelType.Manual)
-					{
-						CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken,
-							maxUnitsCount, processedUnitsCount);
-					}
-					else
-					{
-						throw new Exception($"Расчет для модели '{activeGroupModel.Name}' не поддерживается");
-						//settings.SelectedGroupIds = new List<long> {group.Id};
-						//var errors = CalculateByOldRealization(settings);
-						//_errorsDuringCalculation.AddRange(errors);
-					}
+					
+					CalculateByNewRealization(settings, activeGroupModel, group.Id, cancellationToken, maxUnitsCount, processedUnitsCount);
 				});
 			}
 
