@@ -10,3 +10,27 @@ services:
         working_dir: /app
         volumes: 
             - ./api/:/app
+
+    db:
+        image: postgres
+        restart: always
+        volumes:
+            - db:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: genix_admin
+            POSTGRES_PASSWORD: 123456
+            POSTGRES_DB: client_support
+        ports:
+            - "5432:5432"
+
+    pgadmin:
+        image: dpage/pgadmin4
+        restart: always
+        environment: 
+            PGADMIN_DEFAULT_EMAIL: admin@genix.com
+            PGADMIN_DEFAULT_PASSWORD: 123456
+        ports:
+            - "5052:80"
+
+volumes:
+    db:
