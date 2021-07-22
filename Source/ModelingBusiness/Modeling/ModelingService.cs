@@ -398,6 +398,8 @@ namespace ModelingBusiness.Modeling
 			if (divider == 0)
 				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
 
+			ModelDictionaryService.DeleteMarks(factor.DictionaryId);
+
 			foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
 			{
 				var uniqueFactorInfo = uniqueFactorPair.Value;
