@@ -23,11 +23,13 @@ using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
+using Serilog;
 
 namespace ModelingBusiness.Dictionaries
 {
 	public class ModelDictionaryService : IModelDictionaryService
 	{
+		private readonly ILogger _logger = Log.ForContext<ModelDictionaryService>();
 		public int RowsCount { get; set; } = 1;
 		public int CurrentRow { get; set; }
 		private IModelDictionaryRepository ModelDictionaryRepository { get; }
@@ -294,9 +296,13 @@ namespace ModelingBusiness.Dictionaries
 				return 0;
 
 			var sql = $"delete from ko_modeling_dictionaries_values where dictionary_id = {dictionaryId}";
-
+			_logger.ForContext("Sql", sql).Debug("Начато удаление меток для словаря с ИД '{DictionaryId}'", dictionaryId);
+			
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
-			return DBMngr.Main.ExecuteNonQuery(command);
+			var deletedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
+			_logger.Debug("Удалено {DeletedMarksCount} предыдущих меток для словаря c ИД '{DictionaryId}'", deletedMarksCount, dictionaryId);
+
+			return deletedMarksCount;
 		}
 
 		public Stream ExportMarksToExcel(long dictionaryId)
