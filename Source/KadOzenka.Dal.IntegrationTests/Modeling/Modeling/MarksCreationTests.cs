@@ -70,9 +70,17 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var averagePriceForFirstAddressValue = (firstModelObject.Price + secondModelObject.Price) / 2;
 			var averagePriceForSecondAddressValue = (thirdModelObject.Price + forthModelObject.Price) / 2;
 			var averagePriceForAllAddressValues = (averagePriceForFirstAddressValue + averagePriceForSecondAddressValue) / 2;
+			
+			var expectedCalculationValueForFirstAddressValue = averagePriceForFirstAddressValue / averagePriceForAllAddressValues;
+			var expectedCalculationValueForSecondAddressValue = averagePriceForSecondAddressValue / averagePriceForAllAddressValues;
 
-			CheckMark(addressMarks, _firstAddressValue, averagePriceForFirstAddressValue / averagePriceForAllAddressValues);
-			CheckMark(addressMarks, _secondAddressValue, averagePriceForSecondAddressValue / averagePriceForAllAddressValues);
+			CheckMark(addressMarks, _firstAddressValue, expectedCalculationValueForFirstAddressValue);
+			CheckMark(addressMarks, _secondAddressValue, expectedCalculationValueForSecondAddressValue);
+
+			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue);
+			CheckModelObject(secondModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue);
+			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue);
+			CheckModelObject(forthModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue);
 		}
 
 		[Test]
@@ -101,9 +109,17 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 				}
 				.OrderBy(x => x).ElementAt(1);
 
-			CheckMark(addressMarks, _firstAddressValue, averagePriceForFirstAddressValue / medianPriceForAllAddressValues);
-			CheckMark(addressMarks, _secondAddressValue, averagePriceForSecondAddressValue / medianPriceForAllAddressValues);
-			CheckMark(addressMarks, _thirdAddressValue, averagePriceForThirdAddressValue / medianPriceForAllAddressValues);
+			var expectedCalculationValueForFirstAddressValue = averagePriceForFirstAddressValue / medianPriceForAllAddressValues;
+			var expectedCalculationValueForSecondAddressValue = averagePriceForSecondAddressValue / medianPriceForAllAddressValues;
+			var expectedCalculationValueForThirdAddressValue = averagePriceForThirdAddressValue / medianPriceForAllAddressValues;
+			
+			CheckMark(addressMarks, _firstAddressValue, expectedCalculationValueForFirstAddressValue);
+			CheckMark(addressMarks, _secondAddressValue, expectedCalculationValueForSecondAddressValue);
+			CheckMark(addressMarks, _thirdAddressValue, expectedCalculationValueForThirdAddressValue);
+
+			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue);
+			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue);
+			CheckModelObject(fifthModelObject.Id, _addressAttributeId, expectedCalculationValueForThirdAddressValue);
 		}
 
 		[Test]
@@ -123,14 +139,19 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 
 
 			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
+			var expectedCalculationValueForAddress = modelObject.Price / modelObject.Price;
 			Assert.That(addressMark.Count, Is.EqualTo(1));
 			Assert.That(addressMark[0].Value, Is.EqualTo(_firstAddressValue));
-			Assert.That(addressMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
+			Assert.That(addressMark[0].CalculationValue, Is.EqualTo(expectedCalculationValueForAddress));
 
 			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
+			var expectedCalculationValueForSquare = modelObject.Price / modelObject.Price;
 			Assert.That(squareMark.Count, Is.EqualTo(1));
 			Assert.That(squareMark[0].Value, Is.EqualTo(squareValue.ToString()));
-			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
+			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(expectedCalculationValueForSquare));
+
+			CheckModelObject(modelObject.Id, _addressAttributeId, expectedCalculationValueForAddress);
+			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), expectedCalculationValueForSquare);
 		}
 
 		[Test]
@@ -141,7 +162,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 				CreateCoefficientForAddress(_firstAddressValue),
 				CreateCoefficientForSquare(null)
 			};
-			new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+			var modelObject = new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
 			var squareFactor = CreateSquareFactor();
 
 
@@ -153,6 +174,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 
 			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(squareMark.Count, Is.EqualTo(0));
+
+			CheckModelObject(modelObject.Id, _addressFactor.FactorId.GetValueOrDefault(), coefficients[0].Coefficient);
+			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), coefficients[1].Coefficient);
 		}
 
 
@@ -198,6 +222,14 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var mark = addressMarks.FirstOrDefault(x => x.Value == value);
 			Assert.That(mark, Is.Not.Null);
 			Assert.That(mark.CalculationValue, Is.EqualTo(expectedCalculationValue));
+		}
+
+		private void CheckModelObject(long modelObjectId, long attributeId, decimal? expectedCalculationValue)
+		{
+			var updatedModelObject = OMModelToMarketObjects.Where(x => x.Id == modelObjectId).Select(x => x.Coefficients).ExecuteFirstOrDefault();
+
+			var updatedCoefficient = updatedModelObject.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attributeId);
+			Assert.That(updatedCoefficient.Coefficient, Is.EqualTo(expectedCalculationValue));
 		}
 
 		#endregion

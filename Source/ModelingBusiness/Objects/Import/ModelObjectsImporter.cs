@@ -58,11 +58,6 @@ namespace ModelingBusiness.Objects.Import
 			_isForControlAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl);
 		}
 
-		public ModelObjectsImporter(long coefficientsAttributeId)
-		{
-
-		}
-
 
 		public Stream ChangeObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
 		{
