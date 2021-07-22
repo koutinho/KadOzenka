@@ -798,7 +798,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public FileResult DownloadMarks(long dictionaryId)
         {
-	        var fileStream = ModelDictionaryService.ExportMarkerListToExcel(dictionaryId);
+	        var fileStream = ModelDictionaryService.ExportMarksToExcel(dictionaryId);
 
 	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }

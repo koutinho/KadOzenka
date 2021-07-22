@@ -33,6 +33,6 @@ namespace ModelingBusiness.Dictionaries
 		void DeleteMark(long markId);
 		int DeleteMarks(long? dictionaryId);
 		OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName);
-		Stream ExportMarkerListToExcel(long dictionaryId);
+		Stream ExportMarksToExcel(long dictionaryId);
 	}
 }

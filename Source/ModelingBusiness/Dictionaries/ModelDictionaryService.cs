@@ -299,7 +299,7 @@ namespace ModelingBusiness.Dictionaries
 			return DBMngr.Main.ExecuteNonQuery(command);
 		}
 
-		public Stream ExportMarkerListToExcel(long dictionaryId)
+		public Stream ExportMarksToExcel(long dictionaryId)
 		{
 			var excelTemplate = new ExcelFile();
 			var mainWorkSheet = excelTemplate.Worksheets.Add("Метки");
@@ -323,40 +323,6 @@ namespace ModelingBusiness.Dictionaries
 			stream.Seek(0, SeekOrigin.Begin);
 			return stream;
 		}
-
-		#region Support Methods
-
-		private void ValidateSingleMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
-		{
-			ValidateMark(dictionary.Type_Code, mark.Value, mark.CalculationValue);
-			
-			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
-			if (isTheSameMarkExists)
-				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
-		}
-
-		private void ValidateMark(ModelDictionaryType dictionaryType, string value, decimal? calculationValue)
-		{
-			var isEmptyValue = string.IsNullOrWhiteSpace(value);
-			if (isEmptyValue)
-				throw new EmptyMarkValueException();
-			if (calculationValue == null)
-				throw new EmptyMarkCalculationValueException();
-
-			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
-			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
-			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
-
-			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
-				throw new MarkValueConvertingException(value, dictionaryType);
-		}
-
-		#endregion
-
-		#endregion
-
-
-		#region Загрузка меток через Excel
 
 		public void UpdateDictionaryFromExcel(OMImportDataLog import, DictionaryImportFileInfoDto fileImportInfo,
 			long dictionaryId, bool isDeleteExistedMarks)
@@ -395,7 +361,34 @@ namespace ModelingBusiness.Dictionaries
 			return import;
 		}
 
+
 		#region Support Methods
+
+		private void ValidateSingleMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
+		{
+			ValidateMark(dictionary.Type_Code, mark.Value, mark.CalculationValue);
+			
+			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
+			if (isTheSameMarkExists)
+				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
+		}
+
+		private void ValidateMark(ModelDictionaryType dictionaryType, string value, decimal? calculationValue)
+		{
+			var isEmptyValue = string.IsNullOrWhiteSpace(value);
+			if (isEmptyValue)
+				throw new EmptyMarkValueException();
+			if (calculationValue == null)
+				throw new EmptyMarkCalculationValueException();
+
+			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
+			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
+			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
+
+			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
+				throw new MarkValueConvertingException(value, dictionaryType);
+		}
+
 
 		private void ImportDictionaryMarks(OMImportDataLog import, OMModelingDictionary dictionary,
 			DictionaryImportFileInfoDto fileImportInfo)
