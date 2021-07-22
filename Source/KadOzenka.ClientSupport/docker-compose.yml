@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+    api:
+        image: mcr.microsoft.com/dotnet/sdk:5.0
+        command: dotnet watch run
+        ports:
+            - 5000:5000
+            - 5001:5001
+        working_dir: /app
+        volumes: 
+            - ./api/:/app
