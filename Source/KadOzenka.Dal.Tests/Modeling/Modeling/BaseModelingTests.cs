@@ -1,4 +1,5 @@
-﻿using KadOzenka.Dal.Tests;
+﻿using KadOzenka.Dal.LongProcess.Modeling;
+using KadOzenka.Dal.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
@@ -35,6 +36,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
 			container.AddTransient<ModelingService>();
+			container.AddTransient<MarksCalculationLongProcess>();
 			container.AddTransient(typeof(IModelService), x => ModelService.Object);
 			container.AddTransient(typeof(IModelObjectsService), x => ModelObjectsService.Object);
 			container.AddTransient(typeof(IModelObjectsRepository), x => ModelObjectsRepository.Object);

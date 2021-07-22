@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KadOzenka.Common.Tests;
+using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
 using ModelingBusiness.Dictionaries.Entities;
@@ -13,20 +14,21 @@ using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
 using ObjectModel.Modeling;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 {
 	public class MarksCreationTests : BaseModelingTests
 	{
 		private long _modelId;
-		private long _addressAttributeId;
+		private MarksCalculationLongProcess MarksCalculationLongProcess => Provider.GetService<MarksCalculationLongProcess>();
+
 
 		[SetUp]
 		public void SetUp()
 		{
-			_addressAttributeId = RandomGenerator.GenerateRandomId();
-
 			_modelId = RandomGenerator.GenerateRandomId();
+
 			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Automatic().Build());
 		}
 
@@ -39,7 +41,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => ModelingService.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -49,7 +51,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -59,7 +61,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors();
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -70,7 +72,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -81,7 +83,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -92,7 +94,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => ModelingService.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
 		}
 
 

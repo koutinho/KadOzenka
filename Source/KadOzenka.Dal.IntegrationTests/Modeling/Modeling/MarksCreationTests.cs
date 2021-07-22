@@ -2,6 +2,7 @@
 using System.Linq;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
+using KadOzenka.Dal.LongProcess.Modeling;
 using ModelingBusiness.Modeling.Exceptions;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
@@ -20,6 +21,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		private string _firstAddressValue;
 		private string _secondAddressValue;
 		private string _thirdAddressValue;
+		private MarksCalculationLongProcess MarksCalculationLongProcess { get; set; }
 
 
 		[OneTimeSetUp]
@@ -31,6 +33,8 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			_firstAddressValue = "адрес_1";
 			_secondAddressValue = "адрес_2";
 			_thirdAddressValue = "адрес_3";
+
+			MarksCalculationLongProcess = new MarksCalculationLongProcess();
 		}
 
 		[SetUp]
@@ -49,7 +53,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		{
 			new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(true).Build();
 			
-			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CalculateMarks(_model.Id));
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => MarksCalculationLongProcess.CalculateMarks(_model.Id));
 		}
 
 		[Test]
@@ -61,7 +65,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var forthModelObject = CreateModelObject(_secondAddressValue);
 
 
-			ModelingService.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id);
 
 
 			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
@@ -93,7 +97,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var fifthModelObject = CreateModelObject(_thirdAddressValue);
 
 
-			ModelingService.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id);
 
 
 			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
@@ -135,7 +139,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var squareFactor = CreateSquareFactor();
 
 
-			ModelingService.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id);
 
 
 			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
@@ -166,7 +170,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var squareFactor = CreateSquareFactor();
 
 
-			ModelingService.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id);
 
 
 			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
