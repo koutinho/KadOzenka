@@ -270,23 +270,10 @@ namespace ModelingBusiness.Modeling
 			if (!model.IsAutomatic)
 				throw new CanNotCreateMarksForNonAutomaticModelException();
 
-			List<OMModelToMarketObjects> modelObjects;
-			using (_logger.TimeOperation("Скачивание объектов моделирования для модели с ИД '{ModelId}'", modelId))
-			{
-				modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
-					select => new { select.CadastralNumber, select.Coefficients, select.Price });
-				if (modelObjects.IsEmpty())
-					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
-				
-				_logger.Debug("Найдено {ModelObjectsCount} объектов модели для модели с ИД '{ModelId}'", modelObjects.Count, modelId);
-			}
-			
-			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
-				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
-			if (factors.IsEmpty())
-				throw new CanNotCreateMarksBecauseNoFactorsException();
-			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
+			var modelObjects = GetModelObjects(modelId);
 
+			var factors = GetModelFactors(modelId);
+			
 			var urlToDownloadReport = ProcessModelObjectsWithEmptyFactors(modelObjects, factors);
 
 			factors.ForEach(factor =>
@@ -303,6 +290,33 @@ namespace ModelingBusiness.Modeling
 
 		#region Support Methods
 
+		private List<OMModelToMarketObjects> GetModelObjects(long modelId)
+		{
+			using (_logger.TimeOperation("Получение объектов моделирования для модели с ИД '{ModelId}'", modelId))
+			{
+				var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
+					select => new { select.CadastralNumber, select.Coefficients, select.Price });
+				if (modelObjects.IsEmpty())
+					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
+
+				_logger.Debug("Найдено {ModelObjectsCount} объектов модели для модели с ИД '{ModelId}'", modelObjects.Count, modelId);
+
+				return modelObjects;
+			}
+		}
+
+		private List<ModelFactorRelationPure> GetModelFactors(long modelId)
+		{
+			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
+				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
+			if (factors.IsEmpty())
+				throw new CanNotCreateMarksBecauseNoFactorsException();
+
+			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
+
+			return factors;
+		}
+
 		private string ProcessModelObjectsWithEmptyFactors(List<OMModelToMarketObjects> modelObjects,
 			List<ModelFactorRelationPure> factors)
 		{
@@ -311,6 +325,7 @@ namespace ModelingBusiness.Modeling
 				x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
 			if (modelObjectsWithEmptyFactors.Count == 0)
 				return string.Empty;
+			
 			_logger.Debug("Найдено {ModelObjectsWithEmptyFactorsCount} объектов модели с пустыми факторами'", modelObjectsWithEmptyFactors.Count);
 
 
@@ -368,7 +383,6 @@ namespace ModelingBusiness.Modeling
 				var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
 				if (uniqueFactorValues.Count == 0)
 					return;
-				_logger.Debug("Найдено {uniqueFactorValuesCount} уникальных значений фактора '{FactorName}'", uniqueFactorValues.Count, factor.AttributeName);
 				
 				var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
 				if (uniqueFactorValuesInfo.Count == 0)
@@ -384,11 +398,18 @@ namespace ModelingBusiness.Modeling
 
 		private HashSet<string> GetUniqueFactorValues(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
-			return modelObjects
-				.SelectMany(x => x.DeserializedCoefficients)
-				.Where(x => x.AttributeId == factor.AttributeId && !string.IsNullOrWhiteSpace(x.Value))
-				.Select(x => x.Value)
-				.ToHashSet();
+			using (_logger.TimeOperation("Получение уникальных значений фактора '{FactorName}'", factor.AttributeName))
+			{
+				var uniqueFactorValues = modelObjects
+					.SelectMany(x => x.DeserializedCoefficients)
+					.Where(x => x.AttributeId == factor.AttributeId && !string.IsNullOrWhiteSpace(x.Value))
+					.Select(x => x.Value)
+					.ToHashSet();
+
+				_logger.Debug("Найдено {uniqueFactorValuesCount} уникальных значений фактора '{FactorName}'", uniqueFactorValues.Count, factor.AttributeName);
+
+				return uniqueFactorValues;
+			}
 		}
 
 		private Dictionary<string, UniqueFactorValueInfo> CalculateUniqueValuesAveragePrices(long attributeId,
@@ -449,7 +470,7 @@ namespace ModelingBusiness.Modeling
 
 		private decimal CalculateMedian(List<decimal> prices)
 		{
-			using (_logger.TimeOperation("Расчет медианного значения"))
+			using (_logger.TimeOperation("Расчет медианного значения по {PricesCount} ценам", prices.Count))
 			{
 				var count = prices.Count;
 				var halfIndex = prices.Count / 2;
