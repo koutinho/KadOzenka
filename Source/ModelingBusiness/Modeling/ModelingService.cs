@@ -24,12 +24,13 @@ using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace ModelingBusiness.Modeling
 {
 	public class ModelingService : IModelingService
 	{
-		private readonly ILogger _log = Log.ForContext<ModelingService>();
+		private readonly ILogger _logger = Log.ForContext<ModelingService>();
         private IModelService ModelService { get; }
         private IModelFactorsService ModelFactorsService { get; }
         private IModelObjectsRepository ModelObjectsRepository { get; }
@@ -269,15 +270,22 @@ namespace ModelingBusiness.Modeling
 			if (!model.IsAutomatic)
 				throw new CanNotCreateMarksForNonAutomaticModelException();
 
-			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
-				select => new {select.CadastralNumber, select.Coefficients, select.Price});
-			if (modelObjects.IsEmpty())
-				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
-
+			List<OMModelToMarketObjects> modelObjects;
+			using (_logger.TimeOperation("Скачивание объектов моделирования для модели с ИД '{ModelId}'", modelId))
+			{
+				modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
+					select => new { select.CadastralNumber, select.Coefficients, select.Price });
+				if (modelObjects.IsEmpty())
+					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
+				
+				_logger.Debug("Найдено {ModelObjectsCount} объектов модели для модели с ИД '{ModelId}'", modelObjects.Count, modelId);
+			}
+			
 			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
 				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
+			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
 
 			var urlToDownloadReport = ProcessModelObjectsWithEmptyFactors(modelObjects, factors);
 
@@ -303,6 +311,8 @@ namespace ModelingBusiness.Modeling
 				x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
 			if (modelObjectsWithEmptyFactors.Count == 0)
 				return string.Empty;
+			_logger.Debug("Найдено {ModelObjectsWithEmptyFactorsCount} объектов модели с пустыми факторами'", modelObjectsWithEmptyFactors.Count);
+
 
 			var reportService = new GbuReportService("Объекты, не участвующие в формировании меток");
 
@@ -327,41 +337,49 @@ namespace ModelingBusiness.Modeling
 			reportService.AddHeaders(headers);
 			reportService.SetIndividualWidth(headers);
 
-			modelObjectsWithEmptyFactors.ForEach(obj =>
+			using (_logger.TimeOperation("Формирование отчета с объектами моделирования, у которых есть пустые факторы"))
 			{
-				var factorNames = string.Empty;
-				factors.ForEach(factor =>
+				modelObjectsWithEmptyFactors.ForEach(obj =>
 				{
-					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.AttributeId);
-					if (coefficient != null && string.IsNullOrWhiteSpace(coefficient.Value))
-						factorNames += $"{factor.AttributeName}{Environment.NewLine}";
+					var factorNames = string.Empty;
+					factors.ForEach(factor =>
+					{
+						var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.AttributeId);
+						if (coefficient != null && string.IsNullOrWhiteSpace(coefficient.Value))
+							factorNames += $"{factor.AttributeName}{Environment.NewLine}";
+					});
+
+					var row = reportService.GetCurrentRow();
+					reportService.AddValue(obj.CadastralNumber, descriptionColumnIndex, row);
+					reportService.AddValue(factorNames, factorsColumnIndex, row);
+
+					modelObjects.Remove(obj);
 				});
 
-				var row = reportService.GetCurrentRow();
-				reportService.AddValue(obj.CadastralNumber, descriptionColumnIndex, row);
-				reportService.AddValue(factorNames, factorsColumnIndex, row);
-				
-				modelObjects.Remove(obj);
-			});
-
-			var reportId = reportService.SaveReport();
-			return reportService.GetUrlToDownloadFile(reportId);
+				var reportId = reportService.SaveReport();
+				return reportService.GetUrlToDownloadFile(reportId);
+			}
 		}
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
-			var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
-			if (uniqueFactorValues.Count == 0)
-				return;
+			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
+			{
+				var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
+				if (uniqueFactorValues.Count == 0)
+					return;
+				_logger.Debug("Найдено {uniqueFactorValuesCount} уникальных значений фактора '{FactorName}'", uniqueFactorValues.Count, factor.AttributeName);
+				
+				var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
+				if (uniqueFactorValuesInfo.Count == 0)
+					return;
 
-			var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
-			if (uniqueFactorValuesInfo.Count == 0)
-				return;
+				var allValuesAveragePrices = uniqueFactorValuesInfo.Values.Select(x => x.AveragePrice);
+				var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
+				_logger.Debug("Делитель для фактора '{FactorName}' = {Divider}", factor.AttributeName, divider);
 
-			var allValuesAveragePrices = uniqueFactorValuesInfo.Values.Select(x => x.AveragePrice);
-			var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
-
-			CreateMarks(factor, uniqueFactorValuesInfo, divider);
+				CreateMarks(factor, uniqueFactorValuesInfo, divider);
+			}
 		}
 
 		private HashSet<string> GetUniqueFactorValues(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
@@ -376,21 +394,24 @@ namespace ModelingBusiness.Modeling
 		private Dictionary<string, UniqueFactorValueInfo> CalculateUniqueValuesAveragePrices(long attributeId,
 			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
 		{
-			var uniqueValuesAveragePrices = new Dictionary<string, UniqueFactorValueInfo>();
-
-			uniqueFactorValues.ForEach(uniqueValue =>
+			using (_logger.TimeOperation("Расчет средних цен по {UniqueFactorValuesCount} уникальным факторам", uniqueFactorValues.Count))
 			{
-				var modelObjectsWithCurrentUniqueValue = modelObjects.Where(obj => obj.DeserializedCoefficients.Exists(coef =>
-					coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
+				var uniqueValuesAveragePrices = new Dictionary<string, UniqueFactorValueInfo>();
 
-				uniqueValuesAveragePrices[uniqueValue] = new UniqueFactorValueInfo
+				uniqueFactorValues.ForEach(uniqueValue =>
 				{
-					ModelObjects = modelObjectsWithCurrentUniqueValue,
-					AveragePrice = modelObjectsWithCurrentUniqueValue.Average(x => x.Price)
-				};
-			});
+					var modelObjectsWithCurrentUniqueValue = modelObjects.Where(obj => obj.DeserializedCoefficients.Exists(coef =>
+						coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
 
-			return uniqueValuesAveragePrices;
+					uniqueValuesAveragePrices[uniqueValue] = new UniqueFactorValueInfo
+					{
+						ModelObjects = modelObjectsWithCurrentUniqueValue,
+						AveragePrice = modelObjectsWithCurrentUniqueValue.Average(x => x.Price)
+					};
+				});
+
+				return uniqueValuesAveragePrices;
+			}
 		}
 
 		private void CreateMarks(ModelFactorRelationPure factor, Dictionary<string, UniqueFactorValueInfo> uniqueFactorValuesInfo, decimal divider)
@@ -398,44 +419,53 @@ namespace ModelingBusiness.Modeling
 			if (divider == 0)
 				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
 
-			ModelDictionaryService.DeleteMarks(factor.DictionaryId);
-
-			foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
+			using (_logger.TimeOperation("Полное создание меток для фактора '{FactorName}'", factor.AttributeName))
 			{
-				var uniqueFactorInfo = uniqueFactorPair.Value;
+				ModelDictionaryService.DeleteMarks(factor.DictionaryId);
 
-				uniqueFactorInfo.ModelObjects.ForEach(obj =>
+				foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
 				{
-					var oldCoefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-					if (oldCoefficient == null) 
-						return;
-					
-					oldCoefficient.Coefficient = uniqueFactorInfo.AveragePrice / divider;
-					obj.Coefficients = obj.DeserializedCoefficients.SerializeCoefficient();
-					obj.Save();
-				});
-				
-				var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
-				ModelDictionaryService.CreateMarks(factor.AttributeId, factor.DictionaryId.Value, allObjectsCoefficients);
+					var uniqueFactorInfo = uniqueFactorPair.Value;
+
+					using (_logger.TimeOperation("Обновление {ModelObjectsCount} объектов со значением фактора '{FactorValue}'", uniqueFactorInfo.ModelObjects.Count, uniqueFactorPair.Key))
+					{
+						uniqueFactorInfo.ModelObjects.ForEach(obj =>
+						{
+							var oldCoefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
+							if (oldCoefficient == null)
+								return;
+
+							oldCoefficient.Coefficient = uniqueFactorInfo.AveragePrice / divider;
+							obj.Coefficients = obj.DeserializedCoefficients.SerializeCoefficient();
+							obj.Save();
+						});
+					}
+
+					var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
+					ModelDictionaryService.CreateMarks(factor.AttributeId, factor.DictionaryId.Value, allObjectsCoefficients);
+				}
 			}
 		}
 
 		private decimal CalculateMedian(List<decimal> prices)
 		{
-			var count = prices.Count;
-			var halfIndex = prices.Count / 2;
-			var sortedPrices = prices.OrderBy(n => n).ToList();
-			decimal median;
-			if (count % 2 == 0)
+			using (_logger.TimeOperation("Расчет медианного значения"))
 			{
-				median = (sortedPrices.ElementAt(halfIndex) + sortedPrices.ElementAt(halfIndex - 1)) / 2;
-			}
-			else
-			{
-				median = sortedPrices.ElementAt(halfIndex);
-			}
+				var count = prices.Count;
+				var halfIndex = prices.Count / 2;
+				var sortedPrices = prices.OrderBy(n => n).ToList();
+				decimal median;
+				if (count % 2 == 0)
+				{
+					median = (sortedPrices.ElementAt(halfIndex) + sortedPrices.ElementAt(halfIndex - 1)) / 2;
+				}
+				else
+				{
+					median = sortedPrices.ElementAt(halfIndex);
+				}
 
-			return median;
+				return median;
+			}
 		}
 
 		#endregion

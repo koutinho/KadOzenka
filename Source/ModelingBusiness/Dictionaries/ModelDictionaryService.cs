@@ -28,6 +28,7 @@ using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
+using SerilogTimings.Extensions;
 
 namespace ModelingBusiness.Dictionaries
 {
@@ -282,33 +283,36 @@ namespace ModelingBusiness.Dictionaries
 
 		public void CreateMarks(long attributeId, long dictionaryId, IEnumerable<CoefficientForObject> objectCoefficients)
 		{
-			var dictionary = GetDictionaryById(dictionaryId);
-
-			var rowsToInsertSql = new StringBuilder();
-			var marksCounter = 0;
-			objectCoefficients.Where(x => x.AttributeId == attributeId).DistinctBy(x => x.Value).ForEach(objectCoefficient =>
+			using (_logger.TimeOperation("Пакетное создание меток"))
 			{
-				ValidateMark(dictionary.Type_Code, objectCoefficient.Value, objectCoefficient.Coefficient);
+				var dictionary = GetDictionaryById(dictionaryId);
 
-				var value = objectCoefficient.Value.Replace(',', '.');
-				var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
-				rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {dictionaryId}, '{value}', {metka}),");
+				var rowsToInsertSql = new StringBuilder();
+				var marksCounter = 0;
+				objectCoefficients.Where(x => x.AttributeId == attributeId).DistinctBy(x => x.Value).ForEach(objectCoefficient =>
+				{
+					ValidateMark(dictionary.Type_Code, objectCoefficient.Value, objectCoefficient.Coefficient);
 
-				//добавляем метки пакетом
-				marksCounter++;
-				if (marksCounter % 1000 == 0)
+					var value = objectCoefficient.Value.Replace(',', '.');
+					var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
+					rowsToInsertSql.AppendLine($"((select nextval('REG_OBJECT_SEQ')), {dictionaryId}, '{value}', {metka}),");
+
+					//добавляем метки пакетом
+					marksCounter++;
+					if (marksCounter % 1000 == 0)
+					{
+						InsertMarks(rowsToInsertSql);
+						rowsToInsertSql = new StringBuilder();
+					}
+				});
+
+				if (rowsToInsertSql.Length > 0)
 				{
 					InsertMarks(rowsToInsertSql);
-					rowsToInsertSql = new StringBuilder();
 				}
-			});
 
-			if (rowsToInsertSql.Length > 0)
-			{
-				InsertMarks(rowsToInsertSql);
+				_logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
 			}
-
-			_logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
 		}
 
 		public void UpdateMark(DictionaryMarkDto dto)
