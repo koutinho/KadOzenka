@@ -381,19 +381,11 @@ namespace ModelingBusiness.Modeling
 
 			uniqueFactorValues.ForEach(uniqueValue =>
 			{
-				var objectsPriceSumWithUniqueValue = 0m;
-				var objectsCountWithUniqueValue = 0;
-				modelObjects.ForEach(obj =>
-				{
-					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attributeId && x.Value == uniqueValue);
-					if (coefficient == null)
-						return;
-
-					objectsPriceSumWithUniqueValue += obj.Price;
-					objectsCountWithUniqueValue++;
-				});
-				//todo average?
-				uniqueValuesAveragePrice[uniqueValue] = objectsPriceSumWithUniqueValue / objectsCountWithUniqueValue;
+				var modelObjectsWithCurrentUniqueValue = modelObjects.Where(obj =>
+					obj.DeserializedCoefficients.Exists(coef =>
+						coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
+				
+				uniqueValuesAveragePrice[uniqueValue] = modelObjectsWithCurrentUniqueValue.Average(x => x.Price);
 			});
 
 			return uniqueValuesAveragePrice;
