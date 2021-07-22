@@ -300,17 +300,20 @@ namespace KadOzenka.Dal.KoObject
                     var model = ModelService.GetActiveModelEntityByGroupId(setting.GroupId);
                     var modelFactors = model?.ModelFactor.Select(x => x.FactorId.GetValueOrDefault()).ToList();
                     var conditions = modelFactors?.Select(x => (QSCondition) new QSConditionSimple(new QSColumnSimple(x), QSConditionType.IsNotNull)).ToList();
-                    var checkFactorQuery = queryTemplate.GetCopy();
-                    checkFactorQuery.Condition = checkFactorQuery.Condition.And(new QSConditionGroup
+                    if (conditions.Count> 0)
                     {
-                        Type = QSConditionGroupType.And,
-                        Conditions = conditions
-                    });
-                    checkFactorQuery.ClearSqlCache();
-                    var nonEmptyFactorValueUnits = query.ExecuteQuery<IdHolder>().Select(x => x.Id).ToList();
-                    if (nonEmptyFactorValueUnits.Count != 0)
-                    {
-                        filterConditionMatchingUnitIds = filterConditionMatchingUnitIds.Intersect(nonEmptyFactorValueUnits).ToList();
+                        var checkFactorQuery = queryTemplate.GetCopy();
+                        checkFactorQuery.Condition = checkFactorQuery.Condition.And(new QSConditionGroup
+                        {
+                            Type = QSConditionGroupType.And,
+                            Conditions = conditions
+                        });
+                        checkFactorQuery.ClearSqlCache();
+                        var nonEmptyFactorValueUnits = checkFactorQuery.ExecuteQuery<IdHolder>().Select(x => x.Id).ToList();
+                        if (nonEmptyFactorValueUnits.Count != 0)
+                        {
+                            filterConditionMatchingUnitIds = filterConditionMatchingUnitIds.Intersect(nonEmptyFactorValueUnits).ToList();
+                        }
                     }
                 }
 

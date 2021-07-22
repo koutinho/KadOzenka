@@ -545,6 +545,12 @@ namespace KadOzenka.Web.Controllers
             model.GroupId = groupId;
             model.Settings = new List<TourGroupGroupingSettingsPartialModel>();
 
+            var group = GroupService.GetGroupsByIds(new List<long> {groupId}).FirstOrDefault();
+            if (group != null)
+            {
+                model.CheckModelFactorsValues = group.CheckModelFactorsValues.GetValueOrDefault(false);
+            }
+
             var ind = 0;
             foreach (var groupSetting in groupingSettingsList)
             {
