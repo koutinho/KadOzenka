@@ -54,6 +54,7 @@ namespace CommonSdks.Excel
 			CreateFile();
 		}
 
+		//конструтор нужен для IoC
 		public GbuReportService()
 		{
 			

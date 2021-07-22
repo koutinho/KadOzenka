@@ -45,6 +45,12 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AModelBuilder Name(string name)
+		{
+			_model.Name = name;
+			return this;
+		}
+
 		public AModelBuilder IsActive(bool isActive)
 		{
 			_model.IsActive = isActive;

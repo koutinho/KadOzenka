@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.Excel;
 using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -263,14 +264,14 @@ namespace ModelingBusiness.Modeling
 			return dictionaryId;
 		}
 
-		public void CreateMarks(long modelId)
+		public string CalculateMarks(long modelId)
 		{
 			var model = ModelService.GetModelEntityById(modelId);
 			if (!model.IsAutomatic)
 				throw new CanNotCreateMarksForNonAutomaticModelException();
 
 			var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
-				select => new {select.Coefficients, select.Price});
+				select => new {select.CadastralNumber, select.Coefficients, select.Price});
 			if (modelObjects.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 
@@ -279,7 +280,7 @@ namespace ModelingBusiness.Modeling
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
-			RemoveModelObjectsWithEmptyFactors(modelObjects, factors);
+			var urlToDownloadReport = ProcessModelObjectsWithEmptyFactors(modelObjects, factors);
 
 			factors.ForEach(factor =>
 			{
@@ -288,17 +289,63 @@ namespace ModelingBusiness.Modeling
 
 				ProcessCodedFactor(factor, modelObjects);
 			});
+
+			return urlToDownloadReport;
 		}
 
 
 		#region Support Methods
 
-		private void RemoveModelObjectsWithEmptyFactors(List<OMModelToMarketObjects> modelObjects,
+		private string ProcessModelObjectsWithEmptyFactors(List<OMModelToMarketObjects> modelObjects,
 			List<ModelFactorRelationPure> factors)
 		{
 			var factorIds = factors.Select(x => x.AttributeId).ToList();
 			var modelObjectsWithEmptyFactors = modelObjects.Where(x => x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
-			modelObjectsWithEmptyFactors.ForEach(x => modelObjects.Remove(x));
+			if (modelObjectsWithEmptyFactors.Count == 0)
+				return string.Empty;
+
+			var reportService = new GbuReportService("Объекты, не участвующие в формировании меток");
+
+			var descriptionColumnIndex = 0;
+			var factorsColumnIndex = 1;
+			var headers = new List<GbuReportService.Column>
+			{
+				new()
+				{
+					Header = "Описание объекта аналога",
+					Index = descriptionColumnIndex,
+					Width = 8
+				},
+				new()
+				{
+					Header = "Незаполненный факторы",
+					Index = factorsColumnIndex,
+					Width = 12
+				}
+			};
+
+			reportService.AddHeaders(headers);
+			reportService.SetIndividualWidth(headers);
+
+			modelObjectsWithEmptyFactors.ForEach(obj =>
+			{
+				var factorNames = "";
+				factors.ForEach(factor =>
+				{
+					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.AttributeId);
+					if (coefficient != null && string.IsNullOrWhiteSpace(coefficient.Value))
+						factorNames += $"{factor.AttributeName} {Environment.NewLine}";
+				});
+
+				var row = reportService.GetCurrentRow();
+				reportService.AddValue(obj.CadastralNumber, descriptionColumnIndex, row);
+				reportService.AddValue(factorNames, factorsColumnIndex, row);
+				
+				modelObjects.Remove(obj);
+			});
+
+			var reportId = reportService.SaveReport();
+			return reportService.GetUrlToDownloadFile(reportId);
 		}
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)

@@ -39,7 +39,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => ModelingService.CreateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => ModelingService.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -49,7 +49,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CreateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => ModelingService.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors();
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CreateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => ModelingService.CalculateMarks(_modelId));
 		}
 
 		[Test]
@@ -92,7 +92,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => ModelingService.CreateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => ModelingService.CalculateMarks(_modelId));
 		}
 
 
