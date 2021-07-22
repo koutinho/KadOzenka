@@ -287,9 +287,6 @@ namespace KadOzenka.Dal.KoObject
 
                 var query = FormQueryWithConditions(setting);
 
-                var toAssign = query.ExecuteQuery<IdHolder>().Select(x => x.Id);
-                var filterConditionMatchingUnitIds = unitIds.Intersect(toAssign).ToList();
-                if (filterConditionMatchingUnitIds.Count == 0) continue;
 
                 // Model factor check
                 var group = GroupService.GetGroupsByIds(new List<long> {setting.GroupId}).FirstOrDefault();
@@ -298,26 +295,26 @@ namespace KadOzenka.Dal.KoObject
                 {
                     Logger.Information("Проверка наличия значений факторов у группы {GroupName} ({GroupId})", setting.GroupDesc, setting.GroupId);
                     var model = ModelService.GetActiveModelEntityByGroupId(setting.GroupId);
-                    var modelFactors = model?.ModelFactor.Select(x => x.FactorId.GetValueOrDefault()).ToList();
-                    var conditions = modelFactors?.Select(x => (QSCondition) new QSConditionSimple(new QSColumnSimple(x), QSConditionType.IsNotNull)).ToList();
+                    var modelFactorsObjectModel = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+                    var modelFactorsIds = modelFactorsObjectModel.Select(x => x.FactorId.GetValueOrDefault()).ToList();
+                    var conditions = modelFactorsIds?.Select(x => (QSCondition) new QSConditionSimple(new QSColumnSimple(x), QSConditionType.IsNotNull)).ToList();
                     if (conditions.Count> 0)
                     {
-                        var checkFactorQuery = queryTemplate.GetCopy();
-                        checkFactorQuery.Condition = checkFactorQuery.Condition.And(new QSConditionGroup
+                        query.Condition = query.Condition.And(new QSConditionGroup
                         {
                             Type = QSConditionGroupType.And,
                             Conditions = conditions
                         });
-                        checkFactorQuery.ClearSqlCache();
-                        var nonEmptyFactorValueUnits = checkFactorQuery.ExecuteQuery<IdHolder>().Select(x => x.Id).ToList();
-                        if (nonEmptyFactorValueUnits.Count != 0)
-                        {
-                            filterConditionMatchingUnitIds = filterConditionMatchingUnitIds.Intersect(nonEmptyFactorValueUnits).ToList();
-                        }
+                        query.ClearSqlCache();
                     }
                 }
 
                 var sqlString = query.GetSql();
+                var toAssign = query.ExecuteQuery<IdHolder>().Select(x => x.Id);
+                var filterConditionMatchingUnitIds = unitIds.Intersect(toAssign).ToList();
+                if (filterConditionMatchingUnitIds.Count == 0) continue;
+
+
 
                 var commaSeparatedIdList = filterConditionMatchingUnitIds.Select(x => x.ToString()).Aggregate((acc, item) => acc + "," + item);
                 unitIds = unitIds.Except(filterConditionMatchingUnitIds).ToList();
