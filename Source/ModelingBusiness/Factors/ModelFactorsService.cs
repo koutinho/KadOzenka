@@ -431,11 +431,6 @@ namespace ModelingBusiness.Factors
 			if (factorDto.Type == KoAlgoritmType.None)
 				throw new Exception("Не передан тип алгоритма модели для фактора");
 
-			var factorAttributeType = RegisterCacheWrapper.GetAttributeData(factorDto.FactorId.GetValueOrDefault()).Type;
-			if (factorAttributeType != RegisterAttributeType.DECIMAL &&
-			    factorAttributeType != RegisterAttributeType.INTEGER && factorDto.MarkType != MarkType.Default)
-				throw new WrongFactorTypeException();
-
 			if (IsSpecialMarkType(factorDto.MarkType))
 			{
 				if (factorDto.CorrectItem == null)
@@ -465,49 +460,6 @@ namespace ModelingBusiness.Factors
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
 				throw new Exception($"Не найдена модель с ИД '{factor.ModelId}'");
-			var tourToGroupRelation = OMTourGroup.Where(x => x.GroupId == model.GroupId).Select(x => new
-			{
-				x.ParentTour.Year
-			}).ExecuteFirstOrDefault();
-			//в 2016 почти все атрибуты забиты как строки, поэтому его не валидируем
-			if (tourToGroupRelation?.ParentTour?.Year == 2016)
-				return;
-
-			var errors = new List<string>();
-
-			var attribute = RegisterCache.RegisterAttributes.Values.FirstOrDefault(x => x.Id == factor.FactorId);
-
-			if ((attribute?.Type == RegisterAttributeType.STRING || attribute?.Type == RegisterAttributeType.DATE) &&
-				factor.DictionaryId == null)
-			{
-				errors.Add($"Для атрибута '{attribute.Name}' нужно выбрать словарь");
-			}
-			if (factor.DictionaryId != null)
-			{
-				var dictionary = OMModelingDictionary.Where(x => x.Id == factor.DictionaryId).Select(x => x.Type_Code)
-					.ExecuteFirstOrDefault();
-				if (dictionary == null)
-					throw new Exception($"Не найден словарь для моделирования с ИД '{factor.DictionaryId}'");
-
-				switch (attribute?.Type)
-				{
-					case RegisterAttributeType.STRING:
-						{
-							if (dictionary.Type_Code != ModelDictionaryType.String)
-								errors.Add(GenerateMessage(attribute.Name, ModelDictionaryType.String));
-							break;
-						}
-					case RegisterAttributeType.DATE:
-						{
-							if (dictionary.Type_Code != ModelDictionaryType.Date)
-								errors.Add(GenerateMessage(attribute.Name, ModelDictionaryType.Date));
-							break;
-						}
-				}
-			}
-
-			if (errors.Count > 0)
-				throw new Exception(string.Join("<br>", errors));
 		}
 
 		private void ValidateBaseFactor(AModelFactorDto factor)
@@ -520,6 +472,11 @@ namespace ModelingBusiness.Factors
 
 			if (factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
 				throw new EmptyDictionaryForFactorWithDefaultMarkException();
+
+			var factorAttributeType = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault()).Type;
+			if (factorAttributeType != RegisterAttributeType.DECIMAL &&
+			    factorAttributeType != RegisterAttributeType.INTEGER && factor.MarkType != MarkType.Default)
+				throw new WrongFactorTypeException();
 
 			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type);
 			if (isTheSameAttributeExists)

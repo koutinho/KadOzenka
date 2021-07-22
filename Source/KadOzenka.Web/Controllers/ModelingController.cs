@@ -523,7 +523,8 @@ namespace KadOzenka.Web.Controllers
             var availableAttributeTypes = new[]
             {
                 Consts.IntegerAttributeType, Consts.DecimalAttributeType,
-                Consts.StringAttributeType, Consts.DateAttributeType
+                Consts.StringAttributeType, Consts.DateAttributeType,
+                Consts.BoolAttributeType
             };
 
             var tourAttributes = TourFactorService.GetTourAttributes(tour.Id, type)

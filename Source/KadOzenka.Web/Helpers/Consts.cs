@@ -9,5 +9,6 @@ namespace KadOzenka.Web.Helpers
         public static long DecimalAttributeType => (long) RegisterAttributeType.DECIMAL;
         public static long StringAttributeType => (long) RegisterAttributeType.STRING;
         public static long DateAttributeType => (long) RegisterAttributeType.DATE;
+        public static long BoolAttributeType => (long) RegisterAttributeType.BOOLEAN;
     }
 }
