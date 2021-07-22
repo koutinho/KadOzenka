@@ -78,7 +78,7 @@
     let currentRow = @Model.Settings.Count;
     let dictionaryData = [];
     $.get("@Url.Action("GetDictionariesForDropdown","Tour")").done(function (data){
-        dictionaryData = JSON.parse(data);
+        dictionaryData = data;
     });
     $(document).ready(function () {
         initSignalRConnection();
@@ -139,10 +139,13 @@
     // }
 
     function filterDictionaryListOnAttributeSelect(e, type){
-        // let dropDownDictionaryList = $('#Settings_'+row+'__DictionaryId').data('kendoDropDownList');
-        // let selected = dropDownDictionaryList.value();
-        // dropDownDictionaryList.dataSource.data(dictionaryData);
-        // dropDownDictionaryList.value(selected);
+        let filteredData = dictionaryData.filter(x=>x.Type === type || x.Type == null);
+        let container = e.sender.element.parents('fieldset').first();
+        let dropDownDictionaryField = container.find('[id$="__DictionaryId"]').first();
+        let dropDownDictionaryList = dropDownDictionaryField.data('kendoDropDownList');
+        let selected = dropDownDictionaryList.value();
+        dropDownDictionaryList.dataSource.data(filteredData);
+        dropDownDictionaryList.value(selected);
     }
 
     function swapDropDownAndDeleteButton(rowIndex){
