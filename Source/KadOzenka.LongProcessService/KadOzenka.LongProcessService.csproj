@@ -67,7 +67,7 @@
 		<ASPNETCORE_ENVIRONMENT>Development</ASPNETCORE_ENVIRONMENT>
       </PropertyGroup>
       <ItemGroup>
-		<None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json" />
+		  <None CopyToOutputDirectory="PreserveNewest" Include="appsettings.QA.json; appsettings.Demo.json; appsettings.Test.json; appsettings.Regres.json" />
 	  </ItemGroup>
 	</When>
     <When Condition=" '$(Configuration)'=='QA' ">

@@ -51,7 +51,14 @@
 {
     <div id="groupingSettingToolbar" class="top-toolbar" style="margin-top: 35px; width: 55%"></div>
     <div id="settingsRows" class="bottom-main-content">
-
+        <fieldset>
+            <div class="col-sm-4">
+                @Html.Label("Наличие значений факторов модели")
+            </div>
+            <div class="col-sm-1">
+                @Html.CheckBoxFor(x => x.CheckModelFactorsValues, new { @class = "k-checkbox"})
+            </div>
+        </fieldset>
         @Html.HiddenFor(m => m.GroupId)
         @for (var i = 0; i < Model.Settings.Count; i++)
         {
@@ -69,6 +76,10 @@
 <script src="~/js/custom-validation.js"></script>
 <script>
     let currentRow = @Model.Settings.Count;
+    let dictionaryData = [];
+    $.get("@Url.Action("GetDictionariesForDropdown","Tour")").done(function (data){
+        dictionaryData = data;
+    });
     $(document).ready(function () {
         initSignalRConnection();
         $("#groupingSettingToolbar").kendoToolBar({
@@ -109,7 +120,7 @@
     }
 
     function bindEvent(rowIndex){
-        bindAttributeSelectorEvents('#Settings_'+rowIndex.toString()+'__KoAttributes');
+        bindAttributeSelectorEvents('#Settings_'+rowIndex.toString()+'__KoAttributes', filterDictionaryListOnAttributeSelect);
         bindUnusedFieldHider('Settings_'+rowIndex.toString()+'__GroupFilters');
 
         swapDropDownAndDeleteButton(rowIndex);
@@ -120,6 +131,21 @@
 
         $('#Settings_'+rowIndex.toString()+'__GroupFilters_Type').change();
         createMultiSelectForDictionary(rowIndex);
+        preloadFilterValueSync('Settings_'+rowIndex.toString()+'__GroupFilters');
+    }
+    //
+    // function bindAttributeSelectorEventsForDictionaries(rowIndex){
+    //     $('#Settings_'+rowIndex.toString()+'__KoAttributes').data('kendoDropDownTree').bind('change', () => filterDictionaryListOnAttributeSelect(rowIndex));
+    // }
+
+    function filterDictionaryListOnAttributeSelect(e, type){
+        let filteredData = dictionaryData.filter(x=>x.Type === type || x.Type == null);
+        let container = e.sender.element.parents('fieldset').first();
+        let dropDownDictionaryField = container.find('[id$="__DictionaryId"]').first();
+        let dropDownDictionaryList = dropDownDictionaryField.data('kendoDropDownList');
+        let selected = dropDownDictionaryList.value();
+        dropDownDictionaryList.dataSource.data(filteredData);
+        dropDownDictionaryList.value(selected);
     }
 
     function swapDropDownAndDeleteButton(rowIndex){
@@ -176,7 +202,6 @@
                 filterFields.hide();
             } else {
                 switchContainer.removeClass('switchActive');
-                //switchContainer.show();
                 dictFields.hide();
                 dictUpload.hide();
                 dictView.hide();
@@ -258,13 +283,12 @@
             .build();
 
         connection.on('ReceiveMessage', function (message) {
-
-            var encodedMsg = JSON.parse(message);
+            dictionaryData = JSON.parse(message);
 
             for (var row = 0; row < currentRow; row++){
                 let dropDownDictionaryList = $('#Settings_'+row+'__DictionaryId').data('kendoDropDownList');
                 let selected = dropDownDictionaryList.value();
-                dropDownDictionaryList.dataSource.data(encodedMsg)
+                dropDownDictionaryList.dataSource.data(encodedMsg);
                 dropDownDictionaryList.value(selected);
             }
         });
@@ -282,7 +306,7 @@
         kendo.ui.progress($('body'), true);
         var form = $('#updateGroupingSettingsForm');
         var formObject = Common.Functions.FormToObject(form);
-        console.log(formObject);
+        //console.log(formObject);
         $.ajax({
             type: form.attr('method'),
             url: form.attr('action'),
@@ -314,6 +338,8 @@
     function addCondition(useDict){
         let index = currentRow;
         kendo.ui.progress($('body'), true);
+        $('#add').addClass('k-state-disabled');
+        $('#addDict').addClass('k-state-disabled');
         $.ajax({
             url: '@Url.Action("TourGroupGroupingSettingsPartialNewRow","Tour")',
             data: {
@@ -328,6 +354,8 @@
                 bindEvent(index);
                 currentRow++;
                 kendo.ui.progress($('body'), false);
+                $('#add').removeClass('k-state-disabled');
+                $('#addDict').removeClass('k-state-disabled');
             },
             error: function (html) {
                 alert(html);
