@@ -234,8 +234,10 @@ namespace KadOzenka.Dal.KoObject
             var assignmentReportZu = AssignGroups(convertedZuSettings, queryTemplateZu, unitsZuIds);
 
             var report = new List<GroupingInfo>();
-            report.AddRange(assignmentReportOks);
-            report.AddRange(assignmentReportZu);
+            if (assignmentReportOks.Count>0)
+                report.AddRange(assignmentReportOks);
+            if (assignmentReportZu.Count>0)
+                report.AddRange(assignmentReportZu);
 
             Logger.Information("Генерация отчёта");
             foreach (var groupingInfo in report)
@@ -266,12 +268,15 @@ namespace KadOzenka.Dal.KoObject
             {
                 var query = queryTemplate.GetCopy();
                 var conditions = setting.GetConditions();
-                query.Condition =
-                    query.Condition.And(new QSConditionGroup
-                    {
-                        Type = QSConditionGroupType.And,
-                        Conditions = conditions
-                    });
+                if (conditions.Count > 0)
+                {
+                    query.Condition =
+                        query.Condition.And(new QSConditionGroup
+                        {
+                            Type = QSConditionGroupType.And,
+                            Conditions = conditions
+                        });
+                }
                 query.ClearSqlCache();
                 return query;
             }
@@ -286,7 +291,6 @@ namespace KadOzenka.Dal.KoObject
                 if (unitIds.Count==0) return result;
 
                 var query = FormQueryWithConditions(setting);
-
 
                 // Model factor check
                 var group = GroupService.GetGroupsByIds(new List<long> {setting.GroupId}).FirstOrDefault();
@@ -313,8 +317,6 @@ namespace KadOzenka.Dal.KoObject
                 var toAssign = query.ExecuteQuery<IdHolder>().Select(x => x.Id);
                 var filterConditionMatchingUnitIds = unitIds.Intersect(toAssign).ToList();
                 if (filterConditionMatchingUnitIds.Count == 0) continue;
-
-
 
                 var commaSeparatedIdList = filterConditionMatchingUnitIds.Select(x => x.ToString()).Aggregate((acc, item) => acc + "," + item);
                 unitIds = unitIds.Except(filterConditionMatchingUnitIds).ToList();
