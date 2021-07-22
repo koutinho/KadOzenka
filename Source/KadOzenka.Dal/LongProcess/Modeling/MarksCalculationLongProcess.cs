@@ -73,11 +73,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			try
 			{
 				var urlToDownloadReport = CalculateMarks(modelId);
-				var linkToReport = string.IsNullOrWhiteSpace(urlToDownloadReport) 
+				
+				var downloadReportElement = string.IsNullOrWhiteSpace(urlToDownloadReport) 
 					? string.Empty 
 					: $@"<a href=""{urlToDownloadReport}"">Скачать отчет с ошибками</a>";
 
-				var message = "Операция успешно завершена." + linkToReport;
+				var message = "Операция успешно завершена." + downloadReportElement;
 				NotificationSender.SendNotification(processQueue, _messageSubject, message);
 			}
 			catch (Exception ex)
