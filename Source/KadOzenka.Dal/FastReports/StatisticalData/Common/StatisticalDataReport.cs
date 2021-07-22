@@ -14,7 +14,7 @@ using ObjectModel.Directory;
 using ObjectModel.KO;
 using Platform.Reports;
 using System.Data;
-using KadOzenka.Dal.CancellationQueryManager;
+using CommonSdks;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -14,7 +13,7 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using Npgsql;
 using Serilog;
 
-namespace KadOzenka.Dal.CancellationQueryManager
+namespace CommonSdks
 {
 	/// <summary>
 	/// Менеджер для отмены запросов

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using CommonSdks;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using ObjectModel.Directory;
 using ObjectModel.KO;

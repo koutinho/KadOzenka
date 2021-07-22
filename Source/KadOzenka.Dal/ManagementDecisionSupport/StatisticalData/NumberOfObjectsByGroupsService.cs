@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using KadOzenka.Dal.CancellationQueryManager;
+using CommonSdks;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.StatisticalData

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using CommonSdks;
 using Core.Register;
 using Core.Register.RegisterEntities;
 using Core.Shared.Exceptions;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using ObjectModel.Core.Register;

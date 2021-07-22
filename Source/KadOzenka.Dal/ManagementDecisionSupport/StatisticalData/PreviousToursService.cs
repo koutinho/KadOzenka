@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using CommonSdks;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using ObjectModel.KO;
 using KadOzenka.Dal.ManagementDecisionSupport.StatisticalData.Entities;

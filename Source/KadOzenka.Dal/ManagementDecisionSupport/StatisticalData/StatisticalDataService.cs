@@ -13,7 +13,6 @@ using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using Core.SRD;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.LongProcess.Reports;
 using KadOzenka.Dal.LongProcess.Reports.AdditionalForms;
 using KadOzenka.Dal.LongProcess.Reports.AdditionalForms.AnalysisOfCalculations;

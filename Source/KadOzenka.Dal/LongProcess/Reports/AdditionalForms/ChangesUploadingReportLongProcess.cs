@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
 using KadOzenka.Dal.LongProcess.Reports.ResultsForApproval;

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using CommonSdks;
 using Core.Register;
 using Core.Register.QuerySubsystem;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalData;
 using KadOzenka.Dal.Registers.GbuRegistersServices;
 

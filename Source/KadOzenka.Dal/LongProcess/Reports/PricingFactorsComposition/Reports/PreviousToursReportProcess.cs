@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.CancellationQueryManager;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.LongProcess.InputParameters;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
