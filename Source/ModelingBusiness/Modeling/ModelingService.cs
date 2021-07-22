@@ -296,20 +296,9 @@ namespace ModelingBusiness.Modeling
 		private void RemoveModelObjectsWithEmptyFactors(List<OMModelToMarketObjects> modelObjects,
 			List<ModelFactorRelationPure> factors)
 		{
-			for (var i = 0; i < modelObjects.Count; i++)
-			{
-				var obj = modelObjects[i];
-				factors.ForEach(factor =>
-				{
-					var factorValue = obj.DeserializedCoefficients
-						.FirstOrDefault(x => x.AttributeId == factor.AttributeId)
-						?.Value;
-					if (string.IsNullOrWhiteSpace(factorValue))
-					{
-						modelObjects.Remove(obj);
-					}
-				});
-			}
+			var factorIds = factors.Select(x => x.AttributeId).ToList();
+			var modelObjectsWithEmptyFactors = modelObjects.Where(x => x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
+			modelObjectsWithEmptyFactors.ForEach(x => modelObjects.Remove(x));
 		}
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
@@ -355,7 +344,7 @@ namespace ModelingBusiness.Modeling
 					objectsPriceSumWithUniqueValue += obj.Price;
 					objectsCountWithUniqueValue++;
 				});
-
+				//todo average?
 				uniqueValuesAveragePrice[uniqueValue] = objectsPriceSumWithUniqueValue / objectsCountWithUniqueValue;
 			});
 
