@@ -387,17 +387,8 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			var marks = ModelDictionaryService.GetMarks(factorsWithMarks);
 			_log.Debug("Выгружено {MarksCount} меток", marks.Count);
 
-			var groupedMarks = marks
-				.GroupBy(x => x.Value)
-				.ToDictionary(x => x.Key, x =>
-				{
-					var marksInGroup = x.ToList();
-					var firstMark = marksInGroup.FirstOrDefault();
-					if (marksInGroup.Count > 1)
-						_log.Warning("Найдено более одной метки для словаря {DictionaryId}, значения {Value}", firstMark?.DictionaryId, x.Key);
-					
-					return firstMark?.CalculationValue;
-				});
+			var groupedMarks = marks.GroupBy(x => x.Value)
+				.ToDictionary(x => x.Key, x => x.FirstOrDefault()?.CalculationValue);
 			_log.Debug("Сформированы словари меток с {KeysCount} ключами по фактору и значению", groupedMarks.Count);
 
 			return groupedMarks;

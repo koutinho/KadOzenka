@@ -71,33 +71,6 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		}
 
 		[Test]
-		//В БД может быть несколько меток с одной и той же группой/фактором/значением
-		//когда выясниться, что таких значений быть не должно, тест можно удалить
-		public void Can_Calculate_Price_By_Mult_Model_With_One_Factor_Of_Default_MarkType_With_Two_Marks_With_TheSame_Values()
-		{
-			//формула: свободный член * [(метка(значение_фактора) + поправка)^коэффициент]
-
-			var factor = CreateFactorWithDefaultMark(Tour2018OksFirstIntegerFactor, MultiplicativeModel, UnitFactorValueForIntegerFactor, out var firstMark);
-			var secondMark = new MarkBuilder().Dictionary(factor.DictionaryId).Value(firstMark.Value)
-				//чтобы случайно не создать такое же значение, как в mark
-				.Metka(RandomGenerator.GenerateRandomInteger(maxNumber: 3) + firstMark.CalculationValue)
-				.Build();
-
-			var errors = PerformCalculation(Task.Id, Group.Id);
-
-			
-			var firstPossibleExpectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(firstMark, factor);
-			var secondPossibleExpectedUpks = MultiplicativeModel.A0ForMultiplicativeInFormula * GetExpectedCadastralConstForDefaultMark(secondMark, factor);
-			
-			var unitWithCalculatedPrice = GetUnitById(Unit.Id);
-			Assert.That(unitWithCalculatedPrice.Upks,
-				Is.EqualTo(firstPossibleExpectedUpks).Within(0.01)
-				.Or.EqualTo(secondPossibleExpectedUpks).Within(0.01));
-
-			Assert.That(errors.Count, Is.EqualTo(0), string.Join(Environment.NewLine, errors.Select(x => x.Error)));
-		}
-
-		[Test]
 		public void Can_Calculate_Price_By_Mult_Model_With_One_Factor_Of_Straight_MarkType()
 		{
 			//формула: свободный член * [(корректирующее_слагаемое + значение_фактора)/К + поправка]^коэффициент
