@@ -5,6 +5,7 @@ using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.LongProcess.Modeling;
 using ModelingBusiness.Modeling.Exceptions;
+using ModelingBusiness.Objects.Entities;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;

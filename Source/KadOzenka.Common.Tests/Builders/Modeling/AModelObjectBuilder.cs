@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Core.Shared.Extensions;
+using ModelingBusiness.Objects.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;

@@ -14,6 +14,7 @@ using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Model;
 using ModelingBusiness.Objects;
+using ModelingBusiness.Objects.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.KO;
 using ObjectModel.Market;

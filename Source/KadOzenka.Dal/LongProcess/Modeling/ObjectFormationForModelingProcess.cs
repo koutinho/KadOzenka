@@ -11,6 +11,7 @@ using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Dto.Modeling;
 using MarketPlaceBusiness.Interfaces;
+using ModelingBusiness.Objects.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
 using ObjectModel.Ko;

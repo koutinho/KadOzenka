@@ -13,7 +13,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Serilog;
 
 namespace ObjectModel.KO
@@ -3265,37 +3264,6 @@ namespace ObjectModel.KO
         }
     }
 }
-
-
-namespace ObjectModel.Modeling
-{
-	public class CoefficientForObject
-	{
-		public long AttributeId { get; set; }
-		public decimal? Coefficient { get; set; }
-		public string Value { get; set; }
-
-		public CoefficientForObject(long attributeId)
-		{
-			AttributeId = attributeId;
-		}
-
-		//для сериализации нужен конструктор без параметров
-		protected CoefficientForObject()
-		{
-
-		}
-	}
-
-	public static class CoefficientExtensions
-	{
-		public static string SerializeCoefficient(this List<CoefficientForObject> coefficients)
-		{
-			return JsonConvert.SerializeObject(coefficients);
-		}
-	}
-}
-
 
 
 namespace ObjectModel.KO

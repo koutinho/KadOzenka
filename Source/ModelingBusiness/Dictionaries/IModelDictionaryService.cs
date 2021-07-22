@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Core.Register;
 using ModelingBusiness.Dictionaries.Entities;
+using ModelingBusiness.Objects.Entities;
 using ObjectModel.Common;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
