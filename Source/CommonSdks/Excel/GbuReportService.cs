@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Core.Main.FileStorages;
 using Core.SRD;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.DataExport;
+using Ionic.Zip;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
-using System.Text;
-using Ionic.Zip;
-using KadOzenka.Dal.GbuObject.Dto;
 using SerilogTimings.Extensions;
 
-namespace KadOzenka.Dal.GbuObject
+namespace CommonSdks.Excel
 {
 	public class GbuReportService : IDisposable, IGbuReportService
 	{

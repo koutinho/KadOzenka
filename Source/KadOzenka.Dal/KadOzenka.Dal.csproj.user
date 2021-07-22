@@ -115,8 +115,5 @@
     <EmbeddedResource Update="LongProcess\_Common\Messages.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Update="Modeling\Resources\Messages.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
 </Project>

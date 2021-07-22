@@ -4,6 +4,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using CommonSdks;
+using CommonSdks.Excel;
 using Core.Main.FileStorages;
 using Core.Messages;
 using Core.Register.LongProcessManagment;

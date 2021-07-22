@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.GbuObject.Dto;
 using ObjectModel.Common;
 
-namespace KadOzenka.Dal.GbuObject
+namespace CommonSdks.Excel
 {
 	public interface IGbuReportService
 	{

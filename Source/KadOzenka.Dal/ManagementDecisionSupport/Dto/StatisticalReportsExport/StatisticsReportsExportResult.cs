@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using CommonSdks.Excel;
 using KadOzenka.Dal.GbuObject;
 
 namespace KadOzenka.Dal.ManagementDecisionSupport.Dto.StatisticalReportsExport

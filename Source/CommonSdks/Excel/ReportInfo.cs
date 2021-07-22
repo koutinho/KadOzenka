@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace KadOzenka.Dal.GbuObject.Dto
+namespace CommonSdks.Excel
 {
 	public class ReportInfo
 	{
