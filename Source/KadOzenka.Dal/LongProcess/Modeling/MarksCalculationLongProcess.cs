@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using CommonSdks;
 using CommonSdks.Excel;
 using CommonSdks.PlatformWrappers;
 using Core.ErrorManagment;
@@ -29,9 +30,10 @@ namespace KadOzenka.Dal.LongProcess.Modeling
     {
 	    private static long ProcessId => 100;
 	    private string _messageSubject = "Результат Операции Расчета меток";
-	    private int MaxFactorsCount = 0;
-	    private int ProcessedFactorsCount = 0;
-	    private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
+	    private int _maxFactorsCount;
+	    private int _processedFactorsCount;
+	    private readonly QueryManager _queryManager;
+		private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IModelObjectsRepository ModelObjectsRepository { get; }
@@ -51,6 +53,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
 			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
+			_queryManager = new QueryManager();
 		}
 
 
@@ -74,16 +77,24 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			try
 			{
-				LongProcessProgressLogger.StartLogProgress(processQueue, () => MaxFactorsCount, () => ProcessedFactorsCount);
+				_queryManager.SetBaseToken(cancellationToken);
 
-				var urlToDownloadReport = CalculateMarks(modelId);
-				
-				var downloadReportElement = string.IsNullOrWhiteSpace(urlToDownloadReport) 
-					? string.Empty 
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => _maxFactorsCount,
+					() => _processedFactorsCount);
+
+				var urlToDownloadReport = CalculateMarks(modelId, cancellationToken);
+
+				var downloadReportElement = string.IsNullOrWhiteSpace(urlToDownloadReport)
+					? string.Empty
 					: $@"<a href=""{urlToDownloadReport}"">Скачать отчет с ошибками</a>";
 
 				var message = "Операция успешно завершена." + downloadReportElement;
 				NotificationSender.SendNotification(processQueue, _messageSubject, message);
+			}
+			catch (OperationCanceledException ex)
+			{
+				_logger.Error(ex, "Операция остановлена пользователем");
+				NotificationSender.SendNotification(processQueue, _messageSubject, "Операция была остановлена пользователем");
 			}
 			catch (Exception ex)
 			{
@@ -95,7 +106,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			LongProcessProgressLogger.StopLogProgress();
 		}
 
-        public string CalculateMarks(long modelId)
+        public string CalculateMarks(long modelId, CancellationToken cancellationToken)
         {
 	        var model = ModelService.GetModelEntityById(modelId);
 	        if (!model.IsAutomatic)
@@ -103,18 +114,20 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 	        var factors = GetModelFactors(modelId);
 
-			var modelObjects = GetModelObjects(modelId);
+			var modelObjects = GetModelObjects(modelId, cancellationToken);
 
-	        var urlToDownloadReport = ProcessModelObjectsWithEmptyFactors(modelObjects, factors);
+	        var urlToDownloadReport = ProcessModelObjectsWithEmptyFactors(modelObjects, factors, cancellationToken);
 
 	        factors.ForEach(factor =>
 	        {
-		        if (factor.DictionaryId == null)
+		        cancellationToken.ThrowIfCancellationRequested();
+
+				if (factor.DictionaryId == null)
 			        throw new CanNotCreateMarksBecauseNoDictionaryException(factor.AttributeName);
 
-		        ProcessCodedFactor(factor, modelObjects);
+		        ProcessCodedFactor(factor, modelObjects, cancellationToken);
 		        
-		        ProcessedFactorsCount++;
+		        _processedFactorsCount++;
 	        });
 
 	        return urlToDownloadReport;
@@ -129,11 +142,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				throw new Exception("Не передан ИД модели");
 		}
 
-		private List<OMModelToMarketObjects> GetModelObjects(long modelId)
+		private List<OMModelToMarketObjects> GetModelObjects(long modelId, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Получение объектов моделирования для модели с ИД '{ModelId}'", modelId))
 			{
 				var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
+					cancellationToken,
 					select => new { select.CadastralNumber, select.Coefficients, select.Price });
 				if (modelObjects.IsEmpty())
 					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
@@ -151,14 +165,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
-			MaxFactorsCount = factors.Count;
+			_maxFactorsCount = factors.Count;
 			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
 
 			return factors;
 		}
 
 		private string ProcessModelObjectsWithEmptyFactors(List<OMModelToMarketObjects> modelObjects,
-			List<ModelFactorRelationPure> factors)
+			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
 		{
 			var factorIds = factors.Select(x => x.AttributeId).ToList();
 			var modelObjectsWithEmptyFactors = modelObjects.Where(x =>
@@ -196,6 +210,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				modelObjectsWithEmptyFactors.ForEach(obj =>
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+
 					var factorNames = string.Empty;
 					factors.ForEach(factor =>
 					{
@@ -216,7 +232,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects,
+			CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
 			{
@@ -224,7 +241,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				if (uniqueFactorValues.Count == 0)
 					return;
 
-				var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
+				var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues,
+					modelObjects, cancellationToken);
 				if (uniqueFactorValuesInfo.Count == 0)
 					return;
 
@@ -232,7 +250,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
 				_logger.Debug("Делитель для фактора '{FactorName}' = {Divider}", factor.AttributeName, divider);
 
-				CreateMarks(factor, uniqueFactorValuesInfo, divider);
+				CreateMarks(factor, uniqueFactorValuesInfo, divider, cancellationToken);
 			}
 		}
 
@@ -253,7 +271,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private Dictionary<string, UniqueFactorValueInfo> CalculateUniqueValuesAveragePrices(long attributeId,
-			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
+			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects,
+			CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Расчет средних цен по {UniqueFactorValuesCount} уникальным факторам", uniqueFactorValues.Count))
 			{
@@ -261,6 +280,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				uniqueFactorValues.ForEach(uniqueValue =>
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+
 					var modelObjectsWithCurrentUniqueValue = modelObjects.Where(obj => obj.DeserializedCoefficients.Exists(coef =>
 						coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
 
@@ -275,7 +296,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private void CreateMarks(ModelFactorRelationPure factor, Dictionary<string, UniqueFactorValueInfo> uniqueFactorValuesInfo, decimal divider)
+		private void CreateMarks(ModelFactorRelationPure factor,
+			Dictionary<string, UniqueFactorValueInfo> uniqueFactorValuesInfo, decimal divider,
+			CancellationToken cancellationToken)
 		{
 			if (divider == 0)
 				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
@@ -292,6 +315,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					{
 						uniqueFactorInfo.ModelObjects.ForEach(obj =>
 						{
+							cancellationToken.ThrowIfCancellationRequested();
+
 							var oldCoefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
 							if (oldCoefficient == null)
 								return;

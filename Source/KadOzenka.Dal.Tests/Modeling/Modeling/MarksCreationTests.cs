@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
@@ -41,7 +42,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 		[Test]
@@ -51,7 +52,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 		[Test]
@@ -61,7 +62,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors();
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 		[Test]
@@ -72,7 +73,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 		[Test]
@@ -83,7 +84,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 		[Test]
@@ -94,7 +95,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId));
+			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 
@@ -105,7 +106,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			var result = modelObjects?.ToList() ?? new List<OMModelToMarketObjects>();
 
 			ModelObjectsRepository.Setup(x => x.GetIncludedModelObjects(_modelId, IncludedObjectsMode.Training,
-					It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
+				It.IsAny<CancellationToken>(),
+				It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
 		}
 
 		private void MockModelFactors(params ModelFactorRelationPure[] modelFactors)

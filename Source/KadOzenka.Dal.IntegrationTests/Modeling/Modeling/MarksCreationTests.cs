@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.LongProcess.Modeling;
@@ -53,7 +54,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		{
 			new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(true).Build();
 			
-			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => MarksCalculationLongProcess.CalculateMarks(_model.Id));
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsException>(() => MarksCalculationLongProcess.CalculateMarks(_model.Id, new CancellationToken()));
 		}
 
 		[Test]
@@ -65,7 +66,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var forthModelObject = CreateModelObject(_secondAddressValue);
 
 
-			MarksCalculationLongProcess.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id, new CancellationToken());
 
 
 			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
@@ -97,7 +98,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var fifthModelObject = CreateModelObject(_thirdAddressValue);
 
 
-			MarksCalculationLongProcess.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id, new CancellationToken());
 
 
 			var addressMarks = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
@@ -139,7 +140,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var squareFactor = CreateSquareFactor();
 
 
-			MarksCalculationLongProcess.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id, new CancellationToken());
 
 
 			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
@@ -170,7 +171,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var squareFactor = CreateSquareFactor();
 
 
-			MarksCalculationLongProcess.CalculateMarks(_model.Id);
+			MarksCalculationLongProcess.CalculateMarks(_model.Id, new CancellationToken());
 
 
 			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();

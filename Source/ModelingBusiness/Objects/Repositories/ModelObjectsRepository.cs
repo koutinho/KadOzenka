@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading;
 using CommonSdks;
 using CommonSdks.Repositories;
 using Core.Register.QuerySubsystem;
@@ -29,19 +30,27 @@ namespace ModelingBusiness.Objects.Repositories
 			return GetIncludedModelObjectsQuery(modelId, mode).ExecuteExists();
 		}
 
-		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
+		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode,
+			Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
 		{
 			var query = GetIncludedModelObjectsQuery(modelId, mode);
 
-			return RunQuery(query, selectExpression);
+			return RunQuery(query, selectExpression: selectExpression);
+		}
 
+		public List<OMModelToMarketObjects> GetIncludedModelObjects(long modelId, IncludedObjectsMode mode,
+			CancellationToken cancellation, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
+		{
+			var query = GetIncludedModelObjectsQuery(modelId, mode);
+
+			return RunQuery(query, cancellation, selectExpression);
 		}
 
 		public List<OMModelToMarketObjects> GetIncludedObjectsForTraining(long modelId, TrainingSampleType mode, Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
 		{
 			var query = GetIncludedObjectsForTrainingQuery(modelId, mode).OrderBy(x => x.Price);
 
-			return RunQuery(query, selectExpression);
+			return RunQuery(query, selectExpression: selectExpression);
 		}
 
 
@@ -93,13 +102,20 @@ namespace ModelingBusiness.Objects.Repositories
 		}
 
 		private List<OMModelToMarketObjects> RunQuery(QSQuery<OMModelToMarketObjects> query,
+			CancellationToken? cancellationToken = null,
 			Expression<Func<OMModelToMarketObjects, object>> selectExpression = null)
 		{
 			query = selectExpression == null
 				? query.SelectAll()
 				: query.Select(selectExpression);
 
-			return query.Execute();
+			if (cancellationToken == null)
+				return query.Execute();
+
+			var queryManager = new QueryManager();
+			queryManager.SetBaseToken(cancellationToken);
+
+			return queryManager.ExecuteQuery(query);
 		}
 
 		#endregion
