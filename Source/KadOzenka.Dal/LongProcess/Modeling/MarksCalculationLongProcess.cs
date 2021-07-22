@@ -29,6 +29,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
     {
 	    private static long ProcessId => 100;
 	    private string _messageSubject = "Результат Операции Расчета меток";
+	    private int MaxFactorsCount = 0;
+	    private int ProcessedFactorsCount = 0;
 	    private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
@@ -72,6 +74,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			try
 			{
+				LongProcessProgressLogger.StartLogProgress(processQueue, () => MaxFactorsCount, () => ProcessedFactorsCount);
+
 				var urlToDownloadReport = CalculateMarks(modelId);
 				
 				var downloadReportElement = string.IsNullOrWhiteSpace(urlToDownloadReport) 
@@ -87,6 +91,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				var errorId = ErrorManager.LogError(ex); 
 				NotificationSender.SendNotification(processQueue, _messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
 			}
+
+			LongProcessProgressLogger.StopLogProgress();
 		}
 
         public string CalculateMarks(long modelId)
@@ -95,9 +101,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        if (!model.IsAutomatic)
 		        throw new CanNotCreateMarksForNonAutomaticModelException();
 
-	        var modelObjects = GetModelObjects(modelId);
-
 	        var factors = GetModelFactors(modelId);
+
+			var modelObjects = GetModelObjects(modelId);
 
 	        var urlToDownloadReport = ProcessModelObjectsWithEmptyFactors(modelObjects, factors);
 
@@ -107,6 +113,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			        throw new CanNotCreateMarksBecauseNoDictionaryException(factor.AttributeName);
 
 		        ProcessCodedFactor(factor, modelObjects);
+		        
+		        ProcessedFactorsCount++;
 	        });
 
 	        return urlToDownloadReport;
@@ -143,6 +151,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
+			MaxFactorsCount = factors.Count;
 			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
 
 			return factors;
