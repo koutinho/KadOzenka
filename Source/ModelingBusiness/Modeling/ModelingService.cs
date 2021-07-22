@@ -377,7 +377,7 @@ namespace ModelingBusiness.Modeling
 		private Dictionary<string, decimal> CalculateUniqueValuesAveragePrices(long attributeId,
 			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
 		{
-			var uniqueValuesAveragePrice = new Dictionary<string, decimal>();
+			var uniqueValuesAveragePrices = new Dictionary<string, decimal>();
 
 			uniqueFactorValues.ForEach(uniqueValue =>
 			{
@@ -385,10 +385,10 @@ namespace ModelingBusiness.Modeling
 					obj.DeserializedCoefficients.Exists(coef =>
 						coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
 				
-				uniqueValuesAveragePrice[uniqueValue] = modelObjectsWithCurrentUniqueValue.Average(x => x.Price);
+				uniqueValuesAveragePrices[uniqueValue] = modelObjectsWithCurrentUniqueValue.Average(x => x.Price);
 			});
 
-			return uniqueValuesAveragePrice;
+			return uniqueValuesAveragePrices;
 		}
 
 		private void CreateMarks(ModelFactorRelationPure factor, Dictionary<string, decimal> uniqueValuesAveragePrice, decimal divider)
