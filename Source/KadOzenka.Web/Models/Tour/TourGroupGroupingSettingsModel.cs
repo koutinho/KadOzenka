@@ -10,6 +10,8 @@ namespace KadOzenka.Web.Models.Tour
     {
         public long? GroupId { get; set; }
 
+        public bool CheckModelFactorsValues { get; set; }
+
         public List<TourGroupGroupingSettingsPartialModel> Settings { get; set; }
 
         public TourGroupGroupingSettingsModel()
@@ -19,34 +21,26 @@ namespace KadOzenka.Web.Models.Tour
 
         public List<OMTourGroupGroupingSettings> ToObjectModel()
         {
-            var om = new List<OMTourGroupGroupingSettings>();
+            var objectModelList = new List<OMTourGroupGroupingSettings>();
 
             foreach (var setting in Settings)
             {
                 var useDict = setting.UseDictionary;
+                var om = new OMTourGroupGroupingSettings()
+                {
+                    GroupId = GroupId,
+                    KoAttributeId = setting.KoAttributes,
+                    Filter = setting.GroupFilters.SerializeToXml()
+                };
                 if (useDict)
                 {
-                    om.Add(new OMTourGroupGroupingSettings
-                    {
-                        GroupId = GroupId,
-                        KoAttributeId = setting.KoAttributes,
-                        Filter = setting.GroupFilters.SerializeToXml(),
-                        DictionaryId = setting.DictionaryId,
-                        DictionaryValues = setting.DictionaryValue
-                    });
+                    om.DictionaryId = setting.DictionaryId;
+                    om.DictionaryValues = setting.DictionaryValue;
                 }
-                else
-                {
-                    om.Add(new OMTourGroupGroupingSettings
-                    {
-                        GroupId = GroupId,
-                        KoAttributeId = setting.KoAttributes,
-                        Filter = setting.GroupFilters.SerializeToXml()
-                    });
-                }
+                objectModelList.Add(om);
             }
 
-            return om;
+            return objectModelList;
         }
     }
 }

@@ -520,15 +520,16 @@ namespace KadOzenka.Web.Controllers
             return mergedAttributes;
         }
 
-        public List<SelectListItem> GetDictionariesForDropdown()
+        public List<DictionarySelectListItem> GetDictionariesForDropdown()
         {
-            var dictionaries = DictionaryService.GetDictionaries().Select(x => new SelectListItem
+            var dictionaries = DictionaryService.GetDictionaries().Select(x => new DictionarySelectListItem
             {
                 Text = x.Name,
+                Type = (int) x.Type_Code,
                 Value = x.Id.ToString()
             }).ToList();
 
-            dictionaries.Insert(0, new SelectListItem("", ""));
+            dictionaries.Insert(0, new DictionarySelectListItem("", ""));
             return dictionaries;
         }
 
@@ -611,6 +612,13 @@ namespace KadOzenka.Web.Controllers
             //return new JsonResult(new {Message = "Test"});
             var objectModel = model.ToObjectModel().Where(x=>x.KoAttributeId != null);
             var groupingSettingsList = OMTourGroupGroupingSettings.Where(x => x.GroupId == model.GroupId).SelectAll().Execute();
+
+            var group = GroupService.GetGroupsByIds( new List<long>{model.GroupId.GetValueOrDefault()}).FirstOrDefault();
+            if (group != null)
+            {
+                group.CheckModelFactorsValues = model.CheckModelFactorsValues;
+                group.Save();
+            }
 
             // TODO: Поменять логику создания
             groupingSettingsList.ForEach(x=>x.Destroy());

@@ -8,7 +8,6 @@ INSERT INTO core_register_attribute VALUES (26900300, 'Идентификатор атрибута', 
 INSERT INTO core_register_attribute VALUES (26900400, 'Фильтр', 269, 4, null, null, 'FILTER', null, null, null, null, null, 'Filter', 1, null, null, null, null, null, null, 0);
 INSERT INTO core_register_attribute VALUES (26900500, 'Идентификатор справочника', 269, 1, null, null, 'DICTIONARY_ID', null, null, null, null, null, 'DictionaryId', 1, null, null, null, null, null, null, 0);
 INSERT INTO core_register_attribute VALUES (26900600, 'Значения справочника', 269, 4, null, null, 'DICTIONARY_VALUES', null, null, null, null, null, 'DictionaryValues', 1, null, null, null, null, null, null, 0);
-INSERT INTO core_register_attribute VALUES (26900700, 'Проверять наличие значений факторов', 269, 3, null, null, 'CHECK_MODEL_FACTORS_VALUES', null, null, null, null, null, 'CheckModelFactorsValues', 1, null, null, null, null, null, null, 0);
 
 create table if not exists ko_group_grouping_settings (
     id bigint not null
@@ -18,8 +17,7 @@ create table if not exists ko_group_grouping_settings (
     ko_attribute_id bigint not null,
     filter varchar(4000),
     dictionary_id bigint,
-    dictionary_values varchar(4000),
-    check_models_factors_values smallint
+    dictionary_values varchar(4000)
 );
 
 alter table ko_group_grouping_settings owner to postgres;
@@ -72,4 +70,22 @@ INSERT INTO core_register_relation VALUES (271, 'От значения справочника группир
 -- СРД
 INSERT INTO public.core_srd_function (id, functionname, functiontag, parent_id, description) VALUES (670, 'Присвоение оценочной группы', 'KO.GROUPING', 502, null);
 INSERT INTO public.core_srd_function (id, functionname, functiontag, parent_id, description) VALUES (671, 'Настройка словарей для группировки', 'KO.GROUPING.DICT', 670, null);
+
+-- Флаг для доп проверки
+alter table ko_group add column check_model_factors_values smallint;
+INSERT INTO core_register_attribute VALUES (20502000, 'Проверять наличие значений факторов', 205, 3, null, null, 'CHECK_MODEL_FACTORS_VALUES', null, null, null, null, null, 'CheckModelFactorsValues', 1, null, null, null, null, null, null, 0);
+
+-- Триггеры для обновления списков словарей на форме
+CREATE OR REPLACE FUNCTION notify_ko_grouping_dictionaries_updating()
+    RETURNS trigger
+    LANGUAGE plpgsql
+AS $function$
+begin
+    PERFORM pg_notify('notify_ko_grouping_dictionaries_updating'::text, 'notify_ko_grouping_dictionaries_updating'::text);
+    return null;
+end;
+$function$;
+
+DROP TRIGGER IF EXISTS ko_group_grouping_dictionaries_changed ON ko_grouping_dictionaries;
+CREATE TRIGGER ko_group_grouping_dictionaries_changed AFTER INSERT OR UPDATE OR DELETE ON ko_grouping_dictionaries FOR EACH ROW EXECUTE FUNCTION notify_ko_grouping_dictionaries_updating();
 commit;

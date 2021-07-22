@@ -22,28 +22,16 @@
 
 @using (Html.BeginForm("SetEstimatedGroup", "GbuObject", FormMethod.Post))
 {
-    <div class="top-toolbar k-toolbar k-widget k-toolbar-resizable">
-        <div class="col-sm-7">
-            @(await Html.PartialAsync("/Views/Shared/PartialTemplateStorage.cshtml", new TemplateStorageViewModel
-            {
-                GetTemplatesActionName = nameof(TemplateController.GetTemplates),
-                Parameters = "formStorageType=" + (int) DataFormStorege.EstimatedGroup,
-                SaveTemplateActionName = nameof(TemplateController.SaveTemplateEstimatedGroupObject)
-            }))
-        </div>
-
-        <div class="col-sm-1 col-sm-offset-1">
-            <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button>
-        </div>
-        <div class="col-sm-3">
-            <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right">
-                <span>Перейти к процессу</span>
-            </a>
-        </div>
+    <div id="estimatedGroupToolbar" class="top-toolbar k-toolbar k-widget k-toolbar-resizable">
+            @* <button style="float: right" id="execute" class="k-button" type="button">Выполнить</button> *@
+            @* *@
+            @* <a class="k-button k-state-disabled" id="goToProcessBtn" href="" target="_blank" style="float: right"> *@
+            @*     <span>Перейти к процессу</span> *@
+            @* </a> *@
     </div>
      <div class="bottom-main-content">
         <div class="form-horizontal col-sm-12">
-            @Html.RenderHelpButton()
+            @* @Html.RenderHelpButton() *@
             <div class="form-group">
                 <div class="col-sm-2">
                     @Html.CustomLabelFor(m => m.IdTask)
@@ -109,10 +97,25 @@
         });
 	}
 
-
-
 	$(document).ready(function() {
-		templateStorage.init(@((int) DataFormStorege.EstimatedGroup), fillForm);
+        $("#estimatedGroupToolbar").kendoToolBar({
+            items: [
+                {
+                    type: 'button',
+                    id: 'execute',
+                    icon: 'check',
+                    text: 'Выполнить'
+                },
+                {
+                    type: 'button',
+                    id: 'goToProcessBtn',
+                    icon: 'arrow-right',
+                    text: 'Перейти к процессу',
+                    enable: false
+                },
+                helperButtonForToolbar()
+            ]
+        });
 
 		$('#execute').on('click', function() {
 			kendo.ui.progress($('body'), true);
