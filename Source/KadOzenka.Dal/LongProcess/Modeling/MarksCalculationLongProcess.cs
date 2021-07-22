@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using CommonSdks.Excel;
 using CommonSdks.PlatformWrappers;
+using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Common;
@@ -27,6 +28,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
     public class MarksCalculationLongProcess : LongProcess
     {
 	    private static long ProcessId => 100;
+	    private string _messageSubject = "Результат Операции Расчета меток";
 	    private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
@@ -67,6 +69,23 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			var modelId = processQueue.ObjectId.GetValueOrDefault();
 			ValidateModelId(modelId);
+
+			try
+			{
+				var urlToDownloadReport = CalculateMarks(modelId);
+				var linkToReport = string.IsNullOrWhiteSpace(urlToDownloadReport) 
+					? string.Empty 
+					: $@"<a href=""{urlToDownloadReport}"">Скачать отчет с ошибками</a>";
+
+				var message = "Операция успешно завершена." + linkToReport;
+				NotificationSender.SendNotification(processQueue, _messageSubject, message);
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Ошибка в ходе расчета меток");
+				var errorId = ErrorManager.LogError(ex); 
+				NotificationSender.SendNotification(processQueue, _messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
+			}
 		}
 
         public string CalculateMarks(long modelId)

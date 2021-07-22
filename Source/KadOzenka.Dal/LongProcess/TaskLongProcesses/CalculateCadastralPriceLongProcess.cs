@@ -134,6 +134,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			}
 			catch (Exception ex)
 			{
+				_log.Error(ex, "Ошибка в ходе расчета");
 				var errorId = ErrorManager.LogError(ex);
 				NotificationSender.SendNotification(processQueue, "Результат Операции Расчета кадастровой стоимости", $"Операция была прервана: {ex.Message} (Подробнее в журнале: {errorId})");
 				throw;
