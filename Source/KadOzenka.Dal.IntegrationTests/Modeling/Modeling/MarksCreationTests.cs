@@ -133,7 +133,30 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(modelObject.Price / modelObject.Price));
 		}
 
-		
+		[Test]
+		public void CanNot_Process_Model_Object_With_Empty_Required_Factors()
+		{
+			var coefficients = new List<CoefficientForObject>
+			{
+				CreateCoefficientForAddress(_firstAddressValue),
+				CreateCoefficientForSquare(null)
+			};
+			new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+			var squareFactor = CreateSquareFactor();
+
+
+			ModelingService.CreateMarks(_model.Id);
+
+
+			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(addressMark.Count, Is.EqualTo(0));
+
+			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(squareMark.Count, Is.EqualTo(0));
+		}
+
+
+
 		#region Support Methods
 
 		private OMModelToMarketObjects CreateModelObject(string addressValue = null)
@@ -155,12 +178,12 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			};
 		}
 
-		private CoefficientForObject CreateCoefficientForSquare(double? squareValue = null)
+		private CoefficientForObject CreateCoefficientForSquare(double? squareValue)
 		{
 			return new CoefficientForObject(_squareAttributeId)
 			{
 				Coefficient = RandomGenerator.GenerateRandomDecimal(),
-				Value = squareValue?.ToString() ?? RandomGenerator.GenerateRandomInteger().ToString()
+				Value = squareValue?.ToString()
 			};
 		}
 

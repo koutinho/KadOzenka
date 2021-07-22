@@ -279,6 +279,8 @@ namespace ModelingBusiness.Modeling
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
+			RemoveModelObjectsWithEmptyFactors(modelObjects, factors);
+
 			factors.ForEach(factor =>
 			{
 				if (factor.DictionaryId == null)
@@ -288,8 +290,27 @@ namespace ModelingBusiness.Modeling
 			});
 		}
 
-		
+
 		#region Support Methods
+
+		private void RemoveModelObjectsWithEmptyFactors(List<OMModelToMarketObjects> modelObjects,
+			List<ModelFactorRelationPure> factors)
+		{
+			for (var i = 0; i < modelObjects.Count; i++)
+			{
+				var obj = modelObjects[i];
+				factors.ForEach(factor =>
+				{
+					var factorValue = obj.DeserializedCoefficients
+						.FirstOrDefault(x => x.AttributeId == factor.AttributeId)
+						?.Value;
+					if (string.IsNullOrWhiteSpace(factorValue))
+					{
+						modelObjects.Remove(obj);
+					}
+				});
+			}
+		}
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
