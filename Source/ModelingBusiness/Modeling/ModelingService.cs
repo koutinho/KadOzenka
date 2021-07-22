@@ -16,7 +16,6 @@ using ModelingBusiness.Model;
 using ModelingBusiness.Modeling.Entities;
 using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Modeling.Responses;
-using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using Newtonsoft.Json;
@@ -319,7 +318,7 @@ namespace ModelingBusiness.Modeling
 				},
 				new()
 				{
-					Header = "Незаполненный факторы",
+					Header = "Незаполненные факторы",
 					Index = factorsColumnIndex,
 					Width = 12
 				}
@@ -335,7 +334,7 @@ namespace ModelingBusiness.Modeling
 				{
 					var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.AttributeId);
 					if (coefficient != null && string.IsNullOrWhiteSpace(coefficient.Value))
-						factorNames += $"{factor.AttributeName} {Environment.NewLine}";
+						factorNames += $"{factor.AttributeName}{Environment.NewLine}";
 				});
 
 				var row = reportService.GetCurrentRow();
@@ -355,14 +354,14 @@ namespace ModelingBusiness.Modeling
 			if (uniqueFactorValues.Count == 0)
 				return;
 
-			var uniqueValuesAveragePrices = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
-			if (uniqueValuesAveragePrices.Count == 0)
+			var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues, modelObjects);
+			if (uniqueFactorValuesInfo.Count == 0)
 				return;
 
-			var allValuesAveragePrices = uniqueValuesAveragePrices.Values;
+			var allValuesAveragePrices = uniqueFactorValuesInfo.Values.Select(x => x.AveragePrice);
 			var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
 
-			CreateMarks(factor, modelObjects, uniqueValuesAveragePrices, divider);
+			CreateMarks(factor, uniqueFactorValuesInfo, divider);
 		}
 
 		private HashSet<string> GetUniqueFactorValues(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
@@ -374,61 +373,57 @@ namespace ModelingBusiness.Modeling
 				.ToHashSet();
 		}
 
-		private Dictionary<string, decimal> CalculateUniqueValuesAveragePrices(long attributeId,
+		private Dictionary<string, UniqueFactorValueInfo> CalculateUniqueValuesAveragePrices(long attributeId,
 			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects)
 		{
-			var uniqueValuesAveragePrices = new Dictionary<string, decimal>();
+			var uniqueValuesAveragePrices = new Dictionary<string, UniqueFactorValueInfo>();
 
 			uniqueFactorValues.ForEach(uniqueValue =>
 			{
-				var modelObjectsWithCurrentUniqueValue = FindModelObjects(modelObjects, attributeId, uniqueValue);
+				var modelObjectsWithCurrentUniqueValue = modelObjects.Where(obj => obj.DeserializedCoefficients.Exists(coef =>
+					coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
 
-				uniqueValuesAveragePrices[uniqueValue] = modelObjectsWithCurrentUniqueValue.Average(x => x.Price);
+				uniqueValuesAveragePrices[uniqueValue] = new UniqueFactorValueInfo
+				{
+					ModelObjects = modelObjectsWithCurrentUniqueValue,
+					AveragePrice = modelObjectsWithCurrentUniqueValue.Average(x => x.Price)
+				};
 			});
 
 			return uniqueValuesAveragePrices;
 		}
 
-		private void CreateMarks(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects, Dictionary<string, decimal> uniqueValuesAveragePrice, decimal divider)
+		private void CreateMarks(ModelFactorRelationPure factor, Dictionary<string, UniqueFactorValueInfo> uniqueFactorValuesInfo, decimal divider)
 		{
 			if (divider == 0)
 				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
 
-			foreach (var valuePrice in uniqueValuesAveragePrice)
+			foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
 			{
-				var calculationValue = valuePrice.Value / divider;
+				var uniqueFactorInfo = uniqueFactorPair.Value;
+				var calculationValue = uniqueFactorInfo.AveragePrice / divider;
 
-				var modelObjectsWithCurrentUniqueValue = FindModelObjects(modelObjects, factor.AttributeId, valuePrice.Key);
-				modelObjectsWithCurrentUniqueValue.ForEach(obj =>
+				uniqueFactorInfo.ModelObjects.ForEach(obj =>
 				{
 					var oldCoefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-					if (oldCoefficient != null)
-					{
-						oldCoefficient.Coefficient = calculationValue;
-					}
-
+					if (oldCoefficient == null) 
+						return;
+					
+					oldCoefficient.Coefficient = calculationValue;
 					obj.Coefficients = obj.DeserializedCoefficients.SerializeCoefficient();
 					obj.Save();
 				});
-
 				
 				var mark = new DictionaryMarkDto
 				{
 					DictionaryId = factor.DictionaryId.Value,
-					Value = valuePrice.Key,
+					Value = uniqueFactorPair.Key,
 					CalculationValue = calculationValue
 				};
 
 				//todo если буду проблемы с производительностью, формировать sql-запрос через строку
 				ModelDictionaryService.CreateMark(mark);
 			}
-		}
-
-		private List<OMModelToMarketObjects> FindModelObjects(List<OMModelToMarketObjects> modelObjects,
-			long attributeId, string uniqueValue)
-		{
-			return modelObjects.Where(obj => obj.DeserializedCoefficients.Exists(coef =>
-				coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
 		}
 
 		private decimal CalculateMedian(List<decimal> prices)
@@ -450,6 +445,12 @@ namespace ModelingBusiness.Modeling
 		}
 
 		#endregion
+
+		private class UniqueFactorValueInfo
+		{
+			public List<OMModelToMarketObjects> ModelObjects { get; init; }
+			public decimal AveragePrice { get; init; }
+		}
 
 		#endregion
 	}
