@@ -70,6 +70,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
+			_logger.Debug("Старт процесса расчета меток");
+
 			var modelId = processQueue.ObjectId.GetValueOrDefault();
 			ValidateModelId(modelId);
 
@@ -100,9 +102,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 
 			LongProcessProgressLogger.StopLogProgress();
+
+			_logger.Debug("Финиш процесса расчета меток");
+			WorkerCommon.SetProgress(processQueue, 100);
 		}
 
-        public string CalculateMarks(long modelId, CancellationToken cancellationToken)
+		public string CalculateMarks(long modelId, CancellationToken cancellationToken)
         {
 	        var model = ModelService.GetModelEntityById(modelId);
 	        if (!model.IsAutomatic)
