@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		[SetUp]
 		public void SetUp()
 		{
-			_model = new ModelBuilder().Automatic().Build();
+			_model = new ModelBuilder().Automatic().IsActive(false).Build();
 			
 			var dictionary = new DictionaryBuilder().Type(ModelDictionaryType.String).Build();
 
