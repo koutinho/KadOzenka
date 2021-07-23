@@ -127,6 +127,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		        _processedFactorsCount++;
 	        });
+	        _logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
 
 	        using (_logger.TimeOperation("Обновление коэффициентов в объектах моделирования"))
 	        {
