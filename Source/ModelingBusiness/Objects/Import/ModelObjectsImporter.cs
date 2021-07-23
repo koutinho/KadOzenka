@@ -5,12 +5,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.Excel;
 using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
+using ModelingBusiness.Objects.Import.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
 using ObjectModel.Modeling;
@@ -34,6 +36,7 @@ namespace ModelingBusiness.Objects.Import
 		private readonly long _isForTrainingAttributeId;
 		private readonly long _isForControlAttributeId;
 		private readonly List<ObjectTypeInfo> _objectTypes;
+		private readonly HashSet<long> _modelObjectsRegisterAttributes;
 
 		public int MaxRowsCount;
 		public int CurrentRowCount;
@@ -56,6 +59,7 @@ namespace ModelingBusiness.Objects.Import
 			_unitPropertyTypeAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.UnitPropertyType_Code);
 			_isForTrainingAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining);
 			_isForControlAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl);
+			_modelObjectsRegisterAttributes = RegisterCache.GetAttributeDataList(OMModelToMarketObjects.GetRegisterId()).Select(x => x.Id).ToHashSet();
 		}
 
 
@@ -118,10 +122,10 @@ namespace ModelingBusiness.Objects.Import
 
 			var cadastralNumberAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber);
 			var priceAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Price);
-			var attributeIds = columnsMapping.Where(x => long.TryParse(x.AttributeId, out _)).Select(x => long.Parse(x.AttributeId)).ToList();
+			var attributeIds = columnsMapping.Select(x => x.AttributeId).ToList();
 
 			if (!attributeIds.Contains(cadastralNumberAttributeId) || !attributeIds.Contains(priceAttributeId))
-				throw new Exception("Для создания объектов обязательно нужны: Кадастровый номер и Цена ОА");
+				throw new Exception("Для создания объектов обязательно нужны: Описание ОА и Цена");
 		}
 
 
@@ -148,7 +152,7 @@ namespace ModelingBusiness.Objects.Import
 			MaxRowsCount = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(sheet);
 
 			var columnsMappingWithoutPrimaryKey = config.ColumnsMapping.Where(x =>
-				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id).ToString()).ToList();
+				x.AttributeId != OMModelToMarketObjects.GetColumnAttributeId(y => y.Id)).ToList();
 
 			var modelObjectsFromExcel = new List<ModelObjectsFromExcelData>();
 			for (var i = 1; i <= MaxRowsCount; i++)
@@ -158,11 +162,9 @@ namespace ModelingBusiness.Objects.Import
 				var columnsWithValues = new List<Column>();
 				columnsMappingWithoutPrimaryKey.ForEach(x =>
 				{
-					long.TryParse(x.AttributeId, out var attributeNumber);
 					columnsWithValues.Add(new Column
 					{
-						AttributeStr = x.AttributeId,
-						AttributeId = attributeNumber,
+						AttributeId = x.AttributeId,
 						ValueToUpdate = cells[x.ColumnIndex].Value
 					});
 				});
@@ -192,45 +194,26 @@ namespace ModelingBusiness.Objects.Import
 				if (column.AttributeId == _idAttributeId)
 					return;
 
-				if (column.AttributeId != 0)
+				if (_modelObjectsRegisterAttributes.Contains(column.AttributeId))
 				{
 					//платформе нужен referenceItemId для обновления атрибута типа Reference
 					if (column.AttributeId == _unitPropertyTypeAttributeId)
 					{
 						var type = GetObjectTypeInfo(column.ValueToUpdate?.ToString());
-						modelToMarketObject.SetAttributeValue((int) column.AttributeId, type.Str, (int) type.EnumValue);
+						modelToMarketObject.SetAttributeValue((int)column.AttributeId, type.Str, (int)type.EnumValue);
 					}
 					else
 					{
-						modelToMarketObject.SetAttributeValue((int) column.AttributeId, column.ValueToUpdate);
+						modelToMarketObject.SetAttributeValue((int)column.AttributeId, column.ValueToUpdate);
 					}
 				}
 				else
 				{
-					//из нормализованного атрибута вида ххх_1 вытаскиваем ххх (ИД)
-					var match = Regex.Match(column.AttributeStr, @$"^[^{Consts.PrefixForFactor}]*");
-					var attributeIdStr = match.Groups[0].Value;
-					long.TryParse(attributeIdStr, out var attributeId);
+					//обновление коэффициентов - единственных атрибутов не из таблицы с объектами моделирования
+					var coefficientFromDb = importer.GetCoefficient(coefficientsFromDb, column.AttributeId);
+					coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
 
-					var coefficientFromDb = importer.GetCoefficient(coefficientsFromDb, attributeId);
-
-					//если фактор нормализованный
-					if (column.AttributeStr.Contains(Consts.PrefixForValueInNormalizedColumn))
-					{
-						coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
-					}
-					else if (column.AttributeStr.Contains(Consts.PrefixForCoefficientInNormalizedColumn))
-					{
-						coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
-					}
-					//если фактор не нормализованный
-					else
-					{
-						coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
-						coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
-					}
-
-					modelToMarketObject.SetAttributeValue((int) _coefficientsAttributeId, coefficientsFromDb.SerializeCoefficient());
+					modelToMarketObject.SetAttributeValue((int)_coefficientsAttributeId, coefficientsFromDb.SerializeCoefficient());
 				}
 			});
 

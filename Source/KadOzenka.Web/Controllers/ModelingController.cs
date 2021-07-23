@@ -1110,11 +1110,11 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public IActionResult ModelObjectsConstructor(long modelId)
         {
-            var register = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
+            var modelObjectsRegister = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
             var registerInfo = new
             {
-                Description = register.Description,
-                AttributeId = register.Id
+                Description = modelObjectsRegister.Description,
+                AttributeId = modelObjectsRegister.Id
             };
 
             var source = new List<object> { registerInfo };
@@ -1132,7 +1132,7 @@ namespace KadOzenka.Web.Controllers
             };
 
             RegisterCache.RegisterAttributes.Values
-                .Where(x => x.RegisterId == register.Id && !exceptions.Contains(x.Id))
+                .Where(x => x.RegisterId == modelObjectsRegister.Id && !exceptions.Contains(x.Id))
                 .OrderBy(x => x.Name)
                 .ForEach(x =>
                 {
@@ -1140,37 +1140,19 @@ namespace KadOzenka.Web.Controllers
                     {
                         Description = x.Name,
                         AttributeId = x.Id,
-                        ParentId = register.Id
+                        ParentId = modelObjectsRegister.Id
                     });
                 });
 
             var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
             attributes.ForEach(x =>
             {
-                if (x.IsNormalized)
-                {
-                    source.Add(new
-                    {
-                        Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForValueInNormalizedColumn}",
-                        ParentId = register.Id
-                    });
-                    source.Add(new
-                    {
-                        Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
-                        ParentId = register.Id
-                    });
-                }
-                else
-                {
-                    source.Add(new
-                    {
-                        Description = x.AttributeName,
-                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForFactor}",
-                        ParentId = register.Id
-                    });
-                }
+	            source.Add(new
+	            {
+		            Description = $"{x.AttributeName} (значение)",
+		            AttributeId = x.AttributeId,
+		            ParentId = modelObjectsRegister.Id
+	            });
             });
 
             ViewBag.Attributes = source;

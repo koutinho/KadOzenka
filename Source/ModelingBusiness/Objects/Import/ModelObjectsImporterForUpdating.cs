@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Register;
 using ModelingBusiness.Objects.Entities;
+using ModelingBusiness.Objects.Import.Entities;
 using ObjectModel.Modeling;
 using Serilog;
 

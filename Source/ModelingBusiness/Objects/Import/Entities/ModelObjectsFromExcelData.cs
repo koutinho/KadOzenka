@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ModelingBusiness.Objects.Import
+namespace ModelingBusiness.Objects.Import.Entities
 {
 	public class ModelObjectsFromExcelData
 	{
@@ -16,7 +16,6 @@ namespace ModelingBusiness.Objects.Import
 
 	public class Column
 	{
-		public string AttributeStr { get; set; }
 		public long AttributeId { get; set; }
 		public object ValueToUpdate { get; set; }
 	}

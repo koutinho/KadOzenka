@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using CommonSdks.Excel;
 using KadOzenka.Common.Tests;
-using ModelingBusiness.Objects;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
 using ModelingBusiness.Objects.Import;
+using ModelingBusiness.Objects.Import.Entities;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -137,13 +138,14 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			{
 				Columns = new List<Column>
 				{
-					new() {AttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining), AttributeStr = GetAttributeId(x => x.IsForTraining), ValueToUpdate = "Да"},
-					new() {AttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl), AttributeStr = GetAttributeId(x => x.IsForControl), ValueToUpdate = "Да"}
+					new() {AttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining), ValueToUpdate = "Да"},
+					new() {AttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl), ValueToUpdate = "Да"}
 				}
 			};
 
 			Assert.Throws<ObjectIsForControlAndForTrainingAtTheSameTimeException>(() => ModelObjectsImporter.ProcessObjectFromExcel(importer, excelData));
 		}
+
 
 		#region Support Methods
 
@@ -188,16 +190,15 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 					new(5, GetAttributeId(x => x.UnitPropertyType)),
 					new(6, GetAttributeId(x => x.Price)),
 					new(7, GetAttributeId(x => x.PriceFromModel)),
-					new(9, $"{_addressAttributeId}{Consts.PrefixForValueInNormalizedColumn}"),
-					new(10, $"{_addressAttributeId}{Consts.PrefixForCoefficientInNormalizedColumn}"),
-					new(11, $"{_squareAttributeId}{Consts.PrefixForFactor}")
+					new(9, _addressAttributeId),
+					new(11, _squareAttributeId)
 				}
 			};
 		}
 
-		private string GetAttributeId(Expression<Func<OMModelToMarketObjects, object>> expression)
+		private long GetAttributeId(Expression<Func<OMModelToMarketObjects, object>> expression)
 		{
-			return OMModelToMarketObjects.GetColumnAttributeId(expression).ToString();
+			return OMModelToMarketObjects.GetColumnAttributeId(expression);
 		}
 
 		private void CheckUpdatedObject(long id, ExcelRow row)
@@ -218,11 +219,11 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			
 			var addressAttribute = coefficients.First(x => x.AttributeId == _addressAttributeId);
 			Assert.That(addressAttribute.Value, Is.EqualTo(row.AddressValue));
-			Assert.That(addressAttribute.Coefficient, Is.EqualTo(row.AddressCoefficient));
+			Assert.That(addressAttribute.Coefficient, Is.EqualTo(addressAttribute.Coefficient));
 
 			var squareAttribute = coefficients.First(x => x.AttributeId == _squareAttributeId);
 			Assert.That(squareAttribute.Value, Is.EqualTo(row.SquareCoefficient.ToString()));
-			Assert.That(squareAttribute.Coefficient, Is.EqualTo(row.SquareCoefficient));
+			Assert.That(squareAttribute.Coefficient, Is.EqualTo(squareAttribute.Coefficient));
 		}
 
 		private void CheckObjectWasNotUpdated(long id, OMModelToMarketObjects initial)
