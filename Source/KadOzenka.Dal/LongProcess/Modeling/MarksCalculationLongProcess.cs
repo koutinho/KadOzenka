@@ -146,7 +146,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private List<OMModelToMarketObjects> GetModelObjects(long modelId,
-			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
+			List<FactorInfo> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Получение объектов моделирования для модели с ИД '{ModelId}'", modelId))
 			{
@@ -167,27 +167,35 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private List<ModelFactorRelationPure> GetModelFactors(long modelId)
+		private List<FactorInfo> GetModelFactors(long modelId)
 		{
 			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
 				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
+			var factorDtos = new List<FactorInfo>();
 			factors.ForEach(x =>
 			{
 				if (x.DictionaryId == null)
 					throw new CanNotCreateMarksBecauseNoDictionaryException(x.AttributeName);
+				
+				factorDtos.Add(new FactorInfo
+				{
+					AttributeId = x.AttributeId,
+					AttributeName = x.AttributeName,
+					Dictionary = ModelDictionaryService.GetDictionaryById(x.DictionaryId.Value)
+				});
 			});
 
-			_maxFactorsCount = factors.Count;
+			_maxFactorsCount = factorDtos.Count;
 			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
 
-			return factors;
+			return factorDtos;
 		}
 
 		private string ProcessInValidModelObjects(List<OMModelToMarketObjects> modelObjects,
-			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
+			List<FactorInfo> factors, CancellationToken cancellationToken)
 		{
 			var reportService = new GbuReportService("Объекты, не участвующие в формировании меток");
 
@@ -235,7 +243,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private void ProcessModelObjectsWithEmptyValues(List<OMModelToMarketObjects> modelObjects,
-			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken,
+			List<FactorInfo> factors, CancellationToken cancellationToken,
 			GbuReportService reportService, int descriptionColumnIndex, int factorsColumnIndex)
 		{
 			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть пустые факторы"))
@@ -270,7 +278,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private void ProcessModelObjectsWithInvalidMarks(List<OMModelToMarketObjects> modelObjects,
-			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken, 
+			List<FactorInfo> factors, CancellationToken cancellationToken, 
 			GbuReportService reportService, int descriptionColumnIndex, int factorsColumnIndex)
 		{
 			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть невалидные значения меток"))
@@ -283,14 +291,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					var iLocal = i;
 					factors.ForEach(factor =>
 					{
-						var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.GetValueOrDefault());
 						var factorCoefficient = modelObjects[iLocal].DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
 						if (factorCoefficient == null)
 							return;
 
 						try
 						{
-							ModelDictionaryService.ValidateMark(dictionary, factorCoefficient.Value, 0);
+							ModelDictionaryService.ValidateMark(factor.Dictionary, factorCoefficient.Value, 0);
 						}
 						catch (Exception e)
 						{
@@ -319,7 +326,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			invalidObject.Save();
 		}
 
-		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects,
+		private void ProcessCodedFactor(FactorInfo factor, List<OMModelToMarketObjects> modelObjects,
 			CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
@@ -341,7 +348,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private HashSet<string> GetUniqueFactorValues(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		private HashSet<string> GetUniqueFactorValues(FactorInfo factor, List<OMModelToMarketObjects> modelObjects)
 		{
 			using (_logger.TimeOperation("Получение уникальных значений фактора '{FactorName}'", factor.AttributeName))
 			{
@@ -383,7 +390,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private void CreateMarks(ModelFactorRelationPure factor,
+		private void CreateMarks(FactorInfo factor,
 			Dictionary<string, UniqueFactorValueInfo> uniqueFactorValuesInfo, decimal divider,
 			CancellationToken cancellationToken)
 		{
@@ -392,7 +399,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			using (_logger.TimeOperation("Cоздание меток для фактора '{FactorName}'", factor.AttributeName))
 			{
-				ModelDictionaryService.DeleteMarks(factor.DictionaryId);
+				ModelDictionaryService.DeleteMarks(factor.Dictionary.Id);
 
 				foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
 				{
@@ -417,7 +424,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					}
 
 					var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
-					ModelDictionaryService.CreateMarks(factor.AttributeId, factor.DictionaryId.Value, allObjectsCoefficients);
+					ModelDictionaryService.CreateMarks(factor.AttributeId, factor.Dictionary.Id, allObjectsCoefficients);
 				}
 			}
 		}
@@ -449,6 +456,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			public List<OMModelToMarketObjects> ModelObjects { get; init; }
 			public decimal AveragePrice { get; init; }
+		}
+
+		private class FactorInfo
+		{
+			public long AttributeId { get; set; }
+			public string AttributeName { get; set; }
+			public OMModelingDictionary Dictionary { get; init; }
 		}
     }
 }
