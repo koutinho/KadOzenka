@@ -32,12 +32,16 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	    private string _messageSubject = "Результат Операции Расчета меток";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
+	    private int _descriptionColumnIndex = 0;
+	    private int _factorsColumnIndex = 1;
+	    private int _errorColumnIndex = 2;
 		private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IModelObjectsRepository ModelObjectsRepository { get; }
 		private IModelDictionaryService ModelDictionaryService { get; }
-		public IRegisterCacheWrapper RegisterCacheWrapper { get; }
+		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
+		private GbuReportService GbuReportService { get; set; }
 
 
 
@@ -198,54 +202,20 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		private string ProcessInValidModelObjects(List<OMModelToMarketObjects> modelObjects,
 			List<FactorInfo> factors, CancellationToken cancellationToken)
 		{
-			var reportService = new GbuReportService("Объекты, не участвующие в формировании меток");
+			ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
 
-			var descriptionColumnIndex = 0;
-			var factorsColumnIndex = 1;
-			var errorColumnIndex = 2;
-			var headers = new List<GbuReportService.Column>
-			{
-				new()
-				{
-					Header = "Описание объекта аналога",
-					Index = descriptionColumnIndex,
-					Width = 8
-				},
-				new()
-				{
-					Header = "Незаполненные факторы",
-					Index = factorsColumnIndex,
-					Width = 12
-				},
-				new()
-				{
-					Header = "Ошибки",
-					Index = errorColumnIndex,
-					Width = 12
-				}
-			};
+			ProcessModelObjectsWithInvalidMarks(modelObjects, factors, cancellationToken);
 
-			reportService.AddHeaders(headers);
-			reportService.SetIndividualWidth(headers);
-
-			ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken, reportService, descriptionColumnIndex, factorsColumnIndex);
-
-			ProcessModelObjectsWithInvalidMarks(modelObjects, factors, cancellationToken, reportService, descriptionColumnIndex, factorsColumnIndex);
-
-			if (reportService.IsReportEmpty)
-			{
-				reportService.Dispose();
+			if (GbuReportService == null)
 				return string.Empty;
-			}
-
-			var reportId = reportService.SaveReport();
 			
-			return reportService.GetUrlToDownloadFile(reportId);
+			var reportId = GbuReportService.SaveReport();
+			
+			return GbuReportService.GetUrlToDownloadFile(reportId);
 		}
 
 		private void ProcessModelObjectsWithEmptyValues(List<OMModelToMarketObjects> modelObjects,
-			List<FactorInfo> factors, CancellationToken cancellationToken,
-			GbuReportService reportService, int descriptionColumnIndex, int factorsColumnIndex)
+			List<FactorInfo> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть пустые факторы"))
 			{
@@ -257,6 +227,10 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				_logger.Debug("Найдено {ModelObjectsWithEmptyFactorsCount} объектов модели с пустыми факторами'", modelObjectsWithEmptyFactors.Count);
 
+				if(modelObjectsWithEmptyFactors.Count == 0)
+					return;
+
+				InitReport();
 				modelObjectsWithEmptyFactors.ForEach(obj =>
 				{
 					cancellationToken.ThrowIfCancellationRequested();
@@ -269,9 +243,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 							factorNames += $"{factor.AttributeName}{Environment.NewLine}";
 					});
 
-					var row = reportService.GetCurrentRow();
-					reportService.AddValue(obj.CadastralNumber, descriptionColumnIndex, row);
-					reportService.AddValue(factorNames, factorsColumnIndex, row);
+					var row = GbuReportService.GetCurrentRow();
+					GbuReportService.AddValue(obj.CadastralNumber, _descriptionColumnIndex, row);
+					GbuReportService.AddValue(factorNames, _factorsColumnIndex, row);
 
 					ExcludeInvalidModelObject(modelObjects, obj);
 				});
@@ -279,8 +253,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private void ProcessModelObjectsWithInvalidMarks(List<OMModelToMarketObjects> modelObjects,
-			List<FactorInfo> factors, CancellationToken cancellationToken, 
-			GbuReportService reportService, int descriptionColumnIndex, int factorsColumnIndex)
+			List<FactorInfo> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть невалидные значения меток"))
 			{
@@ -309,14 +282,48 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 					if (!string.IsNullOrWhiteSpace(errors))
 					{
-						var row = reportService.GetCurrentRow();
-						reportService.AddValue(modelObjects[i].CadastralNumber, descriptionColumnIndex, row);
-						reportService.AddValue(errors, factorsColumnIndex, row);
+						InitReport();
+						var row = GbuReportService.GetCurrentRow();
+						GbuReportService.AddValue(modelObjects[i].CadastralNumber, _descriptionColumnIndex, row);
+						GbuReportService.AddValue(errors, _factorsColumnIndex, row);
 
 						ExcludeInvalidModelObject(modelObjects, modelObjects[i]);
 					}
 				}
 			}
+		}
+
+		private void InitReport()
+		{
+			if(GbuReportService != null)
+				return;
+
+			GbuReportService = new GbuReportService("Объекты, не участвующие в формировании меток");
+
+			var headers = new List<GbuReportService.Column>
+			{
+				new()
+				{
+					Header = "Описание объекта аналога",
+					Index = _descriptionColumnIndex,
+					Width = 8
+				},
+				new()
+				{
+					Header = "Незаполненные факторы",
+					Index = _factorsColumnIndex,
+					Width = 12
+				},
+				new()
+				{
+					Header = "Ошибки",
+					Index = _errorColumnIndex,
+					Width = 12
+				}
+			};
+
+			GbuReportService.AddHeaders(headers);
+			GbuReportService.SetIndividualWidth(headers);
 		}
 
 		private void ExcludeInvalidModelObject(List<OMModelToMarketObjects> modelObjects, OMModelToMarketObjects invalidObject)
