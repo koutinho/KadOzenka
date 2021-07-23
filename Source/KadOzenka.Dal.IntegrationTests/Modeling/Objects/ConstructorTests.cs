@@ -21,6 +21,8 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 	{
 		private long _addressAttributeId;
 		private long _squareAttributeId;
+		private long _isForTrainingAttributeId;
+		private long _isForControlAttributeId;
 		private OMModel _model;
 		private ExcelRow _firstExcelRow;
 		private ExcelRow _secondExcelRow;
@@ -33,6 +35,8 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		{
 			_modelIdAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId);
 			_coefficientAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Coefficients);
+			_isForTrainingAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForTraining);
+			_isForControlAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.IsForControl);
 
 			_firstExcelRow = new ExcelRow
 			{
@@ -128,7 +132,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		[Test]
 		public void CanNot_Create_Object_ForTraining_And_ForControl_At_The_Same_Time()
 		{
-			var importer = new ModelObjectsImporterForCreation(_model.Id, _modelIdAttributeId, _coefficientAttributeId);
+			var importer = new ModelObjectsImporterForCreation(_model.Id, _modelIdAttributeId, _coefficientAttributeId, _isForTrainingAttributeId, _isForControlAttributeId);
 			var excelData = new ModelObjectsFromExcelData
 			{
 				Columns = new List<Column>

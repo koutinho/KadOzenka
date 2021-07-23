@@ -126,9 +126,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			        throw new CanNotCreateMarksBecauseNoDictionaryException(factor.AttributeName);
 
 		        ProcessCodedFactor(factor, modelObjects, cancellationToken);
-		        
+
 		        _processedFactorsCount++;
 	        });
+
+	        using (_logger.TimeOperation("Обновление коэффициентов в объектах моделирования"))
+	        {
+		        modelObjects.Where(x => x.IsCoefficientsChanged).ForEach(x => x.Save());
+	        }
 
 	        return urlToDownloadReport;
         }
@@ -303,7 +308,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			if (divider == 0)
 				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
 
-			using (_logger.TimeOperation("Полное создание меток для фактора '{FactorName}'", factor.AttributeName))
+			using (_logger.TimeOperation("Cоздание меток для фактора '{FactorName}'", factor.AttributeName))
 			{
 				ModelDictionaryService.DeleteMarks(factor.DictionaryId);
 
@@ -323,7 +328,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 							oldCoefficient.Coefficient = uniqueFactorInfo.AveragePrice / divider;
 							obj.Coefficients = obj.DeserializedCoefficients.SerializeCoefficient();
-							obj.Save();
+							obj.IsCoefficientsChanged = true;
+							////сделано через одноразовое обновление
+							//obj.Save();
 						});
 					}
 

@@ -279,6 +279,11 @@ namespace ObjectModel.Modeling
 		private List<CoefficientForObject> _deserializeCoefficients;
         public List<CoefficientForObject> DeserializedCoefficients => _deserializeCoefficients ??= DeserializeCoefficient();
 
+        /// <summary>
+        /// Флаг для массового обновления объектов во время расчета меток
+        /// </summary>
+        public bool IsCoefficientsChanged { get; set; }
+        
         private List<CoefficientForObject> DeserializeCoefficient()
 		{
 			if (string.IsNullOrWhiteSpace(Coefficients))
