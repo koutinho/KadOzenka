@@ -26,7 +26,7 @@ namespace ModelingBusiness.Modeling
         public Prediction(string inputParametersXml, OMQueue processQueue)
             : base(processQueue, Log.ForContext<Prediction>())
         {
-            InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
+            InputParameters = DeserializeInputParameters(inputParametersXml);
             GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
         }
 

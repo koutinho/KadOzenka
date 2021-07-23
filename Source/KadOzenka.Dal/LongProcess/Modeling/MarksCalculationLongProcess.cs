@@ -28,7 +28,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class MarksCalculationLongProcess : LongProcess
     {
-	    private static long ProcessId => 100;
 	    private string _messageSubject = "Результат Операции Расчета меток";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
@@ -64,15 +63,21 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			ValidateModelId(modelId);
 
-			var isProcessExists = new LongProcessService().HasActiveProcessInQueue(ProcessId, modelId);
-	        if (isProcessExists)
-		        throw new Exception("Процесс расчета меток для этой модели уже находится в очереди");
+			CheckActiveProcessInQueue(modelId);
 
 			LongProcessManager.AddTaskToQueue(nameof(MarksCalculationLongProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
         }
 
+		public static void CheckActiveProcessInQueue(long modelId)
+		{
+			var processId = 100;
+			var isProcessExists = new LongProcessService().HasActiveProcessInQueue(processId, modelId);
+			if (isProcessExists)
+				throw new Exception("В очереди есть процесс расчета меток для этой модели");
+		}
 
-        public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
+
+		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
 			_logger.Debug("Старт процесса расчета меток");
 

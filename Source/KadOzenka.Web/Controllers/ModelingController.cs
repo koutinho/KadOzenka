@@ -1110,6 +1110,9 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public IActionResult ModelObjectsConstructor(long modelId)
         {
+            MarksCalculationLongProcess.CheckActiveProcessInQueue(modelId);
+            ModelingProcess.CheckActiveProcessInQueue(modelId);
+
             var modelObjectsRegister = RegisterCache.GetRegisterData(OMModelToMarketObjects.GetRegisterId());
             var registerInfo = new
             {

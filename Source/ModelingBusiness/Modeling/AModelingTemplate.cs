@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using CommonSdks;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
+using Core.Shared.Extensions;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Model;
+using ModelingBusiness.Modeling.InputParameters;
 using ModelingBusiness.Modeling.Responses;
 using ModelingBusiness.Objects.Repositories;
 using Newtonsoft.Json;
@@ -120,6 +122,10 @@ namespace ModelingBusiness.Modeling
             Logger.Information(message);
         }
 
+        public static GeneralModelingInputParameters DeserializeInputParameters(string inputParametersXml)
+        {
+	        return inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
+        }
 
         #region Support Methods
 

@@ -2,8 +2,7 @@
 using System.Threading;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.LongProcess.InputParameters;
-using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
+using KadOzenka.Dal.LongProcess.Common;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Modeling.Entities;
 using ModelingBusiness.Modeling.InputParameters;
@@ -12,6 +11,7 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
+    //todo вынести корреляцию отдельно
     public class ModelingProcess : LongProcess
     {
 	    private readonly ILogger _log = Log.ForContext<ModelingProcess>();
@@ -20,6 +20,24 @@ namespace KadOzenka.Dal.LongProcess.Modeling
         {
             LongProcessManager.AddTaskToQueue(nameof(ModelingProcess), parameters: inputParameters.SerializeToXml());
         }
+
+        public static void CheckActiveProcessInQueue(long modelId)
+        {
+	        var processId = 34;
+	        var activeQueue = new LongProcessService().GetProcessActiveQueue(processId, null);
+	        if (activeQueue == null)
+		        return;
+
+            var parameters = activeQueue.Parameters.DeserializeFromXml<ModelingInputParameters>();
+	        if (!string.IsNullOrWhiteSpace(parameters.InputParametersXml) &&
+	            (parameters.Mode == ModelingMode.Training || parameters.Mode == ModelingMode.Prediction))
+	        {
+		        var modelingParameters = AModelingTemplate.DeserializeInputParameters(parameters.InputParametersXml);
+		        if (modelingParameters != null && modelingParameters.ModelId == modelId)
+			        throw new Exception("В очереди есть процесс моделирования для этой модели");
+	        }
+        }
+
 
         public override void StartProcess(OMProcessType processType, OMQueue processQueue,
             CancellationToken cancellationToken)

@@ -35,7 +35,7 @@ namespace ModelingBusiness.Modeling
         public Training(string inputParametersXml, OMQueue processQueue)
             : base(processQueue, Log.ForContext<Training>())
         {
-            InputParameters = inputParametersXml.DeserializeFromXml<GeneralModelingInputParameters>();
+            InputParameters = DeserializeInputParameters(inputParametersXml);
             GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
             ModelAttributes = new List<ModelFactorRelationPure>();
