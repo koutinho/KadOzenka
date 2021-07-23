@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.Excel;
 using Core.ErrorManagment;
 using Core.Messages;
 using Core.Register;

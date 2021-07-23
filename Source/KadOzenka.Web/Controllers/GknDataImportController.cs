@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.Excel;
 using CommonSdks.PlatformWrappers;
 using Core.ErrorManagment;
 using Core.Register;

@@ -1,4 +1,4 @@
-﻿namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
+﻿namespace CommonSdks.Excel
 {
     public class ColumnToAttributeMapping
 	{
