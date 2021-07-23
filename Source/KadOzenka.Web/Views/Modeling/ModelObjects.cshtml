@@ -373,7 +373,7 @@
     function generateSchemaFields(modelAttributes) {
         var fields = {
             Id: {editable: false, nullable: true},
-            CadastralNumber: { editable: false },
+            ModelObjectInfo: { editable: false },
             Price: { type: "number", editable: false },
             PriceFromModel: { type: "number", editable: false },
             IsExcluded: { type: "boolean", editable: true },
@@ -470,9 +470,8 @@
                 width: widthForColumnsWithCheckBoxes
             },
             {
-                title: "Кадастровый номер",
-                field: "CadastralNumber",
-                template: '<a href="/ObjectCard?ObjId=#=MarketObjectId#&RegisterViewId=MarketObjects&isVertical=true&useMasterPage=true" target="_blank">#=CadastralNumber#</a>',
+                title: "Описание объекта-аналога",
+                field: "ModelObjectInfo",
                 sortable: false,
                 width: 200
             },

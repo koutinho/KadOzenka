@@ -176,7 +176,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
                         MarketObjectId = marketObject.Id,
                         UnitId = unit?.Id,
                         UnitPropertyType_Code = unit?.PropertyType ?? PropertyTypes.None,
-                        CadastralNumber = marketObject.CadastralNumber,
+                        MarketObjectInfo = marketObject.CadastralNumber,
                         Price = marketObject.PricePerMeter,
                         IsForTraining = isForTraining,
                         IsForControl = isForControl

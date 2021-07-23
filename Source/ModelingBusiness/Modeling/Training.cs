@@ -110,7 +110,7 @@ namespace ModelingBusiness.Modeling
 		                RequestForService.PricesForControl.Add(new List<decimal> { modelObject.Price });
                     }
 
-                    RequestForService.CadastralNumbers.Add(modelObject.CadastralNumber);
+                    RequestForService.CadastralNumbers.Add(modelObject.MarketObjectInfo);
                 }
             });
 

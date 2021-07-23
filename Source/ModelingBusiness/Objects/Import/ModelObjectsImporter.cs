@@ -120,7 +120,7 @@ namespace ModelingBusiness.Objects.Import
 			if (modelId == null)
 				throw new Exception("Не передан ИД модели для создания объектов моделирования");
 
-			var cadastralNumberAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.CadastralNumber);
+			var cadastralNumberAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectInfo);
 			var priceAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Price);
 			var attributeIds = columnsMapping.Select(x => x.AttributeId).ToList();
 

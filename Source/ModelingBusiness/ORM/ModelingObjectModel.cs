@@ -1233,22 +1233,22 @@ namespace ObjectModel.Modeling
         }
 
 
-        private string _cadastralnumber;
+        private string _marketobjectinfo;
         /// <summary>
-        /// 70200200 Кадастровый номер объекта (CADASTRAL_NUMBER)
+        /// 70200200 Описание объекта-аналога (market_object_info)
         /// </summary>
         [RegisterAttribute(AttributeID = 70200200)]
-        public string CadastralNumber
+        public string MarketObjectInfo
         {
             get
             {
-                CheckPropertyInited("CadastralNumber");
-                return _cadastralnumber;
+                CheckPropertyInited("MarketObjectInfo");
+                return _marketobjectinfo;
             }
             set
             {
-                _cadastralnumber = value;
-                NotifyPropertyChanged("CadastralNumber");
+                _marketobjectinfo = value;
+                NotifyPropertyChanged("MarketObjectInfo");
             }
         }
 

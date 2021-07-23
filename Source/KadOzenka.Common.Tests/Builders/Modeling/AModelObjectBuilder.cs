@@ -26,7 +26,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 			_modelObject = new OMModelToMarketObjects
 			{
-				CadastralNumber = RandomGenerator.GetRandomString(),
+				MarketObjectInfo = RandomGenerator.GetRandomString(),
 				Price = RandomGenerator.GenerateRandomDecimal(),
 				IsExcluded = false,
 				ModelId = RandomGenerator.GenerateRandomId(),

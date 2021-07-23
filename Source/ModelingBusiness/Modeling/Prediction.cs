@@ -85,7 +85,7 @@ namespace ModelingBusiness.Modeling
                 if (coefficients.All(x => x != null))
                 {
                     RequestForService.Coefficients.Add(coefficients);
-                    RequestForService.CadastralNumbers.Add(modelObject.CadastralNumber);
+                    RequestForService.CadastralNumbers.Add(modelObject.MarketObjectInfo);
                     RequestForService.OmModelToMarketObjectsIds.Add(modelObject.Id);
                 }
             });

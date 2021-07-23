@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using ObjectModel.Modeling;
 
 namespace ModelingBusiness.Objects.Entities
 {
 	public class ModelMarketObjectRelationDto
 	{
 		public long Id { get; set; }
-		public string CadastralNumber { get; set; }
+		public string ModelObjectInfo { get; set; }
 		public long? MarketObjectId { get; set; }
 		public long? UnitId { get; set; }
 		public decimal Price { get; set; }

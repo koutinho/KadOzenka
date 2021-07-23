@@ -162,7 +162,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
 					cancellationToken,
-					select => new { select.CadastralNumber, select.Coefficients, select.Price });
+					select => new { CadastralNumber = @select.MarketObjectInfo, select.Coefficients, select.Price });
 				if (modelObjects.IsEmpty())
 					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 
@@ -249,7 +249,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					});
 
 					var row = GbuReportService.GetCurrentRow();
-					GbuReportService.AddValue(obj.CadastralNumber, _descriptionColumnIndex, row);
+					GbuReportService.AddValue(obj.MarketObjectInfo, _descriptionColumnIndex, row);
 					GbuReportService.AddValue(factorNames, _factorsColumnIndex, row);
 
 					ExcludeInvalidModelObject(modelObjects, obj);
@@ -289,7 +289,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					{
 						InitReport();
 						var row = GbuReportService.GetCurrentRow();
-						GbuReportService.AddValue(modelObjects[i].CadastralNumber, _descriptionColumnIndex, row);
+						GbuReportService.AddValue(modelObjects[i].MarketObjectInfo, _descriptionColumnIndex, row);
 						GbuReportService.AddValue(errors, _factorsColumnIndex, row);
 
 						ExcludeInvalidModelObject(modelObjects, modelObjects[i]);

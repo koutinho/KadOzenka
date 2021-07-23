@@ -10,7 +10,7 @@ namespace KadOzenka.Web.Models.Modeling
 	public class ModelMarketObjectRelationModel
 	{
 		public long Id { get; set; }
-		public string CadastralNumber { get; set; }
+		public string ModelObjectInfo { get; set; }
 		public long? MarketObjectId { get; set; }
 		public long? UnitId { get; set; }
 		public string UnitPropertyType { get; set; }
@@ -31,7 +31,7 @@ namespace KadOzenka.Web.Models.Modeling
 	        return new ModelMarketObjectRelationModel
 			{
 				Id = entity.Id,
-				CadastralNumber = entity.CadastralNumber,
+				ModelObjectInfo = entity.MarketObjectInfo,
 				MarketObjectId = entity.MarketObjectId,
 				UnitId = entity.UnitId,
 				UnitPropertyType = entity.UnitPropertyType_Code == PropertyTypes.None ? null : entity.UnitPropertyType_Code.GetEnumDescription(),

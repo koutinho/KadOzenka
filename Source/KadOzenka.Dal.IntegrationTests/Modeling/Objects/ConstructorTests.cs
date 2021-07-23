@@ -125,7 +125,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			var config = GetConfig(null);
 			ModelObjectsImporter.ChangeObjects(excelFile, config);
 
-			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id && x.CadastralNumber == _firstExcelRow.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
+			var createdObject = OMModelToMarketObjects.Where(x => x.ModelId == _model.Id && x.MarketObjectInfo == _firstExcelRow.CadastralNumber).SelectAll().ExecuteFirstOrDefault();
 			Assert.That(createdObject, Is.Not.Null);
 			CheckUpdatedObject(createdObject.Id, _firstExcelRow);
 		}
@@ -186,7 +186,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 					new(1, GetAttributeId(x => x.IsForTraining)),
 					new(2, GetAttributeId(x => x.IsForControl)),
 					new(3, GetAttributeId(x => x.IsExcluded)),
-					new(4, GetAttributeId(x => x.CadastralNumber)),
+					new(4, GetAttributeId(x => x.MarketObjectInfo)),
 					new(5, GetAttributeId(x => x.UnitPropertyType)),
 					new(6, GetAttributeId(x => x.Price)),
 					new(7, GetAttributeId(x => x.PriceFromModel)),
@@ -208,7 +208,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			Assert.That(updatedObject.IsForTraining, Is.EqualTo(row.IsForTraining));
 			Assert.That(updatedObject.IsForControl, Is.EqualTo(row.IsForControl));
 			Assert.That(updatedObject.IsExcluded, Is.EqualTo(row.IsExcluded));
-			Assert.That(updatedObject.CadastralNumber, Is.EqualTo(row.CadastralNumber));
+			Assert.That(updatedObject.MarketObjectInfo, Is.EqualTo(row.CadastralNumber));
 			Assert.That(updatedObject.UnitPropertyType, Is.EqualTo(row.UnitPropertyType));
 			Assert.That(updatedObject.UnitPropertyType_Code, Is.EqualTo(row.UnitPropertyTypeCode));
 			Assert.That(updatedObject.Price, Is.EqualTo(row.Price));
@@ -233,7 +233,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			Assert.That(updatedObject.IsForTraining, Is.EqualTo(initial.IsForTraining));
 			Assert.That(updatedObject.IsForControl, Is.EqualTo(initial.IsForControl));
 			Assert.That(updatedObject.IsExcluded, Is.EqualTo(initial.IsExcluded));
-			Assert.That(updatedObject.CadastralNumber, Is.EqualTo(initial.CadastralNumber));
+			Assert.That(updatedObject.MarketObjectInfo, Is.EqualTo(initial.MarketObjectInfo));
 			Assert.That(updatedObject.UnitPropertyType, Is.EqualTo(initial.UnitPropertyType));
 			Assert.That(updatedObject.UnitPropertyType_Code, Is.EqualTo(initial.UnitPropertyType_Code));
 			Assert.That(updatedObject.Price, Is.EqualTo(initial.Price));

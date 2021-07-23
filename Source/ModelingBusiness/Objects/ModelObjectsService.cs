@@ -25,7 +25,7 @@ namespace ModelingBusiness.Objects
 		private const int IsForTrainingColumnIndex = 1;
 		private const int IsForControlColumnIndex = 2;
 		private const int IsExcludedColumnIndex = 3;
-		private const int CadastralNumberColumnIndex = 4;
+		private const int ModelObjectInfoColumnIndex = 4;
 		private const int ObjectTypeColumnIndex = 5;
 		private const int PriceColumnIndex = 6;
 		private const int PredictedPriceColumnIndex = 7;
@@ -47,7 +47,7 @@ namespace ModelingBusiness.Objects
 			_log.Debug("Начато скачивание объектов моделирования для модели с ИД {ModelId}", modelId);
 
 			var modelObjects = OMModelToMarketObjects.Where(x => x.ModelId == modelId)
-                .OrderBy(x => x.CadastralNumber)
+                .OrderBy(x => x.MarketObjectInfo)
                 .SelectAll()
                 .Execute();
 
@@ -91,7 +91,7 @@ namespace ModelingBusiness.Objects
                     objFromDb.IsForControl.GetValueOrDefault() != obj.IsForControl)
                 {
 	                if (obj.IsForTraining && obj.IsForControl)
-		                throw new Exception($"Объект с КН '{obj.CadastralNumber}' не может одновременно быть и в обучающей, и в контрольной выборках");
+		                throw new Exception($"Объект '{obj.ModelObjectInfo}' не может одновременно быть и в обучающей, и в контрольной выборках");
 
 	                objFromDb.IsExcluded = obj.IsExcluded;
 	                objFromDb.IsForTraining = obj.IsForTraining;
@@ -115,7 +115,7 @@ namespace ModelingBusiness.Objects
             columnHeaders[IsForTrainingColumnIndex] = "Признак выбора аналога в обучающую модель";
             columnHeaders[IsForControlColumnIndex] = "Признак выбора аналога в контрольную модель";
             columnHeaders[IsExcludedColumnIndex] = "Признак исключения из расчета";
-            columnHeaders[CadastralNumberColumnIndex] = "Кадастровый номер";
+            columnHeaders[ModelObjectInfoColumnIndex] = "Кадастровый номер";
             columnHeaders[ObjectTypeColumnIndex] = "Тип объекта";
             columnHeaders[PriceColumnIndex] = "Цена";
             columnHeaders[PredictedPriceColumnIndex] = "Спрогнозированная цена";
@@ -134,7 +134,7 @@ namespace ModelingBusiness.Objects
 				values[IsForTrainingColumnIndex] = obj.IsForTraining.GetValueOrDefault();
 				values[IsForControlColumnIndex] = obj.IsForControl.GetValueOrDefault();
 				values[IsExcludedColumnIndex] = obj.IsExcluded.GetValueOrDefault();
-				values[CadastralNumberColumnIndex] = obj.CadastralNumber;
+				values[ModelObjectInfoColumnIndex] = obj.MarketObjectInfo;
 				values[ObjectTypeColumnIndex] = obj.UnitPropertyType;
 				values[PriceColumnIndex] = obj.Price;
 				values[PredictedPriceColumnIndex] = obj.PriceFromModel;
@@ -157,7 +157,7 @@ namespace ModelingBusiness.Objects
 				});
 
 				//var calculationParameters = GetModelCalculationParameters(model.A0ForExponentialTypeInPreviousTour, obj.Price,
-				// factors, coefficients, obj.CadastralNumber); 
+				// factors, coefficients, obj.ModelObjectInfo); 
 
 				//values.Add(calculationParameters.ModelingPrice); 
 				//values.Add(calculationParameters.Percent);
