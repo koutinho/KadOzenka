@@ -214,12 +214,32 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			reportService.AddHeaders(headers);
 			reportService.SetIndividualWidth(headers);
 
-			using (_logger.TimeOperation("Добавление в отчет объектов моделирования, у которых есть пустые факторы"))
+			ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken, reportService, descriptionColumnIndex, factorsColumnIndex);
+
+			ProcessModelObjectsWithInvalidMarks(modelObjects, factors, cancellationToken, reportService, descriptionColumnIndex, factorsColumnIndex);
+
+			if (reportService.IsReportEmpty)
+			{
+				reportService.Dispose();
+				return string.Empty;
+			}
+
+			var reportId = reportService.SaveReport();
+			
+			return reportService.GetUrlToDownloadFile(reportId);
+		}
+
+		private void ProcessModelObjectsWithEmptyValues(List<OMModelToMarketObjects> modelObjects,
+			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken,
+			GbuReportService reportService, int descriptionColumnIndex, int factorsColumnIndex)
+		{
+			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть пустые факторы"))
 			{
 				var factorIds = factors.Select(x => x.AttributeId).ToList();
 
 				var modelObjectsWithEmptyFactors = modelObjects.Where(x =>
-					x.DeserializedCoefficients.Any(c => string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
+					x.DeserializedCoefficients.Any(c =>
+						string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
 
 				_logger.Debug("Найдено {ModelObjectsWithEmptyFactorsCount} объектов модели с пустыми факторами'", modelObjectsWithEmptyFactors.Count);
 
@@ -239,62 +259,59 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					reportService.AddValue(obj.CadastralNumber, descriptionColumnIndex, row);
 					reportService.AddValue(factorNames, factorsColumnIndex, row);
 
-					modelObjects.Remove(obj);
-				});
-
-				//todo
-				modelObjectsWithEmptyFactors.ForEach(x =>
-				{
-					x.IsExcluded = true;
-					x.Save();
+					ExcludeInvalidModelObject(modelObjects, obj);
 				});
 			}
+		}
 
-			using (_logger.TimeOperation("Добавление в отчет объектов моделирования, у которых есть невалидные значения меток"))
+		private void ProcessModelObjectsWithInvalidMarks(List<OMModelToMarketObjects> modelObjects,
+			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken, 
+			GbuReportService reportService, int descriptionColumnIndex, int factorsColumnIndex)
+		{
+			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть невалидные значения меток"))
 			{
 				for (var i = 0; i < modelObjects.Count; i++)
 				{
-					var modelObject = modelObjects[i];
+					cancellationToken.ThrowIfCancellationRequested();
+
 					var errors = string.Empty;
+					var iLocal = i;
 					factors.ForEach(factor =>
 					{
 						var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.GetValueOrDefault());
-						var factorCoefficient = modelObject.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-						if (factorCoefficient != null)
+						var factorCoefficient = modelObjects[iLocal].DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
+						if (factorCoefficient == null)
+							return;
+
+						try
 						{
-							try
-							{
-								ModelDictionaryService.ValidateMark(dictionary, factorCoefficient.Value, 0);
-							}
-							catch (Exception e)
-							{
-								errors += $"{e.Message}{Environment.NewLine}";
-							}
+							ModelDictionaryService.ValidateMark(dictionary, factorCoefficient.Value, 0);
+						}
+						catch (Exception e)
+						{
+							_logger.Error(e, "Невалидная метка");
+							errors += $"{e.Message}{Environment.NewLine}";
 						}
 					});
 
 					if (!string.IsNullOrWhiteSpace(errors))
 					{
 						var row = reportService.GetCurrentRow();
-						reportService.AddValue(modelObject.CadastralNumber, descriptionColumnIndex, row);
+						reportService.AddValue(modelObjects[i].CadastralNumber, descriptionColumnIndex, row);
 						reportService.AddValue(errors, factorsColumnIndex, row);
 
-						modelObjects.Remove(modelObject);
-						modelObject.IsExcluded = true;
-						modelObject.Save();
+						ExcludeInvalidModelObject(modelObjects, modelObjects[i]);
 					}
 				}
 			}
+		}
 
-			if (reportService.IsReportEmpty)
-			{
-				reportService.Dispose();
-				return string.Empty;
-			}
-
-			var reportId = reportService.SaveReport();
+		private void ExcludeInvalidModelObject(List<OMModelToMarketObjects> modelObjects, OMModelToMarketObjects invalidObject)
+		{
+			modelObjects.Remove(invalidObject);
 			
-			return reportService.GetUrlToDownloadFile(reportId);
+			invalidObject.IsExcluded = true;
+			invalidObject.Save();
 		}
 
 		private void ProcessCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects,
