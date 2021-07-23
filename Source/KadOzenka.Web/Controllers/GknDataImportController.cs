@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Transactions;
 using CommonSdks;
 using CommonSdks.PlatformWrappers;
@@ -11,6 +14,7 @@ using Core.Shared.Extensions;
 using Core.UI.Registers.CoreUI.Registers;
 using Core.UI.Registers.Models.CoreUi;
 using GemBox.Spreadsheet;
+using KadOzenka.Dal.ChunkUpload;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.DataImport;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
@@ -59,7 +63,7 @@ namespace KadOzenka.Web.Controllers
 		[HttpPost]
 		[RequestSizeLimit(2000000000)]
 		[SRDFunction(Tag = "")]
-		public ActionResult ImportGkn(TaskCreationModel dto, List<IFormFile> images)
+		public ActionResult ImportGkn(TaskCreationModel dto, List<IFormFile> images, Guid uuid)
 		{
 			//внутри TaskCreationModel есть модель для документа, поэтому ModelState.IsValid использовать нельзя
 			dto.Validate();
@@ -84,7 +88,8 @@ namespace KadOzenka.Web.Controllers
             attDto.AttachmentRegisterId = 203;
             attDto.AttachmentObjectId = taskId;
             attSvc.AttachmentUpload(attDto, images.ToArray());
-
+            
+            dto.XmlFiles = ChunkUploadManager.Instance().GetFilesByUuid(uuid);
             ProcessDocuments(dto, taskId);
 
 			string Msg = "Задание на оценку успешно создано. ";
@@ -224,10 +229,9 @@ namespace KadOzenka.Web.Controllers
 			{
 				foreach (var file in dto.XmlFiles)
 				{
-					using (var stream = file.OpenReadStream())
-					{
-						DataImporterGknLongProcess.AddImportToQueue(file.FileName, stream, taskId);
-					}
+					file.FileStream.Seek(0, SeekOrigin.Begin);
+					DataImporterGknLongProcess.AddImportToQueue(file.FileName, file.FileStream, taskId);
+					
 				}
 			}
 			else
