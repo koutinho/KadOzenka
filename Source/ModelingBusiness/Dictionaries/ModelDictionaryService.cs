@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.Extentions;
 using CommonSdks.PlatformWrappers;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
@@ -435,7 +436,7 @@ namespace ModelingBusiness.Dictionaries
 
 			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
 			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
-			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBoolean(out _);
+			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBooleanExtended(out _);
 
 			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
 				throw new MarkValueConvertingException(value, dictionaryType);
