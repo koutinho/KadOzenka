@@ -8,6 +8,7 @@ using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Objects.Entities;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
+using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 
@@ -16,7 +17,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 	public class MarksCreationTests : BaseModelingTests
 	{
 		private OMModel _model;
-		private OMModelingDictionary _dictionary;
 		private OMModelFactor _addressFactor;
 		private long _addressAttributeId;
 		private long _squareAttributeId;
@@ -43,10 +43,11 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		public void SetUp()
 		{
 			_model = new ModelBuilder().Automatic().Build();
-			_dictionary = new DictionaryBuilder().Build();
 			
+			var dictionary = new DictionaryBuilder().Type(ModelDictionaryType.String).Build();
+
 			_addressFactor = new ModelFactorBuilder().Model(_model).FactorId(_addressAttributeId)
-				.Dictionary(_dictionary).MarkType(MarkType.Default).Build();
+				.Dictionary(dictionary).MarkType(MarkType.Default).Build();
 		}
 
 
@@ -83,10 +84,10 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			CheckMark(addressMarks, _firstAddressValue, expectedCalculationValueForFirstAddressValue);
 			CheckMark(addressMarks, _secondAddressValue, expectedCalculationValueForSecondAddressValue);
 
-			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue);
-			CheckModelObject(secondModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue);
-			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue);
-			CheckModelObject(forthModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue);
+			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue, false);
+			CheckModelObject(secondModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue, false);
+			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue, false);
+			CheckModelObject(forthModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue, false);
 		}
 
 		[Test]
@@ -123,9 +124,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			CheckMark(addressMarks, _secondAddressValue, expectedCalculationValueForSecondAddressValue);
 			CheckMark(addressMarks, _thirdAddressValue, expectedCalculationValueForThirdAddressValue);
 
-			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue);
-			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue);
-			CheckModelObject(fifthModelObject.Id, _addressAttributeId, expectedCalculationValueForThirdAddressValue);
+			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue, false);
+			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue, false);
+			CheckModelObject(fifthModelObject.Id, _addressAttributeId, expectedCalculationValueForThirdAddressValue, false);
 		}
 
 		[Test]
@@ -135,9 +136,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var coefficients = new List<CoefficientForObject>
 			{
 				CreateCoefficientForAddress(_firstAddressValue),
-				CreateCoefficientForSquare(squareValue)
+				CreateCoefficientForSquare(squareValue.ToString())
 			};
-			var modelObject = new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+			var modelObject = CreateModelObject(coefficients);
 			var squareFactor = CreateSquareFactor();
 
 
@@ -156,8 +157,8 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			Assert.That(squareMark[0].Value, Is.EqualTo(squareValue.ToString()));
 			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(expectedCalculationValueForSquare));
 
-			CheckModelObject(modelObject.Id, _addressAttributeId, expectedCalculationValueForAddress);
-			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), expectedCalculationValueForSquare);
+			CheckModelObject(modelObject.Id, _addressAttributeId, expectedCalculationValueForAddress, false);
+			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), expectedCalculationValueForSquare, false);
 		}
 
 		[Test]
@@ -168,7 +169,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 				CreateCoefficientForAddress(_firstAddressValue),
 				CreateCoefficientForSquare(null)
 			};
-			var modelObject = new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+			var modelObject = CreateModelObject(coefficients);
 			var squareFactor = CreateSquareFactor();
 
 
@@ -181,8 +182,36 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(squareMark.Count, Is.EqualTo(0));
 
-			CheckModelObject(modelObject.Id, _addressFactor.FactorId.GetValueOrDefault(), coefficients[0].Coefficient);
-			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), coefficients[1].Coefficient);
+			CheckModelObject(modelObject.Id, _addressFactor.FactorId.GetValueOrDefault(), coefficients[0].Coefficient, true);
+			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), coefficients[1].Coefficient, true);
+		}
+
+		[Test]
+		public void CanNot_Process_Model_Object_With_NotValid_Mark_Value()
+		{
+			var notValidSquareValue = RandomGenerator.GetRandomString();
+			var coefficients = new List<CoefficientForObject>
+			{
+				CreateCoefficientForAddress(_firstAddressValue),
+				CreateCoefficientForSquare(notValidSquareValue)
+			};
+			var firstModelObject = CreateModelObject(_secondAddressValue);
+			var secondModelObject = CreateModelObject(coefficients);
+			var squareFactor = CreateSquareFactor();
+
+
+			MarksCalculationLongProcess.CalculateMarks(_model.Id, new CancellationToken());
+
+
+			var addressMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == _addressFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(addressMark.Count, Is.EqualTo(1));
+			Assert.That(addressMark.First().Value, Is.EqualTo(_secondAddressValue));
+
+			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
+			Assert.That(squareMark.Count, Is.EqualTo(0));
+
+			CheckModelObject(secondModelObject.Id, _addressFactor.FactorId.GetValueOrDefault(), coefficients[0].Coefficient, true);
+			CheckModelObject(secondModelObject.Id, squareFactor.FactorId.GetValueOrDefault(), coefficients[1].Coefficient, true);
 		}
 
 
@@ -199,6 +228,11 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			return new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
 		}
 
+		private OMModelToMarketObjects CreateModelObject(List<CoefficientForObject> coefficients)
+		{
+			return new ModelObjectBuilder().Model(_model).ForControl(true).Excluded(false).Coefficients(coefficients).Build();
+		}
+
 		private CoefficientForObject CreateCoefficientForAddress(string addressValue = null)
 		{
 			return new CoefficientForObject(_addressAttributeId)
@@ -208,19 +242,19 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			};
 		}
 
-		private CoefficientForObject CreateCoefficientForSquare(double? squareValue)
+		private CoefficientForObject CreateCoefficientForSquare(string squareValue)
 		{
 			return new CoefficientForObject(_squareAttributeId)
 			{
 				Coefficient = RandomGenerator.GenerateRandomDecimal(),
-				Value = squareValue?.ToString()
+				Value = squareValue
 			};
 		}
 
 		private OMModelFactor CreateSquareFactor()
 		{
 			return new ModelFactorBuilder().Model(_model).FactorId(_squareAttributeId)
-				.Dictionary(new DictionaryBuilder().Build()).MarkType(MarkType.Default).Build();
+				.Dictionary(new DictionaryBuilder().Type(ModelDictionaryType.Decimal).Build()).MarkType(MarkType.Default).Build();
 		}
 
 		private void CheckMark(List<OMModelingDictionariesValues> addressMarks, string value, decimal expectedCalculationValue)
@@ -230,9 +264,10 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			Assert.That(mark.CalculationValue, Is.EqualTo(expectedCalculationValue));
 		}
 
-		private void CheckModelObject(long modelObjectId, long attributeId, decimal? expectedCalculationValue)
+		private void CheckModelObject(long modelObjectId, long attributeId, decimal? expectedCalculationValue, bool isExcluded)
 		{
-			var updatedModelObject = OMModelToMarketObjects.Where(x => x.Id == modelObjectId).Select(x => x.Coefficients).ExecuteFirstOrDefault();
+			var updatedModelObject = OMModelToMarketObjects.Where(x => x.Id == modelObjectId).Select(x => new{x.Coefficients, x.IsExcluded}).ExecuteFirstOrDefault();
+			Assert.That(updatedModelObject.IsExcluded, Is.EqualTo(isExcluded));
 
 			var updatedCoefficient = updatedModelObject.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == attributeId);
 			Assert.That(updatedCoefficient.Coefficient, Is.EqualTo(expectedCalculationValue));

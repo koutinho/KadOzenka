@@ -66,6 +66,22 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AModelObjectBuilder Coefficient(long attributeId)
+		{
+			var coefficients = new List<CoefficientForObject>
+			{
+				new CoefficientForObject(attributeId)
+				{
+					Coefficient = RandomGenerator.GenerateRandomDecimal(),
+					Value = RandomGenerator.GetRandomString()
+				}
+			};
+
+			_modelObject.Coefficients = coefficients.SerializeCoefficient();
+			
+			return this;
+		}
+
 		public AModelObjectBuilder ForControl(bool isForControl)
 		{
 			_modelObject.IsForControl = isForControl;

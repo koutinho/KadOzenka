@@ -1,13 +1,13 @@
 ﻿using System;
 using Core.Shared.Extensions;
-using ObjectModel.Directory.KO;
+using ObjectModel.KO;
 
 namespace ModelingBusiness.Dictionaries.Exceptions
 {
 	public class MarkValueConvertingException : Exception
 	{
-		public MarkValueConvertingException(string value, ModelDictionaryType type) 
-			: base($"Значение '{value}' не может быть приведено к типу '{type.GetEnumDescription()}' (тип фактора, к которому привязан словарь)")
+		public MarkValueConvertingException(string value, OMModelingDictionary dictionary) 
+			: base($"Значение '{value}' в словаре '{dictionary.Name}' не может быть приведено к типу словаря '{dictionary.Type_Code.GetEnumDescription()}' (тип фактора, к которому привязан словарь)")
 		{
 
 		}

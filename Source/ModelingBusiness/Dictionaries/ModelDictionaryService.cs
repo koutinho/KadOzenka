@@ -287,13 +287,14 @@ namespace ModelingBusiness.Dictionaries
 		{
 			using (_logger.TimeOperation("Пакетное создание меток"))
 			{
-				var dictionary = GetDictionaryById(dictionaryId);
+				//var dictionary = GetDictionaryById(dictionaryId);
 
 				var rowsToInsertSql = new StringBuilder();
 				var marksCounter = 0;
 				objectCoefficients.Where(x => x.AttributeId == attributeId).DistinctBy(x => x.Value).ForEach(objectCoefficient =>
 				{
-					ValidateMark(dictionary.Type_Code, objectCoefficient.Value, objectCoefficient.Coefficient);
+					////валидация вынесена отдельно, чтобы не останаливать расчет
+					//ValidateMark(dictionary, objectCoefficient.Value, objectCoefficient.Coefficient);
 
 					var value = objectCoefficient.Value.Replace(',', '.');
 					var metka = objectCoefficient.Coefficient.ToString().Replace(',', '.');
@@ -315,6 +316,22 @@ namespace ModelingBusiness.Dictionaries
 
 				_logger.Debug("Всего в БД добавлено {numberOfMarks} меток", marksCounter);
 			}
+		}
+
+		public void ValidateMark(OMModelingDictionary dictionary, string value, decimal? calculationValue)
+		{
+			var isEmptyValue = string.IsNullOrWhiteSpace(value);
+			if (isEmptyValue)
+				throw new EmptyMarkValueException();
+			if (calculationValue == null)
+				throw new EmptyMarkCalculationValueException();
+
+			var canParseToNumber = (dictionary.Type_Code == ModelDictionaryType.Integer || dictionary.Type_Code == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
+			var canParseToDate = dictionary.Type_Code == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
+			var canParseToBoolean = dictionary.Type_Code == ModelDictionaryType.Boolean && value.TryParseToBooleanExtended(out _);
+
+			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionary.Type_Code != ModelDictionaryType.String)
+				throw new MarkValueConvertingException(value, dictionary);
 		}
 
 		public void UpdateMark(DictionaryMarkDto dto)
@@ -419,27 +436,11 @@ namespace ModelingBusiness.Dictionaries
 
 		private void ValidateSingleMark(OMModelingDictionary dictionary, DictionaryMarkDto mark)
 		{
-			ValidateMark(dictionary.Type_Code, mark.Value, mark.CalculationValue);
+			ValidateMark(dictionary, mark.Value, mark.CalculationValue);
 			
 			var isTheSameMarkExists = ModelMarksRepository.IsTheSameMarkExists(dictionary.Id, mark.Id, mark.Value);
 			if (isTheSameMarkExists)
 				throw new TheSameMarkExistsException(dictionary.Name, mark.Value);
-		}
-
-		private void ValidateMark(ModelDictionaryType dictionaryType, string value, decimal? calculationValue)
-		{
-			var isEmptyValue = string.IsNullOrWhiteSpace(value);
-			if (isEmptyValue)
-				throw new EmptyMarkValueException();
-			if (calculationValue == null)
-				throw new EmptyMarkCalculationValueException();
-
-			var canParseToNumber = (dictionaryType == ModelDictionaryType.Integer || dictionaryType == ModelDictionaryType.Decimal) && value.TryParseToDecimal(out _);
-			var canParseToDate = dictionaryType == ModelDictionaryType.Date && value.TryParseToDateTime(out _);
-			var canParseToBoolean = dictionaryType == ModelDictionaryType.Boolean && value.TryParseToBooleanExtended(out _);
-
-			if (!canParseToNumber && !canParseToDate && !canParseToBoolean && dictionaryType != ModelDictionaryType.String)
-				throw new MarkValueConvertingException(value, dictionaryType);
 		}
 
 		private void InsertMarks(StringBuilder rowsToInsertSql)
@@ -521,7 +522,7 @@ namespace ModelingBusiness.Dictionaries
 
 					var valueString = GetValueFromExcelCell(dictionary.Type_Code, valueFromCell);
 
-					ValidateMark(dictionary.Type_Code, valueString, calculationValue);
+					ValidateMark(dictionary, valueString, calculationValue);
 
 					var currentMark = existedMarks.FirstOrDefault(x => x.Value == valueString);
 					if (currentMark != null)

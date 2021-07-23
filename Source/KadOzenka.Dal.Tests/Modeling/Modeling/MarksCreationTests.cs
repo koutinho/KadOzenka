@@ -68,8 +68,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_If_Model_Has_No_Factors_With_Default_Mark_Type()
 		{
-			var modelObject = new ModelObjectBuilder().Build();
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
@@ -79,8 +79,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_If_Model_Has_No_Active_Factors()
 		{
-			var modelObject = new ModelObjectBuilder().Build();
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Active(false).Build();
+			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
@@ -90,12 +90,23 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_For_Factor_Without_DictionaryId()
 		{
-			var modelObject = new ModelObjectBuilder().Build();
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).DictionaryId(null).Build();
+			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
 			Assert.Throws<CanNotCreateMarksBecauseNoDictionaryException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
+		}
+
+		[Test]
+		public void Can_Not_Create_Marks_If_Model_Objects_Have_No_Model_Factors()
+		{
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
+			var modelObject = new ModelObjectBuilder().Build();
+			MockModelObjects(modelObject);
+			MockModelFactors(factor);
+
+			Assert.Throws<CanNotCreateMarksBecauseNoMarketObjectsWithSelectedFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
 		}
 
 

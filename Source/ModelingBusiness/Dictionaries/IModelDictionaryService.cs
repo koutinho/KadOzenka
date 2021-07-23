@@ -37,5 +37,6 @@ namespace ModelingBusiness.Dictionaries
 		OMImportDataLog CreateDataFileImport(Stream fileStream, string inputFileName);
 		Stream ExportMarksToExcel(long dictionaryId);
 		void CreateMarks(long attributeId, long dictionaryId, IEnumerable<CoefficientForObject> objectCoefficients);
+		void ValidateMark(OMModelingDictionary dictionary, string value, decimal? calculationValue);
 	}
 }
