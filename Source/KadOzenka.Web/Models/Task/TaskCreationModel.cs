@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using KadOzenka.Dal.ChunkUpload.Dtos;
 using KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes;
 using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Web.Models.GbuObject;
@@ -41,14 +42,14 @@ namespace KadOzenka.Web.Models.Task
         [Display(Name = "Тип файла")]
         public DocumentType DocumentType { get; set; }
 
-        public List<IFormFile> XmlFiles { get; set; }
+        public List<FileContentDto> XmlFiles { get; set; }
         public IFormFile ExcelFile { get; set; }
         public List<ColumnToAttributeMappingModel> ExcelColumnsMapping { get; set; }
 
 
         public TaskCreationModel()
         {
-            XmlFiles = new List<IFormFile>();
+            XmlFiles = new List<FileContentDto>();
             ExcelColumnsMapping = new List<ColumnToAttributeMappingModel>();
         }
 

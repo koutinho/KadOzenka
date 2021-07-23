@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: services/postgresql/Dockerfile
     container_name: miomo_kadozenka_demo_postgres
+    command: postgres -c 'max_connections=200'
     restart: always
     volumes:
       - postgres:/var/lib/postgresql/data

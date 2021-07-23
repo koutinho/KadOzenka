@@ -6,6 +6,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.Exceptions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -27,8 +28,8 @@ namespace KadOzenka.Dal.KoObject
     public enum ReportColumns : int
     {
         KnColumn = 0,
-        ObjectTypeColumn = 1,
-        ValueColumn = 2,
+        ValueColumn = 1,
+        ObjectTypeColumn = 2,
         ErrorColumn = 3,
     }
 
@@ -168,12 +169,16 @@ namespace KadOzenka.Dal.KoObject
 
 
             // Трекинг юнитов для отчета
-            var allUnits = allUnitsQuery.Select(unit => new {unit.Id, unit.CadastralNumber, unit.PropertyType, unit.PropertyType_Code}).Execute();
+            var allUnits = allUnitsQuery
+                .Select(unit => new {unit.Id, unit.CadastralNumber, unit.PropertyType, unit.PropertyType_Code})
+                .Execute();
             Logger.Information("Выбрано {UnitsCount} юнитов для проставления оценочной группы");
 
             // Сбор данных по группам и приоритету рассчета
             var groupsInfo = GroupService.GetTourGroupsInfo(tourId.GetValueOrDefault(), ObjectTypeExtended.Both);
             Logger.Information("Собраны данные по группам и приоритету рассчета");
+
+            CheckActiveModels(groupsInfo);
 
             // ОКС
             var calcSettingsOks =
@@ -206,24 +211,34 @@ namespace KadOzenka.Dal.KoObject
                     Type = QSConditionGroupType.And,
                     Conditions = new List<QSCondition>
                     {
-                        new QSConditionSimple(OMUnit.GetColumn(x=>x.TaskId), QSConditionType.Equal, param.IdTask)
+                        new QSConditionSimple(OMUnit.GetColumn(x => x.TaskId), QSConditionType.Equal, param.IdTask)
                     }
                 }
             };
 
             // Шаблон для ЗУ
             var queryTemplateZu = queryTemplate.GetCopy();
-            queryTemplateZu.Condition = queryTemplateZu.Condition.And(new QSConditionSimple(OMUnit.GetColumn(x=>x.PropertyType_Code), QSConditionType.Equal, (int) PropertyTypes.Stead));
-            var unitsZu = allUnits.Where(x =>x.PropertyType_Code == PropertyTypes.Stead);
+            queryTemplateZu.Condition = queryTemplateZu.Condition.And(new QSConditionSimple(
+                OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.Equal, (int) PropertyTypes.Stead));
+            var unitsZu = allUnits.Where(x => x.PropertyType_Code == PropertyTypes.Stead);
             var unitsZuIds = unitsZu.Select(x => x.Id).ToList();
 
             // Шаблон для ОКС
-            var propertyTypesOksForQsQuery = new[] {(double) PropertyTypes.Building,(double) PropertyTypes.Construction,
-                (double) PropertyTypes.Pllacement, (double) PropertyTypes.UncompletedBuilding, (double) PropertyTypes.Parking}.AsEnumerable();
-            var propertyTypesOks = new[] { PropertyTypes.Building, PropertyTypes.Construction,
-                 PropertyTypes.Pllacement,  PropertyTypes.UncompletedBuilding,  PropertyTypes.Parking};
+            var propertyTypesOksForQsQuery = new[]
+            {
+                (double) PropertyTypes.Building, (double) PropertyTypes.Construction,
+                (double) PropertyTypes.Pllacement, (double) PropertyTypes.UncompletedBuilding,
+                (double) PropertyTypes.Parking
+            }.AsEnumerable();
+            var propertyTypesOks = new[]
+            {
+                PropertyTypes.Building, PropertyTypes.Construction,
+                PropertyTypes.Pllacement, PropertyTypes.UncompletedBuilding, PropertyTypes.Parking
+            };
             var queryTemplateOks = queryTemplate.GetCopy();
-            queryTemplateOks.Condition = queryTemplateOks.Condition.And(new QSConditionSimple(OMUnit.GetColumn(x=>x.PropertyType_Code), QSConditionType.In, propertyTypesOksForQsQuery));
+            queryTemplateOks.Condition = queryTemplateOks.Condition.And(
+                new QSConditionSimple(OMUnit.GetColumn(x => x.PropertyType_Code), QSConditionType.In,
+                    propertyTypesOksForQsQuery));
             var unitsOks = allUnits.Where(x => propertyTypesOks.Contains(x.PropertyType_Code));
             var unitsOksIds = unitsOks.Select(x => x.Id).ToList();
 
@@ -235,8 +250,10 @@ namespace KadOzenka.Dal.KoObject
             var assignmentReportZu = AssignGroups(convertedZuSettings, queryTemplateZu, unitsZuIds);
 
             var report = new List<GroupingInfo>();
-            report.AddRange(assignmentReportOks);
-            report.AddRange(assignmentReportZu);
+            if (assignmentReportOks.Count > 0)
+                report.AddRange(assignmentReportOks);
+            if (assignmentReportZu.Count > 0)
+                report.AddRange(assignmentReportZu);
 
             Logger.Information("Генерация отчёта");
             foreach (var groupingInfo in report)
@@ -248,7 +265,8 @@ namespace KadOzenka.Dal.KoObject
                         AddErrorRow(unit.CadastralNumber, $"Не найдено подходящей группы по условиям", reportService);
                     else
                     {
-                        AddRowToReport(unit.CadastralNumber, unit.PropertyType, groupingInfo.GroupNumber, reportService);
+                        AddRowToReport(unit.CadastralNumber, unit.PropertyType, groupingInfo.GroupNumber,
+                            reportService);
                     }
                 }
             }
@@ -260,75 +278,91 @@ namespace KadOzenka.Dal.KoObject
             return reportService.GetUrlToDownloadFile(reportId);
         }
 
-        private List<GroupingInfo> AssignGroups(List<EstimatedGroupSettings> convertedSettings, QSQuery queryTemplate, List<long> unitIds)
+
+        private bool CheckActiveModels(TourGroupsInfo groupsInfo)
         {
-            var result = new List<GroupingInfo>();
+            var oksWithModelCheck = groupsInfo.OksSubGroups.Where(x => x.CheckModelFactorsValues).ToList();
+            var zuWithModelCheck = groupsInfo.ZuSubGroups.Where(x => x.CheckModelFactorsValues).ToList();
+            List<GroupTreeDto> modelCheck = new List<GroupTreeDto>();
+            if (oksWithModelCheck.Count > 0)
+                modelCheck.AddRange(oksWithModelCheck);
+            if (zuWithModelCheck.Count > 0)
+                modelCheck.AddRange(zuWithModelCheck);
+            var dictGroupModel = new List<(GroupTreeDto, OMModel)>();
+            foreach (var groupTreeDto in modelCheck)
+            {
+                var model = ModelService.GetActiveModelEntityByGroupId(groupTreeDto.Id);
+                dictGroupModel.Add((groupTreeDto, model));
+            }
+
+            var groupsWithEmptyActiveModels = dictGroupModel.Where(x => x.Item2 == null).ToList();
+            if (groupsWithEmptyActiveModels.Count == 0)
+                return true;
+            var stringListOfGroupsWithEmptyActiveModels = groupsWithEmptyActiveModels
+                .Select(x => x.Item1.GroupName)
+                .Aggregate((acc, str) => acc + "<br>" + str);
+            throw new EmptyActiveModelForGroupWithFactorValueCheckException(
+                "Операция прервана. Найдены группы с флагом проверки наличия значений факторов модели, но с пустыми активными моделями:<br> " +
+                stringListOfGroupsWithEmptyActiveModels);
+        }
+
+        private List<GroupingInfo> AssignGroups(List<EstimatedGroupSettings> convertedSettings, QSQuery queryTemplate,
+            List<long> unitIds)
+        {
             QSQuery FormQueryWithConditions(EstimatedGroupSettings setting)
             {
                 var query = queryTemplate.GetCopy();
                 var conditions = setting.GetConditions();
-                query.Condition =
-                    query.Condition.And(new QSConditionGroup
-                    {
-                        Type = QSConditionGroupType.And,
-                        Conditions = conditions
-                    });
+                if (conditions.Count > 0)
+                {
+                    query.Condition =
+                        query.Condition.And(new QSConditionGroup
+                        {
+                            Type = QSConditionGroupType.And,
+                            Conditions = conditions
+                        });
+                }
+
                 query.ClearSqlCache();
                 return query;
             }
 
+            var result = new List<GroupingInfo>();
             if (convertedSettings.Count == 0)
             {
                 Logger.Information("Не найдено ни одного условия для группировки");
                 return result;
             }
+
             foreach (var setting in convertedSettings)
             {
-                if (unitIds.Count==0) return result;
+                if (unitIds.Count == 0) return result;
 
                 var query = FormQueryWithConditions(setting);
 
+                ModelFactorCheck(setting, query);
+
+                var sqlString = query.GetSql();
                 var toAssign = query.ExecuteQuery<IdHolder>().Select(x => x.Id);
                 var filterConditionMatchingUnitIds = unitIds.Intersect(toAssign).ToList();
                 if (filterConditionMatchingUnitIds.Count == 0) continue;
 
-                // Model factor check
-                var group = GroupService.GetGroupsByIds(new List<long> {setting.GroupId}).FirstOrDefault();
-                var checkFactorValues = group?.CheckModelFactorsValues;
-                if (checkFactorValues ?? false)
-                {
-                    Logger.Information("Проверка наличия значений факторов у группы {GroupName} ({GroupId})", setting.GroupDesc, setting.GroupId);
-                    var model = ModelService.GetActiveModelEntityByGroupId(setting.GroupId);
-                    var modelFactors = model?.ModelFactor.Select(x => x.FactorId.GetValueOrDefault()).ToList();
-                    var conditions = modelFactors?.Select(x => (QSCondition) new QSConditionSimple(new QSColumnSimple(x), QSConditionType.IsNotNull)).ToList();
-                    if (conditions.Count> 0)
-                    {
-                        var checkFactorQuery = queryTemplate.GetCopy();
-                        checkFactorQuery.Condition = checkFactorQuery.Condition.And(new QSConditionGroup
-                        {
-                            Type = QSConditionGroupType.And,
-                            Conditions = conditions
-                        });
-                        checkFactorQuery.ClearSqlCache();
-                        var nonEmptyFactorValueUnits = checkFactorQuery.ExecuteQuery<IdHolder>().Select(x => x.Id).ToList();
-                        if (nonEmptyFactorValueUnits.Count != 0)
-                        {
-                            filterConditionMatchingUnitIds = filterConditionMatchingUnitIds.Intersect(nonEmptyFactorValueUnits).ToList();
-                        }
-                    }
-                }
-
-                var sqlString = query.GetSql();
-
-                var commaSeparatedIdList = filterConditionMatchingUnitIds.Select(x => x.ToString()).Aggregate((acc, item) => acc + "," + item);
+                var commaSeparatedIdList = filterConditionMatchingUnitIds.Select(x => x.ToString())
+                    .Aggregate((acc, item) => acc + "," + item);
                 unitIds = unitIds.Except(filterConditionMatchingUnitIds).ToList();
 
-                Logger.Information("Проставление юнитам группы {GroupName} ({GroupId})", setting.GroupDesc, setting.GroupId);
-                var sql = $"update ko_unit set change_date = now(), group_id = {setting.GroupId} where id in ({commaSeparatedIdList})";
+                Logger.Information("Проставление юнитам группы {GroupName} ({GroupId})", setting.GroupDesc,
+                    setting.GroupId);
+                var sql =
+                    $"update ko_unit set change_date = now(), group_id = {setting.GroupId} where id in ({commaSeparatedIdList})";
                 var updateGroupsCommand = DBMngr.Main.GetSqlStringCommand(sql);
                 DBMngr.Main.ExecuteNonQuery(updateGroupsCommand);
 
-                result.Add(new GroupingInfo { GroupId = setting.GroupId, GroupNumber = setting.GroupNumber, UnitIds = filterConditionMatchingUnitIds});
+                result.Add(new GroupingInfo
+                {
+                    GroupId = setting.GroupId, GroupNumber = setting.GroupNumber,
+                    UnitIds = filterConditionMatchingUnitIds
+                });
             }
 
             if (unitIds.Count > 0)
@@ -338,10 +372,38 @@ namespace KadOzenka.Dal.KoObject
                 var updateGroupsCommand = DBMngr.Main.GetSqlStringCommand(sql);
                 DBMngr.Main.ExecuteNonQuery(updateGroupsCommand);
 
-                result.Add(new GroupingInfo { GroupId = -1, UnitIds = unitIds});
+                result.Add(new GroupingInfo {GroupId = -1, UnitIds = unitIds});
             }
 
             return result;
+        }
+
+        private void ModelFactorCheck(EstimatedGroupSettings setting, QSQuery query)
+        {
+            // Model factor check
+            var group = GroupService.GetGroupsByIds(new List<long> {setting.GroupId}).FirstOrDefault();
+            var checkFactorValues = group?.CheckModelFactorsValues;
+            if (!(checkFactorValues ?? false)) return;
+
+            Logger.Information("Проверка наличия значений факторов у группы {GroupName} ({GroupId})", setting.GroupDesc,
+                setting.GroupId);
+            var model = ModelService.GetActiveModelEntityByGroupId(setting.GroupId);
+            if (model == null) return;
+
+            var modelFactorsObjectModel =
+                OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
+            var modelFactorsIds = modelFactorsObjectModel.Select(x => x.FactorId.GetValueOrDefault())
+                .ToList();
+            var conditions = modelFactorsIds?.Select(x =>
+                    (QSCondition) new QSConditionSimple(new QSColumnSimple(x), QSConditionType.IsNotNull))
+                .ToList();
+            if (conditions.Count <= 0) return;
+            query.Condition = query.Condition.And(new QSConditionGroup
+            {
+                Type = QSConditionGroupType.And,
+                Conditions = conditions
+            });
+            query.ClearSqlCache();
         }
 
         public class IdHolder
@@ -414,12 +476,14 @@ namespace KadOzenka.Dal.KoObject
                 if (setting.DictionaryId != null)
                 {
                     var dictValues = OMGroupingDictionariesValues.Where(x => x.DictionaryId == setting.DictionaryId
-                        && x.GroupingValue != null).SelectAll()
+                                                                             && x.GroupingValue != null).SelectAll()
                         .Execute();
                     var dictStringValues = setting.DictionaryValues.Split("\n");
-                    var dictFilterValues = dictStringValues.Distinct().Where(x=>x.IsNotEmpty()).ToList();
-                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.GroupingValue)).Select(x=>x.Value).ToList();
-                    listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), QSConditionType.In, dictFilter));
+                    var dictFilterValues = dictStringValues.Distinct().Where(x => x.IsNotEmpty()).ToList();
+                    var dictFilter = dictValues.Where(x => dictFilterValues.Contains(x.GroupingValue))
+                        .Select(x => x.Value).ToList();
+                    listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId),
+                        QSConditionType.In, dictFilter));
                     continue;
                 }
 
@@ -501,14 +565,18 @@ namespace KadOzenka.Dal.KoObject
                     {
                         case FilteringType.Date:
                         {
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond1, setting.Filters.DateFilter.Value ?? DateTime.MinValue));
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond2, setting.Filters.DateFilter.Value2 ?? DateTime.MaxValue));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond1,
+                                setting.Filters.DateFilter.Value ?? DateTime.MinValue));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond2,
+                                setting.Filters.DateFilter.Value2 ?? DateTime.MaxValue));
                         }
                             break;
                         case FilteringType.Number:
                         {
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond1, setting.Filters.NumberFilter.Value.ParseToDouble()));
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond2, setting.Filters.NumberFilter.Value2.ParseToDouble()));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond1,
+                                setting.Filters.NumberFilter.Value.ParseToDouble()));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), cond2,
+                                setting.Filters.NumberFilter.Value2.ParseToDouble()));
                         }
                             break;
                     }
@@ -521,28 +589,34 @@ namespace KadOzenka.Dal.KoObject
                         {
                             if (condition == QSConditionType.In)
                             {
-                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.ValueMulti.Replace("\r","").Split('\n').Distinct().Where(x=>x.IsNotEmpty())));
+                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId),
+                                    condition,
+                                    setting.Filters.StringFilter.ValueMulti.Replace("\r", "").Split('\n').Distinct()
+                                        .Where(x => x.IsNotEmpty())));
                             }
                             else
                             {
-                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.StringFilter.Value));
+                                listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId),
+                                    condition, setting.Filters.StringFilter.Value));
                             }
                         }
 
                             break;
                         case FilteringType.Boolean:
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.BoolFilter.Value.GetValueOrDefault() ? 1 : 0));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId),
+                                condition, setting.Filters.BoolFilter.Value.GetValueOrDefault() ? 1 : 0));
                             break;
                         case FilteringType.Number:
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.NumberFilter.Value.ParseToDouble()));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId),
+                                condition, setting.Filters.NumberFilter.Value.ParseToDouble()));
                             break;
                         case FilteringType.Date:
-                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId), condition, setting.Filters.DateFilter.Value ?? DateTime.MinValue));
+                            listConditions.Add(new QSConditionSimple(new QSColumnSimple(setting.KoAttributeId),
+                                condition, setting.Filters.DateFilter.Value ?? DateTime.MinValue));
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-
                 }
             }
 

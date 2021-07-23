@@ -72,9 +72,11 @@
         <li id="XmlFiles" style="display: none;" data-expand>
             <span id="filesBlockLabel">XML-файлы</span>
             <div>
-                <form id="xmlFileForm" class="form-horizontal col-sm-12">
-                    <input name="xmlFiles" id="xmlFiles" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar" />
-                </form>
+	            <form id="xmlFileForm" class="form-horizontal col-sm-12">
+		            <div id="xmlFilesWrapper">
+			            <input name="xmlFiles" id="xmlFiles" type="file" aria-label="files" accept=".xml, .xlsx, .zip, .rar"/>
+		            </div>
+	            </form>
             </div>
         </li>
         <li id="excelFiles" style="display: none;" data-expand>
@@ -131,6 +133,7 @@
 </script>
 
 
+<script type="module" src="~/js/chunk-uploader/chunk-uploader-widget.js"></script>
 <script>
     var dataSource = new kendo.data.DataSource({
         data: [ ]
@@ -157,94 +160,114 @@
         var generalAllowedFilesExtensions = ['.xml', '.xlsx', '.zip', '.rar'];
 
         var toolbar = $("#toolbar").kendoToolBar({
-            items: [
-                {
-                    type: 'button',
-                    id: 'check',
-                    text: 'Сохранить',
-                    icon: 'save',
-                    click: function () {
-                        var message = [];
-                        var upload = $("#xmlFiles").data("kendoUpload");
-                        var files = upload.getFiles();
-
-                        $.each(files, (function (index, value) {
-                            if ($.inArray(value.extension, generalAllowedFilesExtensions) === -1)
-                                message += 'Загружены файлы недопустимого формата (разрешенные форматы: .xml, .zip, .rar)<br>';
-                        }));
-
-                        if ($('[name="EstimationDate"]').data().kendoDatePicker.value() == null) {
-                            message += 'Необходимо заполнить дату изменения сведения (дату оценки)<br>';
+	        items: [
+		        {
+			        type: 'button',
+			        id: 'check',
+			        text: 'Сохранить',
+			        icon: 'save',
+			        click: function() {
+				        var message = [];
+				        var xmlUploader = $('#xmlFilesWrapper').data('ko-chunkUpload');
+						var xmlFiles = xmlUploader.getFiles();
+                        checkError(xmlFiles);
+				        if (message.length !== 0) {
+                            Common.ShowError(message);
+                            return;
                         }
-                        if ($('[name="NoteType"]').val() == 0) {
-                            message += 'Необходимо заполнить тип статьи<br>';
+				        kendo.ui.progress($('body'), true);
+                        if (xmlFiles.length > 0) {
+	                        xmlUploader.upload()
+						        .then((uuid) => save(uuid))
+						        .catch(error => console.error(error));
+				        } else {
+					        save();
+				        }
+				        return;
+
+				        function checkError(files) {
+					        $.each(files,
+						        (function(index, value) {
+							        if ($.inArray(value.extension, generalAllowedFilesExtensions) === -1)
+								        message += 'Загружены файлы недопустимого формата (разрешенные форматы: .xml, .zip, .rar)<br>';
+						        }));
+					        if ($('[name="EstimationDate"]').data().kendoDatePicker.value() == null) {
+						        message += 'Необходимо заполнить дату изменения сведения (дату оценки)<br>';
+					        }
+					        if ($('[name="NoteType"]').val() == 0) {
+						        message += 'Необходимо заполнить тип статьи<br>';
+					        }
+
+				        }
+
+                        function save(uuid = null) {
+	                        try {
+		                              var formData = new FormData();
+					        if (isImportViaExcel()) {
+						        formData = collectFormDataFromMappingBlock();
+					        }
+
+					        var imageFormData = new FormData($('#imageForm').get(0));
+					        var images = imageFormData.getAll('images');
+					        images.forEach(x => formData.append('images', x));
+					        formData.set('@nameof(Model.TourId)', $('[name="Tour"]').val());
+					        formData.set('NoteType', $('[name="NoteType"]').val());
+					        formData.set('@nameof(Model.DocumentType)', getSelectedDocumentType());
+					        var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
+					        if (estdate != null) {
+						        formData.set('EstimationDate', estdate.toDateString());
+					        }
+					        var documentObject = Common.Functions.FormToObject($('#partialDocument'));
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.ModelPrefix)", documentObject.ModelPrefix);
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.IdDocument)", documentObject.IdDocument);
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentRegNumber)", documentObject.NewDocumentRegNumber);
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentName)", documentObject.NewDocumentName);
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentDate)", documentObject.NewDocumentDate);
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentApproveDate)", documentObject.NewDocumentApproveDate);
+					        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentChangeDate)", documentObject.NewDocumentChangeDate);
+                            formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.IsNewDocument)", documentObject.IsNewDocument);
+					        formData.set('uuid', uuid);
+					        $.ajax({
+						        type: 'POST',
+						        url: '@Url.Action("ImportGkn", "GknDataImport")',
+		                        data: formData,
+		                        processData: false,
+		                        contentType: false,
+		                        success: function(e) {
+			                        if (e.Errors) {
+				                        var errors = getErrors(e.Errors);
+				                        Common.ShowError(errors);
+				                        return;
+			                        } else {
+				                        Common.ShowMessage(e.Msg);
+				                        setTimeout(function() {
+						                        Common.UI.CloseWindow('MainMenuWindow', window.parent);
+					                        },
+					                        1000);
+			                        }
+		                        },
+		                        error: function(e) {
+                                    var msg = e.responseText ? e.responseText : 'Ошибка загрузки. Обратитесь к администратору.';
+                                    xmlUploader.deleteFilesByUid(uuid);
+			                        Common.ShowError(msg);
+		                        },
+		                        complete: function() {
+                                    kendo.ui.progress($('body'), false);
+                                   
+		                        }
+	                        });
+                            } catch (e) {
+		                        console.error(e);
+		                        kendo.ui.progress($('body'), false);
+	                        }
                         }
+
 
                         // let check = fileCheck(files.map(x=>x.rawFile));
                         // if (check !== []){
                         //     message += check + 'Пожалуйста выберите файлы заново<br>';
                         // }
 
-                        if (message.length !== 0) {
-                            Common.ShowError(message);
-                            return;
-                        }
-
-                        var formData = new FormData();
-                        if (isImportViaExcel()) {
-                            formData = collectFormDataFromMappingBlock();
-                        } else {
-                            var xmlFilesFormData = new FormData($('#xmlFileForm').get(0));
-                            var images = xmlFilesFormData.getAll('xmlFiles');
-                            images.forEach(x => formData.append('@nameof(Model.XmlFiles)', x));
-                        }
-
-                        var imageFormData = new FormData($('#imageForm').get(0));
-                        var images = imageFormData.getAll('images');
-                        images.forEach(x=>formData.append('images',x));
-                        formData.set('@nameof(Model.TourId)', $('[name="Tour"]').val());
-                        formData.set('NoteType', $('[name="NoteType"]').val());
-                        formData.set('@nameof(Model.DocumentType)', getSelectedDocumentType());
-                        var estdate = $('[name="EstimationDate"]').data().kendoDatePicker.value();
-                        if (estdate != null) {
-                            formData.set('EstimationDate', estdate.toDateString());
-                        }
-                        var documentObject = Common.Functions.FormToObject($('#partialDocument'));
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.ModelPrefix)", documentObject.ModelPrefix);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.IdDocument)", documentObject.IdDocument);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentRegNumber)", documentObject.NewDocumentRegNumber);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentName)", documentObject.NewDocumentName);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentDate)", documentObject.NewDocumentDate);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentApproveDate)", documentObject.NewDocumentApproveDate);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.NewDocumentChangeDate)", documentObject.NewDocumentChangeDate);
-                        formData.append("@nameof(TaskCreationModel.Document).@nameof(PartialDocumentViewModel.IsNewDocument)", documentObject.IsNewDocument);
-                        kendo.ui.progress($('body'), true);
-                        $.ajax({
-                            type: 'POST',
-                            url: '@Url.Action("ImportGkn", "GknDataImport")',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function (e) {
-                                if (e.Errors) {
-                                    var errors = getErrors(e.Errors);
-                                    Common.ShowError(errors);
-                                    return;
-                                } else {
-                                    Common.ShowMessage(e.Msg);
-                                    setTimeout(function () {
-                                        Common.UI.CloseWindow('MainMenuWindow', window.parent);
-                                    }, 1000);
-                                }
-                            },
-                            error: function (e) {
-                                var msg = e.responseText ? e.responseText : 'Ошибка загрузки. Обратитесь к администратору.'
-                                Common.ShowError(msg);
-                            },
-                            complete: function () {
-                                kendo.ui.progress($('body'), false);
-                            }
-                        });
                     }
                 }
             ]
@@ -279,20 +302,9 @@
             }
         }).data('kendoUpload');
 
-        var files = $('#xmlFiles').kendoUpload({
-            multiple: true,
-            localization: {
-                select: 'Выбрать файлы'
-            },
-            error: function (e) {
-                if (e.XMLHttpRequest.responseText) {
-                    Common.ShowError(e.XMLHttpRequest.responseText);
-                } else {
-                    Common.ShowError("При загрузке выбранного файла возникла ошибка (подробно в журнале ошибок)");
-                }
-            }
-        }).data('kendoUpload');
-
+		 $('#xmlFilesWrapper').chunkUpload({
+	        chunkSize: 10_000_000
+        });
 
 
         //Блок для маппинга Excel файла
@@ -349,7 +361,7 @@
             }
         });
     }
-    
+
 
     function collectFormDataFromMappingBlock() {
         var formData = new FormData();

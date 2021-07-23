@@ -79,6 +79,7 @@ namespace KadOzenka.Dal.Groups
             query.AddColumn(OMGroup.GetColumn(x => x.ParentId, "ParentId"));
             query.AddColumn(OMGroup.GetColumn(x => x.GroupAlgoritm_Code, "GroupAlgoritm"));
             query.AddColumn(OMGroup.GetColumn(x => x.GroupName, "GroupName"));
+            query.AddColumn(OMGroup.GetColumn(x => x.CheckModelFactorsValues, "CheckModelFactorsValues"));
             query.AddColumn(OMGroup.GetColumn(x => x.Number, nameof(GroupTreeDto.CombinedNumber)));
             query.AddColumn(OMTourGroup.GetColumn(x => x.TourId, "TourId"));
 
@@ -134,6 +135,7 @@ namespace KadOzenka.Dal.Groups
                 }
 
                 str.GroupName = row["GroupName"].ToString();
+                str.CheckModelFactorsValues = row["CheckModelFactorsValues"].ParseToBoolean();
                 str.CombinedNumber = row[nameof(GroupTreeDto.CombinedNumber)].ParseToStringNullable();
                 str.Number = ParseGroupNumber(str.ParentId, str.CombinedNumber);
                 str.TourId = long.Parse(row["TourId"].ToString());
@@ -150,26 +152,19 @@ namespace KadOzenka.Dal.Groups
 	        var allGroupsInTour = allGroups.Where(x => x.TourId == tourId).ToList();
 	        if (allGroupsInTour.Count == 0)
 	        {
-		        if (addEmptyOksZuMainGroups)
-		        {
-			        var emptyModels = new List<GroupTreeDto>();
-                    var emptyMainGroups = GetMainGroups();
-			        foreach (var mainGroup in emptyMainGroups)
+		        if (!addEmptyOksZuMainGroups) return new List<GroupTreeDto>();
+		        var emptyMainGroups = GetMainGroups();
+
+		        return emptyMainGroups.Select(mainGroup => new GroupTreeDto
 			        {
-				        emptyModels.Add(new GroupTreeDto
-				        {
-					        Id = mainGroup.Id,
-					        GroupName = mainGroup.GroupName,
-					        GroupType = mainGroup.GroupType,
-					        TourId = tourId,
-					        Items = new List<GroupTreeDto>()
-				        });
-                    }
-
-			        return emptyModels;
-		        }
-
-		        return new List<GroupTreeDto>();
+				        Id = mainGroup.Id,
+				        GroupName = mainGroup.GroupName,
+				        GroupType = mainGroup.GroupType,
+				        TourId = tourId,
+				        CheckModelFactorsValues = mainGroup.CheckModelFactorsValues,
+				        Items = new List<GroupTreeDto>()
+			        })
+			        .ToList();
 	        }
 
 	        var subgroups = GetSubgroups(allGroupsInTour);
@@ -196,6 +191,7 @@ namespace KadOzenka.Dal.Groups
                             GroupName = $"{group.CombinedNumber}. {group.GroupName}",
                             CombinedNumber = group.CombinedNumber,
                             GroupType = group.GroupType,
+                            CheckModelFactorsValues = group.CheckModelFactorsValues,
                             TourId = tourId,
                             Items = subgroups.Where(subGroup => subGroup.ParentId == group.Id)
                                 .OrderBy(subGroup => subGroup.Number)
@@ -205,6 +201,7 @@ namespace KadOzenka.Dal.Groups
                                     GroupName = $"{subGroup.CombinedNumber}. {subGroup.GroupName}",
                                     CombinedNumber = subGroup.CombinedNumber,
                                     GroupType = subGroup.GroupType,
+                                    CheckModelFactorsValues = subGroup.CheckModelFactorsValues,
                                     TourId = tourId
                                 }).ToList()
                         }).ToList();
@@ -217,6 +214,7 @@ namespace KadOzenka.Dal.Groups
 				        GroupName = mainGroup.GroupName,
 				        GroupType = mainGroup.GroupType,
 				        TourId = tourId,
+				        CheckModelFactorsValues = mainGroup.CheckModelFactorsValues,
 						Items = groups
 			        });
 		        }
