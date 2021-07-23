@@ -5,6 +5,7 @@ using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using Core.SRD;
 using KadOzenka.Dal.Enum;
+using KadOzenka.Dal.Exceptions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Decorators;
 using KadOzenka.Dal.GbuObject.Dto;
@@ -176,6 +177,8 @@ namespace KadOzenka.Dal.KoObject
             var groupsInfo = GroupService.GetTourGroupsInfo(tourId.GetValueOrDefault(), ObjectTypeExtended.Both);
             Logger.Information("Собраны данные по группам и приоритету рассчета");
 
+            CheckActiveModels(groupsInfo);
+
             // ОКС
             var calcSettingsOks =
                 GroupCalculationSettingsService.GetCalculationSettings(tourId.GetValueOrDefault(), false);
@@ -272,6 +275,34 @@ namespace KadOzenka.Dal.KoObject
             Logger.Information("Закончена операция присвоения оценочной группы");
 
             return reportService.GetUrlToDownloadFile(reportId);
+        }
+
+
+        private bool CheckActiveModels(TourGroupsInfo groupsInfo)
+        {
+            var oksWithModelCheck = groupsInfo.OksSubGroups.Where(x => x.CheckModelFactorsValues).ToList();
+            var zuWithModelCheck = groupsInfo.ZuSubGroups.Where(x => x.CheckModelFactorsValues).ToList();
+            List<GroupTreeDto> modelCheck = new List<GroupTreeDto>();
+            if (oksWithModelCheck.Count > 0)
+                modelCheck.AddRange(oksWithModelCheck);
+            if (zuWithModelCheck.Count > 0)
+                modelCheck.AddRange(zuWithModelCheck);
+            var dictGroupModel = new List<(GroupTreeDto, OMModel)>();
+            foreach (var groupTreeDto in modelCheck)
+            {
+                var model = ModelService.GetActiveModelEntityByGroupId(groupTreeDto.Id);
+                dictGroupModel.Add((groupTreeDto, model));
+            }
+
+            var groupsWithEmptyActiveModels = dictGroupModel.Where(x => x.Item2 == null).ToList();
+            if (groupsWithEmptyActiveModels.Count == 0)
+                return true;
+            var stringListOfGroupsWithEmptyActiveModels = groupsWithEmptyActiveModels
+                .Select(x => x.Item1.GroupName)
+                .Aggregate((acc, str) => acc + "<br>" + str);
+            throw new EmptyActiveModelForGroupWithFactorValueCheckException(
+                "Операция прервана. Найдены группы с флагом проверки наличия значений факторов модели, но с пустыми активными моделями:<br> " +
+                stringListOfGroupsWithEmptyActiveModels);
         }
 
         private List<GroupingInfo> AssignGroups(List<EstimatedGroupSettings> convertedSettings, QSQuery queryTemplate,
