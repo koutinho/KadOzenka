@@ -343,6 +343,16 @@
         $("#" + gridId + " .k-grid-content").on("change", "input.isExcluded", excludeFunc);
         $("#" + gridId + " .k-grid-content").on("change", "input.isForTraining", trainingFunc);
         $("#" + gridId + " .k-grid-content").on("change", "input.IsForControl", controlFunc);
+        $("#" + gridId).data("kendoGrid").tbody.kendoTooltip({
+            filter: "td",
+            content: function (e) {
+                var text =  e.target.text();
+                return '<div style="max-width: 300px; max-height: 300px;">' + text + '</div>';
+            },
+            position: "top",
+            autoHide: true,
+            showAfter: 500
+        });
         $("#headerCheckboxIsForExcluding-" + gridId).on("click", excludeAllFunc);
         $("#headerCheckboxIsForTraining-" + gridId).on("click", trainingAllFunc);
         $("#headerCheckboxIsForControl-" + gridId).on("click", controlAllFunc);
