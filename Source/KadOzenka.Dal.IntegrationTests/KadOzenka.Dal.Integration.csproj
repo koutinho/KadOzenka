@@ -17,6 +17,7 @@
     <ProjectReference Include="..\KadOzenka.Common.Tests\KadOzenka.Common.Tests.csproj" />
     <ProjectReference Include="..\KadOzenka.Dal\KadOzenka.Dal.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
+    <ProjectReference Include="..\ModelingBusiness\ModelingBusiness.csproj" />
   </ItemGroup>
 
   <ItemGroup>

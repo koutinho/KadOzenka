@@ -554,6 +554,12 @@ namespace ObjectModel.SRD
               // Настройка факторов для Наследования (666)
               public const string KO_TASKS_INHERITANCE_FACTOR_SETTINGS = "KO.TASKS.INHERITANCE_FACTOR_SETTINGS";
                 
+              // Присвоение оценочной группы (670)
+              public const string KO_GROUPING = "KO.GROUPING";
+                
+              // Настройка словарей для группировки (671)
+              public const string KO_GROUPING_DICT = "KO.GROUPING.DICT";
+                
               // Доступ к веб-интерфейсу (12344)
               public const string CORE_WEB_INTERFACE = "CORE.WEB.INTERFACE";
                 

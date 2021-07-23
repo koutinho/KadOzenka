@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using CommonSdks;
 using Core.Main.FileStorages;
 using Core.Register;
 using Core.Shared.Extensions;

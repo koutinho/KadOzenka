@@ -1,0 +1,2 @@
+INSERT INTO core_register_relation (id, name, parentregister, chieldregister, cardinality, kindid, parentregister_attribute_id, qscondition) 
+VALUES (212, 'От модели к Группам и подгруппам', 205, 206, null, 20600200, null, null);

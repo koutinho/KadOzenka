@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using CommonSdks.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ConfigurationManagers.KadOzenkaConfigManager.Models.DataImporterGknConfig;
 using KadOzenka.Dal.DataImport.Validation;
 using KadOzenka.Dal.XmlParser;
 using KadOzenka.Dal.XmlParser.GknParserXmlElements;
@@ -25,7 +26,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterGknNew.Attributes
 
 		public GknAllAttributes()
 		{
-			Config = ConfigurationManagers.ConfigurationManager.KoConfig.DataImporterGknConfig;
+			Config = ConfigurationManager.KoConfig.DataImporterGknConfig;
 
 			General = new List<ImportedAttributeGkn>();
 			Parcel = new List<ImportedAttributeGkn>();

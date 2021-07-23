@@ -13,10 +13,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using CadAppraisalDataApi.Models;
+using CommonSdks.ConfigurationManagers.WebClients;
 using RestSharp;
 using IO.Swagger.Client;
 using IO.Swagger.Model;
-using KadOzenka.WebClients.ConfigurationManagers;
 using Serilog;
 using Serilog.Context;
 

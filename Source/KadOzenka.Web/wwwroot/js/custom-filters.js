@@ -65,6 +65,13 @@ function bindUnusedFieldHider(prefix) {
     $(getBoolFilteringTypeSelector(prefix)).bind('change', () => onBoolFilterChange(prefix));
 }
 
+function preloadFilterValueSync(prefix){
+    $(getStringFilteringTypeSelector(prefix)).trigger('change');
+    $(getDateFilteringTypeSelector(prefix)).trigger('change');
+    $(getNumberFilteringTypeSelector(prefix)).trigger('change');
+    $(getBoolFilteringTypeSelector(prefix)).trigger('change');
+}
+
 function createMultiSelectForFilters(prefix){
     let valueBox = $('#'+replaceBrackets(prefix)+'_StringFilter_ValueMulti');
     valueBox.hide();
@@ -289,12 +296,12 @@ function resetAllFields(prefix){
     //$('#'+replaceBrackets(prefix)+'_RefFilter_Value').data('').value(null);
 }
 
-function bindAttributeSelectorEvents(field){
+function bindAttributeSelectorEvents(field, additionalActions){
     //console.log(field);
-    $(field).data('kendoDropDownTree').bind('change', (e)=> getAttributeInfo(e));
+    $(field).data('kendoDropDownTree').bind('change', (e)=> getAttributeInfo(e, additionalActions));
 }
 
-function getAttributeInfo(e){
+function getAttributeInfo(e, additionalActions){
     let attributeId = e?.sender?.value();
     let container = e.sender.element.parents('fieldset').first();
     let typeSelectors = e.sender.element.parents('fieldset').find("[id$='_Type']").toArray();
@@ -331,6 +338,9 @@ function getAttributeInfo(e){
                                 convertedType = "Date";
                                 break;
                         }
+                    }
+                    if (additionalActions != null){
+                        additionalActions(e, type);
                     }
                     typeSelectors.forEach(x=>$(x).data('kendoDropDownList').text(convertedType));
                     typeSelectors.forEach(x=>$(x).trigger('change'));

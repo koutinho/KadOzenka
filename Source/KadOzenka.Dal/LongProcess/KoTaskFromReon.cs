@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
+using CommonSdks.ConfigurationManagers;
 using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using IO.Swagger.Model;
@@ -13,11 +14,9 @@ using KadOzenka.WebClients.ReonClient.Api;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ConfigurationManagers;
 using KadOzenka.Dal.Documents;
 using KadOzenka.Dal.Documents.Dto;
 using KadOzenka.Dal.GbuObject;
-using KadOzenka.WebClients.ConfigurationManagers;
 
 namespace KadOzenka.Dal.LongProcess
 {

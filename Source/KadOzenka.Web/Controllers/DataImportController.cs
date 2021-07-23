@@ -1,13 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using Core.SRD;
 using KadOzenka.Dal.DataImport;
 using Microsoft.AspNetCore.Mvc;
 using ObjectModel.Common;
 using System.Linq;
+using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using KadOzenka.Dal.CommonFunctions;
+using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.GbuObject;
+using KadOzenka.Dal.LongProcess.DataImport;
 using KadOzenka.Web.Attributes;
 using KadOzenka.Web.Models.DataImport;
+using Newtonsoft.Json;
+using ObjectModel.Declarations;
 using ObjectModel.Directory.Common;
 
 namespace KadOzenka.Web.Controllers
@@ -87,9 +94,34 @@ namespace KadOzenka.Web.Controllers
 				throw new Exception($"В журнале загрузок не найдена запись с ИД {importId}");
 			}
 
-			DataImporterCommon.RepeatFormation(import);
+			RepeatFormation(import);
 
 			return Content($"Выполнено повторное формирование файла по шаблону {import.DataFileTitle}");
 		}
+
+
+		#region Support Methods
+
+		public static void RepeatFormation(OMImportDataLog import)
+		{
+			if (string.IsNullOrEmpty(import.DataFileName))
+			{
+				throw new Exception("Не задан шаблон файла");
+			}
+
+			var fileStream = DataImporterCommon.GetImportDataFileStream(import.Id);
+			List<DataExportColumn> columns = JsonConvert.DeserializeObject<List<DataExportColumn>>(import.ColumnsMapping);
+			if (import.MainRegisterId == OMDeclaration.GetRegisterId())
+			{
+				DataImporterDeclarations.AddImportToQueue(OMDeclaration.GetRegisterId(), "DeclarationsDeclaration", import.DataFileTitle, fileStream,
+					columns);
+			}
+			else
+			{
+				DataImporterByTemplateLongProcess.AddImportToQueue(import.MainRegisterId, import.RegisterViewId, import.DataFileTitle, fileStream, columns, import.DocumentId);
+			}
+		}
+
+		#endregion
 	}
 }

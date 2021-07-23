@@ -3,6 +3,7 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks;
 using Serilog;
 using KadOzenka.Dal.Logger;
 using KadOzenka.Dal.LongProcess._Common;

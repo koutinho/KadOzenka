@@ -76,7 +76,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public void AddSeparateColumnsHeaders(List<string> values)
 		{
-			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
+			CommonSdks.ExcelFileHelper.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 
 			_currentRowIndex++;
 		}
@@ -99,7 +99,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public void AddRow(List<object> values)
 		{
-			DataExportCommon.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
+			CommonSdks.ExcelFileHelper.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 			_currentRowIndex++;
 		}
 

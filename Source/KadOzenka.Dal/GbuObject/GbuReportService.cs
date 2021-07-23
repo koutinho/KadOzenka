@@ -173,7 +173,7 @@ namespace KadOzenka.Dal.GbuObject
 
 		public void AddRow(Row row, List<object> values)
 		{
-			DataExportCommon.AddRow(row.File.Worksheets[0], row.Index, values.ToArray());
+			CommonSdks.ExcelFileHelper.AddRow(row.File.Worksheets[0], row.Index, values.ToArray());
 			IsReportEmpty = false;
 		}
 

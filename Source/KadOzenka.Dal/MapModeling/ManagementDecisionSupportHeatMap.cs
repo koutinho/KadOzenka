@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using KadOzenka.Dal.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers;
 using KadOzenka.Dal.ManagementDecisionSupport.Dto.MapBuilding;
 
 namespace KadOzenka.Dal.MapModeling

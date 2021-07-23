@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using KadOzenka.Dal.Modeling;
 using KadOzenka.Web.Models.Modeling;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -25,6 +24,8 @@ using Microsoft.AspNetCore.Http;
 using ObjectModel.KO;
 using System.IO;
 using System.Threading;
+using CommonSdks;
+using CommonSdks.PlatformWrappers;
 using KadOzenka.Dal.CommonFunctions;
 using ObjectModel.Directory;
 using KadOzenka.Dal.DataExport;
@@ -34,21 +35,7 @@ using KadOzenka.Dal.GbuObject.Dto;
 using KadOzenka.Dal.Groups;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling;
-using KadOzenka.Dal.LongProcess.Modeling.Entities;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
-using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Dictionaries.Entities;
-using KadOzenka.Dal.Modeling.Factors;
-using KadOzenka.Dal.Modeling.Factors.Repositories;
-using KadOzenka.Dal.Modeling.Model;
-using KadOzenka.Dal.Modeling.Model.Entities;
-using KadOzenka.Dal.Modeling.Model.Repositories;
-using KadOzenka.Dal.Modeling.Modeling;
-using KadOzenka.Dal.Modeling.Modeling.Entities;
-using KadOzenka.Dal.Modeling.Objects;
-using KadOzenka.Dal.Modeling.Objects.Entities;
-using KadOzenka.Dal.Modeling.Objects.Import;
-using KadOzenka.Dal.Modeling.Objects.Repositories;
 using KadOzenka.Web.Exceptions;
 using KadOzenka.Web.Helpers;
 using Microsoft.Practices.ObjectBuilder2;
@@ -58,6 +45,20 @@ using ObjectModel.Modeling;
 using Consts = KadOzenka.Web.Helpers.Consts;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 using Kendo.Mvc.Extensions;
+using ModelingBusiness.Dictionaries;
+using ModelingBusiness.Dictionaries.Entities;
+using ModelingBusiness.Factors;
+using ModelingBusiness.Factors.Repositories;
+using ModelingBusiness.Model;
+using ModelingBusiness.Model.Entities;
+using ModelingBusiness.Model.Repositories;
+using ModelingBusiness.Modeling;
+using ModelingBusiness.Modeling.Entities;
+using ModelingBusiness.Modeling.InputParameters;
+using ModelingBusiness.Objects;
+using ModelingBusiness.Objects.Entities;
+using ModelingBusiness.Objects.Import;
+using ModelingBusiness.Objects.Repositories;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory.Core.LongProcess;
@@ -78,7 +79,7 @@ namespace KadOzenka.Web.Controllers
         public IModelFactorsService ModelFactorsService { get; set; }
         public GroupService GroupService { get; set; }
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
-        public IModelingRepository ModelingRepository { get; set; }
+        public IModelRepository ModelRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
         public IBaseModelObjectsImporter ModelObjectsImporter { get; set; }
 
@@ -86,7 +87,7 @@ namespace KadOzenka.Web.Controllers
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
 	        IRegisterAttributeService registerAttributeService, ModelDictionaryService modelDictionaryService,
 	        IModelFactorsService modelFactorsService, GroupService groupService,
-	        IModelObjectsRepository modelObjectsRepository, IModelingRepository modelingRepository,
+	        IModelObjectsRepository modelObjectsRepository, IModelRepository modelRepository,
 	        IModelObjectsService modelObjectsService, ILongProcessService longProcessService,
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
@@ -101,7 +102,7 @@ namespace KadOzenka.Web.Controllers
             ModelFactorsService = modelFactorsService;
             GroupService = groupService;
             ModelObjectsRepository = modelObjectsRepository;
-            ModelingRepository = modelingRepository;
+            ModelRepository = modelRepository;
             ModelObjectsService = modelObjectsService;
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
@@ -780,7 +781,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public FileResult DownloadMarks(long dictionaryId)
         {
-	        var fileStream = DataExporterKO.ExportMarkerListToExcel(dictionaryId);
+	        var fileStream = ModelDictionaryService.ExportMarkerListToExcel(dictionaryId);
 
 	        return File(fileStream, Consts.ExcelContentType, "Справочник меток (выгрузка)" + ".xlsx");
         }
@@ -982,22 +983,11 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public ActionResult ModelObjects(long modelId)
         {
-            var omModel = OMModel.Where(x => x.Id == modelId)
-                .Select(x => new
-                {
-                    x.Name,
-                    x.GroupId,
-                    x.ParentGroup.GroupName,
-                    x.ParentGroup.Number
-                }).ExecuteFirstOrDefault();
-            if (omModel == null)
-                throw new Exception($"Не найдена модель с ИД '{modelId}'");
-
-            var tour = ModelService.GetModelTour(omModel.GroupId);
-
+	        var modelDto = ModelService.GetModelById(modelId);
+            
             var attributes = ModelFactorsService.GetGeneralModelAttributes(modelId);
 
-            var model = ModelingObjectsModel.ToModel(omModel, tour.Year, attributes);
+            var model = ModelingObjectsModel.ToModel(modelDto, attributes);
 
             return View(model);
         }
@@ -1079,7 +1069,7 @@ namespace KadOzenka.Web.Controllers
             var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
             var fileStream = ModelObjectsService.ExportMarketObjectsToExcel(modelId, factors);
 
-            var modelName = ModelingRepository.GetById(modelId, x => new { x.Name })?.Name;
+            var modelName = ModelRepository.GetById(modelId, x => new { x.Name })?.Name;
             var fileName = $"Объекты модели {modelName}";
             HttpContext.Session.Set(fileName, fileStream.ToByteArray());
 
@@ -1132,13 +1122,13 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (значение)",
-                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForValueInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForValueInNormalizedColumn}",
                         ParentId = register.Id
                     });
                     source.Add(new
                     {
                         Description = $"{x.AttributeName} (коэффициент)",
-                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
+                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForCoefficientInNormalizedColumn}",
                         ParentId = register.Id
                     });
                 }
@@ -1147,7 +1137,7 @@ namespace KadOzenka.Web.Controllers
                     source.Add(new
                     {
                         Description = x.AttributeName,
-                        AttributeId = $"{x.AttributeId}{Dal.Modeling.Objects.Consts.PrefixForFactor}",
+                        AttributeId = $"{x.AttributeId}{ModelingBusiness.Objects.Consts.PrefixForFactor}",
                         ParentId = register.Id
                     });
                 }

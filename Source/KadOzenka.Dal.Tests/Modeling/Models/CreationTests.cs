@@ -1,7 +1,6 @@
 ﻿using KadOzenka.Common.Tests;
-using KadOzenka.Dal.Modeling.Model.Entities;
-using KadOzenka.Dal.Modeling.Model.Exceptions;
-using KadOzenka.Dal.Modeling.Resources;
+using ModelingBusiness.Model.Entities;
+using ModelingBusiness.Model.Exceptions;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory;
@@ -20,7 +19,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			
 			var exception = Assert.Throws<ModelCrudException>(() => ModelService.AddAutomaticModel(modelDto));
 
-			StringAssert.Contains(Messages.EmptyName, exception.Message);
+			StringAssert.Contains(ModelingBusiness.Messages.EmptyName, exception.Message);
 			ModelingRepository.Verify(foo => foo.Save(It.IsAny<OMModel>()), Times.Never);
 		}
 

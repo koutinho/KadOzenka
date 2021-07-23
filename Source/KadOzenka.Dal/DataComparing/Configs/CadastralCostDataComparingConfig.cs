@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
+using CommonSdks.ConfigurationManagers;
 using Core.Shared.Extensions;
-using KadOzenka.Dal.ConfigurationManagers;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;

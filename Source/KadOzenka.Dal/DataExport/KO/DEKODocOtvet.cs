@@ -12,9 +12,8 @@ using GemBox.Document;
 using GemBox.Document.Tables;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Dal.GbuObject.Entities;
-using KadOzenka.Dal.Modeling;
-using KadOzenka.Dal.Modeling.Dictionaries;
-using KadOzenka.Dal.Modeling.Modeling;
+using ModelingBusiness.Dictionaries;
+using ModelingBusiness.Modeling;
 using ObjectModel.Core.TD;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -674,12 +673,12 @@ namespace KadOzenka.Dal.DataExport
                 {
                     if (!dd)
                     {
-                        formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                        //formula = OMGroup.GetFormulaFull(group_unit, true) + "=" + _unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                     else
                     {
-                        formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
-                                  OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
+                        //formula = formula + "$$" + "УПКС здания, в котором расположено помещение (" + pr_kn + ")=" +
+                        //          OMGroup.GetFormulaFull(calc_group, false) + "=" + calc_unit.Upks.ToString()?.Replace(',', '.') + " руб./кв.м" + "$$" + "Кадастровая стоимость = УПКС * Площадь";
                     }
                 }
                 if ((group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.AVG) && (group_unit.GroupAlgoritm_Code == KoGroupAlgoritm.FlatOnBuilding))

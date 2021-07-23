@@ -1,10 +1,10 @@
 ﻿using System;
-using KadOzenka.Dal.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers.WebClients;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Serilog;
 using Microsoft.Extensions.Configuration;
-using KadOzenka.WebClients.ConfigurationManagers;
 using Platform.Main.ConfigurationManagers.CoreConfigurationManager;
 
 namespace CIPJS

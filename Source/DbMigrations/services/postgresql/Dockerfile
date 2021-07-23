@@ -39,11 +39,12 @@ COPY services/postgresql/scripts/KOMO_86/up.sql /docker-entrypoint-initdb.d/up_r
 COPY services/postgresql/scripts/up_region_000082.sql /docker-entrypoint-initdb.d/up_region_000082.sql
 COPY services/postgresql/scripts/KOMO_87/up.sql /docker-entrypoint-initdb.d/up_region_000087.sql
 COPY services/postgresql/scripts/KOMO_96/up.sql /docker-entrypoint-initdb.d/up_region_000096.sql
-COPY services/postgresql/scripts/up_region_000107.sql /docker-entrypoint-initdb.d/up_region_000107.sql
+COPY services/postgresql/scripts/KOMO_107/up.sql /docker-entrypoint-initdb.d/up_region_000107.sql
 COPY services/postgresql/scripts/KOMO_113/up.sql /docker-entrypoint-initdb.d/up_region_000113.sql
 COPY services/postgresql/scripts/KOMO_121/up.sql /docker-entrypoint-initdb.d/up_region_000121.sql
 COPY services/postgresql/scripts/KOMO_4493/up.sql /docker-entrypoint-initdb.d/up_region_000122.sql
 COPY services/postgresql/scripts/KOMO_4592/up.sql /docker-entrypoint-initdb.d/up_region_000123.sql
 COPY services/postgresql/scripts/KOMO_4599/up.sql /docker-entrypoint-initdb.d/up_region_000124.sql
+COPY services/postgresql/scripts/KOMO_4628/up.sql /docker-entrypoint-initdb.d/up_region_000125.sql
 COPY services/postgresql/scripts/up_region_004090.sql /docker-entrypoint-initdb.d/up_region_004090.sql
 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using KadOzenka.Dal.Tours;
+using KadOzenka.Web.Models.Tour;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
@@ -64,13 +65,14 @@ namespace KadOzenka.Web.SignalR
 		public string CurrentDictionariesList()
 		{
 
-			var dictionaries = _service.GetDictionaries().Select(x => new SelectListItem
+			var dictionaries = _service.GetDictionaries().Select(x => new DictionarySelectListItem
 			{
 				Text = x.Name,
+				Type = (int)x.Type_Code,
 				Value = x.Id.ToString()
 			}).ToList();
 
-			dictionaries.Insert(0, new SelectListItem("", ""));
+			dictionaries.Insert(0, new DictionarySelectListItem("", ""));
 
 			string serializedObject = null;
 			try

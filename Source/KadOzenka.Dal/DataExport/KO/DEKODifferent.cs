@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using CommonSdks;
 using Core.Register;
 using Core.Register.QuerySubsystem;
 using Core.Register.RegisterEntities;
 using Core.Shared.Extensions;
+using Core.Shared.Misc;
 using GemBox.Spreadsheet;
-using KadOzenka.Dal.Helpers;
 using ObjectModel.Directory;
 using ObjectModel.KO;
 
@@ -385,7 +386,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(sheet_edit, start_rows - curindval, objvals, curindval);
             }
 
-            var file_name = PathCombiner.GetFullPath($"Task_{_taskid}", $"Таблица 5. Метод УПКС {DataExportCommon.GetFullNumberGroup(_subgroup)}");
+            var file_name = FileSystemHelper.CombinePath($"Task_{_taskid}", $"Таблица 5. Метод УПКС {DataExportCommon.GetFullNumberGroup(_subgroup)}");
             long id = SaveUnloadResult.SaveResult(file_name, excel_edit, unloadId, KoUnloadResultType.UnloadTable05);
 
             return new ResultKoUnloadSettings
@@ -1422,7 +1423,7 @@ namespace KadOzenka.Dal.DataExport
                 DataExportCommon.AddRow(mainWorkSheet, start_rows - curindval, objvals, curindval);
             }
 
-            var path_name = PathCombiner.GetFullPath(_dir_name, "Table11", $"Task_{_taskid}");
+            var path_name = FileSystemHelper.CombinePath(_dir_name, "Table11", $"Task_{_taskid}");
             if (!Directory.Exists(path_name)) Directory.CreateDirectory(path_name);
             string file_name = "Task_" + _taskid + "Таблица 11. Сводные результаты по КР"
                                + " " + _cad_num.Replace(":", "_")

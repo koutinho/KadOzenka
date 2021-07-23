@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;
@@ -8,8 +9,8 @@ using Core.Shared.Extensions;
 using Core.SRD;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataImport;
-using KadOzenka.Dal.Modeling.Objects.Entities;
-using KadOzenka.Dal.Modeling.Objects.Import;
+using ModelingBusiness.Objects.Entities;
+using ModelingBusiness.Objects.Import;
 using Newtonsoft.Json;
 using ObjectModel.Common;
 using ObjectModel.Core.LongProcess;

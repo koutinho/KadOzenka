@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Messages;
@@ -46,7 +47,7 @@ namespace KadOzenka.Dal.Tours
 				var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 				var mainWorkSheet = excelFile.Worksheets[0];
 
-				var lastUsedRowIndex = DataExportCommon.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 				AllRows = lastUsedRowIndex + 1;
 				CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
 				ParallelOptions options = new ParallelOptions
@@ -56,7 +57,7 @@ namespace KadOzenka.Dal.Tours
 				};
 				object locked = new object();
 
-				int maxColumns = DataExportCommon.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 				var columnNames = new List<string>();
 				for (var i = 0; i < maxColumns; i++)
 				{

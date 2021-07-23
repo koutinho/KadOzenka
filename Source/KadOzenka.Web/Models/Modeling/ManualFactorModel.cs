@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using KadOzenka.Dal.Modeling.Factors.Entities;
+using ModelingBusiness.Factors.Entities;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling

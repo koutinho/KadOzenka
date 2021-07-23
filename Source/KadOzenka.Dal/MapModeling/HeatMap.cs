@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using KadOzenka.Dal.ConfigurationManagers;
+using CommonSdks.ConfigurationManagers;
 using Image = System.Drawing.Image;
 
 namespace KadOzenka.Dal.MapModeling
