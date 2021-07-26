@@ -817,7 +817,7 @@
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'GET',
-            url: '@Url.Action("ModelObjectsConstructor", "Modeling")',
+            url: '@Url.Action("ModelObjectsImporter", "Modeling")',
             data: { modelId: '@Model.Id' },
             success: function (response) {
                 $("#constructorModal").html(response);

@@ -7,7 +7,7 @@ using ModelingBusiness.Objects.Import;
 
 namespace KadOzenka.Web.Models.Modeling
 {
-    public class ModelObjectsConstructorModel : IValidatableObject
+    public class ModelObjectsImporterModel : IValidatableObject
     {
 	    public bool IsBackgroundDownload { get; set; }
         public IFormFile File { get; set; }
@@ -31,9 +31,9 @@ namespace KadOzenka.Web.Models.Modeling
 	        }
 		}
 
-		public ModelObjectsConstructor Map()
+		public ModelObjectsImporterInfo Map()
 		{
-			return new ModelObjectsConstructor
+			return new ModelObjectsImporterInfo
 			{
 				IdColumnIndex = IdColumnIndex,
 				ModelId = ModelId,

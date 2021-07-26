@@ -199,14 +199,14 @@
             if (keyColumns[0].AttributeId != '@OMModelToMarketObjects.GetColumnAttributeId(x => x.Id)') {
                 throw "Для обновления в качестве ключа должен быть выбран антибут 'Идентификатор'";
             } else {
-                formData.append('@nameof(ModelObjectsConstructorModel.IdColumnIndex)', keyColumns[0].ColumnIndex);
+                formData.append('@nameof(ModelObjectsImporterModel.IdColumnIndex)', keyColumns[0].ColumnIndex);
             }
         }
         var file = $('#files').data('kendoUpload').getFiles()[0];
         var isBackgroundDownload = $('#backgroundDownloadCheckbox').is(":checked");
-        formData.append('@nameof(ModelObjectsConstructorModel.File)', file.rawFile);
-        formData.append('@nameof(ModelObjectsConstructorModel.IsBackgroundDownload)', isBackgroundDownload);
-        formData.append('@nameof(ModelObjectsConstructorModel.ModelId)', '@ViewBag.ModelId');
+        formData.append('@nameof(ModelObjectsImporterModel.File)', file.rawFile);
+        formData.append('@nameof(ModelObjectsImporterModel.IsBackgroundDownload)', isBackgroundDownload);
+        formData.append('@nameof(ModelObjectsImporterModel.ModelId)', '@ViewBag.ModelId');
         for (var i = 0; i !== columns.length; i++) {
             formData.append("Columns[" + i + "].ColumnIndex", columns[i].ColumnIndex);
             formData.append("Columns[" + i + "].AttributeId", columns[i].AttributeId);

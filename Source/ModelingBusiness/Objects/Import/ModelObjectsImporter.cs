@@ -27,7 +27,7 @@ namespace ModelingBusiness.Objects.Import
 {
 	public interface IBaseModelObjectsImporter
 	{
-		Stream ChangeObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor);
+		Stream ChangeObjects(ExcelFile file, ModelObjectsImporterInfo modelObjectsImporterInfo);
 	}
 
 	public class ModelObjectsImporter : IBaseModelObjectsImporter
@@ -75,22 +75,22 @@ namespace ModelingBusiness.Objects.Import
 		}
 
 
-		public Stream ChangeObjects(ExcelFile file, ModelObjectsConstructor modelObjectsConstructor)
+		public Stream ChangeObjects(ExcelFile file, ModelObjectsImporterInfo modelObjectsImporterInfo)
 		{
-			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, modelObjectsConstructor.IsCreation);
+			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, modelObjectsImporterInfo.IsCreation);
 
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(sheet) + 1;
 			sheet.Rows[0].Cells[maxColumnIndex].SetValue("Результат обработки");
 
-			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
+			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsImporterInfo);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCount);
 
-			var nonCodedModelFactorIds = ModelFactorsService.GetGeneralModelFactors(modelObjectsConstructor.ModelId)
+			var nonCodedModelFactorIds = ModelFactorsService.GetGeneralModelFactors(modelObjectsImporterInfo.ModelId)
 				.Where(x => x.MarkType != MarkType.Default).Select(x => x.AttributeId).ToHashSet();
-			_log.Debug("{LoggerBasePhrase} у модели с ИД '{ModelId}' {RowsCount} некодированных факторов", LoggerBasePhrase, modelObjectsConstructor.ModelId, nonCodedModelFactorIds.Count);
+			_log.Debug("{LoggerBasePhrase} у модели с ИД '{ModelId}' {RowsCount} некодированных факторов", LoggerBasePhrase, modelObjectsImporterInfo.ModelId, nonCodedModelFactorIds.Count);
 
-			var importer = GetImporter(modelObjectsConstructor, objectsFromExcel);
+			var importer = GetImporter(modelObjectsImporterInfo, objectsFromExcel);
 
 			var cancelTokenSource = new CancellationTokenSource();
 			var options = new ParallelOptions
@@ -124,11 +124,11 @@ namespace ModelingBusiness.Objects.Import
 				}
 			});
 
-			new ModelFactorsService().GetGeneralModelFactors(modelObjectsConstructor.ModelId)
+			new ModelFactorsService().GetGeneralModelFactors(modelObjectsImporterInfo.ModelId)
 				.Where(x => x.IsNormalized).Select(x => x.DictionaryId.GetValueOrDefault())
 				.ForEach(x => ModelDictionaryService.DeleteMarks(x));
 			
-			ModelingService.ResetTrainingResults(modelObjectsConstructor.ModelId, KoAlgoritmType.None);
+			ModelingService.ResetTrainingResults(modelObjectsImporterInfo.ModelId, KoAlgoritmType.None);
 
 			var stream = new MemoryStream();
 			file.Save(stream, SaveOptions.XlsxDefault);
@@ -150,14 +150,14 @@ namespace ModelingBusiness.Objects.Import
 
 		#region Support Methods
 
-		private IModelObjectsImporter GetImporter(ModelObjectsConstructor modelObjectsConstructor,
+		private IModelObjectsImporter GetImporter(ModelObjectsImporterInfo modelObjectsImporterInfo,
 			List<ModelObjectsFromExcelData> objectsFromExcel)
 		{
-			if (modelObjectsConstructor.IsCreation)
+			if (modelObjectsImporterInfo.IsCreation)
 			{
-				ValidateCreationParameters(modelObjectsConstructor.ModelId, modelObjectsConstructor.ColumnsMapping);
+				ValidateCreationParameters(modelObjectsImporterInfo.ModelId, modelObjectsImporterInfo.ColumnsMapping);
 
-				return new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId,
+				return new ModelObjectsImporterForCreation(modelObjectsImporterInfo.ModelId,
 					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId,
 					_isForTrainingAttributeId, _isForControlAttributeId);
 			}
@@ -166,7 +166,7 @@ namespace ModelingBusiness.Objects.Import
 				_isForControlAttributeId, _coefficientsAttributeId, _log);
 		}
 
-		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsConstructor config)
+		private List<ModelObjectsFromExcelData> GetObjectsFromFile(ExcelWorksheet sheet, ModelObjectsImporterInfo config)
 		{
 			MaxRowsCount = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(sheet);
 

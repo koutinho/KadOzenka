@@ -81,7 +81,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelRepository ModelRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
-        public IBaseModelObjectsImporter ModelObjectsImporter { get; set; }
+        public IBaseModelObjectsImporter ModelObjectsImporterService { get; set; }
 
 
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
@@ -92,7 +92,7 @@ namespace KadOzenka.Web.Controllers
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
             IModelingService modelingService,
-	        IBaseModelObjectsImporter modelObjectsImporter)
+	        IBaseModelObjectsImporter modelObjectsImporterService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelService = modelService;
@@ -107,7 +107,7 @@ namespace KadOzenka.Web.Controllers
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
             ModelingService = modelingService;
-            ModelObjectsImporter = modelObjectsImporter;
+            ModelObjectsImporterService = modelObjectsImporterService;
         }
 
 
@@ -1117,7 +1117,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult ModelObjectsConstructor(long modelId)
+        public IActionResult ModelObjectsImporter(long modelId)
         {
             MarksCalculationLongProcess.CheckActiveProcessInQueue(modelId);
             ModelingProcess.CheckActiveProcessInQueue(modelId);
@@ -1176,7 +1176,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ChangeModelObjects(ModelObjectsConstructorModel model)
+        public ActionResult ChangeModelObjects(ModelObjectsImporterModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
@@ -1197,7 +1197,7 @@ namespace KadOzenka.Web.Controllers
             {
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
-            var resultStream = ModelObjectsImporter.ChangeObjects(excelFile, model.Map());
+            var resultStream = ModelObjectsImporterService.ChangeObjects(excelFile, model.Map());
 
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 

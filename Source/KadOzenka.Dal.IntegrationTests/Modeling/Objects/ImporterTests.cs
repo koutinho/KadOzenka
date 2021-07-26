@@ -20,7 +20,7 @@ using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 {
-	public class ConstructorTests : BaseModelingTests
+	public class ImporterTests : BaseModelingTests
 	{
 		private long _isForTrainingAttributeId;
 		private long _isForControlAttributeId;
@@ -106,7 +106,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			var secondObject = new ModelObjectBuilder().Id(2).Model(_model).ForControl(true).Coefficients(coefficients).Build();
 
 			var excelFile = GetFile();
-			var config = new ModelObjectsConstructor
+			var config = new ModelObjectsImporterInfo
 			{
 				IdColumnIndex = 0,
 				ModelId = _model.Id,
@@ -178,9 +178,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			}
 		}
 
-		private ModelObjectsConstructor GetConfig(int? idColumnIndex)
+		private ModelObjectsImporterInfo GetConfig(int? idColumnIndex)
 		{
-			return new ModelObjectsConstructor
+			return new ModelObjectsImporterInfo
 			{
 				IdColumnIndex = idColumnIndex,
 				ModelId = _model.Id,

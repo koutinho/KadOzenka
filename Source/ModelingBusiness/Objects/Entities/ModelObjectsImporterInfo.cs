@@ -3,7 +3,7 @@ using CommonSdks.Excel;
 
 namespace ModelingBusiness.Objects.Entities
 {
-	public class ModelObjectsConstructor
+	public class ModelObjectsImporterInfo
 	{
 		public int? IdColumnIndex { get; set; }
 		public bool IsCreation => IdColumnIndex == null;
