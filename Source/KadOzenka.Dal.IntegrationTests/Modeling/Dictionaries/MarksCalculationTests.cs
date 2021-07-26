@@ -4,6 +4,7 @@ using System.Threading;
 using KadOzenka.Common.Tests;
 using KadOzenka.Common.Tests.Consts;
 using KadOzenka.Dal.Integration._Builders.Model;
+using KadOzenka.Dal.IntegrationTests.Modeling;
 using KadOzenka.Dal.LongProcess.Modeling;
 using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Objects.Entities;
@@ -13,9 +14,9 @@ using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 
-namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
+namespace KadOzenka.Dal.IntegrationTests.Dictionaries.Modeling
 {
-	public class MarksCreationTests : BaseModelingTests
+	public class MarksCalculationTests : BaseModelingTests
 	{
 		private OMModel _model;
 		private OMModelFactor _addressFactor;

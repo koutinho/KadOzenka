@@ -47,6 +47,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Modeling\Modeling\" />
+  </ItemGroup>
+
 	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
 		<Copy SourceFiles="app.config" DestinationFiles="$(OutDir)\ReSharperTestRunner64.dll.config" />
 	</Target>
