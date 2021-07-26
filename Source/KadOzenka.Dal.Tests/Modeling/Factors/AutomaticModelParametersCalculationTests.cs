@@ -11,7 +11,6 @@ using KadOzenka.Dal.UnitTests.Modeling.Modeling;
 using Microsoft.Extensions.DependencyInjection;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculation;
-using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Objects.Entities;
 using Moq;
 using NUnit.Framework;
@@ -36,7 +35,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 
 
 		[Test]
-		public void Can_Not_Create_Marks_For_Non_Automatic_Model()
+		public void Can_Not_Calculate_Parameters_For_Non_Automatic_Model()
 		{
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
 			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Manual().Build());
@@ -47,7 +46,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 		}
 
 		[Test]
-		public void Can_Not_Create_Marks_Without_Model_Factors()
+		public void Can_Not_Calculate_Parameters_Without_Model_Factors()
 		{
 			var modelObject = new ModelObjectBuilder().Build();
 			MockModelObjects(modelObject);
@@ -57,7 +56,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 		}
 
 		[Test]
-		public void Can_Not_Create_Marks_Without_Model_Objects()
+		public void Can_Not_Calculate_Parameters_Without_Model_Objects()
 		{
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
 			MockModelObjects();
@@ -68,7 +67,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 
 		[TestCase(MarkType.Default)]
 		[TestCase(MarkType.None)]
-		public void Can_Not_Create_Marks_If_Model_Has_No_Factors_With_Straight_Or_Reverse_Mark_Type(MarkType mark)
+		public void Can_Not_Calculate_Parameters_If_Model_Has_No_Factors_With_Straight_Or_Reverse_Mark_Type(MarkType mark)
 		{
 			var factor = new ModelFactorRelationPureBuilder().MarkType(mark).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
@@ -79,7 +78,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 		}
 
 		[Test]
-		public void Can_Not_Create_Marks_If_Model_Has_No_Active_Factors()
+		public void Can_Not_Calculate_Parameters_If_Model_Has_No_Active_Factors()
 		{
 			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Active(false).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();

@@ -32,16 +32,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	    private string _messageSubject = "Результат Операции Расчета параметров для автоматической модели";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
-	    private int _descriptionColumnIndex = 0;
-	    private int _factorsColumnIndex = 1;
-	    private int _errorColumnIndex = 2;
-		private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
+	    private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IModelObjectsRepository ModelObjectsRepository { get; }
 		private IModelDictionaryService ModelDictionaryService { get; }
 		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
-		private GbuReportService GbuReportService { get; set; }
 
 
 
@@ -127,7 +123,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
 
-	        //var urlToDownloadReport = ProcessInValidModelObjects(modelObjects, factors, cancellationToken);
+	        var urlToDownloadReport = ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
 
 	        //factors.ForEach(factor =>
 	        //{
@@ -194,23 +190,8 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return factors;
 		}
 
-		private string ProcessInValidModelObjects(List<OMModelToMarketObjects> modelObjects,
-			List<FactorInfo> factors, CancellationToken cancellationToken)
-		{
-			ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
-
-			ProcessModelObjectsWithInvalidMarks(modelObjects, factors, cancellationToken);
-
-			if (GbuReportService == null)
-				return string.Empty;
-			
-			var reportId = GbuReportService.SaveReport();
-			
-			return GbuReportService.GetUrlToDownloadFile(reportId);
-		}
-
-		private void ProcessModelObjectsWithEmptyValues(List<OMModelToMarketObjects> modelObjects,
-			List<FactorInfo> factors, CancellationToken cancellationToken)
+		private string ProcessModelObjectsWithEmptyValues(List<OMModelToMarketObjects> modelObjects,
+			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть пустые факторы"))
 			{
@@ -223,9 +204,31 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				_logger.Debug("Найдено {ModelObjectsWithEmptyFactorsCount} объектов модели с пустыми факторами'", modelObjectsWithEmptyFactors.Count);
 
 				if(modelObjectsWithEmptyFactors.Count == 0)
-					return;
+					return string.Empty;
 
-				InitReport();
+				var reportService = new GbuReportService("Объекты, не участвующие в расчете параметров для автоматической модели");
+
+				var descriptionColumnIndex = 0;
+				var factorsColumnIndex = 1;
+				var headers = new List<GbuReportService.Column>
+				{
+					new()
+					{
+						Header = "Описание объекта аналога",
+						Index = descriptionColumnIndex,
+						Width = 8
+					},
+					new()
+					{
+						Header = "Незаполненные факторы",
+						Index = factorsColumnIndex,
+						Width = 12
+					}
+				};
+
+				reportService.AddHeaders(headers);
+				reportService.SetIndividualWidth(headers);
+
 				modelObjectsWithEmptyFactors.ForEach(obj =>
 				{
 					cancellationToken.ThrowIfCancellationRequested();
@@ -238,87 +241,17 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 							factorNames += $"{factor.AttributeName}{Environment.NewLine}";
 					});
 
-					var row = GbuReportService.GetCurrentRow();
-					GbuReportService.AddValue(obj.MarketObjectInfo, _descriptionColumnIndex, row);
-					GbuReportService.AddValue(factorNames, _factorsColumnIndex, row);
+					var row = reportService.GetCurrentRow();
+					reportService.AddValue(obj.MarketObjectInfo, descriptionColumnIndex, row);
+					reportService.AddValue(factorNames, factorsColumnIndex, row);
 
 					ExcludeInvalidModelObject(modelObjects, obj);
 				});
+
+				var reportId = reportService.SaveReport();
+
+				return reportService.GetUrlToDownloadFile(reportId);
 			}
-		}
-
-		private void ProcessModelObjectsWithInvalidMarks(List<OMModelToMarketObjects> modelObjects,
-			List<FactorInfo> factors, CancellationToken cancellationToken)
-		{
-			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть невалидные значения меток"))
-			{
-				for (var i = 0; i < modelObjects.Count; i++)
-				{
-					cancellationToken.ThrowIfCancellationRequested();
-
-					var errors = string.Empty;
-					var iLocal = i;
-					factors.ForEach(factor =>
-					{
-						var factorCoefficient = modelObjects[iLocal].DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-						if (factorCoefficient == null)
-							return;
-
-						try
-						{
-							ModelDictionaryService.ValidateMark(factor.Dictionary, factorCoefficient.Value, 0);
-						}
-						catch (Exception e)
-						{
-							_logger.Error(e, "Невалидная метка");
-							errors += $"{e.Message}{Environment.NewLine}";
-						}
-					});
-
-					if (!string.IsNullOrWhiteSpace(errors))
-					{
-						InitReport();
-						var row = GbuReportService.GetCurrentRow();
-						GbuReportService.AddValue(modelObjects[i].MarketObjectInfo, _descriptionColumnIndex, row);
-						GbuReportService.AddValue(errors, _factorsColumnIndex, row);
-
-						ExcludeInvalidModelObject(modelObjects, modelObjects[i]);
-					}
-				}
-			}
-		}
-
-		private void InitReport()
-		{
-			if(GbuReportService != null)
-				return;
-
-			GbuReportService = new GbuReportService("Объекты, не участвующие в формировании меток");
-
-			var headers = new List<GbuReportService.Column>
-			{
-				new()
-				{
-					Header = "Описание объекта аналога",
-					Index = _descriptionColumnIndex,
-					Width = 8
-				},
-				new()
-				{
-					Header = "Незаполненные факторы",
-					Index = _factorsColumnIndex,
-					Width = 12
-				},
-				new()
-				{
-					Header = "Ошибки",
-					Index = _errorColumnIndex,
-					Width = 12
-				}
-			};
-
-			GbuReportService.AddHeaders(headers);
-			GbuReportService.SetIndividualWidth(headers);
 		}
 
 		private void ExcludeInvalidModelObject(List<OMModelToMarketObjects> modelObjects, OMModelToMarketObjects invalidObject)
