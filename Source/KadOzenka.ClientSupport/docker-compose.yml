@@ -34,6 +34,16 @@ services:
         volumes:
             - pgadmin4:/var/lib/pgadmin
 
+    angular:
+        image: trion/ng-cli
+        command: ng serve --host 0.0.0.0
+        user: "0"
+        ports: 
+            - 4200:4200
+        working_dir: /app
+        volumes: 
+            - ./client/:/app
+
 volumes:
     db:
     pgadmin4:
