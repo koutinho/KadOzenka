@@ -13,6 +13,7 @@ using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Entities;
+using ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculation;
 using ModelingBusiness.Model;
 using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Objects.Entities;
@@ -26,9 +27,9 @@ using SerilogTimings.Extensions;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
-    public class MarksCalculationLongProcess : LongProcess
+    public class AutomaticModelParametersCalculationLongProcess : LongProcess
     {
-	    private string _messageSubject = "Результат Операции Расчета меток";
+	    private string _messageSubject = "Результат Операции Расчета параметров для автоматической модели";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
 	    private int _descriptionColumnIndex = 0;
@@ -44,7 +45,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 
 
-		public MarksCalculationLongProcess(IModelService modelService = null,
+		public AutomaticModelParametersCalculationLongProcess(IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
 			IModelObjectsRepository modelObjectsRepository = null,
 			IModelDictionaryService modelDictionaryService = null,
@@ -59,27 +60,27 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 
 
-		public static void AddProcessToQueue(long modelId)
-		{
-			ValidateModelId(modelId);
+		//public static void AddProcessToQueue(long modelId)
+		//{
+		//	ValidateModelId(modelId);
 
-			CheckActiveProcessInQueue(modelId);
+		//	CheckActiveProcessInQueue(modelId);
 
-			LongProcessManager.AddTaskToQueue(nameof(MarksCalculationLongProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
-        }
+		//	LongProcessManager.AddTaskToQueue(nameof(MarksCalculationLongProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
+  //      }
 
-		public static void CheckActiveProcessInQueue(long modelId)
-		{
-			var processId = 100;
-			var isProcessExists = new LongProcessService().HasActiveProcessInQueue(processId, modelId);
-			if (isProcessExists)
-				throw new Exception("В очереди есть процесс расчета меток для этой модели");
-		}
+		//public static void CheckActiveProcessInQueue(long modelId)
+		//{
+		//	var processId = 100;
+		//	var isProcessExists = new LongProcessService().HasActiveProcessInQueue(processId, modelId);
+		//	if (isProcessExists)
+		//		throw new Exception("В очереди есть процесс расчета меток для этой модели");
+		//}
 
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
 		{
-			_logger.Debug("Старт процесса расчета меток");
+			_logger.Debug("Старт процесса расчета параметров для автоматической модели");
 
 			var modelId = processQueue.ObjectId.GetValueOrDefault();
 			ValidateModelId(modelId);
@@ -89,7 +90,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				LongProcessProgressLogger.StartLogProgress(processQueue, () => _maxFactorsCount,
 					() => _processedFactorsCount);
 
-				var urlToDownloadReport = CalculateMarks(modelId, cancellationToken);
+				var urlToDownloadReport = CalculateParameters(modelId, cancellationToken);
 
 				var downloadReportElement = string.IsNullOrWhiteSpace(urlToDownloadReport)
 					? string.Empty
@@ -105,45 +106,47 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 			catch (Exception ex)
 			{
-				_logger.Error(ex, "Ошибка в ходе расчета меток");
+				_logger.Error(ex, "Ошибка в ходе расчета параметров для автоматической модели");
 				var errorId = ErrorManager.LogError(ex); 
 				NotificationSender.SendNotification(processQueue, _messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
 			}
 
 			LongProcessProgressLogger.StopLogProgress();
 
-			_logger.Debug("Финиш процесса расчета меток");
+			_logger.Debug("Финиш процесса расчета параметров для автоматической модели");
 			WorkerCommon.SetProgress(processQueue, 100);
 		}
 
-		public string CalculateMarks(long modelId, CancellationToken cancellationToken)
+		public string CalculateParameters(long modelId, CancellationToken cancellationToken)
         {
 	        var model = ModelService.GetModelEntityById(modelId);
 	        if (!model.IsAutomatic)
-		        throw new CanNotCreateMarksForNonAutomaticModelException();
+		        throw new CanNotCalculateParametersForNonAutomaticModelException();
 
 	        var factors = GetModelFactors(modelId);
 
 			var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
 
-	        var urlToDownloadReport = ProcessInValidModelObjects(modelObjects, factors, cancellationToken);
+	        //var urlToDownloadReport = ProcessInValidModelObjects(modelObjects, factors, cancellationToken);
 
-	        factors.ForEach(factor =>
-	        {
-		        cancellationToken.ThrowIfCancellationRequested();
+	        //factors.ForEach(factor =>
+	        //{
+		       // cancellationToken.ThrowIfCancellationRequested();
 
-		        ProcessCodedFactor(factor, modelObjects, cancellationToken);
+		       // ProcessCodedFactor(factor, modelObjects, cancellationToken);
 
-		        _processedFactorsCount++;
-	        });
-	        _logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
+		       // _processedFactorsCount++;
+	        //});
+	        //_logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
 
-	        using (_logger.TimeOperation("Обновление коэффициентов в объектах моделирования"))
-	        {
-		        modelObjects.Where(x => x.IsCoefficientsChanged).ForEach(x => x.Save());
-	        }
+	        //using (_logger.TimeOperation("Обновление коэффициентов в объектах моделирования"))
+	        //{
+		       // modelObjects.Where(x => x.IsCoefficientsChanged).ForEach(x => x.Save());
+	        //}
 
-	        return urlToDownloadReport;
+	        //return urlToDownloadReport;
+
+	        return null;
         }
 
 		
@@ -156,15 +159,15 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private List<OMModelToMarketObjects> GetModelObjects(long modelId,
-			List<FactorInfo> factors, CancellationToken cancellationToken)
+			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Получение объектов моделирования для модели с ИД '{ModelId}'", modelId))
 			{
 				var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
 					cancellationToken,
-					select => new { CadastralNumber = @select.MarketObjectInfo, select.Coefficients, select.Price });
+					select => new { select.MarketObjectInfo, select.Coefficients, select.Price });
 				if (modelObjects.IsEmpty())
-					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
+					throw new CanNotCalculateParametersBecauseNoMarketObjectsException();
 
 				_logger.Debug("Всего найдено {ModelObjectsCount} объектов модели для модели с ИД '{ModelId}'", modelObjects.Count, modelId);
 
@@ -177,31 +180,18 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private List<FactorInfo> GetModelFactors(long modelId)
+		private List<ModelFactorRelationPure> GetModelFactors(long modelId)
 		{
 			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
-				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
+				.Where(x => (x.MarkType == MarkType.Reverse || x.MarkType == MarkType.Straight) && x.IsActive)
+				.ToList();
 			if (factors.IsEmpty())
-				throw new CanNotCreateMarksBecauseNoFactorsException();
+				throw new CanNotCalculateParametersBecauseNoFactorsException();
 
-			var factorDtos = new List<FactorInfo>();
-			factors.ForEach(x =>
-			{
-				if (x.DictionaryId == null)
-					throw new CanNotCreateMarksBecauseNoDictionaryException(x.AttributeName);
-				
-				factorDtos.Add(new FactorInfo
-				{
-					AttributeId = x.AttributeId,
-					AttributeName = x.AttributeName,
-					Dictionary = ModelDictionaryService.GetDictionaryById(x.DictionaryId.Value)
-				});
-			});
+			_maxFactorsCount = factors.Count;
+			_logger.Debug("Найдено {FactorsCount} активных факторов с прямой или обратной меткой для модели с ИД '{ModelId}'", factors.Count, modelId);
 
-			_maxFactorsCount = factorDtos.Count;
-			_logger.Debug("Найдено {FactorsCount} активных факторов с меткой по умолчанию для модели с ИД '{ModelId}'", factors.Count, modelId);
-
-			return factorDtos;
+			return factors;
 		}
 
 		private string ProcessInValidModelObjects(List<OMModelToMarketObjects> modelObjects,

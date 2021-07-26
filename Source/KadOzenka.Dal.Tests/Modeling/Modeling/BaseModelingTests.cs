@@ -37,6 +37,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		{
 			container.AddTransient<ModelingService>();
 			container.AddTransient<MarksCalculationLongProcess>();
+			container.AddTransient<AutomaticModelParametersCalculationLongProcess>();
 			container.AddTransient(typeof(IModelService), x => ModelService.Object);
 			container.AddTransient(typeof(IModelObjectsService), x => ModelObjectsService.Object);
 			container.AddTransient(typeof(IModelObjectsRepository), x => ModelObjectsRepository.Object);
