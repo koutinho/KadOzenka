@@ -10,6 +10,10 @@ using Core.ErrorManagment;
 using Core.Register;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
+using Microsoft.Practices.ObjectBuilder2;
+using ModelingBusiness.Dictionaries;
+using ModelingBusiness.Factors;
+using ModelingBusiness.Modeling;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
 using ModelingBusiness.Objects.Import.Entities;
@@ -41,10 +45,15 @@ namespace ModelingBusiness.Objects.Import
 		public int MaxRowsCount;
 		public int CurrentRowCount;
 
+		private ModelDictionaryService ModelDictionaryService { get; }
+		private ModelingService ModelingService { get; }
+
 
 		public ModelObjectsImporter()
 		{
 			_locker = new object();
+			ModelDictionaryService = new ModelDictionaryService();
+			ModelingService = new ModelingService();
 
 			_objectTypes = System.Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
 				.Select(x => new ObjectTypeInfo
@@ -108,6 +117,12 @@ namespace ModelingBusiness.Objects.Import
 				}
 			});
 
+			new ModelFactorsService().GetGeneralModelFactors(modelObjectsConstructor.ModelId)
+				.Where(x => x.IsNormalized).Select(x => x.DictionaryId.GetValueOrDefault())
+				.ForEach(x => ModelDictionaryService.DeleteMarks(x));
+			
+			ModelingService.ResetTrainingResults(modelObjectsConstructor.ModelId, KoAlgoritmType.None);
+
 			var stream = new MemoryStream();
 			file.Save(stream, SaveOptions.XlsxDefault);
 			stream.Seek(0, SeekOrigin.Begin);
@@ -115,11 +130,8 @@ namespace ModelingBusiness.Objects.Import
 			return stream;
 		}
 
-		public static void ValidateCreationParameters(long? modelId, List<ColumnToAttributeMapping> columnsMapping)
+		public static void ValidateCreationParameters(long modelId, List<ColumnToAttributeMapping> columnsMapping)
 		{
-			if (modelId == null)
-				throw new Exception("Не передан ИД модели для создания объектов моделирования");
-
 			var cadastralNumberAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.MarketObjectInfo);
 			var priceAttributeId = OMModelToMarketObjects.GetColumnAttributeId(x => x.Price);
 			var attributeIds = columnsMapping.Select(x => x.AttributeId).ToList();
@@ -138,7 +150,7 @@ namespace ModelingBusiness.Objects.Import
 			{
 				ValidateCreationParameters(modelObjectsConstructor.ModelId, modelObjectsConstructor.ColumnsMapping);
 
-				return new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId.Value,
+				return new ModelObjectsImporterForCreation(modelObjectsConstructor.ModelId,
 					OMModelToMarketObjects.GetColumnAttributeId(x => x.ModelId), _coefficientsAttributeId,
 					_isForTrainingAttributeId, _isForControlAttributeId);
 			}

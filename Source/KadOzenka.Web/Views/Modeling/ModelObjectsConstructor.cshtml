@@ -3,6 +3,12 @@
 
 
 <form id="importForm">
+    <div class="form-group" style="padding-bottom: 1%;">
+        <div class="col-sm-8 col-sm-offset-2">
+            <span class="k-icon k-i-warning"></span>
+            После загрузки будут сброшены метки и результаты обучения модели
+        </div>
+    </div>
     <ul id="upload_panelbar" class="panelBar" style="margin-top: 10px;">
         @(await Html.PartialAsync("~/Views/DataImportByTemplate/Partials/DataImportMain.cshtml"))
     </ul>
