@@ -276,6 +276,18 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return (average + median) / 2m;
 		}
 
+		public decimal CalculateCorrection(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		{
+			var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients)
+				.Where(x => x.AttributeId == factor.AttributeId && x.Coefficient != null)
+				.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
+
+			var maxCoefficient = coefficients.Max();
+			var minCoefficient = coefficients.Min();
+
+			return 0.2m * (maxCoefficient - minCoefficient);
+		}
+
 		private decimal CalculateMedian(List<decimal> prices)
 		{
 			using (_logger.TimeOperation("Расчет медианного значения по {PricesCount} ценам", prices.Count))

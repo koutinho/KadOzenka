@@ -103,6 +103,21 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			Assert.That(k, Is.EqualTo(expectedK));
 		}
 
+		[Test]
+		public void Can_Calculate_Correction()
+		{
+			var firstModelObjectValue = 2;
+			var secondModelObjectValue = 5;
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectValue).Build();
+			var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectValue).Build();
+
+			var correction = LongProcess.CalculateCorrection(factor, new List<OMModelToMarketObjects> { firstModelObject, secondModelObject });
+
+			var expectedCorrection = 0.2m * (5 - 2);
+			Assert.That(correction, Is.EqualTo(expectedCorrection));
+		}
+
 
 		#region Support Methods
 
