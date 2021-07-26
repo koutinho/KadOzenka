@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using KadOzenka.Common.Tests;
+using KadOzenka.Common.Tests.Consts;
 using KadOzenka.Dal.Integration._Builders.Model;
 using KadOzenka.Dal.LongProcess.Modeling;
 using ModelingBusiness.Modeling.Exceptions;
@@ -18,8 +19,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 	{
 		private OMModel _model;
 		private OMModelFactor _addressFactor;
-		private long _addressAttributeId;
-		private long _squareAttributeId;
 		private string _firstAddressValue;
 		private string _secondAddressValue;
 		private string _thirdAddressValue;
@@ -29,9 +28,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			_addressAttributeId = 48089615;
-			_squareAttributeId = 48403152;
-
 			_firstAddressValue = "адрес_1";
 			_secondAddressValue = "адрес_2";
 			_thirdAddressValue = "адрес_3";
@@ -46,7 +42,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			
 			var dictionary = new DictionaryBuilder().Type(ModelDictionaryType.String).Build();
 
-			_addressFactor = new ModelFactorBuilder().Model(_model).FactorId(_addressAttributeId)
+			_addressFactor = new ModelFactorBuilder().Model(_model).FactorId(Tour2018OksFactorsAttributeIds.AddressAttributeId)
 				.Dictionary(dictionary).MarkType(MarkType.Default).Build();
 		}
 
@@ -84,10 +80,10 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			CheckMark(addressMarks, _firstAddressValue, expectedCalculationValueForFirstAddressValue);
 			CheckMark(addressMarks, _secondAddressValue, expectedCalculationValueForSecondAddressValue);
 
-			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue, false);
-			CheckModelObject(secondModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue, false);
-			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue, false);
-			CheckModelObject(forthModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue, false);
+			CheckModelObject(firstModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForFirstAddressValue, false);
+			CheckModelObject(secondModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForFirstAddressValue, false);
+			CheckModelObject(thirdModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForSecondAddressValue, false);
+			CheckModelObject(forthModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForSecondAddressValue, false);
 		}
 
 		[Test]
@@ -124,9 +120,9 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			CheckMark(addressMarks, _secondAddressValue, expectedCalculationValueForSecondAddressValue);
 			CheckMark(addressMarks, _thirdAddressValue, expectedCalculationValueForThirdAddressValue);
 
-			CheckModelObject(firstModelObject.Id, _addressAttributeId, expectedCalculationValueForFirstAddressValue, false);
-			CheckModelObject(thirdModelObject.Id, _addressAttributeId, expectedCalculationValueForSecondAddressValue, false);
-			CheckModelObject(fifthModelObject.Id, _addressAttributeId, expectedCalculationValueForThirdAddressValue, false);
+			CheckModelObject(firstModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForFirstAddressValue, false);
+			CheckModelObject(thirdModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForSecondAddressValue, false);
+			CheckModelObject(fifthModelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForThirdAddressValue, false);
 		}
 
 		[Test]
@@ -157,7 +153,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 			Assert.That(squareMark[0].Value, Is.EqualTo(squareValue.ToString()));
 			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(expectedCalculationValueForSquare));
 
-			CheckModelObject(modelObject.Id, _addressAttributeId, expectedCalculationValueForAddress, false);
+			CheckModelObject(modelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForAddress, false);
 			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), expectedCalculationValueForSquare, false);
 		}
 
@@ -235,7 +231,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 
 		private CoefficientForObject CreateCoefficientForAddress(string addressValue = null)
 		{
-			return new CoefficientForObject(_addressAttributeId)
+			return new CoefficientForObject(Tour2018OksFactorsAttributeIds.AddressAttributeId)
 			{
 				Coefficient = RandomGenerator.GenerateRandomDecimal(),
 				Value = addressValue ?? RandomGenerator.GetRandomString()
@@ -244,7 +240,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 
 		private CoefficientForObject CreateCoefficientForSquare(string squareValue)
 		{
-			return new CoefficientForObject(_squareAttributeId)
+			return new CoefficientForObject(Tour2018OksFactorsAttributeIds.SquareAttributeId)
 			{
 				Coefficient = RandomGenerator.GenerateRandomDecimal(),
 				Value = squareValue
@@ -253,7 +249,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Modeling
 
 		private OMModelFactor CreateSquareFactor()
 		{
-			return new ModelFactorBuilder().Model(_model).FactorId(_squareAttributeId)
+			return new ModelFactorBuilder().Model(_model).FactorId(Tour2018OksFactorsAttributeIds.SquareAttributeId)
 				.Dictionary(new DictionaryBuilder().Type(ModelDictionaryType.Decimal).Build()).MarkType(MarkType.Default).Build();
 		}
 

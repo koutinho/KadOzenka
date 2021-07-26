@@ -8,11 +8,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using CommonSdks.Excel;
 using KadOzenka.Common.Tests;
+using KadOzenka.Common.Tests.Consts;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Exceptions;
 using ModelingBusiness.Objects.Import;
 using ModelingBusiness.Objects.Import.Entities;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
 
@@ -20,8 +22,6 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 {
 	public class ConstructorTests : BaseModelingTests
 	{
-		private long _addressAttributeId;
-		private long _squareAttributeId;
 		private long _isForTrainingAttributeId;
 		private long _isForControlAttributeId;
 		private OMModel _model;
@@ -75,10 +75,13 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		[SetUp]
 		public void SetUp()
 		{
-			_addressAttributeId = RandomGenerator.GenerateRandomId();
-			_squareAttributeId = RandomGenerator.GenerateRandomId();
-			
 			_model = new ModelBuilder().Build();
+			
+			new ModelFactorBuilder().Model(_model).FactorId(Tour2018OksFactorsAttributeIds.AddressAttributeId)
+				.MarkType(MarkType.Default).Build();
+			
+			new ModelFactorBuilder().Model(_model).FactorId(Tour2018OksFactorsAttributeIds.SquareAttributeId)
+				.MarkType(MarkType.Reverse).Build();
 		}
 
 
@@ -143,7 +146,7 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 				}
 			};
 
-			Assert.Throws<ObjectIsForControlAndForTrainingAtTheSameTimeException>(() => ModelObjectsImporter.ProcessObjectFromExcel(importer, excelData));
+			Assert.Throws<ObjectIsForControlAndForTrainingAtTheSameTimeException>(() => ModelObjectsImporter.ProcessObjectFromExcel(importer, excelData, new HashSet<long>()));
 		}
 
 
@@ -153,12 +156,12 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 		{
 			return new()
 			{
-				new(_addressAttributeId)
+				new(Tour2018OksFactorsAttributeIds.AddressAttributeId)
 				{
 					Coefficient = RandomGenerator.GenerateRandomDecimal(),
 					Value = RandomGenerator.GetRandomString()
 				},
-				new(_squareAttributeId)
+				new(Tour2018OksFactorsAttributeIds.SquareAttributeId)
 				{
 					Coefficient = RandomGenerator.GenerateRandomDecimal(),
 					Value = RandomGenerator.GetRandomString()
@@ -190,8 +193,8 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 					new(5, GetAttributeId(x => x.UnitPropertyType)),
 					new(6, GetAttributeId(x => x.Price)),
 					new(7, GetAttributeId(x => x.PriceFromModel)),
-					new(9, _addressAttributeId),
-					new(11, _squareAttributeId)
+					new(9, Tour2018OksFactorsAttributeIds.AddressAttributeId),
+					new(11, Tour2018OksFactorsAttributeIds.SquareAttributeId)
 				}
 			};
 		}
@@ -217,13 +220,13 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			var coefficients = updatedObject.DeserializedCoefficients;
 			Assert.That(coefficients.Count, Is.EqualTo(2));
 			
-			var addressAttribute = coefficients.First(x => x.AttributeId == _addressAttributeId);
+			var addressAttribute = coefficients.First(x => x.AttributeId == Tour2018OksFactorsAttributeIds.AddressAttributeId);
 			Assert.That(addressAttribute.Value, Is.EqualTo(row.AddressValue));
 			Assert.That(addressAttribute.Coefficient, Is.EqualTo(addressAttribute.Coefficient));
 
-			var squareAttribute = coefficients.First(x => x.AttributeId == _squareAttributeId);
+			var squareAttribute = coefficients.First(x => x.AttributeId == Tour2018OksFactorsAttributeIds.SquareAttributeId);
 			Assert.That(squareAttribute.Value, Is.EqualTo(row.SquareCoefficient.ToString()));
-			Assert.That(squareAttribute.Coefficient, Is.EqualTo(squareAttribute.Coefficient));
+			Assert.That(squareAttribute.Coefficient, Is.EqualTo(row.SquareCoefficient));
 		}
 
 		private void CheckObjectWasNotUpdated(long id, OMModelToMarketObjects initial)
@@ -243,13 +246,13 @@ namespace KadOzenka.Dal.IntegrationTests.Modeling.Objects
 			var initialCoefficients = initial.DeserializedCoefficients;
 			Assert.That(updatedCoefficients.Count, Is.EqualTo(2));
 
-			var updatedAddressAttribute = updatedCoefficients.First(x => x.AttributeId == _addressAttributeId);
-			var initialAddressAttribute = initialCoefficients.First(x => x.AttributeId == _addressAttributeId);
+			var updatedAddressAttribute = updatedCoefficients.First(x => x.AttributeId == Tour2018OksFactorsAttributeIds.AddressAttributeId);
+			var initialAddressAttribute = initialCoefficients.First(x => x.AttributeId == Tour2018OksFactorsAttributeIds.AddressAttributeId);
 			Assert.That(updatedAddressAttribute.Value, Is.EqualTo(initialAddressAttribute.Value));
 			Assert.That(updatedAddressAttribute.Coefficient, Is.EqualTo(initialAddressAttribute.Coefficient));
 
-			var updatedSquareAttribute = updatedCoefficients.First(x => x.AttributeId == _squareAttributeId);
-			var initialSquareAttribute = initialCoefficients.First(x => x.AttributeId == _squareAttributeId);
+			var updatedSquareAttribute = updatedCoefficients.First(x => x.AttributeId == Tour2018OksFactorsAttributeIds.SquareAttributeId);
+			var initialSquareAttribute = initialCoefficients.First(x => x.AttributeId == Tour2018OksFactorsAttributeIds.SquareAttributeId);
 			Assert.That(updatedSquareAttribute.Value, Is.EqualTo(initialSquareAttribute.Value));
 			Assert.That(updatedSquareAttribute.Coefficient, Is.EqualTo(initialSquareAttribute.Coefficient));
 		}

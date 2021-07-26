@@ -19,6 +19,7 @@ using ModelingBusiness.Objects.Exceptions;
 using ModelingBusiness.Objects.Import.Entities;
 using Newtonsoft.Json;
 using ObjectModel.Directory;
+using ObjectModel.Directory.Ko;
 using ObjectModel.Modeling;
 using Serilog;
 
@@ -45,8 +46,9 @@ namespace ModelingBusiness.Objects.Import
 		public int MaxRowsCount;
 		public int CurrentRowCount;
 
-		private ModelDictionaryService ModelDictionaryService { get; }
-		private ModelingService ModelingService { get; }
+		private IModelDictionaryService ModelDictionaryService { get; }
+		private IModelingService ModelingService { get; }
+		private IModelFactorsService ModelFactorsService { get; }
 
 
 		public ModelObjectsImporter()
@@ -54,6 +56,7 @@ namespace ModelingBusiness.Objects.Import
 			_locker = new object();
 			ModelDictionaryService = new ModelDictionaryService();
 			ModelingService = new ModelingService();
+			ModelFactorsService = new ModelFactorsService();
 
 			_objectTypes = System.Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
 				.Select(x => new ObjectTypeInfo
@@ -83,6 +86,10 @@ namespace ModelingBusiness.Objects.Import
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsConstructor);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCount);
 
+			var nonCodedModelFactorIds = ModelFactorsService.GetGeneralModelFactors(modelObjectsConstructor.ModelId)
+				.Where(x => x.MarkType != MarkType.Default).Select(x => x.AttributeId).ToHashSet();
+			_log.Debug("{LoggerBasePhrase} у модели с ИД '{ModelId}' {RowsCount} некодированных факторов", LoggerBasePhrase, modelObjectsConstructor.ModelId, nonCodedModelFactorIds.Count);
+
 			var importer = GetImporter(modelObjectsConstructor, objectsFromExcel);
 
 			var cancelTokenSource = new CancellationTokenSource();
@@ -99,7 +106,7 @@ namespace ModelingBusiness.Objects.Import
 					if (CurrentRowCount % 1000 == 0)
 						_log.Debug("{LoggerBasePhrase} обрабатывается объект №{CurrentCount} из {MaxCount}", LoggerBasePhrase, CurrentRowCount, MaxRowsCount);
 
-					ProcessObjectFromExcel(importer, objectFromExcel);
+					ProcessObjectFromExcel(importer, objectFromExcel, nonCodedModelFactorIds);
 
 					lock (_locker)
 					{
@@ -192,7 +199,8 @@ namespace ModelingBusiness.Objects.Import
 			return modelObjectsFromExcel;
 		}
 
-		public void ProcessObjectFromExcel(IModelObjectsImporter importer, ModelObjectsFromExcelData objectFromExcel)
+		public void ProcessObjectFromExcel(IModelObjectsImporter importer, ModelObjectsFromExcelData objectFromExcel,
+			HashSet<long> nonCodedModelFactorIds)
 		{
 			var modelToMarketObject = importer.CreateObject(objectFromExcel.Id);
 
@@ -221,8 +229,13 @@ namespace ModelingBusiness.Objects.Import
 				}
 				else
 				{
-					//обновление коэффициентов - единственных атрибутов не из таблицы с объектами моделирования
+					//обновление коэффициентов - единственный список атрибутов не из таблицы с объектами моделирования
 					var coefficientFromDb = importer.GetCoefficient(coefficientsFromDb, column.AttributeId);
+					//у некодированных факторов значение = коэффициенту, для кодированных факторов коэффициент расчитывается вместе с метками
+					if (nonCodedModelFactorIds.Contains(column.AttributeId))
+					{
+						coefficientFromDb.Coefficient = column.ValueToUpdate.ParseToDecimalNullable();
+					}
 					coefficientFromDb.Value = column.ValueToUpdate.ParseToStringNullable();
 
 					modelToMarketObject.SetAttributeValue((int)_coefficientsAttributeId, coefficientsFromDb.SerializeCoefficient());
