@@ -3,12 +3,12 @@ services:
   postgres: 
     build: 
       context: .
-      dockerfile: services\postgresql\Dockerfile-uat
+      dockerfile: services/postgresql/Dockerfile-uat
     container_name: miomo_kadozenka_uat_postgres
     command: postgres -c 'max_connections=200'
     restart: always
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - miomo_kadozenka_postgres_uat:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=miomo_uat
       - POSTGRES_USER=postgres
@@ -24,7 +24,7 @@ services:
     ports:
       - "8032:80"
     volumes:
-      - pgadmin4:/var/lib/pgadmin
+      - miomo_kadozenka_pgadmin4_uat:/var/lib/pgadmin
 volumes:
-  postgres:
-  pgadmin4:
+  miomo_kadozenka_postgres_uat:
+  miomo_kadozenka_pgadmin4_uat:
