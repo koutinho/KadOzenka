@@ -95,12 +95,13 @@
             data: formObject,
             success: function (response) {
                 var timeout = 2000;
-                if (response) {
+                /*if (response) {
                     timeout = 3500;
                     Common.ShowMessage("Данные сохранены. Процесс сбора данных для нового фактора поставлен в очередь.");
                 } else {
                     Common.ShowMessage('Сохранение выполнено');
-                }
+                }*/
+                Common.ShowMessage('Сохранение выполнено');
                 setTimeout(closeWindow, timeout);
             },
             error: function (response) {

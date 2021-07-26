@@ -446,39 +446,39 @@ namespace KadOzenka.Web.Controllers
             var isProcessForFactorAdditionCreated = false;
             if (factorModel.IsNewFactor)
             {
-                var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
-                var queue = LongProcessService.GetProcessActiveQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
-                if (hasFormedObjectArray && queue != null)
-                {
-                    var existedInputParameters = queue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
-                    var attributeName = existedInputParameters?.AttributeId == null
-                        ? string.Empty
-                        : RegisterCache.GetAttributeData(existedInputParameters.AttributeId).Name;
-                    throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
-                }
+                //var hasFormedObjectArray = OMModelToMarketObjects.Where(x => x.ModelId == factorModel.ModelId).ExecuteExists();
+                //var queue = LongProcessService.GetProcessActiveQueue(FactorAdditionToModelObjectsLongProcess.ProcessId, factorModel.ModelId);
+                //if (hasFormedObjectArray && queue != null)
+                //{
+                //    var existedInputParameters = queue.Parameters?.DeserializeFromXml<FactorAdditionToModelObjectsInputParameters>();
+                //    var attributeName = existedInputParameters?.AttributeId == null
+                //        ? string.Empty
+                //        : RegisterCache.GetAttributeData(existedInputParameters.AttributeId).Name;
+                //    throw new Exception($"В очередь уже поставлен процесс сбора данных для фактора '{attributeName}'. Дождитесь его окончания");
+                //}
 
                 dto.DictionaryId = CreateDictionary(factorModel.DictionaryName, factorModel.FactorId, factorModel.MarkType, factorModel.ModelId);
                 ModelFactorsService.AddAutomaticFactor(dto);
                 ModelingService.ResetTrainingResults(factorModel.ModelId, KoAlgoritmType.None);
 
-                if (hasFormedObjectArray)
-                {
-                    isProcessForFactorAdditionCreated = true;
-                    var inputParameters = new FactorAdditionToModelObjectsInputParameters
-                    {
-                        ModelId = factorModel.ModelId.GetValueOrDefault(),
-                        AttributeId = factorModel.FactorId.GetValueOrDefault()
-                    };
-                    ////TODO код для отладки
-                    //new FactorAdditionToModelObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
-                    //{
-                    //	Status_Code = Status.Added,
-                    //	UserId = SRDSession.GetCurrentUserId(),
-                    //	Parameters = inputParameters.SerializeToXml()
-                    //}, new CancellationToken());
+                //if (hasFormedObjectArray)
+                //{
+                //    isProcessForFactorAdditionCreated = true;
+                //    var inputParameters = new FactorAdditionToModelObjectsInputParameters
+                //    {
+                //        ModelId = factorModel.ModelId.GetValueOrDefault(),
+                //        AttributeId = factorModel.FactorId.GetValueOrDefault()
+                //    };
+                //    ////TODO код для отладки
+                //    //new FactorAdditionToModelObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
+                //    //{
+                //    //	Status_Code = Status.Added,
+                //    //	UserId = SRDSession.GetCurrentUserId(),
+                //    //	Parameters = inputParameters.SerializeToXml()
+                //    //}, new CancellationToken());
 
-                    FactorAdditionToModelObjectsLongProcess.AddProcessToQueue(inputParameters);
-                }
+                //    FactorAdditionToModelObjectsLongProcess.AddProcessToQueue(inputParameters);
+                //}
             }
             else
             {
