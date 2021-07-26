@@ -17,9 +17,10 @@ namespace ModelingBusiness.Model
 		void AddManualModel(ModelDto modelDto);
 		void UpdateAutomaticModel(ModelDto modelDto);
 		void UpdateManualModel(ModelDto modelDto);
-		void MakeModelActive(long modelId);
+		void ActivateModel(long modelId);
 		void DeleteModel(long modelId);
 		void DeleteModelLogically(long modelId, long eventId);
 		string GetFormula(OMModel model, KoAlgoritmType algorithmType);
+		void DeactivateModel(long groupId);
 	}
 }

@@ -166,11 +166,20 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult MakeModelActive(long modelId)
+        public ActionResult ActivateModel(long modelId)
         {
-            ModelService.MakeModelActive(modelId);
+	        ModelService.ActivateModel(modelId);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult DeactivateModel(long groupId)
+        {
+	        ModelService.DeactivateModel(groupId);
+
+	        return Ok();
         }
 
 

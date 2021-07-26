@@ -66,12 +66,8 @@ namespace ModelingBusiness.Model
 				throw new Exception("Не передан идентификатор Группы для поиска модели");
 
 			return OMModel.Where(x => x.GroupId == groupId)
-				.OrderByDescending(x => x.IsActive.Coalesce(false)).OrderBy(x => x.Name)
-				.Select(x => new
-				{
-					x.Id,
-					x.Name
-				})
+				.OrderBy(x => x.Name)
+				.SelectAll()
 				.Execute();
 		}
 
@@ -258,7 +254,7 @@ namespace ModelingBusiness.Model
             }
         }
 
-        public void MakeModelActive(long modelId)
+        public void ActivateModel(long modelId)
         {
 	        var model = ModelRepository.GetById(modelId, x => new
 	        {
@@ -277,20 +273,14 @@ namespace ModelingBusiness.Model
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel);
+			        throw new Exception(Messages.CanNotActivateNotPreparedAutomaticModel);
 			}
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = ModelRepository.GetEntitiesByCondition(
-					x => x.GroupId == model.GroupId && x.IsActive.Coalesce(false) == true, x => new {x.IsActive});
-				otherModelsForGroup.ForEach(x =>
-				{
-					x.IsActive = false;
-					ModelRepository.Save(x);
-				});
+				DeactivateModel(model.GroupId.GetValueOrDefault());
 
-		        if (!model.IsActive.GetValueOrDefault())
+				if (!model.IsActive.GetValueOrDefault())
 		        {
 			        model.IsActive = true;
 			        ModelRepository.Save(model);
@@ -300,7 +290,25 @@ namespace ModelingBusiness.Model
 	        }
         }
 
-        public void DeleteModel(long modelId)
+        public void DeactivateModel(long groupId)
+        {
+	        using (var ts = new TransactionScope())
+	        {
+		        var otherModelsForGroup = ModelRepository.GetEntitiesByCondition(
+			        x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, x => new { x.IsActive });
+		        
+		        otherModelsForGroup.ForEach(x =>
+		        {
+			        x.IsActive = false;
+			        ModelRepository.Save(x);
+		        });
+
+		        ts.Complete();
+	        }
+        }
+
+
+		public void DeleteModel(long modelId)
         {
 			var model = GetModelEntityById(modelId);
 

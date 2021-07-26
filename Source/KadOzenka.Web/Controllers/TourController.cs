@@ -138,15 +138,9 @@ namespace KadOzenka.Web.Controllers
             }
 
             groupDto.RatingTourId = tourId;
-            var groupModel = GroupModel.ToModel(groupDto);
+            var models = ModelService.GetGroupModels(groupId);
+            var groupModel = GroupModel.ToModel(groupDto, models);
             groupModel.IsReadOnly = isReadOnly;
-
-            groupModel.Models = ModelService.GetGroupModels(groupId)
-                .Select(x => new SelectListItem
-                {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                }).ToList();
 
             return PartialView("~/Views/Tour/Partials/GroupSubCard.cshtml", groupModel);
         }
