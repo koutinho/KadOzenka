@@ -260,28 +260,25 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
 			{
-				
+				var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients)
+					.Where(x => x.AttributeId == factor.AttributeId && x.Coefficient != null)
+					.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
+
+				var k = CalculateK(coefficients);
+				var correction = CalculateCorrection(coefficients);
 			}
 		}
 
-		public decimal CalculateK(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		public decimal CalculateK(List<decimal> coefficients)
 		{
-			var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients)
-				.Where(x => x.AttributeId == factor.AttributeId && x.Coefficient != null)
-				.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
-
 			var average = coefficients.Average();
 			var median = CalculateMedian(coefficients);
 
 			return (average + median) / 2m;
 		}
 
-		public decimal CalculateCorrection(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
+		public decimal CalculateCorrection(List<decimal> coefficients)
 		{
-			var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients)
-				.Where(x => x.AttributeId == factor.AttributeId && x.Coefficient != null)
-				.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
-
 			var maxCoefficient = coefficients.Max();
 			var minCoefficient = coefficients.Min();
 

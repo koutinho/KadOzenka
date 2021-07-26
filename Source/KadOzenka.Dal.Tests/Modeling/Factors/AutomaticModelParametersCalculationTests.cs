@@ -89,20 +89,52 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			Assert.Throws<CanNotCalculateParametersBecauseNoFactorsException>(() => LongProcess.CalculateParameters(_modelId, new CancellationToken()));
 		}
 
+		//[Test]
+		//public void Can_Calculate_K()
+		//{
+		//	var firstModelObjectCoefficient = 2;
+		//	var secondModelObjectCoefficient = 5;
+		//	var thirdModelObjectCoefficient = 3;
+		//	var factor = CreateFactor();
+		//	var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectCoefficient).Build();
+		//	var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectCoefficient).Build();
+		//	var thirdModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, thirdModelObjectCoefficient).Build();
+
+		//	var k = LongProcess.CalculateK(factor, new List<OMModelToMarketObjects> {firstModelObject, secondModelObject, thirdModelObject });
+
+		//	var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient};
+		//	var expectedK = (allCoefficients.Average() + MathExtended.CalculateMedian(allCoefficients)) / 2.0m;
+		//	Assert.That(k, Is.EqualTo(expectedK));
+		//}
+
+		//[Test]
+		//public void Can_Calculate_Correction()
+		//{
+		//	var firstModelObjectCoefficient = 2;
+		//	var secondModelObjectCoefficient = 5;
+		//	var thirdModelObjectCoefficient = 3;
+		//	var factor = CreateFactor();
+		//	var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectCoefficient).Build();
+		//	var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectCoefficient).Build();
+		//	var thirdModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, thirdModelObjectCoefficient).Build();
+
+		//	var correction = LongProcess.CalculateCorrection(factor, new List<OMModelToMarketObjects> { firstModelObject, secondModelObject, thirdModelObject });
+
+		//	var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient };
+		//	var expectedCorrection = 0.2m * (allCoefficients.Max() - allCoefficients.Min());
+		//	Assert.That(correction, Is.EqualTo(expectedCorrection));
+		//}
+
 		[Test]
 		public void Can_Calculate_K()
 		{
 			var firstModelObjectCoefficient = 2;
 			var secondModelObjectCoefficient = 5;
 			var thirdModelObjectCoefficient = 3;
-			var factor = CreateFactor();
-			var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectCoefficient).Build();
-			var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectCoefficient).Build();
-			var thirdModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, thirdModelObjectCoefficient).Build();
-			
-			var k = LongProcess.CalculateK(factor, new List<OMModelToMarketObjects> {firstModelObject, secondModelObject, thirdModelObject });
+			var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient };
 
-			var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient};
+			var k = LongProcess.CalculateK(allCoefficients);
+
 			var expectedK = (allCoefficients.Average() + MathExtended.CalculateMedian(allCoefficients)) / 2.0m;
 			Assert.That(k, Is.EqualTo(expectedK));
 		}
@@ -113,19 +145,15 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			var firstModelObjectCoefficient = 2;
 			var secondModelObjectCoefficient = 5;
 			var thirdModelObjectCoefficient = 3;
-			var factor = CreateFactor();
-			var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectCoefficient).Build();
-			var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectCoefficient).Build();
-			var thirdModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, thirdModelObjectCoefficient).Build();
-
-			var correction = LongProcess.CalculateCorrection(factor, new List<OMModelToMarketObjects> { firstModelObject, secondModelObject, thirdModelObject });
-
 			var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient };
+
+			var correction = LongProcess.CalculateCorrection(allCoefficients);
+
 			var expectedCorrection = 0.2m * (allCoefficients.Max() - allCoefficients.Min());
 			Assert.That(correction, Is.EqualTo(expectedCorrection));
 		}
 
-		
+
 		#region Support Methods
 
 		private void MockModelObjects(params OMModelToMarketObjects[] modelObjects)
