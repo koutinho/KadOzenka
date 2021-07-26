@@ -125,24 +125,17 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 	        var urlToDownloadReport = ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
 
-	        //factors.ForEach(factor =>
-	        //{
-		       // cancellationToken.ThrowIfCancellationRequested();
+			factors.ForEach(factor =>
+			{
+				cancellationToken.ThrowIfCancellationRequested();
 
-		       // ProcessCodedFactor(factor, modelObjects, cancellationToken);
+				ProcessUnCodedFactor(factor, modelObjects, cancellationToken);
 
-		       // _processedFactorsCount++;
-	        //});
-	        //_logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
+				_processedFactorsCount++;
+			});
+			_logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
 
-	        //using (_logger.TimeOperation("Обновление коэффициентов в объектах моделирования"))
-	        //{
-		       // modelObjects.Where(x => x.IsCoefficientsChanged).ForEach(x => x.Save());
-	        //}
-
-	        //return urlToDownloadReport;
-
-	        return null;
+			return urlToDownloadReport;
         }
 
 		
@@ -262,107 +255,25 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			invalidObject.Save();
 		}
 
-		private void ProcessCodedFactor(FactorInfo factor, List<OMModelToMarketObjects> modelObjects,
+		private void ProcessUnCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects,
 			CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
 			{
-				var uniqueFactorValues = GetUniqueFactorValues(factor, modelObjects);
-				if (uniqueFactorValues.Count == 0)
-					return;
-
-				var uniqueFactorValuesInfo = CalculateUniqueValuesAveragePrices(factor.AttributeId, uniqueFactorValues,
-					modelObjects, cancellationToken);
-				if (uniqueFactorValuesInfo.Count == 0)
-					return;
-
-				var allValuesAveragePrices = uniqueFactorValuesInfo.Values.Select(x => x.AveragePrice);
-				var divider = uniqueFactorValues.Count % 2 == 0 ? allValuesAveragePrices.Average() : CalculateMedian(allValuesAveragePrices.ToList());
-				_logger.Debug("Делитель для фактора '{FactorName}' = {Divider}", factor.AttributeName, divider);
-
-				CreateMarks(factor, uniqueFactorValuesInfo, divider, cancellationToken);
+				
 			}
 		}
 
-		private HashSet<string> GetUniqueFactorValues(FactorInfo factor, List<OMModelToMarketObjects> modelObjects)
+		public decimal CalculateK(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects)
 		{
-			using (_logger.TimeOperation("Получение уникальных значений фактора '{FactorName}'", factor.AttributeName))
-			{
-				var uniqueFactorValues = modelObjects
-					.SelectMany(x => x.DeserializedCoefficients)
-					.Where(x => x.AttributeId == factor.AttributeId && !string.IsNullOrWhiteSpace(x.Value))
-					.Select(x => x.Value)
-					.ToHashSet();
+			var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients)
+				.Where(x => x.AttributeId == factor.AttributeId && x.Coefficient != null)
+				.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
 
-				_logger.Debug("Найдено {uniqueFactorValuesCount} уникальных значений фактора '{FactorName}'", uniqueFactorValues.Count, factor.AttributeName);
+			var average = coefficients.Average();
+			var median = CalculateMedian(coefficients);
 
-				return uniqueFactorValues;
-			}
-		}
-
-		private Dictionary<string, UniqueFactorValueInfo> CalculateUniqueValuesAveragePrices(long attributeId,
-			HashSet<string> uniqueFactorValues, List<OMModelToMarketObjects> modelObjects,
-			CancellationToken cancellationToken)
-		{
-			using (_logger.TimeOperation("Расчет средних цен по {UniqueFactorValuesCount} уникальным факторам", uniqueFactorValues.Count))
-			{
-				var uniqueValuesAveragePrices = new Dictionary<string, UniqueFactorValueInfo>();
-
-				uniqueFactorValues.ForEach(uniqueValue =>
-				{
-					cancellationToken.ThrowIfCancellationRequested();
-
-					var modelObjectsWithCurrentUniqueValue = modelObjects.Where(obj => obj.DeserializedCoefficients.Exists(coef =>
-						coef.AttributeId == attributeId && coef.Value == uniqueValue)).ToList();
-
-					uniqueValuesAveragePrices[uniqueValue] = new UniqueFactorValueInfo
-					{
-						ModelObjects = modelObjectsWithCurrentUniqueValue,
-						AveragePrice = modelObjectsWithCurrentUniqueValue.Average(x => x.Price)
-					};
-				});
-
-				return uniqueValuesAveragePrices;
-			}
-		}
-
-		private void CreateMarks(FactorInfo factor,
-			Dictionary<string, UniqueFactorValueInfo> uniqueFactorValuesInfo, decimal divider,
-			CancellationToken cancellationToken)
-		{
-			if (divider == 0)
-				throw new Exception($"Средняя цена объектов с фактором '{factor.AttributeName}' равна нулю");
-
-			using (_logger.TimeOperation("Cоздание меток для фактора '{FactorName}'", factor.AttributeName))
-			{
-				ModelDictionaryService.DeleteMarks(factor.Dictionary.Id);
-
-				foreach (var uniqueFactorPair in uniqueFactorValuesInfo)
-				{
-					var uniqueFactorInfo = uniqueFactorPair.Value;
-
-					using (_logger.TimeOperation("Обновление {ModelObjectsCount} объектов со значением фактора '{FactorValue}'", uniqueFactorInfo.ModelObjects.Count, uniqueFactorPair.Key))
-					{
-						uniqueFactorInfo.ModelObjects.ForEach(obj =>
-						{
-							cancellationToken.ThrowIfCancellationRequested();
-
-							var oldCoefficient = obj.DeserializedCoefficients.FirstOrDefault(x => x.AttributeId == factor.AttributeId);
-							if (oldCoefficient == null)
-								return;
-
-							oldCoefficient.Coefficient = uniqueFactorInfo.AveragePrice / divider;
-							obj.Coefficients = obj.DeserializedCoefficients.SerializeCoefficient();
-							obj.IsCoefficientsChanged = true;
-							////сделано через одноразовое обновление
-							//obj.Save();
-						});
-					}
-
-					var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
-					ModelDictionaryService.CreateMarks(factor.AttributeId, factor.Dictionary.Id, allObjectsCoefficients);
-				}
-			}
+			return (average + median) / 2m;
 		}
 
 		private decimal CalculateMedian(List<decimal> prices)
@@ -374,18 +285,5 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		#endregion
-
-		private class UniqueFactorValueInfo
-		{
-			public List<OMModelToMarketObjects> ModelObjects { get; init; }
-			public decimal AveragePrice { get; init; }
-		}
-
-		private class FactorInfo
-		{
-			public long AttributeId { get; set; }
-			public string AttributeName { get; set; }
-			public OMModelingDictionary Dictionary { get; init; }
-		}
     }
 }

@@ -82,6 +82,22 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AModelObjectBuilder NumberCoefficient(long attributeId, decimal? coefficient)
+		{
+			var coefficients = new List<CoefficientForObject>
+			{
+				new CoefficientForObject(attributeId)
+				{
+					Coefficient = coefficient,
+					Value = coefficient?.ToString()
+				}
+			};
+
+			_modelObject.Coefficients = coefficients.SerializeCoefficient();
+
+			return this;
+		}
+
 		public AModelObjectBuilder ForControl(bool isForControl)
 		{
 			_modelObject.IsForControl = isForControl;

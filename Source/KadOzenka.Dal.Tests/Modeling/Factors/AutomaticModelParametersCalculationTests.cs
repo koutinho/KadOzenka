@@ -88,6 +88,21 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			Assert.Throws<CanNotCalculateParametersBecauseNoFactorsException>(() => LongProcess.CalculateParameters(_modelId, new CancellationToken()));
 		}
 
+		[Test]
+		public void Can_Calculate_K()
+		{
+			var firstModelObjectValue = 2;
+			var secondModelObjectValue = 5;
+			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectValue).Build();
+			var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectValue).Build();
+			
+			var k = LongProcess.CalculateK(factor, new List<OMModelToMarketObjects> {firstModelObject, secondModelObject });
+
+			var expectedK = (3.5 + 3.5) / 2.0;
+			Assert.That(k, Is.EqualTo(expectedK));
+		}
+
 
 		#region Support Methods
 
