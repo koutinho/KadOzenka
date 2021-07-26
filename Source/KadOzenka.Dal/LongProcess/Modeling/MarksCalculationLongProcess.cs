@@ -446,20 +446,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			using (_logger.TimeOperation("Расчет медианного значения по {PricesCount} ценам", prices.Count))
 			{
-				var count = prices.Count;
-				var halfIndex = prices.Count / 2;
-				var sortedPrices = prices.OrderBy(n => n).ToList();
-				decimal median;
-				if (count % 2 == 0)
-				{
-					median = (sortedPrices.ElementAt(halfIndex) + sortedPrices.ElementAt(halfIndex - 1)) / 2;
-				}
-				else
-				{
-					median = sortedPrices.ElementAt(halfIndex);
-				}
-
-				return median;
+				return MathExtended.CalculateMedian(prices);
 			}
 		}
 
