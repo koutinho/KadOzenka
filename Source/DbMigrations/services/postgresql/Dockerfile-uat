@@ -6,7 +6,7 @@ COPY services/postgresql/scripts/02_create_indexes.sql /docker-entrypoint-initdb
 COPY services/postgresql/scripts/03_create_sequence.sql /docker-entrypoint-initdb.d/03_create_sequence.sql
 COPY services/postgresql/scripts/04_create_functions.sql /docker-entrypoint-initdb.d/04_create_functions.sql
 COPY services/postgresql/scripts/05_create_triggers.sql /docker-entrypoint-initdb.d/05_create_triggers.sql
-COPY services/postgresql/scripts/06_insert_srd_data.sql /docker-entrypoint-initdb.d/06_insert_srd_data_uat.sql
+COPY services/postgresql/scripts/06_insert_srd_data_uat.sql /docker-entrypoint-initdb.d/06_insert_srd_data_uat.sql
 COPY services/postgresql/scripts/07_insert_platform_data.sql /docker-entrypoint-initdb.d/07_insert_platform_data.sql
 COPY services/postgresql/scripts/08_insert_source_registers.sql /docker-entrypoint-initdb.d/08_insert_source_registers.sql
 COPY services/postgresql/scripts/09_create_postgres_users.sql /docker-entrypoint-initdb.d/09_create_postgres_users.sql
