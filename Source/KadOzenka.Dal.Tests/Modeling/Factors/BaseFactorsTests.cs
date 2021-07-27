@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Repositories;
+using ModelingBusiness.Model;
+using ModelingBusiness.Objects.Repositories;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.Ko;
@@ -16,17 +18,23 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 	{
 		protected ModelFactorsService ModelFactorsService => Provider.GetService<ModelFactorsService>();
 		protected Mock<IModelFactorsRepository> ModelFactorsRepository { get; set; }
+		protected Mock<IModelObjectsRepository> ModelObjectsRepository { get; set; }
+		protected Mock<IModelService> ModelService { get; set; }
 
 		[SetUp]
 		public void BaseModelTestsSetUp()
 		{
 			ModelFactorsRepository = new Mock<IModelFactorsRepository>();
+			ModelObjectsRepository = new Mock<IModelObjectsRepository>();
+			ModelService = new Mock<IModelService>();
 		}
 
 		protected override void AddServicesToContainer(ServiceCollection container)
 		{
 			container.AddTransient<ModelFactorsService>();
 			container.AddTransient(typeof(IModelFactorsRepository), sp => ModelFactorsRepository.Object);
+			container.AddTransient(typeof(IModelObjectsRepository), sp => ModelObjectsRepository.Object);
+			container.AddTransient(typeof(IModelService), sp => ModelService.Object);
 		}
 
 

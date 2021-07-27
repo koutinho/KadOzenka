@@ -14,11 +14,13 @@ using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculation;
+using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;
 using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using ObjectModel.Core.LongProcess;
+using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -36,6 +38,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IModelObjectsRepository ModelObjectsRepository { get; }
+		private IModelFactorsRepository ModelFactorsRepository { get; }
 		private IModelDictionaryService ModelDictionaryService { get; }
 		private IRegisterCacheWrapper RegisterCacheWrapper { get; }
 
@@ -44,12 +47,14 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		public AutomaticModelParametersCalculationLongProcess(IModelService modelService = null,
 			IModelFactorsService modelFactorsService = null,
 			IModelObjectsRepository modelObjectsRepository = null,
+			IModelFactorsRepository modelFactorsRepository = null,
 			IModelDictionaryService modelDictionaryService = null,
 			IRegisterCacheWrapper registerCacheWrapper = null)
 		{
 			ModelService = modelService ?? new ModelService();
 			ModelFactorsService = modelFactorsService ?? new ModelFactorsService();
 			ModelObjectsRepository = modelObjectsRepository ?? new ModelObjectsRepository();
+			ModelFactorsRepository = modelFactorsRepository ?? new ModelFactorsRepository();
 			ModelDictionaryService = modelDictionaryService ?? new ModelDictionaryService();
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
@@ -129,7 +134,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 
-				ProcessUnCodedFactor(factor, modelObjects, cancellationToken);
+				ProcessUnCodedFactor(factor, modelObjects);
 
 				_processedFactorsCount++;
 			});
@@ -255,8 +260,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			invalidObject.Save();
 		}
 
-		private void ProcessUnCodedFactor(ModelFactorRelationPure factor, List<OMModelToMarketObjects> modelObjects,
-			CancellationToken cancellationToken)
+		public void ProcessUnCodedFactor(ModelFactorRelationPure factor, long modelId, List<OMModelToMarketObjects> modelObjects)
 		{
 			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
 			{
@@ -265,7 +269,15 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
 
 				var k = CalculateK(coefficients);
-				var correction = CalculateCorrection(coefficients);
+				var correctionTerm = CalculateCorrectionTerm(coefficients);
+
+				var omFactors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+				omFactors.ForEach(x =>
+				{
+					x.K = k;
+					x.CorrectingTerm = correctionTerm;
+					ModelFactorsRepository.Save(x);
+				});
 			}
 		}
 
@@ -277,7 +289,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return (average + median) / 2m;
 		}
 
-		public decimal CalculateCorrection(List<decimal> coefficients)
+		public decimal CalculateCorrectionTerm(List<decimal> coefficients)
 		{
 			var maxCoefficient = coefficients.Max();
 			var minCoefficient = coefficients.Min();
