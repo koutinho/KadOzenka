@@ -1,1 +1,32 @@
-<p>login works!</p>
+<div class="login-form-component">
+    <div class="login-form-wrap">        
+        <mat-form-field class="login-row">
+            <mat-label>Имя пользователя</mat-label>
+            <input matInput type="text" required>
+            <button matSuffix mat-icon-button aria-label="Очистить">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <mat-error>
+                Заполните имя пользователя
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="password-row">
+            <mat-label>Пароль</mat-label>
+            <input matInput type="password">
+            <button matSuffix mat-icon-button aria-label="Очистить">
+              <mat-icon>clear</mat-icon>
+            </button>
+            <mat-error>
+                Введите пароль
+            </mat-error>
+          </mat-form-field>
+          <div style="text-align: end;">
+            <button
+              id="loginButton"
+              type="button"
+              mat-raised-button
+              color="primary"
+              aria-label="Войти">Войти</button>
+          </div>
+    </div>
+</div>
