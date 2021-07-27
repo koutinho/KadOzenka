@@ -33,7 +33,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			new ModelFactorBuilder().FactorId(Tour2018OksFirstIntegerFactor.Id).Model(MultiplicativeModel)
 				.MarkType(MarkType.None)
-				.Correction(RandomGenerator.GenerateRandomDecimal()).Coefficient(decimal.MaxValue)
+				.Correction(RandomGenerator.GenerateRandomDecimal())
+				.Coefficient(decimal.MaxValue, MultiplicativeModel.AlgoritmType_Code)
 				.Build();
 
 			var errors = PerformCalculation(Task.Id, Group.Id);
@@ -48,7 +49,8 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 			new ModelFactorBuilder().FactorId(Tour2018OksFirstIntegerFactor.Id).Model(MultiplicativeModel)
 				.MarkType(MarkType.None)
-				.Correction((double)-UnitFactorValueForIntegerFactor).Coefficient((double)RandomGenerator.GenerateRandomInteger( maxNumber:3))
+				.Correction((double)-UnitFactorValueForIntegerFactor)
+				.Coefficient((double)RandomGenerator.GenerateRandomInteger( maxNumber:3), MultiplicativeModel.AlgoritmType_Code)
 				.Build();
 
 			var errors = PerformCalculation(Task.Id, Group.Id);

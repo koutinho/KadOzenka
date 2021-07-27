@@ -101,8 +101,13 @@ namespace ModelingBusiness.Modeling
 	        var factors = ModelFactorsService.GetFactorsEntities(generalModel.Id);
 	        factors.ForEach(x =>
 	        {
-				x.SetCoefficient(null, type);
-		        x.Save();
+		        if (type == KoAlgoritmType.None)
+		        {
+			        x.SetCoefficient(null, KoAlgoritmType.Line);
+			        x.SetCoefficient(null, KoAlgoritmType.Exp);
+			        x.SetCoefficient(null, KoAlgoritmType.Multi);
+		        }
+				x.Save();
 	        });
 
 	        generalModel.Save();

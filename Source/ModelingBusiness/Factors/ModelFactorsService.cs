@@ -66,6 +66,8 @@ namespace ModelingBusiness.Factors
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelation.DictionaryId)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelation.DictionaryName)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.CoefficientForLinear, nameof(ModelFactorRelation.CoefficientForLinear)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.CoefficientForExponential, nameof(ModelFactorRelation.CoefficientForExponential)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.CoefficientForMultiplicative, nameof(ModelFactorRelation.CoefficientForMultiplicative)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelFactorRelation.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelFactorRelation.Correction)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelation.IsActive)));
@@ -414,23 +416,6 @@ namespace ModelingBusiness.Factors
 		private string GenerateMessage(string attributeName, ModelDictionaryType dictionaryType)
 		{
 			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
-		}
-
-		private List<KoAlgoritmType> GetPossibleTypes(KoAlgoritmType type)
-		{
-			var types = new List<KoAlgoritmType>();
-			if (type == KoAlgoritmType.None)
-			{
-				types.Add(KoAlgoritmType.Line);
-				types.Add(KoAlgoritmType.Exp);
-				types.Add(KoAlgoritmType.Multi);
-			}
-			else
-			{
-				types.Add(type);
-			}
-
-			return types;
 		}
 
 		private void ProcessDictionary(OMModelFactor factor, AModelFactorDto dto)

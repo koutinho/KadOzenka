@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return new ModelFactorBuilder().FactorId(attribute.Id).Model(model)
 				.MarkType(MarkType.Reverse)
 				.CorrectingTerm(FactorCorrectionTerm).K(FactorK)
-				.Correction(FactorCorrection).Coefficient(FactorCoefficient).Build();
+				.Correction(FactorCorrection).Coefficient(FactorCoefficient, model.AlgoritmType_Code).Build();
 		}
 
 		protected OMModelFactor CreateFactorWithStraightMark(RegisterAttribute attribute, OMModel model)
@@ -78,15 +78,18 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 			return new ModelFactorBuilder().FactorId(attribute.Id).Model(model)
 				.MarkType(MarkType.Straight)
 				.CorrectingTerm(FactorCorrectionTerm).K(FactorK)
-				.Correction(FactorCorrection).Coefficient(FactorCoefficient).Build();
+				.Correction(FactorCorrection).Coefficient(FactorCoefficient, model.AlgoritmType_Code).Build();
 		}
 
 		protected OMModelFactor CreateFactorWithDefaultMark(RegisterAttribute attribute, OMModel model, decimal value,
 			out OMModelingDictionariesValues mark)
 		{
-			var factor = new ModelFactorBuilder().FactorId(attribute.Id).Model(model)
+			var dictionary = new DictionaryBuilder().Build();
+
+			var factor = new ModelFactorBuilder().Model(model)
+				.FactorId(attribute.Id).Dictionary(dictionary)
 				.MarkType(MarkType.Default)
-				.Correction(FactorCorrection).Coefficient(FactorCoefficient).Build();
+				.Correction(FactorCorrection).Coefficient(FactorCoefficient, model.AlgoritmType_Code).Build();
 
 			mark = new MarkBuilder().Dictionary(factor.DictionaryId)
 				.Value(value.ToString()).Metka(1)
@@ -99,7 +102,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			return new ModelFactorBuilder().FactorId(attribute.Id).Model(model)
 				.MarkType(MarkType.None)
-				.Correction(FactorCorrection).Coefficient(FactorCoefficient)
+				.Correction(FactorCorrection).Coefficient(FactorCoefficient, model.AlgoritmType_Code)
 				.Build();
 		}
 

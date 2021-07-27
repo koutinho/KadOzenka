@@ -14,7 +14,6 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 		protected AFactorBuilder()
 		{
-			var algorithm = KoAlgoritmType.Line;
 			var markType = ObjectModel.Directory.Ko.MarkType.None;
 
 			_factor = new OMModelFactor
@@ -23,6 +22,8 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				FactorId = RandomGenerator.GenerateRandomId(),
 				Correction = RandomGenerator.GenerateRandomDecimal(),
 				CoefficientForLinear = RandomGenerator.GenerateRandomDecimal(),
+				CoefficientForExponential = RandomGenerator.GenerateRandomDecimal(),
+				CoefficientForMultiplicative = RandomGenerator.GenerateRandomDecimal(),
 				SignMarket = true,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				IsActive = true,
@@ -71,21 +72,21 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
-		public AFactorBuilder Correction(decimal weight)
+		public AFactorBuilder Correction(decimal correction)
 		{
-			_factor.Correction = weight;
+			_factor.Correction = correction;
 			return this;
 		}
 
-		public AFactorBuilder Coefficient(double b0)
+		public AFactorBuilder Coefficient(double coefficient, KoAlgoritmType type)
 		{
-			_factor.CoefficientForLinear = (decimal) b0;
+			_factor.SetCoefficient((decimal) coefficient, type);
 			return this;
 		}
 
-		public AFactorBuilder Coefficient(decimal b0)
+		public AFactorBuilder Coefficient(decimal coefficient, KoAlgoritmType type)
 		{
-			_factor.CoefficientForLinear = b0;
+			_factor.SetCoefficient(coefficient, type);
 			return this;
 		}
 

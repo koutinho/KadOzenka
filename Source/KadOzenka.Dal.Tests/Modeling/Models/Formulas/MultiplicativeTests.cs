@@ -29,13 +29,14 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		[Test]
 		public void Can_Create_Formula_With_One_Factor_With_Negative_Parameters()
 		{
+			var type = KoAlgoritmType.Multi;
 			var factor = FactorBuilder.MarkType(MarkType.Straight)
-				.Correction(-1d).Coefficient(-2d)
+				.Correction(-1d).Coefficient(-2d, type)
 				.CorrectingTerm(-3d).K(-4d)
 				.Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
-			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Multi);
+			var formula = ModelService.GetFormula(Model, type);
 
 			var expectedFormula = $"{Model.A0ForMultiplicativeInFormula}*(({CacheAttributeName}+({factor.CorrectingTermInFormula}))/({factor.KInFormula}) + ({factor.CorrectionInFormula}))^({factor.GetCoefficientInFormula(KoAlgoritmType.Multi)})";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));

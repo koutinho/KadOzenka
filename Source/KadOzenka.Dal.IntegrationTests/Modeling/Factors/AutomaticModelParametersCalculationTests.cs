@@ -17,6 +17,7 @@ using ObjectModel.Modeling;
 
 namespace KadOzenka.Dal.IntegrationTests.Factors.Modeling
 {
+	[Ignore("Не реализовано")]
 	public class AutomaticModelParametersCalculationTests : BaseModelingTests
 	{
 		private OMModel _model;

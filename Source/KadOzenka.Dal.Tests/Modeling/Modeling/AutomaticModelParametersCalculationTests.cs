@@ -20,6 +20,7 @@ using ObjectModel.Directory;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 {
+	[Ignore("Не реализовано")]
 	public class AutomaticModelParametersCalculationTests : BaseModelingTests
 	{
 		private long _modelId;
