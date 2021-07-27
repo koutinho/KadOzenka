@@ -446,12 +446,13 @@ namespace ModelingBusiness.Dictionaries
 		private void InsertMarks(StringBuilder rowsToInsertSql)
 		{
 			//убираем последний перевод строки и знак ','
-			var charsToRemoveCount = 3;
+			var charsToRemoveCount = Environment.NewLine.Length + 1;
 			rowsToInsertSql.Remove(rowsToInsertSql.Length - charsToRemoveCount, charsToRemoveCount);
 
 			var sql = @$"INSERT INTO {_marksTableName} (id, dictionary_id, value, calculation_value)
 							VALUES
 							{rowsToInsertSql}";
+			_logger.Debug(new Exception(sql), "Sql-запрос для добавления меток");
 
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			var insertedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
