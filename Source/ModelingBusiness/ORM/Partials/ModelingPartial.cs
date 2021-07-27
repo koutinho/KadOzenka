@@ -251,7 +251,7 @@ namespace ObjectModel.KO
         /// <summary>
         /// Добавочный коэффициент
         /// </summary>
-        public decimal B0InFormula => Math.Round(Coefficient, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+        public decimal B0InFormula => Math.Round(CoefficientForLinear, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
         public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
         public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
 

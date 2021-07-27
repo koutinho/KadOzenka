@@ -24,7 +24,7 @@ namespace KadOzenka.Web.Models.Modeling
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
 				Correction = factor.Correction,
-				Coefficient = factor.Coefficient,
+				Coefficient = factor.CoefficientForLinear,
 				MarkType = factor.MarkType_Code,
 				CorrectItem = factor.CorrectingTerm,
 				K = factor.K

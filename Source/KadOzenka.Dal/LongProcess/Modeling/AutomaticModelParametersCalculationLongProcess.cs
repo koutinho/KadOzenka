@@ -134,7 +134,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 
-				ProcessUnCodedFactor(factor, modelObjects);
+				//ProcessUnCodedFactor(factor, modelObjects);
 
 				_processedFactorsCount++;
 			});

@@ -251,9 +251,9 @@ namespace ModelingBusiness.Modeling
 	            if (factor == null)
 		            throw new Exception($"Не найден фактор с ИД {attributeId}");
 
-	            if (factor.Correction != coefficient.Value)
+	            if (factor.CoefficientForLinear != coefficient.Value)
 	            {
-		            factor.Correction = coefficient.Value;
+		            factor.CoefficientForLinear = coefficient.Value;
 		            factor.Save();
 	            }
 

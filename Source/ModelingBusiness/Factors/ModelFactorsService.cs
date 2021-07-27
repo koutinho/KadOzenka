@@ -127,7 +127,7 @@ namespace ModelingBusiness.Factors
 			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorRelationDto.AttributeType)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelationDto.DictionaryId)));
 			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelationDto.DictionaryName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Coefficient, nameof(ModelFactorRelationDto.Coefficient)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.CoefficientForLinear, nameof(ModelFactorRelationDto.Coefficient)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelFactorRelationDto.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelFactorRelationDto.Correction)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelationDto.IsActive)));
@@ -322,7 +322,7 @@ namespace ModelingBusiness.Factors
 				DictionaryId = dto.DictionaryId,
 				MarkerId = -1,
 				Correction = dto.Correction,
-				Coefficient = dto.Coefficient,
+				CoefficientForLinear = dto.Coefficient,
 				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
 			};
@@ -348,7 +348,7 @@ namespace ModelingBusiness.Factors
 			ProcessDictionary(factor, dto);
 
 			factor.Correction = dto.Correction;
-			factor.Coefficient = dto.Coefficient;
+			factor.CoefficientForLinear = dto.Coefficient;
 			factor.MarkType_Code = dto.MarkType;
 
 			if (IsSpecialMarkType(dto.MarkType))

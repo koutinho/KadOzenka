@@ -625,22 +625,22 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _coefficient;
+        private decimal _coefficientforlinear;
         /// <summary>
-        /// 21000600 Коэффициент (COEFFICIENT)
+        /// 21000600 Коэффициент для линейного алгоритма (COEFFICIENT_FOR_LINEAR)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000600)]
-        public decimal Coefficient
+        public decimal CoefficientForLinear
         {
             get
             {
-                CheckPropertyInited("Coefficient");
-                return _coefficient;
+                CheckPropertyInited("CoefficientForLinear");
+                return _coefficientforlinear;
             }
             set
             {
-                _coefficient = value;
-                NotifyPropertyChanged("Coefficient");
+                _coefficientforlinear = value;
+                NotifyPropertyChanged("CoefficientForLinear");
             }
         }
 
@@ -851,6 +851,46 @@ namespace ObjectModel.KO
             {
                 _k = value;
                 NotifyPropertyChanged("K");
+            }
+        }
+
+
+        private decimal _coefficientforexponential;
+        /// <summary>
+        /// 21001800 Коэффициент для экспоненциального алгоритма (COEFFICIENT_FOR_EXPONENTIAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001800)]
+        public decimal CoefficientForExponential
+        {
+            get
+            {
+                CheckPropertyInited("CoefficientForExponential");
+                return _coefficientforexponential;
+            }
+            set
+            {
+                _coefficientforexponential = value;
+                NotifyPropertyChanged("CoefficientForExponential");
+            }
+        }
+
+
+        private decimal _coefficientformultiplicative;
+        /// <summary>
+        /// 21001900 Коэффициент для мультипликативного алгоритма (COEFFICIENT_FOR_MULTIPLICATIVE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001900)]
+        public decimal CoefficientForMultiplicative
+        {
+            get
+            {
+                CheckPropertyInited("CoefficientForMultiplicative");
+                return _coefficientformultiplicative;
+            }
+            set
+            {
+                _coefficientformultiplicative = value;
+                NotifyPropertyChanged("CoefficientForMultiplicative");
             }
         }
 
