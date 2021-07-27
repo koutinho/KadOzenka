@@ -86,15 +86,24 @@ namespace ModelingBusiness.Modeling
 			        generalModel.LinearTrainingResult = null;
 			        generalModel.ExponentialTrainingResult = null;
 			        generalModel.MultiplicativeTrainingResult = null;
-			        break;
+			        generalModel.A0 = null;
+			        generalModel.A0ForMultiplicative = null;
+			        generalModel.A0ForExponential = null;
+					break;
 		        case KoAlgoritmType.Exp:
 			        generalModel.ExponentialTrainingResult = null;
+			        generalModel.A0 = null;
+			        generalModel.A0ForMultiplicative = null;
 			        break;
 		        case KoAlgoritmType.Line:
 			        generalModel.LinearTrainingResult = null;
+			        generalModel.A0ForExponential = null;
+			        generalModel.A0ForMultiplicative = null;
 			        break;
 		        case KoAlgoritmType.Multi:
 			        generalModel.MultiplicativeTrainingResult = null;
+			        generalModel.A0 = null;
+			        generalModel.A0ForExponential = null;
 			        break;
 	        }
 
