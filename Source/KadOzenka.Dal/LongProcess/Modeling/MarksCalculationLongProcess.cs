@@ -172,7 +172,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
 					cancellationToken,
-					select => new { CadastralNumber = @select.MarketObjectInfo, select.Coefficients, select.Price });
+					select => new { CadastralNumber = select.MarketObjectInfo, select.Coefficients, select.Price });
 				if (modelObjects.IsEmpty())
 					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 
