@@ -27,7 +27,8 @@
               mat-raised-button
               color="primary"
               [disabled]="login === '' || password === ''"
-              aria-label="Войти">Войти</button>
+              aria-label="Войти"
+              (click)="signIn()">Войти</button>
           </div>
     </div>
 </div>
