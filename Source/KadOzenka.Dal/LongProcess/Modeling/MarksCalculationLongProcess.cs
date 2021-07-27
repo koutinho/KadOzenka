@@ -28,7 +28,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class MarksCalculationLongProcess : LongProcess
     {
-	    private string _messageSubject = "Результат Операции Расчета меток";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
 	    private int _descriptionColumnIndex = 0;
@@ -93,6 +92,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			var modelId = processQueue.ObjectId.GetValueOrDefault();
 			ValidateModelId(modelId);
+			
+			var model = ModelService.GetModelEntityById(modelId);
+			if (!model.IsAutomatic)
+				throw new CanNotCreateMarksForNonAutomaticModelException();
+
+			var messageSubject = $"Результат Операции Расчета меток для модели '{model.Name}'";
 
 			try
 			{
@@ -106,18 +111,18 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					: $@"<a href=""{urlToDownloadReport}"">Скачать отчет с ошибками</a>";
 
 				var message = "Операция завершена. " + downloadReportElement;
-				NotificationSender.SendNotification(processQueue, _messageSubject, message);
+				NotificationSender.SendNotification(processQueue, messageSubject, message);
 			}
 			catch (OperationCanceledException ex)
 			{
 				_logger.Error(ex, "Операция остановлена пользователем");
-				NotificationSender.SendNotification(processQueue, _messageSubject, "Операция была остановлена пользователем");
+				NotificationSender.SendNotification(processQueue, messageSubject, "Операция была остановлена пользователем");
 			}
 			catch (Exception ex)
 			{
 				_logger.Error(ex, "Ошибка в ходе расчета меток");
 				var errorId = ErrorManager.LogError(ex); 
-				NotificationSender.SendNotification(processQueue, _messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
+				NotificationSender.SendNotification(processQueue, messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
 			}
 
 			LongProcessProgressLogger.StopLogProgress();
@@ -128,11 +133,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		public string CalculateMarks(long modelId, CancellationToken cancellationToken)
         {
-	        var model = ModelService.GetModelEntityById(modelId);
-	        if (!model.IsAutomatic)
-		        throw new CanNotCreateMarksForNonAutomaticModelException();
-
-	        var factors = GetModelFactors(modelId);
+	       var factors = GetModelFactors(modelId);
 
 			var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
 

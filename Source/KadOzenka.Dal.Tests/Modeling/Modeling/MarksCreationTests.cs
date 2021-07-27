@@ -16,6 +16,7 @@ using NUnit.Framework;
 using ObjectModel.Directory.Ko;
 using ObjectModel.Modeling;
 using Microsoft.Extensions.DependencyInjection;
+using ObjectModel.Core.LongProcess;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 {
@@ -42,7 +43,11 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
+			Assert.Throws<CanNotCreateMarksForNonAutomaticModelException>(() =>
+				MarksCalculationLongProcess.StartProcess(new OMProcessType(), new OMQueue
+				{
+					ObjectId = _modelId
+				}, new CancellationToken()));
 		}
 
 		[Test]
