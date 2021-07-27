@@ -445,6 +445,8 @@ namespace ModelingBusiness.Dictionaries
 
 		private void InsertMarks(StringBuilder rowsToInsertSql)
 		{
+			_logger.Debug(new Exception(rowsToInsertSql.ToString()), "Sql-запрос с данными до обработки");
+
 			//убираем последний перевод строки и знак ','
 			var charsToRemoveCount = 3;
 			rowsToInsertSql.Remove(rowsToInsertSql.Length - charsToRemoveCount, charsToRemoveCount);
@@ -452,6 +454,7 @@ namespace ModelingBusiness.Dictionaries
 			var sql = @$"INSERT INTO {_marksTableName} (id, dictionary_id, value, calculation_value)
 							VALUES
 							{rowsToInsertSql}";
+			_logger.Debug(new Exception(sql), "Sql-запрос для добавления меток");
 
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			var insertedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
