@@ -26,5 +26,8 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Словарь")]
 		public string DictionaryName { get; set; }
 		public long? DictionaryId { get; set; }
+
+		[Display(Name = "Поправка")]
+		public decimal Correction { get; set; }
 	}
 }

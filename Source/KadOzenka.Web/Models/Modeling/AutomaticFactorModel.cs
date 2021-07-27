@@ -42,6 +42,7 @@ namespace KadOzenka.Web.Models.Modeling
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
 				MarkType = factor.MarkType_Code,
+				Correction = factor.Correction,
 				CorrectItem = factor.CorrectingTerm,
 				K = factor.K,
 				IsActive = factor.IsActive.GetValueOrDefault(),
@@ -57,6 +58,7 @@ namespace KadOzenka.Web.Models.Modeling
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
 				MarkType = MarkType,
+				Correction = Correction,
 				IsActive = IsActive.GetValueOrDefault(),
 			};
 		}

@@ -17,6 +17,14 @@
                 isReadonly: false, withOptionLabel: false)
         </div>
     </div>
+    <div class="form-group">
+        <div class="col-sm-3">
+            @Html.CustomLabelFor(x => x.Correction)
+        </div>
+        <div class="col-sm-9">
+            @Html.KendoNumericTextBoxFor(x => x.Correction, precision: 15, isReadonly: false)
+        </div>
+    </div>
     <div id="correctItemBlock" class="form-group">
         <div class="col-sm-3">
             @Html.LabelFor(x => x.CorrectItem, new { @class = "control-label required"})

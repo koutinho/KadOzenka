@@ -197,7 +197,8 @@ namespace ModelingBusiness.Factors
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
 				IsActive = dto.IsActive,
-				MarkType_Code = dto.MarkType
+				MarkType_Code = dto.MarkType,
+				Correction = dto.Correction
 			};
 
 			ModelFactorsRepository.Save(newFactor);
@@ -206,22 +207,18 @@ namespace ModelingBusiness.Factors
 		public bool UpdateAutomaticFactor(AutomaticModelFactorDto dto)
 		{
 			ValidateAutomaticFactor(dto);
-
-			var mustResetTrainingResult = false;
-
+			
 			var factor = GetFactorById(dto.Id);
-			if (factor.DictionaryId != dto.DictionaryId ||
-			    factor.IsActive.GetValueOrDefault() != dto.IsActive ||
-			    factor.MarkType_Code != dto.MarkType)
-			{
-				factor.IsActive = dto.IsActive;
-				factor.MarkType_Code = dto.MarkType;
-				ProcessDictionary(factor, dto);
+			var mustResetTrainingResult = factor.DictionaryId != dto.DictionaryId ||
+			                              factor.IsActive.GetValueOrDefault() != dto.IsActive ||
+			                              factor.MarkType_Code != dto.MarkType;
 
-				ModelFactorsRepository.Save(factor);
+			factor.IsActive = dto.IsActive;
+			factor.MarkType_Code = dto.MarkType;
+			factor.Correction = dto.Correction;
+			ProcessDictionary(factor, dto);
 
-				mustResetTrainingResult = true;
-			}
+			ModelFactorsRepository.Save(factor);
 
 			return mustResetTrainingResult;
 		}

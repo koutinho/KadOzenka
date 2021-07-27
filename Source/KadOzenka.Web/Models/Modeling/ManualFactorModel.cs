@@ -12,9 +12,6 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Коэффициент")]
 		public decimal? Coefficient { get; set; }
 
-		[Display(Name = "Поправка")]
-		public decimal Correction { get; set; }
-
 
 		public static ManualFactorModel ToModel(OMModelFactor factor, KoAlgoritmType type)
 		{

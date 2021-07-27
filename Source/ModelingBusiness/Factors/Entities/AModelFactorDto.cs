@@ -11,5 +11,6 @@ namespace ModelingBusiness.Factors.Entities
 		public long? FactorId { get; set; }
 		public long? DictionaryId { get; set; }
 		public MarkType MarkType { get; set; }
+		public decimal Correction { get; set; }
 	}
 }
