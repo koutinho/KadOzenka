@@ -57,6 +57,16 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
+		//для фоновых процессов
+		public MarksCalculationLongProcess()
+		{
+			ModelService = new ModelService();
+			ModelFactorsService = new ModelFactorsService();
+			ModelObjectsRepository = new ModelObjectsRepository();
+			ModelDictionaryService = new ModelDictionaryService();
+			RegisterCacheWrapper = new RegisterCacheWrapper();
+		}
+
 
 
 		public static void AddProcessToQueue(long modelId)
