@@ -20,8 +20,12 @@ export class LoginComponent implements OnInit {
   signIn(){
     let loginData = new LoginData(this.login, this.password);
 
-    this.api.logIn(loginData).subscribe(() => {
-        this.router.navigate(["home"]);
+    this.api.logIn(loginData).subscribe((res) => {
+        if (res) {
+          this.router.navigate(["home"]);
+        } else {
+          console.log("Неправильный логин или пароль")
+        }
       }, (err) =>
       {
         console.log

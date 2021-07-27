@@ -1,6 +1,6 @@
 import { HttpClient, HttpHandler, HttpHeaders, HttpResponse } from "@angular/common/http"
 import { from, Observable, of } from "rxjs";
-import { tap, map } from "rxjs/operators";
+import { tap, map, catchError } from "rxjs/operators";
 import { Http } from "../httpMethods/methods";
 import { LoginData } from "./data/loginData";
 import { Injectable } from "@angular/core";
@@ -18,7 +18,13 @@ export class AuthApiService {
             tap((res) => {
               localStorage.setItem("jwt", res.token);
             }),
-            map(res => true)
+            map(res => true),
+            catchError(err => {
+              if (err.status == 401) {
+                return of(false)
+              }
+              throw err;
+            })
           );
     }
 }
