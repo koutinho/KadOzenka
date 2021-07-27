@@ -670,9 +670,10 @@ namespace KadOzenka.Web.Controllers
 
             if (id.HasValue)
             {
+	            var model = ModelService.GetModelEntityById(generalModelId);
                 var factor = ModelFactorsService.GetFactorById(id);
 
-                manualFactorDto = ManualFactorModel.ToModel(generalModelId, factor);
+                manualFactorDto = ManualFactorModel.ToModel(factor, model.AlgoritmType_Code);
                 if (factor.DictionaryId != null)
                 {
 	                var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);

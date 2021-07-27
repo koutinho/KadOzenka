@@ -277,13 +277,19 @@ namespace ObjectModel.KO
 	        {
 		        case KoAlgoritmType.Exp:
 			        CoefficientForExponential = coefficient;
+			        CoefficientForLinear = null;
+			        CoefficientForMultiplicative = null;
                     break;
 		        case KoAlgoritmType.Line:
 			        CoefficientForLinear = coefficient;
-			        break;
+			        CoefficientForExponential = null;
+			        CoefficientForMultiplicative = null;
+                    break;
 		        case KoAlgoritmType.Multi:
 			        CoefficientForMultiplicative = coefficient;
-			        break;
+			        CoefficientForExponential = null;
+			        CoefficientForLinear = null;
+                    break;
 		        default:
 			        throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
 	        }

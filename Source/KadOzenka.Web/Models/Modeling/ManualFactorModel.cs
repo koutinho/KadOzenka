@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ModelingBusiness.Factors.Entities;
+using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -15,16 +16,16 @@ namespace KadOzenka.Web.Models.Modeling
 		public decimal Correction { get; set; }
 
 
-		public static ManualFactorModel ToModel(long generalModelId, OMModelFactor factor)
+		public static ManualFactorModel ToModel(OMModelFactor factor, KoAlgoritmType type)
 		{
 			return new()
 			{
 				Id = factor.Id,
-				ModelId = generalModelId,
+				ModelId = factor.ModelId,
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
 				Correction = factor.Correction,
-				Coefficient = factor.CoefficientForLinear,
+				Coefficient = factor.GetCoefficient(type),
 				MarkType = factor.MarkType_Code,
 				CorrectItem = factor.CorrectingTerm,
 				K = factor.K

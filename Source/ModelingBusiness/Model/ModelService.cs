@@ -226,6 +226,16 @@ namespace ModelingBusiness.Model
             {
 	            existedModel.Name = modelDto.Name;
 	            existedModel.Description = modelDto.Description;
+	            if (existedModel.AlgoritmType_Code != modelDto.AlgorithmTypeForCadastralPriceCalculation)
+	            {
+		            var factors = ModelFactorsService.GetFactorsEntities(modelDto.ModelId);
+		            factors.ForEach(x =>
+		            {
+			            var oldCoefficient = x.GetCoefficient(existedModel.AlgoritmType_Code);
+			            x.SetCoefficient(oldCoefficient, modelDto.AlgorithmTypeForCadastralPriceCalculation);
+			            x.Save();
+		            });
+	            }
 	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
 				existedModel.SetA0(modelDto.A0, modelDto.AlgorithmTypeForCadastralPriceCalculation);
 

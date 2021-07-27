@@ -1,12 +1,11 @@
-﻿@using KadOzenka.Web.Helpers
-@model KadOzenka.Web.Models.Modeling.GeneralModelingModel
+﻿@model KadOzenka.Web.Models.Modeling.GeneralModelingModel
 
 <link rel="stylesheet" href="~/css/toolbars.css"/>
 @using (Html.BeginForm("AddModel", "Modeling", FormMethod.Post, htmlAttributes: new {id = "saveModelForm"}))
 {
     <div id="toolbar" class="top-toolbar"></div>
     <div class="bottom-main-content">
-        <div class="form-horizontal" style="padding: 5% 5% 0 5%;">
+        <div class="form-horizontal" style="padding: 1% 5% 1% 5%;">
             @{
                 await Html.RenderPartialAsync("/Views/Modeling/Partials/_GeneralModelInfo.cshtml", Model);
             }
