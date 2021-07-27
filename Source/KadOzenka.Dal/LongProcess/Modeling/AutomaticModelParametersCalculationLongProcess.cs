@@ -179,7 +179,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		private List<ModelFactorRelation> GetModelFactors(long modelId)
 		{
 			var factors = ModelFactorsService.GetFactors(modelId)
-				.Where(x => (x.MarkType == MarkType.Reverse || x.MarkType == MarkType.Straight) && x.IsActive)
+				.Where(x => (x.MarkTypeCode == MarkType.Reverse || x.MarkTypeCode == MarkType.Straight) && x.IsActive)
 				.ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCalculateParametersBecauseNoFactorsException();

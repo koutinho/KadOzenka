@@ -17,7 +17,8 @@ namespace ModelingBusiness.Factors.Entities
 		public string AttributeName { get; set; }
 		public long AttributeType { get; set; }
 		public RegisterAttributeType AttributeTypeCode => (RegisterAttributeType)AttributeType;
-		public MarkType MarkType { get; set; }
+		public MarkType MarkTypeCode { get; set; }
+		public string MarkTypeStr => MarkTypeCode.GetEnumDescription();
 		public long? DictionaryId { get; set; }
 		public string DictionaryName { get; set; }
 		public bool IsNormalized => DictionaryId != null;

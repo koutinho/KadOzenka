@@ -331,7 +331,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 			{
 				FactorId = factor.AttributeId,
 				DictionaryId = factor.DictionaryId,
-				MarkType = factor.MarkType,
+				MarkType = factor.MarkTypeCode,
 				AttributeName = factor.AttributeName,
 				AttributeType = factor.AttributeTypeCode
 			}).ToList();

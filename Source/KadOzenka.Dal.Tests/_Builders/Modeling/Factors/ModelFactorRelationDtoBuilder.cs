@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 				AttributeId = RandomGenerator.GenerateRandomId(),
 				AttributeName = RandomGenerator.GetRandomString(),
 				AttributeType = (long) RegisterAttributeType.STRING,
-				MarkType = ObjectModel.Directory.Ko.MarkType.Default,
+				MarkTypeCode = ObjectModel.Directory.Ko.MarkType.Default,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
 				DictionaryName = RandomGenerator.GetRandomString(),
 				IsActive = true
@@ -40,7 +40,7 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 
 		public ModelFactorRelationDtoBuilder MarkType(MarkType markType)
 		{
-			_factor.MarkType = markType;
+			_factor.MarkTypeCode = markType;
 			return this;
 		}
 

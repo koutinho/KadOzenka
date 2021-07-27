@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
-using CommonSdks;
 using CommonSdks.PlatformWrappers;
 using Core.Register;
 using Core.Register.QuerySubsystem;
@@ -17,7 +16,6 @@ using ModelingBusiness.Objects;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
-using ObjectModel.Directory.KO;
 using ObjectModel.KO;
 
 namespace ModelingBusiness.Factors
@@ -71,7 +69,7 @@ namespace ModelingBusiness.Factors
 			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelFactorRelation.SignMarket)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelFactorRelation.Correction)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelation.IsActive)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType_Code, nameof(ModelFactorRelation.MarkType)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType_Code, nameof(ModelFactorRelation.MarkTypeCode)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelFactorRelation.CorrectingTerm)));
 			query.AddColumn(OMModelFactor.GetColumn(x => x.K, nameof(ModelFactorRelation.K)));
 
@@ -102,7 +100,7 @@ namespace ModelingBusiness.Factors
 				var correctingTerm = row[nameof(ModelFactorRelation.CorrectingTerm)].ParseToDecimalNullable();
 				var k = row[nameof(ModelFactorRelation.K)].ParseToDecimalNullable();
 				var isActive = row[nameof(ModelFactorRelation.IsActive)].ParseToBooleanNullable();
-				var markType = row[nameof(ModelFactorRelation.MarkType)].ParseToLong();
+				var markType = row[nameof(ModelFactorRelation.MarkTypeCode)].ParseToLong();
 
 				attributes.Add(new ModelFactorRelation
 				{
@@ -121,7 +119,7 @@ namespace ModelingBusiness.Factors
 					CorrectingTerm = correctingTerm,
 					K = k,
 					IsActive = isActive.GetValueOrDefault(),
-					MarkType = (MarkType) markType
+					MarkTypeCode = (MarkType) markType
 				});
 			}
 
@@ -209,35 +207,20 @@ namespace ModelingBusiness.Factors
 		{
 			ValidateAutomaticFactor(dto);
 
-			var factor = GetFactorById(dto.Id);
-
 			var mustResetTrainingResult = false;
-			using (var ts = new TransactionScope())
+
+			var factor = GetFactorById(dto.Id);
+			if (factor.DictionaryId != dto.DictionaryId ||
+			    factor.IsActive.GetValueOrDefault() != dto.IsActive ||
+			    factor.MarkType_Code != dto.MarkType)
 			{
-				if (factor.DictionaryId != dto.DictionaryId || 
-				    factor.IsActive.GetValueOrDefault() != dto.IsActive ||
-				    factor.MarkType_Code != dto.MarkType)
-				{
-					var factors = OMModelFactor.Where(x => x.ModelId == dto.ModelId && x.FactorId == dto.FactorId)
-						.Select(x => new
-						{
-							x.IsActive,
-							x.DictionaryId,
-							x.MarkType_Code
-						}).Execute();
+				factor.IsActive = dto.IsActive;
+				factor.MarkType_Code = dto.MarkType;
+				ProcessDictionary(factor, dto);
 
-					factors.ForEach(x =>
-					{
-						x.IsActive = dto.IsActive;
-						x.MarkType_Code = dto.MarkType;
-						ProcessDictionary(x, dto);
+				ModelFactorsRepository.Save(factor);
 
-						ModelFactorsRepository.Save(x);
-					});
-					mustResetTrainingResult = true;
-				}
-
-				ts.Complete();
+				mustResetTrainingResult = true;
 			}
 
 			return mustResetTrainingResult;
@@ -253,9 +236,9 @@ namespace ModelingBusiness.Factors
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
 				Correction = dto.Correction,
-				CoefficientForLinear = dto.Coefficient,
 				MarkType_Code = dto.MarkType
 			};
+			newFactor.SetCoefficient(dto.Coefficient, dto.Type);
 
 			if (IsSpecialMarkType(dto.MarkType))
 			{
@@ -278,7 +261,7 @@ namespace ModelingBusiness.Factors
 			ProcessDictionary(factor, dto);
 
 			factor.Correction = dto.Correction;
-			factor.CoefficientForLinear = dto.Coefficient;
+			factor.SetCoefficient(dto.Coefficient, dto.Type);
 			factor.MarkType_Code = dto.MarkType;
 
 			if (IsSpecialMarkType(dto.MarkType))
@@ -319,12 +302,9 @@ namespace ModelingBusiness.Factors
 			var modelService = new ModelingService();
 			var factor = GetFactorById(id);
 
-			var allFactors = OMModelFactor.Where(x => x.ModelId == factor.ModelId && x.FactorId == factor.FactorId)
-				.Execute();
-
 			using (var ts = new TransactionScope())
 			{
-				allFactors.ForEach(x => x.Destroy());
+				factor.Destroy();
 
 				ModelDictionaryService.DeleteDictionary(factor.DictionaryId);
 
@@ -357,9 +337,6 @@ namespace ModelingBusiness.Factors
 		private void ValidateManualFactor(ManualModelFactorDto factorDto)
 		{
 			ValidateBaseFactor(factorDto);
-
-			if (factorDto.Type == KoAlgoritmType.None)
-				throw new Exception("Не передан тип алгоритма модели для фактора");
 
 			if (IsSpecialMarkType(factorDto.MarkType))
 			{
@@ -411,11 +388,6 @@ namespace ModelingBusiness.Factors
 			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value);
 			if (isTheSameAttributeExists)
 				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name}' уже был добавлен");
-		}
-
-		private string GenerateMessage(string attributeName, ModelDictionaryType dictionaryType)
-		{
-			return $"Выберите словарь типа '{dictionaryType.GetEnumDescription()}' для атрибута '{attributeName}'";
 		}
 
 		private void ProcessDictionary(OMModelFactor factor, AModelFactorDto dto)

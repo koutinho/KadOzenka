@@ -219,11 +219,13 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         //используется в modeling.js
-        public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
+        public JsonResult GetModelFactors(long modelId, KoAlgoritmType type)
         {
+	        var model = ModelService.GetModelEntityById(modelId);
             var attributes = ModelFactorsService.GetFactors(modelId);
-            
-            attributes.ForEach(x => x.Coefficient = x.GetCoefficient(type));
+
+            var resultType = model.IsAutomatic ? type : model.AlgoritmType_Code;
+            attributes.ForEach(x => x.Coefficient = x.GetCoefficient(resultType));
 
             return Json(attributes);
         }
