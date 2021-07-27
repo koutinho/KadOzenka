@@ -446,10 +446,10 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 							//obj.Save();
 						});
 					}
-
-					var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
-					ModelDictionaryService.CreateMarks(factor.AttributeId, factor.Dictionary.Id, allObjectsCoefficients);
 				}
+
+				var allObjectsCoefficients = uniqueFactorValuesInfo.Select(x => x.Value).SelectMany(x => x.ModelObjects).SelectMany(x => x.DeserializedCoefficients);
+				ModelDictionaryService.CreateMarks(factor.AttributeId, factor.Dictionary.Id, allObjectsCoefficients);
 			}
 		}
 
