@@ -3,7 +3,6 @@
 
 @using (Html.BeginForm("EditAutomaticModelFactor", "Modeling", FormMethod.Post, new {id = "updateFactorForm"}))
 {
-    @Html.HiddenFor(x => x.AlgorithmType)
     
 <div class="form-horizontal col-sm-12" style="margin-top: 10px">
     <div class="form-group" style="padding-bottom: 1%;">
@@ -12,20 +11,6 @@
             После сохранения будут сброшены результаты обучения модели
         </div>
     </div>
-    @if (!Model.IsNewFactor)
-    {
-        <div class="form-group">
-            <div class="col-sm-3">
-                @Html.CustomLabelFor(x => x.AlgorithmType, NotSetRequired: true)
-            </div>
-            <div class="col-sm-9">
-                @(Html.Kendo().DropDownListFor(m => m.AlgorithmTypeStr)
-                    .DataTextField("Name")
-                    .DataValueField("Name")
-                    .Enable(false))
-            </div>
-        </div>
-    }
     <div class="form-group">
         <div class="col-sm-3">
             @Html.CustomLabelFor(x => x.FactorId)

@@ -86,7 +86,7 @@ namespace ModelingBusiness.Objects.Import
 			var objectsFromExcel = GetObjectsFromFile(sheet, modelObjectsImporterInfo);
 			_log.Debug("{LoggerBasePhrase} в файле {RowsCount} строк", LoggerBasePhrase, MaxRowsCount);
 
-			var nonCodedModelFactorIds = ModelFactorsService.GetGeneralModelFactors(modelObjectsImporterInfo.ModelId)
+			var nonCodedModelFactorIds = ModelFactorsService.GetFactors(modelObjectsImporterInfo.ModelId)
 				.Where(x => x.MarkType != MarkType.Default).Select(x => x.AttributeId).ToHashSet();
 			_log.Debug("{LoggerBasePhrase} у модели с ИД '{ModelId}' {RowsCount} некодированных факторов", LoggerBasePhrase, modelObjectsImporterInfo.ModelId, nonCodedModelFactorIds.Count);
 
@@ -124,7 +124,7 @@ namespace ModelingBusiness.Objects.Import
 				}
 			});
 
-			new ModelFactorsService().GetGeneralModelFactors(modelObjectsImporterInfo.ModelId)
+			new ModelFactorsService().GetFactors(modelObjectsImporterInfo.ModelId)
 				.Where(x => x.IsNormalized).Select(x => x.DictionaryId.GetValueOrDefault())
 				.ForEach(x => ModelDictionaryService.DeleteMarks(x));
 			

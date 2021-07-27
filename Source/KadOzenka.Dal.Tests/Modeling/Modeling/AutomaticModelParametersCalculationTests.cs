@@ -38,7 +38,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Calculate_Parameters_For_Non_Automatic_Model()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
 			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Manual().Build());
 			MockModelObjects();
 			MockModelFactors(factor);
@@ -59,7 +59,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Calculate_Parameters_Without_Model_Objects()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
 			MockModelObjects();
 			MockModelFactors(factor);
 
@@ -70,7 +70,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[TestCase(MarkType.None)]
 		public void Can_Not_Calculate_Parameters_If_Model_Has_No_Factors_With_Straight_Or_Reverse_Mark_Type(MarkType mark)
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(mark).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(mark).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Calculate_Parameters_If_Model_Has_No_Active_Factors()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Active(false).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Active(false).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
@@ -150,15 +150,15 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 				It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
 		}
 
-		private void MockModelFactors(params ModelFactorRelationPure[] modelFactors)
+		private void MockModelFactors(params ModelFactorRelation[] modelFactors)
 		{
-			var result = modelFactors?.ToList() ?? new List<ModelFactorRelationPure>();
-			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(result);
+			var result = modelFactors?.ToList() ?? new List<ModelFactorRelation>();
+			ModelFactorsService.Setup(x => x.GetFactors(_modelId)).Returns(result);
 		}
 
 		private ModelFactorRelationPure CreateFactor()
 		{
-			return new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			return new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
 		}
 
 		#endregion

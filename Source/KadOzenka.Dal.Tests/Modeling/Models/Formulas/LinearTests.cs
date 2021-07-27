@@ -22,7 +22,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
-			var expectedFormula = $"{Model.A0ForLinearInFormula}+{CacheAttributeName}*{factor.B0InFormula}";
+			var expectedFormula = $"{Model.A0ForLinearInFormula}+{CacheAttributeName}*{factor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
-			var expectedFormula = $"{Model.A0ForLinearInFormula}+метка({CacheAttributeName})*{factor.B0InFormula}";
+			var expectedFormula = $"{Model.A0ForLinearInFormula}+метка({CacheAttributeName})*{factor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -46,7 +46,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
-			var expectedFormula = $"{Model.A0ForLinearInFormula}+({CacheAttributeName}+{factor.CorrectingTermInFormula})/{factor.KInFormula} * {factor.B0InFormula}";
+			var expectedFormula = $"{Model.A0ForLinearInFormula}+({CacheAttributeName}+{factor.CorrectingTermInFormula})/{factor.KInFormula} * {factor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -58,7 +58,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
-			var expectedFormula = $"{Model.A0ForLinearInFormula}+{factor.KInFormula}/({CacheAttributeName}+{factor.CorrectingTermInFormula})*{factor.B0InFormula}";
+			var expectedFormula = $"{Model.A0ForLinearInFormula}+{factor.KInFormula}/({CacheAttributeName}+{factor.CorrectingTermInFormula})*{factor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)));
 		}
 
@@ -75,7 +75,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var straightMarkTypeAttribute = new RegisterAttributeBuilder().Id(straightMarkTypeFactor.Id).Name("straight").Build();
 			var reverseMarkTypeAttribute = new RegisterAttributeBuilder().Id(reverseMarkTypeFactor.Id).Name("reverse").Build();
 
-			ModelFactorsService.Setup(x => x.GetFactors(Model.Id, Model.AlgoritmType_Code))
+			ModelFactorsService.Setup(x => x.GetFactorsEntities(Model.Id))
 				.Returns(new List<OMModelFactor> { noneMarkTypeFactor, defaultMarkTypeFactor, straightMarkTypeFactor, reverseMarkTypeFactor });
 
 			RegisterCacheWrapper.Setup(x => x.GetAttributeData(noneMarkTypeFactor.FactorId.Value)).Returns(noneMarkTypeAttribute);
@@ -86,10 +86,10 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Line);
 
 			var baseFormulaPart = $"{Model.A0ForLinearInFormula}";
-			var noneMarkTypeFormulaPart = $"+\"{noneMarkTypeAttribute.Name}\"*{noneMarkTypeFactor.B0InFormula}";
-			var defaultMarkTypeFormulaPart = $"+метка(\"{defaultMarkTypeAttribute.Name}\")*{defaultMarkTypeFactor.B0InFormula}";
-			var straightMarkTypeFormulaPart = $"+(\"{straightMarkTypeAttribute.Name}\"+{straightMarkTypeFactor.CorrectingTermInFormula})/{straightMarkTypeFactor.KInFormula} * {straightMarkTypeFactor.B0InFormula}";
-			var reverseMarkTypeFormulaPart = $"+{reverseMarkTypeFactor.KInFormula}/(\"{reverseMarkTypeAttribute.Name}\"+{reverseMarkTypeFactor.CorrectingTermInFormula})*{reverseMarkTypeFactor.B0InFormula}";
+			var noneMarkTypeFormulaPart = $"+\"{noneMarkTypeAttribute.Name}\"*{noneMarkTypeFactor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
+			var defaultMarkTypeFormulaPart = $"+метка(\"{defaultMarkTypeAttribute.Name}\")*{defaultMarkTypeFactor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
+			var straightMarkTypeFormulaPart = $"+(\"{straightMarkTypeAttribute.Name}\"+{straightMarkTypeFactor.CorrectingTermInFormula})/{straightMarkTypeFactor.KInFormula} * {straightMarkTypeFactor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
+			var reverseMarkTypeFormulaPart = $"+{reverseMarkTypeFactor.KInFormula}/(\"{reverseMarkTypeAttribute.Name}\"+{reverseMarkTypeFactor.CorrectingTermInFormula})*{reverseMarkTypeFactor.GetCoefficientInFormula(KoAlgoritmType.Line)}";
 			var expectedFormula = baseFormulaPart + noneMarkTypeFormulaPart + defaultMarkTypeFormulaPart + straightMarkTypeFormulaPart + reverseMarkTypeFormulaPart;
 
 			Assert.That(ProcessFormula(formula), Is.EqualTo(ProcessFormula(expectedFormula)), $"{noneMarkTypeAttribute.Name}, {defaultMarkTypeAttribute.Name}, {straightMarkTypeAttribute.Name}, {reverseMarkTypeAttribute.Name}");

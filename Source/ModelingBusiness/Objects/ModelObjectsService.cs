@@ -6,6 +6,7 @@ using Core.Register;
 using GemBox.Spreadsheet;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
+using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using ObjectModel.KO;
@@ -101,7 +102,7 @@ namespace ModelingBusiness.Objects
             });
         }
 
-        public Stream ExportMarketObjectsToExcel(long modelId, List<OMModelFactor> factors)
+        public Stream ExportMarketObjectsToExcel(long modelId, List<ModelFactorRelation> factors)
         {
 	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
 	        //if (model == null)
@@ -198,32 +199,30 @@ namespace ModelingBusiness.Objects
 
         #region Support Methods
 
-		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(List<OMModelFactor> factors)
+		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(List<ModelFactorRelation> factors)
 		{
 			var result = new List<FactorInFileInfo>();
 			factors.ForEach(x =>
 			{
-				var factorId = x.FactorId.GetValueOrDefault();
-				var factorName = RegisterCache.GetAttributeData((int) x.FactorId.GetValueOrDefault()).Name;
 				if (x.DictionaryId == null)
 				{
 					result.Add(new FactorInFileInfo
 					{
-						AttributeId = factorId,
-						Name = factorName
+						AttributeId = x.AttributeId,
+						Name = x.AttributeName
 					});
 				}
 				else
 				{
 					result.Add(new FactorInFileInfo
 					{
-						AttributeId = factorId,
-						Name = $"{factorName} (Коэффициент)"
+						AttributeId = x.AttributeId,
+						Name = $"{x.AttributeName} (Коэффициент)"
 					});
 					result.Add(new FactorInFileInfo
 					{
-						AttributeId = factorId,
-						Name = $"{factorName} (Значение)",
+						AttributeId = x.AttributeId,
+						Name = $"{x.AttributeName} (Значение)",
 						IsColumnWithValue = true
 					});
 				}

@@ -50,119 +50,59 @@ namespace ModelingBusiness.Factors
 			return factor;
 		}
 
-		public List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type)
+		public List<OMModelFactor> GetFactorsEntities(long? modelId)
 		{
-			var types = GetPossibleTypes(type);
-
-			return OMModelFactor.Where(x => x.ModelId == modelId && types.Contains(x.AlgorithmType_Code)).SelectAll().Execute();
+			return OMModelFactor.Where(x => x.ModelId == modelId).SelectAll().Execute();
 		}
 
-		public List<ModelFactorRelationPure> GetGeneralModelFactors(long modelId)
+		public List<ModelFactorRelation> GetFactors(long modelId)
 		{
 			var query = GetModelFactorsQuery(modelId);
 
-			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorRelationPure.RegisterId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelFactorRelationPure.AttributeId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorRelationPure.AttributeName)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorRelationPure.AttributeType)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelationPure.DictionaryId)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelationPure.DictionaryName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelationPure.IsActive)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType_Code, nameof(ModelFactorRelationPure.MarkType)));
-
-			var attributes = new List<ModelFactorRelationPure>();
-			var table = query.ExecuteQuery();
-			for (var i = 0; i < table.Rows.Count; i++)
-			{
-				var row = table.Rows[i];
-
-				var id = row[nameof(ModelFactorRelationPure.Id)].ParseToLong();
-
-				var registerId = row[nameof(ModelFactorRelationPure.RegisterId)].ParseToLong();
-
-				var attributeId = row[nameof(ModelFactorRelationPure.AttributeId)].ParseToLong();
-				var attributeName = row[nameof(ModelFactorRelationPure.AttributeName)].ParseToString();
-				var attributeType = row[nameof(ModelFactorRelationPure.AttributeType)].ParseToInt();
-
-				var markType = row[nameof(ModelFactorRelationPure.MarkType)].ParseToLong();
-				var dictionaryId = row[nameof(ModelFactorRelationPure.DictionaryId)].ParseToLongNullable();
-				var dictionaryName = row[nameof(ModelFactorRelationPure.DictionaryName)].ParseToStringNullable();
-				
-				var isActive = row[nameof(ModelFactorRelationPure.IsActive)].ParseToBooleanNullable();
-
-				attributes.Add(new ModelFactorRelationPure
-				{
-					Id = id,
-					RegisterId = registerId,
-					AttributeId = attributeId,
-					AttributeName = attributeName,
-					AttributeType = attributeType,
-					MarkType = (MarkType) markType,
-					DictionaryId = dictionaryId,
-					DictionaryName = dictionaryName,
-					IsActive = isActive.GetValueOrDefault()
-				});
-			}
-
-			//если модель автоматическая, её факторы дублируются для лин/экс/мульт типов, поэтому группируем по AttributeId
-
-			return attributes.GroupBy(x => x.AttributeId).Select(x => x.FirstOrDefault()).ToList();
-		}
-
-		public List<ModelFactorRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type)
-		{
-			//для совместимости с уже ранее созданными моделями (не через блок "Справочники моделей")
-			QSConditionSimple typeCondition = null;
-			var isFactorsWithSpecificTypeExist = OMModelFactor.Where(x => x.ModelId == modelId && x.AlgorithmType_Code == type).ExecuteExists();
-			if (isFactorsWithSpecificTypeExist)
-			{
-				typeCondition = new QSConditionSimple(OMModelFactor.GetColumn(x => x.AlgorithmType_Code), QSConditionType.Equal, (int)type);
-			}
-
-			var query = GetModelFactorsQuery(modelId, typeCondition);
-
-			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorRelationDto.RegisterId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelFactorRelationDto.AttributeId)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorRelationDto.AttributeName)));
-			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorRelationDto.AttributeType)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelationDto.DictionaryId)));
-			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelationDto.DictionaryName)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.CoefficientForLinear, nameof(ModelFactorRelationDto.Coefficient)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelFactorRelationDto.SignMarket)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelFactorRelationDto.Correction)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelationDto.IsActive)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType, nameof(ModelFactorRelationDto.MarkType)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelFactorRelationDto.CorrectingTerm)));
-			query.AddColumn(OMModelFactor.GetColumn(x => x.K, nameof(ModelFactorRelationDto.K)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.RegisterId, nameof(ModelFactorRelation.RegisterId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Id, nameof(ModelFactorRelation.AttributeId)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Name, nameof(ModelFactorRelation.AttributeName)));
+			query.AddColumn(OMAttribute.GetColumn(x => x.Type, nameof(ModelFactorRelation.AttributeType)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Id, nameof(ModelFactorRelation.DictionaryId)));
+			query.AddColumn(OMModelingDictionary.GetColumn(x => x.Name, nameof(ModelFactorRelation.DictionaryName)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.CoefficientForLinear, nameof(ModelFactorRelation.CoefficientForLinear)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.SignMarket, nameof(ModelFactorRelation.SignMarket)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.Correction, nameof(ModelFactorRelation.Correction)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.IsActive, nameof(ModelFactorRelation.IsActive)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.MarkType_Code, nameof(ModelFactorRelation.MarkType)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.CorrectingTerm, nameof(ModelFactorRelation.CorrectingTerm)));
+			query.AddColumn(OMModelFactor.GetColumn(x => x.K, nameof(ModelFactorRelation.K)));
 
 			//var sql = query.GetSql();
 
-			var attributes = new List<ModelFactorRelationDto>();
+			var attributes = new List<ModelFactorRelation>();
 			var table = query.ExecuteQuery();
 			for (var i = 0; i < table.Rows.Count; i++)
 			{
 				var row = table.Rows[i];
 
-				var id = row[nameof(ModelFactorRelationDto.Id)].ParseToLong();
+				var id = row[nameof(ModelFactorRelation.Id)].ParseToLong();
 
-				var registerId = row[nameof(ModelFactorRelationDto.RegisterId)].ParseToLong();
+				var registerId = row[nameof(ModelFactorRelation.RegisterId)].ParseToLong();
 
-				var attributeId = row[nameof(ModelFactorRelationDto.AttributeId)].ParseToLong();
-				var attributeName = row[nameof(ModelFactorRelationDto.AttributeName)].ParseToString();
-				var attributeType = row[nameof(ModelFactorRelationDto.AttributeType)].ParseToInt();
+				var attributeId = row[nameof(ModelFactorRelation.AttributeId)].ParseToLong();
+				var attributeName = row[nameof(ModelFactorRelation.AttributeName)].ParseToString();
+				var attributeType = row[nameof(ModelFactorRelation.AttributeType)].ParseToInt();
 
-				var dictionaryId = row[nameof(ModelFactorRelationDto.DictionaryId)].ParseToLongNullable();
-				var dictionaryName = row[nameof(ModelFactorRelationDto.DictionaryName)].ParseToString();
+				var dictionaryId = row[nameof(ModelFactorRelation.DictionaryId)].ParseToLongNullable();
+				var dictionaryName = row[nameof(ModelFactorRelation.DictionaryName)].ParseToString();
 
-				var coefficient = row[nameof(ModelFactorRelationDto.Coefficient)].ParseToDecimalNullable();
-				var signMarket = row[nameof(ModelFactorRelationDto.SignMarket)].ParseToBooleanNullable();
-				var correction = row[nameof(ModelFactorRelationDto.Correction)].ParseToDecimalNullable();
-				var correctingTerm = row[nameof(ModelFactorRelationDto.CorrectingTerm)].ParseToDecimalNullable();
-				var k = row[nameof(ModelFactorRelationDto.K)].ParseToDecimalNullable();
-				var isActive = row[nameof(ModelFactorRelationDto.IsActive)].ParseToBooleanNullable();
-				var markType = row[nameof(ModelFactorRelationDto.MarkType)].ParseToString();
+				var coefficientForLinear = row[nameof(ModelFactorRelation.CoefficientForLinear)].ParseToDecimalNullable();
+				var coefficientForExponential = row[nameof(ModelFactorRelation.CoefficientForExponential)].ParseToDecimalNullable();
+				var coefficientForMultiplicative = row[nameof(ModelFactorRelation.CoefficientForMultiplicative)].ParseToDecimalNullable();
+				var signMarket = row[nameof(ModelFactorRelation.SignMarket)].ParseToBooleanNullable();
+				var correction = row[nameof(ModelFactorRelation.Correction)].ParseToDecimalNullable();
+				var correctingTerm = row[nameof(ModelFactorRelation.CorrectingTerm)].ParseToDecimalNullable();
+				var k = row[nameof(ModelFactorRelation.K)].ParseToDecimalNullable();
+				var isActive = row[nameof(ModelFactorRelation.IsActive)].ParseToBooleanNullable();
+				var markType = row[nameof(ModelFactorRelation.MarkType)].ParseToLong();
 
-				attributes.Add(new ModelFactorRelationDto
+				attributes.Add(new ModelFactorRelation
 				{
 					Id = id,
 					RegisterId = registerId,
@@ -171,13 +111,15 @@ namespace ModelingBusiness.Factors
 					AttributeType = attributeType,
 					DictionaryId = dictionaryId,
 					DictionaryName = dictionaryName,
-					Coefficient = coefficient.GetValueOrDefault(),
+					CoefficientForLinear = coefficientForLinear,
+					CoefficientForExponential = coefficientForExponential,
+					CoefficientForMultiplicative = coefficientForMultiplicative,
 					SignMarket = signMarket.GetValueOrDefault(),
 					Correction = correction,
 					CorrectingTerm = correctingTerm,
 					K = k,
 					IsActive = isActive.GetValueOrDefault(),
-					MarkType = markType
+					MarkType = (MarkType) markType
 				});
 			}
 
@@ -249,28 +191,16 @@ namespace ModelingBusiness.Factors
 		{
 			ValidateAutomaticFactor(dto);
 
-			var types = GetPossibleTypes(KoAlgoritmType.None);
-
-			using (var ts = new TransactionScope())
+			var newFactor = new OMModelFactor
 			{
-				types.ForEach(type =>
-				{
-					var newFactor = new OMModelFactor
-					{
-						ModelId = dto.ModelId,
-						FactorId = dto.FactorId,
-						DictionaryId = dto.DictionaryId,
-						MarkerId = -1,
-						AlgorithmType_Code = type,
-						IsActive = dto.IsActive,
-						MarkType_Code = dto.MarkType
-					};
+				ModelId = dto.ModelId,
+				FactorId = dto.FactorId,
+				DictionaryId = dto.DictionaryId,
+				IsActive = dto.IsActive,
+				MarkType_Code = dto.MarkType
+			};
 
-					ModelFactorsRepository.Save(newFactor);
-				});
-
-				ts.Complete();
-			}
+			ModelFactorsRepository.Save(newFactor);
 		}
 
 		public bool UpdateAutomaticFactor(AutomaticModelFactorDto dto)
@@ -320,10 +250,8 @@ namespace ModelingBusiness.Factors
 				ModelId = dto.ModelId,
 				FactorId = dto.FactorId,
 				DictionaryId = dto.DictionaryId,
-				MarkerId = -1,
 				Correction = dto.Correction,
 				CoefficientForLinear = dto.Coefficient,
-				AlgorithmType_Code = dto.Type,
 				MarkType_Code = dto.MarkType
 			};
 
@@ -478,7 +406,7 @@ namespace ModelingBusiness.Factors
 			    factorAttributeType != RegisterAttributeType.INTEGER && factor.MarkType != MarkType.Default)
 				throw new WrongFactorTypeException();
 
-			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value, factor.Type);
+			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value);
 			if (isTheSameAttributeExists)
 				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name}' уже был добавлен");
 		}

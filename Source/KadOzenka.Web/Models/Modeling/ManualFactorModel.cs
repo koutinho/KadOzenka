@@ -9,7 +9,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public override bool IsAutomatic => false;
 
 		[Display(Name = "Коэффициент")]
-		public decimal Coefficient { get; set; }
+		public decimal? Coefficient { get; set; }
 
 		[Display(Name = "Поправка")]
 		public decimal Correction { get; set; }
@@ -38,7 +38,6 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				Id = Id,
 				ModelId = ModelId,
-				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
 				Correction = Correction,

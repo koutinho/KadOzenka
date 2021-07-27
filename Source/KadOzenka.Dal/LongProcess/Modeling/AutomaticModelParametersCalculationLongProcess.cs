@@ -124,23 +124,25 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 	        if (!model.IsAutomatic)
 		        throw new CanNotCalculateParametersForNonAutomaticModelException();
 
-	        var factors = GetModelFactors(modelId);
+	        return null;
 
-			var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
+	        //      var factors = GetModelFactors(modelId);
 
-	        var urlToDownloadReport = ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
+	        //var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
 
-			factors.ForEach(factor =>
-			{
-				cancellationToken.ThrowIfCancellationRequested();
+	        //      var urlToDownloadReport = ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
 
-				//ProcessUnCodedFactor(factor, modelObjects);
+	        //factors.ForEach(factor =>
+	        //{
+	        //	cancellationToken.ThrowIfCancellationRequested();
 
-				_processedFactorsCount++;
-			});
-			_logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
+	        //	//ProcessUnCodedFactor(factor, modelObjects);
 
-			return urlToDownloadReport;
+	        //	_processedFactorsCount++;
+	        //});
+	        //_logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
+
+	        //return urlToDownloadReport;
         }
 
 		
@@ -174,9 +176,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			}
 		}
 
-		private List<ModelFactorRelationPure> GetModelFactors(long modelId)
+		private List<ModelFactorRelation> GetModelFactors(long modelId)
 		{
-			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
+			var factors = ModelFactorsService.GetFactors(modelId)
 				.Where(x => (x.MarkType == MarkType.Reverse || x.MarkType == MarkType.Straight) && x.IsActive)
 				.ToList();
 			if (factors.IsEmpty())
@@ -271,13 +273,13 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				var k = CalculateK(coefficients);
 				var correctionTerm = CalculateCorrectionTerm(coefficients);
 
-				var omFactors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
-				omFactors.ForEach(x =>
-				{
-					x.K = k;
-					x.CorrectingTerm = correctionTerm;
-					ModelFactorsRepository.Save(x);
-				});
+				//var omFactors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+				//omFactors.ForEach(x =>
+				//{
+				//	x.K = k;
+				//	x.CorrectingTerm = correctionTerm;
+				//	ModelFactorsRepository.Save(x);
+				//});
 			}
 		}
 

@@ -321,24 +321,19 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 		private List<FactorInfo> GetModelFactors(OMModel activeGroupModel)
 		{
-			var modelFactors = ModelFactorsService.GetFactors(activeGroupModel.Id, activeGroupModel.AlgoritmType_Code);
+			var modelFactors = ModelFactorsService.GetFactors(activeGroupModel.Id);
 			if (modelFactors.Count == 0)
 				throw new Exception($"У модели '{activeGroupModel.Name}' (С ИД - {activeGroupModel.Id}) нет факторов");
 			
 			_log.Debug("Загружено {FactorsCount} факторов модели", modelFactors.Count);
 
-			var factors = modelFactors.Select(factor =>
+			var factors = modelFactors.Select(factor => new FactorInfo
 			{
-				var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault());
-
-				return new FactorInfo
-				{
-					FactorId = factor.FactorId.GetValueOrDefault(),
-					DictionaryId = factor.DictionaryId,
-					MarkType = factor.MarkType_Code,
-					AttributeName = attribute.Name,
-					AttributeType = attribute.Type
-				};
+				FactorId = factor.AttributeId,
+				DictionaryId = factor.DictionaryId,
+				MarkType = factor.MarkType,
+				AttributeName = factor.AttributeName,
+				AttributeType = factor.AttributeTypeCode
 			}).ToList();
 
 			return factors;

@@ -456,7 +456,7 @@ namespace KadOzenka.Dal.DataExport
                         if (_model.ModelFactor.Count == 0)
                         {
                             _model.ModelFactor = OMModelFactor
-                                .Where(x => x.ModelId == _model.Id && x.AlgorithmType_Code == _model.AlgoritmType_Code)
+                                .Where(x => x.ModelId == _model.Id)
                                 .SelectAll()
                                 .Execute();
                             Log.Debug(
@@ -526,7 +526,7 @@ namespace KadOzenka.Dal.DataExport
 
             private Dictionary<long, List<OMModelingDictionariesValues>> GetMarks()
             {
-	           var modelFactorsWithDictionaries = new ModelFactorsService().GetGeneralModelFactors(_model.Id)
+	           var modelFactorsWithDictionaries = new ModelFactorsService().GetFactors(_model.Id)
 		           .Where(x => x.DictionaryId != null).ToList();
 
                 List<OMModelingDictionariesValues> omMarkCatalogs;

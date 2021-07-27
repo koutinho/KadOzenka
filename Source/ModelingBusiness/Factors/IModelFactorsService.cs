@@ -9,9 +9,8 @@ namespace ModelingBusiness.Factors
 	public interface IModelFactorsService
 	{
 		OMModelFactor GetFactorById(long? id);
-		List<OMModelFactor> GetFactors(long? modelId, KoAlgoritmType type);
-		List<ModelFactorRelationPure> GetGeneralModelFactors(long modelId);
-		List<ModelFactorRelationDto> GetModelAttributes(long modelId, KoAlgoritmType type);
+		List<OMModelFactor> GetFactorsEntities(long? modelId);
+		List<ModelFactorRelation> GetFactors(long modelId);
 		QSQuery GetModelFactorsQuery(long modelId, QSCondition additionalCondition = null);
 		void AddAutomaticFactor(AutomaticModelFactorDto dto);
 		bool UpdateAutomaticFactor(AutomaticModelFactorDto dto);

@@ -37,7 +37,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_For_Non_Automatic_Model()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Default).Build();
 			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Manual().Build());
 			MockModelObjects();
 			MockModelFactors(factor);
@@ -48,7 +48,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_Without_Model_Objects()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Default).Build();
 			MockModelObjects();
 			MockModelFactors(factor);
 
@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_If_Model_Has_No_Factors_With_Default_Mark_Type()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Straight).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
@@ -79,7 +79,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_If_Model_Has_No_Active_Factors()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Active(false).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Default).Active(false).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
@@ -90,7 +90,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_For_Factor_Without_DictionaryId()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).DictionaryId(null).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Default).DictionaryId(null).Build();
 			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
@@ -101,7 +101,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Create_Marks_If_Model_Objects_Have_No_Model_Factors()
 		{
-			var factor = new ModelFactorRelationPureBuilder().MarkType(MarkType.Default).Build();
+			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Default).Build();
 			var modelObject = new ModelObjectBuilder().Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
@@ -121,10 +121,10 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 				It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
 		}
 
-		private void MockModelFactors(params ModelFactorRelationPure[] modelFactors)
+		private void MockModelFactors(params ModelFactorRelation[] modelFactors)
 		{
-			var result = modelFactors?.ToList() ?? new List<ModelFactorRelationPure>();
-			ModelFactorsService.Setup(x => x.GetGeneralModelFactors(_modelId)).Returns(result);
+			var result = modelFactors?.ToList() ?? new List<ModelFactorRelation>();
+			ModelFactorsService.Setup(x => x.GetFactors(_modelId)).Returns(result);
 		}
 
 		#endregion

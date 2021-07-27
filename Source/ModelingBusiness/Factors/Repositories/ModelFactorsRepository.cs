@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
-using CommonSdks;
 using CommonSdks.Repositories;
 using Core.Register.QuerySubsystem;
-using ObjectModel.Directory;
 using ObjectModel.KO;
 
 namespace ModelingBusiness.Factors.Repositories
@@ -20,17 +18,9 @@ namespace ModelingBusiness.Factors.Repositories
 			return x => x.Id == id;
 		}
 
-		public bool IsTheSameAttributeExists(long id, long factorId, long modelId, KoAlgoritmType type)
+		public bool IsTheSameAttributeExists(long id, long factorId, long modelId)
 		{
-			//todo вынести базовую часть запроса в QsQuery
-			if (type == KoAlgoritmType.None)
-			{
-				return OMModelFactor.Where(x => x.Id != id && x.FactorId == factorId && x.ModelId == modelId)
-					.ExecuteExists();
-			}
-
-			return OMModelFactor.Where(x =>
-					x.Id != id && x.FactorId == factorId && x.ModelId == modelId && x.AlgorithmType_Code == type)
+			return OMModelFactor.Where(x => x.Id != id && x.FactorId == factorId && x.ModelId == modelId)
 				.ExecuteExists();
 		}
 

@@ -226,16 +226,6 @@ namespace ModelingBusiness.Model
 
             using (var ts = new TransactionScope())
             {
-	            if (existedModel.AlgoritmType_Code != modelDto.AlgorithmTypeForCadastralPriceCalculation)
-	            {
-		            var factors = ModelFactorsService.GetFactors(modelDto.ModelId, existedModel.AlgoritmType_Code);
-		            factors.ForEach(x =>
-		            {
-			            x.AlgorithmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
-			            x.Save();
-		            });
-	            }
-
 	            existedModel.Name = modelDto.Name;
 	            existedModel.Description = modelDto.Description;
 	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
@@ -312,7 +302,7 @@ namespace ModelingBusiness.Model
         {
 			var model = GetModelEntityById(modelId);
 
-			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+			var factors = ModelFactorsService.GetFactorsEntities(modelId);
 			factors.ForEach(factor => factor.Destroy());
 
 			if (model.Type_Code == KoModelType.Automatic)
@@ -328,7 +318,7 @@ namespace ModelingBusiness.Model
         {
 	        var model = GetModelEntityById(modelId);
 
-	        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+	        var factors = ModelFactorsService.GetFactors(modelId);
 	        RecycleBinService.MoveObjectsToRecycleBin(factors.Select(x => x.Id).ToList(), OMModelFactor.GetRegisterId(), eventId);
 
 	        if (model.Type_Code == KoModelType.Automatic)
@@ -383,10 +373,7 @@ namespace ModelingBusiness.Model
 
 		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			//для ручной модели существует один набор факторов под алгоритм самой модели
-			//для автоматической модели набор факторов разный под тип алгоритма
-			var typeForFactors = model.IsAutomatic ? algorithmType : model.AlgoritmType_Code;
-			var factors = ModelFactorsService.GetFactors(model.Id, typeForFactors);
+			var factors = ModelFactorsService.GetFactorsEntities(model.Id);
 			if (factors.Count == 0 || (model.IsAutomatic && !model.IsModelWasTrained))
 				return "Y = 0";
 
@@ -397,11 +384,11 @@ namespace ModelingBusiness.Model
 			factors.ForEach(x =>
 			{
 				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
-				var weightInFormula = formulaCreator.ProcessNumber(x.WeightInFormula);
-				var b0InFormula = formulaCreator.ProcessNumber(x.B0InFormula);
+				var correctionInFormula = formulaCreator.ProcessNumber(x.CorrectionInFormula);
+				var coefficientInFormula = formulaCreator.ProcessNumber(x.GetCoefficientInFormula(algorithmType));
 				var correctingTermInFormula = formulaCreator.ProcessNumber(x.CorrectingTermInFormula);
 				var kInFormula = formulaCreator.ProcessNumber(x.KInFormula);
-				var modelInfo = new ModelInfoForFormula(attributeName, weightInFormula, b0InFormula,
+				var modelInfo = new ModelInfoForFormula(attributeName, correctionInFormula, coefficientInFormula,
 					correctingTermInFormula, kInFormula);
 
 				switch (x.MarkType_Code)

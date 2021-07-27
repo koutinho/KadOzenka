@@ -10,22 +10,22 @@ namespace ModelingBusiness.Model.Formulas
 
 		public override string GetPartForNoneMarkType(ModelInfoForFormula modelInfo)
 		{
-			return $"({modelInfo.AttributeName} + {modelInfo.WeightInFormula})^{modelInfo.B0InFormula}";
+			return $"({modelInfo.AttributeName} + {modelInfo.Correction})^{modelInfo.Coefficient}";
 		}
 
 		public override string GetPartForDefaultMarkType(ModelInfoForFormula modelInfo)
 		{
-			return $"({MarkTagInFormula}({modelInfo.AttributeName}) + {modelInfo.WeightInFormula})^{modelInfo.B0InFormula}";
+			return $"({MarkTagInFormula}({modelInfo.AttributeName}) + {modelInfo.Correction})^{modelInfo.Coefficient}";
 		}
 
 		public override string GetPartForStraightMarkType(ModelInfoForFormula modelInfo)
 		{
-			return $"(({modelInfo.AttributeName} + {modelInfo.CorrectingTermInFormula}) / {modelInfo.KInFormula} + {modelInfo.WeightInFormula})^{modelInfo.B0InFormula}";
+			return $"(({modelInfo.AttributeName} + {modelInfo.CorrectingTerm}) / {modelInfo.K} + {modelInfo.Correction})^{modelInfo.Coefficient}";
 		}
 
 		public override string GetPartForReverseMarkType(ModelInfoForFormula modelInfo)
 		{
-			return $"({modelInfo.KInFormula}/({modelInfo.AttributeName}+{modelInfo.CorrectingTermInFormula}) + {modelInfo.WeightInFormula})^{modelInfo.B0InFormula}";
+			return $"({modelInfo.K}/({modelInfo.AttributeName}+{modelInfo.CorrectingTerm}) + {modelInfo.Correction})^{modelInfo.Coefficient}";
 		}
 
 		public override string GetBaseFormulaPart(OMModel model, string factors)

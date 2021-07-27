@@ -21,13 +21,10 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			{
 				ModelId = RandomGenerator.GenerateRandomId(),
 				FactorId = RandomGenerator.GenerateRandomId(),
-				MarkerId = RandomGenerator.GenerateRandomInteger(),
 				Correction = RandomGenerator.GenerateRandomDecimal(),
 				CoefficientForLinear = RandomGenerator.GenerateRandomDecimal(),
 				SignMarket = true,
 				DictionaryId = RandomGenerator.GenerateRandomId(),
-				AlgorithmType = algorithm.GetEnumDescription(),
-				AlgorithmType_Code = algorithm,
 				IsActive = true,
 				MarkType = markType.GetEnumDescription(),
 				MarkType_Code = markType,
@@ -107,9 +104,6 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 		public AFactorBuilder Model(OMModel model)
 		{
 			_factor.ModelId = model.Id;
-			_factor.AlgorithmType = model.AlgoritmType_Code.GetEnumDescription();
-			_factor.AlgorithmType_Code = model.AlgoritmType_Code;
-
 			return this;
 		}
 

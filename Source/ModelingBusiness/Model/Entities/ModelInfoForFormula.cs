@@ -3,19 +3,19 @@
 	public class ModelInfoForFormula
 	{
 		public string AttributeName { get; }
-		public string WeightInFormula { get; }
-		public string B0InFormula { get; }
-		public string CorrectingTermInFormula { get; }
-		public string KInFormula { get; }
+		public string Correction { get; }
+		public string Coefficient { get; }
+		public string CorrectingTerm { get; }
+		public string K { get; }
 
-		public ModelInfoForFormula(string attributeName, string weightInFormula, string b0InFormula,
-			string correctingTermInFormula, string kInFormula)
+		public ModelInfoForFormula(string attributeName, string correction, string coefficient,
+			string correctingTerm, string k)
 		{
 			AttributeName = attributeName;
-			WeightInFormula = weightInFormula;
-			B0InFormula = b0InFormula;
-			CorrectingTermInFormula = correctingTermInFormula;
-			KInFormula = kInFormula;
+			Correction = correction;
+			Coefficient = coefficient;
+			CorrectingTerm = correctingTerm;
+			K = k;
 		}
 	}
 }

@@ -14,9 +14,6 @@ namespace KadOzenka.Web.Models.Modeling
 		[Display(Name = "Фактор")]
 		public long? FactorId { get; set; }
 
-		[Display(Name = "Алгоритм расчета")]
-		public KoAlgoritmType AlgorithmType { get; set; }
-
 		[Display(Name = "Тип метки")]
 		public MarkType MarkType { get; set; }
 

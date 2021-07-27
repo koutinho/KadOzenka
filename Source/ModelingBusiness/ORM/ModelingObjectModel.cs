@@ -585,26 +585,6 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _markerid;
-        /// <summary>
-        /// 21000400 Идентификатор метки (MARKER_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21000400)]
-        public long? MarkerId
-        {
-            get
-            {
-                CheckPropertyInited("MarkerId");
-                return _markerid;
-            }
-            set
-            {
-                _markerid = value;
-                NotifyPropertyChanged("MarkerId");
-            }
-        }
-
-
         private decimal _correction;
         /// <summary>
         /// 21000500 Поправка (CORRECTION)
@@ -625,12 +605,12 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _coefficientforlinear;
+        private decimal? _coefficientforlinear;
         /// <summary>
         /// 21000600 Коэффициент для линейного алгоритма (COEFFICIENT_FOR_LINEAR)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000600)]
-        public decimal CoefficientForLinear
+        public decimal? CoefficientForLinear
         {
             get
             {
@@ -681,61 +661,6 @@ namespace ObjectModel.KO
             {
                 _dictionaryid = value;
                 NotifyPropertyChanged("DictionaryId");
-            }
-        }
-
-
-        private string _algorithmtype;
-        /// <summary>
-        /// 21001100  Алгоритм рассчёта ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001100)]
-        public string AlgorithmType
-        {
-            get
-            {
-                CheckPropertyInited("AlgorithmType");
-                return _algorithmtype;
-            }
-            set
-            {
-                _algorithmtype = value;
-                NotifyPropertyChanged("AlgorithmType");
-            }
-        }
-
-
-        private KoAlgoritmType _algorithmtype_Code;
-        /// <summary>
-        /// 21001100  Алгоритм рассчёта (справочный код) (algorithm_type)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001100)]
-        public KoAlgoritmType AlgorithmType_Code
-        {
-            get
-            {
-                CheckPropertyInited("AlgorithmType_Code");
-                return this._algorithmtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_algorithmtype))
-                    {
-                         _algorithmtype = descr;
-                    }
-                }
-                else
-                {
-                     _algorithmtype = descr;
-                }
-
-                this._algorithmtype_Code = value;
-                NotifyPropertyChanged("AlgorithmType");
-                NotifyPropertyChanged("AlgorithmType_Code");
             }
         }
 
@@ -855,12 +780,12 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _coefficientforexponential;
+        private decimal? _coefficientforexponential;
         /// <summary>
         /// 21001800 Коэффициент для экспоненциального алгоритма (COEFFICIENT_FOR_EXPONENTIAL)
         /// </summary>
         [RegisterAttribute(AttributeID = 21001800)]
-        public decimal CoefficientForExponential
+        public decimal? CoefficientForExponential
         {
             get
             {
@@ -875,12 +800,12 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _coefficientformultiplicative;
+        private decimal? _coefficientformultiplicative;
         /// <summary>
         /// 21001900 Коэффициент для мультипликативного алгоритма (COEFFICIENT_FOR_MULTIPLICATIVE)
         /// </summary>
         [RegisterAttribute(AttributeID = 21001900)]
-        public decimal CoefficientForMultiplicative
+        public decimal? CoefficientForMultiplicative
         {
             get
             {

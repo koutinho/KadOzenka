@@ -65,7 +65,7 @@ namespace ModelingBusiness.Modeling
         {
             RequestForService = new PredictionRequest();
 
-            var allAttributes = ModelFactorsService.GetGeneralModelFactors(InputParameters.ModelId).Where(x => x.IsActive).ToList();
+            var allAttributes = ModelFactorsService.GetFactors(InputParameters.ModelId).Where(x => x.IsActive).ToList();
             var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(InputParameters.ModelId, IncludedObjectsMode.Prediction);
             modelObjects.ForEach(modelObject =>
             {

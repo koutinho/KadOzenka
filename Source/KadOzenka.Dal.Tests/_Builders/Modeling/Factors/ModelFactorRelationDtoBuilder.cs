@@ -5,13 +5,13 @@ using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 {
-	public class ModelFactorRelationPureBuilder
+	public class ModelFactorRelationDtoBuilder
 	{
-		private ModelFactorRelationPure _factor;
+		private ModelFactorRelation _factor;
 
-		public ModelFactorRelationPureBuilder()
+		public ModelFactorRelationDtoBuilder()
 		{
-			_factor = new ModelFactorRelationPure
+			_factor = new ModelFactorRelation
 			{
 				Id = RandomGenerator.GenerateRandomId(),
 				RegisterId = RandomGenerator.GenerateRandomId(),
@@ -26,31 +26,31 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 		}
 
 
-		public ModelFactorRelationPureBuilder AttributeId(long attributeId)
+		public ModelFactorRelationDtoBuilder AttributeId(long attributeId)
 		{
 			_factor.AttributeId = attributeId;
 			return this;
 		}
 
-		public ModelFactorRelationPureBuilder DictionaryId(long? dictionaryId)
+		public ModelFactorRelationDtoBuilder DictionaryId(long? dictionaryId)
 		{
 			_factor.DictionaryId = dictionaryId;
 			return this;
 		}
 
-		public ModelFactorRelationPureBuilder MarkType(MarkType markType)
+		public ModelFactorRelationDtoBuilder MarkType(MarkType markType)
 		{
 			_factor.MarkType = markType;
 			return this;
 		}
 
-		public ModelFactorRelationPureBuilder Active(bool isActive)
+		public ModelFactorRelationDtoBuilder Active(bool isActive)
 		{
 			_factor.IsActive = isActive;
 			return this;
 		}
 
-		public ModelFactorRelationPure Build()
+		public ModelFactorRelation Build()
 		{
 			return _factor;
 		}

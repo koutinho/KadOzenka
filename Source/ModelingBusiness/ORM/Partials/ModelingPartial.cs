@@ -244,16 +244,50 @@ namespace ObjectModel.KO
         static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMModelingDictionariesValues> MarkCatalogs { get; set; }
 
-        /// <summary>
-        /// Поправка
-        /// </summary>
-		public decimal WeightInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        /// <summary>
-        /// Добавочный коэффициент
-        /// </summary>
-        public decimal B0InFormula => Math.Round(CoefficientForLinear, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       public decimal CorrectionInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       
+       public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       
+       public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+
+       public decimal GetCoefficientInFormula(KoAlgoritmType type)
+       {
+	       var coefficient = GetCoefficient(type);
+	       return Math.Round(coefficient.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       }
+
+        public decimal? GetCoefficient(KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.Exp:
+			        return CoefficientForExponential;
+		        case KoAlgoritmType.Line:
+			        return CoefficientForLinear;
+		        case KoAlgoritmType.Multi:
+			        return CoefficientForMultiplicative;
+		        default:
+			        throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
+	        }
+        }
+
+        public void SetCoefficient(decimal? coefficient, KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.Exp:
+			        CoefficientForExponential = coefficient;
+                    break;
+		        case KoAlgoritmType.Line:
+			        CoefficientForLinear = coefficient;
+			        break;
+		        case KoAlgoritmType.Multi:
+			        CoefficientForMultiplicative = coefficient;
+			        break;
+		        default:
+			        throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
+	        }
+        }
 
         //public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
         //      {

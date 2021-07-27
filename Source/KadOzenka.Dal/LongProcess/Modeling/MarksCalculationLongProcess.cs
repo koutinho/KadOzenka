@@ -179,7 +179,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		private List<FactorInfo> GetModelFactors(long modelId)
 		{
-			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
+			var factors = ModelFactorsService.GetFactors(modelId)
 				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();

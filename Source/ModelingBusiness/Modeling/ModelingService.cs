@@ -98,10 +98,10 @@ namespace ModelingBusiness.Modeling
 			        break;
 	        }
 
-	        var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
+	        var factors = ModelFactorsService.GetFactorsEntities(generalModel.Id);
 	        factors.ForEach(x =>
 	        {
-		        x.Correction = 0;
+				x.SetCoefficient(null, type);
 		        x.Save();
 	        });
 
@@ -248,7 +248,7 @@ namespace ModelingBusiness.Modeling
 			if (activeModel == null)
 				return null;
 
-			var modelFactors = ModelFactorsService.GetGeneralModelFactors(activeModel.Id);
+			var modelFactors = ModelFactorsService.GetFactors(activeModel.Id);
 			var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
 
 			return dictionaryId;

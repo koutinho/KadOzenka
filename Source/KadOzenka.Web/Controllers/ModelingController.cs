@@ -221,7 +221,9 @@ namespace KadOzenka.Web.Controllers
         //используется в modeling.js
         public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
         {
-            var attributes = ModelFactorsService.GetModelAttributes(modelId, type);
+            var attributes = ModelFactorsService.GetFactors(modelId);
+            
+            attributes.ForEach(x => x.Coefficient = x.GetCoefficient(type));
 
             return Json(attributes);
         }
@@ -832,7 +834,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetModelDictionaries([DataSourceRequest] DataSourceRequest request, long modelId)
         {
-	        var modelAttributes = ModelFactorsService.GetGeneralModelFactors(modelId)
+	        var modelAttributes = ModelFactorsService.GetFactors(modelId)
 		        .Where(x => x.IsNormalized).Select(DictionaryModel.ToModel)
 		        .ToList();
 
@@ -1024,7 +1026,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var modelDto = ModelService.GetModelById(modelId);
             
-            var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
+            var attributes = ModelFactorsService.GetFactors(modelId);
 
             var model = ModelingObjectsModel.ToModel(modelDto, attributes);
 
@@ -1104,8 +1106,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            //пока работаем только с Exp (был расчет МС и процента)
-            var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+            var factors = ModelFactorsService.GetFactors(modelId);
             var fileStream = ModelObjectsService.ExportMarketObjectsToExcel(modelId, factors);
 
             var modelName = ModelRepository.GetById(modelId, x => new { x.Name })?.Name;
@@ -1156,7 +1157,7 @@ namespace KadOzenka.Web.Controllers
                     });
                 });
 
-            var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
+            var attributes = ModelFactorsService.GetFactors(modelId);
             attributes.ForEach(x =>
             {
 	            source.Add(new
@@ -1411,7 +1412,7 @@ namespace KadOzenka.Web.Controllers
         private List<long> GetModelDictionariesIds(long? modelId)
         {
 	        return ModelFactorsService
-		        .GetGeneralModelFactors(modelId.GetValueOrDefault())
+		        .GetFactors(modelId.GetValueOrDefault())
 		        .Select(x => x.DictionaryId.GetValueOrDefault()).Distinct().ToList();
         }
 
