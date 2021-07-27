@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthApiService } from '../common/guards/api/auth/authService';
 import { LoginData } from '../common/guards/api/auth/data/loginData';
 
@@ -11,7 +12,7 @@ export class LoginComponent implements OnInit {
   login = '';
   password = ''
 
-  constructor(private api: AuthApiService) { }
+  constructor(private api: AuthApiService, private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -19,6 +20,11 @@ export class LoginComponent implements OnInit {
   signIn(){
     let loginData = new LoginData(this.login, this.password);
 
-    this.api.logIn(loginData);
+    this.api.logIn(loginData).subscribe(() => {
+        this.router.navigate(["home"]);
+      }, (err) =>
+      {
+        console.log
+      });
   }
 }
