@@ -565,12 +565,12 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _factorid;
+        private long _factorid;
         /// <summary>
         /// 21000300 Идентификатор фактора (FACTOR_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000300)]
-        public long? FactorId
+        public long FactorId
         {
             get
             {

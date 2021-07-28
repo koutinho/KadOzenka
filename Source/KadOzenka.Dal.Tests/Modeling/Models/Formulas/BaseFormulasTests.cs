@@ -34,7 +34,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		{
 			ModelFactorsService.Setup(x => x.GetFactorsEntities(model.Id)).Returns(new List<OMModelFactor> { factor });
 
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(cacheAttribute);
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId)).Returns(cacheAttribute);
 		}
 
 		protected string ProcessFormula(string str)

@@ -247,7 +247,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 						var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.FactorId);
 						if (coefficient != null && coefficient.Coefficient == null)
 						{
-							var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault());
+							var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId);
 							factorNames += $"{attribute.Name}{Environment.NewLine}";
 						}
 					});
@@ -275,7 +275,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		public void ProcessUnCodedFactor(OMModelFactor factor, List<CoefficientForObject> modelObjectsCoefficients)
 		{
-			var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault());
+			var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId);
 			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", attribute.Name))
 			{
 				var coefficients = modelObjectsCoefficients

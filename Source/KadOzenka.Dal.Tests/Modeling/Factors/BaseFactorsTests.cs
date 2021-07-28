@@ -44,11 +44,11 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Factors
 			var factor = new ManualFactorDtoBuilder().Type(markType).CorrectItem(correctItem).K(k).Build();
 			
 			ModelFactorsRepository.Setup(x =>
-					x.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value))
+					x.IsTheSameAttributeExists(factor.Id, factor.FactorId, factor.ModelId.Value))
 				.Returns(false);
 
 			var attribute = new RegisterAttributeBuilder().Id(factor.FactorId).Type(RegisterAttributeType.INTEGER).Build();
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.GetValueOrDefault())).Returns(attribute);
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId)).Returns(attribute);
 
 			return factor;
 		}

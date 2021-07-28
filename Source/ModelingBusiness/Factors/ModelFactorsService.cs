@@ -363,7 +363,7 @@ namespace ModelingBusiness.Factors
 			ValidateBaseFactor(factor);
 
 			var activeForbiddenAttributes = GetAttributesWhichMustBeUnActive();
-			if (activeForbiddenAttributes.Contains(factor.FactorId.GetValueOrDefault()) && factor.IsActive)
+			if (activeForbiddenAttributes.Contains(factor.FactorId) && factor.IsActive)
 				throw new Exception("Атрибут недоступен для активации");
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
@@ -382,14 +382,14 @@ namespace ModelingBusiness.Factors
 			if (factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
 				throw new EmptyDictionaryForFactorWithDefaultMarkException();
 
-			var factorAttributeType = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault()).Type;
+			var factorAttributeType = RegisterCacheWrapper.GetAttributeData(factor.FactorId).Type;
 			if (factorAttributeType != RegisterAttributeType.DECIMAL &&
 			    factorAttributeType != RegisterAttributeType.INTEGER && factor.MarkType != MarkType.Default)
 				throw new WrongFactorTypeException();
 
-			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId.Value, factor.ModelId.Value);
+			var isTheSameAttributeExists = ModelFactorsRepository.IsTheSameAttributeExists(factor.Id, factor.FactorId, factor.ModelId.Value);
 			if (isTheSameAttributeExists)
-				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault()).Name}' уже был добавлен");
+				throw new Exception($"Атрибут '{RegisterCache.GetAttributeData(factor.FactorId).Name}' уже был добавлен");
 		}
 
 		private void ProcessDictionary(OMModelFactor factor, AModelFactorDto dto)

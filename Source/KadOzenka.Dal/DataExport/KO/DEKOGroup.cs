@@ -468,7 +468,7 @@ namespace KadOzenka.Dal.DataExport
                         foreach (var factor in _model.ModelFactor)
                         {
                             _token.ThrowIfCancellationRequested();
-                            var attributeFactor = RegisterCache.GetAttributeData(factor.FactorId.GetValueOrDefault());
+                            var attributeFactor = RegisterCache.GetAttributeData(factor.FactorId);
                             factor.FillMarkCatalogsFromList(_marks);
 
                             XmlNode xnEvaluativeFactor = _xmlFile.CreateElement("Evaluative_Factor");

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 
 namespace KadOzenka.Web.Models.Modeling
@@ -12,7 +11,7 @@ namespace KadOzenka.Web.Models.Modeling
 		public abstract bool IsAutomatic { get; }
 
 		[Display(Name = "Фактор")]
-		public long? FactorId { get; set; }
+		public long FactorId { get; set; }
 
 		[Display(Name = "Тип метки")]
 		public MarkType MarkType { get; set; }

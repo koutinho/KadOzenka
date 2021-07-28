@@ -304,7 +304,7 @@ namespace ObjectModel.KO
 
         public void FillMarkCatalogsFromList(Dictionary<long, List<OMModelingDictionariesValues>> dict)
         {
-            var success = dict.TryGetValue(FactorId.GetValueOrDefault(), out var marks);
+            var success = dict.TryGetValue(FactorId, out var marks);
             MarkCatalogs = success ? marks : new List<OMModelingDictionariesValues>();
             //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
         }

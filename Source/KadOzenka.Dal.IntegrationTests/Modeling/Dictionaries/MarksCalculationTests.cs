@@ -155,7 +155,7 @@ namespace KadOzenka.Dal.IntegrationTests.Dictionaries.Modeling
 			Assert.That(squareMark[0].CalculationValue, Is.EqualTo(expectedCalculationValueForSquare));
 
 			CheckModelObject(modelObject.Id, Tour2018OksFactorsAttributeIds.AddressAttributeId, expectedCalculationValueForAddress, false);
-			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), expectedCalculationValueForSquare, false);
+			CheckModelObject(modelObject.Id, squareFactor.FactorId, expectedCalculationValueForSquare, false);
 		}
 
 		[Test]
@@ -179,8 +179,8 @@ namespace KadOzenka.Dal.IntegrationTests.Dictionaries.Modeling
 			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(squareMark.Count, Is.EqualTo(0));
 
-			CheckModelObject(modelObject.Id, _addressFactor.FactorId.GetValueOrDefault(), coefficients[0].Coefficient, true);
-			CheckModelObject(modelObject.Id, squareFactor.FactorId.GetValueOrDefault(), coefficients[1].Coefficient, true);
+			CheckModelObject(modelObject.Id, _addressFactor.FactorId, coefficients[0].Coefficient, true);
+			CheckModelObject(modelObject.Id, squareFactor.FactorId, coefficients[1].Coefficient, true);
 		}
 
 		[Test]
@@ -207,8 +207,8 @@ namespace KadOzenka.Dal.IntegrationTests.Dictionaries.Modeling
 			var squareMark = OMModelingDictionariesValues.Where(x => x.DictionaryId == squareFactor.DictionaryId).SelectAll().Execute();
 			Assert.That(squareMark.Count, Is.EqualTo(0));
 
-			CheckModelObject(secondModelObject.Id, _addressFactor.FactorId.GetValueOrDefault(), coefficients[0].Coefficient, true);
-			CheckModelObject(secondModelObject.Id, squareFactor.FactorId.GetValueOrDefault(), coefficients[1].Coefficient, true);
+			CheckModelObject(secondModelObject.Id, _addressFactor.FactorId, coefficients[0].Coefficient, true);
+			CheckModelObject(secondModelObject.Id, squareFactor.FactorId, coefficients[1].Coefficient, true);
 		}
 
 

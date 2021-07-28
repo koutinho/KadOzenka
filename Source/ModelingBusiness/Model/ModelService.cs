@@ -391,7 +391,7 @@ namespace ModelingBusiness.Model
 
 			factors.ForEach(x =>
 			{
-				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
+				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId).Name}\"";
 				var correctionInFormula = formulaCreator.ProcessNumber(x.CorrectionInFormula);
 				var coefficientInFormula = formulaCreator.ProcessNumber(x.GetCoefficientInFormula(algorithmType));
 				var correctingTermInFormula = formulaCreator.ProcessNumber(x.CorrectingTermInFormula);

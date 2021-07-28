@@ -50,6 +50,7 @@ COPY services/postgresql/scripts/KOMO_4691/up.sql /docker-entrypoint-initdb.d/up
 COPY services/postgresql/scripts/KOMO_4711/up.sql /docker-entrypoint-initdb.d/up_region_000127.sql
 COPY services/postgresql/scripts/KOMO_4758/up.sql /docker-entrypoint-initdb.d/up_region_000128.sql
 COPY services/postgresql/scripts/KOMO_4743/up.sql /docker-entrypoint-initdb.d/up_region_000129.sql
+COPY services/postgresql/scripts/KOMO_4821/up.sql /docker-entrypoint-initdb.d/up_region_000130.sql
 COPY services/postgresql/scripts/up_region_004090.sql /docker-entrypoint-initdb.d/up_region_004090.sql
 
 
