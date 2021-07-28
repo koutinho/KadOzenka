@@ -186,6 +186,7 @@
                     text: '',
                     attributes: { title: "Расчитать метки" },
                     icon: 'paste-markdown',
+                    //enable: hasFormedObjectArray,
                     click: calculateMarks
                 },
                 {
@@ -194,9 +195,10 @@
                     text: '',
                     attributes: { title: "Рассчитать параметры" },
                     icon: 'parameters',
+                    //enable: hasFormedObjectArray,
                     click: calculateModelParameters
                 },
-                {
+                /*{
                     type: 'button',
                     id: 'formObjectArrayBtn',
                     text: '',
@@ -204,14 +206,14 @@
                     icon: 'media-manager',
                     //enable: !hasProcessToFormObjectArrayInQueue,
                     click: onFormObjectArrayBtnClick
-                },
+                },*/
                 {
                     type: 'button',
                     id: 'trainModelBtn',
                     text: '',
                     attributes: { title: "Обучить" },
                     icon: 'paste-plain-text',
-                    enable: hasFormedObjectArray,
+                    //enable: hasFormedObjectArray,
                     click: onTrainModelBtnClick
                 },
                 {
@@ -220,10 +222,10 @@
                     text: '',
                     attributes: { title: "Рассчитать" },
                     icon: 'calculator',
-                    enable: '@Model.IsModelWasTrained' === "True",
+                    //enable: '@Model.IsModelWasTrained' === "True",
                     click: onPredictModelBtnClick
-                },
-                {
+                }//,
+                /*{
                     type: 'button',
                     id: 'warningsBtn',
                     text: '',
@@ -231,7 +233,7 @@
                     icon: 'clock',
                     enable: hasFormedObjectArray,
                     click: getStatistic
-                }
+                }*/
             ]
         });
        
@@ -254,14 +256,22 @@
         onAlgorithmTypeChange();
     });
 
+
+
+
     function closeConfirmWindow(e) {
         var window = e.closest('[data-role=window]').data('kendoWindow');
         window.close();
         window.destroy();
     }
 
+
     var isTrainingMode = false;
     function onTrainModelBtnClick() {
+        if (!hasFormedObjectArray) {
+            Common.ShowError("Нельзя запустить обучение модели, если у неё нет объектов");
+            return;
+        }
         //при первом обучении модели оно должно идти по всем моделям
         if ('@Model.IsModelWasTrained' === "False") {
             trainModel('@ModelType.All');
@@ -272,7 +282,12 @@
         }
     }
 
+
     function onPredictModelBtnClick() {
+        if ('@Model.IsModelWasTrained' !== "True") {
+            Common.ShowError("Нельзя запустить расчет цены, если модель не была обучена");
+            return;
+        }
         isTrainingMode = false;
         var hasLinearTrainingResult = '@Model.HasLinearTrainingResult' === "True";
         var hasExponentialTrainingResult = '@Model.HasExponentialTrainingResult' === "True";
@@ -344,6 +359,10 @@
 
 
     function calculateMarks() {
+        if (!hasFormedObjectArray) {
+            Common.ShowError("Нельзя запустить расчет меток, если у модели нет объектов");
+            return;
+        }
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
@@ -363,6 +382,10 @@
 
 
     function calculateModelParameters() {
+        if (!hasFormedObjectArray) {
+            Common.ShowError("Нельзя запустить расчет параметров модели, если у модели нет объектов");
+            return;
+        }
         kendo.ui.progress($('body'), true);
         $.ajax({
             type: 'POST',
@@ -517,6 +540,8 @@
         });
     }
 
+
+
     function addFactor() {
         Common.UI.ShowWindow('Добавление фактора',
             '@Url.Action("AddAutomaticModelFactor", "Modeling", new { generalModelId = Model.Id})',
@@ -564,10 +589,7 @@
 
     function changeToolBarButtonsClass() {
         var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
-        var mainToolbar = $("#mainToolbar").data("kendoToolBar");
-        mainToolbar.enable("#formObjectArrayBtn", areAttributesExists);
-        mainToolbar.enable("#calculateMarksBtn", hasFormedObjectArray);
-        mainToolbar.enable("#calculateModelParametersBtn", hasFormedObjectArray);
+        $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
             $('#editFactorBtn').addClass('k-state-disabled');
