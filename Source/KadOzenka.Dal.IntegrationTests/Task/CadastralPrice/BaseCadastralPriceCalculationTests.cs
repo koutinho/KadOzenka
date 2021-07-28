@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Core.Register;
@@ -124,7 +125,7 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 		{
 			var unitWithCalculatedPrice = GetUnitById(unitId);
 
-			var expectedCadastralCost = unitWithCalculatedPrice.Upks * unitWithCalculatedPrice.Square.GetValueOrDefault();
+			var expectedCadastralCost = Math.Round(unitWithCalculatedPrice.Upks.GetValueOrDefault(), 2) * unitWithCalculatedPrice.Square.GetValueOrDefault();
 
 			Assert.That(unitWithCalculatedPrice.CadastralCost, Is.EqualTo(expectedCadastralCost).Within(0.01));
 			Assert.That(unitWithCalculatedPrice.Upks, Is.EqualTo(expectedUpks).Within(0.01));

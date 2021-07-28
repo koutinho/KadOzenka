@@ -229,7 +229,7 @@ namespace KadOzenka.Dal.LongProcess.TaskLongProcesses
 
 						upks = (decimal) CalculateUpks(formula, modelFactors, currentUnitFactors, marks);
 						currentUnit.Upks = upks;
-						currentUnit.CadastralCost = upks * currentUnit.Square.Value;
+						currentUnit.CadastralCost = Math.Round(upks, 2) * currentUnit.Square.Value;
 						UnitRepository.Save(currentUnit);
 
 						Interlocked.Increment(ref processedUnitsCount);
