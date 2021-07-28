@@ -18,6 +18,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/guards/api/auth/authService';
+import { WheatherForecastApiService } from './common/guards/api/wheatherForcast/wheatherForecastService';
 
 
 @NgModule({
@@ -41,7 +42,7 @@ import { AuthApiService } from './common/guards/api/auth/authService';
     MatProgressSpinnerModule,
     MatSelectModule
   ],
-  providers: [AuthApiService],
+  providers: [AuthApiService, WheatherForecastApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
