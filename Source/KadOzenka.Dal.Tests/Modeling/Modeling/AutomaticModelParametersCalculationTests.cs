@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 using System.Threading;
 using CommonSdks;
 using KadOzenka.Common.Tests;
+using KadOzenka.Common.Tests.Builders.Cache;
 using KadOzenka.Dal.LongProcess.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Factors;
-using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Objects.Entities;
 using Moq;
 using NUnit.Framework;
@@ -16,11 +16,11 @@ using ObjectModel.Directory.Ko;
 using ObjectModel.Modeling;
 using Microsoft.Extensions.DependencyInjection;
 using ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculation;
-using ObjectModel.Directory;
+using ObjectModel.Core.LongProcess;
+using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 {
-	[Ignore("Не реализовано")]
 	public class AutomaticModelParametersCalculationTests : BaseModelingTests
 	{
 		private long _modelId;
@@ -39,12 +39,15 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Calculate_Parameters_For_Non_Automatic_Model()
 		{
-			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
-			ModelService.Setup(x => x.GetModelEntityById(_modelId)).Returns(new ModelBuilder().Manual().Build());
+			var manualModel = new ModelBuilder().Manual().Build();
+			var factor = CreateFactor();
+			ModelService.Setup(x => x.GetModelEntityById(manualModel.Id)).Returns(manualModel);
 			MockModelObjects();
 			MockModelFactors(factor);
 
-			Assert.Throws<CanNotCalculateParametersForNonAutomaticModelException>(() => LongProcess.CalculateParameters(_modelId, new CancellationToken()));
+			Assert.Throws<CanNotCalculateParametersForNonAutomaticModelException>(() =>
+				LongProcess.StartProcess(new OMProcessType(), new OMQueue {ObjectId = manualModel.Id},
+					new CancellationToken()));
 		}
 
 		[Test]
@@ -60,7 +63,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Calculate_Parameters_Without_Model_Objects()
 		{
-			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
+			var factor = CreateFactor();
 			MockModelObjects();
 			MockModelFactors(factor);
 
@@ -71,8 +74,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[TestCase(MarkType.None)]
 		public void Can_Not_Calculate_Parameters_If_Model_Has_No_Factors_With_Straight_Or_Reverse_Mark_Type(MarkType mark)
 		{
-			var factor = new ModelFactorRelationDtoBuilder().MarkType(mark).Build();
-			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
+			var factor = new ModelFactorBuilder().MarkType(mark).Build();
+			var modelObject = new ModelObjectBuilder().Coefficient(factor.FactorId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
@@ -82,8 +85,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		[Test]
 		public void Can_Not_Calculate_Parameters_If_Model_Has_No_Active_Factors()
 		{
-			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Active(false).Build();
-			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
+			var factor = new ModelFactorBuilder().MarkType(MarkType.Straight).Active(false).Build();
+			var modelObject = new ModelObjectBuilder().Coefficient(factor.FactorId).Build();
 			MockModelObjects(modelObject);
 			MockModelFactors(factor);
 
@@ -112,31 +115,10 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 			var thirdModelObjectCoefficient = 3;
 			var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient };
 
-			var correctionTerm = LongProcess.CalculateCorrectionTerm(allCoefficients);
+			var correctionTerm = LongProcess.CalculateCorrectingTerm(allCoefficients);
 
-			var expectedCorrectionTerm = 0.2m * (allCoefficients.Max() - allCoefficients.Min());
-			Assert.That(correctionTerm, Is.EqualTo(expectedCorrectionTerm));
-		}
-
-		[Test]
-		public void Can_Process_Factor()
-		{
-			var modelId = RandomGenerator.GenerateRandomId();
-			var firstModelObjectCoefficient = 2;
-			var secondModelObjectCoefficient = 5;
-			var thirdModelObjectCoefficient = 3;
-			var factor = CreateFactor();
-			var firstModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, firstModelObjectCoefficient).Build();
-			var secondModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, secondModelObjectCoefficient).Build();
-			var thirdModelObject = new ModelObjectBuilder().NumberCoefficient(factor.AttributeId, thirdModelObjectCoefficient).Build();
-			//ModelFactorsService.Setup(x => x.GetFactors(modelId, KoAlgoritmType.None)).Returns(new )
-			//ModelFactorsRepository.Setup()
-
-			LongProcess.ProcessUnCodedFactor(factor, modelId, new List<OMModelToMarketObjects> { firstModelObject, secondModelObject, thirdModelObject });
-
-			var allCoefficients = new List<decimal> { firstModelObjectCoefficient, secondModelObjectCoefficient, thirdModelObjectCoefficient };
-			var expectedK = (allCoefficients.Average() + MathExtended.CalculateMedian(allCoefficients)) / 2.0m;
-			var expectedCorrectionTerm = 0.2m * (allCoefficients.Max() - allCoefficients.Min());
+			var expectedCorrectingTerm = 0.2m * (allCoefficients.Max() - allCoefficients.Min());
+			Assert.That(correctionTerm, Is.EqualTo(expectedCorrectingTerm));
 		}
 
 
@@ -151,15 +133,15 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 				It.IsAny<Expression<Func<OMModelToMarketObjects, object>>>())).Returns(result);
 		}
 
-		private void MockModelFactors(params ModelFactorRelation[] modelFactors)
+		private void MockModelFactors(params OMModelFactor[] modelFactors)
 		{
-			var result = modelFactors?.ToList() ?? new List<ModelFactorRelation>();
-			ModelFactorsService.Setup(x => x.GetFactors(_modelId)).Returns(result);
+			var result = modelFactors?.ToList() ?? new List<OMModelFactor>();
+			ModelFactorsService.Setup(x => x.GetFactorsEntities(_modelId)).Returns(result);
 		}
 
-		private ModelFactorRelationPure CreateFactor()
+		private OMModelFactor CreateFactor()
 		{
-			return new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
+			return new ModelFactorBuilder().MarkType(MarkType.Straight).Build();
 		}
 
 		#endregion

@@ -9,18 +9,14 @@ using Core.ErrorManagment;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Common;
-using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors;
-using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculation;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model;
-using ModelingBusiness.Modeling.Exceptions;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using ObjectModel.Core.LongProcess;
-using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
 using ObjectModel.Modeling;
@@ -31,10 +27,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class AutomaticModelParametersCalculationLongProcess : LongProcess
     {
-	    private string _messageSubject = "Результат Операции Расчета параметров для автоматической модели";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
-	    private readonly ILogger _logger = Log.ForContext<MarksCalculationLongProcess>();
+	    private readonly ILogger _logger = Log.ForContext<AutomaticModelParametersCalculationLongProcess>();
 	    private IModelService ModelService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 		private IModelObjectsRepository ModelObjectsRepository { get; }
@@ -59,24 +54,34 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
+		public AutomaticModelParametersCalculationLongProcess()
+		{
+			ModelService = new ModelService();
+			ModelFactorsService = new ModelFactorsService();
+			ModelObjectsRepository = new ModelObjectsRepository();
+			ModelFactorsRepository = new ModelFactorsRepository();
+			ModelDictionaryService = new ModelDictionaryService();
+			RegisterCacheWrapper = new RegisterCacheWrapper();
+		}
 
 
-		//public static void AddProcessToQueue(long modelId)
-		//{
-		//	ValidateModelId(modelId);
 
-		//	CheckActiveProcessInQueue(modelId);
+		public static void AddProcessToQueue(long modelId)
+		{
+			ValidateModelId(modelId);
 
-		//	LongProcessManager.AddTaskToQueue(nameof(MarksCalculationLongProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
-  //      }
+			CheckActiveProcessInQueue(modelId);
 
-		//public static void CheckActiveProcessInQueue(long modelId)
-		//{
-		//	var processId = 100;
-		//	var isProcessExists = new LongProcessService().HasActiveProcessInQueue(processId, modelId);
-		//	if (isProcessExists)
-		//		throw new Exception("В очереди есть процесс расчета меток для этой модели");
-		//}
+			LongProcessManager.AddTaskToQueue(nameof(AutomaticModelParametersCalculationLongProcess), objectId: modelId, registerId: OMModel.GetRegisterId());
+		}
+
+		public static void CheckActiveProcessInQueue(long modelId)
+		{
+			var processId = 101;
+			var isProcessExists = new LongProcessService().HasActiveProcessInQueue(processId, modelId);
+			if (isProcessExists)
+				throw new Exception("В очереди есть процесс расчета меток для этой модели");
+		}
 
 
 		public override void StartProcess(OMProcessType processType, OMQueue processQueue, CancellationToken cancellationToken)
@@ -85,6 +90,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			var modelId = processQueue.ObjectId.GetValueOrDefault();
 			ValidateModelId(modelId);
+
+			var model = ModelService.GetModelEntityById(modelId);
+			if (!model.IsAutomatic)
+				throw new CanNotCalculateParametersForNonAutomaticModelException();
+
+			var messageSubject = $"Результат Операции Расчета параметров для модели '{model.Name}'";
 
 			try
 			{
@@ -98,18 +109,18 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					: $@"<a href=""{urlToDownloadReport}"">Скачать отчет с ошибками</a>";
 
 				var message = "Операция завершена. " + downloadReportElement;
-				NotificationSender.SendNotification(processQueue, _messageSubject, message);
+				NotificationSender.SendNotification(processQueue, messageSubject, message);
 			}
 			catch (OperationCanceledException ex)
 			{
 				_logger.Error(ex, "Операция остановлена пользователем");
-				NotificationSender.SendNotification(processQueue, _messageSubject, "Операция была остановлена пользователем");
+				NotificationSender.SendNotification(processQueue, messageSubject, "Операция была остановлена пользователем");
 			}
 			catch (Exception ex)
 			{
 				_logger.Error(ex, "Ошибка в ходе расчета параметров для автоматической модели");
 				var errorId = ErrorManager.LogError(ex); 
-				NotificationSender.SendNotification(processQueue, _messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
+				NotificationSender.SendNotification(processQueue, messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
 			}
 
 			LongProcessProgressLogger.StopLogProgress();
@@ -120,29 +131,25 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		public string CalculateParameters(long modelId, CancellationToken cancellationToken)
         {
-	        var model = ModelService.GetModelEntityById(modelId);
-	        if (!model.IsAutomatic)
-		        throw new CanNotCalculateParametersForNonAutomaticModelException();
+			var factors = GetModelFactors(modelId);
 
-	        return null;
+			var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
 
-	        //      var factors = GetModelFactors(modelId);
+			var urlToDownloadReport = ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
+			var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients).ToList();
+			if (coefficients.Count == 0)
+				return urlToDownloadReport;
 
-	        //var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
+			factors.ForEach(factor =>
+			{
+				cancellationToken.ThrowIfCancellationRequested();
 
-	        //      var urlToDownloadReport = ProcessModelObjectsWithEmptyValues(modelObjects, factors, cancellationToken);
+				ProcessUnCodedFactor(factor, coefficients);
 
-	        //factors.ForEach(factor =>
-	        //{
-	        //	cancellationToken.ThrowIfCancellationRequested();
+				_processedFactorsCount++;
+			});
 
-	        //	//ProcessUnCodedFactor(factor, modelObjects);
-
-	        //	_processedFactorsCount++;
-	        //});
-	        //_logger.Debug("Расчет всех факторов закончен. Начато обновление коэффициентов в объектах моделирования");
-
-	        //return urlToDownloadReport;
+			return urlToDownloadReport;
         }
 
 		
@@ -155,7 +162,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private List<OMModelToMarketObjects> GetModelObjects(long modelId,
-			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
+			List<OMModelFactor> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Получение объектов моделирования для модели с ИД '{ModelId}'", modelId))
 			{
@@ -167,19 +174,20 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 				_logger.Debug("Всего найдено {ModelObjectsCount} объектов модели для модели с ИД '{ModelId}'", modelObjects.Count, modelId);
 
-				var factorIds = factors.Select(x => x.AttributeId).ToList();
+				var factorIds = factors.Select(x => x.FactorId).ToList();
 				var modelObjectsWithSelectedFactors = modelObjects.Where(x => x.DeserializedCoefficients.Any(c => factorIds.Contains(c.AttributeId))).ToList();
 				if (modelObjectsWithSelectedFactors.Count == 0)
-					throw new CanNotCreateMarksBecauseNoMarketObjectsWithSelectedFactorsException();
+					throw new CanNotCreateParametersBecauseNoMarketObjectsWithSelectedFactorsException();
 
 				return modelObjectsWithSelectedFactors;
 			}
 		}
 
-		private List<ModelFactorRelation> GetModelFactors(long modelId)
+		private List<OMModelFactor> GetModelFactors(long modelId)
 		{
-			var factors = ModelFactorsService.GetFactors(modelId)
-				.Where(x => (x.MarkTypeCode == MarkType.Reverse || x.MarkTypeCode == MarkType.Straight) && x.IsActive)
+			var factors = ModelFactorsService.GetFactorsEntities(modelId)
+				.Where(x => (x.MarkType_Code == MarkType.Reverse || x.MarkType_Code == MarkType.Straight) &&
+				            x.IsActive.GetValueOrDefault())
 				.ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCalculateParametersBecauseNoFactorsException();
@@ -191,15 +199,15 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		}
 
 		private string ProcessModelObjectsWithEmptyValues(List<OMModelToMarketObjects> modelObjects,
-			List<ModelFactorRelationPure> factors, CancellationToken cancellationToken)
+			List<OMModelFactor> factors, CancellationToken cancellationToken)
 		{
 			using (_logger.TimeOperation("Обработка объектов моделирования, у которых есть пустые факторы"))
 			{
-				var factorIds = factors.Select(x => x.AttributeId).ToList();
+				var factorIds = factors.Select(x => x.FactorId).ToList();
 
 				var modelObjectsWithEmptyFactors = modelObjects.Where(x =>
 					x.DeserializedCoefficients.Any(c =>
-						string.IsNullOrWhiteSpace(c.Value) && factorIds.Contains(c.AttributeId))).ToList();
+						c.Coefficient == null && factorIds.Contains(c.AttributeId))).ToList();
 
 				_logger.Debug("Найдено {ModelObjectsWithEmptyFactorsCount} объектов модели с пустыми факторами'", modelObjectsWithEmptyFactors.Count);
 
@@ -236,9 +244,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					var factorNames = string.Empty;
 					factors.ForEach(factor =>
 					{
-						var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.AttributeId);
-						if (coefficient != null && string.IsNullOrWhiteSpace(coefficient.Value))
-							factorNames += $"{factor.AttributeName}{Environment.NewLine}";
+						var coefficient = obj.DeserializedCoefficients.FirstOrDefault(c => c.AttributeId == factor.FactorId);
+						if (coefficient != null && coefficient.Coefficient == null)
+						{
+							var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault());
+							factorNames += $"{attribute.Name}{Environment.NewLine}";
+						}
 					});
 
 					var row = reportService.GetCurrentRow();
@@ -262,24 +273,19 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			invalidObject.Save();
 		}
 
-		public void ProcessUnCodedFactor(ModelFactorRelationPure factor, long modelId, List<OMModelToMarketObjects> modelObjects)
+		public void ProcessUnCodedFactor(OMModelFactor factor, List<CoefficientForObject> modelObjectsCoefficients)
 		{
-			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", factor.AttributeName))
+			var attribute = RegisterCacheWrapper.GetAttributeData(factor.FactorId.GetValueOrDefault());
+			using (_logger.TimeOperation("Полная обработка фактора '{FactorName}'", attribute.Name))
 			{
-				var coefficients = modelObjects.SelectMany(x => x.DeserializedCoefficients)
-					.Where(x => x.AttributeId == factor.AttributeId && x.Coefficient != null)
+				var coefficients = modelObjectsCoefficients
+					.Where(x => x.AttributeId == factor.FactorId && x.Coefficient != null)
 					.Select(x => x.Coefficient.GetValueOrDefault()).ToList();
 
-				var k = CalculateK(coefficients);
-				var correctionTerm = CalculateCorrectionTerm(coefficients);
-
-				//var omFactors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
-				//omFactors.ForEach(x =>
-				//{
-				//	x.K = k;
-				//	x.CorrectingTerm = correctionTerm;
-				//	ModelFactorsRepository.Save(x);
-				//});
+				factor.K = CalculateK(coefficients);
+				factor.CorrectingTerm = CalculateCorrectingTerm(coefficients);
+				
+				ModelFactorsRepository.Save(factor);
 			}
 		}
 
@@ -291,7 +297,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			return (average + median) / 2m;
 		}
 
-		public decimal CalculateCorrectionTerm(List<decimal> coefficients)
+		public decimal CalculateCorrectingTerm(List<decimal> coefficients)
 		{
 			var maxCoefficient = coefficients.Max();
 			var minCoefficient = coefficients.Min();

@@ -8,7 +8,7 @@ namespace KadOzenka.Dal.UnitTests._Builders.Modeling
 	{
 		public override OMModel Build()
 		{
-			_model.Id = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue);
+			_model.Id = RandomGenerator.GenerateRandomId();
 			return _model;
 		}
 	}

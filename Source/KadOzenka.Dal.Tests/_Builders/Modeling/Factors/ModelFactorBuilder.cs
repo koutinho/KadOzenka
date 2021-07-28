@@ -4,11 +4,11 @@ using ObjectModel.KO;
 
 namespace KadOzenka.Dal.UnitTests._Builders.Modeling.Factors
 {
-	public class FactorBuilder : AFactorBuilder
+	public class ModelFactorBuilder : AFactorBuilder
 	{
 		public override OMModelFactor Build()
 		{
-			_factor.Id = RandomGenerator.GenerateRandomInteger(maxNumber: int.MaxValue);
+			_factor.Id = RandomGenerator.GenerateRandomId();
 			return _factor;
 		}
 	}

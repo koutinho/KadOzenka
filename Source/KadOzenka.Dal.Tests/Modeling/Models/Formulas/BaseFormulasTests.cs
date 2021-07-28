@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 	public abstract class BaseFormulasTests : BaseModelTests
 	{
 		protected OMModel Model;
-		protected FactorBuilder FactorBuilder;
+		protected ModelFactorBuilder ModelFactorBuilder;
 		protected RegisterAttribute CacheAttribute;
 		protected string CacheAttributeName => $"\"{CacheAttribute.Name}\"";
 		protected abstract KoAlgoritmType AlgorithmType { get; }
@@ -24,8 +24,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		public void SetUp()
 		{
 			Model = new ModelBuilder().Manual().AlgorithmType(AlgorithmType).Build();
-			FactorBuilder = new FactorBuilder();
-			CacheAttribute = new RegisterAttributeBuilder().Id(FactorBuilder.Id).Build();
+			ModelFactorBuilder = new ModelFactorBuilder();
+			CacheAttribute = new RegisterAttributeBuilder().Id(ModelFactorBuilder.Id).Build();
 		}
 
 

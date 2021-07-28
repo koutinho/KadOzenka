@@ -102,6 +102,12 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
+		public AFactorBuilder Active(bool isActive)
+		{
+			_factor.IsActive = isActive;
+			return this;
+		}
+
 		public AFactorBuilder Model(OMModel model)
 		{
 			_factor.ModelId = model.Id;

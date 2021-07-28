@@ -5,7 +5,7 @@ namespace ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculatio
 	public class CanNotCalculateParametersBecauseNoMarketObjectsException : Exception
 	{
 		public CanNotCalculateParametersBecauseNoMarketObjectsException() 
-			: base("У модели нет ативных объектов из контрольной или обучающей выборок")
+			: base("У модели нет активных объектов из контрольной или обучающей выборок")
 		{
 			
 		}

@@ -18,7 +18,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		[Test]
 		public void Can_Create_Formula_With_One_Factor_Without_Mark()
 		{
-			var factor = FactorBuilder.MarkType(MarkType.None).Build();
+			var factor = ModelFactorBuilder.MarkType(MarkType.None).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Exp);
@@ -30,7 +30,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		[Test]
 		public void Can_Create_Formula_With_One_Factor_Of_Default_Mark()
 		{
-			var factor = FactorBuilder.MarkType(MarkType.Default).Build();
+			var factor = ModelFactorBuilder.MarkType(MarkType.Default).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Exp);
@@ -42,7 +42,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		[Test]
 		public void Can_Create_Formula_With_One_Factor_Of_Straight_Mark()
 		{
-			var factor = FactorBuilder.MarkType(MarkType.Straight).Build();
+			var factor = ModelFactorBuilder.MarkType(MarkType.Straight).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Exp);
@@ -54,7 +54,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		[Test]
 		public void Can_Create_Formula_With_One_Factor_Of_Reverse_Mark()
 		{
-			var factor = FactorBuilder.MarkType(MarkType.Reverse).Build();
+			var factor = ModelFactorBuilder.MarkType(MarkType.Reverse).Build();
 			MockDependencies(Model, factor, CacheAttribute);
 
 			var formula = ModelService.GetFormula(Model, KoAlgoritmType.Exp);
@@ -66,10 +66,10 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		[Test]
 		public void Can_Create_Formula_With_All_Possible_Factors_MarkType()
 		{
-			var noneMarkTypeFactor = new FactorBuilder().MarkType(MarkType.None).Build();
-			var defaultMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Default).Build();
-			var straightMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Straight).Build();
-			var reverseMarkTypeFactor = new FactorBuilder().MarkType(MarkType.Reverse).Build();
+			var noneMarkTypeFactor = new ModelFactorBuilder().MarkType(MarkType.None).Build();
+			var defaultMarkTypeFactor = new ModelFactorBuilder().MarkType(MarkType.Default).Build();
+			var straightMarkTypeFactor = new ModelFactorBuilder().MarkType(MarkType.Straight).Build();
+			var reverseMarkTypeFactor = new ModelFactorBuilder().MarkType(MarkType.Reverse).Build();
 
 			var noneMarkTypeAttribute = new RegisterAttributeBuilder().Id(noneMarkTypeFactor.Id).Name("none").Build();
 			var defaultMarkTypeAttribute = new RegisterAttributeBuilder().Id(defaultMarkTypeFactor.Id).Name("def").Build();
