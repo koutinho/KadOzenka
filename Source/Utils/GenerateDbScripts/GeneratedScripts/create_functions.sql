@@ -14442,4 +14442,12 @@ begin
         end loop;
     end if;
 end
+$function$;/*notify_ko_grouping_dictionaries_updating 2997*/CREATE OR REPLACE FUNCTION public.notify_ko_grouping_dictionaries_updating()
+ RETURNS trigger
+ LANGUAGE plpgsql
+AS $function$
+begin
+    PERFORM pg_notify('notify_ko_grouping_dictionaries_updating'::text, 'notify_ko_grouping_dictionaries_updating'::text);
+    return null;
+end;
 $function$;

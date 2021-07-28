@@ -23,7 +23,6 @@ namespace GenerateDbScripts
             if (ConfigurationManager.AppSettings["CreateDbTableForRegister"].ParseToBoolean())
                 CreateDbTableForRegister();
 
-            //TODO падает в рантайме
             if (ConfigurationManager.AppSettings["CreateDbFunctions"].ParseToBoolean())
                 new GenerateFunctions(
                         ConfigurationManager.AppSettings["DbExporterConnectionString"],
