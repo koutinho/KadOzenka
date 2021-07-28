@@ -190,6 +190,14 @@
                 },
                 {
                     type: 'button',
+                    id: 'calculateModelParametersBtn',
+                    text: '',
+                    attributes: { title: "Рассчитать параметры" },
+                    icon: 'parameters',
+                    click: calculateModelParameters
+                },
+                {
+                    type: 'button',
                     id: 'formObjectArrayBtn',
                     text: '',
                     attributes: { title: "Сформировать массив данных" },
@@ -343,6 +351,25 @@
             success: function () {
                 Common.ShowMessage("Процесс расчета меток поставлен в очередь. По его завершению будет отправлено сообщение на почту.");
                 $("#mainToolbar").data("kendoToolBar").enable("#calculateMarksBtn", false);
+            },
+            error: function(response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function() {
+                kendo.ui.progress($('body'), false);
+            }
+        });
+    }
+
+
+    function calculateModelParameters() {
+        kendo.ui.progress($('body'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CalculateAutomaticModelParameters", "Modeling", new {modelId = Model.Id})',
+            success: function () {
+                Common.ShowMessage("Процесс расчета параметров поставлен в очередь. По его завершению будет отправлено сообщение на почту.");
+                $("#mainToolbar").data("kendoToolBar").enable("#calculateModelParametersBtn", false);
             },
             error: function(response) {
                 Common.ShowError(response.responseText);
@@ -537,8 +564,10 @@
 
     function changeToolBarButtonsClass() {
         var areAttributesExists = $('#grid').data('kendoGrid').dataSource.total() > 0;
-        $("#mainToolbar").data("kendoToolBar").enable("#formObjectArrayBtn", areAttributesExists);
-        $("#mainToolbar").data("kendoToolBar").enable("#calculateMarksBtn", hasFormedObjectArray);
+        var mainToolbar = $("#mainToolbar").data("kendoToolBar");
+        mainToolbar.enable("#formObjectArrayBtn", areAttributesExists);
+        mainToolbar.enable("#calculateMarksBtn", hasFormedObjectArray);
+        mainToolbar.enable("#calculateModelParametersBtn", hasFormedObjectArray);
         var row = getSelectedRowInGrid();
 		if (row.length === 0) {
             $('#editFactorBtn').addClass('k-state-disabled');

@@ -308,6 +308,23 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult CalculateAutomaticModelParameters(long modelId)
+        {
+			////TODO код для отладки
+			//new AutomaticModelParametersCalculationLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	ObjectId = modelId
+			//}, new CancellationToken());
+
+			AutomaticModelParametersCalculationLongProcess.AddProcessToQueue(modelId);
+
+	        return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult FormObjectArray(long modelId)
         {
             if (modelId == 0)
