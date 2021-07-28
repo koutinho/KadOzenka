@@ -27,18 +27,18 @@
     </div>
     <div id="correctItemBlock" class="form-group">
         <div class="col-sm-3">
-            @Html.LabelFor(x => x.CorrectItem, new { @class = "control-label required"})
+            @Html.LabelFor(x => x.CorrectItem, new { @class = Model.IsAutomatic ? "" : "control-label required"})
         </div>
         <div class="col-sm-9">
-            @Html.KendoNumericTextBoxFor(x => x.CorrectItem, precision: 5, isReadonly: Model.IsAutomatic)
+            @Html.KendoNumericTextBoxFor(x => x.CorrectItem, precision: 5, isReadonly: Model.IsAutomatic, editMode: !Model.IsAutomatic)
         </div>
     </div>
     <div id="kBlock" class="form-group">
         <div class="col-sm-3">
-            @Html.LabelFor(x => x.K, new { @class = "control-label required"})
+            @Html.LabelFor(x => x.K, new { @class = Model.IsAutomatic ? "" : "control-label required"})
         </div>
         <div class="col-sm-9">
-            @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: Model.IsAutomatic)
+            @Html.KendoNumericTextBoxFor(x => x.K, precision: 5, isReadonly: Model.IsAutomatic, editMode: !Model.IsAutomatic)
         </div>
     </div>
     <div id="dictionaryBlock" class="form-group">
