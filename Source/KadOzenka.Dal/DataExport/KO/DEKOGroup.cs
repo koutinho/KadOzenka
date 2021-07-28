@@ -527,7 +527,7 @@ namespace KadOzenka.Dal.DataExport
             private Dictionary<long, List<OMModelingDictionariesValues>> GetMarks()
             {
 	           var modelFactorsWithDictionaries = new ModelFactorsService().GetFactors(_model.Id)
-		           .Where(x => x.DictionaryId != null).ToList();
+		           .Where(x => x.IsNormalized).ToList();
 
                 List<OMModelingDictionariesValues> omMarkCatalogs;
                 using (Log.TimeOperation("Получение меток"))

@@ -71,17 +71,6 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		}
 
 		[Test]
-		public void Can_Not_Create_Marks_If_Model_Has_No_Factors_With_Default_Mark_Type()
-		{
-			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Straight).Build();
-			var modelObject = new ModelObjectBuilder().Coefficient(factor.AttributeId).Build();
-			MockModelObjects(modelObject);
-			MockModelFactors(factor);
-
-			Assert.Throws<CanNotCreateMarksBecauseNoFactorsException>(() => MarksCalculationLongProcess.CalculateMarks(_modelId, new CancellationToken()));
-		}
-
-		[Test]
 		public void Can_Not_Create_Marks_If_Model_Has_No_Active_Factors()
 		{
 			var factor = new ModelFactorRelationDtoBuilder().MarkType(MarkType.Default).Active(false).Build();
@@ -129,7 +118,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Modeling
 		private void MockModelFactors(params ModelFactorRelation[] modelFactors)
 		{
 			var result = modelFactors?.ToList() ?? new List<ModelFactorRelation>();
-			ModelFactorsService.Setup(x => x.GetFactors(_modelId)).Returns(result);
+			ModelFactorsService.Setup(x => x.GetCodedFactors(_modelId)).Returns(result);
 		}
 
 		#endregion

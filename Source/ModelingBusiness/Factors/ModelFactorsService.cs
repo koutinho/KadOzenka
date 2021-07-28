@@ -53,6 +53,11 @@ namespace ModelingBusiness.Factors
 			return OMModelFactor.Where(x => x.ModelId == modelId).SelectAll().Execute();
 		}
 
+		public List<ModelFactorRelation> GetCodedFactors(long modelId)
+		{
+			return GetFactors(modelId).Where(x => x.MarkTypeCode == MarkType.Default).ToList();
+		}
+
 		public List<ModelFactorRelation> GetFactors(long modelId)
 		{
 			var query = GetModelFactorsQuery(modelId);

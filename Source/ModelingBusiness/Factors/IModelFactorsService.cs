@@ -19,5 +19,6 @@ namespace ModelingBusiness.Factors
 		void DeleteManualModelFactor(long? id);
 		void DeleteAutomaticModelFactor(long? id);
 		List<long> GetAttributesWhichMustBeUnActive();
+		List<ModelFactorRelation> GetCodedFactors(long modelId);
 	}
 }
