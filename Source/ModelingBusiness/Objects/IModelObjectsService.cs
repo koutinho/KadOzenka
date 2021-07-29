@@ -12,6 +12,7 @@ namespace ModelingBusiness.Objects
 		List<OMModelToMarketObjects> GetModelObjects(long modelId);
 
 		int DestroyModelMarketObjects(OMModel model);
+		int DestroyModelMarketObjects(long modelId);
 
 		void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects);
 

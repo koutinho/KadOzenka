@@ -47,6 +47,7 @@ namespace ModelingBusiness.Objects.Import
 
 		private IModelDictionaryService ModelDictionaryService { get; }
 		private IModelingService ModelingService { get; }
+		private IModelObjectsService ModelObjectsService { get; }
 		private IModelFactorsService ModelFactorsService { get; }
 
 
@@ -55,6 +56,7 @@ namespace ModelingBusiness.Objects.Import
 			_locker = new object();
 			ModelDictionaryService = new ModelDictionaryService();
 			ModelingService = new ModelingService();
+			ModelObjectsService = new ModelObjectsService();
 			ModelFactorsService = new ModelFactorsService();
 
 			_objectTypes = Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
@@ -77,6 +79,11 @@ namespace ModelingBusiness.Objects.Import
 		public Stream ChangeObjects(ExcelFile file, ModelObjectsImporterInfo modelObjectsImporterInfo)
 		{
 			_log.Debug("{LoggerBasePhrase} старт. Создание - {isCreation}", LoggerBasePhrase, modelObjectsImporterInfo.IsCreation);
+
+			if (modelObjectsImporterInfo.IsCreation)
+			{
+				ModelObjectsService.DestroyModelMarketObjects(modelObjectsImporterInfo.ModelId);
+			}
 
 			var sheet = file.Worksheets[0];
 			var maxColumnIndex = ExcelFileHelper.GetLastUsedColumnIndex(sheet) + 1;

@@ -60,9 +60,7 @@ namespace ModelingBusiness.Objects
 
         public int DestroyModelMarketObjects(OMModel model)
         {
-	        var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {model.Id}";
-	        var command = DBMngr.Main.GetSqlStringCommand(sql);
-	        var deletedModelObjectsCount = DBMngr.Main.ExecuteNonQuery(command);
+	        var deletedModelObjectsCount = DestroyModelMarketObjects(model.Id);
 
 			model.ObjectsStatistic = null;
 	        model.Save();
@@ -70,7 +68,20 @@ namespace ModelingBusiness.Objects
 	        return deletedModelObjectsCount;
         }
 
-        public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
+        public int DestroyModelMarketObjects(long modelId)
+        {
+			_log.Debug("Начато удаление объектов моделирования для модели с ИД {ModelId}", modelId);
+
+			var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {modelId}";
+	        var command = DBMngr.Main.GetSqlStringCommand(sql);
+	        var deletedModelObjectsCount = DBMngr.Main.ExecuteNonQuery(command);
+
+	        _log.Debug("Удалено {DeletedModelObjectsCount} объектов моделирования для модели с ИД {ModelId}", deletedModelObjectsCount, modelId);
+
+			return deletedModelObjectsCount;
+        }
+
+		public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
 		{
 			var ids = objects.Select(x => x.Id).ToList();
             if (ids.Count == 0)
