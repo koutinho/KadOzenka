@@ -91,7 +91,7 @@ namespace ModelingBusiness.Modeling
             });
 
             if (RequestForService.Coefficients.Count == 0)
-                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех атрибутов не пустые)");
+                throw new Exception("Не было найдено объектов, подходящих для моделирования. Для расчета цены подходят объекты, которые не исключены из расчета и не находятся ни в обучающей, ни в контрольной выборках.");
 
             return RequestForService;
         }

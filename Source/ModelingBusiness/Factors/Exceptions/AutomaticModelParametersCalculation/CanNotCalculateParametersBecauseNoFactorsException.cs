@@ -7,7 +7,7 @@ namespace ModelingBusiness.Factors.Exceptions.AutomaticModelParametersCalculatio
 	public class CanNotCalculateParametersBecauseNoFactorsException : Exception
 	{
 		public CanNotCalculateParametersBecauseNoFactorsException() 
-			: base($"У модели нет факторов с типом метки '{MarkType.Straight.GetEnumDescription()}' или '{MarkType.Reverse.GetEnumDescription()}'. Создание меток невозможно.")
+			: base($"У модели нет факторов с типом метки '{MarkType.Straight.GetEnumDescription()}' или '{MarkType.Reverse.GetEnumDescription()}'. Расчет параметров невозможен.")
 		{
 			
 		}
