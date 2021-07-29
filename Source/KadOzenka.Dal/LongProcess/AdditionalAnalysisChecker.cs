@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.Excel;
 using Core.Messages;
 using Core.Register.LongProcessManagment;
 using Core.Shared.Extensions;
@@ -94,7 +95,7 @@ namespace KadOzenka.Dal.LongProcess
 
 			var mainWorkSheet = excelTemplate.Worksheets.Add("Объекты для доп. анализа");
 
-			CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Тип объекта", "Адрес", "Дата определения", "Кадастровая стоимость", "№ дела", @"Причина установки признака ""Требуется дополнительный анализ""" });
+			ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Тип объекта", "Адрес", "Дата определения", "Кадастровая стоимость", "№ дела", @"Причина установки признака ""Требуется дополнительный анализ""" });
 
 			mainWorkSheet.Columns[0].SetWidth(200, LengthUnit.Pixel);
 			mainWorkSheet.Columns[1].SetWidth(150, LengthUnit.Pixel);
@@ -143,7 +144,7 @@ namespace KadOzenka.Dal.LongProcess
 				int row = 1;
 				foreach (List<object> value in values)
 				{
-					CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, row, value.ToArray());
+					ExcelFileHelper.AddRow(mainWorkSheet, row, value.ToArray());
 					row++;
 				}
 				Console.WriteLine(values.Count);

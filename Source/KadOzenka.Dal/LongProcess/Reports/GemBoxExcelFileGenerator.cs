@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CommonSdks.Excel;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Reports.Entities;
@@ -76,7 +77,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public void AddSeparateColumnsHeaders(List<string> values)
 		{
-			CommonSdks.ExcelFileHelper.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
+			ExcelFileHelper.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 
 			_currentRowIndex++;
 		}
@@ -99,7 +100,7 @@ namespace KadOzenka.Dal.LongProcess.Reports
 
 		public void AddRow(List<object> values)
 		{
-			CommonSdks.ExcelFileHelper.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
+			ExcelFileHelper.AddRow(_excelFile.Worksheets[0], _currentRowIndex, values.ToArray(), GeneralCellStyle);
 			_currentRowIndex++;
 		}
 

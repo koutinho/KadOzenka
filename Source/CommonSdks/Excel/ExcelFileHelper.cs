@@ -2,7 +2,7 @@
 using System.Linq;
 using GemBox.Spreadsheet;
 
-namespace CommonSdks
+namespace CommonSdks.Excel
 {
 	public class ExcelFileHelper
 	{

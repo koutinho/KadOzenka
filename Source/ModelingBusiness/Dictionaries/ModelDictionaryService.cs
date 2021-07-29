@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.Excel;
 using CommonSdks.Extentions;
 using CommonSdks.PlatformWrappers;
 using Core.ErrorManagment;
@@ -499,7 +500,7 @@ namespace ModelingBusiness.Dictionaries
 			fileStream.Seek(0, SeekOrigin.Begin);
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			var mainWorkSheet = excelFile.Worksheets[0];
-			RowsCount = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+			RowsCount = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 
 			var locker = new object();
 			var cancelTokenSource = new CancellationTokenSource();
@@ -580,7 +581,7 @@ namespace ModelingBusiness.Dictionaries
 
 		private ColumnIndexes GetColumnIndexes(DictionaryImportFileInfoDto fileImportInfo, ExcelWorksheet mainWorkSheet)
 		{
-			var maxColumnsCount = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet);
+			var maxColumnsCount = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
 			var calculationValueIndex = -1;

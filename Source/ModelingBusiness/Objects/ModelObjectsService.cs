@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CommonSdks.Excel;
 using Core.Register;
 using GemBox.Spreadsheet;
 using Microsoft.Practices.EnterpriseLibrary.Data;
@@ -124,7 +125,7 @@ namespace ModelingBusiness.Objects
             groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
 			//TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
 			//columnHeaders.AddRange(new List<string>{ "МС", "%" });
-			CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, columnHeaders);
+			ExcelFileHelper.AddRow(mainWorkSheet, 0, columnHeaders);
 
 			var rowCounter = 1;
 			var marketObjects = GetModelObjects(modelId);
@@ -163,7 +164,7 @@ namespace ModelingBusiness.Objects
 				//values.Add(calculationParameters.ModelingPrice); 
 				//values.Add(calculationParameters.Percent);
 
-				CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, rowCounter++, values);
+				ExcelFileHelper.AddRow(mainWorkSheet, rowCounter++, values);
 			});
 
 			var stream = new MemoryStream();

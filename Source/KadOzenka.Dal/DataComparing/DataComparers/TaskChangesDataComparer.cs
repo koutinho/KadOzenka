@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.Excel;
 using Core.Messages;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -75,8 +76,8 @@ namespace KadOzenka.Dal.DataComparing.DataComparers
 			rsmFileInfo.Compare(pkkoFileInfo, resultExcelFile, "Данные, отсутствующие в ПККО");
 			pkkoFileInfo.Compare(rsmFileInfo, resultExcelFile, "Данные, отсутствующие в РСМ");
 
-			var areProtocolsEqual = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в ПККО"]) == 0
-			                        && CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в РСМ"]) == 0;
+			var areProtocolsEqual = ExcelFileHelper.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в ПККО"]) == 0
+			                        && ExcelFileHelper.GetLastUsedRowIndex(resultExcelFile.Worksheets["Данные, отсутствующие в РСМ"]) == 0;
 
 			_log.ForContext("RsmFileName", rsmFileInfo.Name)
 				.ForContext("PkkoFileName", pkkoFileInfo.Name)

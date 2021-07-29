@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.Excel;
 using GemBox.Spreadsheet;
 using ObjectModel.Directory;
 using ObjectModel.KO;
@@ -30,7 +31,7 @@ namespace KadOzenka.Dal.DataExport
 
             var mainWorkSheet = excelTemplate.Worksheets.Add("Изменения");
 
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "КН", "Дата изменения", "Тип", "Статус", "Старое значение", "Новое значение", "Изменение" });
+            ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "КН", "Дата изменения", "Тип", "Статус", "Старое значение", "Новое значение", "Изменение" });
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             ParallelOptions options = new ParallelOptions
             {
@@ -63,7 +64,7 @@ namespace KadOzenka.Dal.DataExport
 
                         foreach (ObjectModel.KO.OMUnitChange change in changes)
                         {
-	                        CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
+	                        ExcelFileHelper.AddRow(mainWorkSheet, row, new object[] { unit.CadastralNumber, unit.CreationDate.Value, unit.PropertyType, unit.StatusRepeatCalc, change.OldValue, change.NewValue, change.ChangeStatus });
                             row++;
                         }
 

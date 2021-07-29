@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.Excel;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -43,9 +44,9 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
-				CommonSdks.ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
+				ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
 				List<OMGroup> parcelGroup = OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(),
 						KoGroupAlgoritm.MainParcel);
@@ -54,7 +55,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				var groupAttributeFromTourSettings =
 					_tourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(),
 						KoAttributeUsingType.CodeGroupAttribute);
-				var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try
@@ -106,7 +107,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "Группа обновлена");
+										ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "Группа обновлена");
 									}
 								}
 								catch
@@ -118,7 +119,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
+										ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj ? "Указанный объект не найден" : "Указанная группа не найдена");
 									}
 								}
 								catch
@@ -134,7 +135,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						long errorId = ErrorManager.LogError(ex);
 						lock (locked)
 						{
-							CommonSdks.ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
+							ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 						}
 					}
 				});
@@ -171,15 +172,15 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				int maxColumns = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 
-				CommonSdks.ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
+				ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
 				List<OMGroup> parcelGroup = OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), KoGroupAlgoritm.MainParcel);
 				List<OMGroup> oksGroup = OMGroup.GetListGroupTour(settings.TourId.GetValueOrDefault(), KoGroupAlgoritm.MainOKS);
 				var groupAttributeFromTourSettings = _tourFactorService.GetTourAttributeFromSettings(settings.TourId.GetValueOrDefault(), KoAttributeUsingType.CodeGroupAttribute);
 
-				var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try
@@ -230,7 +231,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "Группа обновлена");
+										ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "Группа обновлена");
 									}
 								}
 								catch
@@ -245,7 +246,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns,
+										ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns,
 											!findObj
 												? "Указанный объект не найден"
 												: "Указанная группа не найдена");
@@ -262,7 +263,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						long errorId = ErrorManager.LogError(ex);
 						lock (locked)
 						{
-							CommonSdks.ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
+							ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 						}
 					}
 				});

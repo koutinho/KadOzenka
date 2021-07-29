@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.Excel;
 using Core.Messages;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -122,7 +123,7 @@ namespace KadOzenka.Dal.DataComparing.DataComparers.CadastralCostDataComparer.Da
 				}
 			}
 
-			var maxColIndex = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(worksheet);
+			var maxColIndex = ExcelFileHelper.GetLastUsedColumnIndex(worksheet);
 			for (int i = 0; i <= maxColIndex; i++)
 			{
 				worksheet.Columns[i].SetWidth(6, LengthUnit.Centimeter);

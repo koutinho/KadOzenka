@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.Excel;
 using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
