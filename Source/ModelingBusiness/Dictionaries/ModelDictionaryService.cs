@@ -118,7 +118,7 @@ namespace ModelingBusiness.Dictionaries
 			ValidateDictionary(newName, modelDictionariesIds);
 
 			dictionary.Name = newName;
-			dictionary.Save();
+			ModelDictionaryRepository.Save(dictionary);
 		}
 
 		public int DeleteDictionary(long? id)
