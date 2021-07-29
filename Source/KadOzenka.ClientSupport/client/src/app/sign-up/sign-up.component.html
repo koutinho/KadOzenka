@@ -30,5 +30,8 @@
               aria-label="Зарегистрироваться"
               (click)="signUp()">Зарегистрироваться</button>
           </div>
+          <div class="success-sign-up-message" *ngIf="signUpSuccess">
+            Аккаунт успешно зарегестрирован. <a routerLink="/login" class="additional-link"><strong>Войти</strong></a>
+          </div>
     </div>
 </div>

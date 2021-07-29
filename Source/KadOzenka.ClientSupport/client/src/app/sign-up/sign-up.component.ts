@@ -9,12 +9,14 @@ export class SignUpComponent implements OnInit {
   login = '';
   password = ''
 
+  signUpSuccess = false;
+
   constructor() { }
 
   ngOnInit(): void {
   }
 
   signUp() {
-    console.log('Регистрация');
+    this.signUpSuccess = true;
   }
 }

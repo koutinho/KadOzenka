@@ -18,6 +18,11 @@ border-radius: 15px;
   margin: 10px auto;
   text-align: right;
 }
+.success-sign-up-message {
+  margin-top: 10px;
+  text-align: right;
+  color: white;
+}
 mat-label{
     color: white !important;
 }
