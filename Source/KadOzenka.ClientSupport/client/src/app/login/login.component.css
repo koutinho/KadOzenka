@@ -14,6 +14,10 @@ border-radius: 15px;
     height: 100%;
   background: url("../../assets/region_logo_3_cut.jpg");
 }
+.additional-link{
+  margin: 10px auto;
+  text-align: right;
+}
 mat-label{
     color: white !important;
 }
@@ -21,4 +25,7 @@ input{
     color: white;
     caret-color: white;
 }
-
+a{
+  text-decoration: none;
+  color: rgb(42, 125, 219);
+}
