@@ -181,10 +181,12 @@ namespace ModelingBusiness.Objects.Import
 				var columnsWithValues = new List<Column>();
 				columnsMappingWithoutPrimaryKey.ForEach(x =>
 				{
+					var cellValue = cells[x.ColumnIndex].Value;
 					columnsWithValues.Add(new Column
 					{
 						AttributeId = x.AttributeId,
-						ValueToUpdate = cells[x.ColumnIndex].Value
+						//пустая ячейка в эксель, записывалась как ""
+						ValueToUpdate = string.IsNullOrEmpty(cellValue?.ToString()) ? null : cellValue
 					});
 				});
 
