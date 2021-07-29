@@ -83,7 +83,7 @@ namespace api.Controllers
             if (!result.Succeeded)  
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Ошибка добавления пользователя! Проверьте данные добавляемого пользователя и попробуйте заново." });  
   
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });  
+            return Ok(new Response { Status = "Success", Message = "Пользователь успешно создан!" });  
         }
     }  
 }

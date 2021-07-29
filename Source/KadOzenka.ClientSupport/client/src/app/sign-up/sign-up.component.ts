@@ -10,6 +10,8 @@ export class SignUpComponent implements OnInit {
   password = ''
 
   signUpSuccess = false;
+  signUpError = false;
+  signUpErrorMessage = "Ошибка при регистраци аккаунта."
 
   constructor() { }
 
@@ -17,6 +19,6 @@ export class SignUpComponent implements OnInit {
   }
 
   signUp() {
-    this.signUpSuccess = true;
+    this.signUpError = true;
   }
 }

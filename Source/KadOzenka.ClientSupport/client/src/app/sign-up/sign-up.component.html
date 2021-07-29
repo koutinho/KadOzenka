@@ -33,5 +33,8 @@
           <div class="success-sign-up-message" *ngIf="signUpSuccess">
             Аккаунт успешно зарегестрирован. <a routerLink="/login" class="additional-link"><strong>Войти</strong></a>
           </div>
+          <div class="error-sign-up-message" *ngIf="signUpError">
+            <p>{{signUpErrorMessage}}</p>
+          </div>
     </div>
 </div>

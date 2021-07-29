@@ -23,6 +23,11 @@ border-radius: 15px;
   text-align: right;
   color: white;
 }
+.error-sign-up-message {
+  margin-top: 10px;
+  text-align: right;
+  color: red;
+}
 mat-label{
     color: white !important;
 }
