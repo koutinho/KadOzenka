@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelingBusiness.Dictionaries.Exceptions
+namespace ModelingBusiness.Dictionaries.Exceptions.Dictionary
 {
 	public class DictionaryAlreadyExistsException : Exception
 	{

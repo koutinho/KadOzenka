@@ -2,6 +2,7 @@
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using KadOzenka.Dal.UnitTests.Modeling.Models;
 using ModelingBusiness.Dictionaries.Exceptions;
+using ModelingBusiness.Dictionaries.Exceptions.Mark;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.Directory.KO;

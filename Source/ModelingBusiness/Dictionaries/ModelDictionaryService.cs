@@ -22,6 +22,8 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Dictionaries.Entities;
 using ModelingBusiness.Dictionaries.Exceptions;
+using ModelingBusiness.Dictionaries.Exceptions.Dictionary;
+using ModelingBusiness.Dictionaries.Exceptions.Mark;
 using ModelingBusiness.Dictionaries.Repositories;
 using ModelingBusiness.Objects.Entities;
 using ObjectModel.Common;

@@ -2,7 +2,7 @@
 using Core.Shared.Extensions;
 using ObjectModel.KO;
 
-namespace ModelingBusiness.Dictionaries.Exceptions
+namespace ModelingBusiness.Dictionaries.Exceptions.Mark
 {
 	public class MarkValueConvertingException : Exception
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelingBusiness.Dictionaries.Exceptions
+namespace ModelingBusiness.Dictionaries.Exceptions.Mark
 {
 	public class TheSameMarkExistsException : Exception
 	{

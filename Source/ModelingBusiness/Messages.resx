@@ -117,16 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CanNotActivateNotPreparedAutomaticModel" xml:space="preserve">
-    <value>Невозможно активировать необученную модель</value>
-  </data>
-  <data name="EmptyModelId" xml:space="preserve">
-    <value>Не передан идентификатор Модели</value>
-  </data>
   <data name="EmptyName" xml:space="preserve">
     <value>У модели не заполнено Имя</value>
-  </data>
-  <data name="EmptyDictionaryForFactorWithDefaultMark" xml:space="preserve">
-    <value>Для фактора с типом метки 'По умолчанию' обязательно нужно заполнить имя словаря</value>
   </data>
 </root>

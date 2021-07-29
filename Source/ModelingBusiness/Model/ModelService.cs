@@ -72,7 +72,7 @@ namespace ModelingBusiness.Model
 		public OMModel GetModelEntityById(long? modelId)
         {
 	        if (modelId.GetValueOrDefault() == 0)
-		        throw new Exception(ModelingBusiness.Messages.EmptyModelId);
+		        throw new EmptyModelIdException();
 
 	        var model = ModelRepository.GetById(modelId.Value, null);
 	        if (model == null)
@@ -271,7 +271,7 @@ namespace ModelingBusiness.Model
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception(Messages.CanNotActivateNotPreparedAutomaticModel);
+			        throw new CanNotActivateNotPreparedAutomaticModelException();
 			}
 	        
 			using (var ts = new TransactionScope())

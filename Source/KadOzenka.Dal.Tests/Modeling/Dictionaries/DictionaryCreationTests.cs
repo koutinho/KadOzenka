@@ -5,6 +5,7 @@ using Core.Register;
 using KadOzenka.Common.Tests;
 using KadOzenka.Dal.UnitTests._Builders.Modeling.Dictionaries;
 using ModelingBusiness.Dictionaries.Exceptions;
+using ModelingBusiness.Dictionaries.Exceptions.Dictionary;
 using Moq;
 using NUnit.Framework;
 using ObjectModel.KO;

@@ -2,7 +2,7 @@
 using Core.Register;
 using Core.Shared.Extensions;
 
-namespace ModelingBusiness.Dictionaries.Exceptions
+namespace ModelingBusiness.Dictionaries.Exceptions.Dictionary
 {
 	public class UnsupportedDictionaryTypeException : Exception
 	{

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
+using ModelingBusiness.Model.Exceptions;
 using ModelingBusiness.Objects.Entities;
 using Moq;
 using NUnit.Framework;
@@ -51,10 +52,9 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(false);
 
-			var exception = Assert.Throws<Exception>(() => ModelService.ActivateModel(initialModel.Id));
+			Assert.Throws<CanNotActivateNotPreparedAutomaticModelException>(() => ModelService.ActivateModel(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
-			Assert.That(exception.Message, Is.EqualTo(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
 		[Test]
@@ -67,10 +67,9 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 
-			var exception = Assert.Throws<Exception>(() => ModelService.ActivateModel(initialModel.Id));
+			Assert.Throws<CanNotActivateNotPreparedAutomaticModelException>(() => ModelService.ActivateModel(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
-			Assert.That(exception.Message, Is.EqualTo(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
 		[Test]
