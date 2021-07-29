@@ -784,7 +784,6 @@ namespace KadOzenka.Web.Controllers
                             IsNewDictionary = viewModel.GroupingDictionary.IsNewDictionary,
                             NewDictionaryName = viewModel.GroupingDictionary.NewDictionaryName
                         };
-                        ////TODO для тестирования
                         //new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
                         //{
                         //	Status_Code = Status.Added,

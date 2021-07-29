@@ -293,7 +293,6 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult CalculateMarks(long modelId)
         {
-	        ////TODO код для отладки
 			//new MarksCalculationLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
@@ -310,7 +309,6 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult CalculateAutomaticModelParameters(long modelId)
         {
-			////TODO код для отладки
 			//new AutomaticModelParametersCalculationLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
@@ -335,7 +333,6 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception(Messages.ObjectFormationProcessAlreadyAdded);
 
             var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
-			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
@@ -361,7 +358,6 @@ namespace KadOzenka.Web.Controllers
                 ModelId = modelId,
                 ModelType = ConvertModelType(modelType)
             };
-            //////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
@@ -390,7 +386,6 @@ namespace KadOzenka.Web.Controllers
                 ModelId = modelId,
                 ModelType = ConvertModelType(modelType)
             };
-            ////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
@@ -499,7 +494,6 @@ namespace KadOzenka.Web.Controllers
                 //        ModelId = factorModel.ModelId.GetValueOrDefault(),
                 //        AttributeId = factorModel.FactorId.GetValueOrDefault()
                 //    };
-                //    ////TODO код для отладки
                 //    //new FactorAdditionToModelObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
                 //    //{
                 //    //	Status_Code = Status.Added,
@@ -906,7 +900,6 @@ namespace KadOzenka.Web.Controllers
 			        FileInfo = importInfo,
 			        DictionaryId = model.DictionaryId
 		        };
-				////TODO для тестирования
 				//new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
 				//{
 				//	Status_Code = Status.Added,
@@ -1062,7 +1055,6 @@ namespace KadOzenka.Web.Controllers
             //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
             //if (model == null)
             //	throw new Exception($"Не найдена модель с ИД '{modelId}'");
-            //TODO пока работаем только с Exp
             //var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
 
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
@@ -1367,9 +1359,7 @@ namespace KadOzenka.Web.Controllers
                 InputParametersXml = correlationInputParameters.SerializeToXml<CorrelationInputParameters>()
             };
 
-            ////TODO код для отладки
-            //var process = new ModelingProcess();
-            //process.StartProcess(new OMProcessType(), new OMQueue
+            //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //    Status_Code = Status.Added,
             //    UserId = SRDSession.GetCurrentUserId(),
