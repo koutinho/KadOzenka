@@ -15,7 +15,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			var model = new OMModel
 			{
 				AlgoritmType_Code = type,
-				A0 = line,
+				A0ForLinear = line,
 				A0ForExponential = exp,
 				A0ForMultiplicative = mult
 			};

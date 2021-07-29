@@ -168,22 +168,22 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _a0;
+        private decimal? _a0forlinear;
         /// <summary>
-        /// 20600700 Cвободный член в формуле для Линейного алгоритма (A0)
+        /// 20600700 Cвободный член в формуле для Линейного алгоритма (A0_FOR_LINEAR)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600700)]
-        public decimal? A0
+        public decimal? A0ForLinear
         {
             get
             {
-                CheckPropertyInited("A0");
-                return _a0;
+                CheckPropertyInited("A0ForLinear");
+                return _a0forlinear;
             }
             set
             {
-                _a0 = value;
-                NotifyPropertyChanged("A0");
+                _a0forlinear = value;
+                NotifyPropertyChanged("A0ForLinear");
             }
         }
 

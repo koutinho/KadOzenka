@@ -14,7 +14,7 @@ namespace ObjectModel.KO
         public bool IsAutomatic => Type_Code == KoModelType.Automatic;
         public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
         public decimal A0ForExponentialInFormula => Math.Round(A0ForExponential.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        public decimal A0ForLinearInFormula => Math.Round(A0.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+        public decimal A0ForLinearInFormula => Math.Round(A0ForLinear.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
         public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
         public bool HasLinearTrainingResult => !string.IsNullOrWhiteSpace(LinearTrainingResult);
         public bool HasExponentialTrainingResult => !string.IsNullOrWhiteSpace(ExponentialTrainingResult);
@@ -28,7 +28,7 @@ namespace ObjectModel.KO
                 case KoAlgoritmType.Exp:
                     return A0ForExponential;
                 case KoAlgoritmType.Line:
-                    return A0;
+                    return A0ForLinear;
                 case KoAlgoritmType.Multi:
                     return A0ForMultiplicative;
             }
@@ -44,13 +44,13 @@ namespace ObjectModel.KO
                     A0ForExponential = a0;
                     break;
                 case KoAlgoritmType.Line:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
                 case KoAlgoritmType.Multi:
                     A0ForMultiplicative = a0;
                     break;
                 default:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
             }
         }
@@ -63,13 +63,13 @@ namespace ObjectModel.KO
                     A0ForExponential = a0;
                     break;
                 case KoAlgoritmType.Line:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
                 case KoAlgoritmType.Multi:
                     A0ForMultiplicative = a0;
                     break;
                 default:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
             }
         }

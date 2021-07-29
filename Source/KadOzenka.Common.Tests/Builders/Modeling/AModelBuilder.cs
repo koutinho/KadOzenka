@@ -18,7 +18,7 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 				Formula = RandomGenerator.GetRandomString(),
 				AlgoritmType = KoAlgoritmType.Line.GetEnumDescription(),
 				AlgoritmType_Code = KoAlgoritmType.Line,
-				A0 = RandomGenerator.GenerateRandomDecimal(),
+				A0ForLinear = RandomGenerator.GenerateRandomDecimal(),
 				CalculationType = KoCalculationType.Comparative.GetEnumDescription(),
 				CalculationType_Code = KoCalculationType.Comparative,
 				CalculationMethod = KoCalculationMethod.IndividualCalculation.GetEnumDescription(),

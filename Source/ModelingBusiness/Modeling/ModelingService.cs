@@ -86,7 +86,7 @@ namespace ModelingBusiness.Modeling
 			        generalModel.LinearTrainingResult = null;
 			        generalModel.ExponentialTrainingResult = null;
 			        generalModel.MultiplicativeTrainingResult = null;
-			        generalModel.A0 = null;
+			        generalModel.A0ForLinear = null;
 			        generalModel.A0ForMultiplicative = null;
 			        generalModel.A0ForExponential = null;
 					break;

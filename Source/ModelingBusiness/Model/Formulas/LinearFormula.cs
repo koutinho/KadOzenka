@@ -30,7 +30,7 @@ namespace ModelingBusiness.Model.Formulas
 
 		public override string GetBaseFormulaPart(OMModel model, string factors)
 		{
-			var a0 = ProcessNumber(model.A0 == null ? 1 : model.A0ForLinearInFormula);
+			var a0 = ProcessNumber(model.A0ForLinear == null ? 1 : model.A0ForLinearInFormula);
 			
 			return $"{a0} + {factors}";
 		}

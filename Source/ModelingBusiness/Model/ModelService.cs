@@ -95,7 +95,7 @@ namespace ModelingBusiness.Model
 		        x.Type_Code,
 		        x.AlgoritmType_Code,
 		        x.CalculationType_Code,
-		        x.A0,
+		        A0 = x.A0ForLinear,
 		        x.A0ForExponential,
 		        x.A0ForMultiplicative,
 		        x.Formula,
