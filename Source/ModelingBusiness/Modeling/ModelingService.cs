@@ -106,6 +106,10 @@ namespace ModelingBusiness.Modeling
 			        x.SetCoefficient(null, KoAlgoritmType.Exp);
 			        x.SetCoefficient(null, KoAlgoritmType.Multi);
 		        }
+		        else
+		        {
+					x.SetCoefficient(null, type);
+		        }
 				x.Save();
 	        });
 
