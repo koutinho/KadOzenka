@@ -18,6 +18,8 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 		public void CanNot_Create_Dictionary_Without_Name()
 		{
 			string dictionaryName = null;
+			ModelDictionaryRepository.Setup(x =>
+				x.GetEntitiesByCondition(It.IsAny<Expression<Func<OMModelingDictionary, bool>>>(), null)).Returns(new List<OMModelingDictionary>());
 
 			Assert.Throws<EmptyDictionaryNameException>(() =>
 				ModelDictionaryService.CreateDictionary(dictionaryName, RegisterAttributeType.INTEGER,
@@ -37,6 +39,21 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Dictionaries
 			Assert.Throws<DictionaryAlreadyExistsException>(() =>
 				ModelDictionaryService.CreateDictionary(dictionaryName, RegisterAttributeType.INTEGER,
 					new List<long> {existedDictionary.Id}));
+
+			ModelDictionaryRepository.Verify(foo => foo.Save(It.IsAny<OMModelingDictionary>()), Times.Never);
+		}
+
+		[TestCase(RegisterAttributeType.BFILE)]
+		[TestCase(RegisterAttributeType.BLOB)]
+		[TestCase(RegisterAttributeType.LINK)]
+		public void CanNot_Create_Dictionary_With_Specific_Types(RegisterAttributeType factorType)
+		{
+			string dictionaryName = RandomGenerator.GetRandomString();
+			ModelDictionaryRepository.Setup(x =>
+				x.GetEntitiesByCondition(It.IsAny<Expression<Func<OMModelingDictionary, bool>>>(), null)).Returns(new List<OMModelingDictionary>());
+
+			Assert.Throws<UnsupportedDictionaryTypeException>(() =>
+				ModelDictionaryService.CreateDictionary(dictionaryName, factorType, new List<long>()));
 
 			ModelDictionaryRepository.Verify(foo => foo.Save(It.IsAny<OMModelingDictionary>()), Times.Never);
 		}

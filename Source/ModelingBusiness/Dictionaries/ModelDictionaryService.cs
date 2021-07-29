@@ -231,8 +231,7 @@ namespace ModelingBusiness.Dictionaries
 					dictionaryType = ModelDictionaryType.Reference;
 					break;
 				default:
-					throw new ArgumentOutOfRangeException(
-						$"Для фактора с типом '{factorType.GetEnumDescription()}' нельзя создать словарь меток");
+					throw new UnsupportedDictionaryTypeException(factorType);
 			}
 
 			return dictionaryType;
