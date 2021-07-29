@@ -69,7 +69,7 @@ namespace ModelingBusiness.Dictionaries
 			if (dictionaryIds == null || dictionaryIds.Count == 0)
 				return new List<OMModelingDictionary>();
 
-			var dictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
+			var dictionaries = ModelDictionaryRepository.GetEntitiesByCondition(x => dictionaryIds.Contains(x.Id), null);
 
 			if (!withItems)
 				return dictionaries;
@@ -100,11 +100,13 @@ namespace ModelingBusiness.Dictionaries
 
 			var dictionaryType = MapDictionaryType(factorType);
 
-			return new OMModelingDictionary
+			var dictionary = new OMModelingDictionary
 			{
 				Name = name,
 				Type_Code = dictionaryType
-			}.Save();
+			};
+
+			return ModelDictionaryRepository.Save(dictionary);
 		}
 
 		public void UpdateDictionary(long id, string newName, List<long> modelDictionariesIds)
@@ -195,7 +197,7 @@ namespace ModelingBusiness.Dictionaries
 		private void ValidateDictionary(string name, List<long> modelDictionariesIds)
 		{
 			if (string.IsNullOrWhiteSpace(name))
-				throw new Exception("Нельзя создать словарь с пустым именем");
+				throw new EmptyDictionaryNameException();
 
 			if (modelDictionariesIds.Count > 0)
 			{
