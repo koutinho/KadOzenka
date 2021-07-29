@@ -28,7 +28,6 @@ using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
-using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
 
@@ -56,8 +55,7 @@ namespace ModelingBusiness.Dictionaries
 			_marksTableName = "ko_modeling_dictionaries_values";
 		}
 		
-
-
+		
 
 		#region Словарь
 

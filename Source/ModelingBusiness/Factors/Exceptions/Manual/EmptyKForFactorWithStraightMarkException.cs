@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ModelingBusiness.Factors.Exceptions
+namespace ModelingBusiness.Factors.Exceptions.Manual
 {
 	public class EmptyKForFactorWithStraightMarkException : Exception
 	{

@@ -10,6 +10,8 @@ using Core.Shared.Misc;
 using ModelingBusiness.Dictionaries;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Factors.Exceptions;
+using ModelingBusiness.Factors.Exceptions.Automatic;
+using ModelingBusiness.Factors.Exceptions.Manual;
 using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Modeling;
 using ModelingBusiness.Objects;
@@ -364,7 +366,7 @@ namespace ModelingBusiness.Factors
 
 			var activeForbiddenAttributes = GetAttributesWhichMustBeUnActive();
 			if (activeForbiddenAttributes.Contains(factor.FactorId) && factor.IsActive)
-				throw new Exception("Атрибут недоступен для активации");
+				throw new AttributeForbiddenForActivationException();
 
 			var model = OMModel.Where(x => x.Id == factor.ModelId).Select(x => x.GroupId).ExecuteFirstOrDefault();
 			if (model == null)
@@ -375,9 +377,6 @@ namespace ModelingBusiness.Factors
 		{
 			if (factor.ModelId == null)
 				throw new Exception("Не передан ИД основной модели");
-
-			if (factor.FactorId == null)
-				throw new Exception("Не передан ИД фактора");
 
 			if (factor.MarkType == MarkType.Default && factor.DictionaryId.GetValueOrDefault() == 0)
 				throw new EmptyDictionaryForFactorWithDefaultMarkException();
