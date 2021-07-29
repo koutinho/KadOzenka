@@ -259,7 +259,6 @@ namespace ObjectModel.KO
 
     public partial class OMModelFactor
     {
-        static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMModelingDictionariesValues> MarkCatalogs { get; set; }
 
        public decimal CorrectionInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);

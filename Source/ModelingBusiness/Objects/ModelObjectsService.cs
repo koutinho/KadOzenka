@@ -250,11 +250,11 @@ namespace ModelingBusiness.Objects
 			public bool IsColumnWithValue { get; set; }
 		}
 
-		public class ModelObjectsCalculationParameters
-        {
-	        public decimal? ModelingPrice { get; set; }
-	        public decimal? Percent { get; set; }
-        }
+		/*public class ModelObjectsCalculationParameters
+		{
+			public decimal? ModelingPrice { get; set; }
+			public decimal? Percent { get; set; }
+		}*/
 
 		#endregion
 	}

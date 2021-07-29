@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CommonSdks.Excel;
@@ -58,7 +57,7 @@ namespace ModelingBusiness.Objects.Import
 			ModelingService = new ModelingService();
 			ModelFactorsService = new ModelFactorsService();
 
-			_objectTypes = System.Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
+			_objectTypes = Enum.GetValues(typeof(PropertyTypes)).Cast<PropertyTypes>()
 				.Select(x => new ObjectTypeInfo
 				{
 					EnumValue = x,
@@ -124,7 +123,7 @@ namespace ModelingBusiness.Objects.Import
 				}
 			});
 
-			new ModelFactorsService().GetFactors(modelObjectsImporterInfo.ModelId)
+			ModelFactorsService.GetFactors(modelObjectsImporterInfo.ModelId)
 				.Where(x => x.IsNormalized).Select(x => x.DictionaryId.GetValueOrDefault())
 				.ForEach(x => ModelDictionaryService.DeleteMarks(x));
 			
