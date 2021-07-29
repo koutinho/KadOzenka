@@ -7,7 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SignUpComponent implements OnInit {
   login = '';
-  password = ''
+  password = '';
+  email = '';
 
   signUpSuccess = false;
   signUpError = false;

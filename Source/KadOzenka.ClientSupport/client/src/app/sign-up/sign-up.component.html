@@ -20,13 +20,26 @@
                 Введите пароль
             </mat-error>
           </mat-form-field>
+          <mat-form-field class="login-row">
+            <mat-label>Почта</mat-label>
+            <input matInput type="email" [(ngModel)]="email" required email #emailControl="ngModel">
+            <button *ngIf="email" matSuffix mat-icon-button aria-label="Очистить" (click)="email=''">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <mat-error *ngIf="emailControl.errors?.required">
+                Введите почту
+            </mat-error>
+            <mat-error *ngIf="emailControl.errors?.email">
+                Введите действительный адрес почты
+            </mat-error>
+          </mat-form-field>
           <div style="text-align: end;">
             <button
               id="signUpButton"
               type="button"
               mat-raised-button
               color="primary"
-              [disabled]="login === '' || password === ''"
+              [disabled]="login === '' || password === '' || email === ''"
               aria-label="Зарегистрироваться"
               (click)="signUp()">Зарегистрироваться</button>
           </div>
