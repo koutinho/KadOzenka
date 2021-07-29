@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './common/guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { Settings } from 'src/settings';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 export function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -24,6 +25,10 @@ const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent
+  },
+  {
+    path: 'signup',
+    component: SignUpComponent
   }
 ];
 

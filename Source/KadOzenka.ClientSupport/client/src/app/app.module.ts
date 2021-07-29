@@ -19,13 +19,15 @@ import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/guards/api/auth/authService';
 import { WheatherForecastApiService } from './common/guards/api/wheatherForcast/wheatherForecastService';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    LoginComponent
+    LoginComponent,
+    SignUpComponent
   ],
   imports: [
     BrowserModule,
