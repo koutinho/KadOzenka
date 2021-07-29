@@ -9,8 +9,8 @@ using Core.Shared.Extensions;
 using KadOzenka.Dal.LongProcess.Common;
 using KadOzenka.Dal.LongProcess.Modeling.InputParameters;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Dto.Modeling;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Modeling;
+using MarketPlaceBusiness.Modeling.Entities;
 using ModelingBusiness.Objects.Entities;
 using ObjectModel.Core.LongProcess;
 using ObjectModel.Directory;
@@ -19,6 +19,7 @@ using ObjectModel.KO;
 using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
+using Consts = KadOzenka.Dal.LongProcess.Common.Consts;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -120,9 +121,9 @@ namespace KadOzenka.Dal.LongProcess.Modeling
             var numberOfDeletedModelObjects = ModelObjectsService.DestroyModelMarketObjects(Model);
             AddLog(Queue, $"Удалено {numberOfDeletedModelObjects} ранее найденных объектов модели.", logger: Logger);
 
-            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == MarketPlaceBusiness.Common.Consts.RegisterId).ToList();
+            var marketObjectAttributes = modelAttributes.Where(x => x.RegisterId == MarketPlaceBusiness.Consts.RegisterId).ToList();
             AddLog(Queue, $"Найдено {marketObjectAttributes.Count} атрибутов для модели из таблицы с Аналогами.", logger: Logger);
-            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != MarketPlaceBusiness.Common.Consts.RegisterId).ToList();
+            var tourFactorsAttributes = modelAttributes.Where(x => x.RegisterId != MarketPlaceBusiness.Consts.RegisterId).ToList();
             AddLog(Queue, $"Найдено {tourFactorsAttributes.Count} атрибутов для модели из таблицы с факторами тура.", logger: Logger);
 
             var dictionaries = GetDictionaries(modelAttributes);

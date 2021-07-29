@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using MarketPlaceBusiness.Dto;
-using ObjectModel.Market;
-
-namespace MarketPlaceBusiness.Interfaces
+﻿namespace MarketPlaceBusiness.Common.Interfaces
 {
 	public interface IMarketObjectService : IAMarketObjectBaseService
 	{

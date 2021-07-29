@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Core.Register.RegisterEntities;
-using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Common.Dto;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness.Interfaces
+namespace MarketPlaceBusiness.Common.Interfaces
 {
 	public interface IAMarketObjectBaseService
 	{

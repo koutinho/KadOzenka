@@ -19,6 +19,7 @@ using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Directory.Ko;
 using ObjectModel.KO;
+using Consts = MarketPlaceBusiness.Consts;
 
 namespace ModelingBusiness.Factors
 {
@@ -190,7 +191,7 @@ namespace ModelingBusiness.Factors
 
 		public List<long> GetAttributesWhichMustBeUnActive()
 		{
-			return RegisterCacheWrapper.GetAttributeDataList(MarketPlaceBusiness.Common.Consts.RegisterId)
+			return RegisterCacheWrapper.GetAttributeDataList(Consts.RegisterId)
 				.Select(x => x.Id).ToList();
 		}
 

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using AutoMapper;
 using Core.Register.RegisterEntities;
-using MarketPlaceBusiness.Common;
-using MarketPlaceBusiness.Dto;
-using MarketPlaceBusiness.Dto.AutoMapper;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Common.Dto;
+using MarketPlaceBusiness.Common.Dto.AutoMapper;
+using MarketPlaceBusiness.Common.Interfaces;
+using MarketPlaceBusiness.Repositories;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness
+namespace MarketPlaceBusiness.Common
 {
 	public abstract class AMarketObjectBaseService : IAMarketObjectBaseService
 	{

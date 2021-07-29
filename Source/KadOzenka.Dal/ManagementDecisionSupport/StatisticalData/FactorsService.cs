@@ -6,7 +6,7 @@ using System.Text;
 using CommonSdks;
 using Core.Register;
 using Core.Shared.Extensions;
-using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness;
 using ModelingBusiness.Factors;
 using ObjectModel.Core.Register;
 using ObjectModel.KO;

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace MarketPlaceBusiness.Dto.AutoMapper
+namespace MarketPlaceBusiness.Common.Dto.AutoMapper
 {
 	public class MapperSingleton
 	{

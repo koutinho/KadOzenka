@@ -1,4 +1,4 @@
-﻿namespace MarketPlaceBusiness.Dto.Modeling
+﻿namespace MarketPlaceBusiness.Modeling.Entities
 {
 	public class MarketObjectPure
 	{

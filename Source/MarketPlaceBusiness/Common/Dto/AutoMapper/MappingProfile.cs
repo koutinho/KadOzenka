@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness.Dto.AutoMapper
+namespace MarketPlaceBusiness.Common.Dto.AutoMapper
 {
 	public class MappingProfile : Profile
 	{

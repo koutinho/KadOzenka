@@ -1,8 +1,9 @@
 ﻿using Core.Register.QuerySubsystem;
-using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Common.Dto;
+using MarketPlaceBusiness.Common.Interfaces;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness.Interfaces
+namespace MarketPlaceBusiness.Map
 {
 	public interface IMarketObjectsForMapService : IAMarketObjectBaseService
 	{

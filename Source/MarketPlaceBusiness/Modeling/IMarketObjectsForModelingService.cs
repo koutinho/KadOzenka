@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using MarketPlaceBusiness.Dto.Modeling;
+using MarketPlaceBusiness.Modeling.Entities;
 using ObjectModel.Core.Register;
 
-namespace MarketPlaceBusiness.Interfaces
+namespace MarketPlaceBusiness.Modeling
 {
 	public interface IMarketObjectsForModelingService
 	{

@@ -21,7 +21,7 @@ using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
-using Consts = MarketPlaceBusiness.Common.Consts;
+using Consts = MarketPlaceBusiness.Consts;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {

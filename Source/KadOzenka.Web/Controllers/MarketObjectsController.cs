@@ -16,7 +16,7 @@ using Core.UI.Registers.CoreUI.Registers;
 using KadOzenka.Dal.CommonFunctions;
 using KadOzenka.Dal.GbuObject;
 using KadOzenka.Web.Attributes;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Common.Interfaces;
 using SRDCoreFunctions = ObjectModel.SRD.SRDCoreFunctions;
 
 namespace KadOzenka.Web.Controllers

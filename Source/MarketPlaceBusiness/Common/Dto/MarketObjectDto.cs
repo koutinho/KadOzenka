@@ -1,7 +1,7 @@
 ﻿using System;
 using ObjectModel.Directory;
 
-namespace MarketPlaceBusiness.Dto
+namespace MarketPlaceBusiness.Common.Dto
 {
 	public class MarketObjectDto
 	{

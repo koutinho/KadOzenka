@@ -2,7 +2,7 @@
 using Core.Register.RegisterEntities;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness.Common
+namespace MarketPlaceBusiness
 {
 	public static class Consts
 	{

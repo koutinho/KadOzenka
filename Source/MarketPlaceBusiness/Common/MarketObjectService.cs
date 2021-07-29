@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
-using MarketPlaceBusiness.Common;
-using MarketPlaceBusiness.Dto;
-using MarketPlaceBusiness.Interfaces;
-using ObjectModel.Directory;
-using ObjectModel.Market;
+﻿using AutoMapper;
+using MarketPlaceBusiness.Common.Interfaces;
+using MarketPlaceBusiness.Repositories;
 
-namespace MarketPlaceBusiness
+namespace MarketPlaceBusiness.Common
 {
 	public class MarketObjectService : AMarketObjectBaseService, IMarketObjectService
 	{
@@ -18,7 +12,7 @@ namespace MarketPlaceBusiness
 		{
 		}
 
-		#region Проверк на дублирование
+		#region Проверка на дублирование
 
 		//public List<OMCoreObject> GetObjectsForDuplicatesChecking()
 		//{

@@ -2,13 +2,12 @@
 using System.Linq;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
-using MarketPlaceBusiness.Dto.Modeling;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Modeling.Entities;
 using ObjectModel.Core.Register;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 
-namespace MarketPlaceBusiness
+namespace MarketPlaceBusiness.Modeling
 {
     //TODO возможно, объединить с основным
 	public class MarketObjectsForModelingService : IMarketObjectsForModelingService
