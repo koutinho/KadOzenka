@@ -1,1 +1,34 @@
-<p>sign-up works!</p>
+<div class="login-form-component">
+    <div class="login-form-wrap">        
+        <mat-form-field class="login-row">
+            <mat-label>Имя пользователя</mat-label>
+            <input matInput type="text" [(ngModel)]="login" required #loginControl="ngModel">
+            <button *ngIf="login" matSuffix mat-icon-button aria-label="Очистить" (click)="login=''">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <mat-error *ngIf="loginControl.errors?.required">
+                Заполните имя пользователя
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="password-row">
+            <mat-label>Пароль</mat-label>
+            <input matInput type="password" [(ngModel)]="password" required #passwordControl="ngModel">
+            <button *ngIf="password" matSuffix mat-icon-button aria-label="Очистить" (click)="password=''">
+                <mat-icon>clear</mat-icon>
+            </button>
+            <mat-error *ngIf="passwordControl.errors?.required">
+                Введите пароль
+            </mat-error>
+          </mat-form-field>
+          <div style="text-align: end;">
+            <button
+              id="signUpButton"
+              type="button"
+              mat-raised-button
+              color="primary"
+              [disabled]="login === '' || password === ''"
+              aria-label="Зарегистрироваться"
+              (click)="signUp()">Зарегистрироваться</button>
+          </div>
+    </div>
+</div>

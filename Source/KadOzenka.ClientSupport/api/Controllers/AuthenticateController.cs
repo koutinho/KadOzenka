@@ -71,7 +71,7 @@ namespace api.Controllers
         {  
             var userExists = await userManager.FindByNameAsync(model.Username);  
             if (userExists != null)  
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });  
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = $"Пользователь {model.Username} уже есть в системе!" });  
   
             ApplicationUser user = new ApplicationUser()  
             {  
@@ -81,7 +81,7 @@ namespace api.Controllers
             };  
             var result = await userManager.CreateAsync(user, model.Password);  
             if (!result.Succeeded)  
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "Ошибка добавления пользователя! Проверьте данные добавляемого пользователя и попробуйте заново." });  
   
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });  
         }
