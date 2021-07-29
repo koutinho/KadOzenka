@@ -89,6 +89,24 @@ namespace ObjectModel.KO
             }
         }
 
+        public void SetTrainingResult(string trainingResult, KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.Exp:
+			        ExponentialTrainingResult = trainingResult;
+                    break;
+		        case KoAlgoritmType.Line:
+			        LinearTrainingResult = trainingResult;
+                    break;
+		        case KoAlgoritmType.Multi:
+			        MultiplicativeTrainingResult = trainingResult;
+                    break;
+		        default:
+			        throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
+	        }
+        }
+
         //public string GetFormulaFull(bool upks)
         //{
         //    string str_koeff = GetFormulaKoeff(false, string.Empty);

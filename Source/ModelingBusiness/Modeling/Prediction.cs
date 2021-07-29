@@ -51,13 +51,13 @@ namespace ModelingBusiness.Modeling
         {
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            if (InputParameters.ModelType == KoAlgoritmType.Line && string.IsNullOrWhiteSpace(GeneralModel.LinearTrainingResult))
+            if (InputParameters.ModelType == KoAlgoritmType.Line && !GeneralModel.HasLinearTrainingResult)
 	            throw new Exception(GetErrorMessage(KoAlgoritmType.Line));
 
-            if (InputParameters.ModelType == KoAlgoritmType.Exp && string.IsNullOrWhiteSpace(GeneralModel.ExponentialTrainingResult))
+            if (InputParameters.ModelType == KoAlgoritmType.Exp && !GeneralModel.HasExponentialTrainingResult)
 	            throw new Exception(GetErrorMessage(KoAlgoritmType.Exp));
 
-            if (InputParameters.ModelType == KoAlgoritmType.Multi && string.IsNullOrWhiteSpace(GeneralModel.MultiplicativeTrainingResult))
+            if (InputParameters.ModelType == KoAlgoritmType.Multi && !GeneralModel.HasMultiplicativeTrainingResult)
 	            throw new Exception(GetErrorMessage(KoAlgoritmType.Multi));
         }
 

@@ -307,25 +307,9 @@ namespace ModelingBusiness.Modeling
             };
             var trainingResultStr = JsonConvert.SerializeObject(trainingResult);
 
-            switch (type)
-			{
-				case KoAlgoritmType.Exp:
-					GeneralModel.ExponentialTrainingResult = trainingResultStr;
-					GeneralModel.A0ForExponential = a0;
-					break;
-				case KoAlgoritmType.Line:
-					GeneralModel.LinearTrainingResult = trainingResultStr;
-					GeneralModel.A0 = a0;
-                    break;
-				case KoAlgoritmType.Multi:
-					GeneralModel.MultiplicativeTrainingResult = trainingResultStr;
-					GeneralModel.A0ForMultiplicative = a0;
-                    break;
-                case KoAlgoritmType.None:
-	                throw new Exception("Невозможно обновить результаты обучения модели, т.к. не указан её тип");
-			}
-
-			GeneralModel.Save();
+            GeneralModel.SetTrainingResult(trainingResultStr, type);
+            GeneralModel.SetA0(a0, type);
+            GeneralModel.Save();
 
 			SaveImagesToDb(type, trainingResult);
         }

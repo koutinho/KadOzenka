@@ -90,21 +90,10 @@ namespace ModelingBusiness.Modeling
 			        generalModel.A0ForMultiplicative = null;
 			        generalModel.A0ForExponential = null;
 					break;
-		        case KoAlgoritmType.Exp:
-			        generalModel.ExponentialTrainingResult = null;
-			        generalModel.A0 = null;
-			        generalModel.A0ForMultiplicative = null;
-			        break;
-		        case KoAlgoritmType.Line:
-			        generalModel.LinearTrainingResult = null;
-			        generalModel.A0ForExponential = null;
-			        generalModel.A0ForMultiplicative = null;
-			        break;
-		        case KoAlgoritmType.Multi:
-			        generalModel.MultiplicativeTrainingResult = null;
-			        generalModel.A0 = null;
-			        generalModel.A0ForExponential = null;
-			        break;
+		        default:
+					generalModel.SetTrainingResult(null, type);
+					generalModel.SetA0(null, type);
+					break;
 	        }
 
 	        var factors = ModelFactorsService.GetFactorsEntities(generalModel.Id);
@@ -149,21 +138,7 @@ namespace ModelingBusiness.Modeling
 			trainingResult.QualityControlInfo.UpdateFisher(newQualityControlInfo.Fisher.Criterion, newQualityControlInfo.Fisher.Conclusion);
 
 			var updatedTrainingResult = JsonConvert.SerializeObject(trainingResult);
-			switch (type)
-			{
-				case KoAlgoritmType.Exp:
-					model.ExponentialTrainingResult = updatedTrainingResult;
-					break;
-				case KoAlgoritmType.Line:
-					model.LinearTrainingResult = updatedTrainingResult;
-					break;
-				case KoAlgoritmType.Multi:
-					model.MultiplicativeTrainingResult = updatedTrainingResult;
-					break;
-				default:
-					throw new Exception($"Передан неизвестный тип модели {type.GetEnumDescription()}");
-			}
-
+			model.SetTrainingResult(updatedTrainingResult, type);
 			model.Save();
 		}
 
