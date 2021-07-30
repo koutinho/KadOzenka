@@ -377,34 +377,6 @@ namespace KadOzenka.Web.Controllers
             return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
         }
 
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult Predict(long modelId, ModelType modelType)
-        {
-            var inputParameters = new GeneralModelingInputParameters
-            {
-                ModelId = modelId,
-                ModelType = ConvertModelType(modelType)
-            };
-            //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //	Status_Code = Status.Added,
-            //	UserId = SRDSession.GetCurrentUserId(),
-            //	Parameters = new ModelingInputParameters
-            //	{
-            //		Mode = ModelingMode.Prediction,
-            //		InputParametersXml = inputParameters.SerializeToXml()
-            //	}.SerializeToXml()
-            //}, new CancellationToken());
-            ModelingProcess.AddProcessToQueue(new ModelingInputParameters
-            {
-                Mode = ModelingMode.Prediction,
-                InputParametersXml = inputParameters.SerializeToXml()
-            });
-
-            return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
-        }
-
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public JsonResult Statistic(long modelId)

@@ -385,12 +385,10 @@
             Id: {editable: false, nullable: true},
             ModelObjectInfo: { editable: false },
             Price: { type: "number", editable: false },
-            PriceFromModel: { type: "number", editable: false },
             IsExcluded: { type: "boolean", editable: true },
             IsForTraining: { type: "boolean", editable: true },
             IsForControl: { type: "boolean", editable: true },
             ModelingPrice: { type: "number", editable: false },
-            DeviationFromPredictablePrice: { type: "number", editable: false },
             Percent: { type: "number", editable: false }
         }
         $.each(modelAttributes, function (index, attribute) {
@@ -532,22 +530,6 @@
                 title: "Цена",
                 field: "Price",
                 template: '#: kendo.format("{0:c}", Price) #',
-                filterable: true,
-                sortable: true,
-                width: widthForColumnsWithPrices
-            },
-            {
-                title: "Спрогнозированная цена",
-                field: "PriceFromModel",
-                template: '#: PriceFromModel == null ? "" : kendo.format("{0:c}", PriceFromModel) #',
-                filterable: true,
-                sortable: true,
-                width: widthForColumnsWithPrices
-            },
-            {
-                title: "Отклонение цены от прогнозной, %",
-                field: "DeviationFromPredictablePrice",
-                template: '#: DeviationFromPredictablePrice == null ? "" : kendo.toString(DeviationFromPredictablePrice, "n2") #',
                 filterable: true,
                 sortable: true,
                 width: widthForColumnsWithPrices

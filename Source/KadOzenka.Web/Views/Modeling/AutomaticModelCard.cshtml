@@ -215,15 +215,6 @@
                     icon: 'paste-plain-text',
                     //enable: hasFormedObjectArray,
                     click: onTrainModelBtnClick
-                },
-                {
-                    type: 'button',
-                    id: 'predictModelBtn',
-                    text: '',
-                    attributes: { title: "Рассчитать" },
-                    icon: 'calculator',
-                    //enable: '@Model.IsModelWasTrained' === "True",
-                    click: onPredictModelBtnClick
                 }//,
                 /*{
                     type: 'button',
@@ -266,7 +257,6 @@
     }
 
 
-    var isTrainingMode = false;
     function onTrainModelBtnClick() {
         if (!hasFormedObjectArray) {
             Common.ShowError("Нельзя запустить обучение модели, если у неё нет объектов");
@@ -276,25 +266,11 @@
         if ('@Model.IsModelWasTrained' === "False") {
             trainModel('@ModelType.All');
         } else {
-            isTrainingMode = true;
             setGroupButtonsState(true, true, true, true);
             showModelTypeWindow();
         }
     }
 
-
-    function onPredictModelBtnClick() {
-        if ('@Model.IsModelWasTrained' !== "True") {
-            Common.ShowError("Нельзя запустить расчет цены, если модель не была обучена");
-            return;
-        }
-        isTrainingMode = false;
-        var hasLinearTrainingResult = '@Model.HasLinearTrainingResult' === "True";
-        var hasExponentialTrainingResult = '@Model.HasExponentialTrainingResult' === "True";
-        var hasMultiplicativeTrainingResult = '@Model.HasMultiplicativeTrainingResult' === "True";
-        setGroupButtonsState(hasLinearTrainingResult, hasExponentialTrainingResult, hasMultiplicativeTrainingResult, false);
-        showModelTypeWindow();
-    }
 
     function setGroupButtonsState(enableLinerBtn, enableExponentialBtn, enableMultiplicativeBtn, enableAllModelTypeBtn) {
         if (enableLinerBtn)
@@ -315,6 +291,7 @@
             $("#allModelTypeBtn").addClass('k-state-disabled');
     }
 
+
     function showModelTypeWindow() {
         var modal = $("#modelTypeWindow");
         ShowModal(modal, '60%', '20%', "Выбор типа модели");
@@ -323,10 +300,7 @@
     function onModelTypeSelect(e) {
         var modal = $('#modelTypeWindow');
         modal.data("kendoWindow").close();
-        if (isTrainingMode)
-            trainModel(e.indices);
-        else
-            predictModel(e.indices);
+        trainModel(e.indices);
     }
 
     function updateModel() {
@@ -428,30 +402,6 @@
             type: 'POST',
             url: '@Url.Action("TrainModel", "Modeling")',
             data: { modelId: '@Model.Id', modelType: modelType },
-            success: function(response) {
-                if (response.Errors) {
-                    var errors = getErrors(response.Errors);
-                    Common.ShowError(errors);
-                    return;
-                } else {
-                    Common.ShowMessage(response.Message);
-                }
-            },
-            error: function(response) {
-                Common.ShowError(response.responseText);
-            },
-            complete: function() {
-                kendo.ui.progress($('body'), false);
-            }
-        });
-    }
-
-    function predictModel(modelTypeButtons) {
-        kendo.ui.progress($('body'), true);
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("Predict", "Modeling")',
-            data: { modelId: '@Model.Id', modelType: modelTypeButtons.indices},
             success: function(response) {
                 if (response.Errors) {
                     var errors = getErrors(response.Errors);
