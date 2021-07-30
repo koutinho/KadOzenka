@@ -98,20 +98,7 @@ namespace ModelingBusiness.Modeling
 	        }
 
 	        var factors = ModelFactorsService.GetFactorsEntities(generalModel.Id);
-	        factors.ForEach(x =>
-	        {
-		        if (type == KoAlgoritmType.None)
-		        {
-			        x.SetCoefficient(null, KoAlgoritmType.Line);
-			        x.SetCoefficient(null, KoAlgoritmType.Exp);
-			        x.SetCoefficient(null, KoAlgoritmType.Multi);
-		        }
-		        else
-		        {
-					x.SetCoefficient(null, type);
-		        }
-				x.Save();
-	        });
+	        factors.ForEach(x => ResetCoefficient(x, type));
 
 	        generalModel.Save();
         }
@@ -122,6 +109,37 @@ namespace ModelingBusiness.Modeling
 		        .SelectAll()
 		        .ExecuteFirstOrDefault();
         }
+
+
+		#region Support Methods
+
+		public void ResetCoefficient(OMModelFactor factor, KoAlgoritmType type)
+		{
+			decimal? resetedCoefficientValue = null;
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					factor.CoefficientForExponential = resetedCoefficientValue;
+					break;
+				case KoAlgoritmType.Line:
+					factor.CoefficientForLinear = resetedCoefficientValue;
+					break;
+				case KoAlgoritmType.Multi:
+					factor.CoefficientForMultiplicative = resetedCoefficientValue;
+					break;
+				case KoAlgoritmType.None:
+					factor.CoefficientForExponential = resetedCoefficientValue;
+					factor.CoefficientForLinear = resetedCoefficientValue;
+					factor.CoefficientForMultiplicative = resetedCoefficientValue;
+					break;
+				default:
+					throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
+			}
+
+			factor.Save();
+		}
+
+		#endregion
 
 		#endregion
 
