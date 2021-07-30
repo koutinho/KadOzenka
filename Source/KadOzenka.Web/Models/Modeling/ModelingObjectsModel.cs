@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Model.Entities;
 using ObjectModel.KO;
@@ -24,6 +25,8 @@ namespace KadOzenka.Web.Models.Modeling
 
 		public static ModelingObjectsModel ToModel(ModelDto model, List<ModelFactorRelation> attributes)
 		{
+			//json не парсит строки с обратным слешем
+			attributes.ForEach(x => x.AttributeName =  x.AttributeName.Replace(@"\", @"\\"));
 			return new ModelingObjectsModel
 			{
 				Id = model.ModelId,
