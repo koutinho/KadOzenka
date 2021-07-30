@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using CommonSdks.ConfigurationManagers;
 using CommonSdks.ConfigurationManagers.WebClients;
@@ -90,9 +91,9 @@ namespace KadOzenka.Dal.IntegrationTests
 			SpreadsheetInfo.SetLicense("ERDD-TNCL-YKZ5-3ZTU");
 		}
 
-		protected void AddUnitFactor(RegisterData tourRegister, long unitId, RegisterAttribute tourFactor, object value)
+		protected void AddUnitFactor(RegisterData tourRegister, long unitId, RegisterAttribute tourFactor, decimal value)
 		{
-			AddUnitFactor(tourRegister, unitId, new List<RegisterAttribute> {tourFactor}, new List<object> {value});
+			AddUnitFactor(tourRegister, unitId, new List<RegisterAttribute> {tourFactor}, new List<object> { value.ToString(CultureInfo.InvariantCulture)});
 		}
 
 		protected void AddUnitFactor(RegisterData tourRegister, long unitId, List<RegisterAttribute> tourFactors, List<object> values)
