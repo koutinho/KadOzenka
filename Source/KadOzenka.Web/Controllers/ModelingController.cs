@@ -1135,7 +1135,7 @@ namespace KadOzenka.Web.Controllers
                 {
                     source.Add(new
                     {
-                        Description = x.Name,
+                        Description = ModelingObjectsModel.PreprocessAttributeName(x.Name),
                         AttributeId = x.Id,
                         ParentId = modelObjectsRegister.Id
                     });
@@ -1146,7 +1146,7 @@ namespace KadOzenka.Web.Controllers
             {
 	            source.Add(new
 	            {
-		            Description = $"{x.AttributeName} (значение)",
+		            Description = $"{ModelingObjectsModel.PreprocessAttributeName(x.AttributeName)} (значение)",
 		            AttributeId = x.AttributeId,
 		            ParentId = modelObjectsRegister.Id
 	            });
