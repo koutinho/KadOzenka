@@ -114,10 +114,12 @@ namespace ModelingBusiness.Modeling
                 }
             });
 
-            if (RequestForService.CoefficientsForControl.Count < 2)
-                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в контрольной выборке.");
-            if (RequestForService.CoefficientsForTraining.Count < 2)
-	            throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в обучающей выборке.");
+            var minObjectsCount = 2;
+            var baseErrorMessage = $"Недостаточно данных для построения модели (должно быть минимум {minObjectsCount + 1} объекта с заполненными коэффициентами по всем активным факторам модели). Для объектов в";
+            if (RequestForService.CoefficientsForControl.Count < minObjectsCount)
+                throw new Exception($"{baseErrorMessage} контрольной выборке.");
+            if (RequestForService.CoefficientsForTraining.Count < minObjectsCount)
+	            throw new Exception($"{baseErrorMessage} обучающей выборке.");
 
             return RequestForService;
         }
