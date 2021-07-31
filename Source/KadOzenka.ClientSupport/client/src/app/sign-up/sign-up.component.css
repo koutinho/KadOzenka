@@ -1,4 +1,4 @@
-.login-row, .password-row {
+.login-row, .password-row, .email-row {
     display: block;
 }
 .login-form-wrap {
@@ -7,7 +7,7 @@ margin: auto;
 position: relative;
 top: 30%;
   padding: 100px 20px 20px;
-  background-color: rgb(67 84 84 / 30%);
+  background-color: rgb(67 84 84 / 60%);
 border-radius: 15px;
 }
 .login-form-component {

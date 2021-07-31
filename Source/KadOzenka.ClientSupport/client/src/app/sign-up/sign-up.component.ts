@@ -20,6 +20,13 @@ export class SignUpComponent implements OnInit {
   }
 
   signUp() {
-    this.signUpError = true;
+    this.signUpSuccess = true;
+    this.reset();
+  }
+
+  reset() {
+    this.login = '';
+    this.password = '';
+    this.email = '';
   }
 }

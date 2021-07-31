@@ -19,8 +19,8 @@
             <mat-error *ngIf="passwordControl.errors?.required">
                 Введите пароль
             </mat-error>
-          </mat-form-field>
-          <mat-form-field class="login-row">
+        </mat-form-field>
+        <mat-form-field class="email-row">
             <mat-label>Почта</mat-label>
             <input matInput type="email" [(ngModel)]="email" required email #emailControl="ngModel">
             <button *ngIf="email" matSuffix mat-icon-button aria-label="Очистить" (click)="email=''">
@@ -32,22 +32,25 @@
             <mat-error *ngIf="emailControl.errors?.email">
                 Введите действительный адрес почты
             </mat-error>
-          </mat-form-field>
-          <div style="text-align: end;">
+        </mat-form-field>
+        <div style="text-align: end;">
             <button
               id="signUpButton"
               type="button"
               mat-raised-button
               color="primary"
-              [disabled]="login === '' || password === '' || email === ''"
+              [disabled]="login === '' || password === '' || email === '' || emailControl.errors?.email"
               aria-label="Зарегистрироваться"
               (click)="signUp()">Зарегистрироваться</button>
-          </div>
-          <div class="success-sign-up-message" *ngIf="signUpSuccess">
-            Аккаунт успешно зарегестрирован. <a routerLink="/login" class="additional-link"><strong>Войти</strong></a>
-          </div>
-          <div class="error-sign-up-message" *ngIf="signUpError">
+        </div>
+        <div class="success-sign-up-message" *ngIf="signUpSuccess">
+            Аккаунт успешно зарегестрирован!
+        </div>
+        <div style="text-align: right;margin-top: 10px;">
+            <a routerLink="/login" class="additional-link"><strong>Войти</strong></a>
+        </div>
+        <div class="error-sign-up-message" *ngIf="signUpError">
             <p>{{signUpErrorMessage}}</p>
-          </div>
+        </div>
     </div>
 </div>
