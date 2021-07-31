@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SignUpResult } from './Data/sign-up-result';
 
 @Component({
   selector: 'app-sign-up',
@@ -9,10 +10,7 @@ export class SignUpComponent implements OnInit {
   login = '';
   password = '';
   email = '';
-
-  signUpSuccess = false;
-  signUpError = false;
-  signUpErrorMessage = "Ошибка при регистраци аккаунта."
+  signUpResult: SignUpResult | null = null;
 
   constructor() { }
 
@@ -20,7 +18,7 @@ export class SignUpComponent implements OnInit {
   }
 
   signUp() {
-    this.signUpSuccess = true;
+    this.signUpResult = new SignUpResult(false, "Ошибка при регистраци аккаунта.");
     this.reset();
   }
 

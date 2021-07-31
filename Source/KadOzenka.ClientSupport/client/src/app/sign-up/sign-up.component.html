@@ -43,14 +43,14 @@
               aria-label="Зарегистрироваться"
               (click)="signUp()">Зарегистрироваться</button>
         </div>
-        <div class="success-sign-up-message" *ngIf="signUpSuccess">
+        <div class="success-sign-up-message" *ngIf="signUpResult?.success">
             Аккаунт успешно зарегестрирован!
         </div>
         <div style="text-align: right;margin-top: 10px;">
             <a routerLink="/login" class="additional-link"><strong>Войти</strong></a>
         </div>
-        <div class="error-sign-up-message" *ngIf="signUpError">
-            <p>{{signUpErrorMessage}}</p>
+        <div class="error-sign-up-message" *ngIf="signUpResult != null && !signUpResult.success">
+            <p>{{signUpResult?.errorMessage}}</p>
         </div>
     </div>
 </div>
