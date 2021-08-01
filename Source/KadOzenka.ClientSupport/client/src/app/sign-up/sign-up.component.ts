@@ -1,6 +1,8 @@
 import { FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { SignUpResult } from './Data/sign-up-result';
+import { SignUpResult } from '../common/guards/api/sign-up/sign-up-result';
+import { SignUpApiService } from '../common/guards/api/sign-up/sign-up-service';
+import { SignUpData } from '../common/guards/api/sign-up/sign-up-data';
 
 @Component({
   selector: 'app-sign-up',
@@ -14,13 +16,17 @@ export class SignUpComponent implements OnInit {
 
   signUpResult: SignUpResult | null = null;
 
-  constructor() { }
+  constructor(private signUpService: SignUpApiService) {
+  }
 
   ngOnInit(): void {
   }
 
   signUp() {
-    this.signUpResult = new SignUpResult(false, "Ошибка при регистраци аккаунта.");
+    let signUpData = new SignUpData(this.login.value,
+      this.email.value, this.password.value);
+
+    this.signUpResult = this.signUpService.SignUp(signUpData);
     this.reset();
   }
 

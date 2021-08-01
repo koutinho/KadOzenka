@@ -20,6 +20,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/guards/api/auth/authService';
 import { WheatherForecastApiService } from './common/guards/api/wheatherForcast/wheatherForecastService';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { SignUpApiService } from './common/guards/api/sign-up/sign-up-service';
 
 
 @NgModule({
@@ -45,7 +46,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     MatSelectModule,
     ReactiveFormsModule
   ],
-  providers: [AuthApiService, WheatherForecastApiService],
+  providers: [AuthApiService, WheatherForecastApiService, SignUpApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
