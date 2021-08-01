@@ -1,5 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { Observable, of } from "rxjs";
 import { Http } from "../httpMethods/methods";
 import { SignUpData } from "./sign-up-data";
 import { SignUpResult } from "./sign-up-result";
@@ -12,7 +13,7 @@ export class SignUpApiService {
         this.http = new Http(httpClient);
     }
 
-    SignUp(signUpData: SignUpData): SignUpResult {
-        return new SignUpResult(false, "Ошибка при регистраци аккаунта.");
+    SignUp(signUpData: SignUpData): Observable<SignUpResult> {
+        return of(new SignUpResult(true, "Ошибка при регистраци аккаунта."));
     }
 }

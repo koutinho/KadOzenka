@@ -26,8 +26,14 @@ export class SignUpComponent implements OnInit {
     let signUpData = new SignUpData(this.login.value,
       this.email.value, this.password.value);
 
-    this.signUpResult = this.signUpService.SignUp(signUpData);
-    this.reset();
+    this.signUpService.SignUp(signUpData)
+      .subscribe((result) => {
+        this.signUpResult = result;
+        if (result.success)
+          this.reset();
+      }, () => {
+        console.log  
+      });
   }
 
   reset() {
