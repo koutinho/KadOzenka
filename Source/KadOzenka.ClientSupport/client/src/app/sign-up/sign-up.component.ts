@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SignUpResult } from './Data/sign-up-result';
 
 @Component({
@@ -7,9 +8,10 @@ import { SignUpResult } from './Data/sign-up-result';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  login = '';
-  password = '';
-  email = '';
+  login: FormControl = new FormControl('' , Validators.required);
+  password: FormControl = new FormControl('', Validators.required);
+  email: FormControl = new FormControl('', [Validators.required, Validators.email]);
+
   signUpResult: SignUpResult | null = null;
 
   constructor() { }
@@ -23,8 +25,26 @@ export class SignUpComponent implements OnInit {
   }
 
   reset() {
-    this.login = '';
-    this.password = '';
-    this.email = '';
+    this.resetLogin();
+    this.resetPassword();
+    this.resetEmail();
+  }
+
+  resetLogin() {
+    this.login.setValue('');
+    this.login.markAsDirty();
+    this.login.markAsUntouched();
+  }
+
+  resetPassword() {
+    this.password.setValue('');
+    this.password.markAsDirty();
+    this.password.markAsUntouched();
+  }
+
+  resetEmail() {
+    this.email.setValue('');
+    this.email.markAsDirty();
+    this.email.markAsUntouched();
   }
 }

@@ -15,7 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/guards/api/auth/authService';
 import { WheatherForecastApiService } from './common/guards/api/wheatherForcast/wheatherForecastService';
@@ -42,7 +42,8 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     MatButtonModule,
     MatToolbarModule,
     MatProgressSpinnerModule,
-    MatSelectModule
+    MatSelectModule,
+    ReactiveFormsModule
   ],
   providers: [AuthApiService, WheatherForecastApiService],
   bootstrap: [AppComponent]
