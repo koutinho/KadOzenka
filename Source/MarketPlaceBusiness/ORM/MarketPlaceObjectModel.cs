@@ -148,6 +148,26 @@ namespace ObjectModel.Market
         }
 
 
+        private decimal? _latitude;
+        /// <summary>
+        /// 10003500 Широта (latitude)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10003500)]
+        public decimal? Latitude
+        {
+            get
+            {
+                CheckPropertyInited("Latitude");
+                return _latitude;
+            }
+            set
+            {
+                _latitude = value;
+                NotifyPropertyChanged("Latitude");
+            }
+        }
+
+
         private string _dealtype;
         /// <summary>
         /// 10003600 Тип сделки (DEAL_TYPE)
@@ -199,6 +219,26 @@ namespace ObjectModel.Market
                 this._dealtype_Code = value;
                 NotifyPropertyChanged("DealType");
                 NotifyPropertyChanged("DealType_Code");
+            }
+        }
+
+
+        private decimal? _longitude;
+        /// <summary>
+        /// 10004000 Долгота (longitude)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 10004000)]
+        public decimal? Longitude
+        {
+            get
+            {
+                CheckPropertyInited("Longitude");
+                return _longitude;
+            }
+            set
+            {
+                _longitude = value;
+                NotifyPropertyChanged("Longitude");
             }
         }
 

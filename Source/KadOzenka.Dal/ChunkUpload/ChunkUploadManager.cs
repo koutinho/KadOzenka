@@ -78,7 +78,7 @@ namespace KadOzenka.Dal.ChunkUpload
 			}
 			else
 			{
-				_log.Warning("Файлы для uuid = {uuid} не надены", uuid);
+				_log.Warning("Файлы для uuid = {uuid} не найдены", uuid);
 
 			}
 		

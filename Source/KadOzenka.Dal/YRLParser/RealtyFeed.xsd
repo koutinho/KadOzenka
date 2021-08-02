@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="NewDataSet" targetNamespace="http://webmaster.yandex.ru/schemas/feed/realty/2010-06" xmlns:mstns="http://webmaster.yandex.ru/schemas/feed/realty/2010-06" xmlns="http://webmaster.yandex.ru/schemas/feed/realty/2010-06" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:element name="realty-feed">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="generation-date" type="xs:string" minOccurs="0" />
+        <xs:element name="offer" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="newobject-id" type="xs:string" minOccurs="0" />
+              <xs:element name="type" type="xs:string" minOccurs="0" />
+              <xs:element name="property-type" type="xs:string" minOccurs="0" />
+              <xs:element name="category" type="xs:string" minOccurs="0" />
+              <xs:element name="garage-type" type="xs:string" minOccurs="0" />
+              <xs:element name="lot-number" type="xs:string" minOccurs="0" />
+              <xs:element name="cadastral-number" type="xs:string" minOccurs="0" />
+              <xs:element name="url" type="xs:string" minOccurs="0" />
+              <xs:element name="creation-date" type="xs:string" minOccurs="0" />
+              <xs:element name="vas" type="xs:string" minOccurs="0" />
+              <xs:element name="village-name" type="xs:string" minOccurs="0" />
+              <xs:element name="yandex-village-id" type="xs:string" minOccurs="0" />
+              <xs:element name="last-update-date" type="xs:string" minOccurs="0" />
+              <xs:element name="payed-adv" type="xs:string" minOccurs="0" />
+              <xs:element name="manually-added" type="xs:string" minOccurs="0" />
+              <xs:element name="renovation" type="xs:string" minOccurs="0" />
+              <xs:element name="description" type="xs:string" minOccurs="0" />
+              <xs:element name="rooms" type="xs:string" minOccurs="0" />
+              <xs:element name="phone" type="xs:string" minOccurs="0" />
+              <xs:element name="floor" type="xs:string" minOccurs="0" />
+              <xs:element name="floors-total" type="xs:string" minOccurs="0" />
+              <xs:element name="building-name" type="xs:string" minOccurs="0" />
+              <xs:element name="building-type" type="xs:string" minOccurs="0" />
+              <xs:element name="building-series" type="xs:string" minOccurs="0" />
+              <xs:element name="built-year" type="xs:string" minOccurs="0" />
+              <xs:element name="ceiling-height" type="xs:string" minOccurs="0" />
+              <xs:element name="rubbish-chute" type="xs:string" minOccurs="0" />
+              <xs:element name="lot-type" type="xs:string" minOccurs="0" />
+              <xs:element name="water-supply" type="xs:string" minOccurs="0" />
+              <xs:element name="sewerage-supply" type="xs:string" minOccurs="0" />
+              <xs:element name="electricity-supply" type="xs:string" minOccurs="0" />
+              <xs:element name="gas-supply" type="xs:string" minOccurs="0" />
+              <xs:element name="rooms-offered" type="xs:string" minOccurs="0" />
+              <xs:element name="room-furniture" type="xs:string" minOccurs="0" />
+              <xs:element name="bathroom-unit" type="xs:string" minOccurs="0" />
+              <xs:element name="television" type="xs:string" minOccurs="0" />
+              <xs:element name="washing-machine" type="xs:string" minOccurs="0" />
+              <xs:element name="refrigerator" type="xs:string" minOccurs="0" />
+              <xs:element name="internet" type="xs:string" minOccurs="0" />
+
+              <xs:element name="rent-pledge" type="xs:string" minOccurs="0" />
+              <xs:element name="taxation-form" type="xs:string" minOccurs="0" />
+              <xs:element name="deal-status" type="xs:string" minOccurs="0" />
+              <xs:element name="haggle" type="xs:string" minOccurs="0" />
+              <xs:element name="mortgage" type="xs:string" minOccurs="0" />
+              <xs:element name="prepayment" type="xs:string" minOccurs="0" />
+              <xs:element name="agent-fee" type="xs:string" minOccurs="0" />
+              <xs:element name="not-for-agents" type="xs:string" minOccurs="0" />
+              <xs:element name="utilities-included" type="xs:string" minOccurs="0" />
+              <xs:element name="disable-flat-plan-guess" type="xs:string" minOccurs="0" />
+              <xs:element name="video-preview" type="xs:string" minOccurs="0" />
+              <xs:element name="quality" type="xs:string" minOccurs="0" />
+              <xs:element name="image" type="xs:string" minOccurs="0" />
+              <xs:element name="is-image-order-change-allowed" type="xs:string" minOccurs="0" />
+              <xs:element name="apartments" type="xs:string" minOccurs="0" />
+              <xs:element name="studio" type="xs:string" minOccurs="0" />
+              <xs:element name="open-plan" type="xs:string" minOccurs="0" />
+              <xs:element name="rooms-type" type="xs:string" minOccurs="0" />
+              <xs:element name="window-view" type="xs:string" minOccurs="0" />
+              <xs:element name="balcony" type="xs:string" minOccurs="0" />
+              <xs:element name="air-conditioner" type="xs:string" minOccurs="0" />
+              <xs:element name="kitchen-furniture" type="xs:string" minOccurs="0" />
+              <xs:element name="dishwasher" type="xs:string" minOccurs="0" />
+              <xs:element name="built-in-tech" type="xs:string" minOccurs="0" />
+              <xs:element name="floor-covering" type="xs:string" minOccurs="0" />
+              <xs:element name="with-children" type="xs:string" minOccurs="0" />
+              <xs:element name="with-pets" type="xs:string" minOccurs="0" />
+              <xs:element name="yandex-building-id" type="xs:string" minOccurs="0" />
+              <xs:element name="yandex-house-id" type="xs:string" minOccurs="0" />
+              <xs:element name="building-section" type="xs:string" minOccurs="0" />
+              <xs:element name="guarded-building" type="xs:string" minOccurs="0" />
+              <xs:element name="pmg" type="xs:string" minOccurs="0" />
+              <xs:element name="access-control-system" type="xs:string" minOccurs="0" />
+              <xs:element name="lift" type="xs:string" minOccurs="0" />
+              <xs:element name="heating-supply" type="xs:string" minOccurs="0" />
+              <xs:element name="toilet" type="xs:string" minOccurs="0" />
+              <xs:element name="shower" type="xs:string" minOccurs="0" />
+              <xs:element name="pool" type="xs:string" minOccurs="0" />
+              <xs:element name="billiard" type="xs:string" minOccurs="0" />
+              <xs:element name="sauna" type="xs:string" minOccurs="0" />
+              <xs:element name="parking" type="xs:string" minOccurs="0" />
+              <xs:element name="parking-places" type="xs:string" minOccurs="0" />
+              <xs:element name="parking-placeprice" type="xs:string" minOccurs="0" />
+              <xs:element name="parking-guest" type="xs:string" minOccurs="0" />
+              <xs:element name="parking-guest-places" type="xs:string" minOccurs="0" />
+              <xs:element name="alarm" type="xs:string" minOccurs="0" />
+              <xs:element name="flat-alarm" type="xs:string" minOccurs="0" />
+              <xs:element name="security" type="xs:string" minOccurs="0" />
+              <xs:element name="is-elite" type="xs:string" minOccurs="0" />
+
+              <xs:element name="automatic-gates" type="xs:string" minOccurs="0" />
+              <xs:element name="cctv" type="xs:string" minOccurs="0" />
+              <xs:element name="fire-alarm" type="xs:string" minOccurs="0" />
+              <xs:element name="inspection-pit" type="xs:string" minOccurs="0" />
+              <xs:element name="cellar" type="xs:string" minOccurs="0" />
+              <xs:element name="car-wash" type="xs:string" minOccurs="0" />
+              <xs:element name="auto-repair" type="xs:string" minOccurs="0" />
+              <xs:element name="new-parking" type="xs:string" minOccurs="0" />
+              <xs:element name="ownership-type" type="xs:string" minOccurs="0" />
+              <xs:element name="garage-name" type="xs:string" minOccurs="0" />
+              <xs:element name="parking-type" type="xs:string" minOccurs="0" />
+
+              <xs:element name="commercial-type" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element name="commercial-building-type" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element name="purpose" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+              <xs:element name="purpose-warehouse" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+
+              <xs:element name="cleaning-included" type="xs:string" minOccurs="0" />
+              <xs:element name="electricity-included" type="xs:string" minOccurs="0" />
+
+              <xs:element name="entrance-type" type="xs:string" minOccurs="0" />
+              <xs:element name="phone-lines" type="xs:string" minOccurs="0" />
+              <xs:element name="adding-phone-on-request" type="xs:string" minOccurs="0" />
+              <xs:element name="self-selection-telecom" type="xs:string" minOccurs="0" />
+              <xs:element name="ventilation" type="xs:string" minOccurs="0" />
+              <xs:element name="electric-capacity" type="xs:string" minOccurs="0" />
+              <xs:element name="window-type" type="xs:string" minOccurs="0" />
+              
+              <xs:element name="office-class" type="xs:string" minOccurs="0" />
+              <xs:element name="twenty-four-seven" type="xs:string" minOccurs="0" />
+              <xs:element name="eating-facilities" type="xs:string" minOccurs="0" />
+
+              <xs:element name="resposniblestorage" type="xs:string" minOccurs="0" />
+              <xs:element name="palletprice" type="xs:string" minOccurs="0" />
+              <xs:element name="freightelevator" type="xs:string" minOccurs="0" />
+              <xs:element name="truckentrance" type="xs:string" minOccurs="0" />
+              <xs:element name="ramp" type="xs:string" minOccurs="0" />
+              <xs:element name="railway" type="xs:string" minOccurs="0" />
+              <xs:element name="officewarehouse" type="xs:string" minOccurs="0" />
+              <xs:element name="openarea" type="xs:string" minOccurs="0" />
+              <xs:element name="servicethreepl" type="xs:string" minOccurs="0" />
+              <xs:element name="temperatirecomment" type="xs:string" minOccurs="0" />
+
+
+              <xs:element name="location" minOccurs="1">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="country" type="xs:string" minOccurs="0" />
+                    <xs:element name="region" type="xs:string" minOccurs="0" />
+                    <xs:element name="district" type="xs:string" minOccurs="0" />
+                    <xs:element name="locality-name" type="xs:string" minOccurs="0" />
+                    <xs:element name="sub-locality-name" type="xs:string" minOccurs="0" />
+                    <xs:element name="address" type="xs:string" minOccurs="0" />
+                    <xs:element name="apartment" type="xs:string" minOccurs="0" />
+                    <xs:element name="direction" type="xs:string" minOccurs="0" />
+                    <xs:element name="distance" type="xs:string" minOccurs="0" />
+                    <xs:element name="latitude" type="xs:string" minOccurs="0" />
+                    <xs:element name="longitude" type="xs:string" minOccurs="0" />
+                    <xs:element name="railway-station" type="xs:string" minOccurs="0" />
+                    <xs:element name="metro" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="name" type="xs:string" minOccurs="0" />
+                          <xs:element name="time-on-foot" type="xs:string" minOccurs="0" />
+                          <xs:element name="time-on-transport" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="sales-agent">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="name" type="xs:string" minOccurs="0" />
+                    <xs:element name="category" type="xs:string" minOccurs="0" />
+                    <xs:element name="organization" type="xs:string" minOccurs="0" />
+                    <xs:element name="agency-id" type="xs:string" minOccurs="0" />
+                    <xs:element name="url" type="xs:string" minOccurs="0" />
+                    <xs:element name="email" type="xs:string" minOccurs="0" />
+                    <xs:element name="photo" type="xs:string" minOccurs="0" />
+                    <xs:element name="partner" type="xs:string" minOccurs="0" />
+                    <xs:element name="phone" nillable="true" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:simpleContent msdata:ColumnName="phone_Text">
+                          <xs:extension base="xs:string">
+                          </xs:extension>
+                        </xs:simpleContent>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="price">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0" />
+                    <xs:element name="currency" type="xs:string" minOccurs="0" />
+                    <xs:element name="period" type="xs:string" minOccurs="0" />
+                    <xs:element name="unit" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="area">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0" />
+                    <xs:element name="unit" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="room-space" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0" />
+                    <xs:element name="unit" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="kitchen-space">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0" />
+                    <xs:element name="unit" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="living-space">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0" />
+                    <xs:element name="unit" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+              <xs:element name="lot-area">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="value" type="xs:string" minOccurs="0" />
+                    <xs:element name="unit" type="xs:string" minOccurs="0" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+            <xs:attribute name="internal-id" form="unqualified" type="xs:string" />
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="realty-feed" />
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
