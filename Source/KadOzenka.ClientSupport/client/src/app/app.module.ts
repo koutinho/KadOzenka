@@ -17,10 +17,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { AuthApiService } from './common/guards/api/auth/authService';
-import { WheatherForecastApiService } from './common/guards/api/wheatherForcast/wheatherForecastService';
+import { AuthApiService } from './common/api/auth/authService';
+import { WheatherForecastApiService } from './common/api/wheatherForcast/wheatherForecastService';
 import { SignUpComponent } from './sign-up/sign-up.component';
-import { SignUpApiService } from './common/guards/api/sign-up/sign-up-service';
+import { SignUpApiService } from './common/api/sign-up/sign-up-service';
 
 
 @NgModule({

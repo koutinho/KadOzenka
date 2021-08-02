@@ -1,8 +1,8 @@
-import { FormControl, Validators } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { SignUpResult } from '../common/guards/api/sign-up/sign-up-result';
-import { SignUpApiService } from '../common/guards/api/sign-up/sign-up-service';
-import { SignUpData } from '../common/guards/api/sign-up/sign-up-data';
+import { FormControl, Validators, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { SignUpResult } from '../common/api/sign-up/sign-up-result';
+import { SignUpApiService } from '../common/api/sign-up/sign-up-service';
+import { SignUpData } from '../common/api/sign-up/sign-up-data';
 
 @Component({
   selector: 'app-sign-up',
@@ -10,16 +10,31 @@ import { SignUpData } from '../common/guards/api/sign-up/sign-up-data';
   styleUrls: ['./sign-up.component.css']
 })
 export class SignUpComponent implements OnInit {
-  login: FormControl = new FormControl('' , Validators.required);
-  password: FormControl = new FormControl('', Validators.required);
-  email: FormControl = new FormControl('', [Validators.required, Validators.email]);
+
+  signUpForm: FormGroup = this.formBuilder.group({
+    login: ['', Validators.required],
+    password: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]]
+  });;
 
   signUpResult: SignUpResult | null = null;
 
-  constructor(private signUpService: SignUpApiService) {
+  constructor(private signUpService: SignUpApiService, private formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {
+  }
+
+  get login(): AbstractControl {
+    return this.signUpForm.get('login') as AbstractControl;
+  }
+
+  get password(): AbstractControl {
+    return this.signUpForm.get('password') as AbstractControl;
+  }
+
+  get email(): AbstractControl {
+    return this.signUpForm.get('email') as AbstractControl;
   }
 
   signUp() {

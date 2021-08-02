@@ -1,38 +1,40 @@
 <div class="login-form-component">
-    <div class="login-form-wrap">        
-        <mat-form-field class="login-row">
-            <mat-label>Имя пользователя</mat-label>
-            <input matInput type="text" [formControl]="login">
-            <button *ngIf="login.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetLogin()">
-                <mat-icon>clear</mat-icon>
-            </button>
-            <mat-error *ngIf="login.errors?.required">
-                Заполните имя пользователя
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="password-row">
-            <mat-label>Пароль</mat-label>
-            <input matInput type="password" [formControl]="password">
-            <button *ngIf="password.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetPassword()">
-                <mat-icon>clear</mat-icon>
-            </button>
-            <mat-error *ngIf="password.errors?.required">
-                Введите пароль
-            </mat-error>
-        </mat-form-field>
-        <mat-form-field class="email-row">
-            <mat-label>Почта</mat-label>
-            <input matInput type="email" [formControl]="email">
-            <button *ngIf="email.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetEmail()">
-                <mat-icon>clear</mat-icon>
-            </button>
-            <mat-error *ngIf="email.errors?.required">
-                Введите почту
-            </mat-error>
-            <mat-error *ngIf="email.errors?.email">
-                Введите действительный адрес почты
-            </mat-error>
-        </mat-form-field>
+    <div class="login-form-wrap"> 
+        <form [formGroup]="signUpForm">
+            <mat-form-field class="login-row">
+                <mat-label>Имя пользователя</mat-label>
+                <input matInput type="text" formControlName="login">
+                <button *ngIf="login.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetLogin()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="login.errors?.required">
+                    Заполните имя пользователя
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="password-row">
+                <mat-label>Пароль</mat-label>
+                <input matInput type="password" formControlName="password">
+                <button *ngIf="password.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetPassword()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="password.errors?.required">
+                    Введите пароль
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="email-row">
+                <mat-label>Почта</mat-label>
+                <input matInput type="email" formControlName="email">
+                <button *ngIf="email.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetEmail()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="email.errors?.required">
+                    Введите почту
+                </mat-error>
+                <mat-error *ngIf="email.errors?.email">
+                    Введите действительный адрес почты
+                </mat-error>
+            </mat-form-field>
+        </form>       
         <div style="text-align: end;">
             <button
               id="signUpButton"

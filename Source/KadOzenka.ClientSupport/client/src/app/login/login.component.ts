@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthApiService } from '../common/guards/api/auth/authService';
-import { LoginData } from '../common/guards/api/auth/data/loginData';
+import { AuthApiService } from '../common/api/auth/authService';
+import { LoginData } from '../common/api/auth/data/loginData';
 
 @Component({
   selector: 'app-login',

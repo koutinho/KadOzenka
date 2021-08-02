@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { WheatherForecastApiService } from '../common/guards/api/wheatherForcast/wheatherForecastService';
-import { WeatherForecast } from '../common/guards/api/wheatherForcast/WeatherForecast';
+import { WheatherForecastApiService } from '../common/api/wheatherForcast/wheatherForecastService';
+import { WeatherForecast } from '../common/api/wheatherForcast/WeatherForecast';
 
 @Component({
   selector: 'app-home',
