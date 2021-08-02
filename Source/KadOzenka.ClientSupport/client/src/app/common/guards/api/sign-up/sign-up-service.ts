@@ -1,8 +1,10 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
+import { Observable, of, throwError } from "rxjs";
+import { catchError, map } from "rxjs/operators";
 import { Http } from "../httpMethods/methods";
 import { SignUpData } from "./sign-up-data";
+import { SignUpResponse } from "./sign-up-response";
 import { SignUpResult } from "./sign-up-result";
 
 @Injectable()
@@ -14,6 +16,19 @@ export class SignUpApiService {
     }
 
     SignUp(signUpData: SignUpData): Observable<SignUpResult> {
-        return of(new SignUpResult(true, "Ошибка при регистраци аккаунта."));
+        return this.http.post<SignUpData, SignUpResponse>("authenticate/register", signUpData)
+          .pipe(
+            map(res => new SignUpResult(true, res.message)),
+            catchError(this.handleError));        
+    }
+
+    private handleError(error: HttpErrorResponse) {
+      console.error('Ошибка:', error.error);
+
+      if (error.status === 500) {
+        return of<SignUpResult>(new SignUpResult(false, error.error.message));
+      } else {
+        return of<SignUpResult>(new SignUpResult(false, "Возникла непредвиденная ошибка"))
+      }
     }
 }
