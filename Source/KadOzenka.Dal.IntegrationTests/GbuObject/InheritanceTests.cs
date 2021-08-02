@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using KadOzenka.Common.Tests.Consts;
 using KadOzenka.Dal.GbuObject;
@@ -221,7 +222,7 @@ namespace KadOzenka.Dal.IntegrationTests.GbuObject
 
 			var copiedAttribute = copiedAttributes.First();
 			Assert.That(copiedAttribute, Is.Not.Null, attributeCopyFrom.Id.ToString);
-			Assert.That(copiedAttribute.Value.ToString(), Is.EqualTo(attributeCopyFrom.GetValue().ToString()));
+			Assert.That(Convert.ToString(copiedAttribute.Value, CultureInfo.InvariantCulture), Is.EqualTo(Convert.ToString(attributeCopyFrom.GetValue(), CultureInfo.InvariantCulture)));
 			//сравниваем даты с учетом +- 50 сек
 			Assert.That(copiedAttribute.S, Is.EqualTo(attributeCopyFrom.S).Within(TimeSpan.FromMilliseconds(50000)));
 			Assert.That(copiedAttribute.Ot, Is.EqualTo(attributeCopyFrom.Ot).Within(TimeSpan.FromMilliseconds(50000)));

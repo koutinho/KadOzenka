@@ -61,33 +61,6 @@ namespace ModelingBusiness {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Невозможно активировать необученную модель.
-        /// </summary>
-        public static string CanNotActivateNotPreparedAutomaticModel {
-            get {
-                return ResourceManager.GetString("CanNotActivateNotPreparedAutomaticModel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Для фактора с типом метки &apos;По умолчанию&apos; обязательно нужно заполнить имя словаря.
-        /// </summary>
-        public static string EmptyDictionaryForFactorWithDefaultMark {
-            get {
-                return ResourceManager.GetString("EmptyDictionaryForFactorWithDefaultMark", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Не передан идентификатор Модели.
-        /// </summary>
-        public static string EmptyModelId {
-            get {
-                return ResourceManager.GetString("EmptyModelId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to У модели не заполнено Имя.
         /// </summary>
         public static string EmptyName {

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.Excel;
 using CommonSdks.PlatformWrappers;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -86,24 +87,18 @@ namespace ModelingBusiness.Modeling
 			        generalModel.LinearTrainingResult = null;
 			        generalModel.ExponentialTrainingResult = null;
 			        generalModel.MultiplicativeTrainingResult = null;
-			        break;
-		        case KoAlgoritmType.Exp:
-			        generalModel.ExponentialTrainingResult = null;
-			        break;
-		        case KoAlgoritmType.Line:
-			        generalModel.LinearTrainingResult = null;
-			        break;
-		        case KoAlgoritmType.Multi:
-			        generalModel.MultiplicativeTrainingResult = null;
-			        break;
+			        generalModel.A0ForLinear = null;
+			        generalModel.A0ForMultiplicative = null;
+			        generalModel.A0ForExponential = null;
+					break;
+		        default:
+					generalModel.SetTrainingResult(null, type);
+					generalModel.SetA0(null, type);
+					break;
 	        }
 
-	        var factors = ModelFactorsService.GetFactors(generalModel.Id, type);
-	        factors.ForEach(x =>
-	        {
-		        x.Correction = 0;
-		        x.Save();
-	        });
+	        var factors = ModelFactorsService.GetFactorsEntities(generalModel.Id);
+	        factors.ForEach(x => ResetCoefficient(x, type));
 
 	        generalModel.Save();
         }
@@ -114,6 +109,37 @@ namespace ModelingBusiness.Modeling
 		        .SelectAll()
 		        .ExecuteFirstOrDefault();
         }
+
+
+		#region Support Methods
+
+		public void ResetCoefficient(OMModelFactor factor, KoAlgoritmType type)
+		{
+			decimal? resetedCoefficientValue = null;
+			switch (type)
+			{
+				case KoAlgoritmType.Exp:
+					factor.CoefficientForExponential = resetedCoefficientValue;
+					break;
+				case KoAlgoritmType.Line:
+					factor.CoefficientForLinear = resetedCoefficientValue;
+					break;
+				case KoAlgoritmType.Multi:
+					factor.CoefficientForMultiplicative = resetedCoefficientValue;
+					break;
+				case KoAlgoritmType.None:
+					factor.CoefficientForExponential = resetedCoefficientValue;
+					factor.CoefficientForLinear = resetedCoefficientValue;
+					factor.CoefficientForMultiplicative = resetedCoefficientValue;
+					break;
+				default:
+					throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
+			}
+
+			factor.Save();
+		}
+
+		#endregion
 
 		#endregion
 
@@ -135,21 +161,7 @@ namespace ModelingBusiness.Modeling
 			trainingResult.QualityControlInfo.UpdateFisher(newQualityControlInfo.Fisher.Criterion, newQualityControlInfo.Fisher.Conclusion);
 
 			var updatedTrainingResult = JsonConvert.SerializeObject(trainingResult);
-			switch (type)
-			{
-				case KoAlgoritmType.Exp:
-					model.ExponentialTrainingResult = updatedTrainingResult;
-					break;
-				case KoAlgoritmType.Line:
-					model.LinearTrainingResult = updatedTrainingResult;
-					break;
-				case KoAlgoritmType.Multi:
-					model.MultiplicativeTrainingResult = updatedTrainingResult;
-					break;
-				default:
-					throw new Exception($"Передан неизвестный тип модели {type.GetEnumDescription()}");
-			}
-
+			model.SetTrainingResult(updatedTrainingResult, type);
 			model.Save();
 		}
 
@@ -248,7 +260,7 @@ namespace ModelingBusiness.Modeling
 			if (activeModel == null)
 				return null;
 
-			var modelFactors = ModelFactorsService.GetGeneralModelFactors(activeModel.Id);
+			var modelFactors = ModelFactorsService.GetFactors(activeModel.Id);
 			var dictionaryId = modelFactors.FirstOrDefault(x => x.AttributeId == factorId)?.DictionaryId;
 
 			return dictionaryId;

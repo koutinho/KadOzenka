@@ -172,28 +172,28 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		protected decimal GetExpectedCostForNoneMark(OMModelFactor factor, decimal unitFactorValue)
 		{
-			return (decimal)Math.Pow((double)(unitFactorValue + factor.WeightInFormula), (double)factor.B0InFormula);
+			return (decimal)Math.Pow((double)(unitFactorValue + factor.CorrectionInFormula), (double)factor.GetCoefficientInFormula(KoAlgoritmType.Multi));
 		}
 
 		private decimal GetExpectedCadastralConstForDefaultMark(OMModelingDictionariesValues mark, OMModelFactor factor)
 		{
 			return (decimal) Math.Pow(
-				       (double) (mark.CalculationValue + factor.WeightInFormula),
-				       (double) factor.B0InFormula);
+				       (double) (mark.CalculationValue + factor.CorrectionInFormula),
+				       (double) factor.GetCoefficientInFormula(KoAlgoritmType.Multi));
 		}
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)
 		{
-			var formulaPart = (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula + factor.WeightInFormula;
+			var formulaPart = (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula + factor.CorrectionInFormula;
 			
-			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
+			return (decimal)Math.Pow((double)formulaPart, (double)factor.GetCoefficientInFormula(KoAlgoritmType.Multi));
 		}
 
 		private decimal GetExpectedCadastralCostForReverseMark(OMModelFactor factor)
 		{
-			var formulaPart = factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) + factor.WeightInFormula;
+			var formulaPart = factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) + factor.CorrectionInFormula;
 			
-			return (decimal)Math.Pow((double)formulaPart, (double)factor.B0InFormula);
+			return (decimal)Math.Pow((double)formulaPart, (double)factor.GetCoefficientInFormula(KoAlgoritmType.Multi));
 		}
 
 		#endregion

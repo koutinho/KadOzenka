@@ -3,6 +3,7 @@
 @using KadOzenka.Web.Models.GbuObject
 @using ObjectModel.Gbu
 @using ObjectModel.Market
+@using Consts = MarketPlaceBusiness.Consts
 
 <form id="importForm">
     @if((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())
@@ -61,7 +62,7 @@
             var mainRegisterId = @((long)ViewBag.MainRegisterId);
             const registerViewId = '@((string)ViewBag.RegisterViewId)';
             const dataCountForBackgroundLoading = @((int)ViewBag.DataCountForBackgroundLoading);
-            const isForMarketObjects = '@((long)ViewBag.MainRegisterId == MarketPlaceBusiness.Common.Consts.RegisterId)' == 'True';
+            const isForMarketObjects = '@((long)ViewBag.MainRegisterId == Consts.RegisterId)' == 'True';
             const isForGbuObjects = '@((long)ViewBag.MainRegisterId == OMMainObject.GetRegisterId())' == 'True';
 
             initFilter();

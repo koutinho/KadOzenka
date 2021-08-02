@@ -172,7 +172,7 @@ namespace CommonSdks.Excel
 
 		public void AddRow(Row row, List<object> values)
 		{
-			CommonSdks.ExcelFileHelper.AddRow(row.File.Worksheets[0], row.Index, values.ToArray());
+			ExcelFileHelper.AddRow(row.File.Worksheets[0], row.Index, values.ToArray());
 			IsReportEmpty = false;
 		}
 

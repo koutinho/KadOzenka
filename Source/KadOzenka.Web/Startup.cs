@@ -56,7 +56,9 @@ using Microsoft.AspNetCore.Mvc.Authorization;
 using KadOzenka.Web.SignalR.AnalogCheck;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Common.Interfaces;
+using MarketPlaceBusiness.Map;
+using MarketPlaceBusiness.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
@@ -234,7 +236,7 @@ namespace CIPJS
                 services.AddSingleton(provider => new MapperConfiguration(cfg =>
                 {
 	                cfg.AddProfile(new MappingProfile());
-	                cfg.AddProfile(new MarketPlaceBusiness.Dto.AutoMapper.MappingProfile());
+	                cfg.AddProfile(new MarketPlaceBusiness.Common.Dto.AutoMapper.MappingProfile());
 	                cfg.AddProfile(new KadOzenka.Web.Helpers.MappingProfile());
                 }).CreateMapper());
 

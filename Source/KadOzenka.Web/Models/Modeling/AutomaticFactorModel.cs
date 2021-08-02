@@ -13,7 +13,6 @@ namespace KadOzenka.Web.Models.Modeling
 
 		[Display(Name = "Использовать в модели")]
 		public bool? IsActive { get; set; }
-		public string AlgorithmTypeStr => AlgorithmType.GetEnumDescription();
 
 		public List<long> UnActiveAttributeIds { get; }
 		public List<DropDownTreeItemModel> Attributes { get; }
@@ -43,9 +42,9 @@ namespace KadOzenka.Web.Models.Modeling
 				FactorId = factor.FactorId,
 				DictionaryId = factor.DictionaryId,
 				MarkType = factor.MarkType_Code,
+				Correction = factor.Correction,
 				CorrectItem = factor.CorrectingTerm,
 				K = factor.K,
-				AlgorithmType = factor.AlgorithmType_Code,
 				IsActive = factor.IsActive.GetValueOrDefault(),
 			};
 		}
@@ -56,10 +55,10 @@ namespace KadOzenka.Web.Models.Modeling
 			{
 				Id = Id,
 				ModelId = ModelId,
-				Type = AlgorithmType,
 				FactorId = FactorId,
 				DictionaryId = DictionaryId,
 				MarkType = MarkType,
+				Correction = Correction,
 				IsActive = IsActive.GetValueOrDefault(),
 			};
 		}

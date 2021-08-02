@@ -206,7 +206,6 @@ namespace KadOzenka.Web.Controllers
             try
             {
                 var settings = model.CovertToGroupingSettings();
-				////TODO код для отладки
 				//new SetPriorityGroupProcess().StartProcess(new OMProcessType(), new OMQueue
 				//{
 				//	Status_Code = Status.Added,
@@ -276,7 +275,6 @@ namespace KadOzenka.Web.Controllers
 			try
 			{
 				var settings = model.CovertToGroupingSettings();
-				////TODO код для отладки
 				// new SetPriorityGroupFinalProcess().StartProcess(new OMProcessType(), new OMQueue
 				// {
 				// 	Status_Code = Status.Added,
@@ -487,7 +485,6 @@ namespace KadOzenka.Web.Controllers
 
 			try
 			{
-                ////TODO код для отладки
                 //new InheritanceLongProcess().StartProcess(new OMProcessType(), new OMQueue
                 //{
                 //    Status_Code = Status.Added,
@@ -534,7 +531,6 @@ namespace KadOzenka.Web.Controllers
 	                _tourFactorService.GetEstimatedGroupModelParamsForTask(viewModel.IdTask.Value);
 
 	            var parameters = viewModel.ToGroupModel(estimatedGroupModelParamsDto);
-				////TODO код для отладки
 				//new TaskSetEstimatedGroup().StartProcess(new OMProcessType(), new OMQueue
 				//{
 				//	ObjectRegisterId = OMTask.GetRegisterId(),

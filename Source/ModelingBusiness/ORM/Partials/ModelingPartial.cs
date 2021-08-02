@@ -14,7 +14,7 @@ namespace ObjectModel.KO
         public bool IsAutomatic => Type_Code == KoModelType.Automatic;
         public decimal A0ForMultiplicativeInFormula => Math.Round(A0ForMultiplicative.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
         public decimal A0ForExponentialInFormula => Math.Round(A0ForExponential.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        public decimal A0ForLinearInFormula => Math.Round(A0.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+        public decimal A0ForLinearInFormula => Math.Round(A0ForLinear.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
         public bool IsModelWasTrained => HasLinearTrainingResult || HasExponentialTrainingResult || HasMultiplicativeTrainingResult;
         public bool HasLinearTrainingResult => !string.IsNullOrWhiteSpace(LinearTrainingResult);
         public bool HasExponentialTrainingResult => !string.IsNullOrWhiteSpace(ExponentialTrainingResult);
@@ -28,7 +28,7 @@ namespace ObjectModel.KO
                 case KoAlgoritmType.Exp:
                     return A0ForExponential;
                 case KoAlgoritmType.Line:
-                    return A0;
+                    return A0ForLinear;
                 case KoAlgoritmType.Multi:
                     return A0ForMultiplicative;
             }
@@ -44,13 +44,13 @@ namespace ObjectModel.KO
                     A0ForExponential = a0;
                     break;
                 case KoAlgoritmType.Line:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
                 case KoAlgoritmType.Multi:
                     A0ForMultiplicative = a0;
                     break;
                 default:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
             }
         }
@@ -63,13 +63,13 @@ namespace ObjectModel.KO
                     A0ForExponential = a0;
                     break;
                 case KoAlgoritmType.Line:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
                 case KoAlgoritmType.Multi:
                     A0ForMultiplicative = a0;
                     break;
                 default:
-                    A0 = a0;
+                    A0ForLinear = a0;
                     break;
             }
         }
@@ -87,6 +87,24 @@ namespace ObjectModel.KO
                 default:
                     throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
             }
+        }
+
+        public void SetTrainingResult(string trainingResult, KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.Exp:
+			        ExponentialTrainingResult = trainingResult;
+                    break;
+		        case KoAlgoritmType.Line:
+			        LinearTrainingResult = trainingResult;
+                    break;
+		        case KoAlgoritmType.Multi:
+			        MultiplicativeTrainingResult = trainingResult;
+                    break;
+		        default:
+			        throw new Exception($"Неизвестный тип алгоритма модели {type.GetEnumDescription()}");
+	        }
         }
 
         //public string GetFormulaFull(bool upks)
@@ -241,19 +259,58 @@ namespace ObjectModel.KO
 
     public partial class OMModelFactor
     {
-        static readonly ILogger _log = Serilog.Log.ForContext<OMModelFactor>();
         public List<OMModelingDictionariesValues> MarkCatalogs { get; set; }
 
-        /// <summary>
-        /// Поправка
-        /// </summary>
-		public decimal WeightInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        /// <summary>
-        /// Добавочный коэффициент
-        /// </summary>
-        public decimal B0InFormula => Math.Round(Coefficient, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
-        public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       public decimal CorrectionInFormula => Math.Round(Correction, ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       
+       public decimal CorrectingTermInFormula => Math.Round(CorrectingTerm.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       
+       public decimal KInFormula => Math.Round(K.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+
+       public decimal GetCoefficientInFormula(KoAlgoritmType type)
+       {
+	       var coefficient = GetCoefficient(type);
+	       return Math.Round(coefficient.GetValueOrDefault(), ORM.Consts.ObjectModelConsts.ModelFormulaPrecision);
+       }
+
+        public decimal? GetCoefficient(KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.Exp:
+			        return CoefficientForExponential;
+		        case KoAlgoritmType.Line:
+			        return CoefficientForLinear;
+		        case KoAlgoritmType.Multi:
+			        return CoefficientForMultiplicative;
+		        default:
+			        throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
+	        }
+        }
+
+        public void SetCoefficient(decimal? coefficient, KoAlgoritmType type)
+        {
+	        switch (type)
+	        {
+		        case KoAlgoritmType.Exp:
+			        CoefficientForExponential = coefficient;
+			        CoefficientForLinear = null;
+			        CoefficientForMultiplicative = null;
+                    break;
+		        case KoAlgoritmType.Line:
+			        CoefficientForLinear = coefficient;
+			        CoefficientForExponential = null;
+			        CoefficientForMultiplicative = null;
+                    break;
+		        case KoAlgoritmType.Multi:
+			        CoefficientForMultiplicative = coefficient;
+			        CoefficientForExponential = null;
+			        CoefficientForLinear = null;
+                    break;
+		        default:
+			        throw new Exception($"Передан неизвестный тип алгоритма '{type.GetEnumDescription()}'");
+	        }
+        }
 
         //public void FillMarkCatalogsFromList(List<OMMarkCatalog> list,long? groupId)
         //      {
@@ -264,7 +321,7 @@ namespace ObjectModel.KO
 
         public void FillMarkCatalogsFromList(Dictionary<long, List<OMModelingDictionariesValues>> dict)
         {
-            var success = dict.TryGetValue(FactorId.GetValueOrDefault(), out var marks);
+            var success = dict.TryGetValue(FactorId, out var marks);
             MarkCatalogs = success ? marks : new List<OMModelingDictionariesValues>();
             //_log.Verbose("Заполнение каталогов меток для группы = {groupId} из имеющегося списка", groupId);
         }

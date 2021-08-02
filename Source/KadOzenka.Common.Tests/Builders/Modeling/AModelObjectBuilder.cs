@@ -66,11 +66,11 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 			return this;
 		}
 
-		public AModelObjectBuilder Coefficient(long attributeId)
+		public AModelObjectBuilder Coefficient(long? attributeId)
 		{
 			var coefficients = new List<CoefficientForObject>
 			{
-				new CoefficientForObject(attributeId)
+				new CoefficientForObject(attributeId.GetValueOrDefault())
 				{
 					Coefficient = RandomGenerator.GenerateRandomDecimal(),
 					Value = RandomGenerator.GetRandomString()
@@ -79,6 +79,22 @@ namespace KadOzenka.Common.Tests.Builders.Modeling
 
 			_modelObject.Coefficients = coefficients.SerializeCoefficient();
 			
+			return this;
+		}
+
+		public AModelObjectBuilder NumberCoefficient(long? attributeId, decimal? coefficient)
+		{
+			var coefficients = new List<CoefficientForObject>
+			{
+				new CoefficientForObject(attributeId.GetValueOrDefault())
+				{
+					Coefficient = coefficient,
+					Value = coefficient?.ToString()
+				}
+			};
+
+			_modelObject.Coefficients = coefficients.SerializeCoefficient();
+
 			return this;
 		}
 

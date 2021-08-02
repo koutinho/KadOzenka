@@ -18,6 +18,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using CommonSdks.Excel;
 
 namespace KadOzenka.Dal.DataExport
 {
@@ -32,7 +33,7 @@ namespace KadOzenka.Dal.DataExport
 
             var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
 
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Дата определения КС", "Кадастровая стоимость", "№ дела", "Дата судебного акта", "Установленная судом РС", "Административный истец" });
+            ExcelFileHelper.AddRow(mainWorkSheet, 0, new object[] { "Кадастровый номер объекта", "Дата определения КС", "Кадастровая стоимость", "№ дела", "Дата судебного акта", "Установленная судом РС", "Административный истец" });
 
             List<ObjectModel.Sud.OMObject> objs = ObjectModel.Sud.OMObject.Where(x => x.IsRemoved != true || x.IsRemoved == null).SelectAll().Execute();
             int curIndex = 0;
@@ -100,7 +101,7 @@ namespace KadOzenka.Dal.DataExport
                 int row = 1;
                 foreach(List<object> value in values)
                 {
-	                CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, row, value.ToArray());
+	                ExcelFileHelper.AddRow(mainWorkSheet, row, value.ToArray());
                     row++;
                 }
                 Console.WriteLine(values.Count);
@@ -338,7 +339,7 @@ namespace KadOzenka.Dal.DataExport
                     DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (10 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (10 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
                 }
 
-                CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 2, caption.ToArray());
+                ExcelFileHelper.AddRow(mainWorkSheet, 2, caption.ToArray());
 
                 curIndex = 0;
                 int dataRow = 2;
@@ -351,7 +352,7 @@ namespace KadOzenka.Dal.DataExport
                     lock (locked)
                     {
                         dataRow++;
-                        CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, dataRow, datas.ToArray());
+                        ExcelFileHelper.AddRow(mainWorkSheet, dataRow, datas.ToArray());
                     }
                 });
 
@@ -496,7 +497,7 @@ namespace KadOzenka.Dal.DataExport
                     DataExportCommon.MergeCell(mainWorkSheet, 1, 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i)), 9 + (10 * maxotchet) + (8 * maxsud) + (15 * (i + 1)) - 1, "Экспертное заключение " + "№" + (i + 1).ToString());
                 }
 
-                CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 2, caption.ToArray());
+                ExcelFileHelper.AddRow(mainWorkSheet, 2, caption.ToArray());
 
                 curIndex = 0;
                 int dataRow = 2;
@@ -509,7 +510,7 @@ namespace KadOzenka.Dal.DataExport
                     lock (locked)
                     {
                         dataRow++;
-                        CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, dataRow, datas.ToArray());
+                        ExcelFileHelper.AddRow(mainWorkSheet, dataRow, datas.ToArray());
                     }
                 });
 
@@ -847,15 +848,15 @@ namespace KadOzenka.Dal.DataExport
             object[] row8 = new object[] { "Рецензия после анализа (ДА)", count8_new + count8_old, count8_old, count8_new };
             object[] row9 = new object[] { "Рецензия после анализа (НЕТ)", count9_new + count9_old, count9_old, count9_new };
 
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 1, row1);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 2, row2);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 3, row3);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 4, row4);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 5, row5);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 6, row6);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 7, row7);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 8, row8);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 9, row9);
+            ExcelFileHelper.AddRow(mainWorkSheet, 1, row1);
+            ExcelFileHelper.AddRow(mainWorkSheet, 2, row2);
+            ExcelFileHelper.AddRow(mainWorkSheet, 3, row3);
+            ExcelFileHelper.AddRow(mainWorkSheet, 4, row4);
+            ExcelFileHelper.AddRow(mainWorkSheet, 5, row5);
+            ExcelFileHelper.AddRow(mainWorkSheet, 6, row6);
+            ExcelFileHelper.AddRow(mainWorkSheet, 7, row7);
+            ExcelFileHelper.AddRow(mainWorkSheet, 8, row8);
+            ExcelFileHelper.AddRow(mainWorkSheet, 9, row9);
 
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
@@ -990,12 +991,12 @@ namespace KadOzenka.Dal.DataExport
             object[] row4 = new object[] { "в т.ч. Помещение", flt_stop, flt_no, flt_yes, flt_none, flt_no + flt_yes };
             object[] row5 = new object[] { "ВСЕГО", zu_stop + oks_stop, zu_no + oks_no, zu_yes + oks_yes, zu_none + oks_none, zu_no + zu_yes + oks_no + oks_yes };
 
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, captions);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 1, row1);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 2, row2);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 3, row3);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 4, row4);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 5, row5);
+            ExcelFileHelper.AddRow(mainWorkSheet, 0, captions);
+            ExcelFileHelper.AddRow(mainWorkSheet, 1, row1);
+            ExcelFileHelper.AddRow(mainWorkSheet, 2, row2);
+            ExcelFileHelper.AddRow(mainWorkSheet, 3, row3);
+            ExcelFileHelper.AddRow(mainWorkSheet, 4, row4);
+            ExcelFileHelper.AddRow(mainWorkSheet, 5, row5);
 
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);
@@ -1156,11 +1157,11 @@ namespace KadOzenka.Dal.DataExport
             object[] row5 = new object[] { "ВСЕГО", zu_kc + oks_kc, zu_rs + oks_rs, zu_exp + oks_exp, zu_sud + oks_sud, zu_kc + oks_kc - zu_sud - oks_sud, (zu_kc + oks_kc > 0) ? (100 - ((zu_sud + oks_sud) * 100 / (zu_kc + oks_kc))) : 0, zu_count + oks_count };
 
             DataExportCommon.AddRow(mainWorkSheet, 0, captions, new int[] { 5600, 5600, 5600, 5600, 5600, 5600, 5600, 5600 }, true, true, true);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 1, row1);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 2, row2);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 3, row3);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 4, row4);
-            CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 5, row5);
+            ExcelFileHelper.AddRow(mainWorkSheet, 1, row1);
+            ExcelFileHelper.AddRow(mainWorkSheet, 2, row2);
+            ExcelFileHelper.AddRow(mainWorkSheet, 3, row3);
+            ExcelFileHelper.AddRow(mainWorkSheet, 4, row4);
+            ExcelFileHelper.AddRow(mainWorkSheet, 5, row5);
 
             MemoryStream stream = new MemoryStream();
             excelTemplate.Save(stream, SaveOptions.XlsxDefault);

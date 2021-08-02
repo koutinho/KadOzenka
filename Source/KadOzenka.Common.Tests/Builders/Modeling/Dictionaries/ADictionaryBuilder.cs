@@ -28,6 +28,13 @@ namespace KadOzenka.Common.Tests.Builders.Modeling.Dictionaries
 			return this;
 		}
 
+		public ADictionaryBuilder Name(string name)
+		{
+			_dictionary.Name = name;
+			return this;
+		}
+
+
 		public abstract OMModelingDictionary Build();
 	}
 }

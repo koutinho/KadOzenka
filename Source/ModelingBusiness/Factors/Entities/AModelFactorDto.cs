@@ -8,8 +8,9 @@ namespace ModelingBusiness.Factors.Entities
 		public long Id { get; set; }
 		public long? ModelId { get; set; }
 		public KoAlgoritmType Type { get; set; }
-		public long? FactorId { get; set; }
+		public long FactorId { get; set; }
 		public long? DictionaryId { get; set; }
 		public MarkType MarkType { get; set; }
+		public decimal Correction { get; set; }
 	}
 }

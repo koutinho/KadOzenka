@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 	public abstract class BaseFormulasTests : BaseModelTests
 	{
 		protected OMModel Model;
-		protected FactorBuilder FactorBuilder;
+		protected ModelFactorBuilder ModelFactorBuilder;
 		protected RegisterAttribute CacheAttribute;
 		protected string CacheAttributeName => $"\"{CacheAttribute.Name}\"";
 		protected abstract KoAlgoritmType AlgorithmType { get; }
@@ -24,18 +24,17 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models.Formulas
 		public void SetUp()
 		{
 			Model = new ModelBuilder().Manual().AlgorithmType(AlgorithmType).Build();
-			FactorBuilder = new FactorBuilder();
-			CacheAttribute = new RegisterAttributeBuilder().Id(FactorBuilder.Id).Build();
+			ModelFactorBuilder = new ModelFactorBuilder();
+			CacheAttribute = new RegisterAttributeBuilder().Id(ModelFactorBuilder.Id).Build();
 		}
 
 
 
 		protected void MockDependencies(OMModel model, OMModelFactor factor, RegisterAttribute cacheAttribute)
 		{
-			ModelFactorsService.Setup(x => x.GetFactors(model.Id, model.AlgoritmType_Code))
-				.Returns(new List<OMModelFactor> { factor });
+			ModelFactorsService.Setup(x => x.GetFactorsEntities(model.Id)).Returns(new List<OMModelFactor> { factor });
 
-			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId.Value)).Returns(cacheAttribute);
+			RegisterCacheWrapper.Setup(x => x.GetAttributeData(factor.FactorId)).Returns(cacheAttribute);
 		}
 
 		protected string ProcessFormula(string str)

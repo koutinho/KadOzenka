@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CommonSdks;
+using CommonSdks.Excel;
 using Core.ErrorManagment;
 using Core.Main.FileStorages;
 using Core.Register.LongProcessManagment;
@@ -152,7 +153,7 @@ namespace KadOzenka.Dal.LongProcess.DataComparing
 
 				mainExcelFile = ExcelFile.Load(stream, LoadOptions.XlsxDefault);
 				var mainWorksheet = mainExcelFile.Worksheets[0];
-				var mainCurrentRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorksheet) + 1;
+				var mainCurrentRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorksheet) + 1;
 				Log.Debug("Создан Excel файл на основе {FileName}", firstFile.FileName);
 
 				foreach (var file in filesFromZip.Skip(1).ToList())
@@ -162,8 +163,8 @@ namespace KadOzenka.Dal.LongProcess.DataComparing
 					file.Extract(stream);
 					stream.Seek(0, SeekOrigin.Begin);
 					var currentExcelFile = ExcelFile.Load(stream, LoadOptions.XlsxDefault);
-					var currentLastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(currentExcelFile.Worksheets[0]);
-					var currentLastUsedColIndex = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(currentExcelFile.Worksheets[0]);
+					var currentLastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(currentExcelFile.Worksheets[0]);
+					var currentLastUsedColIndex = ExcelFileHelper.GetLastUsedColumnIndex(currentExcelFile.Worksheets[0]);
 					for (var i = 1; i <= currentLastUsedRowIndex; i++)
 					{
 						for (var j = 0; j <= currentLastUsedColIndex; j++)

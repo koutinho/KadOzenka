@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CommonSdks.Excel;
 using Core.Register;
 using GemBox.Spreadsheet;
 using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
+using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Objects.Entities;
 using ModelingBusiness.Objects.Repositories;
 using ObjectModel.KO;
@@ -58,9 +60,7 @@ namespace ModelingBusiness.Objects
 
         public int DestroyModelMarketObjects(OMModel model)
         {
-	        var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {model.Id}";
-	        var command = DBMngr.Main.GetSqlStringCommand(sql);
-	        var deletedModelObjectsCount = DBMngr.Main.ExecuteNonQuery(command);
+	        var deletedModelObjectsCount = DestroyModelMarketObjects(model.Id);
 
 			model.ObjectsStatistic = null;
 	        model.Save();
@@ -68,7 +68,20 @@ namespace ModelingBusiness.Objects
 	        return deletedModelObjectsCount;
         }
 
-        public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
+        public int DestroyModelMarketObjects(long modelId)
+        {
+			_log.Debug("Начато удаление объектов моделирования для модели с ИД {ModelId}", modelId);
+
+			var sql = $"delete from MODELING_MODEL_TO_MARKET_OBJECTS where MODEL_ID = {modelId}";
+	        var command = DBMngr.Main.GetSqlStringCommand(sql);
+	        var deletedModelObjectsCount = DBMngr.Main.ExecuteNonQuery(command);
+
+	        _log.Debug("Удалено {DeletedModelObjectsCount} объектов моделирования для модели с ИД {ModelId}", deletedModelObjectsCount, modelId);
+
+			return deletedModelObjectsCount;
+        }
+
+		public void ChangeObjectsStatusInCalculation(List<ModelMarketObjectRelationDto> objects)
 		{
 			var ids = objects.Select(x => x.Id).ToList();
             if (ids.Count == 0)
@@ -101,7 +114,7 @@ namespace ModelingBusiness.Objects
             });
         }
 
-        public Stream ExportMarketObjectsToExcel(long modelId, List<OMModelFactor> factors)
+        public Stream ExportMarketObjectsToExcel(long modelId, List<ModelFactorRelation> factors)
         {
 	        //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
 	        //if (model == null)
@@ -123,7 +136,7 @@ namespace ModelingBusiness.Objects
             groupedFactors.SelectMany(x => x.ToList()).ForEach(x => columnHeaders[x.ColumnIndex] = x.Name);
 			//TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
 			//columnHeaders.AddRange(new List<string>{ "МС", "%" });
-			CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0, columnHeaders);
+			ExcelFileHelper.AddRow(mainWorkSheet, 0, columnHeaders);
 
 			var rowCounter = 1;
 			var marketObjects = GetModelObjects(modelId);
@@ -162,7 +175,7 @@ namespace ModelingBusiness.Objects
 				//values.Add(calculationParameters.ModelingPrice); 
 				//values.Add(calculationParameters.Percent);
 
-				CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, rowCounter++, values);
+				ExcelFileHelper.AddRow(mainWorkSheet, rowCounter++, values);
 			});
 
 			var stream = new MemoryStream();
@@ -198,32 +211,30 @@ namespace ModelingBusiness.Objects
 
         #region Support Methods
 
-		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(List<OMModelFactor> factors)
+		private List<IGrouping<long, FactorInFileInfo>> GetFactorColumnsForModelObjectsInFile(List<ModelFactorRelation> factors)
 		{
 			var result = new List<FactorInFileInfo>();
 			factors.ForEach(x =>
 			{
-				var factorId = x.FactorId.GetValueOrDefault();
-				var factorName = RegisterCache.GetAttributeData((int) x.FactorId.GetValueOrDefault()).Name;
 				if (x.DictionaryId == null)
 				{
 					result.Add(new FactorInFileInfo
 					{
-						AttributeId = factorId,
-						Name = factorName
+						AttributeId = x.AttributeId,
+						Name = x.AttributeName
 					});
 				}
 				else
 				{
 					result.Add(new FactorInFileInfo
 					{
-						AttributeId = factorId,
-						Name = $"{factorName} (Коэффициент)"
+						AttributeId = x.AttributeId,
+						Name = $"{x.AttributeName} (Коэффициент)"
 					});
 					result.Add(new FactorInFileInfo
 					{
-						AttributeId = factorId,
-						Name = $"{factorName} (Значение)",
+						AttributeId = x.AttributeId,
+						Name = $"{x.AttributeName} (Значение)",
 						IsColumnWithValue = true
 					});
 				}
@@ -251,11 +262,11 @@ namespace ModelingBusiness.Objects
 			public bool IsColumnWithValue { get; set; }
 		}
 
-		public class ModelObjectsCalculationParameters
-        {
-	        public decimal? ModelingPrice { get; set; }
-	        public decimal? Percent { get; set; }
-        }
+		/*public class ModelObjectsCalculationParameters
+		{
+			public decimal? ModelingPrice { get; set; }
+			public decimal? Percent { get; set; }
+		}*/
 
 		#endregion
 	}

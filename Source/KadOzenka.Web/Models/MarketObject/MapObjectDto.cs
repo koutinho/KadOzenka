@@ -1,5 +1,4 @@
-﻿using MarketPlaceBusiness.Dto;
-using ObjectModel.Market;
+﻿using MarketPlaceBusiness.Common.Dto;
 
 namespace KadOzenka.Web.Models.MarketObject
 {

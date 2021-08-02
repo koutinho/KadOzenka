@@ -11,7 +11,7 @@ using Serilog;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
-    //todo вынести корреляцию отдельно
+    //todo вынести корреляцию отдельно, удалить prediction
     public class ModelingProcess : LongProcess
     {
 	    private readonly ILogger _log = Log.ForContext<ModelingProcess>();

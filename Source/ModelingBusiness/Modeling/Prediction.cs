@@ -51,13 +51,13 @@ namespace ModelingBusiness.Modeling
         {
             AddLog($"Начата работа с моделью '{GeneralModel.Name}', тип модели: '{InputParameters.ModelType.GetEnumDescription()}'.");
 
-            if (InputParameters.ModelType == KoAlgoritmType.Line && string.IsNullOrWhiteSpace(GeneralModel.LinearTrainingResult))
+            if (InputParameters.ModelType == KoAlgoritmType.Line && !GeneralModel.HasLinearTrainingResult)
 	            throw new Exception(GetErrorMessage(KoAlgoritmType.Line));
 
-            if (InputParameters.ModelType == KoAlgoritmType.Exp && string.IsNullOrWhiteSpace(GeneralModel.ExponentialTrainingResult))
+            if (InputParameters.ModelType == KoAlgoritmType.Exp && !GeneralModel.HasExponentialTrainingResult)
 	            throw new Exception(GetErrorMessage(KoAlgoritmType.Exp));
 
-            if (InputParameters.ModelType == KoAlgoritmType.Multi && string.IsNullOrWhiteSpace(GeneralModel.MultiplicativeTrainingResult))
+            if (InputParameters.ModelType == KoAlgoritmType.Multi && !GeneralModel.HasMultiplicativeTrainingResult)
 	            throw new Exception(GetErrorMessage(KoAlgoritmType.Multi));
         }
 
@@ -65,7 +65,7 @@ namespace ModelingBusiness.Modeling
         {
             RequestForService = new PredictionRequest();
 
-            var allAttributes = ModelFactorsService.GetGeneralModelFactors(InputParameters.ModelId).Where(x => x.IsActive).ToList();
+            var allAttributes = ModelFactorsService.GetFactors(InputParameters.ModelId).Where(x => x.IsActive).ToList();
             var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(InputParameters.ModelId, IncludedObjectsMode.Prediction);
             modelObjects.ForEach(modelObject =>
             {
@@ -90,8 +90,8 @@ namespace ModelingBusiness.Modeling
                 }
             });
 
-            if (RequestForService.Coefficients.Count == 0)
-                throw new Exception("Не было найдено объектов, подходящих для моделирования (у которых значения всех атрибутов не пустые)");
+	        if (RequestForService.Coefficients.Count == 0)
+                throw new Exception("Не было найдено объектов, подходящих для моделирования. Для расчета цены подходят объекты с заполненными коэффициентами по всем активным факторам модели, которые не исключены из расчета и не находятся ни в обучающей, ни в контрольной выборках.");
 
             return RequestForService;
         }

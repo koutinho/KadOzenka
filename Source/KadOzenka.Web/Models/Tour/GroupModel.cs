@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using KadOzenka.Dal.Groups.Dto;
 using KadOzenka.Dal.Groups.Dto.Consts;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ObjectModel.Directory;
+using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Tour
 {
@@ -33,7 +35,7 @@ namespace KadOzenka.Web.Models.Tour
         public bool IsReadOnly { get; set; }
 
 
-        public static GroupModel ToModel(GroupDto group)
+        public static GroupModel ToModel(GroupDto group, List<OMModel> models)
         {
             var parentId = group.ParentGroupId;
             if (parentId == -1)
@@ -46,7 +48,13 @@ namespace KadOzenka.Web.Models.Tour
 		        {
 			        parentId = (long?)KoGroupAlgoritm.MainParcel;
 		        }
-	        }
+            }
+
+            var groupModels = models.Select(x => new SelectListItem
+            {
+	            Value = x.Id.ToString(),
+	            Text = x.Name
+            }).ToList();
 
             return new GroupModel
             {
@@ -56,7 +64,9 @@ namespace KadOzenka.Web.Models.Tour
                 Number = group.Number,
 				ParentGroupId = parentId,
                 GroupType = group.GroupType,
-                GroupAlgorithm = group.GroupAlgorithmCode
+                GroupAlgorithm = group.GroupAlgorithmCode,
+                Models = groupModels,
+                ModelId = models.FirstOrDefault(x => x.IsActive.GetValueOrDefault())?.Id
 			};
         }
 

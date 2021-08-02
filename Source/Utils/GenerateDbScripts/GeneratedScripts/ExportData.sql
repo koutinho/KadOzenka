@@ -276,6 +276,18 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(25, 'Gbu.Source25', 'Источник: РГИС - геофакторы ОКС', 'GBU_SOURCE25_A', NULL, 'GBU_MAIN_OBJECT', NULL, 5, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, 1, 200)
+on conflict (registerid) do update set
+"registername"='Gbu.Source25', "registerdescription"='Источник: РГИС - геофакторы ОКС', "allpri_table"='GBU_SOURCE25_A', "object_table"=NULL, "quant_table"='GBU_MAIN_OBJECT', "track_changes_column"=NULL, "storage_type"=5, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=1, "main_register"=200;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(26, 'Gbu.Source26', 'Источник: РГИС - геофакторы ЗУ', 'GBU_SOURCE26_A', NULL, 'GBU_MAIN_OBJECT', NULL, 5, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, 1, 200)
+on conflict (registerid) do update set
+"registername"='Gbu.Source26', "registerdescription"='Источник: РГИС - геофакторы ЗУ', "allpri_table"='GBU_SOURCE26_A', "object_table"=NULL, "quant_table"='GBU_MAIN_OBJECT', "track_changes_column"=NULL, "storage_type"=5, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=1, "main_register"=200;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
 (80, 'Gbu.KadastrKvartal', 'Справочник кадастровых кварталов', NULL, NULL, 'GBU_KADASTR_KVARTAL', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
 on conflict (registerid) do update set
 "registername"='Gbu.KadastrKvartal', "registerdescription"='Справочник кадастровых кварталов', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='GBU_KADASTR_KVARTAL', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
@@ -285,6 +297,12 @@ insert into core_register ("registerid", "registername", "registerdescription", 
 (81, 'Gbu.AttributeSettings', 'Реестр хранения настроек гбу атрибута', NULL, NULL, 'GBU_ATTRIBUTE_SETTINGS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
 on conflict (registerid) do update set
 "registername"='Gbu.AttributeSettings', "registerdescription"='Реестр хранения настроек гбу атрибута', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='GBU_ATTRIBUTE_SETTINGS', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(82, 'Gbu.RgisLayers', 'Таблица, содержащая список слоев для факторов из РГИС', NULL, NULL, 'GBU_RGIS_LAYERS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='Gbu.RgisLayers', "registerdescription"='Таблица, содержащая список слоев для факторов из РГИС', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='GBU_RGIS_LAYERS', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=NULL, "allpri_partitioning"=NULL, "main_register"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
@@ -384,21 +402,9 @@ on conflict (registerid) do update set
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
-(208, 'KO.GroupFactor', 'Факторы группы', NULL, NULL, 'KO_GROUP_FACTOR', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
-on conflict (registerid) do update set
-"registername"='KO.GroupFactor', "registerdescription"='Факторы группы', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_GROUP_FACTOR', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
-
---<DO>--
-insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
 (210, 'KO.ModelFactor', 'Факторы модели', NULL, NULL, 'KO_MODEL_FACTOR', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
 on conflict (registerid) do update set
 "registername"='KO.ModelFactor', "registerdescription"='Факторы модели', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_MODEL_FACTOR', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
-
---<DO>--
-insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
-(211, 'KO.MarkCatalog', 'Справочник меток', NULL, NULL, 'KO_MARK_CATALOG', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
-on conflict (registerid) do update set
-"registername"='KO.MarkCatalog', "registerdescription"='Справочник меток', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_MARK_CATALOG', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
@@ -567,6 +573,24 @@ insert into core_register ("registerid", "registername", "registerdescription", 
 (267, 'KO.UnloadResultFiles', 'Реестр с файлами выгрузок результатов оценки', NULL, NULL, 'KO_UNLOAD_RESULT_FILES', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, NULL, NULL, NULL)
 on conflict (registerid) do update set
 "registername"='KO.UnloadResultFiles', "registerdescription"='Реестр с файлами выгрузок результатов оценки', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_UNLOAD_RESULT_FILES', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=NULL, "allpri_partitioning"=NULL, "main_register"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(269, 'KO.TourGroupGroupingSettings', 'Реестр условий группировки', NULL, NULL, 'KO_GROUP_GROUPING_SETTINGS', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, 0, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='KO.TourGroupGroupingSettings', "registerdescription"='Реестр условий группировки', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_GROUP_GROUPING_SETTINGS', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=0, "allpri_partitioning"=NULL, "main_register"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(270, 'KO.GroupingDictionary', 'Справочники группировки', NULL, NULL, 'KO_GROUPING_DICTIONARIES', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, 'CHANGE_USER_ID', 'CHANGE_DATE', NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='KO.GroupingDictionary', "registerdescription"='Справочники группировки', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_GROUPING_DICTIONARIES', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"='CHANGE_USER_ID', "track_changes_date"='CHANGE_DATE', "is_deleted"=NULL, "allpri_partitioning"=NULL, "main_register"=NULL;
+
+--<DO>--
+insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
+(271, 'KO.GroupingDictionariesValues', 'Справочники группировки. Значения справочников', NULL, NULL, 'KO_GROUPING_DICTIONARIES_VALUES', NULL, 4, 'REG_OBJECT_SEQ', 0, 0, NULL, NULL, NULL, NULL, NULL, NULL)
+on conflict (registerid) do update set
+"registername"='KO.GroupingDictionariesValues', "registerdescription"='Справочники группировки. Значения справочников', "allpri_table"=NULL, "object_table"=NULL, "quant_table"='KO_GROUPING_DICTIONARIES_VALUES', "track_changes_column"=NULL, "storage_type"=4, "object_sequence"='REG_OBJECT_SEQ', "is_virtual"=0, "contains_quant_in_future"=0, "db_connection_name"=NULL, "track_changes_userid"=NULL, "track_changes_date"=NULL, "is_deleted"=NULL, "allpri_partitioning"=NULL, "main_register"=NULL;
 
 --<DO>--
 insert into core_register ("registerid", "registername", "registerdescription", "allpri_table", "object_table", "quant_table", "track_changes_column", "storage_type", "object_sequence", "is_virtual", "contains_quant_in_future", "db_connection_name", "track_changes_userid", "track_changes_date", "is_deleted", "allpri_partitioning", "main_register") values
@@ -1418,12 +1442,12 @@ insert into core_reference ("referenceid", "description", "readonly", "progid", 
 		"Name": "FlatShare"
 	},
 	{
-		"Id": 17,
+		"Id": 18,
 		"Value": "Квартира в новостройке",
 		"Name": "NewBuildingFlat"
 	},
 	{
-		"Id": 18,
+		"Id": 19,
 		"Value": "Участок",
 		"Name": "Land"
 	}
@@ -1521,12 +1545,12 @@ on conflict (referenceid) do update set
 		"Name": "FlatShare"
 	},
 	{
-		"Id": 17,
+		"Id": 18,
 		"Value": "Квартира в новостройке",
 		"Name": "NewBuildingFlat"
 	},
 	{
-		"Id": 18,
+		"Id": 19,
 		"Value": "Участок",
 		"Name": "Land"
 	}
@@ -2765,6 +2789,74 @@ on conflict (referenceid) do update set
 		"Id": 3,
 		"Value": "Обратная метка",
 		"Name": "Reverse"
+	}
+]';
+
+--<DO>--
+insert into core_reference ("referenceid", "description", "readonly", "progid", "istree", "defaultvalue", "name", "register_id", "simple_values") values
+(227, 'Тип данных для словаря моделирования', 1, 'Core.RefLib.Executors.ReferenceExecutorSimple', NULL, NULL, 'KO.ModelDictionaryType', NULL, '[
+	{
+		"Id": 1,
+		"Value": "Целое число",
+		"Name": "Integer"
+	},	
+	{
+		"Id": 2,
+		"Value": "Десятичное число",
+		"Name": "Decimal"
+	},
+	{
+		"Id": 3,
+		"Value": "Логическое значение",
+		"Name": "Boolean"
+	},
+	{
+		"Id": 4,
+		"Value": "Строка",
+		"Name": "String"
+	},
+	{
+		"Id": 5,
+		"Value": "Дата и время",
+		"Name": "Date"
+	},
+	{
+		"Id": 6,
+		"Value": "Значение из справочника",
+		"Name": "Reference"
+	}
+]')
+on conflict (referenceid) do update set
+"description"='Тип данных для словаря моделирования', "readonly"=1, "progid"='Core.RefLib.Executors.ReferenceExecutorSimple', "istree"=NULL, "defaultvalue"=NULL, "name"='KO.ModelDictionaryType', "register_id"=NULL, "simple_values"='[
+	{
+		"Id": 1,
+		"Value": "Целое число",
+		"Name": "Integer"
+	},	
+	{
+		"Id": 2,
+		"Value": "Десятичное число",
+		"Name": "Decimal"
+	},
+	{
+		"Id": 3,
+		"Value": "Логическое значение",
+		"Name": "Boolean"
+	},
+	{
+		"Id": 4,
+		"Value": "Строка",
+		"Name": "String"
+	},
+	{
+		"Id": 5,
+		"Value": "Дата и время",
+		"Name": "Date"
+	},
+	{
+		"Id": 6,
+		"Value": "Значение из справочника",
+		"Name": "Reference"
 	}
 ]';
 

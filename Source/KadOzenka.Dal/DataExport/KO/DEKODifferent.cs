@@ -251,7 +251,7 @@ namespace KadOzenka.Dal.DataExport
             }
 
             if (model.ModelFactor.Count == 0)
-                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id && x.AlgorithmType_Code == model.AlgoritmType_Code).SelectAll().Execute();
+                model.ModelFactor = OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
 
             ExcelFile excel_edit = new ExcelFile();
             ExcelWorksheet sheet_edit = excel_edit.Worksheets.Add("КО");

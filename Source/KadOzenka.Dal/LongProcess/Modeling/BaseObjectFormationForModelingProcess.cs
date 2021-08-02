@@ -21,7 +21,7 @@ using ObjectModel.Market;
 using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
-using Consts = MarketPlaceBusiness.Common.Consts;
+using Consts = MarketPlaceBusiness.Consts;
 
 namespace KadOzenka.Dal.LongProcess.Modeling
 {
@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		protected List<ModelAttributePure> GetGeneralModelAttributes(long modelId)
 		{
-			return ModelFactorsService.GetGeneralModelFactors(modelId)
+			return ModelFactorsService.GetFactors(modelId)
 				.Select(x => new ModelAttributePure(x.AttributeId, x.DictionaryId)).ToList();
 		}
 

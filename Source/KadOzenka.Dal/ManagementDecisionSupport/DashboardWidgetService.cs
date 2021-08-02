@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.Excel;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -155,7 +156,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 		{
 			ExcelFile excelTemplate = new ExcelFile();
 			var mainWorkSheet = excelTemplate.Worksheets.Add("Экспорт данных");
-			CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 0,
+			ExcelFileHelper.AddRow(mainWorkSheet, 0,
 				new object[]
 				{
 					"Кадастровый номер объекта", "Вид объекта недвижимости", "Площадь", "Кадастровая стоимость",
@@ -316,7 +317,7 @@ namespace KadOzenka.Dal.ManagementDecisionSupport
 				var excelRow = 1;
 				foreach (var rowValue in rowValueList)
 				{
-					CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, excelRow, rowValue.ToArray());
+					ExcelFileHelper.AddRow(mainWorkSheet, excelRow, rowValue.ToArray());
 					excelRow++;
 				}
 			}

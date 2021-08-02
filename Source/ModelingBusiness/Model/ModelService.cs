@@ -4,13 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Transactions;
-using CommonSdks;
 using CommonSdks.PlatformWrappers;
 using CommonSdks.RecycleBin;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using ModelingBusiness.Factors;
-using ModelingBusiness.Factors.Repositories;
 using ModelingBusiness.Model.Entities;
 using ModelingBusiness.Model.Exceptions;
 using ModelingBusiness.Model.Formulas;
@@ -66,19 +64,15 @@ namespace ModelingBusiness.Model
 				throw new Exception("Не передан идентификатор Группы для поиска модели");
 
 			return OMModel.Where(x => x.GroupId == groupId)
-				.OrderByDescending(x => x.IsActive.Coalesce(false)).OrderBy(x => x.Name)
-				.Select(x => new
-				{
-					x.Id,
-					x.Name
-				})
+				.OrderBy(x => x.Name)
+				.SelectAll()
 				.Execute();
 		}
 
 		public OMModel GetModelEntityById(long? modelId)
         {
 	        if (modelId.GetValueOrDefault() == 0)
-		        throw new Exception(ModelingBusiness.Messages.EmptyModelId);
+		        throw new EmptyModelIdException();
 
 	        var model = ModelRepository.GetById(modelId.Value, null);
 	        if (model == null)
@@ -101,7 +95,7 @@ namespace ModelingBusiness.Model
 		        x.Type_Code,
 		        x.AlgoritmType_Code,
 		        x.CalculationType_Code,
-		        x.A0,
+		        A0 = x.A0ForLinear,
 		        x.A0ForExponential,
 		        x.A0ForMultiplicative,
 		        x.Formula,
@@ -230,18 +224,18 @@ namespace ModelingBusiness.Model
 
             using (var ts = new TransactionScope())
             {
+	            existedModel.Name = modelDto.Name;
+	            existedModel.Description = modelDto.Description;
 	            if (existedModel.AlgoritmType_Code != modelDto.AlgorithmTypeForCadastralPriceCalculation)
 	            {
-		            var factors = ModelFactorsService.GetFactors(modelDto.ModelId, existedModel.AlgoritmType_Code);
+		            var factors = ModelFactorsService.GetFactorsEntities(modelDto.ModelId);
 		            factors.ForEach(x =>
 		            {
-			            x.AlgorithmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
+			            var oldCoefficient = x.GetCoefficient(existedModel.AlgoritmType_Code);
+			            x.SetCoefficient(oldCoefficient, modelDto.AlgorithmTypeForCadastralPriceCalculation);
 			            x.Save();
 		            });
 	            }
-
-	            existedModel.Name = modelDto.Name;
-	            existedModel.Description = modelDto.Description;
 	            existedModel.AlgoritmType_Code = modelDto.AlgorithmTypeForCadastralPriceCalculation;
 				existedModel.SetA0(modelDto.A0, modelDto.AlgorithmTypeForCadastralPriceCalculation);
 
@@ -258,7 +252,7 @@ namespace ModelingBusiness.Model
             }
         }
 
-        public void MakeModelActive(long modelId)
+        public void ActivateModel(long modelId)
         {
 	        var model = ModelRepository.GetById(modelId, x => new
 	        {
@@ -277,20 +271,14 @@ namespace ModelingBusiness.Model
 		                                !string.IsNullOrWhiteSpace(model.ExponentialTrainingResult) ||
 		                                !string.IsNullOrWhiteSpace(model.MultiplicativeTrainingResult);
 		        if (!hasFormedObjectArray || !hasTrainingResult)
-			        throw new Exception(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel);
+			        throw new CanNotActivateNotPreparedAutomaticModelException();
 			}
 	        
 			using (var ts = new TransactionScope())
 			{
-				var otherModelsForGroup = ModelRepository.GetEntitiesByCondition(
-					x => x.GroupId == model.GroupId && x.IsActive.Coalesce(false) == true, x => new {x.IsActive});
-				otherModelsForGroup.ForEach(x =>
-				{
-					x.IsActive = false;
-					ModelRepository.Save(x);
-				});
+				DeactivateModel(model.GroupId.GetValueOrDefault());
 
-		        if (!model.IsActive.GetValueOrDefault())
+				if (!model.IsActive.GetValueOrDefault())
 		        {
 			        model.IsActive = true;
 			        ModelRepository.Save(model);
@@ -300,11 +288,29 @@ namespace ModelingBusiness.Model
 	        }
         }
 
-        public void DeleteModel(long modelId)
+        public void DeactivateModel(long groupId)
+        {
+	        using (var ts = new TransactionScope())
+	        {
+		        var otherModelsForGroup = ModelRepository.GetEntitiesByCondition(
+			        x => x.GroupId == groupId && x.IsActive.Coalesce(false) == true, x => new { x.IsActive });
+		        
+		        otherModelsForGroup.ForEach(x =>
+		        {
+			        x.IsActive = false;
+			        ModelRepository.Save(x);
+		        });
+
+		        ts.Complete();
+	        }
+        }
+
+
+		public void DeleteModel(long modelId)
         {
 			var model = GetModelEntityById(modelId);
 
-			var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+			var factors = ModelFactorsService.GetFactorsEntities(modelId);
 			factors.ForEach(factor => factor.Destroy());
 
 			if (model.Type_Code == KoModelType.Automatic)
@@ -320,7 +326,7 @@ namespace ModelingBusiness.Model
         {
 	        var model = GetModelEntityById(modelId);
 
-	        var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.None);
+	        var factors = ModelFactorsService.GetFactors(modelId);
 	        RecycleBinService.MoveObjectsToRecycleBin(factors.Select(x => x.Id).ToList(), OMModelFactor.GetRegisterId(), eventId);
 
 	        if (model.Type_Code == KoModelType.Automatic)
@@ -375,10 +381,7 @@ namespace ModelingBusiness.Model
 
 		public string GetFormula(OMModel model, KoAlgoritmType algorithmType)
 		{
-			//для ручной модели существует один набор факторов под алгоритм самой модели
-			//для автоматической модели набор факторов разный под тип алгоритма
-			var typeForFactors = model.IsAutomatic ? algorithmType : model.AlgoritmType_Code;
-			var factors = ModelFactorsService.GetFactors(model.Id, typeForFactors);
+			var factors = ModelFactorsService.GetFactorsEntities(model.Id);
 			if (factors.Count == 0 || (model.IsAutomatic && !model.IsModelWasTrained))
 				return "Y = 0";
 
@@ -388,12 +391,12 @@ namespace ModelingBusiness.Model
 
 			factors.ForEach(x =>
 			{
-				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId.GetValueOrDefault()).Name}\"";
-				var weightInFormula = formulaCreator.ProcessNumber(x.WeightInFormula);
-				var b0InFormula = formulaCreator.ProcessNumber(x.B0InFormula);
+				var attributeName = $"\"{RegisterCacheWrapper.GetAttributeData(x.FactorId).Name}\"";
+				var correctionInFormula = formulaCreator.ProcessNumber(x.CorrectionInFormula);
+				var coefficientInFormula = formulaCreator.ProcessNumber(x.GetCoefficientInFormula(algorithmType));
 				var correctingTermInFormula = formulaCreator.ProcessNumber(x.CorrectingTermInFormula);
 				var kInFormula = formulaCreator.ProcessNumber(x.KInFormula);
-				var modelInfo = new ModelInfoForFormula(attributeName, weightInFormula, b0InFormula,
+				var modelInfo = new ModelInfoForFormula(attributeName, correctionInFormula, coefficientInFormula,
 					correctingTermInFormula, kInFormula);
 
 				switch (x.MarkType_Code)

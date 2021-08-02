@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonSdks\CommonSdks.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModelEnum\KadOzenka.ObjectModelEnum.csproj" />
     <ProjectReference Include="..\KadOzenka.ObjectModel\KadOzenka.ObjectModel.csproj" />
   </ItemGroup>

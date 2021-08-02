@@ -58,6 +58,7 @@
                             @(Html.Kendo().DropDownListFor(m => m.ModelId)
                                 .DataTextField("Text")
                                 .DataValueField("Value")
+                                .OptionLabel("-")
                                 .Filter(FilterType.Contains)
                                 .BindTo(Model.Models))
                         </div>
@@ -65,7 +66,7 @@
                     <div class="form-group col-sm-12" align="center">
                         <div class="col-sm-4 col-sm-offset-4" >
                             @(Html.Kendo().Button()
-                                .Name("makeModelActiveBtn")
+                                .Name("changeModelBtn")
                                 .Content("Сделать модель активной")
                                 .Enable(Model.Models?.Count > 0)
                                 .HtmlAttributes(new { style = "width: 100%;" }))
@@ -213,7 +214,7 @@
         var modelDropDown = $('#@nameof(Model.ModelId)').data("kendoDropDownList");
         modelDropDown.bind('change', initModelCard);
         initModelCard();
-        $('#makeModelActiveBtn').on('click', makeModelActive);
+        $('#changeModelBtn').on('click', changeModel);
 
         var panelbar = $('#groupSubCard_panelbar').kendoPanelBar().data('kendoPanelBar');
         panelbar.expand('li[data-expand]');
@@ -399,19 +400,44 @@
         });
     }
 
-    function makeModelActive() {
+    
+
+    function changeModel() {
         var modelId = $('#@nameof(Model.ModelId)').data("kendoDropDownList").value();
         if (!modelId || modelId == 0) {
-            Common.ShowError("Не выбрана модель из списка");
-            return;
+            deactivateModel();
         }
+        else {
+            activateModel(modelId);
+        }
+    }
+
+    function activateModel(modelId) {
         kendo.ui.progress($('#Section_Model'), true);
         $.ajax({
             type: 'POST',
-            url: '@Url.Action("MakeModelActive", "Modeling")',
+            url: '@Url.Action("ActivateModel", "Modeling")',
 			data: { modelId: modelId },
             success: function () {
                 Common.ShowMessage("Модель сделана активной");
+            },
+            error: function (response) {
+                Common.ShowError(response.responseText);
+            },
+            complete: function () {
+                kendo.ui.progress($('#Section_Model'), false);
+            }
+        });
+    }
+
+    function deactivateModel() {
+        kendo.ui.progress($('#Section_Model'), true);
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DeactivateModel", "Modeling")',
+            data: { groupId: '@Model.Id' },
+            success: function () {
+                Common.ShowMessage("Активная модель сброшена");
             },
             error: function (response) {
                 Common.ShowError(response.responseText);

@@ -15,7 +15,7 @@ namespace KadOzenka.Web.Models.Modeling
         public bool HasLinearTrainingResult { get; private init; }
 		public bool HasExponentialTrainingResult { get; private init; }
 		public bool HasMultiplicativeTrainingResult { get; private init; }
-		public List<ModelFactorRelationDto> Attributes { get; set; }
+		public List<ModelFactorRelation> Attributes { get; set; }
 
         [Display(Name = "Группа")]
         public string GroupName { get; set; }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Common.Dto;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 

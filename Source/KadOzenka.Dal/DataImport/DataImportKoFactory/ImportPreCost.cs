@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using CommonSdks.Excel;
 using Core.ErrorManagment;
 using Core.Shared.Extensions;
 using GemBox.Spreadsheet;
@@ -41,11 +42,11 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 				};
 
 
-				int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-				CommonSdks.ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
+				int maxColumns = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
 
-				var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try
@@ -81,7 +82,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
+										ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
 										return;
 									}
 								}
@@ -98,7 +99,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (предварительная) и УПКС (предварительный) обновлены");
+										ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (предварительная) и УПКС (предварительный) обновлены");
 									}
 								}
 								catch
@@ -117,7 +118,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 											: !setPreCost
 												? "КС (предварительная) не установлена"
 												: "УПКС (предварительный) не установлен";
-										CommonSdks.ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj 
+										ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj 
 											? "Указанный объект не найден" : msg);
 									}
 								}
@@ -134,7 +135,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						long errorId = ErrorManager.LogError(ex);
 						lock (locked)
 						{
-							CommonSdks.ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
+							ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 						}
 					}
 				});
@@ -171,10 +172,10 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 					MaxDegreeOfParallelism = 10
 				};
 
-				int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-				CommonSdks.ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
+				int maxColumns = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+				ExcelFileHelper.AddSuccessHeaderColumn(mainWorkSheet, maxColumns);
 
-				var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+				var lastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 				Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 				{
 					try
@@ -210,7 +211,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
+										ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, "УПКС не может быть больше Кадастровой стоимости");
 										return;
 									}
 								}
@@ -229,7 +230,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 								{
 									lock (locked)
 									{
-										CommonSdks.ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (предварительная) и УПКС (предварительный) обновлены");
+										ExcelFileHelper.AddSuccessCell(mainWorkSheet, row.Index, maxColumns, "КС (предварительная) и УПКС (предварительный) обновлены");
 									}
 								}
 								catch
@@ -248,7 +249,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 											: !setPreCost
 												? "КС (предварительная) не установлена"
 												: "УПКС (предварительный) не установлен";
-										CommonSdks.ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
+										ExcelFileHelper.AddWarningCell(mainWorkSheet, row.Index, maxColumns, !findObj
 											? "Указанный объект не найден" : msg);
 									}
 								}
@@ -264,7 +265,7 @@ namespace KadOzenka.Dal.DataImport.DataImportKoFactory
 						long errorId = ErrorManager.LogError(ex);
 						lock (locked)
 						{
-							CommonSdks.ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
+							ExcelFileHelper.AddErrorCell(mainWorkSheet, row.Index, maxColumns, $"{ex.Message} (подробно в журнале №{errorId})");
 						}
 					}
 				});

@@ -18,9 +18,8 @@ using System.Globalization;
 using AutoMapper;
 using KadOzenka.Web.Attributes;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Common;
-using MarketPlaceBusiness.Dto;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Common.Dto;
+using MarketPlaceBusiness.Map;
 using ObjectModel.SRD;
 
 namespace KadOzenka.Web.Controllers

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using KadOzenka.Dal.UnitTests._Builders.Modeling;
+using ModelingBusiness.Model.Exceptions;
 using ModelingBusiness.Objects.Entities;
 using Moq;
 using NUnit.Framework;
@@ -22,7 +23,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>());
 			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
-			ModelService.MakeModelActive(initialModel.Id);
+			ModelService.ActivateModel(initialModel.Id);
 
 			VerifyModelIsMakedActive(initialModel, updatedModel);
 		}
@@ -38,7 +39,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 			ModelingRepository.Setup(x => x.Save(initialModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
 
-			ModelService.MakeModelActive(initialModel.Id);
+			ModelService.ActivateModel(initialModel.Id);
 
 			VerifyModelIsMakedActive(initialModel, updatedModel);
 		}
@@ -51,10 +52,9 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(false);
 
-			var exception = Assert.Throws<Exception>(() => ModelService.MakeModelActive(initialModel.Id));
+			Assert.Throws<CanNotActivateNotPreparedAutomaticModelException>(() => ModelService.ActivateModel(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
-			Assert.That(exception.Message, Is.EqualTo(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel));
 		}
 
 		[Test]
@@ -67,10 +67,25 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 			MoqModelingRepository_GetById(initialModel);
 			ModelObjectsRepository.Setup(x => x.AreIncludedModelObjectsExist(initialModel.Id, IncludedObjectsMode.Training)).Returns(true);
 
-			var exception = Assert.Throws<Exception>(() => ModelService.MakeModelActive(initialModel.Id));
+			Assert.Throws<CanNotActivateNotPreparedAutomaticModelException>(() => ModelService.ActivateModel(initialModel.Id));
 
 			ModelingRepository.Verify(foo => foo.Save(initialModel), Times.Never);
-			Assert.That(exception.Message, Is.EqualTo(ModelingBusiness.Messages.CanNotActivateNotPreparedAutomaticModel));
+		}
+
+		[Test]
+		public void Can_Deactivate_Model_For_Group()
+		{
+			OMModel updatedModel = null;
+			var previouslyActivatedModel = new ModelBuilder().Manual().IsActive(true).Build();
+
+			MoqModelingRepository_GetOtherGroupModels(new List<OMModel>{previouslyActivatedModel});
+			ModelingRepository.Setup(x => x.Save(previouslyActivatedModel)).Callback<OMModel>(inputModel => updatedModel = inputModel);
+
+			ModelService.DeactivateModel(previouslyActivatedModel.GroupId.GetValueOrDefault());
+
+			ModelingRepository.Verify(foo => foo.Save(previouslyActivatedModel), Times.Once);
+			Assert.That(updatedModel.Id, Is.EqualTo(previouslyActivatedModel.Id));
+			Assert.That(updatedModel.IsActive, Is.False);
 		}
 
 

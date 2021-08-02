@@ -15,9 +15,7 @@ namespace KadOzenka.Dal.UnitTests.Modeling.Models
 		[TestCase(0)]
 		public void If_Model_Id_Is_Empty_Throw_Exception(long modelId)
 		{
-			var exception = Assert.Throws<Exception>(() => ModelService.GetModelEntityById(modelId));
-
-			StringAssert.Contains(ModelingBusiness.Messages.EmptyModelId, exception.Message);
+			Assert.Throws<EmptyModelIdException>(() => ModelService.GetModelEntityById(modelId));
 		}
 
 

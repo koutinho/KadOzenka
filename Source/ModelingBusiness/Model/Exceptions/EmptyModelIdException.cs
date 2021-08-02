@@ -4,7 +4,7 @@ namespace ModelingBusiness.Model.Exceptions
 {
 	public class EmptyModelIdException : Exception
 	{
-		public EmptyModelIdException(string message) : base(message)
+		public EmptyModelIdException() : base("Не передан ИД Модели")
 		{
 			
 		}

@@ -28,7 +28,6 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 {
     public class MarksCalculationLongProcess : LongProcess
     {
-	    private string _messageSubject = "Результат Операции Расчета меток";
 	    private int _maxFactorsCount;
 	    private int _processedFactorsCount;
 	    private int _descriptionColumnIndex = 0;
@@ -57,6 +56,16 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			RegisterCacheWrapper = registerCacheWrapper ?? new RegisterCacheWrapper();
 		}
 
+		//для фоновых процессов
+		public MarksCalculationLongProcess()
+		{
+			ModelService = new ModelService();
+			ModelFactorsService = new ModelFactorsService();
+			ModelObjectsRepository = new ModelObjectsRepository();
+			ModelDictionaryService = new ModelDictionaryService();
+			RegisterCacheWrapper = new RegisterCacheWrapper();
+		}
+
 
 
 		public static void AddProcessToQueue(long modelId)
@@ -83,6 +92,12 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 			var modelId = processQueue.ObjectId.GetValueOrDefault();
 			ValidateModelId(modelId);
+			
+			var model = ModelService.GetModelEntityById(modelId);
+			if (!model.IsAutomatic)
+				throw new CanNotCreateMarksForNonAutomaticModelException();
+
+			var messageSubject = $"Результат Операции Расчета меток для модели '{model.Name}'";
 
 			try
 			{
@@ -96,18 +111,18 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 					: $@"<a href=""{urlToDownloadReport}"">Скачать отчет с ошибками</a>";
 
 				var message = "Операция завершена. " + downloadReportElement;
-				NotificationSender.SendNotification(processQueue, _messageSubject, message);
+				NotificationSender.SendNotification(processQueue, messageSubject, message);
 			}
 			catch (OperationCanceledException ex)
 			{
 				_logger.Error(ex, "Операция остановлена пользователем");
-				NotificationSender.SendNotification(processQueue, _messageSubject, "Операция была остановлена пользователем");
+				NotificationSender.SendNotification(processQueue, messageSubject, "Операция была остановлена пользователем");
 			}
 			catch (Exception ex)
 			{
 				_logger.Error(ex, "Ошибка в ходе расчета меток");
 				var errorId = ErrorManager.LogError(ex); 
-				NotificationSender.SendNotification(processQueue, _messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
+				NotificationSender.SendNotification(processQueue, messageSubject, $"Операция завершена с ошибкой: {ex.Message} (Подробнее в журнале: {errorId})");
 			}
 
 			LongProcessProgressLogger.StopLogProgress();
@@ -118,11 +133,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 		public string CalculateMarks(long modelId, CancellationToken cancellationToken)
         {
-	        var model = ModelService.GetModelEntityById(modelId);
-	        if (!model.IsAutomatic)
-		        throw new CanNotCreateMarksForNonAutomaticModelException();
-
-	        var factors = GetModelFactors(modelId);
+	       var factors = GetModelFactors(modelId);
 
 			var modelObjects = GetModelObjects(modelId, factors, cancellationToken);
 
@@ -162,25 +173,24 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			{
 				var modelObjects = ModelObjectsRepository.GetIncludedModelObjects(modelId, IncludedObjectsMode.Training,
 					cancellationToken,
-					select => new { CadastralNumber = @select.MarketObjectInfo, select.Coefficients, select.Price });
+					select => new { CadastralNumber = select.MarketObjectInfo, select.Coefficients, select.Price });
 				if (modelObjects.IsEmpty())
 					throw new CanNotCreateMarksBecauseNoMarketObjectsException();
 
 				_logger.Debug("Всего найдено {ModelObjectsCount} объектов модели для модели с ИД '{ModelId}'", modelObjects.Count, modelId);
 
 				var factorIds = factors.Select(x => x.AttributeId).ToList();
-				var modelObjectsSelectedFactors = modelObjects.Where(x => x.DeserializedCoefficients.Any(c => factorIds.Contains(c.AttributeId))).ToList();
-				if (modelObjectsSelectedFactors.Count == 0)
+				var modelObjectsWithSelectedFactors = modelObjects.Where(x => x.DeserializedCoefficients.Any(c => factorIds.Contains(c.AttributeId))).ToList();
+				if (modelObjectsWithSelectedFactors.Count == 0)
 					throw new CanNotCreateMarksBecauseNoMarketObjectsWithSelectedFactorsException();
 
-				return modelObjectsSelectedFactors;
+				return modelObjectsWithSelectedFactors;
 			}
 		}
 
 		private List<FactorInfo> GetModelFactors(long modelId)
 		{
-			var factors = ModelFactorsService.GetGeneralModelFactors(modelId)
-				.Where(x => x.MarkType == MarkType.Default && x.IsActive).ToList();
+			var factors = ModelFactorsService.GetCodedFactors(modelId).Where(x => x.IsActive).ToList();
 			if (factors.IsEmpty())
 				throw new CanNotCreateMarksBecauseNoFactorsException();
 
@@ -435,10 +445,10 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 							//obj.Save();
 						});
 					}
-
-					var allObjectsCoefficients = uniqueFactorInfo.ModelObjects.SelectMany(x => x.DeserializedCoefficients);
-					ModelDictionaryService.CreateMarks(factor.AttributeId, factor.Dictionary.Id, allObjectsCoefficients);
 				}
+
+				var allObjectsCoefficients = uniqueFactorValuesInfo.Select(x => x.Value).SelectMany(x => x.ModelObjects).SelectMany(x => x.DeserializedCoefficients);
+				ModelDictionaryService.CreateMarks(factor.AttributeId, factor.Dictionary.Id, allObjectsCoefficients);
 			}
 		}
 
@@ -446,20 +456,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 		{
 			using (_logger.TimeOperation("Расчет медианного значения по {PricesCount} ценам", prices.Count))
 			{
-				var count = prices.Count;
-				var halfIndex = prices.Count / 2;
-				var sortedPrices = prices.OrderBy(n => n).ToList();
-				decimal median;
-				if (count % 2 == 0)
-				{
-					median = (sortedPrices.ElementAt(halfIndex) + sortedPrices.ElementAt(halfIndex - 1)) / 2;
-				}
-				else
-				{
-					median = sortedPrices.ElementAt(halfIndex);
-				}
-
-				return median;
+				return MathExtended.CalculateMedian(prices);
 			}
 		}
 

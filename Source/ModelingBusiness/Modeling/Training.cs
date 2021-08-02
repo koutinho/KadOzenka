@@ -28,7 +28,7 @@ namespace ModelingBusiness.Modeling
         protected GeneralModelingInputParameters InputParameters { get; set; }
         private OMModel GeneralModel { get; }
         private List<OMModelToMarketObjects> MarketObjectsForTraining { get; set; }
-        private List<ModelFactorRelationPure> ModelAttributes { get; set; }
+        private List<ModelFactorRelation> ModelAttributes { get; set; }
         protected override string SubjectForMessageInNotification => $"Процесс обучения модели '{GeneralModel.Name}'";
         private string AdditionalMessage { get; set; }
 
@@ -38,7 +38,7 @@ namespace ModelingBusiness.Modeling
             InputParameters = DeserializeInputParameters(inputParametersXml);
             GeneralModel = ModelService.GetModelEntityById(InputParameters.ModelId);
             MarketObjectsForTraining = new List<OMModelToMarketObjects>();
-            ModelAttributes = new List<ModelFactorRelationPure>();
+            ModelAttributes = new List<ModelFactorRelation>();
             ModelDictionaryService = new ModelDictionaryService();
         }
 
@@ -114,10 +114,12 @@ namespace ModelingBusiness.Modeling
                 }
             });
 
-            if (RequestForService.CoefficientsForControl.Count < 2)
-                throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в контрольной выборке.");
-            if (RequestForService.CoefficientsForTraining.Count < 2)
-	            throw new Exception("Недостаточно данных для построения модели (у которых значения всех атрибутов не пустые). Для объектов в обучающей выборке.");
+            var minObjectsCount = 2;
+            var baseErrorMessage = $"Недостаточно данных для построения модели (должно быть минимум {minObjectsCount + 1} объекта с заполненными коэффициентами по всем активным факторам модели). Для объектов в";
+            if (RequestForService.CoefficientsForControl.Count < minObjectsCount)
+                throw new Exception($"{baseErrorMessage} контрольной выборке.");
+            if (RequestForService.CoefficientsForTraining.Count < minObjectsCount)
+	            throw new Exception($"{baseErrorMessage} обучающей выборке.");
 
             return RequestForService;
         }
@@ -242,7 +244,7 @@ namespace ModelingBusiness.Modeling
 
         private void SaveCoefficients(Dictionary<string, decimal> coefficients, KoAlgoritmType type)
         {
-	        var factors = ModelFactorsService.GetFactors(GeneralModel.Id, type);
+	        var factors = ModelFactorsService.GetFactorsEntities(GeneralModel.Id);
 
 	        foreach (var coefficient in coefficients)
             {
@@ -251,9 +253,9 @@ namespace ModelingBusiness.Modeling
 	            if (factor == null)
 		            throw new Exception($"Не найден фактор с ИД {attributeId}");
 
-	            if (factor.Correction != coefficient.Value)
+	            if (factor.GetCoefficient(type) != coefficient.Value)
 	            {
-		            factor.Correction = coefficient.Value;
+                    factor.SetCoefficient(coefficient.Value, type);
 		            factor.Save();
 	            }
 
@@ -307,25 +309,9 @@ namespace ModelingBusiness.Modeling
             };
             var trainingResultStr = JsonConvert.SerializeObject(trainingResult);
 
-            switch (type)
-			{
-				case KoAlgoritmType.Exp:
-					GeneralModel.ExponentialTrainingResult = trainingResultStr;
-					GeneralModel.A0ForExponential = a0;
-					break;
-				case KoAlgoritmType.Line:
-					GeneralModel.LinearTrainingResult = trainingResultStr;
-					GeneralModel.A0 = a0;
-                    break;
-				case KoAlgoritmType.Multi:
-					GeneralModel.MultiplicativeTrainingResult = trainingResultStr;
-					GeneralModel.A0ForMultiplicative = a0;
-                    break;
-                case KoAlgoritmType.None:
-	                throw new Exception("Невозможно обновить результаты обучения модели, т.к. не указан её тип");
-			}
-
-			GeneralModel.Save();
+            GeneralModel.SetTrainingResult(trainingResultStr, type);
+            GeneralModel.SetA0(a0, type);
+            GeneralModel.Save();
 
 			SaveImagesToDb(type, trainingResult);
         }
@@ -362,7 +348,7 @@ namespace ModelingBusiness.Modeling
 
         private void InitModelAttributes()
         {
-	        ModelAttributes = ModelFactorsService.GetGeneralModelFactors(GeneralModel.Id).Where(x => x.IsActive).ToList();
+	        ModelAttributes = ModelFactorsService.GetFactors(GeneralModel.Id).Where(x => x.IsActive).ToList();
 
             if (ModelAttributes.Count == 0)
 		        throw new Exception("У модели нет активных факторов, обучение невозможно");

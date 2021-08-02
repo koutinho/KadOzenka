@@ -81,7 +81,7 @@ namespace KadOzenka.Web.Controllers
         public IModelObjectsRepository ModelObjectsRepository { get; set; }
         public IModelRepository ModelRepository { get; set; }
         public ILongProcessService LongProcessService { get; set; }
-        public IBaseModelObjectsImporter ModelObjectsImporter { get; set; }
+        public IBaseModelObjectsImporter ModelObjectsImporterService { get; set; }
 
 
         public ModelingController(IModelService modelService, TourFactorService tourFactorService,
@@ -92,7 +92,7 @@ namespace KadOzenka.Web.Controllers
 	        IRegisterCacheWrapper registerCacheWrapper, IGbuObjectService gbuObjectService,
 	        IModelFactorsRepository modelFactorsRepository,
             IModelingService modelingService,
-	        IBaseModelObjectsImporter modelObjectsImporter)
+	        IBaseModelObjectsImporter modelObjectsImporterService)
 	        : base(gbuObjectService, registerCacheWrapper)
         {
             ModelService = modelService;
@@ -107,7 +107,7 @@ namespace KadOzenka.Web.Controllers
             LongProcessService = longProcessService;
             ModelFactorsRepository = modelFactorsRepository;
             ModelingService = modelingService;
-            ModelObjectsImporter = modelObjectsImporter;
+            ModelObjectsImporterService = modelObjectsImporterService;
         }
 
 
@@ -166,11 +166,20 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public ActionResult MakeModelActive(long modelId)
+        public ActionResult ActivateModel(long modelId)
         {
-            ModelService.MakeModelActive(modelId);
+	        ModelService.ActivateModel(modelId);
 
             return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult DeactivateModel(long groupId)
+        {
+	        ModelService.DeactivateModel(groupId);
+
+	        return Ok();
         }
 
 
@@ -210,9 +219,13 @@ namespace KadOzenka.Web.Controllers
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         //используется в modeling.js
-        public JsonResult GetModelAttributes(long modelId, KoAlgoritmType type)
+        public JsonResult GetModelFactors(long modelId, KoAlgoritmType type)
         {
-            var attributes = ModelFactorsService.GetModelAttributes(modelId, type);
+	        var model = ModelService.GetModelEntityById(modelId);
+            var attributes = ModelFactorsService.GetFactors(modelId);
+
+            var resultType = model.IsAutomatic ? type : model.AlgoritmType_Code;
+            attributes.ForEach(x => x.Coefficient = x.GetCoefficient(resultType));
 
             return Json(attributes);
         }
@@ -280,7 +293,6 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
         public ActionResult CalculateMarks(long modelId)
         {
-	        ////TODO код для отладки
 			//new MarksCalculationLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
@@ -289,6 +301,22 @@ namespace KadOzenka.Web.Controllers
 			//}, new CancellationToken());
 
 			MarksCalculationLongProcess.AddProcessToQueue(modelId);
+
+	        return Ok();
+        }
+
+        [HttpPost]
+        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
+        public ActionResult CalculateAutomaticModelParameters(long modelId)
+        {
+			//new AutomaticModelParametersCalculationLongProcess().StartProcess(new OMProcessType(), new OMQueue
+			//{
+			//	Status_Code = Status.Added,
+			//	UserId = SRDSession.GetCurrentUserId(),
+			//	ObjectId = modelId
+			//}, new CancellationToken());
+
+			AutomaticModelParametersCalculationLongProcess.AddProcessToQueue(modelId);
 
 	        return Ok();
         }
@@ -305,7 +333,6 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception(Messages.ObjectFormationProcessAlreadyAdded);
 
             var inputParameters = new ObjectFormationInputParameters { ModelId = modelId };
-			////TODO код для отладки
 			//new ObjectFormationForModelingProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//	Status_Code = Status.Added,
@@ -331,7 +358,6 @@ namespace KadOzenka.Web.Controllers
                 ModelId = modelId,
                 ModelType = ConvertModelType(modelType)
             };
-            //////TODO код для отладки
             //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
@@ -349,35 +375,6 @@ namespace KadOzenka.Web.Controllers
             });
 
             return Json(new { Message = "Процесс обучения модели поставлен в очередь" });
-        }
-
-        [HttpPost]
-        [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS)]
-        public JsonResult Predict(long modelId, ModelType modelType)
-        {
-            var inputParameters = new GeneralModelingInputParameters
-            {
-                ModelId = modelId,
-                ModelType = ConvertModelType(modelType)
-            };
-            ////TODO код для отладки
-            //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
-            //{
-            //	Status_Code = Status.Added,
-            //	UserId = SRDSession.GetCurrentUserId(),
-            //	Parameters = new ModelingInputParameters
-            //	{
-            //		Mode = ModelingMode.Prediction,
-            //		InputParametersXml = inputParameters.SerializeToXml()
-            //	}.SerializeToXml()
-            //}, new CancellationToken());
-            ModelingProcess.AddProcessToQueue(new ModelingInputParameters
-            {
-                Mode = ModelingMode.Prediction,
-                InputParametersXml = inputParameters.SerializeToXml()
-            });
-
-            return Json(new { Message = "Процесс рассчета цены на основе модели поставлен в очередь" });
         }
 
         [HttpGet]
@@ -469,7 +466,6 @@ namespace KadOzenka.Web.Controllers
                 //        ModelId = factorModel.ModelId.GetValueOrDefault(),
                 //        AttributeId = factorModel.FactorId.GetValueOrDefault()
                 //    };
-                //    ////TODO код для отладки
                 //    //new FactorAdditionToModelObjectsLongProcess().StartProcess(new OMProcessType(), new OMQueue
                 //    //{
                 //    //	Status_Code = Status.Added,
@@ -531,11 +527,11 @@ namespace KadOzenka.Web.Controllers
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var marketObjectAttributes = RegisterAttributeService
-                .GetActiveRegisterAttributes(MarketPlaceBusiness.Common.Consts.RegisterId)
+                .GetActiveRegisterAttributes(MarketPlaceBusiness.Consts.RegisterId)
                 .Where(x => availableAttributeTypes.Contains(x.Type)).ToList();
 
             var tourAttributesTree = MapAttributes(tourAttributes.FirstOrDefault()?.RegisterId, tourAttributes);
-            var marketObjectsAttributesTree = MapAttributes(MarketPlaceBusiness.Common.Consts.RegisterId, marketObjectAttributes);
+            var marketObjectsAttributesTree = MapAttributes(MarketPlaceBusiness.Consts.RegisterId, marketObjectAttributes);
 
             var fullTree = new List<DropDownTreeItemModel>
             {
@@ -657,9 +653,10 @@ namespace KadOzenka.Web.Controllers
 
             if (id.HasValue)
             {
+	            var model = ModelService.GetModelEntityById(generalModelId);
                 var factor = ModelFactorsService.GetFactorById(id);
 
-                manualFactorDto = ManualFactorModel.ToModel(generalModelId, factor);
+                manualFactorDto = ManualFactorModel.ToModel(factor, model.AlgoritmType_Code);
                 if (factor.DictionaryId != null)
                 {
 	                var dictionary = ModelDictionaryService.GetDictionaryById(factor.DictionaryId.Value);
@@ -823,7 +820,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_TOURS_MARK_CATALOG)]
         public JsonResult GetModelDictionaries([DataSourceRequest] DataSourceRequest request, long modelId)
         {
-	        var modelAttributes = ModelFactorsService.GetGeneralModelFactors(modelId)
+	        var modelAttributes = ModelFactorsService.GetFactors(modelId)
 		        .Where(x => x.IsNormalized).Select(DictionaryModel.ToModel)
 		        .ToList();
 
@@ -875,7 +872,6 @@ namespace KadOzenka.Web.Controllers
 			        FileInfo = importInfo,
 			        DictionaryId = model.DictionaryId
 		        };
-				////TODO для тестирования
 				//new ModelDictionaryImportFromExcelLongProcess().StartProcess(new OMProcessType(), new OMQueue
 				//{
 				//	Status_Code = Status.Added,
@@ -1015,7 +1011,7 @@ namespace KadOzenka.Web.Controllers
         {
 	        var modelDto = ModelService.GetModelById(modelId);
             
-            var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
+            var attributes = ModelFactorsService.GetFactors(modelId);
 
             var model = ModelingObjectsModel.ToModel(modelDto, attributes);
 
@@ -1031,7 +1027,6 @@ namespace KadOzenka.Web.Controllers
             //var model = OMModel.Where(x => x.Id == modelId).Select(x => x.A0ForExponential).ExecuteFirstOrDefault();
             //if (model == null)
             //	throw new Exception($"Не найдена модель с ИД '{modelId}'");
-            //TODO пока работаем только с Exp
             //var factors = ModelFactorsService.GetFactors(model.Id, KoAlgoritmType.Exp);
 
             //TODO код закомментирован по просьбе заказчиков, в дальнейшем он будет использоваться
@@ -1095,8 +1090,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
         public JsonResult ExportModelObjectsToExcel(long modelId)
         {
-            //пока работаем только с Exp (был расчет МС и процента)
-            var factors = ModelFactorsService.GetFactors(modelId, KoAlgoritmType.Exp);
+            var factors = ModelFactorsService.GetFactors(modelId);
             var fileStream = ModelObjectsService.ExportMarketObjectsToExcel(modelId, factors);
 
             var modelName = ModelRepository.GetById(modelId, x => new { x.Name })?.Name;
@@ -1108,7 +1102,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpGet]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public IActionResult ModelObjectsConstructor(long modelId)
+        public IActionResult ModelObjectsImporter(long modelId)
         {
             MarksCalculationLongProcess.CheckActiveProcessInQueue(modelId);
             ModelingProcess.CheckActiveProcessInQueue(modelId);
@@ -1141,18 +1135,18 @@ namespace KadOzenka.Web.Controllers
                 {
                     source.Add(new
                     {
-                        Description = x.Name,
+                        Description = ModelingObjectsModel.PreprocessAttributeName(x.Name),
                         AttributeId = x.Id,
                         ParentId = modelObjectsRegister.Id
                     });
                 });
 
-            var attributes = ModelFactorsService.GetGeneralModelFactors(modelId);
+            var attributes = ModelFactorsService.GetFactors(modelId);
             attributes.ForEach(x =>
             {
 	            source.Add(new
 	            {
-		            Description = $"{x.AttributeName} (значение)",
+		            Description = $"{ModelingObjectsModel.PreprocessAttributeName(x.AttributeName)} (значение)",
 		            AttributeId = x.AttributeId,
 		            ParentId = modelObjectsRegister.Id
 	            });
@@ -1167,7 +1161,7 @@ namespace KadOzenka.Web.Controllers
 
         [HttpPost]
         [SRDFunction(Tag = SRDCoreFunctions.KO_DICT_MODELS_MODEL_OBJECTS)]
-        public ActionResult ChangeModelObjects(ModelObjectsConstructorModel model)
+        public ActionResult ChangeModelObjects(ModelObjectsImporterModel model)
         {
             if (!ModelState.IsValid)
                 return GenerateMessageNonValidModel();
@@ -1188,7 +1182,7 @@ namespace KadOzenka.Web.Controllers
             {
                 excelFile = ExcelFile.Load(stream, new XlsxLoadOptions());
             }
-            var resultStream = ModelObjectsImporter.ChangeObjects(excelFile, model.Map());
+            var resultStream = ModelObjectsImporterService.ChangeObjects(excelFile, model.Map());
 
             HttpContext.Session.Set(fileName, resultStream.ToByteArray());
 
@@ -1299,8 +1293,8 @@ namespace KadOzenka.Web.Controllers
         public JsonResult GetMarketObjectAttributes()
         {
 	        var marketObjectAttributes = OMAttribute.Where(x =>
-			        x.RegisterId == MarketPlaceBusiness.Common.Consts.RegisterId &&
-			        x.Id != MarketPlaceBusiness.Common.Consts.PriceAttributeId &&
+			        x.RegisterId == MarketPlaceBusiness.Consts.RegisterId &&
+			        x.Id != MarketPlaceBusiness.Consts.PriceAttributeId &&
 			        x.Type == (int) RegisterAttributeType.DECIMAL)
 		        .Select(x => x.Id)
 		        .Select(x => x.Name)
@@ -1337,9 +1331,7 @@ namespace KadOzenka.Web.Controllers
                 InputParametersXml = correlationInputParameters.SerializeToXml<CorrelationInputParameters>()
             };
 
-            ////TODO код для отладки
-            //var process = new ModelingProcess();
-            //process.StartProcess(new OMProcessType(), new OMQueue
+            //new ModelingProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //    Status_Code = Status.Added,
             //    UserId = SRDSession.GetCurrentUserId(),
@@ -1402,7 +1394,7 @@ namespace KadOzenka.Web.Controllers
         private List<long> GetModelDictionariesIds(long? modelId)
         {
 	        return ModelFactorsService
-		        .GetGeneralModelFactors(modelId.GetValueOrDefault())
+		        .GetFactors(modelId.GetValueOrDefault())
 		        .Select(x => x.DictionaryId.GetValueOrDefault()).Distinct().ToList();
         }
 

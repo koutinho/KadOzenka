@@ -52,7 +52,7 @@ namespace KadOzenka.Dal.Units
 			var model = ModelService.GetActiveModelEntityByGroupId(unit.GroupId);
 			if (model != null)
 			{
-				var modelFactorIds = ModelFactorsService.GetGeneralModelFactors(model.Id).Select(x => x.AttributeId).ToList();
+				var modelFactorIds = ModelFactorsService.GetFactors(model.Id).Select(x => x.AttributeId).ToList();
 				if (!modelFactorIds.IsEmpty())
 					factorsValues = GetUnitFactors(unit, modelFactorIds);
 			}

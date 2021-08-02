@@ -168,22 +168,22 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal? _a0;
+        private decimal? _a0forlinear;
         /// <summary>
-        /// 20600700 Cвободный член в формуле для Линейного алгоритма (A0)
+        /// 20600700 Cвободный член в формуле для Линейного алгоритма (A0_FOR_LINEAR)
         /// </summary>
         [RegisterAttribute(AttributeID = 20600700)]
-        public decimal? A0
+        public decimal? A0ForLinear
         {
             get
             {
-                CheckPropertyInited("A0");
-                return _a0;
+                CheckPropertyInited("A0ForLinear");
+                return _a0forlinear;
             }
             set
             {
-                _a0 = value;
-                NotifyPropertyChanged("A0");
+                _a0forlinear = value;
+                NotifyPropertyChanged("A0ForLinear");
             }
         }
 
@@ -565,12 +565,12 @@ namespace ObjectModel.KO
         }
 
 
-        private long? _factorid;
+        private long _factorid;
         /// <summary>
         /// 21000300 Идентификатор фактора (FACTOR_ID)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000300)]
-        public long? FactorId
+        public long FactorId
         {
             get
             {
@@ -581,26 +581,6 @@ namespace ObjectModel.KO
             {
                 _factorid = value;
                 NotifyPropertyChanged("FactorId");
-            }
-        }
-
-
-        private long? _markerid;
-        /// <summary>
-        /// 21000400 Идентификатор метки (MARKER_ID)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21000400)]
-        public long? MarkerId
-        {
-            get
-            {
-                CheckPropertyInited("MarkerId");
-                return _markerid;
-            }
-            set
-            {
-                _markerid = value;
-                NotifyPropertyChanged("MarkerId");
             }
         }
 
@@ -625,22 +605,22 @@ namespace ObjectModel.KO
         }
 
 
-        private decimal _coefficient;
+        private decimal? _coefficientforlinear;
         /// <summary>
-        /// 21000600 Коэффициент (COEFFICIENT)
+        /// 21000600 Коэффициент для линейного алгоритма (COEFFICIENT_FOR_LINEAR)
         /// </summary>
         [RegisterAttribute(AttributeID = 21000600)]
-        public decimal Coefficient
+        public decimal? CoefficientForLinear
         {
             get
             {
-                CheckPropertyInited("Coefficient");
-                return _coefficient;
+                CheckPropertyInited("CoefficientForLinear");
+                return _coefficientforlinear;
             }
             set
             {
-                _coefficient = value;
-                NotifyPropertyChanged("Coefficient");
+                _coefficientforlinear = value;
+                NotifyPropertyChanged("CoefficientForLinear");
             }
         }
 
@@ -681,61 +661,6 @@ namespace ObjectModel.KO
             {
                 _dictionaryid = value;
                 NotifyPropertyChanged("DictionaryId");
-            }
-        }
-
-
-        private string _algorithmtype;
-        /// <summary>
-        /// 21001100  Алгоритм рассчёта ()
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001100)]
-        public string AlgorithmType
-        {
-            get
-            {
-                CheckPropertyInited("AlgorithmType");
-                return _algorithmtype;
-            }
-            set
-            {
-                _algorithmtype = value;
-                NotifyPropertyChanged("AlgorithmType");
-            }
-        }
-
-
-        private KoAlgoritmType _algorithmtype_Code;
-        /// <summary>
-        /// 21001100  Алгоритм рассчёта (справочный код) (algorithm_type)
-        /// </summary>
-        [RegisterAttribute(AttributeID = 21001100)]
-        public KoAlgoritmType AlgorithmType_Code
-        {
-            get
-            {
-                CheckPropertyInited("AlgorithmType_Code");
-                return this._algorithmtype_Code;
-            }
-            set
-            {
-                string descr = value.GetEnumDescription();
-
-                if (string.IsNullOrEmpty(descr))
-                {
-                    if (string.IsNullOrEmpty(_algorithmtype))
-                    {
-                         _algorithmtype = descr;
-                    }
-                }
-                else
-                {
-                     _algorithmtype = descr;
-                }
-
-                this._algorithmtype_Code = value;
-                NotifyPropertyChanged("AlgorithmType");
-                NotifyPropertyChanged("AlgorithmType_Code");
             }
         }
 
@@ -851,6 +776,46 @@ namespace ObjectModel.KO
             {
                 _k = value;
                 NotifyPropertyChanged("K");
+            }
+        }
+
+
+        private decimal? _coefficientforexponential;
+        /// <summary>
+        /// 21001800 Коэффициент для экспоненциального алгоритма (COEFFICIENT_FOR_EXPONENTIAL)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001800)]
+        public decimal? CoefficientForExponential
+        {
+            get
+            {
+                CheckPropertyInited("CoefficientForExponential");
+                return _coefficientforexponential;
+            }
+            set
+            {
+                _coefficientforexponential = value;
+                NotifyPropertyChanged("CoefficientForExponential");
+            }
+        }
+
+
+        private decimal? _coefficientformultiplicative;
+        /// <summary>
+        /// 21001900 Коэффициент для мультипликативного алгоритма (COEFFICIENT_FOR_MULTIPLICATIVE)
+        /// </summary>
+        [RegisterAttribute(AttributeID = 21001900)]
+        public decimal? CoefficientForMultiplicative
+        {
+            get
+            {
+                CheckPropertyInited("CoefficientForMultiplicative");
+                return _coefficientformultiplicative;
+            }
+            set
+            {
+                _coefficientformultiplicative = value;
+                NotifyPropertyChanged("CoefficientForMultiplicative");
             }
         }
 

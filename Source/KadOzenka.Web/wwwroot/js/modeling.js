@@ -106,7 +106,7 @@ function initFactorsGrid(getDataForModelAttributesDownloaderFunc, onGridChangeFu
         dataSource: {
             transport: {
                 read: {
-                    url: '/Modeling/GetModelAttributes',
+                    url: '/Modeling/GetModelFactors',
                     data: getDataForModelAttributesDownloaderFunc,
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json'
@@ -122,7 +122,7 @@ function initFactorsGrid(getDataForModelAttributesDownloaderFunc, onGridChangeFu
                         DictionaryName: { type: "string" },
                         Correction: { type: "number" },
                         IsActive: { type: "boolean" },
-                        MarkType: { type: "string" }
+                        MarkTypeStr: { type: "string" }
                     }
                 }
             }
@@ -142,7 +142,7 @@ function initFactorsGrid(getDataForModelAttributesDownloaderFunc, onGridChangeFu
                 width: "40%"
             },
             {
-                field: 'MarkType',
+                field: 'MarkTypeStr',
                 title: 'Тип метки',
                 attributes: { style: "text-align: center;" }
             },

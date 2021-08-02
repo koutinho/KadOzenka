@@ -7,7 +7,7 @@ using CommonSdks.ConfigurationManagers;
 using Core.Register.QuerySubsystem;
 using Core.Shared.Extensions;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Interfaces;
+using MarketPlaceBusiness.Modeling;
 using ModelingBusiness.Modeling.InputParameters;
 using ModelingBusiness.Modeling.Requests;
 using ModelingBusiness.Modeling.Responses;

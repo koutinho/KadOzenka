@@ -12,9 +12,8 @@ using ObjectModel.Core.Shared;
 using ObjectModel.Directory;
 using Core.Shared.Extensions;
 using MarketPlaceBusiness;
-using MarketPlaceBusiness.Common;
-using MarketPlaceBusiness.Interfaces;
 using AutoMapper;
+using MarketPlaceBusiness.Common.Interfaces;
 
 namespace KadOzenka.Web.Controllers
 {

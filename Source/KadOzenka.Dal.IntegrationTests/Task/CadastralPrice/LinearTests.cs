@@ -45,22 +45,22 @@ namespace KadOzenka.Dal.IntegrationTests.Task.CadastralPrice
 
 		protected decimal GetExpectedCostForNoneMark(OMModelFactor factor, decimal unitFactorValue)
 		{
-			return unitFactorValue * factor.B0InFormula;
+			return unitFactorValue * factor.GetCoefficientInFormula(KoAlgoritmType.Line);
 		}
 
 		private decimal GetExpectedCadastralConstForDefaultMark(OMModelingDictionariesValues mark, OMModelFactor factor)
 		{
-			return mark.CalculationValue * factor.B0InFormula;
+			return mark.CalculationValue * factor.GetCoefficientInFormula(KoAlgoritmType.Line);
 		}
 
 		private decimal GetExpectedCadastralCostForStraightType(OMModelFactor factor)
 		{
-			return (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula * factor.B0InFormula;
+			return (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) / factor.KInFormula * factor.GetCoefficientInFormula(KoAlgoritmType.Line);
 		}
 
 		private decimal GetExpectedCadastralCostForReverseMark(OMModelFactor factor)
 		{
-			return factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) * factor.B0InFormula;
+			return factor.KInFormula / (factor.CorrectingTermInFormula + UnitFactorValueForIntegerFactor) * factor.GetCoefficientInFormula(KoAlgoritmType.Line);
 		}
 
 		#endregion

@@ -36,7 +36,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 
 
 
-		public static long AddToQueue(Stream file, string fileName, ModelObjectsConstructor modelObjectsConstructor)
+		public static long AddToQueue(Stream file, string fileName, ModelObjectsImporterInfo modelObjectsImporterInfo)
 		{
 			var import = new OMImportDataLog
 			{
@@ -45,7 +45,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				Status_Code = ObjectModel.Directory.Common.ImportStatus.Added,
 				DataFileTitle = DataImporterCommon.GetDataFileTitle(fileName),
 				FileExtension = DataImporterCommon.GetFileExtension(fileName),
-				ColumnsMapping = JsonConvert.SerializeObject(modelObjectsConstructor.ColumnsMapping),
+				ColumnsMapping = JsonConvert.SerializeObject(modelObjectsImporterInfo.ColumnsMapping),
 				MainRegisterId = OMModelToMarketObjects.GetRegisterId(),
 				RegisterViewId = "KoModels"
 			};
@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 			//}, new CancellationToken());
 
 			LongProcessManager.AddTaskToQueue(nameof(UpdateModelObjectsLongProcess), OMImportDataLog.GetRegisterId(),
-				import.Id, modelObjectsConstructor.SerializeToXml());
+				import.Id, modelObjectsImporterInfo.SerializeToXml());
 
 			return import.Id;
 		}
@@ -81,7 +81,7 @@ namespace KadOzenka.Dal.LongProcess.Modeling
 				import.DateStarted = DateTime.Now;
 				import.Save();
 
-				var constructor = processQueue.Parameters.DeserializeFromXml<ModelObjectsConstructor>();
+				var constructor = processQueue.Parameters.DeserializeFromXml<ModelObjectsImporterInfo>();
 				var fileStream = FileStorageManager.GetFileStream(DataImporterCommon.FileStorageName, import.DateCreated, import.DataFileName);
 				var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 

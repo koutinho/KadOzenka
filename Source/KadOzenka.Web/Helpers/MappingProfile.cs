@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using KadOzenka.Web.Models.MarketObject;
-using MarketPlaceBusiness.Dto;
+using MarketPlaceBusiness.Common.Dto;
 
 namespace KadOzenka.Web.Helpers
 {

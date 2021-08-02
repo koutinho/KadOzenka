@@ -11,6 +11,7 @@ using Core.Shared.Extensions;
 using Core.Shared.Misc;
 using GemBox.Spreadsheet;
 using KadOzenka.Dal.DataExport;
+using MarketPlaceBusiness;
 using ObjectModel.Core.Shared;
 using ObjectModel.Market;
 
@@ -18,7 +19,7 @@ namespace KadOzenka.Dal.DataImport.DataImporterByTemplate
 {
 	public class DataImporterByTemplateMarket : DataImporterByTemplate
 	{
-		public DataImporterByTemplateMarket() : base(MarketPlaceBusiness.Common.Consts.RegisterId)
+		public DataImporterByTemplateMarket() : base(Consts.RegisterId)
 		{
 		}
 

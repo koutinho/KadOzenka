@@ -27,7 +27,7 @@ using KadOzenka.Web.Models.DataImportByTemplate;
 using Microsoft.Practices.ObjectBuilder2;
 using ObjectModel.KO;
 using ConfigurationManager = CommonSdks.ConfigurationManagers.ConfigurationManager;
-using Consts = MarketPlaceBusiness.Common.Consts;
+using Consts = MarketPlaceBusiness.Consts;
 
 
 namespace KadOzenka.Web.Controllers

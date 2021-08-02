@@ -392,7 +392,7 @@ namespace KadOzenka.Dal.KoObject
 
             var modelFactorsObjectModel =
                 OMModelFactor.Where(x => x.ModelId == model.Id).SelectAll().Execute();
-            var modelFactorsIds = modelFactorsObjectModel.Select(x => x.FactorId.GetValueOrDefault())
+            var modelFactorsIds = modelFactorsObjectModel.Select(x => x.FactorId)
                 .ToList();
             var conditions = modelFactorsIds?.Select(x =>
                     (QSCondition) new QSConditionSimple(new QSColumnSimple(x), QSConditionType.IsNotNull))

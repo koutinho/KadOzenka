@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using CommonSdks;
+using CommonSdks.Excel;
 using Core.Shared.Misc;
 using GemBox.Document;
 using GemBox.Document.Tables;
@@ -212,7 +213,7 @@ namespace KadOzenka.Dal.DataExport
                 objcaps.Add("КН");
                 objcaps.Add("Дата определения КС");
                 int fieldcount = objcaps.Count;
-                CommonSdks.ExcelFileHelper.AddRow(mainWorkSheet, 1, objcaps.ToArray());
+                ExcelFileHelper.AddRow(mainWorkSheet, 1, objcaps.ToArray());
 
 
                 int lenobjs = baditems.Count;

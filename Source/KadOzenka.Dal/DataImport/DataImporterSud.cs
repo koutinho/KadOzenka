@@ -13,6 +13,7 @@ using Core.Register.LongProcessManagment;
 using ObjectModel.Core.LongProcess;
 using System.Linq;
 using CommonSdks;
+using CommonSdks.Excel;
 using ObjectModel.Directory.Sud;
 using KadOzenka.Dal.DataExport;
 using KadOzenka.Dal.LongProcess.Common;
@@ -153,8 +154,8 @@ namespace KadOzenka.Dal.DataImport
 				MaxDegreeOfParallelism = 10
 			};
 
-			int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
-			var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+			int maxColumns = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			var lastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 			Parallel.ForEach(mainWorkSheet.Rows, options, row =>
 			{
 				bool ReadyImport = false;

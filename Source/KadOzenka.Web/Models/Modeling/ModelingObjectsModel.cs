@@ -2,14 +2,13 @@
 using System.ComponentModel.DataAnnotations;
 using ModelingBusiness.Factors.Entities;
 using ModelingBusiness.Model.Entities;
-using ObjectModel.KO;
 
 namespace KadOzenka.Web.Models.Modeling
 {
 	public class ModelingObjectsModel 
     {
 	    public long Id { get; set; }
-	    public List<ModelFactorRelationPure> Attributes { get; set; }
+	    public List<ModelFactorRelation> Attributes { get; set; }
 
         [Display(Name = "Имя")]
         public string Name { get; set; }
@@ -22,8 +21,9 @@ namespace KadOzenka.Web.Models.Modeling
 
 
 
-		public static ModelingObjectsModel ToModel(ModelDto model, List<ModelFactorRelationPure> attributes)
+		public static ModelingObjectsModel ToModel(ModelDto model, List<ModelFactorRelation> attributes)
 		{
+			attributes.ForEach(x => x.AttributeName = PreprocessAttributeName(x.AttributeName));
 			return new ModelingObjectsModel
 			{
 				Id = model.ModelId,
@@ -33,5 +33,11 @@ namespace KadOzenka.Web.Models.Modeling
 				Attributes = attributes
 			};
         }
+
+		public static string PreprocessAttributeName(string name)
+		{
+			//json не парсит строки с обратным слешем
+			return name.Replace(@"\", @"\\");
+		}
     }
 }

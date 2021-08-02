@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 using CommonSdks;
+using CommonSdks.Excel;
 using CommonSdks.Extentions;
 using CommonSdks.PlatformWrappers;
 using Core.ErrorManagment;
@@ -22,13 +23,14 @@ using Microsoft.Practices.EnterpriseLibrary.Data;
 using Microsoft.Practices.ObjectBuilder2;
 using ModelingBusiness.Dictionaries.Entities;
 using ModelingBusiness.Dictionaries.Exceptions;
+using ModelingBusiness.Dictionaries.Exceptions.Dictionary;
+using ModelingBusiness.Dictionaries.Exceptions.Mark;
 using ModelingBusiness.Dictionaries.Repositories;
 using ModelingBusiness.Objects.Entities;
 using ObjectModel.Common;
 using ObjectModel.Directory.Common;
 using ObjectModel.Directory.KO;
 using ObjectModel.KO;
-using ObjectModel.Modeling;
 using Serilog;
 using SerilogTimings.Extensions;
 
@@ -56,8 +58,7 @@ namespace ModelingBusiness.Dictionaries
 			_marksTableName = "ko_modeling_dictionaries_values";
 		}
 		
-
-
+		
 
 		#region Словарь
 
@@ -71,7 +72,7 @@ namespace ModelingBusiness.Dictionaries
 			if (dictionaryIds == null || dictionaryIds.Count == 0)
 				return new List<OMModelingDictionary>();
 
-			var dictionaries = OMModelingDictionary.Where(x => dictionaryIds.Contains(x.Id)).SelectAll().Execute();
+			var dictionaries = ModelDictionaryRepository.GetEntitiesByCondition(x => dictionaryIds.Contains(x.Id), null);
 
 			if (!withItems)
 				return dictionaries;
@@ -102,11 +103,13 @@ namespace ModelingBusiness.Dictionaries
 
 			var dictionaryType = MapDictionaryType(factorType);
 
-			return new OMModelingDictionary
+			var dictionary = new OMModelingDictionary
 			{
 				Name = name,
 				Type_Code = dictionaryType
-			}.Save();
+			};
+
+			return ModelDictionaryRepository.Save(dictionary);
 		}
 
 		public void UpdateDictionary(long id, string newName, List<long> modelDictionariesIds)
@@ -118,7 +121,7 @@ namespace ModelingBusiness.Dictionaries
 			ValidateDictionary(newName, modelDictionariesIds);
 
 			dictionary.Name = newName;
-			dictionary.Save();
+			ModelDictionaryRepository.Save(dictionary);
 		}
 
 		public int DeleteDictionary(long? id)
@@ -197,7 +200,7 @@ namespace ModelingBusiness.Dictionaries
 		private void ValidateDictionary(string name, List<long> modelDictionariesIds)
 		{
 			if (string.IsNullOrWhiteSpace(name))
-				throw new Exception("Нельзя создать словарь с пустым именем");
+				throw new EmptyDictionaryNameException();
 
 			if (modelDictionariesIds.Count > 0)
 			{
@@ -231,8 +234,7 @@ namespace ModelingBusiness.Dictionaries
 					dictionaryType = ModelDictionaryType.Reference;
 					break;
 				default:
-					throw new ArgumentOutOfRangeException(
-						$"Для фактора с типом '{factorType.GetEnumDescription()}' нельзя создать словарь меток");
+					throw new UnsupportedDictionaryTypeException(factorType);
 			}
 
 			return dictionaryType;
@@ -446,12 +448,13 @@ namespace ModelingBusiness.Dictionaries
 		private void InsertMarks(StringBuilder rowsToInsertSql)
 		{
 			//убираем последний перевод строки и знак ','
-			var charsToRemoveCount = 3;
+			var charsToRemoveCount = Environment.NewLine.Length + 1;
 			rowsToInsertSql.Remove(rowsToInsertSql.Length - charsToRemoveCount, charsToRemoveCount);
 
 			var sql = @$"INSERT INTO {_marksTableName} (id, dictionary_id, value, calculation_value)
 							VALUES
 							{rowsToInsertSql}";
+			_logger.Debug(new Exception(sql), "Sql-запрос для добавления меток");
 
 			var command = DBMngr.Main.GetSqlStringCommand(sql);
 			var insertedMarksCount = DBMngr.Main.ExecuteNonQuery(command);
@@ -497,7 +500,7 @@ namespace ModelingBusiness.Dictionaries
 			fileStream.Seek(0, SeekOrigin.Begin);
 			var excelFile = ExcelFile.Load(fileStream, LoadOptions.XlsxDefault);
 			var mainWorkSheet = excelFile.Worksheets[0];
-			RowsCount = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+			RowsCount = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 
 			var locker = new object();
 			var cancelTokenSource = new CancellationTokenSource();
@@ -578,7 +581,7 @@ namespace ModelingBusiness.Dictionaries
 
 		private ColumnIndexes GetColumnIndexes(DictionaryImportFileInfoDto fileImportInfo, ExcelWorksheet mainWorkSheet)
 		{
-			var maxColumnsCount = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet);
+			var maxColumnsCount = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet);
 			var resultColumnIndex = maxColumnsCount + 1;
 			var valueIndex = -1;
 			var calculationValueIndex = -1;

@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using CommonSdks.Excel;
 using Serilog;
 
 namespace KadOzenka.Dal.DataExport
@@ -139,7 +140,7 @@ namespace KadOzenka.Dal.DataExport
 			int packageSize = 1000;
 			var mainWorkSheet = excelTemplate.Worksheets[0];
 			bool isFinish = false;
-			var lastUsedRowIndex = CommonSdks.ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
+			var lastUsedRowIndex = ExcelFileHelper.GetLastUsedRowIndex(mainWorkSheet);
 			var usedRowCount = lastUsedRowIndex + 1;
             if (usedRowCount <= 1)  //файл пустой или в нем есть только заголовок
 				throw new Exception("В указанном файле отсутствуют данные");
@@ -277,7 +278,7 @@ namespace KadOzenka.Dal.DataExport
         protected static List<string> GetAllColumnNames(ExcelWorksheet mainWorkSheet)
 		{
 			var columnNames = new List<string>();
-			int maxColumns = CommonSdks.ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
+			int maxColumns = ExcelFileHelper.GetLastUsedColumnIndex(mainWorkSheet) + 1;
 			for (var i = 0; i < maxColumns; i++)
 			{
                 var value = GetCellValue(mainWorkSheet, 0, i);

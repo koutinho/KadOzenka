@@ -293,7 +293,6 @@ namespace KadOzenka.Web.Controllers
                 throw new Exception("Не выбраны атрибуты для переноса.");
             }
 
-            ////TODO код для отладки
             //new ExportAttributeToKoProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //    Status_Code = Status.Added,
@@ -544,7 +543,6 @@ namespace KadOzenka.Web.Controllers
 
             var settings = CadastralPriceCalculationModel.UnMap(model);
 
-            ////TODO код для отладки
             //new CalculateCadastralPriceLongProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
@@ -666,7 +664,6 @@ namespace KadOzenka.Web.Controllers
 				TaskId = model.TaskId,
 				IdFactors = model.AttributeIds
 			};
-			////TODO код для отладки
 			//new GeoFactorsFromRgisLongProcess().StartProcess(new OMProcessType(), new OMQueue
 			//{
 			//    Status_Code = Status.Added,
@@ -697,7 +694,6 @@ namespace KadOzenka.Web.Controllers
             }
 
             var taskName = TaskService.GetTemplateForTaskName(taskId);
-            //////TODO код для отладки
             //new UpdateTaskCadastralDataLongProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
@@ -777,7 +773,6 @@ namespace KadOzenka.Web.Controllers
         {
             var taskName = TaskService.GetTemplateForTaskName(taskId);
 
-            ////TODO код для отладки
             //new UpdateEvaluativeGroupLongProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
@@ -875,7 +870,6 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.KO_TASKS)]
         public ActionResult TaskForCod(long taskId)
         {
-            ////TODO код для отладки
             //new TaskForCodLongProcess().StartProcess(new OMProcessType(), new OMQueue
             //{
             //	Status_Code = Status.Added,
