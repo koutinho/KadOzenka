@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Core.Shared.Extensions;
-using MarketPlaceBusiness.Common;
+using MarketPlaceBusiness.Repositories;
 using ObjectModel.Directory;
 using ObjectModel.Market;
 using Serilog;

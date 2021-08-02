@@ -28,6 +28,8 @@
 
     <Button Caption="Выгрузить в Excel" Icon="icon-excel" CommandName="ExportToExcel" OpenInRadWindow="false" SRDFunctionTag="MARKET.EXPORT_TO_EXCEL" />
 
+    <Button Caption="Загрузить из YRL-фида" Icon="fas fa-arrow-circle-down" NavigateURL="~/YrlParser/YrlParserCreateImportTask" WindowHeight="400" WindowWidth="500" />
+
     <!--<Button Caption="Присвоить округа, районы, зоны" NavigateURL="~/MarketObjects/ActivateProcess" WindowHeight="110" WindowWidth="700" Icon="fas fa-object-group" SRDFunctionTag="MARKET.ACTIVATE_PROCESS"/>-->
 
     <!--<Button Caption="Присвоить координаты" NavigateURL="~/MarketObjects/ActivateCoordinates" WindowHeight="110" WindowWidth="700" Icon="fas fa-crosshairs" SRDFunctionTag="MARKET.ACTIVATE_COORDINATES" />-->

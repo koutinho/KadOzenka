@@ -11,3 +11,5 @@ alter table market_core_object drop column longitude;
 
 delete from core_register_attribute where id = 10003500;
 delete from core_register_attribute where id = 10004000;
+
+delete from core_long_process_type where id=103
