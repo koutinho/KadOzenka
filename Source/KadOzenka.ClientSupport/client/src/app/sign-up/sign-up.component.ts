@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignUpResult } from '../common/api/sign-up/sign-up-result';
 import { SignUpApiService } from '../common/api/sign-up/sign-up-service';
 import { SignUpData } from '../common/api/sign-up/sign-up-data';
+import { MustMatchValidator } from '../common/validators/MustMatchValidator';
 
 @Component({
   selector: 'app-sign-up',
@@ -14,7 +15,10 @@ export class SignUpComponent implements OnInit {
   signUpForm: FormGroup = this.formBuilder.group({
     login: ['', Validators.required],
     password: ['', Validators.required],
+    confirmPassword: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]]
+  }, {
+    validator: MustMatchValidator('password', 'confirmPassword')
   });;
 
   signUpResult: SignUpResult | null = null;
@@ -31,6 +35,10 @@ export class SignUpComponent implements OnInit {
 
   get password(): AbstractControl {
     return this.signUpForm.get('password') as AbstractControl;
+  }
+
+  get confirmPassword(): AbstractControl {
+    return this.signUpForm.get('confirmPassword') as AbstractControl;
   }
 
   get email(): AbstractControl {
@@ -67,6 +75,12 @@ export class SignUpComponent implements OnInit {
     this.password.setValue('');
     this.password.markAsDirty();
     this.password.markAsUntouched();
+  }
+
+  resetConfirmPassword() {
+    this.confirmPassword.setValue('');
+    this.confirmPassword.markAsDirty();
+    this.confirmPassword.markAsUntouched();
   }
 
   resetEmail() {

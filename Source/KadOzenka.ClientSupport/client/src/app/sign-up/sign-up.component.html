@@ -21,6 +21,19 @@
                     Введите пароль
                 </mat-error>
             </mat-form-field>
+            <mat-form-field class="password-row">
+                <mat-label>Подтверждение пароля</mat-label>
+                <input matInput type="password" formControlName="confirmPassword">
+                <button *ngIf="confirmPassword.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetConfirmPassword()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="confirmPassword.errors?.required">
+                    Введите пароль ещё раз
+                </mat-error>
+                <mat-error *ngIf="confirmPassword.errors?.mustMatch">
+                    Пароли не совпадают
+                </mat-error>
+            </mat-form-field>
             <mat-form-field class="email-row">
                 <mat-label>Почта</mat-label>
                 <input matInput type="email" formControlName="email">
@@ -41,7 +54,7 @@
               type="button"
               mat-raised-button
               color="primary"
-              [disabled]="login.value === '' || password.value === '' || email.value === '' || email.errors?.email"
+              [disabled]="login.value === '' || password.value === '' || email.value === '' || confirmPassword.value === '' || email.errors?.email || confirmPassword.errors?.mustMatch"
               aria-label="Зарегистрироваться"
               (click)="signUp()">Зарегистрироваться</button>
         </div>
