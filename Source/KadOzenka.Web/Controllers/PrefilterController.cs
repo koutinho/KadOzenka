@@ -13,6 +13,7 @@ using ObjectModel.Directory;
 using Core.Shared.Extensions;
 using MarketPlaceBusiness;
 using AutoMapper;
+using Core.UI.Registers.Models.Registers;
 using MarketPlaceBusiness.Common.Interfaces;
 
 namespace KadOzenka.Web.Controllers
@@ -90,7 +91,7 @@ namespace KadOzenka.Web.Controllers
 		{
 			var filter = CreateConditionFilter(model);
 			var c = new CoreUiController(_service, _registersService, _mapper);
-			c.SaveSearchFilter(MarketObjectsRegisterViewId, filter);
+			c.SaveSearchFilter(MarketObjectsRegisterViewId, filter, RegisterSearchType.Custom);
 			return NoContent();
 		}
 

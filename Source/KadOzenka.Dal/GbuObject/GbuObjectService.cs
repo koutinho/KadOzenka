@@ -548,7 +548,7 @@ namespace KadOzenka.Dal.GbuObject
             int id;
             try
             {
-                id = new OMAttribute
+                id = (int)new OMAttribute
                 {
                     Name = attributeName,
                     RegisterId = registerId,

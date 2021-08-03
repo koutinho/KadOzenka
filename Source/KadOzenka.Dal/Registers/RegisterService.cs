@@ -65,7 +65,7 @@ namespace KadOzenka.Dal.Registers
 
         public int CreateIdColumnForRegister(long registerId)
         {
-            return new OMAttribute
+            return (int)new OMAttribute
             {
                 Id = GetFirstAttributeId(registerId),
                 RegisterId = registerId,

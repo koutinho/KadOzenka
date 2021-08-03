@@ -56,7 +56,7 @@ namespace CommonSdks.Repositories
 
 		public int Save(TSource entity)
 		{
-			return entity.Save();
+			return (int)entity.Save();
 		}
 	}
 }

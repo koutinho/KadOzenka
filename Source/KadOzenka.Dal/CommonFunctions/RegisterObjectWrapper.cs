@@ -14,7 +14,7 @@ namespace KadOzenka.Dal.CommonFunctions
 
         public int Save(RegisterObject registerObject)
         {
-            return RegisterStorage.Save(registerObject);
+            return (int)RegisterStorage.Save(registerObject);
         }
     }
 

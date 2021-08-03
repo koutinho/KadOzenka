@@ -68,7 +68,7 @@ namespace KadOzenka.Dal.Tours
             tour.Year = tourDto.Year;
             var id = tour.Save();
 
-            return id;
+            return (int)id;
         }
 
         public void UpdateTourAttributeSettings(TourAttributeSettingsDto tourDto)

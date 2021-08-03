@@ -683,7 +683,7 @@ namespace KadOzenka.Dal.Groups
                 group.Number = numberStr;
                 group.ParentId = groupDto.ParentGroupId ?? -1;
                 group.GroupAlgoritm_Code = groupAlgorithm;
-                groupId = group.Save();
+                groupId = (int)group.Save();
 
                 tourGroup.GroupId = group.Id;
                 tourGroup.TourId = groupDto.RatingTourId.Value;

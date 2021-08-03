@@ -16,6 +16,7 @@ using ObjectModel.Core.Shared;
 using KadOzenka.Dal.MapModeling;
 using System.Globalization;
 using AutoMapper;
+using Core.UI.Registers.Models.Registers;
 using KadOzenka.Web.Attributes;
 using MarketPlaceBusiness;
 using MarketPlaceBusiness.Common.Dto;
@@ -279,7 +280,7 @@ namespace KadOzenka.Web.Controllers
         [SRDFunction(Tag = SRDCoreFunctions.MARKET_MAP)]
         public JsonResult SetFilters(string filter)
         {
-            new CoreUiController(_coreUiService, _registersService, Mapper).SaveSearchFilter(MarketObjectsRegisterViewId, filter);
+            new CoreUiController(_coreUiService, _registersService, Mapper).SaveSearchFilter(MarketObjectsRegisterViewId, filter, RegisterSearchType.Fixed);
             return Json(new { });
         }
 

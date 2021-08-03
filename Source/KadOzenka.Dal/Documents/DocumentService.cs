@@ -29,7 +29,7 @@ namespace KadOzenka.Dal.Documents
             if (documentDto.ChangeDate != null)
                 newDocument.ChangeDate = documentDto.ChangeDate.Value;
 
-            return newDocument.Save();
+            return (int)newDocument.Save();
         }
 
         public void UpdateDocument(DocumentDto documentDto)

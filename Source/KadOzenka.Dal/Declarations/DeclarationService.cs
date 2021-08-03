@@ -53,7 +53,7 @@ namespace KadOzenka.Dal.Declarations
 			using (var ts = new TransactionScope())
 			{
 
-				resId = new OMSubject
+				resId = (int)new OMSubject
 				{
 					Name = newSubject.Name,
 					Type_Code = newSubject.Type,
