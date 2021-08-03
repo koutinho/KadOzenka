@@ -1,0 +1,49 @@
+version: "3.7"
+
+services:
+    api:
+        image: mcr.microsoft.com/dotnet/sdk:5.0
+        command: dotnet watch run
+        ports:
+            - 5000:5000
+            - 5001:5001
+        working_dir: /app
+        volumes: 
+            - ./api/:/app
+
+    db:
+        image: postgres
+        restart: always
+        volumes:
+            - db:/var/lib/postgresql/data
+        environment:
+            POSTGRES_USER: genix_admin
+            POSTGRES_PASSWORD: 123456
+            POSTGRES_DB: client_support
+        ports:
+            - "5432:5432"
+
+    pgadmin:
+        image: dpage/pgadmin4
+        restart: always
+        environment: 
+            PGADMIN_DEFAULT_EMAIL: admin@genix.com
+            PGADMIN_DEFAULT_PASSWORD: 123456
+        ports:
+            - "5052:80"
+        volumes:
+            - pgadmin4:/var/lib/pgadmin
+
+    angular:
+        image: trion/ng-cli
+        command: ng serve --host 0.0.0.0
+        user: "0"
+        ports: 
+            - 4200:4200
+        working_dir: /app
+        volumes: 
+            - ./client/:/app
+
+volumes:
+    db:
+    pgadmin4:

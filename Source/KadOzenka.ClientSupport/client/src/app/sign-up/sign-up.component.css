@@ -1,0 +1,41 @@
+.login-row, .password-row, .email-row {
+    display: block;
+}
+.login-form-wrap {
+max-width: 350px;
+margin: auto;
+position: relative;
+top: 30%;
+  padding: 100px 20px 20px;
+  background-color: rgb(67 84 84 / 60%);
+border-radius: 15px;
+}
+.login-form-component {
+    height: 100%;
+  background: url("../../assets/region_logo_3_cut.jpg");
+}
+.additional-link{
+  margin: 10px auto;
+  text-align: right;
+}
+.success-sign-up-message {
+  margin-top: 10px;
+  text-align: right;
+  color: white;
+}
+.error-sign-up-message {
+  margin-top: 10px;
+  text-align: right;
+  color: red;
+}
+mat-label{
+    color: white !important;
+}
+input{
+    color: white;
+    caret-color: white;
+}
+a{
+  text-decoration: none;
+  color: rgb(42, 125, 219);
+}

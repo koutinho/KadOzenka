@@ -1,0 +1,71 @@
+<div class="login-form-component">
+    <div class="login-form-wrap"> 
+        <form [formGroup]="signUpForm">
+            <mat-form-field class="login-row">
+                <mat-label>Имя пользователя</mat-label>
+                <input matInput type="text" formControlName="login">
+                <button *ngIf="login.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetLogin()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="login.errors?.required">
+                    Заполните имя пользователя
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="password-row">
+                <mat-label>Пароль</mat-label>
+                <input matInput type="password" formControlName="password">
+                <button *ngIf="password.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetPassword()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="password.errors?.required">
+                    Введите пароль
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="password-row">
+                <mat-label>Подтверждение пароля</mat-label>
+                <input matInput type="password" formControlName="confirmPassword">
+                <button *ngIf="confirmPassword.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetConfirmPassword()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="confirmPassword.errors?.required">
+                    Введите пароль ещё раз
+                </mat-error>
+                <mat-error *ngIf="confirmPassword.errors?.mustMatch">
+                    Пароли не совпадают
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field class="email-row">
+                <mat-label>Почта</mat-label>
+                <input matInput type="email" formControlName="email">
+                <button *ngIf="email.value" matSuffix mat-icon-button aria-label="Очистить" (click)="resetEmail()">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-error *ngIf="email.errors?.required">
+                    Введите почту
+                </mat-error>
+                <mat-error *ngIf="email.errors?.email">
+                    Введите действительный адрес почты
+                </mat-error>
+            </mat-form-field>
+        </form>       
+        <div style="text-align: end;">
+            <button
+              id="signUpButton"
+              type="button"
+              mat-raised-button
+              color="primary"
+              [disabled]="login.value === '' || password.value === '' || email.value === '' || confirmPassword.value === '' || email.errors?.email || confirmPassword.errors?.mustMatch"
+              aria-label="Зарегистрироваться"
+              (click)="signUp()">Зарегистрироваться</button>
+        </div>
+        <div class="success-sign-up-message" *ngIf="signUpResult?.success">
+            Аккаунт успешно зарегестрирован!
+        </div>
+        <div style="text-align: right;margin-top: 10px;">
+            <a routerLink="/login" class="additional-link"><strong>Войти</strong></a>
+        </div>
+        <div class="error-sign-up-message" *ngIf="signUpResult != null && !signUpResult.success">
+            <p>{{signUpResult?.errorMessage}}</p>
+        </div>
+    </div>
+</div>
