@@ -8,9 +8,16 @@ namespace api.DataLayer
     {  
         public ClientSupportDbContext(DbContextOptions<ClientSupportDbContext> options)
             : base(options)  { }
+
+        public DbSet<Ticket> Tickets { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)  
         {  
-            base.OnModelCreating(builder);  
-        }  
+            base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(user => user.Tickets)
+                .WithOne(ticket => ticket.User);
+        }
     }  
 }  
