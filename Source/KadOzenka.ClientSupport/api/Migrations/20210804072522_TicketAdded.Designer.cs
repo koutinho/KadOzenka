@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.DataLayer;
@@ -9,9 +10,10 @@ using api.DataLayer;
 namespace api.Migrations
 {
     [DbContext(typeof(ClientSupportDbContext))]
-    partial class ClientSupportDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210804072522_TicketAdded")]
+    partial class TicketAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
