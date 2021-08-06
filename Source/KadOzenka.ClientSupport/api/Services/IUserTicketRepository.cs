@@ -6,7 +6,7 @@ namespace api.Services
 {
     public interface IUserTicketRepository
     {
-        void AddTicket(Ticket ticket);
+        Task AddTicket(Ticket ticket);
 
         Task<IQueryable<Ticket>> GetTickets();
     }
