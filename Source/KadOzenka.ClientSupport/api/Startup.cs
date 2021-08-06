@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using api.Authentication;
 using api.DataLayer;
+using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,10 @@ namespace api
             services.AddDbContext<ClientSupportDbContext>(options =>
                 options.UseNpgsql(
                     Configuration.GetConnectionString("PGConnection")));
+
+            services.AddHttpContextAccessor();
+            services.AddTransient<IUserTicketRepository, UserTicketRepository>();
+            services.AddTransient<ICurrentUserAccessor, CurrentUserAccessor>();
 
             services.AddCors(op =>
 				{
