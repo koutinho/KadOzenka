@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Model;
 using api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +13,7 @@ namespace api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class TicketsController : ControllerBase
     {
         public TicketsController(IUserTicketRepository userTicketRepository, ILogger<TicketsController> logger)
@@ -20,17 +23,35 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Ticket>> Get()
+        public async Task<ActionResult<IEnumerable<Ticket>>> Get()
         {
-            var tickets = await _userTicketRepository.GetTickets();
+            List<Ticket> tickets;
 
-            return tickets.ToList();
+            try
+            {
+                var ticketsQuery = await _userTicketRepository.GetTickets();
+                
+                tickets = ticketsQuery.ToList();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+
+            return Ok(tickets);
         }
 
         [HttpPost]
         public async Task<ActionResult<Ticket>> AddTicket(Ticket ticket)
         {
-            await _userTicketRepository.AddTicket(ticket);
+            try
+            {
+                await _userTicketRepository.AddTicket(ticket);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
 
             return Ok(ticket);
         }
