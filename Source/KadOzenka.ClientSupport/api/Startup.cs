@@ -42,6 +42,8 @@ namespace api
             services.AddTransient<IUserTicketRepository, UserTicketRepository>();
             services.AddTransient<ICurrentUserAccessor, CurrentUserAccessor>();
 
+            services.AddMemoryCache();
+
             services.AddCors(op =>
 				{
 					op.AddDefaultPolicy(builder =>
