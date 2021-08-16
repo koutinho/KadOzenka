@@ -21,6 +21,7 @@ import { AuthApiService } from './common/api/auth/authService';
 import { WheatherForecastApiService } from './common/api/wheatherForcast/wheatherForecastService';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { SignUpApiService } from './common/api/sign-up/sign-up-service';
+import { TicketsComponent } from './tickets/tickets.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { SignUpApiService } from './common/api/sign-up/sign-up-service';
     AppComponent,
     HomeComponent,
     LoginComponent,
-    SignUpComponent
+    SignUpComponent,
+    TicketsComponent
   ],
   imports: [
     BrowserModule,

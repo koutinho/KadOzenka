@@ -6,6 +6,7 @@ import { AuthGuard } from './common/guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { Settings } from 'src/settings';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { TicketsComponent } from './tickets/tickets.component';
 
 export function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -21,6 +22,11 @@ const routes: Routes = [
     path: 'home',
     canActivate: [AuthGuard],
     component: HomeComponent
+  },
+  {
+    path: 'tickets',
+    canActivate: [AuthGuard],
+    component: TicketsComponent
   },
   {
     path: 'login',
