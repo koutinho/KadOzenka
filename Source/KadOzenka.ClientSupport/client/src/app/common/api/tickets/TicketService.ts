@@ -12,6 +12,6 @@ export class TicketApiService {
     }
 
     getTickets(): Observable<Ticket[]> {
-        return of<Ticket[]>([new Ticket(1, "", "")])
+        return of<Ticket[]>([new Ticket(1, "228", "Обращение1")])
     }
 }

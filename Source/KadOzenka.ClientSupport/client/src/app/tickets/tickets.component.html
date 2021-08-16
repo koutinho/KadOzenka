@@ -1,6 +1,6 @@
 <h1 id="tableLabel">Мои обращения</h1>
 
-<table class='table table-striped' aria-labelledby="tableLabel">
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="tickets.length != 0">
   <thead>
     <tr>
       <th>Идентификатор</th>
@@ -8,4 +8,11 @@
       <th>Текст обращения</th>
     </tr>
   </thead>
+  <tbody>
+    <tr *ngFor="let ticket of tickets">
+      <td>{{ ticket.id }}</td>
+      <td>{{ ticket.kadNumber }}</td>
+      <td>{{ ticket.content }}</td>
+    </tr>
+  </tbody>
 </table>

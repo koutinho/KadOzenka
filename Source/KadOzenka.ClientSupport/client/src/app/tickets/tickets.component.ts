@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Ticket } from '../common/api/tickets/Ticket';
+import { TicketApiService } from '../common/api/tickets/TicketService';
 
 @Component({
   selector: 'app-tickets',
@@ -7,7 +9,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TicketsComponent implements OnInit {
 
-  constructor() { }
+  public ticketService: TicketApiService;
+
+  public tickets: Ticket[] = [];
+
+  constructor(ticketService: TicketApiService) {
+    this.ticketService = ticketService;
+    
+    this.ticketService.getTickets().subscribe(
+      (res) => this.tickets = res);
+  }
 
   ngOnInit(): void {
   }

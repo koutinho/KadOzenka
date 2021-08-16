@@ -22,6 +22,7 @@ import { WheatherForecastApiService } from './common/api/wheatherForcast/wheathe
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { SignUpApiService } from './common/api/sign-up/sign-up-service';
 import { TicketsComponent } from './tickets/tickets.component';
+import { TicketApiService } from './common/api/tickets/TicketService';
 
 
 @NgModule({
@@ -48,7 +49,7 @@ import { TicketsComponent } from './tickets/tickets.component';
     MatSelectModule,
     ReactiveFormsModule
   ],
-  providers: [AuthApiService, WheatherForecastApiService, SignUpApiService],
+  providers: [AuthApiService, WheatherForecastApiService, SignUpApiService, TicketApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
