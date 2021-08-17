@@ -23,6 +23,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { SignUpApiService } from './common/api/sign-up/sign-up-service';
 import { TicketsComponent } from './tickets/tickets.component';
 import { TicketApiService } from './common/api/tickets/TicketService';
+import { AddTicketComponent } from './add-ticket/add-ticket.component';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { TicketApiService } from './common/api/tickets/TicketService';
     HomeComponent,
     LoginComponent,
     SignUpComponent,
-    TicketsComponent
+    TicketsComponent,
+    AddTicketComponent
   ],
   imports: [
     BrowserModule,
