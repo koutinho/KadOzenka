@@ -19,7 +19,7 @@ export class SignUpComponent implements OnInit {
     email: ['', [Validators.required, Validators.email]]
   }, {
     validator: MustMatchValidator('password', 'confirmPassword')
-  });;
+  });
 
   signUpResult: SignUpResult | null = null;
 

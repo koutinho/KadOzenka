@@ -1,0 +1,20 @@
+.inner-wrapper {
+    padding: 15px 0 130px;
+    width: 100%;
+  }
+  
+.inner-wrapper mat-card {
+  display: inline-block;
+  margin: 0 6% 0 0;
+  vertical-align: top;
+  width: 44%;
+}
+
+.controlers-wrapper>* {
+  width: 100%;
+  padding: 0;
+}
+
+.example-full-width {
+  width: 100%;
+}

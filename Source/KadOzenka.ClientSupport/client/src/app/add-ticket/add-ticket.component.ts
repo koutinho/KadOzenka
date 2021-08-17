@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-add-ticket',
@@ -7,7 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AddTicketComponent implements OnInit {
 
-  constructor() { }
+  public ticketForm: FormGroup = this.formBuilder.group({
+    kadNumber: ['', Validators.required],
+    content: ['', Validators.required]
+  })
+
+  constructor(private formBuilder: FormBuilder) { }
+
+  public get kadNumber(): AbstractControl {
+    return this.ticketForm.get('kadNumber') as AbstractControl;
+  }
+
+  public get content(): AbstractControl {
+    return this.ticketForm.get('content') as AbstractControl;
+  }
 
   ngOnInit(): void {
   }

@@ -1,1 +1,28 @@
-<p>add-ticket works!</p>
+<!-- Title group  -->
+<div class="title-group">
+  <h1 class="mat-h1">Добавление нового обращения</h1>
+  <mat-divider fxFlex="1 0"></mat-divider>
+</div>
+
+<div class="inner-wrapper">
+    <form [formGroup]="ticketForm">
+        <mat-card>
+          <div class="controlers-wrapper">
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Кадастровый номер</mat-label>
+              <input matInput formControlName="kadNumber">
+              <mat-error *ngIf="kadNumber.errors?.required">
+                Введите кадастровый номер
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field class="example-full-width" appearance="fill">
+              <mat-label>Обращение</mat-label>
+              <textarea cdkTextareaAutosize matInput formControlName="content" placeholder="Текст обращения"></textarea>
+              <mat-error *ngIf="content.errors?.required">
+                Введите содержимое обращения
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card>
+    </form>
+</div>
