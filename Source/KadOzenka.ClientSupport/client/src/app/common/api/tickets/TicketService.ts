@@ -11,7 +11,7 @@ export class TicketApiService {
         this.http = new Http(httpClient);
     }
 
-    getTickets(): Observable<Ticket[]> {
-        return of<Ticket[]>([new Ticket(1, "228", "Обращение1")])
+    getTickets(): Observable<Ticket[]> {        
+        return this.http.get<Ticket[]>("Tickets");
     }
 }
