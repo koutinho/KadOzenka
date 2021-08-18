@@ -16,7 +16,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import {MatCardModule} from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/api/auth/authService';
@@ -26,6 +26,7 @@ import { SignUpApiService } from './common/api/sign-up/sign-up-service';
 import { TicketsComponent } from './tickets/tickets.component';
 import { TicketApiService } from './common/api/tickets/TicketService';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
+import { HeaderComponent } from './navigation/header/header.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { AddTicketComponent } from './add-ticket/add-ticket.component';
     LoginComponent,
     SignUpComponent,
     TicketsComponent,
-    AddTicketComponent
+    AddTicketComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,

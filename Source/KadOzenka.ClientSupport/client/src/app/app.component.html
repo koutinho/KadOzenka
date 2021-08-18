@@ -1,3 +1,4 @@
 <div class="root">
+  <app-header *ngIf="currentUrl != '/login' && currentUrl != '/signup'"></app-header>  
   <router-outlet></router-outlet>
 </div>
