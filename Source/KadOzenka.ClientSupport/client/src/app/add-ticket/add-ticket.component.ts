@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Ticket } from '../common/api/tickets/Ticket';
+import { TicketApiService } from '../common/api/tickets/TicketService';
 
 @Component({
   selector: 'app-add-ticket',
@@ -13,7 +15,7 @@ export class AddTicketComponent implements OnInit {
     content: ['', Validators.required]
   })
 
-  constructor(private formBuilder: FormBuilder) { }
+  constructor(private formBuilder: FormBuilder, private ticketService: TicketApiService) { }
 
   public get kadNumber(): AbstractControl {
     return this.ticketForm.get('kadNumber') as AbstractControl;
@@ -26,4 +28,24 @@ export class AddTicketComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public addTicket() {
+    if (this.ticketForm.valid) {
+      this.ticketService.addTicket(this.ticketForm.value).subscribe(ticket => {
+        this.reset();
+      });
+    }
+  }
+
+  reset() {
+    this.ticketForm.markAsPristine()
+    this.ticketForm.reset();
+  }
+
+  resetKadNumber() {
+    this.kadNumber.reset();
+  }
+
+  resetContent() {
+    this.content.reset();
+  }
 }

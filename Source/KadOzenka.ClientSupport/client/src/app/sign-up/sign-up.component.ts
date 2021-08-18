@@ -60,32 +60,22 @@ export class SignUpComponent implements OnInit {
   }
 
   reset() {
-    this.resetLogin();
-    this.resetPassword();
-    this.resetEmail();
+    this.signUpForm.reset();
   }
 
   resetLogin() {
-    this.login.setValue('');
-    this.login.markAsDirty();
-    this.login.markAsUntouched();
+    this.login.reset();
   }
 
   resetPassword() {
-    this.password.setValue('');
-    this.password.markAsDirty();
-    this.password.markAsUntouched();
+    this.password.reset();
   }
 
   resetConfirmPassword() {
-    this.confirmPassword.setValue('');
-    this.confirmPassword.markAsDirty();
-    this.confirmPassword.markAsUntouched();
+    this.confirmPassword.reset();
   }
 
   resetEmail() {
-    this.email.setValue('');
-    this.email.markAsDirty();
-    this.email.markAsUntouched();
+    this.email.reset();
   }
 }

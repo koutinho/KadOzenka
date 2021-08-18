@@ -1,3 +1,7 @@
+.title-group {
+  padding: 16px;
+}
+
 .inner-wrapper {
     padding: 15px 0 130px;
     width: 100%;
@@ -17,4 +21,16 @@
 
 .example-full-width {
   width: 100%;
+}
+
+.full-wrapper {
+  width: 100%;
+}
+
+.button-wrapper {
+  margin: 20px 0 0 0;
+}
+
+.button-wrapper button {
+  margin-right: 5px;
 }
