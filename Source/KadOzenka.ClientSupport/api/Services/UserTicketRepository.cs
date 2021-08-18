@@ -22,7 +22,7 @@ namespace api.Services
 
         public async Task AddTicket(Model.Ticket ticket)
         {
-            var user = await _currentUserAccessor.GetCurrentUser(); 
+            var user = await _currentUserAccessor.GetCurrentUser();
 
             if (user == null)
                 throw new Exception("Пользователь не найден");
@@ -31,7 +31,7 @@ namespace api.Services
             {
                 KadNumber = ticket.KadNumber,
                 Content = ticket.Content,
-                User = user
+                UserId = user.Id
             };
 
             _context.Tickets.Add(dbTicket);
