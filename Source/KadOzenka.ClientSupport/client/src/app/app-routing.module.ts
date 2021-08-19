@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './common/guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
@@ -19,17 +18,12 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/home',
+    redirectTo: '/tickets',
   },
   {
     path: '',
     component: HomeLayoutComponent,
     children: [
-      {
-        path: 'home',
-        canActivate: [AuthGuard],
-        component: HomeComponent
-      },
       {
         path: 'tickets',
         canActivate: [AuthGuard],
