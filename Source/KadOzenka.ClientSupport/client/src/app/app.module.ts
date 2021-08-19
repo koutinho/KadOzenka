@@ -27,7 +27,8 @@ import { TicketsComponent } from './tickets/tickets.component';
 import { TicketApiService } from './common/api/tickets/TicketService';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
 import { HeaderComponent } from './navigation/header/header.component';
-
+import { LoginLayoutComponent } from './layouts/login-layout.component';
+import { HomeLayoutComponent } from './layouts/home-layout.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,9 @@ import { HeaderComponent } from './navigation/header/header.component';
     SignUpComponent,
     TicketsComponent,
     AddTicketComponent,
-    HeaderComponent
+    HeaderComponent,
+    LoginLayoutComponent,
+    HomeLayoutComponent
   ],
   imports: [
     BrowserModule,

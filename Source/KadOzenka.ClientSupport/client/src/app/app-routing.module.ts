@@ -8,6 +8,8 @@ import { Settings } from 'src/settings';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { TicketsComponent } from './tickets/tickets.component';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
+import { LoginLayoutComponent } from './layouts/login-layout.component';
+import { HomeLayoutComponent } from './layouts/home-layout.component';
 
 export function tokenGetter() {
   return localStorage.getItem("jwt");
@@ -20,27 +22,39 @@ const routes: Routes = [
     redirectTo: '/home',
   },
   {
-    path: 'home',
-    canActivate: [AuthGuard],
-    component: HomeComponent
+    path: '',
+    component: HomeLayoutComponent,
+    children: [
+      {
+        path: 'home',
+        canActivate: [AuthGuard],
+        component: HomeComponent
+      },
+      {
+        path: 'tickets',
+        canActivate: [AuthGuard],
+        component: TicketsComponent
+      },
+      {
+        path: 'tickets/add',
+        canActivate: [AuthGuard],
+        component: AddTicketComponent
+      }
+    ]
   },
   {
-    path: 'tickets',
-    canActivate: [AuthGuard],
-    component: TicketsComponent
-  },
-  {
-    path: 'tickets/add',
-    canActivate: [AuthGuard],
-    component: AddTicketComponent
-  },
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'signup',
-    component: SignUpComponent
+    path: '',
+    component: LoginLayoutComponent,
+    children: [
+      {
+        path: 'login',
+        component: LoginComponent
+      },
+      {
+        path: 'signup',
+        component: SignUpComponent
+      }
+    ]
   }
 ];
 
