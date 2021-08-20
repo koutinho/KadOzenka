@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './components/login/login.component';
 import { AuthGuard } from './common/guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { Settings } from 'src/settings';
-import { SignUpComponent } from './sign-up/sign-up.component';
-import { TicketsComponent } from './tickets/tickets.component';
-import { AddTicketComponent } from './add-ticket/add-ticket.component';
-import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
-import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
+import { TicketsComponent } from './components/tickets/tickets.component';
+import { AddTicketComponent } from './components/add-ticket/add-ticket.component';
+import { LoginLayoutComponent } from './components/layouts/login-layout/login-layout.component';
+import { HomeLayoutComponent } from './components/layouts/home-layout/home-layout.component';
 
 export function tokenGetter() {
   return localStorage.getItem("jwt");

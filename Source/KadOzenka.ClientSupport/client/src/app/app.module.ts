@@ -4,7 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './components/login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,14 +21,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/api/auth/authService';
 import { WheatherForecastApiService } from './common/api/wheatherForcast/wheatherForecastService';
-import { SignUpComponent } from './sign-up/sign-up.component';
+import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { SignUpApiService } from './common/api/sign-up/sign-up-service';
-import { TicketsComponent } from './tickets/tickets.component';
+import { TicketsComponent } from './components/tickets/tickets.component';
 import { TicketApiService } from './common/api/tickets/TicketService';
-import { AddTicketComponent } from './add-ticket/add-ticket.component';
-import { HeaderComponent } from './navigation/header/header.component';
-import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
-import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
+import { AddTicketComponent } from './components/add-ticket/add-ticket.component';
+import { HeaderComponent } from './components/navigation/header/header.component';
+import { LoginLayoutComponent } from './components/layouts/login-layout/login-layout.component';
+import { HomeLayoutComponent } from './components/layouts/home-layout/home-layout.component';
 
 @NgModule({
   declarations: [
