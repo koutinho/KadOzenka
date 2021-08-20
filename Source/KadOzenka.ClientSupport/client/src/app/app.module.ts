@@ -20,7 +20,6 @@ import { MatCardModule } from '@angular/material/card';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthApiService } from './common/api/auth/authService';
-import { WheatherForecastApiService } from './common/api/wheatherForcast/wheatherForecastService';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { SignUpApiService } from './common/api/sign-up/sign-up-service';
 import { TicketsComponent } from './components/tickets/tickets.component';
@@ -60,7 +59,7 @@ import { HomeLayoutComponent } from './components/layouts/home-layout/home-layou
     MatSelectModule,
     ReactiveFormsModule
   ],
-  providers: [AuthApiService, WheatherForecastApiService, SignUpApiService, TicketApiService],
+  providers: [AuthApiService, SignUpApiService, TicketApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
