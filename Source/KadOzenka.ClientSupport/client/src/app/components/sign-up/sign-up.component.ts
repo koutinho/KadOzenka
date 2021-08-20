@@ -1,9 +1,9 @@
 import { FormControl, Validators, FormBuilder, FormGroup, AbstractControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { SignUpResult } from '../../common/api/sign-up/sign-up-result';
-import { SignUpApiService } from '../../common/api/sign-up/sign-up-service';
-import { SignUpData } from '../../common/api/sign-up/sign-up-data';
-import { MustMatchValidator } from '../../common/validators/MustMatchValidator';
+import { SignUpResult } from '../../api/sign-up/sign-up-result';
+import { SignUpApiService } from '../../api/sign-up/sign-up-service';
+import { SignUpData } from '../../api/sign-up/sign-up-data';
+import { MustMatchValidator } from '../../validators/MustMatchValidator';
 
 @Component({
   selector: 'app-sign-up',

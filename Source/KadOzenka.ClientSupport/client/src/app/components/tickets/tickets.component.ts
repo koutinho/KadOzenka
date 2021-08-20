@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Ticket } from '../../common/api/tickets/Ticket';
-import { TicketApiService } from '../../common/api/tickets/TicketService';
+import { Ticket } from '../../api/tickets/Ticket';
+import { TicketApiService } from '../../api/tickets/TicketService';
 
 @Component({
   selector: 'app-tickets',

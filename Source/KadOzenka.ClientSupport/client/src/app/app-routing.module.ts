@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
-import { AuthGuard } from './common/guards/auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { JwtModule } from '@auth0/angular-jwt';
 import { Settings } from 'src/settings';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
