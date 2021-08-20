@@ -1,0 +1,11 @@
+.main {
+    padding-left: 50px;
+    padding-right: 50px;
+    background: #fafafa;
+    height: 100%;
+}
+
+.outlet {
+    padding-top: 50px;
+    padding-bottom: 50px;
+}

@@ -7,8 +7,8 @@ import { Settings } from 'src/settings';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { TicketsComponent } from './tickets/tickets.component';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
-import { LoginLayoutComponent } from './layouts/login-layout.component';
-import { HomeLayoutComponent } from './layouts/home-layout.component';
+import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
+import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 
 export function tokenGetter() {
   return localStorage.getItem("jwt");

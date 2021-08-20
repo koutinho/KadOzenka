@@ -1,13 +1,14 @@
 a {
     text-decoration: none;
     color: white;
-    margin-right: 10px;
+    margin-right: 50px;
 }
 
 a:hover, a:active{
     color: lightgray;
 }
 
-mat-toolbar{
+mat-toolbar {
     border-radius: 3px;
+    justify-content: center;    
 }

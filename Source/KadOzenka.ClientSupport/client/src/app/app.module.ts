@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTableModule } from '@angular/material/table';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
@@ -26,8 +27,8 @@ import { TicketsComponent } from './tickets/tickets.component';
 import { TicketApiService } from './common/api/tickets/TicketService';
 import { AddTicketComponent } from './add-ticket/add-ticket.component';
 import { HeaderComponent } from './navigation/header/header.component';
-import { LoginLayoutComponent } from './layouts/login-layout.component';
-import { HomeLayoutComponent } from './layouts/home-layout.component';
+import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
+import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { HomeLayoutComponent } from './layouts/home-layout.component';
     BrowserAnimationsModule,
     MatFormFieldModule,
     MatIconModule,
+    MatTableModule,
     FormsModule,
     MatInputModule,
     MatButtonModule,

@@ -22,7 +22,7 @@ export class LoginComponent implements OnInit {
 
     this.api.logIn(loginData).subscribe((res) => {
         if (res) {
-          this.router.navigate(["home"]);
+          this.router.navigate(["tickets"]);
         } else {
           console.log("Неправильный логин или пароль")
         }

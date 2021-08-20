@@ -1,18 +1,19 @@
-<h1 id="tableLabel">Мои обращения</h1>
+<table mat-table [dataSource]="tickets" class="mat-elevation-z8">
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef> Идентификатор </th>
+    <td mat-cell *matCellDef="let ticket"> {{ticket.ticketId}} </td>
+  </ng-container>
 
-<table class='table table-striped' aria-labelledby="tableLabel">
-  <thead>
-    <tr>
-      <th>Идентификатор</th>
-      <th>Кадастровый номер</th>
-      <th>Текст обращения</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let ticket of tickets">
-      <td>{{ ticket.ticketId }}</td>
-      <td>{{ ticket.kadNumber }}</td>
-      <td>{{ ticket.content }}</td>
-    </tr>
-  </tbody>
+  <ng-container matColumnDef="kadNumber">
+    <th mat-header-cell *matHeaderCellDef> Кадастровый номер </th>
+    <td mat-cell *matCellDef="let ticket"> {{ticket.kadNumber}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="content">
+    <th mat-header-cell *matHeaderCellDef> Текст обращения </th>
+    <td mat-cell *matCellDef="let ticket"> {{ticket.content}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['id', 'kadNumber', 'content']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['id', 'kadNumber', 'content'];"></tr>
 </table>
